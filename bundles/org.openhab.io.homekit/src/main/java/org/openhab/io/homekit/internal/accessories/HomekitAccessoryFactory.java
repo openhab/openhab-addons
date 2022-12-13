@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +49,6 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.services.Service;
 
@@ -78,6 +78,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(LIGHTBULB, new HomekitCharacteristicType[] { ON_STATE });
+            put(BASIC_FAN, new HomekitCharacteristicType[] { ON_STATE });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
@@ -119,6 +120,7 @@ public class HomekitAccessoryFactory {
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
             put(WINDOW_COVERING, HomekitWindowCoveringImpl.class);
             put(LIGHTBULB, HomekitLightbulbImpl.class);
+            put(BASIC_FAN, HomekitBasicFanImpl.class);
             put(FAN, HomekitFanImpl.class);
             put(LIGHT_SENSOR, HomekitLightSensorImpl.class);
             put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);
@@ -168,7 +170,7 @@ public class HomekitAccessoryFactory {
      *             characteristic
      */
     @SuppressWarnings("null")
-    public static HomekitAccessory create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
+    public static AbstractHomekitAccessoryImpl create(HomekitTaggedItem taggedItem, MetadataRegistry metadataRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
         logger.trace("Constructing {} of accessory type {}", taggedItem.getName(), accessoryType.getTag());
@@ -202,7 +204,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * return HomeKit accessory types for a OH item based on meta data
+     * return HomeKit accessory types for an OH item based on meta data
      *
      * @param item OH item
      * @param metadataRegistry meta data registry
@@ -335,7 +337,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * add optional characteristic for given accessory.
+     * add optional characteristics for given accessory.
      *
      * @param taggedItem main item
      * @param accessory accessory
@@ -372,7 +374,7 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * collect optional HomeKit characteristics for a OH item.
+     * collect optional HomeKit characteristics for an OH item.
      *
      * @param taggedItem main OH item
      * @param metadataRegistry OH metadata registry
@@ -380,7 +382,7 @@ public class HomekitAccessoryFactory {
      */
     private static Map<HomekitCharacteristicType, GenericItem> getOptionalCharacteristics(HomekitTaggedItem taggedItem,
             MetadataRegistry metadataRegistry) {
-        Map<HomekitCharacteristicType, GenericItem> characteristicItems = new HashMap<>();
+        Map<HomekitCharacteristicType, GenericItem> characteristicItems = new TreeMap<>();
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
             groupItem.getMembers().forEach(item -> getAccessoryTypes(item, metadataRegistry).stream()

@@ -23,35 +23,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum ShapeType {
     // side lengths are taken from https://forum.nanoleaf.me/docs chapter 3.3
-    UNKNOWN("Unknown", -1, 0, 0, DrawingAlgorithm.NONE),
-    TRIANGLE("Triangle", 0, 150, 3, DrawingAlgorithm.TRIANGLE),
-    RHYTHM("Rhythm", 1, 0, 1, DrawingAlgorithm.NONE),
-    SQUARE("Square", 2, 100, 0, DrawingAlgorithm.SQUARE),
-    CONTROL_SQUARE_MASTER("Control Square Master", 3, 100, 0, DrawingAlgorithm.SQUARE),
-    CONTROL_SQUARE_PASSIVE("Control Square Passive", 4, 100, 0, DrawingAlgorithm.SQUARE),
-    SHAPES_HEXAGON("Hexagon (Shapes)", 7, 67, 6, DrawingAlgorithm.HEXAGON),
-    SHAPES_TRIANGLE("Triangle (Shapes)", 8, 134, 3, DrawingAlgorithm.TRIANGLE),
-    SHAPES_MINI_TRIANGLE("Mini Triangle (Shapes)", 9, 67, 3, DrawingAlgorithm.TRIANGLE),
-    SHAPES_CONTROLLER("Controller (Shapes)", 12, 0, 0, DrawingAlgorithm.NONE),
-    ELEMENTS_HEXAGON("Elements Hexagon", 14, 134, 6, DrawingAlgorithm.HEXAGON),
-    ELEMENTS_HEXAGON_CORNER("Elements Hexagon - Corner", 15, 33.5 / 58, 6, DrawingAlgorithm.CORNER),
-    LINES_CONNECTOR("Lines Connector", 16, 11, 1, DrawingAlgorithm.LINE),
-    LIGHT_LINES("Light Lines", 17, 154, 1, DrawingAlgorithm.LINE),
-    LINES_LINES_SINGLE("Light Lines - Single Sone", 18, 77, 1, DrawingAlgorithm.LINE),
-    CONTROLLER_CAP("Controller Cap", 19, 11, 0, DrawingAlgorithm.NONE),
-    POWER_CONNECTOR("Power Connector", 20, 11, 0, DrawingAlgorithm.NONE);
+    UNKNOWN("Unknown", -1, 0, 0, 1, DrawingAlgorithm.NONE),
+    TRIANGLE("Triangle", 0, 150, 3, 1, DrawingAlgorithm.TRIANGLE),
+    RHYTHM("Rhythm", 1, 0, 1, 1, DrawingAlgorithm.NONE),
+    SQUARE("Square", 2, 100, 0, 1, DrawingAlgorithm.SQUARE),
+    CONTROL_SQUARE_MASTER("Control Square Master", 3, 100, 0, 1, DrawingAlgorithm.SQUARE),
+    CONTROL_SQUARE_PASSIVE("Control Square Passive", 4, 100, 0, 1, DrawingAlgorithm.SQUARE),
+    SHAPES_HEXAGON("Hexagon (Shapes)", 7, 67, 6, 1, DrawingAlgorithm.HEXAGON),
+    SHAPES_TRIANGLE("Triangle (Shapes)", 8, 134, 3, 1, DrawingAlgorithm.TRIANGLE),
+    SHAPES_MINI_TRIANGLE("Mini Triangle (Shapes)", 9, 67, 3, 1, DrawingAlgorithm.TRIANGLE),
+    SHAPES_CONTROLLER("Controller (Shapes)", 12, 0, 0, 1, DrawingAlgorithm.NONE),
+    ELEMENTS_HEXAGON("Elements Hexagon", 14, 134, 6, 1, DrawingAlgorithm.HEXAGON),
+    ELEMENTS_HEXAGON_CORNER("Elements Hexagon - Corner", 15, 58, 6, 6, DrawingAlgorithm.CORNER),
+    LINES_CONNECTOR("Lines Connector", 16, 11, 1, 1, DrawingAlgorithm.NONE),
+    LIGHT_LINES("Light Lines", 17, 154, 1, 1, DrawingAlgorithm.LINE),
+    LINES_LINES_SINGLE("Light Lines - Single Sone", 18, 77, 2, 2, DrawingAlgorithm.LINE),
+    CONTROLLER_CAP("Controller Cap", 19, 11, 0, 1, DrawingAlgorithm.NONE),
+    POWER_CONNECTOR("Power Connector", 20, 11, 0, 1, DrawingAlgorithm.NONE);
 
     private final String name;
     private final int id;
-    private final double sideLength;
+    private final int sideLength;
     private final int numSides;
+    private final int numLights;
     private final DrawingAlgorithm drawingAlgorithm;
 
-    ShapeType(String name, int id, double sideLenght, int numSides, DrawingAlgorithm drawingAlgorithm) {
+    ShapeType(String name, int id, int sideLenght, int numSides, int numLights, DrawingAlgorithm drawingAlgorithm) {
         this.name = name;
         this.id = id;
         this.sideLength = sideLenght;
         this.numSides = numSides;
+        this.numLights = numLights;
         this.drawingAlgorithm = drawingAlgorithm;
     }
 
@@ -63,12 +65,16 @@ public enum ShapeType {
         return id;
     }
 
-    public double getSideLength() {
+    public int getSideLength() {
         return sideLength;
     }
 
     public int getNumSides() {
         return numSides;
+    }
+
+    public int getNumLightsPerShape() {
+        return numLights;
     }
 
     public DrawingAlgorithm getDrawingAlgorithm() {

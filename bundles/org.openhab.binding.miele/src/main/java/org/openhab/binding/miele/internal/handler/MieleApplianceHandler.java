@@ -15,7 +15,6 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -38,6 +37,8 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -335,9 +336,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         try {
             long minutesFromNow = Long.valueOf(value);
             if (minutesFromNow > 0) {
-                ZonedDateTime remaining = ZonedDateTime.ofInstant(Instant.ofEpochSecond(minutesFromNow * 60),
-                        ZoneId.of("UTC"));
-                updateState(channelUid, new DateTimeType(remaining.withZoneSameLocal(timeZoneProvider.getTimeZone())));
+                updateState(channelUid, new QuantityType<>(minutesFromNow, Units.MINUTE));
                 return;
             }
         } catch (NumberFormatException e) {

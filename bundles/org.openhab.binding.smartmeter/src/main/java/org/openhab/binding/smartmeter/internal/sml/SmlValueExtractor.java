@@ -25,7 +25,7 @@ import org.openmuc.jsml.structures.ASNObject;
 import org.openmuc.jsml.structures.SmlListEntry;
 
 /**
- * Proxy class to encapsulate a openMUC SML_ListEntry-Object to read informations.
+ * Proxy class to encapsulate an openMUC SML_ListEntry-Object to read informations.
  *
  * @author Matthias Steigenberger - Initial contribution
  * @author Mathias Gilhuber - Also-By

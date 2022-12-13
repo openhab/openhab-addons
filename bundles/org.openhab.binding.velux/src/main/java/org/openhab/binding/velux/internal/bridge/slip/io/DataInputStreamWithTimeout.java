@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is an wrapper around {@link java.io.InputStream} to support socket receive operations.
+ * This is a wrapper around {@link java.io.InputStream} to support socket receive operations.
  *
  * It implements a secondary polling thread to asynchronously read bytes from the socket input stream into a buffer. And
  * it parses the bytes into SLIP messages, which are placed on a message queue. Callers can access the SLIP messages in

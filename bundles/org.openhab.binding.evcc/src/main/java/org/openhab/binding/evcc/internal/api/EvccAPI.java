@@ -41,7 +41,7 @@ public class EvccAPI {
     private String host;
 
     public EvccAPI(String host) {
-        this.host = host;
+        this.host = (host.endsWith("/") ? host.substring(0, host.length() - 1) : host);
     }
 
     /**

@@ -15,7 +15,7 @@ Since every stop is represented by a KVV-provided id, this id has to be figured 
 
 ### Example Call for Stop 'Gottesauer Platz/BGV'
 
-```bash
+```shell
 export QUERY="gottesauer"
 curl https://www.kvv.de/tunnelEfaDirect.php?action=XSLT_STOPFINDER_REQUEST&name_sf=${QUERY}&outputFormat=JSON&type_sf=any
 ```

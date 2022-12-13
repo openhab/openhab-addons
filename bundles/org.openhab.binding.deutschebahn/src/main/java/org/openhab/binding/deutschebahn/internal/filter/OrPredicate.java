@@ -27,7 +27,7 @@ final class OrPredicate implements TimetableStopPredicate {
     private final TimetableStopPredicate second;
 
     /**
-     * Creates an new {@link OrPredicate}.
+     * Creates a new {@link OrPredicate}.
      */
     public OrPredicate(TimetableStopPredicate first, TimetableStopPredicate second) {
         this.first = first;

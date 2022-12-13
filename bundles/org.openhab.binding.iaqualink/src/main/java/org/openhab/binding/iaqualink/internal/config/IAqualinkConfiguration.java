@@ -15,7 +15,7 @@ package org.openhab.binding.iaqualink.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration properties for connecting to a iAqualink Account
+ * Configuration properties for connecting to an iAqualink Account
  *
  * @author Dan Cunningham - Initial contribution
  *

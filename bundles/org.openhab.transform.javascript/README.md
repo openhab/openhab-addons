@@ -5,7 +5,7 @@ Transform an input to an output using JavaScript.
 It expects the transformation rule to be read from a file which is stored under the `transform` folder. 
 To organize the various transformations, one should use subfolders.
 
-Simple transformation rules can also be given as a inline script.
+Simple transformation rules can also be given as an inline script.
 Inline script should be start by `|` character following the JavaScript.
 Beware that complex inline script could cause issues to e.g. item file parsing.
 

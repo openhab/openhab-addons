@@ -30,7 +30,6 @@ public class GetEchoRequest extends Packet {
     private ByteBuffer payload;
 
     public GetEchoRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

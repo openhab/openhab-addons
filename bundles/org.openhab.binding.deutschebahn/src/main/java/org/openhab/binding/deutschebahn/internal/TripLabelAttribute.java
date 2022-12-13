@@ -27,7 +27,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Selection that returns the value of an {@link TripLabel}.
+ * Selection that returns the value of a {@link TripLabel}.
  * 
  * chapter "1.2.7 TripLabel" in Technical Interface Description for external Developers
  *
@@ -73,7 +73,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
             TripLabel::setO, StringType::new, TripLabelAttribute::singletonList, StringType.class);
 
     /**
-     * Creates an new {@link TripLabelAttribute}.
+     * Creates a new {@link TripLabelAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.
@@ -133,7 +133,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
     }
 
     /**
-     * Returns an {@link TripLabelAttribute} for the given channel-name.
+     * Returns a {@link TripLabelAttribute} for the given channel-name.
      */
     @Nullable
     public static TripLabelAttribute<?, ?> getByChannelName(final String channelName) {

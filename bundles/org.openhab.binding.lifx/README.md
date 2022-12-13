@@ -57,7 +57,7 @@ The following matrix lists the capabilities (channels) for each type:
 The binding is able to auto-discover all lights in a network over the LIFX UDP protocol.
 Therefore all lights must be turned on.
 
-*Note:* To get the binding working, all lights must be added to the WLAN network first with the help of the [LIFX smart phone applications](https://www.lifx.com/pages/app).
+_Note:_ To get the binding working, all lights must be added to the WLAN network first with the help of the [LIFX smart phone applications](https://www.lifx.com/pages/app).
 The binding is NOT able to add or detect lights outside the network.
 
 ## Thing Configuration
@@ -68,16 +68,16 @@ But usually the discovery works quite reliably, so that a manual configuration i
 
 However, in the thing file, a manual configuration looks e.g. like
 
-```
+```java
 Thing lifx:colorlight:living [ deviceId="D073D5A1A1A1", fadetime=200 ]
 ```
 
-The *fadetime* is an optional thing configuration parameter which configures the time to fade to a new color value (in ms).
-When the *fadetime* is not configured, the binding uses 300ms as default.
+The _fadetime_ is an optional thing configuration parameter which configures the time to fade to a new color value (in ms).
+When the _fadetime_ is not configured, the binding uses 300ms as default.
 
 You can optionally also configure a fixed Host or IP address when lights are in a different subnet and are not discovered.
 
-```
+```java
 Thing lifx:colorirlight:porch [ host="10.120.130.4", fadetime=0 ]
 ```
 
@@ -94,50 +94,49 @@ All devices support some of the following channels:
 | colorzone          | Color     | This channel supports full zone color control with hue, saturation and brightness values.                                                                        | colormzlight                                                                 |
 | effect             | String    | This channel represents a type of light effect (e.g. for tile light: off, morph, flame)                                                                          | tilelight                                                                    |
 | hevcycle           | Switch    | This channel supports starting and stopping the HEV clean cycle.                                                                                                 | colorhevlight                                                                |
-| infrared           | Dimmer    | This channel supports adjusting the infrared value. *Note:* IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                                                 |
+| infrared           | Dimmer    | This channel supports adjusting the infrared value. _Note:_ IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                                                 |
 | signalstrength     | Number    | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
 | temperature        | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
 | temperaturezone    | Dimmer    | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                                                 |
 
-The *color* and *brightness* channels have a "Power On Brightness" configuration option that is used to determine the brightness when a light is switched on.
+The _color_ and _brightness_ channels have a "Power On Brightness" configuration option that is used to determine the brightness when a light is switched on.
 When it is left empty, the brightness of a light remains unchanged when a light is switched on or off.
 
-The *color* channels have a "Power On Color" configuration option that is used to determine the hue, saturation, brightness levels when a light is switched on.
+The _color_ channels have a "Power On Color" configuration option that is used to determine the hue, saturation, brightness levels when a light is switched on.
 When it is left empty, the color of a light remains unchanged when a light is switched on or off.
 Configuration options contains 3 comma separated values, where first value is hue (0-360), second  saturation (0-100) and third brightness (0-100).
 If both "Power on brightness" and "Power On Color" configuration options are defined, "Power on brightness" option overrides the brightness level defined on the "Power on color" configuration option.
 
-The *temperature* channels have a "Power On Temperature" configuration option that is used to determine the color temperature when a light is switched on. When it is left empty, the color temperature of a light remains unchanged when a light is switched on or off.
+The _temperature_ channels have a "Power On Temperature" configuration option that is used to determine the color temperature when a light is switched on. When it is left empty, the color temperature of a light remains unchanged when a light is switched on or off.
 
-MultiZone lights (*colormzlight*) have several channels (e.g. *colorzone0*, *temperaturezone0*, *abstemperaturezone0*, etc.) that allow for controlling specific zones of the light.
-Changing the *color*, *temperature* and *abstemperature* channels will update the states of all zones.
-The *color*, *temperature* and *abstemperature* channels of MultiZone lights always return the same state as *colorzone0*, *temperaturezone0*, *abstemperaturezone0*.
+MultiZone lights (_colormzlight_) have several channels (e.g. _colorzone0_, _temperaturezone0_, _abstemperaturezone0_, etc.) that allow for controlling specific zones of the light.
+Changing the _color_, _temperature_ and _abstemperature_ channels will update the states of all zones.
+The _color_, _temperature_ and _abstemperature_ channels of MultiZone lights always return the same state as _colorzone0_, _temperaturezone0_, _abstemperaturezone0_.
 
-The *hevcycle* channels have an optional "HEV Cycle Duration" configuration option that can be used to override the cycle duration configured in the light. 
+The _hevcycle_ channels have an optional "HEV Cycle Duration" configuration option that can be used to override the cycle duration configured in the light.
 
-LIFX Tile (*tilelight*) supports special tile effects: morph and flame.
+LIFX Tile (_tilelight_) supports special tile effects: morph and flame.
 These effects are predefined to their appearance using LIFX application.
 Each effect has a separate speed configuration option.
 
 ## Full Example
 
-In this example **living** is a Color 1000 light that has a *colorlight* thing type which supports *color* and *temperature* channels.
+In this example **living** is a Color 1000 light that has a _colorlight_ thing type which supports _color_ and _temperature_ channels.
 
-The **desk** light is a LIFX Clean that has a *colorhevlight* thing type which supports *color*, *temperature* and *hevcycle* channels.
+The **desk** light is a LIFX Clean that has a _colorhevlight_ thing type which supports _color_, _temperature_ and _hevcycle_ channels.
 
-The **porch** light is a LIFX+ BR30 that has a *colorirlight* thing type which supports *color*, *temperature* and *infrared* channels.
+The **porch** light is a LIFX+ BR30 that has a _colorirlight_ thing type which supports _color_, _temperature_ and _infrared_ channels.
 
-The **ceiling** light is a LIFX Z with 2 strips (16 zones) that has a *colormzlight* thing type which supports *color*, *colorzone*, *temperature* and *temperaturezone* channels.
+The **ceiling** light is a LIFX Z with 2 strips (16 zones) that has a _colormzlight_ thing type which supports _color_, _colorzone_, _temperature_ and _temperaturezone_ channels.
 
-Finally, **kitchen** is a White 800 (Low Voltage) light that has a *whitelight* thing type which supports *brightness* and *temperature* channels.
+Finally, **kitchen** is a White 800 (Low Voltage) light that has a _whitelight_ thing type which supports _brightness_ and _temperature_ channels.
 
-Either create a single *Color* item linked to the *color* channel and define *Switch*, *Slider* and *Colorpicker* entries with this item in the sitemap.
-Or create items for each type (*Color*, *Switch*, *Dimmer*) and define the correspondent entries in the sitemap.
-
+Either create a single _Color_ item linked to the _color_ channel and define _Switch_, _Slider_ and _Colorpicker_ entries with this item in the sitemap.
+Or create items for each type (_Color_, _Switch_, _Dimmer_) and define the correspondent entries in the sitemap.
 
 ### demo.things:
 
-```
+```java
 Thing lifx:colorlight:living [ deviceId="D073D5A1A1A1" ]
 
 Thing lifx:colorlight:living2 [ deviceId="D073D5A2A2A2" ] {
@@ -172,7 +171,7 @@ Thing lifx:whitelight:kitchen [ deviceId="D073D5D4D4D4", fadetime=150 ]
 
 ### demo.items:
 
-```
+```java
 // Living
 Color Living_Color { channel="lifx:colorlight:living:color" }
 Dimmer Living_Temperature { channel="lifx:colorlight:living:temperature" }
@@ -218,7 +217,7 @@ Number Kitchen_Abs_Temperature { channel="lifx:whitelight:kitchen:abstemperature
 
 ### demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame label="Living" {

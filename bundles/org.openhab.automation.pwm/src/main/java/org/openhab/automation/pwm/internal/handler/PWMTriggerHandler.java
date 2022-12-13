@@ -69,10 +69,12 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private @Nullable ServiceRegistration<?> eventSubscriberRegistration;
     private @Nullable ScheduledFuture<?> deadMeanSwitchTimer;
     private @Nullable StateMachine stateMachine;
+    private String ruleUID;
 
-    public PWMTriggerHandler(Trigger module, ItemRegistry itemRegistry, BundleContext bundleContext) {
+    public PWMTriggerHandler(Trigger module, ItemRegistry itemRegistry, BundleContext bundleContext, String ruleUID) {
         super(module);
         this.bundleContext = bundleContext;
+        this.ruleUID = ruleUID;
 
         Configuration config = module.getConfiguration();
 
@@ -99,13 +101,15 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         super.setCallback(callback);
 
         double periodSec = getDoubleFromConfig(module.getConfiguration(), CONFIG_PERIOD);
-        stateMachine = new StateMachine(getCallback().getScheduler(), this::setOutput, (long) (periodSec * 1000));
+        stateMachine = new StateMachine(getCallback().getScheduler(), this::setOutput, (long) (periodSec * 1000),
+                ruleUID);
 
         eventSubscriberRegistration = bundleContext.registerService(EventSubscriber.class.getName(), this, null);
     }
 
     private double getDoubleFromConfig(Configuration config, String key) {
-        return ((BigDecimal) Objects.requireNonNull(config.get(key), key + " is not set")).doubleValue();
+        return ((BigDecimal) Objects.requireNonNull(config.get(key), ruleUID + ": " + key + " is not set"))
+                .doubleValue();
     }
 
     private Optional<Double> getOptionalDoubleFromConfig(Configuration config, String key) {
@@ -161,17 +165,17 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                     }
                 }).orElse(newDutycycle);
 
-                logger.debug("Received new duty cycle: {} {}", newDutycycleBeforeLimit,
+                logger.debug("{}: Received new duty cycle: {} {}", ruleUID, newDutycycleBeforeLimit,
                         newDutycycle != newDutycycleBeforeLimit ? "Limited to: " + newDutycycle : "");
 
                 StateMachine localStateMachine = stateMachine;
                 if (localStateMachine != null) {
                     localStateMachine.setDutycycle(newDutycycle);
                 } else {
-                    logger.debug("Initialization not finished");
+                    logger.debug("{}: Initialization not finished", ruleUID);
                 }
             } catch (PWMException e) {
-                logger.warn("{}", e.getMessage());
+                logger.warn("{}: {}", ruleUID, e.getMessage());
             }
         }
     }
@@ -189,7 +193,7 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     }
 
     private void activateDeadManSwitch() {
-        logger.warn("Dead-man switch activated. Disabling output");
+        logger.warn("{}: Dead-man switch activated. Disabling output", ruleUID);
 
         StateMachine localStateMachine = stateMachine;
         if (localStateMachine != null) {
@@ -220,9 +224,10 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
                 // nothing
             }
         } else if (state instanceof UnDefType) {
-            throw new PWMException("Duty cycle item '" + dutyCycleItem.getName() + "' has no valid value");
+            throw new PWMException(ruleUID + ": Duty cycle item '" + dutyCycleItem.getName() + "' has no valid value");
         }
-        throw new PWMException("Duty cycle item not of type DecimalType: " + state.getClass().getSimpleName());
+        throw new PWMException(
+                ruleUID + ": Duty cycle item not of type DecimalType: " + state.getClass().getSimpleName());
     }
 
     @Override
@@ -240,11 +245,6 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
         ServiceRegistration<?> localEventSubscriberRegistration = eventSubscriberRegistration;
         if (localEventSubscriberRegistration != null) {
             localEventSubscriberRegistration.unregister();
-        }
-
-        StateMachine localStateMachine = stateMachine;
-        if (localStateMachine != null) {
-            localStateMachine.stop();
         }
 
         super.dispose();

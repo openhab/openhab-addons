@@ -28,6 +28,8 @@ import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHa
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
+import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
+import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
@@ -49,6 +51,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christian Oeing - Added Shutter Control and ThermostatHandler; refactored handler mapping
  * @author Christian Oeing - Added WallThermostatHandler
  * @author David Pace - Added cameras, intrusion detection system and smart plugs
+ * @author Christian Oeing - Added smoke detector
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
@@ -77,7 +80,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_EYES, CameraHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_INTRUSION_DETECTION_SYSTEM, IntrusionDetectionHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

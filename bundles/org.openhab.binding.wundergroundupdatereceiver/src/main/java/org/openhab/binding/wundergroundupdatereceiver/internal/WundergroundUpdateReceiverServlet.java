@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,7 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
 
     public static final String SERVLET_URL = "/weatherstation/updateweatherstation.php";
     private static final long serialVersionUID = -5296703727081438023L;
+    private static final Pattern CLEANER = Pattern.compile("[^\\w-]");
 
     private final Logger logger = LoggerFactory.getLogger(WundergroundUpdateReceiverServlet.class);
     private final Map<String, WundergroundUpdateReceiverHandler> handlers = new HashMap<>();
@@ -173,6 +175,11 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
         }
     }
 
+    protected Map<String, String> normalizeParameterMap(Map<String, String[]> parameterMap) {
+        return parameterMap.entrySet().stream()
+                .collect(toMap(e -> makeUidSafeString(e.getKey()), e -> String.join("", e.getValue())));
+    }
+
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         if (!active) {
@@ -190,16 +197,15 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
         logger.trace("doGet {}", req.getQueryString());
 
         String stationId = req.getParameter(STATION_ID_PARAMETER);
+        Map<String, String> states = normalizeParameterMap(req.getParameterMap());
         Optional.ofNullable(this.handlers.get(stationId)).ifPresentOrElse(handler -> {
-            Map<String, String> states = req.getParameterMap().entrySet().stream()
-                    .collect(toMap(Map.Entry::getKey, e -> String.join("", e.getValue())));
             String queryString = req.getQueryString();
             if (queryString != null && queryString.length() > 0) {
                 states.put(LAST_QUERY, queryString);
             }
             handler.updateChannelStates(states);
         }, () -> {
-            this.discoveryService.addUnhandledStationId(stationId, req.getParameterMap());
+            this.discoveryService.addUnhandledStationId(stationId, states);
         });
 
         resp.setStatus(HttpServletResponse.SC_OK);
@@ -215,5 +221,9 @@ public class WundergroundUpdateReceiverServlet extends BaseOpenHABServlet
 
     protected Map<String, WundergroundUpdateReceiverHandler> getHandlers() {
         return Collections.unmodifiableMap(this.handlers);
+    }
+
+    private String makeUidSafeString(String key) {
+        return CLEANER.matcher(key).replaceAll("-");
     }
 }

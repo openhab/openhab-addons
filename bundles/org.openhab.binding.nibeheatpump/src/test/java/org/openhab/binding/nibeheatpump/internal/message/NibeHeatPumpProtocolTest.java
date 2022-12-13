@@ -109,7 +109,9 @@ public class NibeHeatPumpProtocolTest {
                 // MODBUS40 data read out, special len, acknowledge should be send
                 + "5C00206852449C2500489CFE004C9CF2004E9CD4014D9CFB014F9C2500509C3700519C0D01529C5C5C01569C3200C9AF000001A80C01FDA712FAFAA9070098A95C5C1BFFFF0000A0A9D102FFFF00009CA9B412FFFF00007F"
                 // MODBUS40 data read out, special checksum, acknowledge should be send
-                + "5C00206850449C2600489CF6004C9CF1004E9CD6014D9C0C024F9C4500509C3F00519CF100529C0401569CD500C9AF000001A80C01FDA799FAFAA9020098A91A1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000C5";
+                + "5C00206850449C2600489CF6004C9CF1004E9CD6014D9C0C024F9C4500509C3F00519CF100529C0401569CD500C9AF000001A80C01FDA799FAFAA9020098A91A1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000C5"
+                // 16-bit address (e.g. model F2120 heatpumps), acknowledge should be send
+                + "5C41C9F7007F";
         //@formatter:on
 
         // create byte data from hex string
@@ -125,11 +127,11 @@ public class NibeHeatPumpProtocolTest {
 
         // test results
 
-        assertEquals(7, ackRequestCount);
+        assertEquals(8, ackRequestCount);
         assertEquals(2, nakRequestCount);
         assertEquals(1, sendWriteMsgCount);
         assertEquals(1, sendReadMsgCount);
-        assertEquals(7, receivedMsgs.size());
+        assertEquals(8, receivedMsgs.size());
 
         String expect;
 
@@ -153,5 +155,8 @@ public class NibeHeatPumpProtocolTest {
 
         expect = "5C00206850449C2600489CF6004C9CF1004E9CD6014D9C0C024F9C4500509C3F00519CF100529C0401569CD500C9AF000001A80C01FDA799FAFAA9020098A91A1BFFFF0000A0A9CA02FFFF00009CA99212FFFF0000C5";
         assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(6));
+
+        expect = "5C41C9F7007F";
+        assertArrayEquals(HexUtils.hexToBytes(expect), receivedMsgs.get(7));
     }
 }

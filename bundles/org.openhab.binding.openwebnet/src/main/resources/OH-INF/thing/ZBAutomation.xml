@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>ZigBee Automation</label>
-		<description>A OpenWebNet ZigBee automation device to control roller shutters, blinds, etc. BTicino models:
+		<description>An OpenWebNet ZigBee automation device to control roller shutters, blinds, etc. BTicino models:
 			xxx/yyyy/etc.</description>
 
 		<channels>

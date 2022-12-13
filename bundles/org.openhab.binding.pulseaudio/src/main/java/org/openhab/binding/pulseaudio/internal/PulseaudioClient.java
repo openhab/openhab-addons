@@ -261,7 +261,7 @@ public class PulseaudioClient {
     }
 
     /**
-     * retrieves a {@link AbstractAudioDeviceConfig} by its identifier
+     * retrieves an {@link AbstractAudioDeviceConfig} by its identifier
      * If several devices correspond to the deviceIdentifier, returns the first one (aphabetical order)
      *
      * @param The device identifier to match against
@@ -312,7 +312,7 @@ public class PulseaudioClient {
     }
 
     /**
-     * change the volume of a {@link AbstractAudioDeviceConfig}
+     * change the volume of an {@link AbstractAudioDeviceConfig}
      *
      * @param item the {@link AbstractAudioDeviceConfig} to handle
      * @param vol the new volume value the {@link AbstractAudioDeviceConfig} should be changed to (possible values from
@@ -459,7 +459,7 @@ public class PulseaudioClient {
     }
 
     /**
-     * change the volume of a {@link AbstractAudioDeviceConfig}
+     * change the volume of an {@link AbstractAudioDeviceConfig}
      *
      * @param item the {@link AbstractAudioDeviceConfig} to handle
      * @param vol the new volume percent value the {@link AbstractAudioDeviceConfig} should be changed to (possible

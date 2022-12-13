@@ -15,6 +15,7 @@ package org.openhab.binding.plugwiseha.internal.api.model.dto;
 import java.time.ZonedDateTime;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
  * The {@link PlugwiseBaseModel} abstract class contains
@@ -24,6 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 public abstract class PlugwiseBaseModel {
 
+    @XStreamAsAttribute
     private String id;
 
     @XStreamAlias("created_date")
@@ -56,5 +58,9 @@ public abstract class PlugwiseBaseModel {
 
     public ZonedDateTime getDeletedDate() {
         return deletedDate;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

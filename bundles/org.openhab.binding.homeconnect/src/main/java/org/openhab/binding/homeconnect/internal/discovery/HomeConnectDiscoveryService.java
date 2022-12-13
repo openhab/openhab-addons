@@ -51,7 +51,7 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService
     private @Nullable HomeConnectBridgeHandler bridgeHandler;
 
     /**
-     * Construct an {@link HomeConnectDiscoveryService}.
+     * Construct a {@link HomeConnectDiscoveryService}.
      *
      */
     public HomeConnectDiscoveryService() {

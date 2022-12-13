@@ -159,7 +159,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     }
 
     /**
-     * Converts a openHAB command to a Homematic value.
+     * Converts an openHAB command to a Homematic value.
      */
     protected Object commandToBinding(Command command, HmDatapoint dp) throws ConverterException {
         throw new ConverterException("Unsupported command " + command.getClass().getSimpleName() + " for "
@@ -182,7 +182,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     protected abstract boolean fromBindingValidation(HmDatapoint dp);
 
     /**
-     * Converts the datapoint value to a openHAB type.
+     * Converts the datapoint value to an openHAB type.
      */
     protected abstract T fromBinding(HmDatapoint dp) throws ConverterException;
 

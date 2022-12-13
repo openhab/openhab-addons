@@ -55,7 +55,7 @@ public abstract class XiaomiSocket {
     private final Thread socketReceiveThread = new Thread(this::receiveData);
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a random port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a random port
      *
      * @param owner identifies the socket owner
      */
@@ -64,7 +64,7 @@ public abstract class XiaomiSocket {
     }
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a specific port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a specific port
      *
      * @param port the socket will be bound to this port
      * @param owner identifies the socket owner

@@ -12,20 +12,21 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
@@ -42,10 +43,22 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
+    private static final String ALT_MIME_TYPE = "text/javascript;version=ECMAScript-2021";
+    private static final String ALIAS = "graaljs";
+
+    private final JSScriptServiceUtil jsScriptServiceUtil;
+    private final JSDependencyTracker jsDependencyTracker;
+
+    @Activate
+    public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
+            final @Reference JSDependencyTracker jsDependencyTracker, Map<String, Object> config) {
+        this.jsDependencyTracker = jsDependencyTracker;
+        this.jsScriptServiceUtil = jsScriptServiceUtil;
+        modified(config);
+    }
 
     @Override
     public List<String> getScriptTypes() {
-        List<String> scriptTypes = new ArrayList<>();
 
         /*
          * Whilst we run in parallel with Nashorn, we use a custom mime-type to avoid
@@ -58,9 +71,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         // scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
         // scriptTypes.addAll(graalJSEngineFactory.getExtensions());
 
-        scriptTypes.add(MIME_TYPE);
-
-        return Collections.unmodifiableList(scriptTypes);
+        return List.of(MIME_TYPE, ALT_MIME_TYPE, ALIAS);
     }
 
     @Override
@@ -71,12 +82,12 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Override
     public ScriptEngine createScriptEngine(String scriptType) {
         return new DebuggingGraalScriptEngine<>(
-                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null));
+                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null, jsScriptServiceUtil));
     }
 
-    @Activate
-    protected void activate(BundleContext context, Map<String, ?> config) {
-        modified(config);
+    @Override
+    public @Nullable ScriptDependencyTracker getDependencyTracker() {
+        return jsDependencyTracker;
     }
 
     @Modified

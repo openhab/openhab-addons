@@ -185,7 +185,7 @@ For example
 - get status updates from roller operations by observing channel 'roller#state' and 'roller#stopReason', those report an updated status once the operation is completed
 - select a position by sending a number value of 100..0 to channel 'roller#rollerpos'
 - or use the defined favorites by sending favorite id to channel 'roller#rollerFav'
-- you might set a auto-timer, e.g. once the roller is opened close it again after xx minutes by sending a value to the 'roller#autoOn' or 'roller#autoOff' channels
+- you might set an auto-timer, e.g. once the roller is opened close it again after xx minutes by sending a value to the 'roller#autoOn' or 'roller#autoOff' channels
 - you could also get the position of the roller from 'roller#control' (by linking a Number item) or the last status from 'roller#state'.
 Please note that the device only provides updates only after the roller stops, not during movement so it's not possible to get position updates while the roller is moving.
 - of course you could use time-triggered rules, trigger the shutter depending on sunrise/sunset within openHAB, but also directly on the device

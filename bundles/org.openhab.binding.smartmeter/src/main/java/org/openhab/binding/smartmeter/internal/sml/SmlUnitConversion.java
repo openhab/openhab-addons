@@ -22,7 +22,7 @@ import org.openhab.core.library.unit.Units;
 import org.openmuc.jsml.EUnit;
 
 /**
- * Converts a {@link EUnit} to an {@link Unit}.
+ * Converts an {@link EUnit} to a {@link Unit}.
  *
  * @author Matthias Steigenberger - Initial contribution
  *

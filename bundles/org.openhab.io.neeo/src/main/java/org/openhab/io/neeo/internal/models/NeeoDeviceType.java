@@ -30,11 +30,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class NeeoDeviceType {
-    /** Represents an device that should be excluded */
+    /** Represents a device that should be excluded */
     public static final NeeoDeviceType EXCLUDE = new NeeoDeviceType("");
     /** Represents an accessory device (spelled the way NEEO spells it) */
     public static final NeeoDeviceType ACCESSOIRE = new NeeoDeviceType("ACCESSOIRE");
-    /** Represents an light device */
+    /** Represents a light device */
     static final NeeoDeviceType LIGHT = new NeeoDeviceType("LIGHT");
 
     /** Represents the propery way to spell accessory! */

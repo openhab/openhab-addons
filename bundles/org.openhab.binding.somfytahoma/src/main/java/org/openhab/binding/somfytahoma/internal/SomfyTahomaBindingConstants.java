@@ -291,7 +291,6 @@ public class SomfyTahomaBindingConstants {
     public static final String POWER_HEAT_PUMP = "power_heatpump";
     public static final String POWER_HEAT_ELEC = "power_heatelec";
     public static final String WATER_HEATER_MODE = "mode";
-    public static final String WATER_TEMPERATURE = "water_temperature";
     public static final String ELECTRIC_BOOSTER_OPERATING_TIME = "electric_booster_operating_time";
     public static final String SHOWERS = "showers";
 
@@ -367,12 +366,15 @@ public class SomfyTahomaBindingConstants {
     public static final String API_BASE_URL = "/enduser-mobile-web/enduserAPI/";
     public static final String EVENTS_URL = "events/";
     public static final String SETUP_URL = "setup/";
+
+    public static final String CONFIG_URL = "config/";
     public static final String GATEWAYS_URL = SETUP_URL + "gateways/";
     public static final String DEVICES_URL = SETUP_URL + "devices/";
     public static final String REFRESH_URL = DEVICES_URL + "states/refresh";
     public static final String EXEC_URL = "exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
-    public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    public static final String LOCAL_TOKENS_URL = "/local/tokens/";
+    public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36";
     public static final int TAHOMA_TIMEOUT = 5;
     public static final String UNAUTHORIZED = "Not logged in";
     public static final int TYPE_NONE = 0;
@@ -381,9 +383,13 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_STRING = 3;
     public static final int TYPE_BOOLEAN = 6;
     public static final String UNAVAILABLE = "unavailable";
-    public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
-    public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
+    public static final String TEMPORARILY_BANNED = "Too many attempts with an invalid token, temporarily banned.";
+
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
+    public static final String EVENT_LISTENER_TIMEOUT = "No registered event listener";
+    public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
+    public static final String AUTHENTICATION_OAUTH_INVALID_GRANT = "error.invalid.grant";
+    public static final String OPENHAB_TOKEN = "openHAB token";
     public static final int SUSPEND_TIME = 120;
     public static final int RECONCILIATION_TIME = 600;
 
@@ -449,6 +455,7 @@ public class SomfyTahomaBindingConstants {
     public static final String RADIO_PART_BATTERY_STATE = "io:MaintenanceRadioPartBatteryState";
     public static final String SENSOR_PART_BATTERY_STATE = "io:MaintenanceSensorPartBatteryState";
     public static final String ZWAVE_SET_POINT_TYPE_STATE = "zwave:SetPointTypeState";
+    public static final String LUMINANCE_STATE = "core:LuminanceState";
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";

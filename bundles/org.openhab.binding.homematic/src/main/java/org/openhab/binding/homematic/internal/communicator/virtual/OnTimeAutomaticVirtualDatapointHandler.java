@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A virtual Number datapoint which adds a automatic ON_TIME datapoint on supported device. This datapoint sets the
+ * A virtual Number datapoint which adds an automatic ON_TIME datapoint on supported device. This datapoint sets the
  * ON_TIME datapoint every time a STATE or LEVEL datapoint is set, so that the light turns off automatically by the
  * device after the specified time.
  *

@@ -14,7 +14,7 @@ Discovery is not available, as the binding only reads from serial ports.
 
 ## Thing Configuration
 
-The smartmeter thing requires the serial port where the meter device is connected and optionally an refresh interval.
+The smartmeter thing requires the serial port where the meter device is connected and optionally a refresh interval.
 
 | Parameter | Name | Description | Required | Default |
 |-----------|------|-------------|----------|---------|

@@ -15,8 +15,8 @@ This can be configured on the binding level:
 
 Configure a Callback URL when the Chromecast cannot connect using the Primary Address or Port, e.g. when:
 
-* proxying HTTP (port 80/443) using Apache/NGINX to openHAB (port 8080)
-* openHAB is running inside a Docker container that has its own IP Address
+- proxying HTTP (port 80/443) using Apache/NGINX to openHAB (port 8080)
+- openHAB is running inside a Docker container that has its own IP Address
 
 ## Supported Things
 
@@ -33,7 +33,7 @@ No authentication is required for accessing the devices on the network.
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```
+```shell
 discovery.chromecast:background=false
 ```
 
@@ -155,14 +155,13 @@ sitemap chromecast label="Chromecasts" {
 
 This binding includes rule actions for casting media.
 
-* `playURL(String url)`
-* `playURL(String url, String mimeType)`
+- `playURL(String url)`
+- `playURL(String url, String mimeType)`
 
 Examples:
 
-```
+```java
 val castActions = getActions("chromecast","chromecast:chromecast:29fcf535da")
 val success  = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg")
 val success2 = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg", "image/jpeg")
-
 ```

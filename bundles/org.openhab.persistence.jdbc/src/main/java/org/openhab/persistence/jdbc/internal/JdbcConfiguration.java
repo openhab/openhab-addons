@@ -58,6 +58,7 @@ public class JdbcConfiguration {
     private int numberDecimalcount = 3;
     private boolean tableUseRealItemNames = false;
     private boolean tableCaseSensitiveItemNames = false;
+    private String itemsManageTable = "items";
     private String tableNamePrefix = "item";
     private int tableIdDigitCount = 4;
     private boolean rebuildTableNames = false;
@@ -144,6 +145,12 @@ public class JdbcConfiguration {
         if (et != null && !et.isBlank() && isNumericPattern.matcher(et).matches()) {
             errReconnectThreshold = Integer.parseInt(et);
             logger.debug("JDBC::updateConfig: errReconnectThreshold={}", errReconnectThreshold);
+        }
+
+        String mt = (String) configuration.get("itemsManageTable");
+        if (mt != null && !mt.isBlank()) {
+            itemsManageTable = mt;
+            logger.debug("JDBC::updateConfig: itemsManageTable={}", itemsManageTable);
         }
 
         String np = (String) configuration.get("tableNamePrefix");
@@ -326,7 +333,7 @@ public class JdbcConfiguration {
                         warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.4.1 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
                         warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
@@ -348,6 +355,10 @@ public class JdbcConfiguration {
 
     public @Nullable String getServiceName() {
         return serviceName;
+    }
+
+    public String getItemsManageTable() {
+        return itemsManageTable;
     }
 
     public String getTableNamePrefix() {

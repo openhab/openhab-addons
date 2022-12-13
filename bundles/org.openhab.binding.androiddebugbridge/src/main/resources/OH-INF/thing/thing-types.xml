@@ -58,6 +58,29 @@
 				<description>JSON config that allows to modify the media state detection strategy for each app. Refer to the binding
 					documentation.</description>
 			</parameter>
+			<parameter name="volumeSettingKey" type="text">
+				<label>Volume Setting Key</label>
+				<description>Settings key for android versions where the volume level is gathered using the 'settings' cli
+					(>=android 11).</description>
+				<default>volume_music_hdmi</default>
+				<options>
+					<option value="volume_bluetooth_sco">volume bluetooth sco</option>
+					<option value="volume_music">volume music</option>
+					<option value="volume_music_bt_a2dp">volume music bt a2dp</option>
+					<option value="volume_music_hdmi">volume music hdmi</option>
+					<option value="volume_music_headphone">volume music headphone</option>
+					<option value="volume_music_headset">volume music headset</option>
+					<option value="volume_music_usb_headset">volume music usb headset</option>
+					<option value="volume_system">volume system</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="deviceMaxVolume" type="integer" min="1" max="100">
+				<label>Device Max Volume</label>
+				<description>Assumed max volume for devices with android versions that do not expose this value (>=android 11).</description>
+				<default>25</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

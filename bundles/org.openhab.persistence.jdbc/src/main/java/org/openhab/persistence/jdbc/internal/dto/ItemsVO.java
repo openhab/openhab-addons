@@ -27,8 +27,8 @@ public class ItemsVO implements Serializable {
     private static final String STR_FILTER = "[^a-zA-Z0-9]";
 
     private String coltype = "VARCHAR(500)";
-    private String colname = "itemname";
-    private String itemsManageTable = "items";
+    private String colname = "ItemName";
+    private String itemsManageTable;
     private int itemId;
     private String itemName;
     private String tableName;

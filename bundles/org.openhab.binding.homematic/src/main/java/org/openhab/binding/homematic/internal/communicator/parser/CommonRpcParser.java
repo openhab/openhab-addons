@@ -42,7 +42,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Converts the object to a integer.
+     * Converts the object to an integer.
      */
     protected Integer toInteger(Object object) {
         if (object == null || object instanceof Integer) {

@@ -15,7 +15,7 @@ package org.openhab.binding.powermax.internal.message;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Used to map received messages from the Visonic alarm panel to a ENUM value
+ * Used to map received messages from the Visonic alarm panel to an ENUM value
  *
  * @author Laurent Garnier - Initial contribution
  */

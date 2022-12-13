@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OperationModeType} class is holding all OperationModes
  *
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public enum OperationModeType {
     OFFLINE,
     STANDBY,

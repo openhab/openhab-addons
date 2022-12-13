@@ -31,7 +31,6 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.type.MetadataUtils.OptionsBuilder;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
@@ -260,57 +259,43 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_BUTTON;
         } else {
             String itemType = MetadataUtils.getItemType(dp);
-            String category = MetadataUtils.getCategory(dp, itemType);
-            String label = MetadataUtils.getLabel(dp);
-            String description = MetadataUtils.getDatapointDescription(dp);
+            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create()
+                    .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
 
-            List<StateOption> options = null;
-            if (dp.isEnumType()) {
-                options = MetadataUtils.generateOptions(dp, new OptionsBuilder<StateOption>() {
-                    @Override
-                    public StateOption createOption(String value, String description) {
-                        return new StateOption(value, description);
-                    }
-                });
-            }
-
-            StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
             if (dp.isNumberType()) {
-                BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
-                BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                if (ITEM_TYPE_DIMMER.equals(itemType)
-                        && (max.compareTo(new BigDecimal("1.0")) == 0 || max.compareTo(new BigDecimal("1.01")) == 0)) {
-                    // For dimmers with a max value of 1.01 or 1.0 the values must be corrected
+                final BigDecimal min, max;
+                if (ITEM_TYPE_DIMMER.equals(itemType) || ITEM_TYPE_ROLLERSHUTTER.equals(itemType)) {
+                    // those types use PercentTypeConverter, so set up min and max as percent values
                     min = MetadataUtils.createBigDecimal(0);
                     max = MetadataUtils.createBigDecimal(100);
+                } else {
+                    min = MetadataUtils.createBigDecimal(dp.getMinValue());
+                    max = MetadataUtils.createBigDecimal(dp.getMaxValue());
                 }
-                stateFragment.withMinimum(min).withMaximum(max).withPattern(MetadataUtils.getStatePattern(dp))
-                        .withReadOnly(dp.isReadOnly());
-            } else {
-                stateFragment.withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
-            }
-            if (options != null) {
-                stateFragment.withOptions(options);
+                stateFragment.withMinimum(min).withMaximum(max);
+            } else if (dp.isEnumType()) {
+                List<StateOption> options = MetadataUtils.generateOptions(dp,
+                        (value, description) -> new StateOption(value, description));
+                if (options != null) {
+                    stateFragment.withOptions(options);
+                }
             }
 
-            ChannelTypeBuilder channelTypeBuilder;
-            EventDescription eventDescription = null;
+            String label = MetadataUtils.getLabel(dp);
+            final ChannelTypeBuilder channelTypeBuilder;
             if (dp.isTrigger()) {
-                eventDescription = new EventDescription(
-                        MetadataUtils.generateOptions(dp, new OptionsBuilder<EventOption>() {
-                            @Override
-                            public EventOption createOption(String value, String description) {
-                                return new EventOption(value, description);
-                            }
-                        }));
+                EventDescription eventDescription = new EventDescription(
+                        MetadataUtils.generateOptions(dp, (value, description) -> new EventOption(value, description)));
                 channelTypeBuilder = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withEventDescription(eventDescription);
             } else {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                         .withStateDescriptionFragment(stateFragment.build());
             }
-            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
-                    .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
+            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp))
+                    .withDescription(MetadataUtils.getDatapointDescription(dp))
+                    .withCategory(MetadataUtils.getCategory(dp, itemType))
+                    .withConfigDescriptionURI(configDescriptionUriChannel).build();
         }
         return channelType;
     }
@@ -326,41 +311,29 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
+                    String defaultValueString = Objects.toString(dp.getDefaultValue(), "");
                     ConfigDescriptionParameterBuilder builder = ConfigDescriptionParameterBuilder.create(
                             MetadataUtils.getParameterName(dp), MetadataUtils.getConfigDescriptionParameterType(dp));
 
                     builder.withLabel(MetadataUtils.getLabel(dp));
-                    builder.withDefault(Objects.toString(dp.getDefaultValue(), ""));
+                    builder.withDefault(defaultValueString);
                     builder.withDescription(MetadataUtils.getDatapointDescription(dp));
                     if (dp.isEnumType()) {
                         builder.withLimitToOptions(dp.isEnumType());
                         List<ParameterOption> options = MetadataUtils.generateOptions(dp,
-                                new OptionsBuilder<ParameterOption>() {
-                                    @Override
-                                    public ParameterOption createOption(String value, String description) {
-                                        return new ParameterOption(value, description);
-                                    }
-                                });
+                                (value, description) -> new ParameterOption(value, description));
                         builder.withOptions(options);
                         if (dp.isEnumType()) {
                             logger.trace("Checking if default option {} is valid",
                                     Objects.toString(dp.getDefaultValue(), ""));
-                            boolean needsChange = true;
-                            for (ParameterOption option : options) {
-                                if (option.getValue().equals(Objects.toString(dp.getDefaultValue(), ""))) {
-                                    needsChange = false;
-                                    break;
-                                }
-                            }
+                            boolean needsChange = options.stream()
+                                    .noneMatch(opt -> opt.getValue().equals(defaultValueString));
                             if (needsChange) {
                                 String defStr = Objects.toString(dp.getDefaultValue(), "0");
-                                if (defStr == null) {
-                                    defStr = "0";
-                                }
-                                int offset = Integer.parseInt(defStr);
+                                int offset = defStr != null ? Integer.valueOf(defStr) : 0;
                                 if (offset >= 0 && offset < options.size()) {
                                     ParameterOption defaultOption = options.get(offset);
-                                    logger.trace("Changing default option to {} (offset {})", defaultOption, defStr);
+                                    logger.trace("Changing default option to {} (offset {})", defaultOption, offset);
                                     builder.withDefault(defaultOption.getValue());
                                 } else if (options.size() > 0) {
                                     ParameterOption defaultOption = options.get(0);

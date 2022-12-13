@@ -33,8 +33,8 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Shapes Mini Triangles  | NL48 | Mini Triangles                                             |     X     |       X       |
 | Elements Hexagon       | NL52 | Elements Hexagons                                          |     X     |       X       |
 | Smart Bulb             | NL45 | Smart Bulb                                                 |     -     |               |
-| Lightstrip             | NL55 | Lightstrip                                                 |     -     |               |
-| Lines                  | NL59 | Lines                                                      |     -     |               |
+| Lightstrip             | NL55 | Lightstrip                                                 |     -     |       -       |
+| Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
  x  = Supported  (-) = unknown (no device available to test)
@@ -80,7 +80,7 @@ Clicking on that image or adding it to a dashboard will show a picture of your c
 
 If your canvas has elements we dont know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
 
-![Image](doc/Layout.jpg)
+![Image](doc/Layout.png)
 
 There is an alternative method for canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
 
@@ -104,7 +104,17 @@ Compare the following output with the right picture at the beginning of the arti
                                     41451                                     
 
 ```
-         
+
+## State
+
+The state channel shows an image of the panels on the wall.
+You have to configure things for each panel to get the correct color. 
+Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
+For state to work, you need to set static colors to your panel. 
+This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
+
+![Image](doc/NanoCanvas_rendered.png)
+
 ## Thing Configuration
 
 The controller thing has the following parameters:
@@ -137,19 +147,21 @@ The controller bridge has the following channels:
 | colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
 | colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
 | effect              | String    | Selected effect of the light panels                                                                       | No        |
+| layout              | Image     | Shows the layout of your panels with IDs.                                                                 | Yes       |
 | rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| state               | Image     | Shows the current state of your panels with colors.                                                       | Yes       |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
 
 
 
 A lightpanel thing has the following channels:
 
-| Channel             | Type      | Description                                                                                              | Read Only |
-|---------------------|-----------|----------------------------------------------------------------------------------------------------------|-----------|
-| color               | Color     | Color of the individual light panel                                                                      | No        |
-| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
+| Channel             | Type      | Description                                                                                                           | Read Only |
+|---------------------|-----------|-----------------------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color of the individual light panel                                                                                   | No        |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED, LONG_PRESSED and DOUBLE_PRESSED events are supported. | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.

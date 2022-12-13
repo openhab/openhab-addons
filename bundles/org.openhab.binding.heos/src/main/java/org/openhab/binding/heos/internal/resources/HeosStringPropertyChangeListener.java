@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@Link HeosStringPropertyChangeListener} provides the possibility
- * to add a listener to an String and get informed about the new value.
+ * to add a listener to a String and get informed about the new value.
  *
  * @author Johannes Einig - Initial contribution
  */

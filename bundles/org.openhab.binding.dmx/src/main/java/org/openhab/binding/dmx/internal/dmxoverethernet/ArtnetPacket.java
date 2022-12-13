@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ArtnetPacket} is a ArtNet packet template
+ * The {@link ArtnetPacket} is an ArtNet packet template
  *
  * @author Jan N. Klug - Initial contribution
  */

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nanoleaf.internal.layout.ImagePoint2D;
 import org.openhab.binding.nanoleaf.internal.layout.Point2D;
 import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
@@ -44,14 +45,14 @@ public class Square extends Shape {
     }
 
     @Override
-    public Point2D labelPosition(Graphics2D graphics, List<Point2D> outline) {
+    protected ImagePoint2D labelPosition(Graphics2D graphics, List<ImagePoint2D> outline) {
         // Center of square is average of oposite corners
-        Point2D p0 = outline.get(0);
-        Point2D p2 = outline.get(2);
+        ImagePoint2D p0 = outline.get(0);
+        ImagePoint2D p2 = outline.get(2);
 
         Rectangle2D rect = graphics.getFontMetrics().getStringBounds(Integer.toString(getPanelId()), graphics);
 
-        return new Point2D((p0.getX() + p2.getX()) / 2 - (int) (rect.getWidth() / 2),
-                (p0.getY() + p2.getY()) / 2 - (int) (rect.getHeight() / 2));
+        return new ImagePoint2D((p0.getX() + p2.getX()) / 2 - (int) (rect.getWidth() / 2),
+                (p0.getY() + p2.getY()) / 2 + (int) (rect.getHeight() / 2));
     }
 }

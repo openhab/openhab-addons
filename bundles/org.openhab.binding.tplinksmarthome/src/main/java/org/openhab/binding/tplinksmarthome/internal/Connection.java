@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * This class acts as and interface to the physical device.
  *
  * @author Christian Fischer - Initial contribution
- * @author Hilbrand Bouwkamp - Reorganized code an put connection in single class
+ * @author Hilbrand Bouwkamp - Reorganized code and put connection in single class
  */
 @NonNullByDefault
 public class Connection {

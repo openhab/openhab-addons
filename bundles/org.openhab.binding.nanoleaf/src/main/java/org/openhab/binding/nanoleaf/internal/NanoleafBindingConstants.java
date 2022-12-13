@@ -59,6 +59,7 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_SWIPE_EVENT_LEFT = "LEFT";
     public static final String CHANNEL_SWIPE_EVENT_RIGHT = "RIGHT";
     public static final String CHANNEL_LAYOUT = "layout";
+    public static final String CHANNEL_VISUAL_STATE = "visualState";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "color";
@@ -90,7 +91,8 @@ public class NanoleafBindingConstants {
     public static final String SERVICE_TYPE = "_nanoleafapi._tcp.local.";
 
     // Effect/scene name for static color
-    public static final String EFFECT_NAME_STATIC_COLOR = "*Dynamic*";
+    public static final String EFFECT_NAME_STATIC_COLOR = "*Static*";
+    public static final String EFFECT_NAME_SOLID_COLOR = "*Solid*";
 
     // Color channels increase/decrease brightness step size
     public static final int BRIGHTNESS_STEP_SIZE = 5;

@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.tr064.internal.soap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CallListType} is used for post processing the retrieved call list
  *
  * @author Jan N. Klug - Initial contribution
  */
+
+@NonNullByDefault
 public enum CallListType {
     MISSED_COUNT("2"),
     INBOUND_COUNT("1"),
