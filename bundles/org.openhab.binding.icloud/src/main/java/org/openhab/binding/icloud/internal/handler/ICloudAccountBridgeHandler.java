@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -108,10 +109,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             authState = AuthState.INITIAL;
         }
 
-        callApiWithRetryAndExceptionHandling(() -> {
+        Callable<?> initialAuthentication = () -> callApiWithRetryAndExceptionHandling(() -> {
             logger.debug("Dummy call for initial authentication.");
             return null;
         });
+        this.scheduler.schedule(initialAuthentication, 0, TimeUnit.SECONDS);
 
         this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             return callApiWithRetryAndExceptionHandling(() -> {
@@ -183,7 +185,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     }
                 } catch (IllegalStateException e) {
                     logger.debug("Need to authenticate first.", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Wait for login");
                     return null;
                 } catch (IOException e) {
                     logger.warn("Unable to refresh device data", e);
