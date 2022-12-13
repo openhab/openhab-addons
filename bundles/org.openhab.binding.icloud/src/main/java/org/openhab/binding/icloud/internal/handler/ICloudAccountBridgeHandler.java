@@ -109,13 +109,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             authState = AuthState.INITIAL;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-        Callable<?> initialAuthentication = () -> callApiWithRetryAndExceptionHandling(() -> {
-            logger.debug("Dummy call for initial authentication.");
-            return null;
-        });
-        this.scheduler.schedule(initialAuthentication, 0, TimeUnit.SECONDS);
-
         this.iCloudDeviceInformationCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             return callApiWithRetryAndExceptionHandling(() -> {
                 // callApiWithRetryAndExceptionHanlding ensures that iCloudService is not null when the following is
@@ -127,13 +120,24 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
         });
 
-        if (authState == AuthState.AUTHENTICATED) {
-            ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-            this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.refreshTimeInMinutes,
-                    MINUTES);
-        } else {
-            cancelRefresh();
-        }
+        updateStatus(ThingStatus.UNKNOWN);
+
+        // Init has to be done async becaue it requires sync network calls, which are not allowed in init.
+        Callable<?> asyncInit = () -> {
+            callApiWithRetryAndExceptionHandling(() -> {
+                logger.debug("Dummy call for initial authentication.");
+                return null;
+            });
+            if (authState == AuthState.AUTHENTICATED) {
+                ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+                this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0,
+                        config.refreshTimeInMinutes, MINUTES);
+            } else {
+                cancelRefresh();
+            }
+            return null;
+        };
+        this.scheduler.schedule(asyncInit, 0, TimeUnit.SECONDS);
         logger.debug("iCloud bridge handler initialized.");
     }
 
