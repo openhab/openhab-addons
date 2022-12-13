@@ -38,9 +38,6 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     protected void beforeInvocation() {
     }
 
-    protected void afterInvocation() {
-    }
-
     protected Object afterInvocation(Object obj) {
         return obj;
     }

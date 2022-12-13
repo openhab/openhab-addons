@@ -86,7 +86,7 @@ public class OpenhabGraalJSScriptEngine
                     }, HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
-    /** Shared lock object for synchronization of multi-thread access */
+    /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
@@ -232,13 +232,8 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    protected void afterInvocation() {
-        lock.unlock();
-    }
-
-    @Override
     protected Object afterInvocation(Object obj) {
-        afterInvocation();
+        lock.unlock();
         return obj;
     }
 

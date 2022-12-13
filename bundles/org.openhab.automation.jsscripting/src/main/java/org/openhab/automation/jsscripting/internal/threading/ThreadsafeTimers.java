@@ -80,8 +80,8 @@ public class ThreadsafeTimers {
      */
     public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
         return scriptExecution.createTimer(identifier, instant, () -> {
+            lock.lock();
             try {
-                lock.lock();
                 closure.run();
             } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
                         // deadlocks
@@ -116,8 +116,8 @@ public class ThreadsafeTimers {
     public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
+            lock.lock();
             try {
-                lock.lock();
                 callback.run();
                 idSchedulerMapping.remove(id);
             } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
@@ -169,8 +169,8 @@ public class ThreadsafeTimers {
     public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
+            lock.lock();
             try {
-                lock.lock();
                 callback.run();
             } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
                         // deadlocks

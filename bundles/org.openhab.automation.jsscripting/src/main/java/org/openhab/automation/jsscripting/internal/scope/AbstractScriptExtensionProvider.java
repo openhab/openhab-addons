@@ -45,6 +45,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Activate
     public void activate(final BundleContext context) {
+        types.clear();
         initializeTypes(context);
     }
 

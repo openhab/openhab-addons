@@ -56,8 +56,8 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
+        lock.lock();
         try {
-            lock.lock();
             return delegate.execute(module, inputs);
         } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
             lock.unlock();
