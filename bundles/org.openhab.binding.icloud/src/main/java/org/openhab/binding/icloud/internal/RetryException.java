@@ -31,6 +31,6 @@ public class RetryException extends RuntimeException {
      * @param originalException Exception which was thrown for the last unsuccessful retry.
      */
     public RetryException(@Nullable Throwable originalException) {
-        super(originalException);
+        super("Retry finally failed.", originalException);
     }
 }
