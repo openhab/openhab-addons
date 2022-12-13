@@ -78,9 +78,9 @@ public class TestICloud {
             if (consoleOutput != null) {
                 consoleOutput.print("Code: ");
             }
+            @SuppressWarnings("resource")
             Scanner in = new Scanner(System.in);
             String code = in.nextLine();
-            in.close();
             assertTrue(service.validate2faCode(code));
             if (!service.isTrustedSession()) {
                 service.trustSession();
