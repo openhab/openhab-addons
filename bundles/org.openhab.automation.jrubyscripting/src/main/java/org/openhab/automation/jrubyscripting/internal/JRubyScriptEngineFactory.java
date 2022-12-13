@@ -13,10 +13,14 @@
 package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +44,8 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is an implementation of a {@link ScriptEngineFactory} for Ruby.
@@ -52,12 +58,16 @@ import org.osgi.service.component.annotations.ReferencePolicy;
         + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
+
+    private final Logger logger = LoggerFactory.getLogger(JRubyScriptEngineFactory.class);
+
+    private final String DEFAULT_JRUBY_VERSION = "9.3.9.0";
+
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
 
-    private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
+    private final Map<String, javax.script.ScriptEngineFactory> factories = new ConcurrentHashMap<>();
 
-    private final List<String> scriptTypes = Stream.concat(Objects.requireNonNull(factory.getExtensions()).stream(),
-            Objects.requireNonNull(factory.getMimeTypes()).stream()).collect(Collectors.toUnmodifiableList());
+    private final List<String> scriptTypes;
 
     private JRubyDependencyTracker jrubyDependencyTracker;
 
@@ -74,6 +84,14 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     @Activate
     public JRubyScriptEngineFactory(Map<String, Object> config) {
+        var factory = Objects.requireNonNull(instantiateFactory(DEFAULT_JRUBY_VERSION));
+        factories.put(DEFAULT_JRUBY_VERSION, factory);
+
+        scriptTypes = Stream
+                .concat(Objects.requireNonNull(factory.getExtensions()).stream(),
+                        Objects.requireNonNull(factory.getMimeTypes()).stream())
+                .collect(Collectors.toUnmodifiableList());
+
         jrubyDependencyTracker = new JRubyDependencyTracker(this);
         modified(config);
     }
@@ -86,7 +104,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     // The modified call updates configuration for the automation
     @Modified
     protected void modified(Map<String, Object> config) {
-        configuration.update(config, factory);
+        configuration.update(config, factories.values());
         // Re-initialize the dependency tracker's watchers.
         jrubyDependencyTracker.deactivate();
         jrubyDependencyTracker.activate();
@@ -154,6 +172,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
+        var factory = getConcreteFactory();
         ScriptEngine engine = factory.getScriptEngine();
         configuration.configureRubyEnvironment(engine);
         return engine;
@@ -187,7 +206,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     public String getGemHome() {
-        return configuration.getSpecificGemHome();
+        return configuration.getSpecificGemHome(getConcreteFactory());
     }
 
     public boolean isFileInGemHome(String file) {
@@ -196,5 +215,37 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             return false;
         }
         return file.startsWith(gemHome + File.separator);
+    }
+
+    private javax.script.ScriptEngineFactory getConcreteFactory() {
+        String jrubyVersion = configuration.getJrubyVersion();
+
+        return Objects.requireNonNull(factories.computeIfAbsent(jrubyVersion, (version) -> {
+            javax.script.ScriptEngineFactory factory = instantiateFactory(version);
+
+            if (factory == null) {
+                return factories.get(DEFAULT_JRUBY_VERSION);
+            }
+
+            configuration.configureFactory(factory);
+            return factory;
+        }));
+    }
+
+    private javax.script.@Nullable ScriptEngineFactory instantiateFactory(String jrubyVersion) {
+        URL jar_url = getClass().getClassLoader().getResource("jruby-complete-" + jrubyVersion + ".jar");
+        if (jar_url == null) {
+            return null;
+        }
+
+        URLClassLoader jrubyClassLoader = new URLClassLoader(new URL[] { jar_url }, getClass().getClassLoader());
+        try {
+            Class<?> klass = Class.forName("org.jruby.embed.jsr223.JRubyEngineFactory", true, jrubyClassLoader);
+            var r = (javax.script.ScriptEngineFactory) klass.getDeclaredConstructor().newInstance();
+            return r;
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException
+                | NoSuchMethodException e) {
+            return null;
+        }
     }
 }

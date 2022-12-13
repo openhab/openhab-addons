@@ -46,6 +46,16 @@
 				scripts.</description>
 		</parameter>
 
+		<parameter name="jruby_version" type="text" required="true" groupName="environment">
+			<label>JRuby Version</label>
+			<options>
+				<option value="9.3.9.0">9.3.9.0</option>
+				<option value="9.4.0.0">9.4.0.0</option>
+			</options>
+			<default>9.3.9.0</default>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
 			<label>GEM_HOME</label>
 			<description><![CDATA[Location Ruby Gems will be installed to and loaded from. Directory will be created if necessary.

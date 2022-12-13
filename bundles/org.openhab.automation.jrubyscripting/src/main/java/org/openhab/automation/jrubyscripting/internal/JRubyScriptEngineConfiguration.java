@@ -14,6 +14,7 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,7 +28,6 @@ import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jruby.runtime.Constants;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +54,7 @@ public class JRubyScriptEngineConfiguration {
     private static final String DEFAULT_RUBYLIB = Paths.get(OpenHAB.getConfigFolder(), "automation", "ruby", "lib")
             .toString();
 
+    private static final String JRUBY_VERSION_KEY = "jruby_version";
     private static final String GEM_HOME_CONFIG_KEY = "gem_home";
     private static final String RUBYLIB_CONFIG_KEY = "rubylib";
     private static final String GEMS_CONFIG_KEY = "gems";
@@ -69,6 +70,8 @@ public class JRubyScriptEngineConfiguration {
             Map.entry("local_variable",
                     new OptionalConfigurationElement(OptionalConfigurationElement.Type.SYSTEM_PROPERTY, "transient",
                             "org.jruby.embed.localvariable.behavior")),
+
+            Map.entry(JRUBY_VERSION_KEY, new OptionalConfigurationElement("9.3.9.0")),
 
             Map.entry(GEM_HOME_CONFIG_KEY,
                     new OptionalConfigurationElement(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT,
@@ -90,13 +93,22 @@ public class JRubyScriptEngineConfiguration {
      * @param config Configuration parameters to apply to ScriptEngine
      * @param factory ScriptEngineFactory to configure
      */
-    void update(Map<String, Object> config, ScriptEngineFactory factory) {
+    void update(Map<String, Object> config, Collection<ScriptEngineFactory> factories) {
         logger.trace("JRuby Script Engine Configuration: {}", config);
         configurationParameters.forEach((k, v) -> v.clearValue());
         config.forEach(this::processConfigValue);
 
         configureSystemProperties();
 
+        factories.forEach(this::configureFactory);
+    }
+
+    /**
+     * Prepare the environment for this factory
+     *
+     * Specifically ensuring gems are installed.
+     */
+    public void configureFactory(ScriptEngineFactory factory) {
         ScriptEngine engine = factory.getScriptEngine();
         configureRubyEnvironment(engine);
         configureGems(engine);
@@ -126,20 +138,37 @@ public class JRubyScriptEngineConfiguration {
         return Objects.requireNonNull(configElement).getValue();
     }
 
+    public String getJrubyVersion() {
+        return get(JRUBY_VERSION_KEY);
+    }
+
     /**
      * Gets the concrete gem home to install gems into for this version of JRuby.
      * 
      * {RUBY_ENGINE} and {RUBY_VERSION} are replaced with their current actual values.
      */
-    public String getSpecificGemHome() {
+    public String getSpecificGemHome(ScriptEngineFactory engineFactory) {
         String gemHome = get(GEM_HOME_CONFIG_KEY);
         if (gemHome.isEmpty()) {
             return gemHome;
         }
 
-        gemHome = gemHome.replace(RUBY_ENGINE_REPLACEMENT, Constants.ENGINE);
-        gemHome = gemHome.replace(RUBY_ENGINE_VERSION_REPLACEMENT, Constants.VERSION);
-        gemHome = gemHome.replace(RUBY_VERSION_REPLACEMENT, Constants.RUBY_VERSION);
+        gemHome = gemHome.replace(RUBY_ENGINE_REPLACEMENT, engineFactory.getEngineName());
+        gemHome = gemHome.replace(RUBY_ENGINE_VERSION_REPLACEMENT, engineFactory.getEngineVersion());
+        // this isn't exposed directly by the ScriptEngineFactory, and we're not directly
+        // compiling against any specific version of JRuby, so we have to use reflection to get
+        // at this value
+        if (gemHome.contains(RUBY_VERSION_REPLACEMENT)) {
+            try {
+                Class<?> klass = Class.forName("org.jruby.runtime.Constants", true,
+                        engineFactory.getClass().getClassLoader());
+                var field = klass.getDeclaredField("RUBY_VERSION");
+                String rubyVersion = Objects.requireNonNull((String) field.get(klass));
+                gemHome = gemHome.replace(RUBY_VERSION_REPLACEMENT, rubyVersion);
+            } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+
+            }
+        }
         return new File(gemHome).toString();
     }
 
@@ -190,7 +219,7 @@ public class JRubyScriptEngineConfiguration {
             return;
         }
 
-        String gemHome = getSpecificGemHome();
+        String gemHome = getSpecificGemHome(engine.getFactory());
         if (gemHome.isEmpty()) {
             logger.warn("Gem install requested with empty gem_home, not installing gems.");
             return;
@@ -278,7 +307,7 @@ public class JRubyScriptEngineConfiguration {
             String value;
             if ("GEM_HOME".equals(configElement.mappedTo().get())) {
                 // this value has to be post-processed to handle replacements.
-                value = getSpecificGemHome();
+                value = getSpecificGemHome(scriptEngine.getFactory());
             } else {
                 value = configElement.getValue();
             }

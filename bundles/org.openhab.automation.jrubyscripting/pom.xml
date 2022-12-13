@@ -19,13 +19,51 @@
     <jruby.version>9.3.9.0</jruby.version>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.jruby</groupId>
-      <artifactId>jruby-complete</artifactId>
-      <version>${jruby.version}</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
-
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.build.directory}/jrubies</directory>
+        <includes>
+          <include>*.jar</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.jruby</groupId>
+              <artifactId>jruby-complete</artifactId>
+              <version>9.3.9.0</version>
+              <type>jar</type>
+              <outputDirectory>${project.build.directory}/jrubies</outputDirectory>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.jruby</groupId>
+              <artifactId>jruby-complete</artifactId>
+              <version>9.4.0.0</version>
+              <type>jar</type>
+              <outputDirectory>${project.build.directory}/jrubies</outputDirectory>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
