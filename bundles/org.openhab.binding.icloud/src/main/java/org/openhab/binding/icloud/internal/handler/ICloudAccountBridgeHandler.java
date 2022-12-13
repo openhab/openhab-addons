@@ -76,6 +76,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Nullable
     ScheduledFuture<?> refreshJob;
 
+    @Nullable
+    ScheduledFuture<?> initTask;
+
     private Storage<String> storage;
 
     private static final String AUTH_CODE_KEY = "AUTH_CODE";
@@ -137,7 +140,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             }
             return null;
         };
-        this.scheduler.schedule(asyncInit, 0, TimeUnit.SECONDS);
+        initTask = this.scheduler.schedule(asyncInit, 0, TimeUnit.SECONDS);
         logger.debug("iCloud bridge handler initialized.");
     }
 
@@ -264,13 +267,19 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefresh();
+
+        final ScheduledFuture<?> localInitTask = this.initTask;
+        if (localInitTask != null) {
+            localInitTask.cancel(true);
+            this.initTask = null;
+        }
         super.dispose();
     }
 
     private void cancelRefresh() {
-        final ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        final ScheduledFuture<?> localrefreshJob = this.refreshJob;
+        if (localrefreshJob != null) {
+            localrefreshJob.cancel(true);
             this.refreshJob = null;
         }
     }
