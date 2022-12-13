@@ -41,8 +41,8 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
- * @author Daniel Rosengarten - Add new module support, removes global alarm configuration from module (moved on bridge),
- *         reduces bus flooding on alarm value update
+ * @author Daniel Rosengarten - Add new module support, removes global alarm configuration from module (moved on
+ *         bridge), reduces bus flooding on alarm value update
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
