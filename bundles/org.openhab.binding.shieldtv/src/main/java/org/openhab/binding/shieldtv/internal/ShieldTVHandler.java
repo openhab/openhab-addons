@@ -223,7 +223,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             logger.debug("Opening SSL connection to {}:{}", config.ipAddress, config.port);
             SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(config.ipAddress, config.port);
             sslsocket.startHandshake();
-            writer = new BufferedWriter(new OutputStreamWriter(sslsocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+            writer = new BufferedWriter(
+                    new OutputStreamWriter(sslsocket.getOutputStream(), StandardCharsets.ISO_8859_1));
             reader = new BufferedReader(new InputStreamReader(sslsocket.getInputStream(), StandardCharsets.ISO_8859_1));
             this.sslsocket = sslsocket;
         } catch (UnknownHostException e) {
@@ -261,6 +262,10 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
         keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
                 TimeUnit.MINUTES);
+
+        String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
+        logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(login));
+        sendCommand(new ShieldTVCommand(login));
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -375,13 +380,37 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
      */
     private void readerThreadJob() {
         logger.debug("Message reader thread started");
+        StringBuffer sb = new StringBuffer();
         String msg = null;
+        String lastMsg = "";
+        String thisMsg = "";
+        boolean inMessage = true;
         try {
             BufferedReader reader = this.reader;
-            while (!Thread.interrupted() && reader != null && (msg = reader.readLine()) != null) {
-                shieldtvMessageParser.handleMessage(msg);
+            while (!Thread.interrupted() && reader != null && (thisMsg = Integer.toHexString(reader.read())) != null) {
+                if (thisMsg.length() % 2 > 0) {
+                    thisMsg = "0" + thisMsg;
+                }
+                if (lastMsg.equals("08") && thisMsg.equals("0a")) {
+                    if ((inMessage == false) && (sb.length() > 0)) {
+                        shieldtvMessageParser.handleMessage(sb.toString());
+                        sb.setLength(0);
+                    }
+                    sb.append(thisMsg.toString());
+                    lastMsg = thisMsg;
+                    inMessage = true;
+                } else if (lastMsg.equals("18") && thisMsg.equals("0a")) {
+                    sb.append(thisMsg.toString());
+                    lastMsg = "";
+                    inMessage = false;
+                    shieldtvMessageParser.handleMessage(sb.toString());
+                    sb.setLength(0);
+                } else {
+                    sb.append(thisMsg.toString());
+                    lastMsg = thisMsg;
+                }
             }
-            if (msg == null) {
+            if (thisMsg == null) {
                 logger.debug("End of input stream detected");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
             }
@@ -475,20 +504,15 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+            if (command instanceof StringType) {
+                String pin = ShieldTVRequest.pinRequest(command.toString());
+                String message = ShieldTVRequest.encodeMessage(pin);
+                logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
+                sendCommand(new ShieldTVCommand(message));
             }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         } else if (CHANNEL_RAW.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String message = ShieldTVRequest.encodeMessage(command.toString());
-                logger.trace("Sending Raw Message: {}", message);
                 logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
                 sendCommand(new ShieldTVCommand(message));
             }

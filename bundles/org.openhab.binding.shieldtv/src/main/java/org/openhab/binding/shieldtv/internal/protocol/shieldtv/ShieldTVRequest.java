@@ -46,4 +46,21 @@ public class ShieldTVRequest {
         String reply = sb.toString();
         return reply;
     }
+
+    public static String pinRequest(String pin) {
+        if (pin.equals("REQUEST")) {
+            String message = "080a120308cd08";
+            return message;
+        } else {
+            String prefix = "080a121f08d108121a0a06";
+            String encodedPin = decodeMessage(pin);
+            String suffix = "121036646564646461326639366635646261";
+            return prefix + encodedPin + suffix;
+        }
+    }
+
+    public static String loginRequest() {
+        String message = "0801121a0801121073616d73756e6720534d2d4739393855180128fbff04";
+        return message;
+    }
 }

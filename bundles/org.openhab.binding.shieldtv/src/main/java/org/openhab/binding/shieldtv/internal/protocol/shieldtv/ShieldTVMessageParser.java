@@ -34,16 +34,45 @@ public class ShieldTVMessageParser {
     }
 
     public void handleMessage(String msg) {
-        String decodedMessage;
         if (msg.trim().equals("")) {
             return; // Ignore empty lines
         }
 
         logger.trace("Received message: {}", msg);
+        logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
 
-        decodedMessage = ShieldTVRequest.decodeMessage(msg);
+        char[] charArray = msg.toCharArray();
 
-        logger.trace("Decoded message: {}", decodedMessage);
+        if (msg.startsWith("080a12")) {
+            // Hostname of Shield Replied
+            // 080a12 1d08e80712 18080112 10 5b534849454c445d2054686561746572 18d7fd04180a
+            // 080a12 2208e80712 1d08e80712 14 5b534849454c445d204c6976696e6720526f6f6d 18d7fd04180a
+            // Each chunk ends in 12
+            // 4th chunk (10 and 14 above) represent length of the name.
+            // 5th chunk is the name
+            int chunk = 0;
+            int i = 0;
+            String st = "";
+            StringBuffer hostname = new StringBuffer();
+            while (chunk < 3) {
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                if (st.equals("12")) {
+                    chunk++;
+                }
+                i += 2;
+            }
+            st = "" + charArray[i] + "" + charArray[i + 1];
+	    i += 2;
+            int length = Integer.parseInt(st, 16);
+            int current = i;
+            for (; i < current + length; i = i + 2) {
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                hostname.append(st);
+            }
+            logger.trace("Shield Hostname: {}", hostname);
+            logger.trace("Shield Hostname Encoded: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
+
+        }
 
         return;
     }
