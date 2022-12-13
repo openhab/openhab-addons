@@ -2,7 +2,7 @@
 
 This binding reads data from MEC power meter for providing electrical information for the electric circuit.
 
-To use this binding the meter must be installed, initialized and connected to the same network as openHAB. 
+To use this binding the meter must be installed, initialized and connected to the same network as openHAB.
 
 ## Supported Things
 
@@ -12,7 +12,7 @@ Its unique ID is the serial number.
 
 ## Discovery
 
-MecMeters are automatically discovered via mDNS. 
+MecMeters are automatically discovered via mDNS.
 The IP of the Power Meter is automatically set and can be changed manually if needed.
 The default update interval is set to 5 seconds. Intervals from 1 to 300 seconds can be set manually.
 
@@ -26,10 +26,9 @@ The thing has a few configuration parameters:
 | ip              | The IP address of the meter. Mandatory.                               |
 | refreshInterval | Refresh interval in second. Optional, the default value is 5 seconds. |
 
-	
 ## Channels
 
-The meter has the following channels: 
+The meter has the following channels:
 
 | Channel Type ID                                              | Item Type                | Label                             | Description                              |
 |--------------------------------------------------------------|--------------------------|-----------------------------------|------------------------------------------|
@@ -115,13 +114,13 @@ The meter has the following channels:
 
 ### mecmeter.things
 
-```
+```java
 mecmeter:meter:1 [ password="Test1234", ip="192.168.1.16", refreshInterval="10" ]
 ```
 
 ### mecmeter.items
 
-```
+```java
 Number:Frequency    MainFrequency           { channel="mecmeter:meter:1:general_group#frequency" }
 Number:Temperature  InternalTemperature     { channel="mecmeter:meter:1:general_group#temperature" }
 Number:Time         TimeinOperation         { channel="mecmeter:meter:1:general_group#op_time" }
@@ -222,7 +221,7 @@ Number:Energy RevReactiveEnergyP3 { channel="mecmeter:meter:1:rev_reactive_energ
 
 ### mecmeter.sitemap
 
-```
+```perl
 sitemap mecmeter label="MecMeter"
 {
     Frame label="General" {

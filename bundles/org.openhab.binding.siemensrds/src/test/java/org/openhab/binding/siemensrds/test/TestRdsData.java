@@ -18,9 +18,12 @@ import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +41,7 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * test suite
@@ -46,11 +50,11 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class RdsTestData {
+public class TestRdsData {
 
     private String load(String fileName) {
-        try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
-                BufferedReader reader = new BufferedReader(file)) {
+        try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName),
+                StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(file)) {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -259,14 +263,14 @@ public class RdsTestData {
 
             State state;
             QuantityType<?> celsius;
-
             state = dataPoints.getPointByClass("'TOa").getState();
             assertTrue(state instanceof QuantityType<?>);
             celsius = ((QuantityType<?>) state).toUnit(SIUnits.CELSIUS);
             assertNotNull(celsius);
             assertEquals(18.55, celsius.floatValue(), 0.01);
 
-            assertEquals("0.0", dataPoints.getPointByClass("'HDevElLd").getState().toString());
+            assertEquals(new QuantityType<ElectricCurrent>(0, Units.AMPERE),
+                    dataPoints.getPointByClass("'HDevElLd").getState());
 
             state = dataPoints.getPointByClass("'SpHPcf").getState();
             assertTrue(state instanceof QuantityType<?>);
@@ -316,7 +320,7 @@ public class RdsTestData {
             assertNotNull(celsius);
             assertEquals(35.00, celsius.floatValue(), 0.01);
 
-            assertEquals("30.0", dataPoints.getPointByClass("'WarmUpGrdnt").getState().toString());
+            assertEquals(new QuantityType<>(30, Units.ONE), dataPoints.getPointByClass("'WarmUpGrdnt").getState());
 
             state = dataPoints.getPointByClass("'TRBltnMsvAdj").getState();
             assertTrue(state instanceof QuantityType<?>);
@@ -324,30 +328,35 @@ public class RdsTestData {
             assertNotNull(kelvin);
             assertEquals(35.0, celsius.floatValue(), 0.01);
 
-            assertEquals("0.0", dataPoints.getPointByClass("'Q22Q24ElLd").getState().toString());
-            assertEquals("713.0", dataPoints.getPointByClass("'RAQual").getState().toString());
-            assertEquals("0.0", dataPoints.getPointByClass("'TmpCmfBtn").getState().toString());
-            assertEquals("0.0", dataPoints.getPointByClass("'CmfBtn").getState().toString());
-            assertEquals("0.0", dataPoints.getPointByClass("'RPscDet").getState().toString());
-            assertEquals("1.0", dataPoints.getPointByClass("'EnHCtl").getState().toString());
-            assertEquals("0.0", dataPoints.getPointByClass("'EnRPscDet").getState().toString());
-            assertEquals("2.0", dataPoints.getPointByClass("'OffPrtCnf").getState().toString());
-            assertEquals("3.0", dataPoints.getPointByClass("'OccMod").getState().toString());
-            assertEquals("5.0", dataPoints.getPointByClass("'REei").getState().toString());
-            assertEquals("2.0", dataPoints.getPointByClass("'DhwMod").getState().toString());
-            assertEquals("2.0", dataPoints.getPointByClass("'HCSta").getState().toString());
-            assertEquals("4.0", dataPoints.getPointByClass("'PrOpModRsn").getState().toString());
-            assertEquals("6.0", dataPoints.getPointByClass("'HCtrSet").getState().toString());
-            assertEquals("2.0", dataPoints.getPointByClass("'OsscSet").getState().toString());
-            assertEquals("4.0", dataPoints.getPointByClass("'RAQualInd").getState().toString());
-            assertEquals("500.0", dataPoints.getPointByClass("'KickCyc").getState().toString());
-            assertEquals("180000.0", dataPoints.getPointByClass("'BoDhwTiOnMin").getState().toString());
-            assertEquals("180000.0", dataPoints.getPointByClass("'BoDhwTiOffMin").getState().toString());
-            assertEquals("UNDEF", dataPoints.getPointByClass("'ROpModSched").getState().toString());
-            assertEquals("UNDEF", dataPoints.getPointByClass("'DhwSched").getState().toString());
-            assertEquals("UNDEF", dataPoints.getPointByClass("'ROpModSched").getState().toString());
-            assertEquals("UNDEF", dataPoints.getPointByClass("'DhwSched").getState().toString());
-            assertEquals("253140.0", dataPoints.getPointByClass("'OphH").getState().toString());
+            assertEquals(new QuantityType<>(0, Units.AMPERE), dataPoints.getPointByClass("'Q22Q24ElLd").getState());
+            assertEquals(new QuantityType<>(713, Units.PARTS_PER_MILLION),
+                    dataPoints.getPointByClass("'RAQual").getState());
+
+            assertEquals(new QuantityType<>(0, Units.ONE), dataPoints.getPointByClass("'TmpCmfBtn").getState());
+            assertEquals(new QuantityType<>(0, Units.ONE), dataPoints.getPointByClass("'CmfBtn").getState());
+            assertEquals(new QuantityType<>(0, Units.ONE), dataPoints.getPointByClass("'RPscDet").getState());
+            assertEquals(new QuantityType<>(1, Units.ONE), dataPoints.getPointByClass("'EnHCtl").getState());
+            assertEquals(new QuantityType<>(0, Units.ONE), dataPoints.getPointByClass("'EnRPscDet").getState());
+            assertEquals(new QuantityType<>(2, Units.ONE), dataPoints.getPointByClass("'OffPrtCnf").getState());
+            assertEquals(new QuantityType<>(3, Units.ONE), dataPoints.getPointByClass("'OccMod").getState());
+            assertEquals(new QuantityType<>(5, Units.ONE), dataPoints.getPointByClass("'REei").getState());
+            assertEquals(new QuantityType<>(2, Units.ONE), dataPoints.getPointByClass("'DhwMod").getState());
+            assertEquals(new QuantityType<>(2, Units.ONE), dataPoints.getPointByClass("'HCSta").getState());
+            assertEquals(new QuantityType<>(4, Units.ONE), dataPoints.getPointByClass("'PrOpModRsn").getState());
+            assertEquals(new QuantityType<>(6, Units.ONE), dataPoints.getPointByClass("'HCtrSet").getState());
+            assertEquals(new QuantityType<>(2, Units.ONE), dataPoints.getPointByClass("'OsscSet").getState());
+            assertEquals(new QuantityType<>(4, Units.ONE), dataPoints.getPointByClass("'RAQualInd").getState());
+
+            assertEquals(new QuantityType<>(500, Units.HOUR), dataPoints.getPointByClass("'KickCyc").getState());
+            assertEquals(new QuantityType<>(3, Units.MINUTE), dataPoints.getPointByClass("'BoDhwTiOnMin").getState());
+            assertEquals(new QuantityType<>(3, Units.MINUTE), dataPoints.getPointByClass("'BoDhwTiOffMin").getState());
+
+            assertEquals(UnDefType.UNDEF, dataPoints.getPointByClass("'ROpModSched").getState());
+            assertEquals(UnDefType.UNDEF, dataPoints.getPointByClass("'DhwSched").getState());
+            assertEquals(UnDefType.UNDEF, dataPoints.getPointByClass("'ROpModSched").getState());
+            assertEquals(UnDefType.UNDEF, dataPoints.getPointByClass("'DhwSched").getState());
+
+            assertEquals(new QuantityType<>(253140, Units.MINUTE), dataPoints.getPointByClass("'OphH").getState());
         } catch (RdsCloudException e) {
             fail(e.getMessage());
         }

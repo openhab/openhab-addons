@@ -164,7 +164,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         switch (returnCode) {
             case -1:
                 throw new UnknownApiException(
-                        "The OpenSprinkler API returnd an result that was not parseable: " + returnContent);
+                        "The OpenSprinkler API returnd a result that was not parseable: " + returnContent);
             case 1:
                 return;
             case 2:

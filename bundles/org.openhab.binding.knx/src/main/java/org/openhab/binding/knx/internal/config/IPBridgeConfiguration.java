@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.knx.internal.config;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -28,7 +26,7 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     private boolean useNAT = false;
     private String type = "";
     private String ipAddress = "";
-    private BigDecimal portNumber = BigDecimal.valueOf(0);
+    private int portNumber = 0;
     private String localIp = "";
     private String localSourceAddr = "";
     private String routerBackboneKey = "";
@@ -48,7 +46,7 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
         return ipAddress;
     }
 
-    public BigDecimal getPortNumber() {
+    public int getPortNumber() {
         return portNumber;
     }
 

@@ -45,7 +45,7 @@ Any home automation system based on the OverKiz API is potentially supported.
 - water heater system (monitor and control)
 - Yutaki heat pump consisting of heat pump, heating control and hot water tank (controls and a lot of states; it is tested with components RAS-4WHNPE, RWM-4.ONE, DHWT-300S-3.0H2E)
 
-Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
+Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working in the cloud mode.
 
 ## Discovery
 
@@ -59,7 +59,41 @@ If you are missing some device, check the debug log during the discovery and cre
 
 ## Thing Configuration
 
-To retrieve thing configuration and url parameter, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
+### bridge
+
+| Parameter      | Parameter ID  | Required/Optional | Description                                                                          |
+|----------------|---------------|-------------------|--------------------------------------------------------------------------------------|
+| Cloud portal   | cloudPortal   | Optional          | Cloud portal to connect to                                                           |
+| Email address  | email         | Required          | Email address for the portal                                                         |
+| Password       | password      | Required          | Password for the portal                                                              |
+| Refresh        | refresh       | Optional          | Refresh time for polling events (in seconds)                                         |
+| Status timeout | statusTimeout | Optional          | Reconciliation timeout after which the status is refreshed (in seconds)              |
+| Retries        | retries       | Optional          | Specifies the number of retries when command execution                               |
+| Retry delay    | retryDelay    | Optional          | Delay in milliseconds between subsequent retries after a command failure             |
+| Developer mode | devMode       | Optional          | Enables the direct control of your devices over the lan using the local API endpoint |
+| Gateway IP     | ip            | Optional          | Local IP address of gateway, relevant only if developer mode is enabled              |
+| Gateway PIN    | pin           | Optional          | Gateway PIN in format ABCD-EFGH-IJKL, relevant only if developer mode is enabled     |
+| Local token    | token         | Optional          | Token for local communication, relevant only if developer mode is enabled            |
+
+For more information about the developer mode please see https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode.
+If the gateway ip or pin are not provided, the binding tries to detect it automatically and saves it into the configuration.
+If the local token is not provided, the binding creates the local token automatically and saves it into the configuration.
+Please note that the action groups (scenarios) control does not work in local mode due to missing support in the gateway firmware.
+The gateway support for the developer mode is limited as well, so far Connexoon gateways do not support the developer mode.
+
+### gateway
+
+| Parameter  | Parameter ID | Required/Optional | Description                               |
+|------------|--------------|-------------------|-------------------------------------------|
+| Gateway id | id           | Required          | ID of your gateway (sometimes called pin) |
+
+### other devices
+
+| Parameter  | Parameter ID | Required/Optional | Description                  |
+|------------|--------------|-------------------|------------------------------|
+| Device URL | url          | Required          | The identifier of the device |
+
+To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
 ## Channels
@@ -88,8 +122,7 @@ Please see the example below.
 | smoke sensor, occupancy sensor, contact sensor & water sensor                      | sensor_defect                   | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                                                                                                                                               |
 | smoke sensor                                                                       | radio_battery                   | maintenance radio part battery state (low, normal)                                                                                                                                                                                |
 | smoke sensor                                                                       | sensor_battery                  | maintenance sensor part battery state (absence, low, normal)                                                                                                                                                                      |
-| smoke sensor                                                                       | short_check                     | triggering the smoke sensor's short check                                                                                                                                                                                         |
-| smoke sensor                                                                       | long_check                      | triggering the smoke sensor's long check                                                                                                                                                                                          |
+| smoke sensor                                                                       | alarm_check                     | triggers the smoke sensor's beep check (short, long)                                                                                                                                                                              |
 | light sensor                                                                       | luminance                       | light luminance value in luxes                                                                                                                                                                                                    |
 | electricity sensor                                                                 | energy_consumption              | energy consumption value in watts                                                                                                                                                                                                 |
 | humidity sensor                                                                    | humidity                        | current relative humidity                                                                                                                                                                                                         |

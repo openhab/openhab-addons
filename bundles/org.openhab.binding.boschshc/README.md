@@ -17,6 +17,7 @@ Binding for the Bosch Smart Home.
     - [Security Camera Eyes](#security-camera-eyes)
     - [Intrusion Detection System](#intrusion-detection-system)
     - [Smart Bulb](#smart-bulb)
+    - [Smoke Detector](#smoke-detector)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -68,6 +69,7 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | combined-rating    | String               | &#9744;  | Combined rating of the air quality.                                                               |
 | battery-level      | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery        | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
 
 ### Door/Window Contact
 
@@ -190,6 +192,17 @@ A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
 | power-switch    | Switch    | &#9745;  | Switches the light on or off.                                  |
 | brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
 | color           | Color     | &#9745;  | The color of the emitted light.                                |
+
+### Smoke detector
+
+The smoke detector warns you in case of fire.
+
+**Thing Type ID**: `smoke-detector`
+
+| Channel Type ID    | Item Type            | Writable | Description                                                                                       |
+| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
+| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+
 
 ## Limitations
 

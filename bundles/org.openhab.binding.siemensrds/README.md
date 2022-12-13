@@ -41,6 +41,7 @@ However the Climatix IC cloud server is also used for supporting private custome
 But Siemens customer support people are often unaware of the latter fact, so when you ask them for the API key for the RDS smart thermostat range, their first reaction might often be to say you are talking nonsense!
 Do not accept that answer!
 You need to insist that you are requesting the Climatix IC cloud server API key _**for the RDS smart thermostat range**_ – it is a <u>different</u> key than those for OEM commercial customers.
+You can also get the API key by observing the traffic between your RDS App and the server, as explained [below](#observing-the-api-key).
 
 Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account Things risk causing communication errors with the cloud server.
 
@@ -70,6 +71,14 @@ The RDS Smart Thermostat supports several channels as shown below.
 | thermostatAutoMode    | Switch               | The Thermostat is in Automatic Mode (Off=Manual, On=Automatic)             |
 | hotWaterAutoMode      | Switch               | The Domestic Water Heating is in Automatic Mode (Off=Manual, On=Automatic) |
 | hotWaterOutputState   | Switch               | The On/Off state of the domestic water heating                             |
+
+## Observing the API Key
+
+You can find your API key by observing the traffic between the RDS App on a phone/tablet and the remote ClimatixIC server.
+The traffic is encrypted using SSL so regular network analyzers like [WireShark](https://www.wireshark.org/) will not work.
+But you can use an interposing SSL proxy server like [Charles Proxy](https://www.charlesproxy.com/).
+The general technique of using Charles Proxy to observe SSL App/server traffic is explained in this [video](https://m.youtube.com/watch?v=r7aV39-CKg4).
+And specifically for this case you can examine the SSL traffic to 'api.climatixic.com', and search for the 'Ocp-Apim-Subscription-Key’ header.
 
 ## Full Example
 

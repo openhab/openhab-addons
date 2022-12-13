@@ -163,7 +163,7 @@ public interface Device extends GeneralDeviceInformation {
     void increase();
 
     /**
-     * Adds an decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
+     * Adds a decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
      */
     void decrease();
 
@@ -175,7 +175,7 @@ public interface Device extends GeneralDeviceInformation {
     int getSlatPosition();
 
     /**
-     * Adds an set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
+     * Adds a set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
      * outstanding commands.
      *
      * @param slatPosition to set
@@ -205,7 +205,7 @@ public interface Device extends GeneralDeviceInformation {
     short getOutputValue();
 
     /**
-     * Adds an set output value command as {@link DeviceStateUpdate} with the given output value to the list of
+     * Adds a set output value command as {@link DeviceStateUpdate} with the given output value to the list of
      * outstanding commands.
      *
      * @param outputValue to set
@@ -427,7 +427,7 @@ public interface Device extends GeneralDeviceInformation {
     short getAnglePosition();
 
     /**
-     * Adds an set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
+     * Adds a set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
      * outstanding commands.
      *
      * @param angle to set

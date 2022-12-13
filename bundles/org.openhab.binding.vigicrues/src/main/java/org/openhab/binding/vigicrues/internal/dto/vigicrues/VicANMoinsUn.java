@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link VicANMoinsUn} is the Java class used to map the JSON
- * response to an vigicrue api endpoint request.
+ * response to a vigicrue api endpoint request.
  *
  * @author Gaël L'hopital - Initial contribution
  */

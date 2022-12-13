@@ -16,6 +16,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -36,7 +37,7 @@ public class PanelFactory {
         List<Panel> result = new ArrayList<>(panels.size());
         Deque<PositionDatum> panelStack = new ArrayDeque<>(panels);
         while (!panelStack.isEmpty()) {
-            PositionDatum panel = panelStack.peek();
+            PositionDatum panel = Objects.requireNonNull(panelStack.peek());
             final ShapeType shapeType = ShapeType.valueOf(panel.getShapeType());
             Panel shape = createPanel(shapeType, takeFirst(shapeType.getNumLightsPerShape(), panelStack));
             result.add(shape);
@@ -81,13 +82,21 @@ public class PanelFactory {
                 Point2D pos3 = new Point2D(hexShape.getPosX(), hexShape.getPosY());
                 return new Hexagon(shapeType, hexShape.getPanelId(), pos3, hexShape.getOrientation());
 
+            case LINE:
+                return new SingleLine(shapeType, positionDatum);
+
             case CORNER:
                 return new HexagonCorners(shapeType, positionDatum);
 
+            case NONE:
+                PositionDatum noShape = positionDatum.get(0);
+                Point2D pos4 = new Point2D(noShape.getPosX(), noShape.getPosY());
+                return new NoDraw(shapeType, noShape.getPanelId(), pos4);
+
             default:
                 PositionDatum shape = positionDatum.get(0);
-                Point2D pos4 = new Point2D(shape.getPosX(), shape.getPosY());
-                return new Point(shapeType, shape.getPanelId(), pos4);
+                Point2D pos5 = new Point2D(shape.getPosX(), shape.getPosY());
+                return new Point(shapeType, shape.getPanelId(), pos5);
         }
     }
 }

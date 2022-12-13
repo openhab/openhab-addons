@@ -6,10 +6,10 @@ Modbus TCP slaves are usually also called as Modbus TCP servers.
 
 The binding can act as
 
-* Modbus TCP Client (that is, as modbus master), querying data from Modbus TCP servers (that is, modbus slaves)
-* Modbus serial master, querying data from modbus serial slaves
+- Modbus TCP Client (that is, as modbus master), querying data from Modbus TCP servers (that is, modbus slaves)
+- Modbus serial master, querying data from modbus serial slaves
 
-The Modbus binding polls the slave data with an configurable poll period.
+The Modbus binding polls the slave data with a configurable poll period.
 openHAB commands are translated to write requests.
 
 The binding has the following extensions:
@@ -23,37 +23,34 @@ The rest of this page contains details for configuring this binding:
 - TOC
 {:toc}
 
-
-
 ## Main Features
 
-The binding polls (or *reads*) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers).
+The binding polls (or _reads_) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers).
 This polled data is converted to data suitable for use in openHAB.
 Functionality exists to interpret typical number formats (e.g. single precision float).
 
-The binding can also *write* data to Modbus slaves using FC05 (Write single coil), FC06 (Write single holding register), FC15 (Write multiple coils) or FC16 (Write multiple holding registers).
+The binding can also _write_ data to Modbus slaves using FC05 (Write single coil), FC06 (Write single holding register), FC15 (Write multiple coils) or FC16 (Write multiple holding registers).
 
 ## Caveats And Limitations
 
 Please note the following caveats or limitations
 
-* The binding does *not* act as Modbus slave (e.g. as Modbus TCP server).
-* The binding *does* support Modbus RTU over Modbus TCP, (also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP"), as well as normal "Modbus TCP".
-
+- The binding does _not_ act as Modbus slave (e.g. as Modbus TCP server).
+- The binding _does_ support Modbus RTU over Modbus TCP, (also known as "Modbus over TCP/IP" or "Modbus over TCP" or "Modbus RTU/IP"), as well as normal "Modbus TCP".
 
 ## Background Material
 
 Reader of the documentation should understand the basics of Modbus protocol.
 Good sources for further information:
 
-* [Wikipedia article](https://en.wikipedia.org/wiki/Modbus): good read on modbus basics and addressing.
-* [Simplymodbus.ca](https://www.simplymodbus.ca/): good reference as well as excellent tutorial like explanation of the protocol
+- [Wikipedia article](https://en.wikipedia.org/wiki/Modbus): good read on modbus basics and addressing.
+- [Simplymodbus.ca](https://www.simplymodbus.ca/): good reference as well as excellent tutorial like explanation of the protocol
 
 Useful tools
 
-* [binaryconvert.com](https://www.binaryconvert.com/): tool to convert numbers between different binary presentations
-* [rapidscada.net Modbus parser](https://modbus.rapidscada.net/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
-* [JSFiddle tool](https://jsfiddle.net/rgypuuxq/) to test JavaScript (JS) transformations interactively
+- [binaryconvert.com](https://www.binaryconvert.com/): tool to convert numbers between different binary presentations
+- [rapidscada.net Modbus parser](https://modbus.rapidscada.net/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
+- [JSFiddle tool](https://jsfiddle.net/rgypuuxq/) to test JavaScript (JS) transformations interactively
 
 ## Supported Things
 
@@ -93,13 +90,13 @@ Note that parameter type is very critical when writing `.things` file yourself, 
 
 Some examples:
 
-* `parameter="value"` for `text` parameters
-* `parameter=4` for `integer`
-* `parameter=true` for `boolean`
+- `parameter="value"` for `text` parameters
+- `parameter=4` for `integer`
+- `parameter=true` for `boolean`
 
 Note the differences with quoting.
 
-Required parameters *must* be specified in the `.things` file.
+Required parameters _must_ be specified in the `.things` file.
 When optional parameters are not specified, they default to the values shown in the table below.
 
 ### `tcp` Thing
@@ -218,14 +215,14 @@ You must give each of your data Things a reference (thing ID) that is unique for
 Only the `data` thing has channels.
 It has several "data channels", serving the polled data in different formats, and for accepting openHAB commands from different item types.
 
-Please note that transformations might be *necessary* in order to update some data channels, or to convert some openHAB commands to suitable Modbus data.
+Please note that transformations might be _necessary_ in order to update some data channels, or to convert some openHAB commands to suitable Modbus data.
 See [Transformations](#transformations) for more details.
 
 | Channel Type ID | Item Type       | Description                         |
 | --------------- | --------------- | ----------------------------------- |
 | `number`        | `Number`        | Data as number                      |
 | `switch`        | `Switch`        | Data as switch (`ON` / `OFF`)       |
-| `contact`       | `Contact `      | Data as contact (`OPEN` / `CLOSED`) |
+| `contact`       | `Contact`       | Data as contact (`OPEN` / `CLOSED`) |
 | `dimmer`        | `Dimmer`        | Data as dimmer                      |
 | `datetime`      | `DateTime`      | Data as a date time                 |
 | `string`        | `String`        | Data as string                      |
@@ -249,7 +246,7 @@ Items are configured the typical way, using `channel` to bind the item to a part
 
 For example, in the following example, item `Temperature_Modbus_Livingroom` is bound to channel `number` of thing `modbus:data:siemensplc:holding:livingroom_temperature`.
 
-```bash
+```java
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
 ```
 
@@ -272,7 +269,6 @@ Typically, you see something like this
 ```
 
 Let's go through it step by step
-
 
 ```java
 // openHAB UI switch changed command is sent
@@ -301,12 +297,13 @@ With `autoupdate` disabled, one would get
 Item state has no "fluctuation", it updates from `OFF` to `ON`.
 
 To summarize (credits to [rossko57's community post](https://community.openhab.org/t/rule-to-postupdate-an-item-works-but-item-falls-back-after-some-seconds/19986/2?u=ssalonen)):
-* `autoupdate="false"`: monitor the _actual_ state of device
-* `autoupdate="true"`: (or defaulted) allows faster display of the _expected_ state in a sitemap
+
+- `autoupdate="false"`: monitor the _actual_ state of device
+- `autoupdate="true"`: (or defaulted) allows faster display of the _expected_ state in a sitemap
 
 You can disable `autoupdate` as follows:
 
-```bash
+```java
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number", autoupdate="false" }
 ```
 
@@ -327,6 +324,7 @@ When reading from Modbus, the result will be `updateTowardsItem = (raw_value_fro
 When applying command, the calculation goes in reverse.
 
 See examples for concrete use case with value scaling.
+
 ### Discovery
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
@@ -340,11 +338,11 @@ Note that the main binding does not recognize any devices, so it is pointless to
 [Modbus Wikipedia article](https://en.wikipedia.org/wiki/Modbus#Coil.2C_discrete_input.2C_input_register.2C_holding_register_numbers_and_addresses) summarizes this excellently:
 
 > In the traditional standard, [entity] numbers for those entities start with a digit, followed by a number of four digits in range 1–9,999:
-
-> * coils numbers start with a zero and then span from 00001 to 09999
-> * discrete input numbers start with a one and then span from 10001 to 19999
-> * input register numbers start with a three and then span from 30001 to 39999
-> * holding register numbers start with a four and then span from 40001 to 49999
+>
+> - coils numbers start with a zero and then span from 00001 to 09999
+> - discrete input numbers start with a one and then span from 10001 to 19999
+> - input register numbers start with a three and then span from 30001 to 39999
+> - holding register numbers start with a four and then span from 40001 to 49999
 >
 > This translates into [entity] addresses between 0 and 9,998 in data frames.
 
@@ -424,7 +422,6 @@ To resolve this the binding supports a second set of valuetypes that have the wo
 
 If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
 
-
 #### `int32_swap`:
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit integer
@@ -490,16 +487,16 @@ Command must be such that it is accepted by the item in the first place
 1. Command is converted to string (e.g. `"3.14"`) and passed to the transformation.
 Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
   See [Transformations](#transformations) section for more details.
-3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
+1. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
   First successful conversion is stored.
   For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
 In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
-5. Next step depends on the `writeType`:
-   * `writeType="coil"`: the command from the transformation is converted to boolean.
+1. Next step depends on the `writeType`:
+   - `writeType="coil"`: the command from the transformation is converted to boolean.
      Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
+   - `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
    For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
-6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
+1. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
   Write address is specified by `writeStart`.
 
 #### Advanced Write Using JSON
@@ -530,7 +527,7 @@ For example, if the transformation returns the following JSON
 Two write requests would be sent to the Modbus slave
 
 1. FC16 (write multiple holding register), with start address 5412, having three registers of data (1, 0, and 5).
-2. FC06 (write single holding register), with start address 555, and single register of data (3).
+1. FC06 (write single holding register), with start address 555, and single register of data (3).
   Write is tried maximum of 10 times in case some of the writes fail.
 
 The JSON transformation output can be useful when you need full control how the write goes, for example in case where the write address depends on the incoming command.
@@ -551,8 +548,8 @@ Explanation for the different properties of the JSON object in the array.
 
 Transformations serve two purpose
 
-* `readTransform`: doing preprocessing transformations to read binary data and to make it more usable in openHAB
-* `writeTransform`: doing preprocessing to openHAB commands before writing them to Modbus slave
+- `readTransform`: doing preprocessing transformations to read binary data and to make it more usable in openHAB
+- `writeTransform`: doing preprocessing to openHAB commands before writing them to Modbus slave
 
 Note that transformation is only one part of the overall process how polled data is converted to openHAB state, or how commands are converted to Modbus writes.
 Consult [Read steps](#read-steps) and [Write steps](#write-steps) for more details.
@@ -582,6 +579,7 @@ There are three different format to specify the configuration:
 1. String `"default"`, in which case the default transformation is used. The default is to do no conversion to the command.
 1. `"SERVICENAME:ARG"` for calling a transformation service. The transformation receives the command as input. This is useful for applying complex arithmetic for commands before the data is written to Modbus. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
+
 #### Example: Inverting Binary Data On Read And Write
 
 This example transformation is able to invert "boolean" input.
@@ -613,7 +611,7 @@ Please refer to the comments for more explanations.
 
 `things/modbus_ex1.things`:
 
-```
+```java
 Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
     // read-write for coils. Reading 4 coils, with index 4, and 5.
@@ -661,7 +659,7 @@ Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
 `items/modbus_ex1.items`:
 
-```
+```java
 Switch DO4            "Digital Output index 4 [%d]"    { channel="modbus:data:localhostTCP:coils:do4:switch" }
 Switch DO5            "Digital Output index 5 [%d]"    { channel="modbus:data:localhostTCP:coils:do5:switch" }
 
@@ -679,7 +677,7 @@ Number Holding5writeonly            "Holding index 5 [%.1f]"    { channel="modbu
 
 `sitemaps/modbus_ex1.sitemap`:
 
-```
+```perl
 sitemap modbus_ex1 label="modbus_ex1"
 {
     Frame {
@@ -711,7 +709,7 @@ Toggling these switches always have the same effect: either setting or resetting
 
 `things/modbus_ex2.things`:
 
-```
+```java
 Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
     Bridge poller items [ start=4, length=2, refresh=1000, type="discrete" ] {
@@ -729,7 +727,7 @@ Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex2.items`:
 
-```
+```java
 Switch ReadDI4WriteDO5            "Coil 4/5 mix [%d]"    { channel="modbus:data:localhostTCPex2:items:readDiscrete4WriteCoil5:switch" }
 Switch ResetDO5            "Flip to turn Coil 5 OFF [%d]"    { channel="modbus:data:localhostTCPex2:items:resetCoil5:switch" }
 Switch SetDO5            "Flip to turn Coil 5 ON [%d]"    { channel="modbus:data:localhostTCPex2:items:setCoil5:switch" }
@@ -739,7 +737,7 @@ Contact Coil5            "Coil 5 [%d]"    { channel="modbus:data:localhostTCPex2
 
 `sitemaps/modbus_ex2.sitemap`:
 
-```
+```perl
 sitemap modbus_ex2 label="modbus_ex2"
 {
     Frame {
@@ -766,7 +764,7 @@ The profile also works the other way round, scaling the commands sent to the ite
 
 `things/modbus_ex_scaling.things`:
 
-```
+```java
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
         Thing data temperatureDeciCelsius [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
@@ -776,13 +774,13 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_scaling.items`:
 
-```
+```java
 Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", pre-gain-offset="0" ] }
 ```
 
 `sitemaps/modbus_ex_scaling.sitemap`:
 
-```
+```perl
 sitemap modbus_ex_scaling label="modbus_ex_scaling"
 {
     Frame {
@@ -791,7 +789,6 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
     }
 }
 ```
-
 
 ### Commanding Individual Bits
 
@@ -803,7 +800,7 @@ In order to use this feature, one specifies `writeStart="X.Y"` (register `X`, bi
 
 `things/modbus_ex_command_bit.things`:
 
-```
+```java
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
         Thing data register5 [ readStart="5.1", readValueType="bit", writeStart="5.1", writeValueType="bit", writeType="holding" ]
@@ -814,14 +811,14 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_command_bit.items`:
 
-```
+```java
 Switch SecondLeastSignificantBit            "2nd least significant bit write switch [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
 Number SecondLeastSignificantBitAltRead            "2nd least significant bit is now [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
 ```
 
 `sitemaps/modbus_ex_command_bit.sitemap`:
 
-```
+```perl
 sitemap modbus_ex_command_bit label="modbus_ex_command_bit"
 {
     Frame {
@@ -841,22 +838,23 @@ Example for a dimmer device where 255 register value = 100% for fully ON:
 
 `things/modbus_ex_dimmer.things`:
 
-```
+```java
 Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
    Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
-	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS:dimread255.js", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS:dimwrite255.js" ]
+          Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS:dimread255.js", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS:dimwrite255.js" ]
    }
 }
 ```
 
 `items/modbus_ex_dimmer.items`:
-```
+
+```java
 Dimmer myDimmer "My Dimmer d2 [%.1f]"   { channel="modbus:data:remoteTCP:MBDimmer:DimmerReg:dimmer" }
 ```
 
 `sitemaps/modbus_ex_dimmer.sitemap`:
 
-```
+```perl
 sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 {
     Frame {
@@ -867,6 +865,7 @@ sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 ```
 
 `transform/dimread255.js`:
+
 ```javascript
 // Wrap everything in a function (no global variable pollution)
 // variable "input" contains data string passed by binding
@@ -879,6 +878,7 @@ sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 ```
 
 `transform/dimwrite255.js`:
+
 ```javascript
 // variable "input" contains command string passed by openHAB
 (function(inputData) {
@@ -898,7 +898,6 @@ sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 })(input)
 ```
 
-
 ### Rollershutter Example
 
 #### Rollershutter
@@ -916,10 +915,9 @@ The logic of processing commands are summarized in the table
 | `MOVE`  | `1`                            | 2              |
 | `STOP`  | `0`                            | 2              |
 
-
 `things/modbus_ex_rollershutter.things`:
 
-```
+```java
 Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
     Bridge poller holding [ start=0, length=3, refresh=1000, type="holding" ] {
         // Since we are using advanced transformation outputting JSON,
@@ -936,7 +934,7 @@ Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_rollershutter.items`:
 
-```
+```java
 // We disable auto-update to make sure that rollershutter position is updated from the slave, not "automatically" via commands
 Rollershutter RollershutterItem "Roller shutter position [%.1f]" <temperature> { autoupdate="false", channel="modbus:data:localhostTCPRollerShutter:holding:rollershutterData:rollershutter" }
 
@@ -948,7 +946,7 @@ Number RollershutterItemDebug2 "Roller shutter Debug 2 [%d]" <temperature> { cha
 
 `sitemaps/modbus_ex_rollershutter.sitemap`:
 
-```
+```perl
 sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
     Switch item=RollershutterItem label="Roller shutter [(%d)]" mappings=[UP="up", STOP="X", DOWN="down", MOVE="move"]
 
@@ -1031,15 +1029,15 @@ Please be aware that `REFRESH` commands are "throttled" (to be exact, responses 
 Modbus, while simple at its heart, potentially is a complicated standard to use because there's a lot of freedom (and bugs) when it comes to implementations.
 There are many device or vendor specific quirks and wrinkles you might stumble across. Here's some:
 
-* With Modbus TCP devices, there may be multiple network interfaces available, e.g. Wifi and wired Ethernet. However, with some devices the Modbus data is accessible via only one of the interfaces. You need to check the device manufacturer manual, or simply try out which of the IPs are returning valid modbus data.
+- With Modbus TCP devices, there may be multiple network interfaces available, e.g. Wifi and wired Ethernet. However, with some devices the Modbus data is accessible via only one of the interfaces. You need to check the device manufacturer manual, or simply try out which of the IPs are returning valid modbus data.
 Attention: a device may have an interface with a port open (502 or other) that it responds to Modbus requests on, but that may have no connection to the real bus hardware, resulting in generic Modbus error responses to _every_ request.
 So check ALL interfaces. Usually either the IP on Ethernet will do.
 
-* some devices do not allow to query a range of registers that is too large or spans reserved registers. Do not poll more than 123 registers.
+- some devices do not allow to query a range of registers that is too large or spans reserved registers. Do not poll more than 123 registers.
 Devices may respond with an error or no error but invalid register data so this error can easily go undedetected.
 Turn your poller thing into multiple things to cover smaller ranges to work around this problem.
 
-* there's potentially many more or less weird inconsistencies with some devices.
+- there's potentially many more or less weird inconsistencies with some devices.
 If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
 In extreme cases you might even need more than a poller for a single register so you have two or more poller with two or more data things and need to combine these into another item using a rule.
 
@@ -1056,8 +1054,8 @@ The major differences in configuration logic are:
 
 ### Absolute Addresses Instead Of Relative
 
-The new Modbus binding uses *absolute* addresses.
-This means that all parameters referring to addresses of input registers, holding registers, discrete inputs or coils are *entity addresses*.
+The new Modbus binding uses _absolute_ addresses.
+This means that all parameters referring to addresses of input registers, holding registers, discrete inputs or coils are _entity addresses_.
 This means that the addresses start from zero (first entity), and can go up to 65 535. See [Wikipedia explanation](https://en.wikipedia.org/wiki/Modbus#Coil.2C_discrete_input.2C_input_register.2C_holding_register_numbers_and_addresses) for more information.
 
 Previous binding sometimes used absolute addresses (`modbus.cfg`), sometimes relative to polled data (items configuration).
@@ -1105,7 +1103,7 @@ The 1.x modbus configuration to be updated defined 4 slaves:
 
 `modbus.cfg`
 
-```
+```text
     poll=500
 
     tcp.slave1.connection=192.168.2.9:502
@@ -1140,11 +1138,12 @@ The 2.x modbus binding uses a three-level definition.
 Level one defines a `Bridge` for every modbus device that is to be addressed.
 The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
 
-```
+```java
 Bridge modbus:tcp:wago [ host="192.168.2.9", port=502 ] {
 
 }
 ```
+
 Host and Port are taken from the 1.x modbus config.
 
 Within the top level `Bridge` there are one or more second level bridges that replace the former `slave` configurations.
@@ -1152,7 +1151,7 @@ The poll frequency can now be set per `poller`, so you may want to define differ
 The slave `Bridge` configs go inside the top level config.
 For the four `poller`s defined in this example the 2.x configuration looks like this:
 
-```
+```java
 Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
 
     Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
@@ -1181,7 +1180,7 @@ Here a few examples of the Item configuration from the 1.x binding:
 
 The first Item polled with the first `poller` used this configuration (with offset 0):
 
-```
+```java
 Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"}
 ```
 
@@ -1190,19 +1189,19 @@ Now we have to define a `Thing` that can later be bound to that Item.
 The `slave1` `poller` uses `12288` as start address.
 So we define the first data Thing within the `poller` `wago_slave1` with this address and choose a name that ends with `0`:
 
-```
+```java
 Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
 ```
 
 The second Item of the 1.x binding (offset `1`) is defined as follows.
 
-```
+```java
 Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
 ```
 
 This leads to the thing definition
 
-```
+```java
 Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
 ```
 
@@ -1212,7 +1211,7 @@ Incorporating this definitions into the thing file leads to:
 
 `wago.things`:
 
-```
+```java
 Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
 
     Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
@@ -1238,14 +1237,14 @@ Given that there are no config errors, they quickly change from `INITIALIZING` t
 Finally the Item definition has to be changed to refer to the new created `data` `Thing`.
 You can copy the names you need for this directly from the `events.log` file:
 
-```
+```java
 Switch FooSwitch  "Foo Switch" {modbus="slave1:0"}
 Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
 ```
 
 turn into
 
-```
+```java
 Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_000:switch", autopudate="false"}
 Switch BarSwitch  "Bar Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_001:switch", autoupdate="false"}
 ```
@@ -1283,7 +1282,7 @@ Continue to add `data` `Thing`s for all your other Items the same way and link t
 
 Save your updated item file and check whether updates come in as expected.
 
-## Troubleshooting
+## Troubleshooting Tips
 
 ### Thing Status
 
@@ -1293,9 +1292,9 @@ Check thing status for errors in configuration or communication.
 
 Enable `DEBUG` or `TRACE` (even more verbose) logging for the loggers named:
 
-* `org.openhab.binding.modbus`
-* `org.openhab.core.io.transport.modbus`
-* `net.wimpi.modbus`
+- `org.openhab.binding.modbus`
+- `org.openhab.core.io.transport.modbus`
+- `net.wimpi.modbus`
 
 Consult [openHAB logging documentation](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for more information.
 

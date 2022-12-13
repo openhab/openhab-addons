@@ -1,8 +1,8 @@
 # Kaleidescape Binding
 
 This binding now makes it possible to easily integrate almost all of the capabilities of the Kaleidescape control protocol into openHAB.
-Beyond just integrating playback transport controls, all meta-data provided via the control protocol are made available for display purposes and to use in rules.
-By using rules, it is possible to control other Things such lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
+Beyond just integrating playback transport controls, all meta-data provided via the control protocol is made available for display purposes and to use in rules.
+By using rules, it is possible to control other Things such as lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
 Finally, any other command that is supported by the control protocol can be sent to the component through rules.
 See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
 
@@ -24,11 +24,6 @@ The binding supports either a TCP/IP connection or direct serial port connection
 Manually initiated Auto-discovery will locate all supported Kaleidescape components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
-## Binding Configuration
-
-There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
-
 ## Thing Configuration
 
 The thing has the following configuration parameters:
@@ -46,17 +41,17 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
-* The only caveat of note about this binding is the updatePeriod configuration parameter.
-* When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
-* In this case, the running time channels will also only sporadically update.
-* When updatePeriod is set to 1 (values greater than 1 are not yet supported by the control protocol), the component sends running time status update messages every second.
-* Be aware that this could cause performance impacts to your openHAB system.
+- Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
+- The only caveat of note about this binding is the updatePeriod configuration parameter.
+- When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
+- In this case, the running time channels will also only sporadically update.
+- When updatePeriod is set to 1 (values greater than 1 are not yet supported by the control protocol), the component sends running time status update messages every second.
+- Be aware that this could cause performance impacts to your openHAB system.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Kaleidescape and RFXcom.
-* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Kaleidescape and RFXcom.
+- See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ## Channels
 
@@ -141,16 +136,15 @@ The following channels are available:
 
 kaleidescape.things:
 
-```
+```java
 kaleidescape:player:myzone1 "M500 Living Rm" [ host="192.168.1.10", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
 kaleidescape:cinemaone:myzone2 "My Cinema One" [ host="192.168.1.11", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
 kaleidescape:strato:myzone3 "Strato Theater Rm" [ host="192.168.1.12", updatePeriod=0, loadHighlightedDetails=true ]
-
 ```
 
 kaleidescape.items:
 
-```
+```java
 // Virtual switch to send a command, see sitemap and rules below
 Switch z1_GoMovieCovers   "Go to Movie Covers"
 
@@ -230,12 +224,11 @@ String z1_Detail_ColorDescription "Color Description: [%s]" { channel="kaleidesc
 String z1_Detail_Country "Country: [%s]" { channel="kaleidescape:player:myzone1:detail#country" }
 String z1_Detail_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:detail#aspect_ratio" }
 String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:player:myzone1:detail#disc_location" }
-
 ```
 
 ksecondsformat.js:
 
-```
+```javascript
 (function(totalSeconds) {
     if (isNaN(totalSeconds)) {
         return '-';
@@ -257,7 +250,7 @@ ksecondsformat.js:
 
 kaleidescape.sitemap:
 
-```
+```perl
 sitemap kaleidescape label="Kaleidescape" {
     Frame label="Zone 1" {
         Image item=z1_Detail_CoverArt
@@ -343,7 +336,7 @@ sitemap kaleidescape label="Kaleidescape" {
 
 kaleidescape.rules:
 
-```
+```java
 var int lightPercent
 val kactions = getActions("kaleidescape","kaleidescape:player:myzone1")
 

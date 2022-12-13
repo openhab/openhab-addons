@@ -95,7 +95,6 @@ Import-Package: \
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.16,2.0.17)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
-	biz.aQute.tester.junit-platform;version='[6.3.0,6.3.1)',\
 	org.openhab.binding.mqtt;version='[3.4.0,3.4.1)',\
 	org.openhab.binding.mqtt.generic;version='[3.4.0,3.4.1)',\
 	org.openhab.binding.mqtt.homeassistant;version='[3.4.0,3.4.1)',\
@@ -110,4 +109,7 @@ Import-Package: \
 	org.openhab.core.test;version='[3.4.0,3.4.1)',\
 	org.openhab.core.thing;version='[3.4.0,3.4.1)',\
 	org.openhab.core.thing.xml;version='[3.4.0,3.4.1)',\
-	org.openhab.core.transform;version='[3.4.0,3.4.1)'
+	org.openhab.core.transform;version='[3.4.0,3.4.1)',\
+	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
+	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'

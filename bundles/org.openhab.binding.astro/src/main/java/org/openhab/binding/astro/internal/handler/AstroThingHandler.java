@@ -310,7 +310,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             monitor.unlock();
         }
         if (logger.isDebugEnabled()) {
-            String formattedDate = this.isoFormatter.format(eventAt);
+            final String formattedDate = this.isoFormatter.format(eventAt.getTime());
             logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
         }
     }

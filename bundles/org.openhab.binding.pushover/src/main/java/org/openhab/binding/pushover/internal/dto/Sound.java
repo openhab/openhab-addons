@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.ParameterOption;
 
 /**
- * The {@link Sound} is the Java class used to map the JSON response to an Pushover API request..
+ * The {@link Sound} is the Java class used to map the JSON response to a Pushover API request..
  *
  * @author Christoph Weitkamp - Initial contribution
  */

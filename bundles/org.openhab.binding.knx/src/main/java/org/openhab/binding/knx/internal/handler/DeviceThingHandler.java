@@ -84,7 +84,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     public void initialize() {
         super.initialize();
         DeviceConfig config = getConfigAs(DeviceConfig.class);
-        readInterval = config.getReadInterval().intValue();
+        readInterval = config.getReadInterval();
         initializeGroupAddresses();
     }
 

@@ -65,7 +65,7 @@
 			serviceId="urn:X_AVM-DE_HostFilter-com:serviceId:X_AVM-DE_HostFilter1"/>
 		<getAction name="GetWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"
-				pattern="([1-9]\d{0,2}\.){3}[1-9]\d{0,2}(\s*#.*)*"/>
+				pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$"/>
 		</getAction>
 		<setAction name="DisallowWANAccessByIP" argument="NewDisallow">
 			<parameter name="NewIPv4Address" thingParameter="wanBlockIPs"/>

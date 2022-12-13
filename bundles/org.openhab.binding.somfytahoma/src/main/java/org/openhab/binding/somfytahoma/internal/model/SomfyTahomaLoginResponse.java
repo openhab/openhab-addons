@@ -27,6 +27,8 @@ public class SomfyTahomaLoginResponse {
     private String version = "";
     private String error = "";
 
+    private String errorCode = "";
+
     public boolean isSuccess() {
         return success;
     }
@@ -37,5 +39,9 @@ public class SomfyTahomaLoginResponse {
 
     public String getError() {
         return error;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
     }
 }
