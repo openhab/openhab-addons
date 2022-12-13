@@ -43,7 +43,7 @@ public class ShieldTVMessageParser {
 
         char[] charArray = msg.toCharArray();
 
-        if (msg.startsWith("080a12")) {
+        if (msg.startsWith("080a12") && msg.startsWith("08e807", 8)) {
             // Hostname of Shield Replied
             // 080a12 1d08e80712 18080112 10 5b534849454c445d2054686561746572 18d7fd04180a
             // 080a12 2208e80712 1d08e80712 14 5b534849454c445d204c6976696e6720526f6f6d 18d7fd04180a
@@ -62,7 +62,7 @@ public class ShieldTVMessageParser {
                 i += 2;
             }
             st = "" + charArray[i] + "" + charArray[i + 1];
-	    i += 2;
+            i += 2;
             int length = Integer.parseInt(st, 16);
             int current = i;
             for (; i < current + length; i = i + 2) {

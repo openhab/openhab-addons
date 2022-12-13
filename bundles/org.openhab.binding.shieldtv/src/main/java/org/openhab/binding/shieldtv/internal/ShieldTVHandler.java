@@ -393,8 +393,10 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                 }
                 if (lastMsg.equals("08") && thisMsg.equals("0a")) {
                     if ((inMessage == false) && (sb.length() > 0)) {
+                        sb.setLength(sb.length() - 2);
                         shieldtvMessageParser.handleMessage(sb.toString());
                         sb.setLength(0);
+                        sb.append(lastMsg.toString());
                     }
                     sb.append(thisMsg.toString());
                     lastMsg = thisMsg;
