@@ -41,6 +41,10 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     protected void afterInvocation() {
     }
 
+    protected Object afterInvocation(Object obj) {
+        return obj;
+    }
+
     protected ScriptException afterThrowsInvocation(ScriptException se) {
         return se;
     }
@@ -49,11 +53,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(String s, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(s, scriptContext);
+            return afterInvocation(super.eval(s, scriptContext));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -61,11 +63,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(reader, scriptContext);
+            return afterInvocation(super.eval(reader, scriptContext));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -73,11 +73,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(String s) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(s);
+            return afterInvocation(super.eval(s));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -85,11 +83,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(reader);
+            return afterInvocation(super.eval(reader));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -97,11 +93,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(String s, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(s, bindings);
+            return afterInvocation(super.eval(s, bindings));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -109,11 +103,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object eval(Reader reader, Bindings bindings) throws ScriptException {
         try {
             beforeInvocation();
-            return super.eval(reader, bindings);
+            return afterInvocation(super.eval(reader, bindings));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -121,11 +113,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
             beforeInvocation();
-            return super.invokeMethod(o, s, objects);
+            return afterInvocation(super.invokeMethod(o, s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 
@@ -133,11 +123,9 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
     public Object invokeFunction(String s, Object... objects) throws ScriptException, NoSuchMethodException {
         try {
             beforeInvocation();
-            return super.invokeFunction(s, objects);
+            return afterInvocation(super.invokeFunction(s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            afterInvocation();
         }
     }
 }

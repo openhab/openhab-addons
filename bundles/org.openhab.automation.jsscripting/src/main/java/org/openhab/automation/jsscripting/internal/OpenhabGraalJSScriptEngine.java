@@ -237,6 +237,18 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
+    protected Object afterInvocation(Object obj) {
+        afterInvocation();
+        return obj;
+    }
+
+    @Override
+    protected ScriptException afterThrowsInvocation(ScriptException se) {
+        lock.unlock();
+        return se;
+    }
+
+    @Override
     public void close() {
         jsRuntimeFeatures.close();
     }
