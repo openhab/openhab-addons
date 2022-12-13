@@ -42,7 +42,7 @@ public class MonopriceAudioDefaultConnector extends MonopriceAudioConnector {
     }
 
     @Override
-    public void sendCommand(String zone, String cmd, @Nullable Integer value) {
+    public void sendCommand(@Nullable String zone, String cmd, @Nullable Integer value) {
         logger.warn(
                 "MonopriceAudio binding incorrectly configured. Please configure for Serial or IP over serial connection");
         setConnected(false);

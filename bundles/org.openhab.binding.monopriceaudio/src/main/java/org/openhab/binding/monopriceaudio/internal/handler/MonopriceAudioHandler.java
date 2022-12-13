@@ -506,8 +506,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         if (amp == AmplifierModel.XANTECH) {
                             try {
                                 // for xantech send the commands to enable unsolicited updates
-                                connector.sendCommand(EMPTY, "ZA1", null);
-                                connector.sendCommand(EMPTY, "ZP10", null); // Zone Periodic Auto Update set to 10 secs
+                                connector.sendCommand("!ZA1");
+                                connector.sendCommand("!ZP10"); // Zone Periodic Auto Update set to 10 secs
                             } catch (MonopriceAudioException e) {
                                 logger.debug("Error sending Xantech periodic update commands: {}", e.getMessage());
                             }

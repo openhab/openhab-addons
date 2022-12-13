@@ -163,17 +163,6 @@ public abstract class MonopriceAudioConnector {
     }
 
     /**
-     * Get the status of a zone
-     *
-     * @param zone the zone to query for current status
-     *
-     * @throws MonopriceAudioException - In case of any problem
-     */
-    public void queryZone(String zoneId) throws MonopriceAudioException {
-        sendCommand(zoneId, amp.getQueryPrefix(), null);
-    }
-
-    /**
      * Get ping success events from the amplifier only. If amplifier does not have keypads or supports
      * unsolicited updates, the use of this method will cause the connector to only send ping success events until the
      * next time the connection is reset.
@@ -183,13 +172,43 @@ public abstract class MonopriceAudioConnector {
     public void sendPing() throws MonopriceAudioException {
         pingResponseOnly = true;
         // poll zone 1 status only to see if the amp responds
-        sendCommand(amp.getZoneIds().get(0), amp.getQueryPrefix(), null);
+        queryZone(amp.getZoneIds().get(0));
     }
 
+    /**
+     * Get the status of a zone
+     *
+     * @param zone the zone to query for current status
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void queryZone(String zoneId) throws MonopriceAudioException {
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getQuerySuffix());
+    }
+
+    /**
+     * Monoprice 31028 and OSD Audio PAM1270 amps do not report treble, bass and balance with the main status inquiry,
+     * so we must send three extra commands to retrieve those values
+     *
+     * @param zone the zone to query for current treble, bass and balance status
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
     public void queryTrebBassBalance(String zoneId) throws MonopriceAudioException {
-        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getTrebleCmd(), null);
-        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBassCmd(), null);
-        sendCommand(EMPTY, amp.getQueryPrefix() + zoneId + amp.getBalanceCmd(), null);
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getTrebleCmd());
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getBassCmd());
+        sendCommand(amp.getQueryPrefix() + zoneId + amp.getBalanceCmd());
+    }
+
+    /**
+     * Request the MonopriceAudio amplifier to execute a raw command
+     *
+     * @param cmd the command to execute
+     *
+     * @throws MonopriceAudioException - In case of any problem
+     */
+    public void sendCommand(String cmd) throws MonopriceAudioException {
+        sendCommand(null, cmd, null);
     }
 
     /**
@@ -197,23 +216,21 @@ public abstract class MonopriceAudioConnector {
      *
      * @param zoneId the zone for which the command is to be run
      * @param cmd the command to execute
-     * @param value the integer value to consider for volume, bass, treble, etc. adjustment
+     * @param value the integer value to consider for power, volume, bass, treble, etc. adjustment
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void sendCommand(String zoneId, String cmd, @Nullable Integer value) throws MonopriceAudioException {
+    public void sendCommand(@Nullable String zoneId, String cmd, @Nullable Integer value)
+            throws MonopriceAudioException {
         String messageStr;
 
-        if (cmd.startsWith(amp.getQueryPrefix())) {
-            // query special case (ie: ? + zoneId)
-            messageStr = cmd + zoneId + amp.getQuerySuffix();
-        } else if (value != null) {
-            // if the command passed a value, append it to the messageStr
-            messageStr = amp.getCmdPrefix() + zoneId + cmd + amp.getFormattedValue(value);
+        if (zoneId != null && value != null) {
+            // if the command passed a value, build messageStr with prefix, zoneId, command, value and suffix
+            messageStr = amp.getCmdPrefix() + zoneId + cmd + amp.getFormattedValue(value) + amp.getCmdSuffix();
         } else {
-            messageStr = amp.getCmdPrefix() + cmd;
+            // otherwise send the raw cmd from the query() methods
+            messageStr = cmd + amp.getCmdSuffix();
         }
-        messageStr += amp.getCmdSuffix();
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
