@@ -114,14 +114,16 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.invokeMethod(o, s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } catch (Exception e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid deadlocks
+        } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid
+                                            // deadlocks
             // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
             // afterThrowsInvocation
-            if (e instanceof NoSuchMethodException) {
-                throw (NoSuchMethodException) afterInvocation(e);
-            } else if (e instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) afterInvocation(e);
-            }
+            throw (NoSuchMethodException) afterInvocation(e);
+        } catch (NullPointerException e) {
+            throw (NullPointerException) afterInvocation(e);
+        } catch (IllegalArgumentException e) {
+            throw (IllegalArgumentException) afterInvocation(e);
+        } catch (Exception e) {
             return afterInvocation(e); // Avoid "missing return statement" warnings
         }
     }
@@ -134,12 +136,14 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.invokeFunction(s, objects));
         } catch (ScriptException se) {
             throw afterThrowsInvocation(se);
-        } catch (Exception e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid deadlocks
+        } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid
+                                            // deadlocks
             // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
             // afterThrowsInvocation
-            if (e instanceof NoSuchMethodException) {
-                throw (NoSuchMethodException) afterInvocation(e);
-            }
+            throw (NoSuchMethodException) afterInvocation(e);
+        } catch (NullPointerException e) {
+            throw (NullPointerException) afterInvocation(e);
+        } catch (Exception e) {
             return afterInvocation(e); // Avoid "missing return statement" warnings
         }
     }

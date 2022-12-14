@@ -101,6 +101,13 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-plugin</artifactId>
+        <configuration>
+          <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
