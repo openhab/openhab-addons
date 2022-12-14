@@ -23,11 +23,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
 import org.openhab.binding.saicismart.internal.asn1.Util;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherBody;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.MP_DispatcherHeader;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.Message;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.MessageCoder;
-import org.openhab.binding.saicismart.internal.asn1.v3_0.entity.OTA_ChrgMangDataResp;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
@@ -36,6 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+
+import net.heberling.ismart.asn1.v3_0.MP_DispatcherBody;
+import net.heberling.ismart.asn1.v3_0.MP_DispatcherHeader;
+import net.heberling.ismart.asn1.v3_0.Message;
+import net.heberling.ismart.asn1.v3_0.MessageCoder;
+import net.heberling.ismart.asn1.v3_0.entity.OTA_ChrgMangDataResp;
 
 /**
  *

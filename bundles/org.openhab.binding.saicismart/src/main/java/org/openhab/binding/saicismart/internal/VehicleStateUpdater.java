@@ -30,12 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.openhab.binding.saicismart.internal.asn1.Util;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.MP_DispatcherBody;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.MP_DispatcherHeader;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.Message;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.MessageCoder;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.entity.OTA_RVMVehicleStatusReq;
-import org.openhab.binding.saicismart.internal.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -49,6 +43,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+
+import net.heberling.ismart.asn1.v2_1.MP_DispatcherBody;
+import net.heberling.ismart.asn1.v2_1.MP_DispatcherHeader;
+import net.heberling.ismart.asn1.v2_1.Message;
+import net.heberling.ismart.asn1.v2_1.MessageCoder;
+import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusReq;
+import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
 
 /**
  *
