@@ -14,6 +14,7 @@
 package org.openhab.automation.jsscripting.internal.scriptengine;
 
 import java.io.Reader;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
@@ -124,7 +125,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
         } catch (IllegalArgumentException e) {
             throw (IllegalArgumentException) afterInvocation(e);
         } catch (Exception e) {
-            return afterInvocation(e); // Avoid "missing return statement" warnings
+            throw new UndeclaredThrowableException((Exception) afterInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -144,7 +145,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
         } catch (NullPointerException e) {
             throw (NullPointerException) afterInvocation(e);
         } catch (Exception e) {
-            return afterInvocation(e); // Avoid "missing return statement" warnings
+            throw new UndeclaredThrowableException((Exception) afterInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 }
