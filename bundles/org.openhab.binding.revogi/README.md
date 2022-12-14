@@ -1,11 +1,11 @@
 # Revogi Binding
 
-This binding is written to control Revogi devices. 
-The first thing implemented is the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6). 
-The device has 6 power plugs that can be switched independently, or all together. 
+This binding is written to control Revogi devices.
+The first thing implemented is the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6).
+The device has 6 power plugs that can be switched independently, or all together.
 It also provides information like power consumption and electric current for each plug.
 
-It was hard to find out how to control it without internet access, but there's a way to use UDP packets. 
+It was hard to find out how to control it without internet access, but there's a way to use UDP packets.
 See the following [support document](https://github.com/andibraeu/revogismartstripcontrol/blob/master/doc/LAN%20UDP%20Control.pdf) for details. This was the only document the Revogi support provided.
 
 ## Supported Things
@@ -14,18 +14,18 @@ Currently only the model `SOW019` is supported.
 
 ## Discovery
 
-If your smart strip is within your network (broadcast domain), discovery can work. 
+If your smart strip is within your network (broadcast domain), discovery can work.
 The discovery service will send udp packets to the broadcast address and waits for a feedback.
 
 It is required to integrate your power strip into your network first, maybe with the official app.
 
 ## Thing Configuration
 
-You need to know the serial number. Usually you can find it on the back. 
-The serial number will also be discovered. 
-The IP address of the device is also necessary, this address should be set static. 
-There's a fallback to broadcast status and switch requests. 
-That may be unreliable if you have more than one smart plug in your network. 
+You need to know the serial number. Usually you can find it on the back.
+The serial number will also be discovered.
+The IP address of the device is also necessary, this address should be set static.
+There's a fallback to broadcast status and switch requests.
+That may be unreliable if you have more than one smart plug in your network.
 They all react on UDP packets.
 
 ## Channels
@@ -56,13 +56,13 @@ They all react on UDP packets.
 
 Example Thing configuration:
 
-```
+```java
 Thing revogi:smartstrip:<serialNumber> "<Name>" @ "<Location>" [serialNumber="<serialNumnber>", ipAddress=<ipaddress>, pollIntervall=45]
 ```
 
 Example Items configuration:
 
-```
+```java
 Group revogi (LivingRoom)
 
 Group plug1 (revogi)

@@ -14,6 +14,7 @@ package org.openhab.automation.jsscripting.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jsscripting.internal.threading.ThreadsafeTimers;
@@ -31,7 +32,7 @@ public class JSRuntimeFeatures {
     private final Map<String, Object> features = new HashMap<>();
     public final ThreadsafeTimers threadsafeTimers;
 
-    JSRuntimeFeatures(Object lock, JSScriptServiceUtil jsScriptServiceUtil) {
+    JSRuntimeFeatures(Lock lock, JSScriptServiceUtil jsScriptServiceUtil) {
         this.threadsafeTimers = new ThreadsafeTimers(lock, jsScriptServiceUtil.getScriptExecution(),
                 jsScriptServiceUtil.getScheduler());
 

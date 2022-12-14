@@ -215,7 +215,7 @@
 	</channel-type>
 
 	<channel-type id="powerConsumption">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Power Consumption</label>
 		<description>Power consumption by the currently running program on the appliance</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

@@ -131,7 +131,7 @@ Channels available for each appliance type are listed below.
 | finish              | Number:Time          | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| powerConsumption    | Number:Energy        | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
 ##### Programs
@@ -354,7 +354,7 @@ See oven.
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| powerConsumption    | Number:Energy        | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
 ##### Programs
@@ -426,49 +426,49 @@ Bridge miele:xgw3000:home [ipAddress="192.168.0.18", interface="192.168.0.5"] {
 ## items/miele.items
 
 ```java
-String Dishwasher_State                                     {channel="miele:dishwasher:home:dishwasher:state"}
-Number Dishwasher_RawState                                  {channel="miele:dishwasher:home:dishwasher:rawState"}
-String Dishwasher_Program "Program [%s]"                    {channel="miele:dishwasher:home:dishwasher:program"}
-String Dishwasher_Phase "Phase [%s]"                        {channel="miele:dishwasher:home:dishwasher:phase"}
-DateTime Dishwasher_ElapsedTime "Elapsed time" <time>       {channel="miele:dishwasher:home:dishwasher:elapsed"}
-DateTime Dishwasher_FinishTime "Remaining time" <time>      {channel="miele:dishwasher:home:dishwasher:finish"}
-Number:Power Dishwasher_PowerConsumption                    {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
-Number:Volume Dishwasher_WaterConsumption                   {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
+String Dishwasher_State                                       {channel="miele:dishwasher:home:dishwasher:state"}
+Number Dishwasher_RawState                                    {channel="miele:dishwasher:home:dishwasher:rawState"}
+String Dishwasher_Program "Program [%s]"                      {channel="miele:dishwasher:home:dishwasher:program"}
+String Dishwasher_Phase "Phase [%s]"                          {channel="miele:dishwasher:home:dishwasher:phase"}
+Number:Time Dishwasher_ElapsedTime "Elapsed time" <time>      {channel="miele:dishwasher:home:dishwasher:elapsed"}
+Number:Time Dishwasher_FinishTime "Remaining time" <time>     {channel="miele:dishwasher:home:dishwasher:finish"}
+Number:Energy Dishwasher_PowerConsumption                     {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
+Number:Volume Dishwasher_WaterConsumption                     {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
 
-String Fridge_State                                         {channel="miele:fridge:home:fridge:state"}
-Contact Fridge_Door                                         {channel="miele:fridge:home:fridge:door"}
-Switch Fridge_SuperCool                                     {channel="miele:fridge:home:fridge:supercool"}
-Number:Temperature Fridge_CurrentTemperature <temperature>  {channel="miele:fridge:home:fridge:current"}
-Number:Temperature Fridge_TargetTemperature  <temperature>  {channel="miele:fridge:home:fridge:target"}
-Switch Fridge_Start                                         {channel="miele:fridge:home:fridge:start"}
+String Fridge_State                                           {channel="miele:fridge:home:fridge:state"}
+Contact Fridge_Door                                           {channel="miele:fridge:home:fridge:door"}
+Switch Fridge_SuperCool                                       {channel="miele:fridge:home:fridge:supercool"}
+Number:Temperature Fridge_CurrentTemperature <temperature>    {channel="miele:fridge:home:fridge:current"}
+Number:Temperature Fridge_TargetTemperature  <temperature>    {channel="miele:fridge:home:fridge:target"}
+Switch Fridge_Start                                           {channel="miele:fridge:home:fridge:start"}
 
-String Oven_State                                           {channel="miele:oven:home:oven:state"}
-Number Oven_RawState                                        {channel="miele:oven:home:oven:rawState"}
-String Oven_Program "Program [%s]"                          {channel="miele:oven:home:oven:program"}
-String Oven_Phase "Phase [%s]"                              {channel="miele:oven:home:oven:phase"}
-DateTime Oven_ElapsedTime "Elapsed time" <time>             {channel="miele:oven:home:oven:elapsed"}
-DateTime Oven_FinishTime "Remaining time" <time>            {channel="miele:oven:home:oven:finish"}
-Number:Temperature Oven_CurrentTemperature <temperature>    {channel="miele:oven:home:oven:measured"}
-Number:Temperature Oven_TargetTemperature <temperature>     {channel="miele:oven:home:oven:target"}
-Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop"}
+String Oven_State                                             {channel="miele:oven:home:oven:state"}
+Number Oven_RawState                                          {channel="miele:oven:home:oven:rawState"}
+String Oven_Program "Program [%s]"                            {channel="miele:oven:home:oven:program"}
+String Oven_Phase "Phase [%s]"                                {channel="miele:oven:home:oven:phase"}
+Number:Time Oven_ElapsedTime "Elapsed time" <time>            {channel="miele:oven:home:oven:elapsed"}
+Number:Time Oven_FinishTime "Remaining time" <time>           {channel="miele:oven:home:oven:finish"}
+Number:Temperature Oven_CurrentTemperature <temperature>      {channel="miele:oven:home:oven:measured"}
+Number:Temperature Oven_TargetTemperature <temperature>       {channel="miele:oven:home:oven:target"}
+Switch Oven_Stop                                              {channel="miele:oven:home:oven:stop"}
 
-String WashingMachine_State                                 {channel="miele:washingmachine:home:washingmachine:state"}
-Number WashingMachine_RawState                              {channel="miele:washingmachine:home:washingmachine:rawState"}
-String WashingMachine_Program "Program [%s]"                {channel="miele:washingmachine:home:washingmachine:program"}
-String WashingMachine_Phase "Phase [%s]"                    {channel="miele:washingmachine:home:washingmachine:phase"}
-Number:Temperature WashingMachine_Temperature <temperature> {channel="miele:washingmachine:home:washingmachine:target"}
-String WashingMachine_SpinningSpeed                         {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
-DateTime WashingMachine_ElapsedTime "Elapsed time" <time>   {channel="miele:washingmachine:home:washingmachine:elapsed"}
-DateTime WashingMachine_FinishTime "Remaining time" <time>  {channel="miele:washingmachine:home:washingmachine:finish"}
-Number:Power WashingMachine_PowerConsumption                {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
-Number:Volume WashingMachine_WaterConsumption               {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
+String WashingMachine_State                                   {channel="miele:washingmachine:home:washingmachine:state"}
+Number WashingMachine_RawState                                {channel="miele:washingmachine:home:washingmachine:rawState"}
+String WashingMachine_Program "Program [%s]"                  {channel="miele:washingmachine:home:washingmachine:program"}
+String WashingMachine_Phase "Phase [%s]"                      {channel="miele:washingmachine:home:washingmachine:phase"}
+Number:Temperature WashingMachine_Temperature <temperature>   {channel="miele:washingmachine:home:washingmachine:target"}
+String WashingMachine_SpinningSpeed                           {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
+Number:Time WashingMachine_ElapsedTime "Elapsed time" <time>  {channel="miele:washingmachine:home:washingmachine:elapsed"}
+Number:Time WashingMachine_FinishTime "Remaining time" <time> {channel="miele:washingmachine:home:washingmachine:finish"}
+Number:Energy WashingMachine_PowerConsumption                 {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
+Number:Volume WashingMachine_WaterConsumption                 {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
 
-String TumbleDryer_State                                    {channel="miele:tumbledryer:home:tumbledryer:state"}
-Number TumbleDryer_RawState                                 {channel="miele:tumbledryer:home:tumbledryer:rawState"}
-String TumbleDryer_Program "Program [%s]"                   {channel="miele:tumbledryer:home:tumbledryer:program"}
-String TumbleDryer_Phase "Phase [%s]"                       {channel="miele:tumbledryer:home:tumbledryer:phase"}
-DateTime TumbleDryer_ElapsedTime "Elapsed time" <time>      {channel="miele:tumbledryer:home:tumbledryer:elapsed"}
-DateTime TumbleDryer_FinishTime "Remaining time" <time>     {channel="miele:tumbledryer:home:tumbledryer:finish"}
+String TumbleDryer_State                                      {channel="miele:tumbledryer:home:tumbledryer:state"}
+Number TumbleDryer_RawState                                   {channel="miele:tumbledryer:home:tumbledryer:rawState"}
+String TumbleDryer_Program "Program [%s]"                     {channel="miele:tumbledryer:home:tumbledryer:program"}
+String TumbleDryer_Phase "Phase [%s]"                         {channel="miele:tumbledryer:home:tumbledryer:phase"}
+Number:Time TumbleDryer_ElapsedTime "Elapsed time" <time>     {channel="miele:tumbledryer:home:tumbledryer:elapsed"}
+Number:Time TumbleDryer_FinishTime "Remaining time" <time>    {channel="miele:tumbledryer:home:tumbledryer:finish"}
 ```
 
 ## sitemaps/miele.sitemap

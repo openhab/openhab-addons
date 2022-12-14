@@ -40,13 +40,13 @@ No autodiscovery available
 
 ### demo.things
 
-```
+```java
 Thing omnikinverter:omnik:70ecb4f0 "Solar Inverter" [ hostname="igen-wifi.lan",serial=604455290]
 ```
 
 ### demo.items
 
-```
+```java
 Number:Power OmnikInverterBindingThing_InstantaneousPower "Solar Power" <sun> {channel="omnikinverter:omnik:70ecb4f0:power"}
 Number:Power OmnikInverterBindingThing_InstantaneousPower1 "Solar Power 1" <sun> {channel="omnikinverter:omnik:70ecb4f0:powerAC1"}
 Number:Power OmnikInverterBindingThing_InstantaneousPower2 "Solar Power 2" <sun> {channel="omnikinverter:omnik:70ecb4f0:powerAC2"}
@@ -63,7 +63,7 @@ Number:Energy OmnikInverterBindingThing_TotalGeneratedEnergy "Solar Energy Total
 
 ### Sitemap
 
-```
+```perl
 Text item=OmnikInverterBindingThing_InstantaneousPower
 Text item=OmnikInverterBindingThing_InstantaneousPower1
 Text item=OmnikInverterBindingThing_InstantaneousPower2
@@ -80,4 +80,4 @@ Text item=OmnikInverterBindingThing_TotalGeneratedEnergy
 
 ## References
 
-Based on the work of https://github.com/Woutrrr/Omnik-Data-Logger
+Based on the work of <https://github.com/Woutrrr/Omnik-Data-Logger>

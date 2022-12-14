@@ -23,7 +23,7 @@ Plug the wireless display into an USB port.
 Note [openHAB Serial Port documentation](https://www.openhab.org/docs/administration/serial.html) for general serial port configuration.
 After that you can add the device as thing and configure the usbPort your OS generated for the display.
 
-```
+```text
 UID: proteusecometer:EcoMeterS:e90705eaa4
 label: Proteus EcoMeter S
 thingTypeUID: proteusecometer:EcoMeterS
