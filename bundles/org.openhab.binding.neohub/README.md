@@ -170,26 +170,26 @@ Number:Temperature Kitchen_Temperature "Kitchen Temperature" { channel="neohub:n
 ```perl
 sitemap neohub label="Heatmiser NeoHub"
 {
- Frame label="Thermostat" {
-  Text      item=Upstairs_RoomTemperature 
-  Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
-  Text      item=Upstairs_ThermostatOutputState
-  Switch    item=Upstairs_OccupancyModePresent
-  Text      item=Upstairs_FloorTemperature 
- }
+    Frame label="Thermostat" {
+        Text      item=Upstairs_RoomTemperature 
+        Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
+        Text      item=Upstairs_ThermostatOutputState
+        Switch    item=Upstairs_OccupancyModePresent
+        Text      item=Upstairs_FloorTemperature 
+    }
 
- Frame label="Plug" {
-  Switch item=Downstairs_PlugOutputState  
-  Switch item=Downstairs_PlugAutoMode
- }
+    Frame label="Plug" {
+        Switch item=Downstairs_PlugOutputState  
+        Switch item=Downstairs_PlugAutoMode
+    }
 
- Frame label="Contact" {
-  Contact item=Window_Contact_State
-  Switch item=Window_Contact_Battery_Low
- }
+    Frame label="Contact" {
+        Contact item=Window_Contact_State
+        Switch item=Window_Contact_Battery_Low
+    }
 
- Frame label="Sensor" {
-  Text item=Kitchen_Temperature
- }
+    Frame label="Sensor" {
+        Text item=Kitchen_Temperature
+    }
 }
 ```
