@@ -43,8 +43,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
         return obj;
     }
 
-    protected ScriptException afterThrowsInvocation(ScriptException se) {
-        return se;
+    protected Exception afterThrowsInvocation(Exception e) {
+        return e;
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(s, scriptContext));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(reader, scriptContext));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -73,7 +73,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(s));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(reader));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -93,7 +93,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(s, bindings));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -103,7 +103,7 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.eval(reader, bindings));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         }
     }
 
@@ -114,18 +114,16 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.invokeMethod(o, s, objects));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeMethod to avoid
                                             // deadlocks
-            // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
-            // afterThrowsInvocation
-            throw (NoSuchMethodException) afterInvocation(e);
+            throw (NoSuchMethodException) afterThrowsInvocation(e);
         } catch (NullPointerException e) {
-            throw (NullPointerException) afterInvocation(e);
+            throw (NullPointerException) afterThrowsInvocation(e);
         } catch (IllegalArgumentException e) {
-            throw (IllegalArgumentException) afterInvocation(e);
+            throw (IllegalArgumentException) afterThrowsInvocation(e);
         } catch (Exception e) {
-            throw new UndeclaredThrowableException((Exception) afterInvocation(e)); // Wrap and rethrow other exceptions
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -136,16 +134,14 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             beforeInvocation();
             return afterInvocation(super.invokeFunction(s, objects));
         } catch (ScriptException se) {
-            throw afterThrowsInvocation(se);
+            throw (ScriptException) afterThrowsInvocation(se);
         } catch (NoSuchMethodException e) { // Make sure to unlock on exceptions from Invocable.invokeFunction to avoid
                                             // deadlocks
-            // These exceptions shouldn't be handled by the OpenHABGraalJSScriptEngine, so don't use
-            // afterThrowsInvocation
-            throw (NoSuchMethodException) afterInvocation(e);
+            throw (NoSuchMethodException) afterThrowsInvocation(e);
         } catch (NullPointerException e) {
-            throw (NullPointerException) afterInvocation(e);
+            throw (NullPointerException) afterThrowsInvocation(e);
         } catch (Exception e) {
-            throw new UndeclaredThrowableException((Exception) afterInvocation(e)); // Wrap and rethrow other exceptions
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 }

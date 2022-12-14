@@ -239,9 +239,9 @@ public class OpenhabGraalJSScriptEngine
     }
 
     @Override
-    protected ScriptException afterThrowsInvocation(ScriptException se) {
+    protected Exception afterThrowsInvocation(Exception e) {
         lock.unlock();
-        return se;
+        return e;
     }
 
     @Override
