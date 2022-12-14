@@ -202,11 +202,11 @@ public class RenaultHandler extends BaseThingHandler {
                 }
             case RenaultBindingConstants.CHANNEL_UPDATE_NOW:
                 if (command instanceof OnOffType && OnOffType.valueOf(command.toString()).equals(OnOffType.ON)) {
-                    ScheduledFuture<?> job = pollingJob;
-                    if (job == null || job.isCancelled()) {
-                        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval,
-                                TimeUnit.MINUTES);
+                    if (pollingJob != null) {
+                        pollingJob.cancel(true);
                     }
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval,
+                            TimeUnit.MINUTES);
                 }
             default:
                 break;
@@ -360,7 +360,7 @@ public class RenaultHandler extends BaseThingHandler {
                 updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disable lock status update.");
-                car.setDisableCockpit(true);
+                car.setDisableLockStatus(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating lock status.", e);
             }
