@@ -222,8 +222,14 @@ class VehicleStateUpdater implements Callable<Boolean> {
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
 
+            boolean acActive = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                    .getRemoteClimateStatus() > 0;
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_REMOTE_AC_STATUS,
+                    new DecimalType(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                            .getRemoteClimateStatus()));
+
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
-            return engineRunning || isCharging;
+            return engineRunning || isCharging || acActive;
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
