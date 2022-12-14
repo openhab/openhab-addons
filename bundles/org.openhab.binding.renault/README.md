@@ -22,15 +22,15 @@ No discovery
 
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
 
-| Parameter         | Description                                                                | Required |
-|-------------------|----------------------------------------------------------------------------|----------|
-| myRenaultUsername | MyRenault Username.                                                        | yes      |
-| myRenaultPassword | MyRenault Password.                                                        | yes      |
-| locale            | MyRenault Location (language_country).                                     | yes      |
-| vin               | Vehicle Identification Number.                                             | yes      |
-| refreshInterval   | Interval the car is polled in minutes.                                     | no       |
-| updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
-| kamereonApiKey    | Kamereon API Key.                                                          | no       | 
+| Parameter         | Description                                                                | Required                |
+|-------------------|----------------------------------------------------------------------------|-------------------------|
+| myRenaultUsername | MyRenault Username.                                                        | Yes                     |
+| myRenaultPassword | MyRenault Password.                                                        | Yes                     |
+| locale            | MyRenault Location (language_country).                                     | Yes                     |
+| vin               | Vehicle Identification Number.                                             | Yes                     |
+| refreshInterval   | Interval the car is polled in minutes.                                     | Yes (default available) |
+| updateDelay       | How long to wait for commands to reach car and update to server in seconds.| Yes (default available) |
+| kamereonApiKey    | Kamereon API Key.                                                          | Yes (default available) |
 
 
 ## Channels
@@ -39,6 +39,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 |------------------------|--------------------|-------------------------------------------------|-----------|
 | batteryavailableEnergy | Number:Energy      | Battery Energy Available                        | Yes       |
 | batterylevel           | Number             | State of the battery in %                       | Yes       |
+| batterystatusupdated   | DateTime           | Timestamp of the last battery status update     | Yes       |
 | chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
 | chargingstatus         | String             | Charging status                                 | Yes       |
 | chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
@@ -51,7 +52,8 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
-
+| lockstatus             | String             | Lock status of the car                          | Yes       |
+| updatenow              | Switch             | Switch to force an immediate update of channels | No        |
 
 ## Limitations
 
@@ -75,18 +77,21 @@ renaultcar.sitemap:
 sitemap renaultcar label="Renault Car" {
     Frame {
         Image item=RenaultCar_ImageURL
-        Default item=RenaultCar_BatteryLevel icon="batterylevel"
-        Default item=RenaultCar_BatteryEnergyAvailable icon="energy"
-        Default item=RenaultCar_PlugStatus icon="poweroutlet"
-        Default item=RenaultCar_ChargingStatus icon="switch"
-        Selection item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"] icon="switch"
-        Default item=RenaultCar_ChargingTimeRemaining icon="time"
+        Switch icon="switch" item=RenaultCar_UpdateNow
+        Default icon="batterylevel" item=RenaultCar_BatteryLevel
+        Default icon="energy" item=RenaultCar_BatteryEnergyAvailable
+        Default icon="time" item=RenaultCar_BatteryStatusUpdated
+        Default icon="poweroutlet" item=RenaultCar_PlugStatus
+        Default icon="switch" item=RenaultCar_ChargingStatus
+        Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
+        Default icon="time" item=RenaultCar_ChargingTimeRemaining
         Default item=RenaultCar_EstimatedRange
         Default item=RenaultCar_Odometer
-        Selection item=RenaultCar_HVACStatus mappings=[ON="ON"] icon="switch"
-        Setpoint item=RenaultCar_HVACTargetTemperature minValue=19 maxValue=21 step=1 icon="temperature"
-        Default item=RenaultCar_LocationUpdate icon="time"
-        Default item=RenaultCar_Location
+        Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
+        Setpoint icon="temperature" item=RenaultCar_HVACTargetTemperature maxValue=21 minValue=19 step=1
+        Default icon="lock" item=RenaultCar_LockStatus
+        Default icon="time" item=RenaultCar_LocationUpdate
+        Default icon="zoom" item=RenaultCar_Location
     }
 }
 ```
