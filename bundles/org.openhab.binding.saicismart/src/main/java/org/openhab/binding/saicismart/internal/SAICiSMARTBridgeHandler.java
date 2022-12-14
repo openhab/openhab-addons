@@ -30,17 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.MP_DispatcherBody;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.MP_DispatcherHeader;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.Message;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.MessageCoder;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.MessageCounter;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MP_UserLoggingInReq;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MP_UserLoggingInResp;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MessageListReq;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.MessageListResp;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.StartEndNumber;
-import org.openhab.binding.saicismart.internal.asn1.v1_1.entity.VinInfo;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -53,6 +42,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+
+import net.heberling.ismart.asn1.v1_1.MP_DispatcherBody;
+import net.heberling.ismart.asn1.v1_1.MP_DispatcherHeader;
+import net.heberling.ismart.asn1.v1_1.Message;
+import net.heberling.ismart.asn1.v1_1.MessageCoder;
+import net.heberling.ismart.asn1.v1_1.MessageCounter;
+import net.heberling.ismart.asn1.v1_1.entity.MP_UserLoggingInReq;
+import net.heberling.ismart.asn1.v1_1.entity.MP_UserLoggingInResp;
+import net.heberling.ismart.asn1.v1_1.entity.MessageListReq;
+import net.heberling.ismart.asn1.v1_1.entity.MessageListResp;
+import net.heberling.ismart.asn1.v1_1.entity.StartEndNumber;
+import net.heberling.ismart.asn1.v1_1.entity.VinInfo;
 
 /**
  * The {@link SAICiSMARTBridgeHandler} is responsible for handling commands, which are
@@ -182,7 +183,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                             new GsonBuilder().setPrettyPrinting().create().toJson(messageListResponseMessage));
 
                     if (messageListResponseMessage.getApplicationData() != null) {
-                        for (org.openhab.binding.saicismart.internal.asn1.v1_1.entity.Message message : messageListResponseMessage
+                        for (net.heberling.ismart.asn1.v1_1.entity.Message message : messageListResponseMessage
                                 .getApplicationData().getMessages()) {
                             if (message.isVinPresent()) {
                                 ZonedDateTime time = ZonedDateTime.ofInstant(
