@@ -286,7 +286,21 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
     }
 
     public Integer getPanelID() {
-        return (Integer) getThing().getConfiguration().get(CONFIG_PANEL_ID);
+        Object panelId = getThing().getConfiguration().get(CONFIG_PANEL_ID);
+        if (panelId instanceof Integer) {
+            return (Integer) panelId;
+        } else if (panelId instanceof Number) {
+            return ((Number) panelId).intValue();
+        } else {
+            // Fall back to parsing string representation of panel if it is not returning an integer
+            String stringPanelId = panelId.toString();
+            Integer parsedPanelId = Integer.getInteger(stringPanelId);
+            if (parsedPanelId == null) {
+                return 0;
+            } else {
+                return parsedPanelId;
+            }
+        }
     }
 
     private void setPanelColor(HSBType color) {
