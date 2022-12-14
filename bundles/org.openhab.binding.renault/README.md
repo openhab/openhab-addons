@@ -100,7 +100,7 @@ This stops charging after the battery level goes over the charge limit.
 
 ChargeRenaultCarLimit Code
 
-```json
+```javascript
 configuration: {}
 triggers:
   - id: "1"
