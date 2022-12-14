@@ -81,8 +81,8 @@ Not all devices report this.
 
 ```java
 Bridge nobohub:nobohub:controller "Nobø Hub" [ hostName="192.168.1.10", serialNumber="103000000000" ] {
- Thing zone      1               "Zone - Kitchen"      [ id=1 ]
- Thing component 184000000000    "Heater - Kitchen"    [ serialNumber="184000000000" ]
+    Thing zone      1               "Zone - Kitchen"      [ id=1 ]
+    Thing component 184000000000    "Heater - Kitchen"    [ serialNumber="184000000000" ]
 }
 ```
 
