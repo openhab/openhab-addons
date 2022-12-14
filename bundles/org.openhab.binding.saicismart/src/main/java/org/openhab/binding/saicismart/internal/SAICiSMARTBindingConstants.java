@@ -56,4 +56,7 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_WINDOW_SUN_ROOF = "window-sun-roof";
     public static final String CHANNEL_LAST_ACTIVITY = "last-activity";
     public static final String CHANNEL_FORCE_REFRESH = "force-refresh";
+    public static final String CHANNEL_REMOTE_AC_STATUS = "remote-ac-status";
+    public static final String CHANNEL_ENABLE_AC = "enable-ac";
+    public static final String CHANNEL_DISABLE_AC = "disable-ac";
 }

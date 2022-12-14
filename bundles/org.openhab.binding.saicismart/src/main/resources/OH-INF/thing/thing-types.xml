@@ -68,6 +68,9 @@
 				<label>Last Car Activity</label>
 				<description>Last time either the engine was on or the car was charging</description>
 			</channel>
+			<channel id="remote-ac-status" typeId="remote-ac-status-channel"/>
+			<channel id="enable-ac" typeId="enable-ac-channel"/>
+			<channel id="disable-ac" typeId="disable-ac-channel"/>
 			<channel id="force-refresh" typeId="force-refresh-channel"/>
 		</channels>
 
@@ -178,6 +181,21 @@
 		<label>Timestamp</label>
 		<description>The time of the event</description>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+	<channel-type id="remote-ac-status-channel">
+		<item-type>Number</item-type>
+		<label>Remote A/C</label>
+		<description>Status of remote A/C</description>
+	</channel-type>
+	<channel-type id="enable-ac-channel">
+		<item-type>Switch</item-type>
+		<label>Start Remote A/C</label>
+		<description>Start the remote A/C</description>
+	</channel-type>
+	<channel-type id="disable-ac-channel">
+		<item-type>Switch</item-type>
+		<label>Stop Remote A/C</label>
+		<description>Stop the remote A/C</description>
 	</channel-type>
 	<channel-type id="force-refresh-channel" advanced="true">
 		<item-type>Switch</item-type>
