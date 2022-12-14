@@ -1,6 +1,6 @@
 # Plugwise Binding
 
-The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise.com) ZigBee devices using the Stick.
+The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise.com) Zigbee devices using the Stick.
 
 Users should use the Plugwise Source software to define the network, reset devices or perform firmware upgrades.
 
@@ -14,11 +14,11 @@ The binding supports the following Plugwise devices:
 | Device Type | Description                                                                              | Thing Type |
 |-------------|------------------------------------------------------------------------------------------|------------|
 | Circle      | A power outlet plug that provides energy measurement and switching control of appliances | circle     |
-| Circle+     | A special Circle that coordinates the ZigBee network and acts as network gateway         | circleplus |
+| Circle+     | A special Circle that coordinates the Zigbee network and acts as network gateway         | circleplus |
 | Scan        | A wireless motion (PIR) and light sensor                                                 | scan       |
 | Sense       | A wireless temperature and humidity sensor                                               | sense      |
 | Stealth     | A Circle with a more compact form factor that can be built-in                            | stealth    |
-| Stick       | A ZigBee USB controller that openHAB uses to communicate with the Circle+                | stick      |
+| Stick       | A Zigbee USB controller that openHAB uses to communicate with the Circle+                | stick      |
 | Switch      | A wireless wall switch                                                                   | switch     |
 
 ## Discovery
@@ -44,7 +44,7 @@ Similarly the MAC addresses of the Scan, Sense and Switch can also be obtained f
 | Configuration Parameter | Required | Default      | Description                                                                       |
 |-------------------------|----------|--------------|-----------------------------------------------------------------------------------|
 | serialPort              | X        | /dev/ttyUSB0 | The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows |
-| messageWaitTime         |          | 150          | The time to wait between messages sent on the ZigBee network (in ms)              |
+| messageWaitTime         |          | 150          | The time to wait between messages sent on the Zigbee network (in ms)              |
 
 To determine the serial port in Linux, insert the Stick, then execute the `dmesg` command.
 The last few lines of the output will contain the USB port of the Stick (e.g. `/dev/ttyUSB0`).
@@ -60,7 +60,7 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 | powerStateChanging      |          | commandSwitching | Controls if the power state can be changed with commands or is always on/off (commandSwitching, alwaysOn or alwaysOff) |
 | suppliesPower           |          | false            | Enables power production measurements (true or false)                                                                  |
 | measurementInterval     |          | 60               | The energy measurement interval (in minutes) (5 to 60)                                                                 |
-| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the ZigBee network traffic (true or false)                                  |
+| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the Zigbee network traffic (true or false)                                  |
 
 ### Scan
 
