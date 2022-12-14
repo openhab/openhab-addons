@@ -45,13 +45,13 @@ public class BluetoothUtils {
      * @param value
      * @return
      */
-    public static int[] toIntArray(Byte[] value) {
+    public static int[] toIntArray(byte[] value) {
         int[] ret = new int[value.length];
         System.arraycopy(value, 0, ret, 0, value.length);
         return ret;
     }
 
-    public static byte[] toByteArray(Integer[] value) {
+    public static byte[] toByteArray(int[] value) {
         byte[] ret = new byte[value.length];
         for (int i = 0; i < value.length; i++) {
             ret[i] = (byte) (value[i] & 0xFF);
