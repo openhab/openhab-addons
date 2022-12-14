@@ -1,13 +1,13 @@
 # PJLink Binding
 
-This binding allows you to control devices with [PJLink](https://pjlink.jbmia.or.jp/english/) support. 
+This binding allows you to control devices with [PJLink](https://pjlink.jbmia.or.jp/english/) support.
 PJLink is a protocol that was developed to standardize IP control of digital projectors, but can also be used by other device types.
 
 Aspects that can be controlled via PJLink are power on/off, input source selection and volume/mute setting.
 
 ## Supported Things
 
-This binding supports devices which implement the PJLink protocol (Class 1). 
+This binding supports devices which implement the PJLink protocol (Class 1).
 
 Limitations at this point:
 
@@ -22,20 +22,19 @@ Autodiscovery is checking all IP addressess of all class C IPv4 subnets connecte
 
 ## Thing Configuration
 
-The *pjLinkDevice* thing type has the following parameters:
+The _pjLinkDevice_ thing type has the following parameters:
 
 | Parameter             | Description                                                                                                                                                  |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ipAddress             | the IPv4 address of the device  **Mandatory**                                                                                                                |
-| tcpPort               | the listening TCP port of the devices. *Optional, the default value is 4352*                                                                                 |
-| adminPassword         | the PJLink password of the device (should be left empty for devices without authentication). *Optional*                                                      |
-| refreshInterval       | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling. *Optional, the default value is 5*       |
-| refreshPower          | enables polling of the power status. *Optional, the default value is false*                                                                                  |
-| refreshMute           | enables polling of the mute status. *Optional, the default value is false*                                                                                   |
-| refreshInputChannel   | enables polling of the selected input channel. *Optional, the default value is false*                                                                        |
-| refreshLampState      | enables polling of the lamp usage hours and activity. *Optional, the default value is false*                                                                 |
-| autoReconnectInterval | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s *Optional, the default value is 60*  |
-
+| tcpPort               | the listening TCP port of the devices. _Optional, the default value is 4352_                                                                                 |
+| adminPassword         | the PJLink password of the device (should be left empty for devices without authentication). _Optional_                                                      |
+| refreshInterval       | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling. _Optional, the default value is 5_       |
+| refreshPower          | enables polling of the power status. _Optional, the default value is false_                                                                                  |
+| refreshMute           | enables polling of the mute status. _Optional, the default value is false_                                                                                   |
+| refreshInputChannel   | enables polling of the selected input channel. _Optional, the default value is false_                                                                        |
+| refreshLampState      | enables polling of the lamp usage hours and activity. _Optional, the default value is false_                                                                 |
+| autoReconnectInterval | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s _Optional, the default value is 60_  |
 
 ## Channels
 
@@ -52,13 +51,13 @@ The *pjLinkDevice* thing type has the following parameters:
 
 sample.things:
 
-```
+```java
 pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
 ```
 
 sample.items:
 
-```
+```java
 Switch Projector_Power "Projector Power"          { channel="pjLinkDevice:pjLinkDevice:MyProjector:power" }
 String Projector_Input "Projector Input"          { channel="pjLinkDevice:pjLinkDevice:MyProjector:input" }
 Switch Projector_AudioMute "Projector Audio Mute" { channel="pjLinkDevice:pjLinkDevice:MyProjector:audioMute" }
@@ -69,7 +68,7 @@ Switch Projector_Lamp1Active "Projector lamp 1 active"      { channel="pjLinkDev
 
 sample.sitemap:
 
-```
+```perl
 sitemap sample label="Main Menu" {
   Frame  {
     Switch item=Projector_Power
@@ -88,7 +87,7 @@ Most of the time, there's just one lamp. In case a projector has more than one l
 
 sample-lamp-2.things:
 
-```
+```java
 pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
 {
   Channels:
@@ -103,14 +102,14 @@ pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
 
 sample-lamp-2.items:
 
-```
+```java
 Number Projector_Lamp2Hours "Projector lamp 2 used hours"   { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp2Hours" }
 Switch Projector_Lamp2Active "Projector lamp 2 active"      { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp2Active" }
 ```
 
 sample-lamp-2.sitemap:
 
-```
+```perl
 sitemap sample label="Main Menu" {
   Frame  {
     Switch item=Projector_Lamp2Active
