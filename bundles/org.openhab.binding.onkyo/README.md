@@ -153,7 +153,7 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                      |
 | player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                             |
 | player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                         |
-| player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                                     |
+| player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                               |
 | player#playuri            | String    | Plays the URI provided to the channel                                                                           |
 | player#albumArt           | Image     | Image of the current album art of the current song                                                              |
 | player#albumArtUrl        | String    | URL to the current album art of the current song                                                                |
