@@ -60,7 +60,6 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     @Override
     public void initialize() {
-
         // super.initialize adds callbacks that might require the connectionTaskExecutor to be present, so we initialize
         // the connectionTaskExecutor first
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,

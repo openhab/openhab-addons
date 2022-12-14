@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
  *
  * @author Chris Jackson - Initial contribution
  */
+@NonNullByDefault
 public class BluetoothConnectionStatusNotification extends BluetoothNotification {
     private ConnectionState connectionState;
 
