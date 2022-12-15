@@ -61,10 +61,12 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     private @Nullable EmbyClientDiscoveryService clientDiscoverySerivce;
     private @Nullable EmbyHTTPUtils httputils;
     private EmbyBridgeConfiguration config;
+    private int reconnectionCount;
 
     public EmbyBridgeHandler(Bridge bridge, @Nullable String hostAddress, @Nullable String port,
             WebSocketClient passedWebSocketClient) {
         super(bridge);
+        reconnectionCount = 0;
         config = new EmbyBridgeConfiguration();
         checkConfiguration();
         callbackIpAddress = hostAddress + ":" + port;
@@ -163,10 +165,16 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     public void updateConnectionState(boolean connected) {
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
+            reconnectionCount = 0;
         } else {
+            reconnectionCount++;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "The connection to the emby server was closed, binding will attempt to restablish connection.");
-            establishConnection();
+                    "The connection to the emby server was closed, binding will wait one min and attempt to restablish connection. There have been "
+                            + Integer.toString(reconnectionCount) + " attempts to establish a new connection");
+            scheduler.schedule(() -> {
+                establishConnection();
+            }, 60000, TimeUnit.MILLISECONDS);
+
         }
     }
 
