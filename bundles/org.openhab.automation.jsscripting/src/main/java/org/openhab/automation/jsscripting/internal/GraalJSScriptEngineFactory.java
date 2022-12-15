@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.script.ScriptEngine;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
@@ -37,6 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.jsscripting", property = Constants.SERVICE_PID
         + "=org.openhab.jsscripting")
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
+@NonNullByDefault
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
@@ -80,7 +82,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     @Override
-    public ScriptEngine createScriptEngine(String scriptType) {
+    public @Nullable ScriptEngine createScriptEngine(String scriptType) {
         return new DebuggingGraalScriptEngine<>(
                 new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null, jsScriptServiceUtil));
     }
