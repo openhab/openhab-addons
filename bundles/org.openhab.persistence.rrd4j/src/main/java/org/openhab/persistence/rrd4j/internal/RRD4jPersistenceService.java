@@ -152,7 +152,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
         final String name = alias == null ? item.getName() : alias;
 
-        RrdDb db = getDB(name);
+        RrdDb db = null;
+        try {
+            db = getDB(name);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' ({})", name, e.getClass().getName());
+        }
         if (db == null) {
             return;
         }
@@ -249,7 +254,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         String itemName = filter.getItemName();
 
-        RrdDb db = getDB(itemName);
+        RrdDb db = null;
+        try {
+            db = getDB(itemName);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' ({})", itemName, e.getClass().getName());
+            return List.of();
+        }
         if (db == null) {
             logger.debug("Could not find item '{}' in rrd4j database", itemName);
             return List.of();
