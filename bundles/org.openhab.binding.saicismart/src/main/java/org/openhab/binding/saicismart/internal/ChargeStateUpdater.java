@@ -42,7 +42,7 @@ import net.heberling.ismart.asn1.v3_0.entity.OTA_ChrgMangDataResp;
  *
  * @author Markus Heberling - Initial contribution
  */
-class ChargeStateUpdater implements Callable<Boolean> {
+class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
     private final Logger logger = LoggerFactory.getLogger(ChargeStateUpdater.class);
 
     private final SAICiSMARTHandler saiCiSMARTHandler;
@@ -51,7 +51,7 @@ class ChargeStateUpdater implements Callable<Boolean> {
         this.saiCiSMARTHandler = saiCiSMARTHandler;
     }
 
-    public Boolean call() {
+    public OTA_ChrgMangDataResp call() {
         try {
             Message<IASN1PreparedElement> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(), new byte[16],
                     new MP_DispatcherBody(), null);
@@ -116,10 +116,11 @@ class ChargeStateUpdater implements Callable<Boolean> {
             saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(power, MetricPrefix.KILO(Units.WATT)));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
+            return chargingStatusResponseMessage.getApplicationData();
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
         }
-        return false;
+        return null;
     }
 }

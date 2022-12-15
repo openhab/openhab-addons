@@ -59,7 +59,7 @@ public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new SAICiSMARTBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new SAICiSMARTHandler(thing);
+            return new SAICiSMARTHandler(httpClientFactory, thing);
         }
 
         return null;

@@ -9,5 +9,9 @@
 			<label>Vehicle Identification Number (VIN)</label>
 			<description>Unique VIN given by SAIC</description>
 		</parameter>
+		<parameter name="abrpUserToken" type="text" required="false">
+			<label>ABRP User Token</label>
+			<description>User Token for A Better Routeplanner.</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
