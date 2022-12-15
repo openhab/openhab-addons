@@ -18,13 +18,12 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_HEADING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LOCATION;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_MILAGE;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_RANGE_ELECTRIC;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SPEED;
 
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -52,10 +51,9 @@ import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusReq;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
 
 /**
- *
  * @author Markus Heberling - Initial contribution
  */
-class VehicleStateUpdater implements Callable<Boolean> {
+class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
     private final Logger logger = LoggerFactory.getLogger(VehicleStateUpdater.class);
 
     private final SAICiSMARTHandler saiCiSMARTHandler;
@@ -65,7 +63,7 @@ class VehicleStateUpdater implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() {
+    public OTA_RVMVehicleStatusResp25857 call() {
         try {
             Message<OTA_RVMVehicleStatusReq> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(),
                     new byte[16], new MP_DispatcherBody(), new OTA_RVMVehicleStatusReq());
@@ -132,15 +130,6 @@ class VehicleStateUpdater implements Callable<Boolean> {
                             .getExtendedData2() >= 1;
             saiCiSMARTHandler.updateState(CHANNEL_ENGINE, OnOffType.from(engineRunning));
             saiCiSMARTHandler.updateState(CHANNEL_CHARGING, OnOffType.from(isCharging));
-
-            if (chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().isExtendedData1Present()
-                    && !engineRunning && !isCharging) {
-                // if the engine is running or we are charging, we will use the more precise data from the charging API
-                saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
-                        chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getExtendedData1(),
-                        Units.PERCENT));
-                saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(0, MetricPrefix.KILO(Units.WATT)));
-            }
 
             saiCiSMARTHandler.updateState(CHANNEL_AUXILIARY_BATTERY_VOLTAGE, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getBatteryVoltage()
@@ -241,12 +230,17 @@ class VehicleStateUpdater implements Callable<Boolean> {
                     new DecimalType(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRemoteClimateStatus()));
 
+            if (isCharging || acActive || engineRunning) {
+                // update activity date
+                saiCiSMARTHandler.notifyCarActivity(ZonedDateTime.now(), true);
+            }
+
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
-            return engineRunning || isCharging || acActive;
+            return chargingStatusResponseMessage.getApplicationData();
         } catch (URISyntaxException | ExecutionException | InterruptedException | TimeoutException e) {
             saiCiSMARTHandler.updateStatus(ThingStatus.OFFLINE);
             logger.error("Could not get vehicle data for {}", saiCiSMARTHandler.config.vin, e);
-            return false;
+            return null;
         }
     }
 }

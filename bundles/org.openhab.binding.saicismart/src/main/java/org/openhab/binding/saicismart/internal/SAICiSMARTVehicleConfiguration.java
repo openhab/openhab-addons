@@ -13,6 +13,7 @@
 package org.openhab.binding.saicismart.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SAICiSMARTVehicleConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,4 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SAICiSMARTVehicleConfiguration {
 
     public String vin = "";
+
+    @Nullable
+    public String abrpUserToken;
 }
