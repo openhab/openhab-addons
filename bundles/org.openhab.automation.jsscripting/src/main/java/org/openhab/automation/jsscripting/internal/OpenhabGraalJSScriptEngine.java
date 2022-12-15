@@ -230,18 +230,20 @@ public class OpenhabGraalJSScriptEngine
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
+
+        super.beforeInvocation();
     }
 
     @Override
     protected Object afterInvocation(Object obj) {
         lock.unlock();
-        return obj;
+        return super.afterInvocation(obj);
     }
 
     @Override
     protected Exception afterThrowsInvocation(Exception e) {
         lock.unlock();
-        return e;
+        return super.afterThrowsInvocation(e);
     }
 
     @Override
