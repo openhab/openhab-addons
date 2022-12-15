@@ -384,7 +384,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         String msg = null;
         String lastMsg = "";
         String thisMsg = "";
-        boolean inMessage = true;
+        int inMessage = 1;
         try {
             BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null && (thisMsg = Integer.toHexString(reader.read())) != null) {
@@ -392,7 +392,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                     thisMsg = "0" + thisMsg;
                 }
                 if (lastMsg.equals("08") && thisMsg.equals("0a")) {
-                    if ((inMessage == false) && (sb.length() > 0)) {
+                    if ((inMessage == 0) && (sb.length() > 0)) {
                         sb.setLength(sb.length() - 2);
                         shieldtvMessageParser.handleMessage(sb.toString());
                         sb.setLength(0);
@@ -400,11 +400,43 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                     }
                     sb.append(thisMsg.toString());
                     lastMsg = thisMsg;
-                    inMessage = true;
-                } else if (lastMsg.equals("18") && thisMsg.equals("0a")) {
+                    inMessage = 1;
+                } else if (lastMsg.equals("18") && thisMsg.equals("0a") && inMessage == 1) {
                     sb.append(thisMsg.toString());
                     lastMsg = "";
-                    inMessage = false;
+                    inMessage = 0;
+                    shieldtvMessageParser.handleMessage(sb.toString());
+                    sb.setLength(0);
+                } else if (lastMsg.equals("08") && thisMsg.equals("0b")) {
+                    if ((inMessage == 0) && (sb.length() > 0)) {
+                        sb.setLength(sb.length() - 2);
+                        shieldtvMessageParser.handleMessage(sb.toString());
+                        sb.setLength(0);
+                        sb.append(lastMsg.toString());
+                    }
+                    sb.append(thisMsg.toString());
+                    lastMsg = thisMsg;
+                    inMessage = 2;
+                } else if (lastMsg.equals("18") && thisMsg.equals("0b") && inMessage == 2) {
+                    sb.append(thisMsg.toString());
+                    lastMsg = "";
+                    inMessage = 0;
+                    shieldtvMessageParser.handleMessage(sb.toString());
+                    sb.setLength(0);
+                } else if (lastMsg.equals("08") && thisMsg.equals("f1")) {
+                    if ((inMessage == 0) && (sb.length() > 0)) {
+                        sb.setLength(sb.length() - 2);
+                        shieldtvMessageParser.handleMessage(sb.toString());
+                        sb.setLength(0);
+                        sb.append(lastMsg.toString());
+                    }
+                    sb.append(thisMsg.toString());
+                    lastMsg = thisMsg;
+                    inMessage = 3;
+                } else if (lastMsg.equals("18") && thisMsg.equals("f1") && inMessage == 3) {
+                    sb.append(thisMsg.toString());
+                    lastMsg = "";
+                    inMessage = 0;
                     shieldtvMessageParser.handleMessage(sb.toString());
                     sb.setLength(0);
                 } else {
@@ -517,6 +549,10 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                 String message = ShieldTVRequest.encodeMessage(command.toString());
                 logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(message));
                 sendCommand(new ShieldTVCommand(message));
+            }
+        } else if (CHANNEL_RAWMSG.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                shieldtvMessageParser.handleMessage(command.toString());
             }
         }
     }

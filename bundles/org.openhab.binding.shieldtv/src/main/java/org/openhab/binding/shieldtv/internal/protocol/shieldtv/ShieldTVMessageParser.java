@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.shieldtv.internal.protocol.shieldtv;
 
+import java.util.Base64;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +43,7 @@ public class ShieldTVMessageParser {
         }
 
         logger.trace("Received message: {}", msg);
-        logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
+        // logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
 
         char[] charArray = msg.toCharArray();
 
@@ -77,7 +81,7 @@ public class ShieldTVMessageParser {
             }
             logger.trace("Shield Hostname: {} {}", hostname, length);
             logger.trace("Shield Hostname Encoded: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
-        } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 8)) {
+        } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
             logger.trace("PIN Process Started");
         } else if (msg.startsWith("20") && msg.startsWith("10", 4) && msg.length() == 6) {
             // This seems to be 20**10 when observed.
@@ -87,6 +91,10 @@ public class ShieldTVMessageParser {
             // Login successful???
             // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
             // Maybe this should be what we use to set the shield online?
+            logger.trace("Login Successful");
+        } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
+            // Timeout
+            logger.trace("Timeout");
         } else if (msg.startsWith("080a12") && msg.startsWith("1008b510", 8)) {
             // Certificate Reply
             // |--6---------12----------10--------------16---------6--- = 50 characters long
@@ -94,8 +102,42 @@ public class ShieldTVMessageParser {
             // |080a12 9f1008b51012 9910080112 07 53756363657373 1ac209 3082... 3082... 180a
             // |-------------------------------Length of SUCCESS
             // |----------------------------------ASCII: SUCCESS
-            // |--------------------------------------------------------Priv Key (2442 Long) RSA 2048
-            // |----------------------------------------------------------------Cert (1708 Long) X.509
+            // |--------------------------------------------------------Priv Key RSA 2048
+            // |----------------------------------------------------------------Cert X.509
+            StringBuffer preamble = new StringBuffer();
+            StringBuffer privKey = new StringBuffer();
+            StringBuffer pubKey = new StringBuffer();
+            String privLenSt = "" + charArray[6] + "" + charArray[7];
+            int privLen = 2400;
+            for (int i = 0; i < 50; i++) {
+                preamble.append(charArray[i]);
+            }
+            for (int i = 50; i < privLen; i++) {
+                privKey.append(charArray[i]);
+                if ((i + 1) == privLen) {
+                    String checkForPub = "" + charArray[i + 1] + "" + charArray[i + 2] + "" + charArray[i + 3] + ""
+                            + charArray[i + 4];
+                    if (!checkForPub.equals("3082")) {
+                        privLen += 2;
+                    }
+                }
+            }
+            for (int i = privLen; i < msg.length() - 4; i++) {
+                pubKey.append(charArray[i]);
+            }
+            logger.trace("Cert Preamble:   {}", preamble.toString());
+            logger.trace("Cert privKey: {} {}", privLen, privKey.toString());
+            logger.trace("Cert pubKey:  {} {}", msg.length() - privLen - 4, pubKey.toString());
+
+            byte[] privKeyB64Byte = DatatypeConverter.parseHexBinary(privKey.toString());
+            byte[] pubKeyB64Byte = DatatypeConverter.parseHexBinary(pubKey.toString());
+
+            String privKeyB64 = Base64.getEncoder().encodeToString(privKeyB64Byte);
+            String pubKeyB64 = Base64.getEncoder().encodeToString(pubKeyB64Byte);
+
+            logger.trace("Cert privKey: {}", privKeyB64);
+            logger.trace("Cert pubKey:  {}", pubKeyB64);
+
         } else {
             logger.trace("Unknown payload received. {}", msg);
         }
