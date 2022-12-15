@@ -37,6 +37,12 @@
 			<channel id="tyre-pressure-rear-right" typeId="tyre-pressure-channel">
 				<label>Pressure Rear Right</label>
 			</channel>
+			<channel id="interior-temperature" typeId="temperature-channel">
+				<label>Interior Temperature</label>
+			</channel>
+			<channel id="exterior-temperature" typeId="temperature-channel">
+				<label>Exterior Temperature</label>
+			</channel>
 			<channel id="door-driver" typeId="door-channel">
 				<label>Driver Door</label>
 			</channel>
@@ -125,6 +131,16 @@
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

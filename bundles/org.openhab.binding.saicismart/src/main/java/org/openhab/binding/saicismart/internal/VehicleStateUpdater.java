@@ -184,6 +184,19 @@ class VehicleStateUpdater implements Callable<Boolean> {
                     new QuantityType<>(chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
                             .getRearRightTyrePressure() * 4 / 100.d, Units.BAR));
 
+            Integer interiorTemperature = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                    .getInteriorTemperature();
+            if (interiorTemperature > -128) {
+                saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_INTERIOR_TEMPERATURE,
+                        new QuantityType<>(interiorTemperature, SIUnits.CELSIUS));
+            }
+            Integer exteriorTemperature = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()
+                    .getExteriorTemperature();
+            if (exteriorTemperature > -128) {
+                saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_EXTERIOR_TEMPERATURE,
+                        new QuantityType<>(exteriorTemperature, SIUnits.CELSIUS));
+            }
+
             saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_DOOR_DRIVER,
                     chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus().getDriverDoor()
                             ? OpenClosedType.OPEN
