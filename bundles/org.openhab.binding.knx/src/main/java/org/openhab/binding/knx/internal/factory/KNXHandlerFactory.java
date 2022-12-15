@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
@@ -61,6 +62,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             final @Reference LocaleProvider localeProvider, final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
         this.serialPortManager = serialPortManager;
+        SerialTransportAdapter.setSerialPortManager(serialPortManager);
     }
 
     @Override
