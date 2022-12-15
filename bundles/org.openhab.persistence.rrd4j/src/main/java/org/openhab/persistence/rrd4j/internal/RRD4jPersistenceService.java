@@ -259,6 +259,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             db = getDB(itemName);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' ({})", itemName, e.getClass().getName());
+            return List.of();
         }
         if (db == null) {
             logger.debug("Could not find item '{}' in rrd4j database", itemName);
