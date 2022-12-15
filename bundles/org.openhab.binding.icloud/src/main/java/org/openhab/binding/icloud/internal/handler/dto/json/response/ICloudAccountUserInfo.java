@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icloud.internal.json.response;
+package org.openhab.binding.icloud.internal.handler.dto.json.response;
 
 /**
  * Serializable class to parse json response received from the Apple server.
