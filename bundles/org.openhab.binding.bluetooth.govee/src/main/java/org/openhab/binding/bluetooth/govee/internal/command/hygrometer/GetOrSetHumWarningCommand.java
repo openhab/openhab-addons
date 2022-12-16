@@ -65,14 +65,20 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
 
     @Override
     protected byte @Nullable [] getData() {
-        if (settings == null) {
+        WarningSettingsDTO<Dimensionless> localSettins = settings;
+        if (localSettins == null || localSettins.min == null || localSettins.max == null) {
+            return null;
+        }
+        QuantityType<Dimensionless> localMin = localSettins.min;
+        QuantityType<Dimensionless> localMax = localSettins.max;
+        if (localMin == null || localMax == null) {
             return null;
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(settings.enableAlarm == OnOffType.ON ? (byte) 1 : 0);
-        buffer.putShort(convertQuantity(settings.min));
-        buffer.putShort(convertQuantity(settings.max));
+        buffer.put(localSettins.enableAlarm == OnOffType.ON ? (byte) 1 : 0);
+        buffer.putShort(convertQuantity(localMin));
+        buffer.putShort(convertQuantity(localMax));
         return buffer.array();
     }
 
