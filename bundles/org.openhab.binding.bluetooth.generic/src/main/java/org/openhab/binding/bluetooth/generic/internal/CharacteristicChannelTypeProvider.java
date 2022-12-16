@@ -108,7 +108,10 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         if (channelID.charAt(30) != '-') {
             return false;
         }
-        return !(channelID.charAt(67) != '-');
+        if (channelID.charAt(67) != '-') {
+            return false;
+        }
+        return true;
     }
 
     public ChannelTypeUID registerChannelType(String characteristicUUID, boolean advanced, boolean readOnly,
@@ -132,7 +135,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
             throw new IllegalStateException("Unknown field format type: " + field.getUnit());
         }
 
-        if ("Switch".equals(itemType)) {
+        if (itemType.equals("Switch")) {
             options = Collections.emptyList();
         }
 
