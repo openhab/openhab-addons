@@ -44,7 +44,7 @@ public enum GoveeModel {
     private final String label;
     private final boolean supportsWarningBroadcast;
 
-    private final static Logger logger = LoggerFactory.getLogger(GoveeModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(GoveeModel.class);
 
     private GoveeModel(ThingTypeUID thingTypeUID, String label, boolean supportsWarningBroadcast) {
         this.thingTypeUID = thingTypeUID;
