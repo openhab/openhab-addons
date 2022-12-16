@@ -316,8 +316,10 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMaxSpeed(PercentType command, String channelId, String commandFragment) {
         int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
-        if (fanStateMap.get(channelId) != null) {
-            currentMax = ((PercentType) fanStateMap.get(channelId)).intValue();
+        @Nullable
+        State fanState = fanStateMap.get(channelId);
+        if (fanState != null) {
+            currentMax = ((PercentType) fanState).intValue();
         }
         if (newMin > currentMax) {
             updateState(CHANNEL_FAN_SPEED_MAX, command);
@@ -328,8 +330,10 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMinSpeed(PercentType command, String channelId, String commandFragment) {
         int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
-        if (fanStateMap.get(channelId) != null) {
-            currentMin = ((PercentType) fanStateMap.get(channelId)).intValue();
+        @Nullable
+        State fanSate = fanStateMap.get(channelId);
+        if (fanSate != null) {
+            currentMin = ((PercentType) fanSate).intValue();
         }
         if (newMax < currentMin) {
             updateState(channelId, command);
@@ -453,8 +457,10 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMaxLevel(PercentType command) {
         int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
-        if (fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX) != null) {
-            currentMax = ((PercentType) fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX)).intValue();
+        @Nullable
+        State fanState = fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX);
+        if (fanState != null) {
+            currentMax = ((PercentType) fanState).intValue();
         }
         if (newMin > currentMax) {
             updateState(CHANNEL_LIGHT_LEVEL_MAX, command);
@@ -465,8 +471,10 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMinLevel(PercentType command) {
         int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
-        if (fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN) != null) {
-            currentMin = ((PercentType) fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN)).intValue();
+        @Nullable
+        State fanState = fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN);
+        if (fanState != null) {
+            currentMin = ((PercentType) fanState).intValue();
         }
         if (newMax < currentMin) {
             updateState(CHANNEL_LIGHT_LEVEL_MIN, command);
