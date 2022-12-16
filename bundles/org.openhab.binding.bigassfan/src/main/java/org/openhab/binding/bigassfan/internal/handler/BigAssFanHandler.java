@@ -589,14 +589,12 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
 
         @SuppressWarnings("null")
-        public void stopFanListener() {
-            synchronized (this) {
-                if (listenerJob != null) {
-                    logger.debug("Stopping listener for {} at {}", thing.getUID(), ipAddress);
-                    terminate = true;
-                    listenerJob.cancel(true);
-                    listenerJob = null;
-                }
+        public synchronized void stopFanListener() {
+            if (listenerJob != null) {
+                logger.debug("Stopping listener for {} at {}", thing.getUID(), ipAddress);
+                terminate = true;
+                listenerJob.cancel(true);
+                listenerJob = null;
             }
 
             conn.cancelConnectionMonitorJob();

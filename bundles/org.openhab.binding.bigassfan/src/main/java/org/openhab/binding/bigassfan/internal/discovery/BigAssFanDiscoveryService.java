@@ -115,27 +115,24 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         cancelListenerJob();
     }
 
-    private void startListenerJob() {
+    private synchronized void startListenerJob() {
         logger.debug("Starting discovery listener job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
 
-        synchronized (this) {
-            if (this.listenerJob == null) {
-                this.listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
-                        TimeUnit.SECONDS);
-            }
+        if (this.listenerJob == null) {
+            this.listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
+                    TimeUnit.SECONDS);
         }
     }
 
     @SuppressWarnings("null")
-    private void cancelListenerJob() {
+    private synchronized void cancelListenerJob() {
         logger.debug("Canceling discovery listener job");
-        synchronized (this) {
-            if (this.listenerJob != null) {
-                if (!this.listenerJob.isCancelled()) {
-                    this.listenerJob.cancel(true);
-                    terminate = true;
-                    listenerJob = null;
-                }
+
+        if (this.listenerJob != null) {
+            if (!this.listenerJob.isCancelled()) {
+                this.listenerJob.cancel(true);
+                terminate = true;
+                listenerJob = null;
             }
         }
     }
@@ -251,34 +248,29 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty(THING_PROPERTY_MAC).withLabel(device.getLabel()).build());
     }
 
-    private void schedulePollJob() {
-        synchronized (this) {
-            if (this.pollJob == null) {
-                logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ,
-                        POLL_DELAY);
-                pollJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        DiscoveryListener localListener = discoveryListener;
-                        if (localListener != null) {
-                            localListener.pollForDevices();
-                        }
-                    } catch (RuntimeException e) {
-                        logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
+    private synchronized void schedulePollJob() {
+        if (this.pollJob == null) {
+            logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ,
+                    POLL_DELAY);
+            pollJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    DiscoveryListener localListener = discoveryListener;
+                    if (localListener != null) {
+                        localListener.pollForDevices();
                     }
-                }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
-
-            }
+                } catch (RuntimeException e) {
+                    logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
+                }
+            }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
         }
     }
 
     @SuppressWarnings("null")
-    private void cancelPollJob() {
-        synchronized (this) {
-            if (this.pollJob != null) {
-                logger.debug("Canceling poll job");
-                this.pollJob.cancel(true);
-                pollJob = null;
-            }
+    private synchronized void cancelPollJob() {
+        if (this.pollJob != null) {
+            logger.debug("Canceling poll job");
+            this.pollJob.cancel(true);
+            pollJob = null;
         }
     }
 }
