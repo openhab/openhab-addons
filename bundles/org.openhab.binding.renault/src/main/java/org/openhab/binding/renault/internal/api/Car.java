@@ -40,6 +40,7 @@ public class Car {
     private boolean disableBattery = false;
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
+    private boolean disableLockStatus = false;
 
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
@@ -47,12 +48,14 @@ public class Car {
     private double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
     private @Nullable Double batteryAvailableEnergy;
+    private @Nullable String batteryStatusUpdated;
     private @Nullable Integer chargingRemainingTime;
     private @Nullable Boolean hvacstatus;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
     private @Nullable String locationUpdated;
+    private LockStatus lockStatus = LockStatus.UNKNOWN;
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
@@ -61,14 +64,6 @@ public class Car {
         UNKNOWN,
         SCHEDULE_MODE,
         ALWAYS_CHARGING
-    }
-
-    public enum PlugStatus {
-        UNPLUGGED,
-        PLUGGED,
-        PLUG_ERROR,
-        PLUG_UNKNOWN,
-        UNKNOWN
     }
 
     public enum ChargingStatus {
@@ -80,6 +75,20 @@ public class Car {
         CHARGE_IN_PROGRESS,
         CHARGE_ERROR,
         UNAVAILABLE,
+        UNKNOWN
+    }
+
+    public enum LockStatus {
+        LOCKED,
+        UNLOCKED,
+        UNKNOWN
+    }
+
+    public enum PlugStatus {
+        UNPLUGGED,
+        PLUGGED,
+        PLUG_ERROR,
+        PLUG_UNKNOWN,
         UNKNOWN
     }
 
@@ -104,6 +113,9 @@ public class Car {
                 }
                 if (attributes.get("chargingRemainingTime") != null) {
                     chargingRemainingTime = attributes.get("chargingRemainingTime").getAsInt();
+                }
+                if (attributes.get("timestamp") != null) {
+                    batteryStatusUpdated = attributes.get("timestamp").getAsString();
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -161,6 +173,19 @@ public class Car {
         }
     }
 
+    public void setLockStatus(JsonObject responseJson) {
+        try {
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null) {
+                if (attributes.get("lockStatus") != null) {
+                    lockStatus = mapLockStatus(attributes.get("lockStatus").getAsString());
+                }
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Location: {}", e.getMessage(), responseJson);
+        }
+    }
+
     public void setDetails(JsonObject responseJson) {
         try {
             if (responseJson.get("assets") != null) {
@@ -210,6 +235,10 @@ public class Car {
 
     public @Nullable Double getBatteryLevel() {
         return batteryLevel;
+    }
+
+    public @Nullable String getBatteryStatusUpdated() {
+        return batteryStatusUpdated;
     }
 
     public @Nullable Boolean getHvacstatus() {
@@ -312,6 +341,17 @@ public class Car {
         return null;
     }
 
+    private LockStatus mapLockStatus(final String apiLockStatus) {
+        switch (apiLockStatus) {
+            case "locked":
+                return LockStatus.LOCKED;
+            case "unlocked":
+                return LockStatus.UNLOCKED;
+            default:
+                return LockStatus.UNKNOWN;
+        }
+    }
+
     private PlugStatus mapPlugStatus(final String apiPlugState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
         switch (apiPlugState) {
@@ -350,5 +390,17 @@ public class Car {
             default:
                 return ChargingStatus.UNKNOWN;
         }
+    }
+
+    public LockStatus getLockStatus() {
+        return lockStatus;
+    }
+
+    public boolean isDisableLockStatus() {
+        return disableLockStatus;
+    }
+
+    public void setDisableLockStatus(boolean disableLockStatus) {
+        this.disableLockStatus = disableLockStatus;
     }
 }
