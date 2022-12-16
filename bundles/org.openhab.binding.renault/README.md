@@ -80,8 +80,8 @@ sitemap renaultcar label="Renault Car" {
         Default icon="switch" item=RenaultCar_ChargingStatus
         Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
         Default icon="time" item=RenaultCar_ChargingTimeRemaining
-        Default item=RenaultCar_EstimatedRange
-        Default item=RenaultCar_Odometer
+        Default icon="pressure" item=RenaultCar_EstimatedRange
+        Default icon="pressure" item=RenaultCar_Odometer
         Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
         Setpoint icon="temperature" item=RenaultCar_HVACTargetTemperature maxValue=21 minValue=19 step=1
         Default icon="lock" item=RenaultCar_LockStatus

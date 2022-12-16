@@ -97,7 +97,7 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<state pattern="%.1f kWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterystatusupdated">
 		<item-type>DateTime</item-type>
