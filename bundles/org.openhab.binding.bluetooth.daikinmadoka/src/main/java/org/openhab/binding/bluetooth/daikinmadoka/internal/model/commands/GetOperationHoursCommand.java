@@ -63,11 +63,12 @@ public class GetOperationHoursCommand extends BRC1HCommand {
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
         try {
-
             byte[] msg = mm.getRawMessage();
             if (logger.isDebugEnabled() && msg != null) {
                 logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
             }
+            // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be
+            // intentionally here too
 
             // The specific GetOperationHours requires 2 consecutive runs for some reason.
             // If value size is 0, then it will be for the next query!

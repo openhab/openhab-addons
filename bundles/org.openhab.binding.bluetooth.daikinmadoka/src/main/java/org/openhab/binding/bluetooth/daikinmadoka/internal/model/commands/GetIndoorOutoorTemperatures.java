@@ -47,6 +47,8 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
+        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
+        // here too
         byte[] bIndoorTemperature = mm.getValues().get(0x40).getRawValue();
         byte[] bOutdoorTemperature = mm.getValues().get(0x41).getRawValue();
 

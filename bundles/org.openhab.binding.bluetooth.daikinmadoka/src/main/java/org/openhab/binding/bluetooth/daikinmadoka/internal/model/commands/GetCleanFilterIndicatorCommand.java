@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Command used to get the Clean Filter Indicator status
@@ -30,14 +28,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(GetCleanFilterIndicatorCommand.class);
-
     private @Nullable Boolean cleanFilterIndicator;
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-
+        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
+        // here too
         byte[] valueCleanFilterIndicator = mm.getValues().get(0x62).getRawValue();
         if (valueCleanFilterIndicator == null || valueCleanFilterIndicator.length != 1) {
             setState(State.FAILED);

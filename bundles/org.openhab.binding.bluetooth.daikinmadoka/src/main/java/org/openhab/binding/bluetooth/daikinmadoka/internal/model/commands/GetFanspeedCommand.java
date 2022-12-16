@@ -44,7 +44,8 @@ public class GetFanspeedCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-
+        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
+        // here too
         byte[] valueCoolingFanSpeed = mm.getValues().get(0x20).getRawValue();
         byte[] valueHeatingFanSpeed = mm.getValues().get(0x21).getRawValue();
 

@@ -39,6 +39,8 @@ public class GetEyeBrightnessCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
+        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
+        // here too
         byte[] bEyeBrightness = mm.getValues().get(0x33).getRawValue();
 
         if (bEyeBrightness == null || bEyeBrightness == null) {
