@@ -18,7 +18,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -121,13 +120,17 @@ public abstract class AM43Command {
     }
 
     public byte[] getRequest() {
-        byte[] value = ArrayUtils.EMPTY_BYTE_ARRAY;
-        value = ArrayUtils.add(value, HEADER_PREFIX);
-        value = ArrayUtils.add(value, header);
-        value = ArrayUtils.add(value, (byte) data.length);
-        value = ArrayUtils.addAll(value, data);
-        value = ArrayUtils.add(value, createChecksum(value));
-        return ArrayUtils.addAll(REQUEST_PREFIX, value);
+        byte[] value = new byte[3 + data.length];
+        value[0] = HEADER_PREFIX;
+        value[1] = header;
+        value[2] = (byte) data.length;
+        System.arraycopy(data, 0, value, 3, data.length);
+
+        byte[] combined = new byte[REQUEST_PREFIX.length + value.length + 1];
+        System.arraycopy(REQUEST_PREFIX, 0, combined, 0, REQUEST_PREFIX.length);
+        System.arraycopy(value, 0, combined, REQUEST_PREFIX.length, value.length);
+        combined[combined.length - 1] = createChecksum(value);
+        return combined;
     }
 
     protected byte createChecksum(byte[] data) {
