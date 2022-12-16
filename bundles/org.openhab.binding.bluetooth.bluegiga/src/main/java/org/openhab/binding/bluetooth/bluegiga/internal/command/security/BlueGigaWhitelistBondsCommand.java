@@ -30,8 +30,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaWhitelistBondsCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x05;
-    public static int COMMAND_METHOD = 0x07;
+    public static final int COMMAND_CLASS = 0x05;
+    public static final int COMMAND_METHOD = 0x07;
 
     @Override
     public int[] serialize() {

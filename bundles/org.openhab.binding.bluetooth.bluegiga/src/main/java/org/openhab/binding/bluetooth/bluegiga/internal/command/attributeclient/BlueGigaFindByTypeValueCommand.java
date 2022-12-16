@@ -31,8 +31,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaFindByTypeValueCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * First requested handle number

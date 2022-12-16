@@ -30,8 +30,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
  */
 @NonNullByDefault
 public class BlueGigaReadByHandleCommand extends BlueGigaDeviceCommand {
-    public static int COMMAND_CLASS = 0x04;
-    public static int COMMAND_METHOD = 0x04;
+    public static final int COMMAND_CLASS = 0x04;
+    public static final int COMMAND_METHOD = 0x04;
 
     private BlueGigaReadByHandleCommand(CommandBuilder builder) {
         super.setConnection(builder.connection);
