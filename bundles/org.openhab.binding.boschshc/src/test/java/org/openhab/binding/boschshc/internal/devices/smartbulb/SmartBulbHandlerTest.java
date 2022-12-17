@@ -1,0 +1,146 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.boschshc.internal.devices.smartbulb;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCDeviceHandlerTest;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.binaryswitch.dto.BinarySwitchServiceState;
+import org.openhab.binding.boschshc.internal.services.hsbcoloractuator.dto.HSBColorActuatorServiceState;
+import org.openhab.binding.boschshc.internal.services.multilevelswitch.dto.MultiLevelSwitchServiceState;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+/**
+ * Unit tests for {@link SmartBulbHandler}.
+ *
+ * @author David Pace - Initial contribution
+ *
+ */
+public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHandler> {
+
+    @Captor
+    private ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
+
+    @Captor
+    private ArgumentCaptor<MultiLevelSwitchServiceState> multiLevelSwitchServiceStateCaptor;
+
+    @Captor
+    private ArgumentCaptor<HSBColorActuatorServiceState> hsbColorActuatorServiceStateCaptor;
+
+    @Override
+    protected SmartBulbHandler createFixture() {
+        return new SmartBulbHandler(getThing());
+    }
+
+    @Override
+    protected String getDeviceID() {
+        return "hdm:ZigBee:f0d1b80000f2a3e9";
+    }
+
+    @Override
+    protected ThingTypeUID getThingTypeUID() {
+        return BoschSHCBindingConstants.THING_TYPE_SMART_BULB;
+    }
+
+    @Test
+    public void testHandleCommand_BinarySwitch()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
+                OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("BinarySwitch"),
+                binarySwitchServiceStateCaptor.capture());
+        BinarySwitchServiceState state = binarySwitchServiceStateCaptor.getValue();
+        assertTrue(state.on);
+
+        getFixture().handleCommand(new ChannelUID(new ThingUID(getThingTypeUID(), "abcdef"),
+                BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
+        verify(getBridgeHandler(), times(2)).putState(eq(getDeviceID()), eq("BinarySwitch"),
+                binarySwitchServiceStateCaptor.capture());
+        state = binarySwitchServiceStateCaptor.getValue();
+        assertFalse(state.on);
+    }
+
+    @Test
+    public void testHandleCommand_MultiLevelSwitch()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BRIGHTNESS),
+                new PercentType(42));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("MultiLevelSwitch"),
+                multiLevelSwitchServiceStateCaptor.capture());
+        MultiLevelSwitchServiceState state = multiLevelSwitchServiceStateCaptor.getValue();
+        assertEquals(42, state.level);
+    }
+
+    @Test
+    public void testHandleCommand_HSBColorActuator()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
+                HSBType.BLUE);
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("HSBColorActuator"),
+                hsbColorActuatorServiceStateCaptor.capture());
+        HSBColorActuatorServiceState state = hsbColorActuatorServiceStateCaptor.getValue();
+        assertEquals(-16776961, state.rgb);
+    }
+
+    @Test
+    public void testUpdateChannel_BinarySwitchState() {
+        JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"binarySwitchState\",\"on\":true}");
+        getFixture().processUpdate("BinarySwitch", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
+
+        jsonObject = JsonParser.parseString("{\"@type\":\"binarySwitchState\",\"on\":false}");
+        getFixture().processUpdate("BinarySwitch", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
+    }
+
+    @Test
+    public void testUpdateChannel_MultiLevelSwitchState() {
+        JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"multiLevelSwitchState\",\"level\":16}");
+        getFixture().processUpdate("MultiLevelSwitch", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BRIGHTNESS), new PercentType(16));
+    }
+
+    @Test
+    public void testUpdateChannel_HSBColorActuatorState() {
+        JsonElement jsonObject = JsonParser.parseString("{\"colorTemperatureRange\": {\n" + "        \"minCt\": 153,\n"
+                + "        \"maxCt\": 526\n" + "    },\n" + "    \"@type\": \"colorState\",\n"
+                + "    \"gamut\": \"LEDVANCE_GAMUT_A\",\n" + "    \"rgb\": -12427}");
+        getFixture().processUpdate("HSBColorActuator", jsonObject);
+        verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
+                HSBType.fromRGB(255, 207, 117));
+    }
+}

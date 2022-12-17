@@ -1,7 +1,7 @@
 # Jablotron Alarm Binding
 
 This is the binding for Jablotron alarms.
-https://www.jablotron.com/en/jablotron-products/alarms/
+<https://www.jablotron.com/en/jablotron-products/alarms/>
 
 ## Supported Things
 
@@ -11,7 +11,7 @@ https://www.jablotron.com/en/jablotron-products/alarms/
 | JA-80   | the OASIS alarm                           |
 | JA-100  | with the thermometer support              |
 | JA-100F | without the thermometer support           |
- 
+
 ## Discovery
 
 This binding supports auto discovery. Just manually add a bridge thing and supply login & password to your Jablonet account.
@@ -60,30 +60,30 @@ Binding itself doesn't require specific configuration.
 
 The state, pgm, thermometer, thermostat, sec and pg channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 
-* The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
+- The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
 
 ## Full Example
 
 # items file for JA80
 
-```
+```java
 String  HouseAlarm "Alarm [%s]" <alarm>
 String JablotronCode { channel="jablotron:oasis:8c93a5ed:50139:command", autoupdate="false" }
-Switch	ArmSectionA	"Garage arming"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusA" }
-Switch	ArmSectionAB	"1st floor arming"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusB" }
-Switch	ArmSectionABC	"2nd floor arming"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusABC" }
+Switch ArmSectionA "Garage arming" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusA" }
+Switch ArmSectionAB "1st floor arming" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusB" }
+Switch ArmSectionABC "2nd floor arming" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusABC" }
 String LastEvent "Last event code [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEvent" }
 String LastEventClass "Last event class [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEventClass" }
 String LastEventInvoker "Last event class [%s]" <jablotron> { channel="jablotron:oasis:8c93a5ed:50139:lastEventInvoker" }
 DateTime LastEventTime "Last event [%1$td.%1$tm.%1$tY %1$tR]" <clock> { channel="jablotron:oasis:8c93a5ed:50139:lastEventTime" }
 DateTime LastCheckTime "Last check [%1$td.%1$tm.%1$tY %1$tR]" <clock> { channel="jablotron:oasis:8c93a5ed:50139:lastCheckTime" }
-Switch	ArmControlPGX	"PGX"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusPGX" }
-Switch	ArmControlPGY	"PGY"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusPGY" }
+Switch ArmControlPGX "PGX" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusPGX" }
+Switch ArmControlPGY "PGY" <jablotron> (Alarm) { channel="jablotron:oasis:8c93a5ed:50139:statusPGY" }
 ```
 
 # sitemap example for JA80
 
-```
+```java
 Text item=HouseAlarm icon="alarm" {
           Switch item=ArmSectionA
           Switch item=ArmSectionAB
@@ -102,7 +102,7 @@ Text item=HouseAlarm icon="alarm" {
 
 # rule example for JA80
 
-```
+```java
 rule "Alarm"
 when 
   Item ArmSectionA changed or Item ArmSectionAB changed or Item ArmSectionABC changed or 

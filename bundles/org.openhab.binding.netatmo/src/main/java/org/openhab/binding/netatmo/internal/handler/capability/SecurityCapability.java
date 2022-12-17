@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,10 +47,17 @@ import org.slf4j.LoggerFactory;
 class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
-    private static final Map<String, HomeEvent> eventBuffer = new HashMap<>();
+    private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
+    private @Nullable ZonedDateTime freshestEventTime;
 
     SecurityCapability(CommonInterface handler) {
         super(handler, SecurityApi.class);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        freshestEventTime = null;
     }
 
     @Override
@@ -120,8 +128,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected List<NAObject> updateReadings(SecurityApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
-            Collection<HomeEvent> lastEvents = api.getHomeEvents(handler.getId());
-            lastEvents.stream().forEach(event -> {
+            for (HomeEvent event : api.getHomeEvents(handler.getId(), freshestEventTime)) {
                 HomeEvent previousEvent = eventBuffer.get(event.getCameraId());
                 if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
                     eventBuffer.put(event.getCameraId(), event);
@@ -133,7 +140,10 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                         eventBuffer.put(personId, event);
                     }
                 }
-            });
+                if (freshestEventTime == null || event.getTime().isAfter(freshestEventTime)) {
+                    freshestEventTime = event.getTime();
+                }
+            }
         } catch (NetatmoException e) {
             logger.warn("Error retrieving last events for home '{}' : {}", handler.getId(), e.getMessage());
         }

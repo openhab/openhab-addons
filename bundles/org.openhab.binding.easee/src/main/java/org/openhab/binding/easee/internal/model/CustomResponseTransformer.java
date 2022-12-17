@@ -81,7 +81,7 @@ class CustomResponseTransformer {
     private void updateChargerStartStop(Map<Channel, State> result, String value, JsonObject rawData) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_START_STOP);
         if (channel != null) {
-            int val = Integer.valueOf(value);
+            int val = Integer.parseInt(value);
             // state >= 3 will mean charging, ready to charge or charging finished
             boolean charging = val >= CHARGER_OP_STATE_CHARGING;
 
@@ -97,7 +97,7 @@ class CustomResponseTransformer {
     private void updateChargerPauseResume(Map<Channel, State> result, String value) {
         Channel channel = channelProvider.getChannel(CHANNEL_GROUP_CHARGER_COMMANDS, CHANNEL_CHARGER_PAUSE_RESUME);
         if (channel != null) {
-            int val = Integer.valueOf(value);
+            double val = Double.parseDouble(value);
             // value == 0 will mean paused
             boolean paused = val == CHARGER_DYNAMIC_CURRENT_PAUSE;
 

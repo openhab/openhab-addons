@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The model representing an forward actions result (serialize/deserialize json use only).
+ * The model representing a forward actions result (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial contribution
  *

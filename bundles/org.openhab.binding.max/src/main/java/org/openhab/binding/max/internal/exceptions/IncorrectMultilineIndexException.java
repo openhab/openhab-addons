@@ -14,7 +14,7 @@ package org.openhab.binding.max.internal.exceptions;
 
 /**
  * Will be thrown when there is an attempt to put a new message line into the message processor,
- * but the processor is currently processing an other message type.
+ * but the processor is currently processing another message type.
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */

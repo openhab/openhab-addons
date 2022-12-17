@@ -8,8 +8,8 @@ Smarther chronothermostat is produced by [BTicino](https://www.bticino.com/produ
 
 All BTicino Smarther Chronothermostat device models should be discoverable through this binding:
 
-* Flush mounting installation item (X8000)
-* Wall installation item (X8000W)
+- Flush mounting installation item (X8000)
+- Wall installation item (X8000W)
 
 If you can control them from BTicino Thermostat mobile app on your iPhone/Android you should be able to add it as a thing.
 
@@ -52,26 +52,26 @@ The following configuration options are available on the BTicino Smarther Chrono
 
 ### Account Creation
 
-Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/getting-started/), under: 
+Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/getting-started/), under:
 
-* Step 1 : Create an account
-* Step 2 : Subscribe to a product and get subscription key
+- Step 1 : Create an account
+- Step 2 : Subscribe to a product and get subscription key
 
 There's also a Step 3 in this tutorial, you can skip it as not needed to complete this process.
 Simply write down your "Primary Key" as it will be needed later on in the bridge configuration phase.
 
 ### Application Creation
 
-Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/create-an-application/), under: 
+Follow the instructions in the tutorial [here](https://developer.legrand.com/tutorials/create-an-application/), under:
 
-* Step 1 : Register your application
-* Step 2 : Check scopes
-* Step 3 : Getting application details
+- Step 1 : Register your application
+- Step 2 : Check scopes
+- Step 3 : Getting application details
 
 When registering your new Legrand Application for openHAB BTicino Smarther Bridge you have to specify the allowed Reply URL, aka white-listed address.
 Here you have to specify the URL to the Bridge Authorization page on your server.
 
-For example if you run your openHAB server on http://openhabianpi:8080 you should set `http://openhabianpi:8080/bticinosmarther/connectsmarther` as the "First Reply URL" required field in Step 1.
+For example if you run your openHAB server on `http://openhabianpi:8080` you should set `http://openhabianpi:8080/bticinosmarther/connectsmarther` as the "First Reply URL" required field in Step 1.
 Other Reply URLs (second, third, etc.) you can leave them blank.
 
 This is **very important** since the authorize process with Legrand takes place using your client web browser and Legrand will have to know the right URL to your openHAB server for the authorization to be completed.
@@ -92,19 +92,19 @@ If you want to later receive push notifications (device status) from Legrand for
 ### Bridge Configuration
 
 1. Install the binding and make sure the _BTicino Smarther Binding_ is listed on your server, if you have not already done so.
-2. Complete the [Account Creation](#account-creation) and [Application Creation](#application-creation) steps, if you have not already done so.
-3. Make sure you have your Legrand account _Primary Key_ and your Legrand application _Client ID_ and _Client Secret_ identities available.
-4. Go to your preferred openHAB admin UI and add a new Thing - select the **"BTicino Smarther Bridge"**.
-5. Choose new Id for the bridge, unless you like the generated one.
-6. Put in your _Primary Key_ (in _Subscription Key_ field), _Client ID_ and _Cliend Secret_ in their respective fields of the bridge configuration.
-7. Set _Use Notifications_ to `ON` if your openHAB server is reachable from a public https URL (see [Note on notifications](#note-on-notifications)), set `OFF` otherwise.
-8. You can leave the _Bridge Status Refresh Period_ as is.
-9. Save the bridge.
-10. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine, as you now have to authorize this bridge with Legrand.
-11. Go to the authorization page of your server (see [Application Creation](#application-creation)) `http://<your openHAB address>:<your openHAB port>/bticinosmarther/connectsmarther`; your newly added bridge should be listed there (along with the available locations).
-12. Press the _"Authorize Bridge"_ button; this will take you either to the login page of Legrand portal or directly to the authorization screen.
-13. Login and/or authorize the application; if the Reply URL is correct you will be returned and the entry should show your bridge is authorized with your Client ID; otherwise, go back to your application configuration on Legrand portal and ensure you have set the right Reply URL (see [Troubleshooting](#troubleshooting) below).
-14. The bridge will be updated with a refresh token and go _ONLINE_ (the refresh token is used to re-authorize the bridge with Legrand Smarther API whenever required).
+1. Complete the [Account Creation](#account-creation) and [Application Creation](#application-creation) steps, if you have not already done so.
+1. Make sure you have your Legrand account _Primary Key_ and your Legrand application _Client ID_ and _Client Secret_ identities available.
+1. Go to your preferred openHAB admin UI and add a new Thing - select the **"BTicino Smarther Bridge"**.
+1. Choose new Id for the bridge, unless you like the generated one.
+1. Put in your _Primary Key_ (in _Subscription Key_ field), _Client ID_ and _Cliend Secret_ in their respective fields of the bridge configuration.
+1. Set _Use Notifications_ to `ON` if your openHAB server is reachable from a public https URL (see [Note on notifications](#note-on-notifications)), set `OFF` otherwise.
+1. You can leave the _Bridge Status Refresh Period_ as is.
+1. Save the bridge.
+1. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine, as you now have to authorize this bridge with Legrand.
+1. Go to the authorization page of your server (see [Application Creation](#application-creation)) `http://<your openHAB address>:<your openHAB port>/bticinosmarther/connectsmarther`; your newly added bridge should be listed there (along with the available locations).
+1. Press the _"Authorize Bridge"_ button; this will take you either to the login page of Legrand portal or directly to the authorization screen.
+1. Login and/or authorize the application; if the Reply URL is correct you will be returned and the entry should show your bridge is authorized with your Client ID; otherwise, go back to your application configuration on Legrand portal and ensure you have set the right Reply URL (see [Troubleshooting](#troubleshooting) below).
+1. The bridge will be updated with a refresh token and go _ONLINE_ (the refresh token is used to re-authorize the bridge with Legrand Smarther API whenever required).
 
 ![Tutorial 1](doc/images/tutorial-1.png)
 
@@ -124,7 +124,7 @@ You can force reinitialization by authorizing again on the `/bticinosmarther/con
 
 When configuring the bridge (see step 13 [here](#thing-configuration)), you can receive the following error from Legrand portal:
 
-```
+```json
 {
   "error": "invalid_request",
   "error_description": "The reply url host xxxxx doesn't match with the ones configured on the application"
@@ -136,8 +136,8 @@ Please remember these two strings must match for authentication process to work.
 
 To solve the issue, either:
 
-* Correct the address you're accessing the `/bticinosmarther/connectsmarther` page from, to match the "Reply URL" attribute registered in your application, or
-* Should you have specified a wrong "Reply URL" attribute in your application, go to the Legrand portal and correct it accordingly then resubmit the application for approval.
+- Correct the address you're accessing the `/bticinosmarther/connectsmarther` page from, to match the "Reply URL" attribute registered in your application, or
+- Should you have specified a wrong "Reply URL" attribute in your application, go to the Legrand portal and correct it accordingly then resubmit the application for approval.
 
 ## Channels
 
@@ -220,7 +220,7 @@ In this example there is a bridge configured with Thing ID **mybridge**:
 
 bticinosmarther.things:
 
-```
+```java
 Bridge bticinosmarther:bridge:mybridge "BTicino Smarther Bridge" [subscriptionKey="<your primary key>" clientId="<your client id>", clientSecret="<your client secret>"] {
   Thing module thermo1 "Thermo 1" [plantId="<location plant id>" moduleId="<chronothermostat module id>"]
   Thing module thermo2 "Thermo 2" [plantId="<location plant id>" moduleId="<chronothermostat module id>"]
@@ -229,7 +229,7 @@ Bridge bticinosmarther:bridge:mybridge "BTicino Smarther Bridge" [subscriptionKe
 
 bticinosmarther.items:
 
-```
+```java
 // Measures items
 Number:Temperature   smaTemperature "In Temperature [%.1f %unit%]"  { channel="bticinosmarther:module:mybridge:thermo1:measures#temperature" }
 Number:Dimensionless smaHumidity    "In Humidity [%.1f %unit%]"     { channel="bticinosmarther:module:mybridge:thermo1:measures#humidity" }
@@ -257,7 +257,7 @@ Switch               smaDisplayTime
 
 bticinosmarther.sitemap:
 
-```
+```perl
 sitemap bticinosmarther label="BTicino Smarther Sitemap" {
 
   Frame label="Smarther Measures" {
@@ -288,7 +288,7 @@ sitemap bticinosmarther label="BTicino Smarther Sitemap" {
 
 bticinosmarther.rules:
 
-```
+```java
 rule "BTicino Smarther - Set time visibility flag"
 when
     Item smaSetMode received update or Item smaSetDate received update
@@ -309,9 +309,9 @@ All devices (chronothermostats modules) currently associated with the user accou
 
 Legrand/BTicino Smarther topology considers the following dimensions:
 
-* topology : is the whole network of devices associated with a user account
-* plant    : is the location where a module is installed (0..N plants per topology)
-* module   : is the chronothermostat installed in a location (0..N modules per location)
+- topology : is the whole network of devices associated with a user account
+- plant    : is the location where a module is installed (0..N plants per topology)
+- module   : is the chronothermostat installed in a location (0..N modules per location)
 
 You can add multiple bridges to allow controlling devices in the context of multiple Legrand user accounts.
 

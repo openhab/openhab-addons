@@ -50,10 +50,13 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vosk.LibVosk;
+import org.vosk.LogLevel;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jna.NativeLibrary;
 
 /**
  * The {@link VoskSTTService} class is a service implementation to use Vosk-API for Speech-to-Text.
@@ -89,7 +92,18 @@ public class VoskSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        configChange(config);
+        try {
+            String osName = System.getProperty("os.name", "generic").toLowerCase();
+            String osArch = System.getProperty("os.arch", "").toLowerCase();
+            if (osName.contains("linux") && (osArch.equals("arm") || osArch.equals("armv7l"))) {
+                // workaround for loading required shared libraries
+                loadSharedLibrariesArmv7l();
+            }
+            LibVosk.setLogLevel(LogLevel.WARNINGS);
+            configChange(config);
+        } catch (LinkageError e) {
+            logger.warn("LinkageError, service will not work: {}", e.getMessage());
+        }
     }
 
     @Modified
@@ -297,5 +311,23 @@ public class VoskSTTService implements STTService {
 
     private boolean isExpiredInterval(long interval, long referenceTime) {
         return System.currentTimeMillis() - referenceTime > interval;
+    }
+
+    private void loadSharedLibrariesArmv7l() {
+        logger.debug("loading required shared libraries for linux arm");
+        var libatomicArmLibPath = Path.of("/usr/lib/arm-linux-gnueabihf/libatomic.so.1");
+        if (libatomicArmLibPath.toFile().exists()) {
+            var libatomicArmLibFolderPath = libatomicArmLibPath.getParent().toAbsolutePath();
+            String libraryPath = System.getProperty("jna.library.path", System.getProperty("java.library.path"));
+            if (!libraryPath.contains(libatomicArmLibFolderPath.toString())) {
+                libraryPath = libatomicArmLibFolderPath + "/:" + libraryPath;
+                System.setProperty("jna.library.path", libraryPath);
+                logger.debug("jna library path updated: {}", libraryPath);
+            }
+            NativeLibrary.getInstance("libatomic");
+            logger.debug("loaded libatomic shared library");
+        } else {
+            throw new LinkageError("Required shared library libatomic is missing");
+        }
     }
 }

@@ -70,27 +70,27 @@
 	</channel-type>
 
 	<channel-type id="duration">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="elapsed">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Elapsed Time</label>
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="finish">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Finish Time</label>
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="door">
@@ -215,7 +215,7 @@
 	</channel-type>
 
 	<channel-type id="powerConsumption">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Power Consumption</label>
 		<description>Power consumption by the currently running program on the appliance</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

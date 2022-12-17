@@ -81,7 +81,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link YamahaZoneThingHandler} is managing one zone of an Yamaha AVR.
+ * The {@link YamahaZoneThingHandler} is managing one zone of a Yamaha AVR.
  * It has a state consisting of the zone, the current input ID, {@link ZoneControlState}
  * and some more state objects and uses the zone control protocol
  * class {@link ZoneControlXML}, {@link InputWithPlayControlXML} and {@link InputWithNavigationControlXML}

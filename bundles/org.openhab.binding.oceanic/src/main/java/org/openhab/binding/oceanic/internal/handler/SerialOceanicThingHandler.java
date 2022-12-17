@@ -36,7 +36,7 @@ import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
 /**
- * The {@link SerialOceanicThingHandler} implements {@link OceanicThingHandler} for a Oceanic water softener that is
+ * The {@link SerialOceanicThingHandler} implements {@link OceanicThingHandler} for an Oceanic water softener that is
  * directly connected to a serial port of the openHAB host
  *
  * @author Karel Goderis - Initial contribution

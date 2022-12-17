@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.broadlinkthermostat</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Broadlink Thermostat Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Broadlink Binding</name>
 
   <dependencies>
     <dependency>

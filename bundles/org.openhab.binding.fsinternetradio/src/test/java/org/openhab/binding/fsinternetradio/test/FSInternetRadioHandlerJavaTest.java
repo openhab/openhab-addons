@@ -255,7 +255,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
 
         /*
          * Setting the needed boolean variable to false, so we can be sure
-         * that the XML response won't have a OK_200 status
+         * that the XML response won't have an OK_200 status
          */
         ChannelUID modeChannelUID = getChannelUID(radioThing, modeChannelID);
         Item modeTestItem = initializeItem(modeChannelUID, CHANNEL_MODE, acceptedItemType);

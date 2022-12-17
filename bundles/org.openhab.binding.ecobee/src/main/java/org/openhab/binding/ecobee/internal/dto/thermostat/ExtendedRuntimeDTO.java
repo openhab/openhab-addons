@@ -82,6 +82,26 @@ public class ExtendedRuntimeDTO {
     public List<Integer> desiredDehumidity;
 
     /*
+     * The last three 5 minute actual air quality accuracy readings
+     */
+    public List<Integer> actualAQAccuracy;
+
+    /*
+     * The last three 5 minute actual air quality score readings
+     */
+    public List<Integer> actualAQScore;
+
+    /*
+     * The last three 5 minute actual CO2 readings
+     */
+    public List<Integer> actualCO2;
+
+    /*
+     * The last three 5 minute actual VOC readings
+     */
+    public List<Integer> actualVOC;
+
+    /*
      * The last three 5 minute desired Demand Management temeprature offsets.
      * This value is Demand Management adjustment value which was applied by
      * the thermostat. If the thermostat decided not to honour the adjustment,

@@ -110,7 +110,7 @@ public interface StructureManager {
     Map<Short, List<Device>> getGroupsFromZoneX(int zoneID);
 
     /**
-     * Returns the reference {@link List} of the {@link Device}'s of an zone-group.
+     * Returns the reference {@link List} of the {@link Device}'s of a zone-group.
      *
      * @param zoneID of the zone
      * @param groupID of the group

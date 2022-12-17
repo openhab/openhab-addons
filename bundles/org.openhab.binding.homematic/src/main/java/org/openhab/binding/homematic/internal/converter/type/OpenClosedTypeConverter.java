@@ -20,7 +20,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB OpenClosedType.
+ * Converts between a Homematic datapoint value and an openHAB OpenClosedType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

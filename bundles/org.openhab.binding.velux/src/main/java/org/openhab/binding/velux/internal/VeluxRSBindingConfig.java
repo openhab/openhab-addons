@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This represents the configuration of a openHAB item that is binded to a Velux
+ * This represents the configuration of an openHAB item that is binded to a Velux
  * KLF200 Gateway. It contains the following information:
  *
  * <ul>
@@ -137,7 +137,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     }
 
     /**
-     * Returns the next shutter level for an DOWN command w/ adjusting the actual position.
+     * Returns the next shutter level for a DOWN command w/ adjusting the actual position.
      *
      * @return <b>rollershutterLevel</b> of type Integer with next position after DOWN command.
      */

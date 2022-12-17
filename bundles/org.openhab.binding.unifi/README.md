@@ -161,7 +161,7 @@ The `wirelessClient` information that is retrieved is available as these channel
 | ap         | String               | Access point (AP) the client is connected to                         | Read        |
 | essid      | String               | Network name (ESSID) the client is connected to                      | Read        |
 | rssi       | Number               | Received signal strength indicator (RSSI) of the client              | Read        |
-| uptime     | Number               | Uptime of the client (in seconds)                                    | Read        |
+| uptime     | Number:Time          | Uptime of the client (in seconds)                                    | Read        |
 | lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
 | experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch               | Blocked status of the client                                         | Read, Write |
@@ -181,7 +181,7 @@ The `wiredClient` information that is retrieved is available as these channels:
 | site       | String               | Site name (from the controller web UI) the client is associated with | Read        |
 | macAddress | String               | MAC address of the client                                            | Read        |
 | ipAddress  | String               | IP address of the client                                             | Read        |
-| uptime     | Number               | Uptime of the client (in seconds)                                    | Read        |
+| uptime     | Number:Time          | Uptime of the client (in seconds)                                    | Read        |
 | lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
 | experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
 | blocked    | Switch               | Blocked status of the client                                         | Read, Write |
@@ -199,15 +199,15 @@ Sending `ON` to this channel will trigger a reconnect via the controller.
 
 The `poePort` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type                | Description                                        | Permissions |
-|------------|--------------------------|----------------------------------------------------|-------------|
-| online     | Switch                   | Online status of the port                          | Read        |
-| mode       | Selection                | Select the PoE mode: off, auto, 24v or passthrough | Read, Write |
-| enable     | Switch                   | Enable Power over Ethernet                         | Read, Write |
-| cmd        | String                   | Command channel: `power-cycle`: Power Cycle port   | Write       |
-| power      | Number:Power             | Power consumption of the port in Watt              | Read        |
-| voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
-| current    | Number:ElectricCurrent   | Current used by the port in mA                     | Read        |
+| Channel ID | Item Type                | Description                                           | Permissions |
+|------------|--------------------------|-------------------------------------------------------|-------------|
+| online     | Switch                   | Online status of the port                             | Read        |
+| mode       | Selection                | Select the PoE mode: off, auto, pasv24 or passthrough | Read, Write |
+| enable     | Switch                   | Enable Power over Ethernet                            | Read, Write |
+| cmd        | String                   | Command channel: `power-cycle`: Power Cycle port      | Write       |
+| power      | Number:Power             | Power consumption of the port in Watt                 | Read        |
+| voltage    | Number:ElectricPotential | Voltage of the port in Volt                           | Read        |
+| current    | Number:ElectricCurrent   | Current used by the port in mA                        | Read        |
 
 The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.
@@ -229,17 +229,17 @@ Replace `$user`, `$password` and `$cid` accordingly.
 items/unifi.items
 
 ```
-Switch   MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
-String   MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
-String   MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
-String   MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
-String   MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
-String   MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
-Number   MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
-Number   MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%d]"                    { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
-DateTime MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
-Switch   MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
-Switch   MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
+Switch      MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
+String      MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
+String      MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
+String      MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
+String      MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
+String      MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
+Number      MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
+Number:Time MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
+DateTime    MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
+Switch      MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
+Switch      MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
 ```
 
 transform/unifi.map

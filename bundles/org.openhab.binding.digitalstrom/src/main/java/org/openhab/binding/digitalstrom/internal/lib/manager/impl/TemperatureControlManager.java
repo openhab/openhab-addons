@@ -37,7 +37,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TemperatureControlManager} is responsible for handling the zone temperature control of the digitalSTROM
- * zones. For that it implements a {@link EventHandler} to get informed by control changes, like the target temperature.
+ * zones. For that it implements an {@link EventHandler} to get informed by control changes, like the target
+ * temperature.
  * It also implement the {@link TemperatureControlSensorTransmitter}, so the zone temperature can be set through this
  * class. <br>
  * <br>

@@ -160,7 +160,7 @@ public class KM200ServiceHandler {
                     serviceObject.setJSONData(dataObject);
                     remoteDevice.virtualList.add(serviceObject);
                     break;
-                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is an errorList */
                     logger.trace("initDevice: type errorList: {}", dataObject);
                     KM200ErrorServiceHandler eService = new KM200ErrorServiceHandler();
                     eService.updateErrors(nodeRoot);

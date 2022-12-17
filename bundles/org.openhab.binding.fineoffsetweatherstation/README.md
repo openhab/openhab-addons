@@ -4,16 +4,16 @@ This binding is for weather stations manufactured by [Fine Offset](http://www.fo
 These weather stations are white labeled products which are re-branded by many distribution companies around the world.
 Some of these brands are e.g.:
 
-* Aercus
-* Ambient Weather
-* Ecowitt
-* ELV
-* Frogitt
-* Misol
-* Pantech
-* Sainlogic
-* Steinberg Systems
-* Waldbeck Halley
+- Aercus
+- Ambient Weather
+- Ecowitt
+- ELV
+- Froggit
+- Misol
+- Pantech
+- Sainlogic
+- Steinberg Systems
+- Waldbeck Halley
 
 Here is a product picture of how this Weather Station looks like:
 
@@ -21,29 +21,33 @@ Here is a product picture of how this Weather Station looks like:
 
 This binding works offline by [implementing the wire protocol](https://osswww.ecowitt.net/uploads/20210716/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.0%20.pdf) of the WiFi gateway device.
 
+## Discussion
+
+If you have any issues or feedback, please feel free to [get in touch via the community forum](https://community.openhab.org/t/fine-offset-weather-station-binding-discussion/134167)
+
 ## Supported Things
 
 - `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
-    - HP2550
-    - HP3500
-    - GW1000
-    - GW1001
-    - GW1002
-    - GW1003
-    - GW1100
-    - GW2001
-    - WN1900
-    - WN1910
-    - WH2350
-    - WH2600
-    - WH2610
-    - WH2620
-    - WH2650 (tested)
-    - WH2680
-    - WH2900
-    - WH2950
-    - WS980 ELV (tested)
-    - WittBoy (tested)
+  - HP2550
+  - HP3500
+  - GW1000
+  - GW1001
+  - GW1002
+  - GW1003
+  - GW1100
+  - GW2001
+  - WN1900
+  - WN1910
+  - WH2350
+  - WH2600
+  - WH2610
+  - WH2620
+  - WH2650 (tested)
+  - WH2680
+  - WH2900
+  - WH2950
+  - WS980 ELV (tested)
+  - WittBoy (tested)
 - `sensor`: A Fine Offset sensor which is connected to the bridge with the ThingTypeUID `fineoffsetweatherstation:sensor`.
   Since the gateway collects all the sensor data and harmonizes them, the sensor thing itself will only hold information about the signal and battery status.
   This is a list of sensors supported by the protocol:
@@ -71,7 +75,7 @@ In this case you have to configure a service to which the data is sent.
 Please try if here the [IPObserver binding](https://www.openhab.org/addons/bindings/ipobserver/) offers an alternative.
 Known weather stations not compatible with this binding:
 
-  - [WH3000](https://community.openhab.org/t/fine-offset-weather-station-binding-beta-and-discussion/134167/52?u=andy2003)
+- [WH3000](https://community.openhab.org/t/fine-offset-weather-station-binding-beta-and-discussion/134167/52?u=andy2003)
 
 ## Discovery
 
@@ -258,13 +262,13 @@ Valid sensors:
 | sensor-co2-co2                        | Number:Dimensionless          | R          | CO2                                            |
 | sensor-co2-co2-24-hour-average        | Number:Dimensionless          | R          | CO2 24 Hour Average                            |
 | leaf-wetness-channel-1                | Number:Dimensionless          | R          | Leaf Moisture Channel 1                        |  
-| leaf-wetness-channel-2                | Number:Dimensionless          | R          | Leaf Moisture Channel 2                        | 
-| leaf-wetness-channel-3                | Number:Dimensionless          | R          | Leaf Moisture Channel 3                        | 
-| leaf-wetness-channel-4                | Number:Dimensionless          | R          | Leaf Moisture Channel 4                        | 
-| leaf-wetness-channel-5                | Number:Dimensionless          | R          | Leaf Moisture Channel 5                        | 
-| leaf-wetness-channel-6                | Number:Dimensionless          | R          | Leaf Moisture Channel 6                        | 
-| leaf-wetness-channel-7                | Number:Dimensionless          | R          | Leaf Moisture Channel 7                        | 
-| leaf-wetness-channel-8                | Number:Dimensionless          | R          | Leaf Moisture Channel 8                        | 
+| leaf-wetness-channel-2                | Number:Dimensionless          | R          | Leaf Moisture Channel 2                        |
+| leaf-wetness-channel-3                | Number:Dimensionless          | R          | Leaf Moisture Channel 3                        |
+| leaf-wetness-channel-4                | Number:Dimensionless          | R          | Leaf Moisture Channel 4                        |
+| leaf-wetness-channel-5                | Number:Dimensionless          | R          | Leaf Moisture Channel 5                        |
+| leaf-wetness-channel-6                | Number:Dimensionless          | R          | Leaf Moisture Channel 6                        |
+| leaf-wetness-channel-7                | Number:Dimensionless          | R          | Leaf Moisture Channel 7                        |
+| leaf-wetness-channel-8                | Number:Dimensionless          | R          | Leaf Moisture Channel 8                        |
 | piezo-rain-rate                       | Number:VolumetricFlowRate     | R          | Piezo - Rainfall Rate                          |
 | piezo-rain-event                      | Number:Length                 | R          | Piezo - Amount of Rainfall At the last Rain    |
 | piezo-rain-hour                       | Number:Length                 | R          | Piezo - Rainfall Current Hour                  |
@@ -272,6 +276,9 @@ Valid sensors:
 | piezo-rain-week                       | Number:Length                 | R          | Piezo - Rainfall this Week                     |
 | piezo-rain-month                      | Number:Length                 | R          | Piezo - Rainfall this Month                    |
 | piezo-rain-year                       | Number:Length                 | R          | Piezo - Rainfall this Year                     |
+
+NOTE: Not every gateway provides all available data, even if they are displayed in the WS-View app.
+Especially the channels `temperature-dew-point` or `temperature-wind-chill` are derived from other measured values.
 
 ### `sensor` Channels
 
@@ -288,7 +295,7 @@ This is an example configuration for the WH2650 gateway
 
 _weatherstation.things_:
 
-```xtend
+```java
 Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
      ip="192.168.1.42",
      port="45000", 
@@ -296,14 +303,14 @@ Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
      pollingInterval="16",
      protocol="DEFAULT"
 ] {
-	Thing sensor WH25 "WH25" [sensor="WH25"]
-	Thing sensor WH65 "WH65" [sensor="WH65"]
+ Thing sensor WH25 "WH25" [sensor="WH25"]
+ Thing sensor WH65 "WH65" [sensor="WH65"]
 }
 ```
 
 _weatherstation.items_:
 
-```xtend
+```java
 Group WH25 "WH25"  <Sensor> ["Sensor"]
 Number SignalWH25        "Signal WH25"      <QualityOfService> (WH25) ["Measurement", "Level"] { channel="fineoffsetweatherstation:sensor:3906700515:WH25:signal" }
 Switch BatteryStatusWH25 "Low Battery WH25" <LowBattery>       (WH25) ["Energy", "LowBattery"] { channel="fineoffsetweatherstation:sensor:3906700515:WH25:lowBattery" }

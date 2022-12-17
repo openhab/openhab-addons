@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,7 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -44,10 +44,13 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class StatusFileInterpreter {
     private static final String URL_TEMPLATE = "http://%s/globalstatus.xml";
+
     private final Logger logger = LoggerFactory.getLogger(StatusFileInterpreter.class);
-    private final String hostname;
-    private @Nullable Document doc;
+    private final DocumentBuilder builder;
+    private final String url;
     private final Ipx800EventListener listener;
+
+    private Optional<Document> doc = Optional.empty();
 
     public static enum StatusEntry {
         VERSION,
@@ -55,36 +58,39 @@ public class StatusFileInterpreter {
     }
 
     public StatusFileInterpreter(String hostname, Ipx800EventListener listener) {
-        this.hostname = hostname;
+        this.url = String.format(URL_TEMPLATE, hostname);
         this.listener = listener;
-    }
-
-    public void read() {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             factory.setXIncludeAware(false);
             factory.setExpandEntityReferences(false);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            String statusPage = HttpUtil.executeUrl("GET", String.format(URL_TEMPLATE, hostname), 5000);
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            logger.warn("Error initializing StatusFileInterpreter :{}", e.getMessage());
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public void read() {
+        try {
+            String statusPage = HttpUtil.executeUrl("GET", url, 5000);
             InputStream inputStream = new ByteArrayInputStream(statusPage.getBytes());
             Document document = builder.parse(inputStream);
             document.getDocumentElement().normalize();
-            doc = document;
-            pushDatas();
             inputStream.close();
-        } catch (IOException | SAXException | ParserConfigurationException e) {
+            this.doc = Optional.of(document);
+            pushDatas();
+        } catch (IOException | SAXException e) {
             logger.warn("Unable to read IPX800 status page : {}", e.getMessage());
-            doc = null;
         }
     }
 
     private void pushDatas() {
-        Element root = getRoot();
-        if (root != null) {
+        getRoot().ifPresent(root -> {
             PortDefinition.asStream().forEach(portDefinition -> {
                 List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName());
                 xmlNodes.forEach(xmlNode -> {
@@ -94,40 +100,29 @@ public class StatusFileInterpreter {
                     listener.dataReceived(String.format("%s%d", portDefinition.getPortName(), portNum), value);
                 });
             });
-        }
+        });
     }
 
     public String getElement(StatusEntry entry) {
-        Element root = getRoot();
-        if (root != null) {
-            return root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent();
-        } else {
-            return "";
-        }
+        return getRoot().map(root -> root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent())
+                .orElse("");
     }
 
     private List<Node> getMatchingNodes(NodeList nodeList, String criteria) {
         return IntStream.range(0, nodeList.getLength()).boxed().map(nodeList::item)
-                .filter(node -> node.getNodeName().startsWith(criteria))
-                .sorted(Comparator.comparing(o -> o.getNodeName())).collect(Collectors.toList());
+                .filter(node -> node.getNodeName().startsWith(criteria)).sorted(Comparator.comparing(Node::getNodeName))
+                .collect(Collectors.toList());
     }
 
     public int getMaxNumberofNodeType(PortDefinition portDefinition) {
-        Element root = getRoot();
-        if (root != null) {
-            List<Node> filteredNodes = getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName());
-            return filteredNodes.size();
-        }
-        return 0;
+        return getRoot().map(root -> getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName()).size())
+                .orElse(0);
     }
 
-    private @Nullable Element getRoot() {
-        if (doc == null) {
+    private Optional<Element> getRoot() {
+        if (doc.isEmpty()) {
             read();
         }
-        if (doc != null) {
-            return doc.getDocumentElement();
-        }
-        return null;
+        return Optional.ofNullable(doc.map(Document::getDocumentElement).orElse(null));
     }
 }

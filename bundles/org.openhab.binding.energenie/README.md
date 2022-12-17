@@ -1,7 +1,6 @@
 # Gembird energenie Binding
 
-This binding integrates the Gembird energenie range of power extenders by using the Energenie Data Exchange Protocol and power reading devices through HTTP interface. 
-
+This binding integrates the Gembird energenie range of power extenders by using the Energenie Data Exchange Protocol and power reading devices through HTTP interface.
 
 ## Supported Things
 
@@ -17,7 +16,7 @@ The Binding does not need any specific configuration
 
 ## Thing Configuration
 
-The device requires the IP-address and a password as a configuration value in order for the binding to know where to access it and to login to the device. 
+The device requires the IP-address and a password as a configuration value in order for the binding to know where to access it and to login to the device.
 
 | Parameter | Description                                          |
 |-----------|------------------------------------------------------|
@@ -48,7 +47,7 @@ PWM-LAN devices support the following channels
 
 Things
 
-```
+```java
 Thing energenie:pm2lan:pm2lan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 Thing energenie:pmslan:pmslan [ host="xxx.xxx.xxx.xxx", password="your password" ]
 Thing energenie:pms2lan:pms2lan [ host="xxx.xxx.xxx.xxx", password="your password" ]
@@ -58,7 +57,7 @@ Thing energenie:pwmlan:pwmlan [ host="xxx.xxx.xxx.xxx", password="your password"
 
 Items
 
-```
+```java
 //Power extenders
 Switch Socket1  { channel="energenie:pm2lan:pm2lan:socket1" }
 Switch Socket2  { channel="energenie:pm2lan:pm2lan:socket2" }
@@ -74,7 +73,7 @@ Number Energy { channel="energenie:pwmlan:pwmlan:energy" }
 
 Sitemap
 
-```
+```perl
 sitemap energenie label="Energenie Devices"
 {
     Frame {

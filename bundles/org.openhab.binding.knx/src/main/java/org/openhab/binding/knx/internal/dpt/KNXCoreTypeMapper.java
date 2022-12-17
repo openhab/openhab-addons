@@ -75,7 +75,7 @@ import tuwien.auto.calimero.dptxlator.TranslatorTypes;
  * This class provides type mapping between all openHAB core types and KNX data point types.
  *
  * Each 'MainType' delivered from calimero, has a default mapping
- * for all it's children to a openHAB Typeclass.
+ * for all it's children to an openHAB Typeclass.
  * All these 'MainType' mapping's are put into 'dptMainTypeMap'.
  *
  * Default 'MainType' mapping's we can override by a specific mapping.

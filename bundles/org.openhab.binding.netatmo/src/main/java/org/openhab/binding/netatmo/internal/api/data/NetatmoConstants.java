@@ -84,7 +84,7 @@ public class NetatmoConstants {
         PRESSURE(260, 1260, 0.1, HECTO(SIUnits.PASCAL), "pressure", "measure", true),
         CO2(0, 5000, 50, Units.PARTS_PER_MILLION, "co2", "measure", true),
         NOISE(35, 120, 1, Units.DECIBEL, "noise", "measure", true),
-        RAIN_QUANTITY(0, 150, 0.1, MILLI(SIUnits.METRE), "sum_rain", "sum_rain", false),
+        RAIN_QUANTITY(0, Double.MAX_VALUE, 0.1, MILLI(SIUnits.METRE), "sum_rain", "sum_rain", false),
         RAIN_INTENSITY(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR, "", "", false),
         WIND_SPEED(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR, "", "", false),
         WIND_ANGLE(0, 360, 5, Units.DEGREE_ANGLE, "", "", false),
@@ -147,6 +147,7 @@ public class NetatmoConstants {
     public static final String PARAM_HOME_ID = "home_id";
     public static final String PARAM_ROOM_ID = "room_id";
     public static final String PARAM_PERSON_ID = "person_id";
+    public static final String PARAM_EVENT_ID = "event_id";
     public static final String PARAM_SCHEDULE_ID = "schedule_id";
     public static final String PARAM_OFFSET = "offset";
     public static final String PARAM_GATEWAY_TYPE = "gateway_types";

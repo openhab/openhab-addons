@@ -37,6 +37,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="tag-status">
+		<item-type>Contact</item-type>
+		<label>Door Status</label>
+		<category>Door</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="anticipating-heating">
 		<item-type>Switch</item-type>
 		<label>Anticipated Heating</label>

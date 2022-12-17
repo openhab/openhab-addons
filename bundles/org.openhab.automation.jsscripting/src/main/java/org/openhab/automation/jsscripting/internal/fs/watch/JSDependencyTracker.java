@@ -14,8 +14,16 @@ package org.openhab.automation.jsscripting.internal.fs.watch;
 
 import java.io.File;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.automation.module.script.rulesupport.loader.DependencyTracker;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
+import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +32,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public class JSDependencyTracker extends DependencyTracker {
+@Component(service = JSDependencyTracker.class)
+@NonNullByDefault
+public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
     private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
 
@@ -35,6 +45,7 @@ public class JSDependencyTracker extends DependencyTracker {
         super(LIB_PATH);
     }
 
+    @Activate
     public void activate() {
         File directory = new File(LIB_PATH);
         if (!directory.exists()) {
@@ -46,5 +57,19 @@ public class JSDependencyTracker extends DependencyTracker {
         }
 
         super.activate();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        super.deactivate();
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "removeChangeTracker")
+    public void addChangeTracker(ScriptDependencyTracker.Listener listener) {
+        super.addChangeTracker(listener);
+    }
+
+    public void removeChangeTracker(ScriptDependencyTracker.Listener listener) {
+        super.removeChangeTracker(listener);
     }
 }

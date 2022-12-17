@@ -43,6 +43,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.homekit.Homekit;
@@ -96,6 +97,7 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
+import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
@@ -114,7 +116,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
 import tech.units.indriya.unit.UnitDimension;
 
 /**
- * Creates a optional characteristics .
+ * Creates an optional characteristics .
  *
  * @author Eugen Freiter - Initial contribution
  */
@@ -159,6 +161,7 @@ public class HomekitCharacteristicFactory {
             put(VOLUME, HomekitCharacteristicFactory::createVolumeCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
             put(HEATING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createHeatingThresholdCharacteristic);
+            put(RELATIVE_HUMIDITY, HomekitCharacteristicFactory::createRelativeHumidityCharacteristic);
             put(REMAINING_DURATION, HomekitCharacteristicFactory::createRemainingDurationCharacteristic);
             put(OZONE_DENSITY, HomekitCharacteristicFactory::createOzoneDensityCharacteristic);
             put(NITROGEN_DIOXIDE_DENSITY, HomekitCharacteristicFactory::createNitrogenDioxideDensityCharacteristic);
@@ -299,6 +302,11 @@ public class HomekitCharacteristicFactory {
         return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
     }
 
+    public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
+        return taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                new QuantityType(defaultValue, SIUnits.CELSIUS), true).doubleValue();
+    }
+
     private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
             int defaultValue) {
         return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem, defaultValue));
@@ -355,6 +363,8 @@ public class HomekitCharacteristicFactory {
                 value = ((PercentType) state).doubleValue();
             } else if (state instanceof DecimalType) {
                 value = ((DecimalType) state).doubleValue();
+            } else if (state instanceof QuantityType) {
+                value = ((QuantityType) state).doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         };
@@ -610,13 +620,65 @@ public class HomekitCharacteristicFactory {
 
     private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        int minValue = taggedItem.getConfigurationAsInt(HomekitTaggedItem.MIN_VALUE,
-                ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE);
-        return new ColorTemperatureCharacteristic(minValue,
-                taggedItem.getConfigurationAsInt(HomekitTaggedItem.MAX_VALUE,
-                        ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE),
-                getIntSupplier(taggedItem, minValue), setIntConsumer(taggedItem),
-                getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
+        final boolean inverted = taggedItem.isInverted();
+
+        int minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED), false)
+                .intValue();
+        int maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED), false)
+                .intValue();
+
+        // It's common to swap these if you're providing in Kelvin instead of mired
+        if (minValue > maxValue) {
+            int temp = minValue;
+            minValue = maxValue;
+            maxValue = temp;
+        }
+
+        final int finalMinValue = minValue;
+        final int range = maxValue - minValue;
+
+        return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
+            int value = finalMinValue;
+            final State state = taggedItem.getItem().getState();
+            if (state instanceof QuantityType<?>) {
+                // Number:Temperature
+                QuantityType<?> qt = (QuantityType<?>) state;
+                qt = qt.toInvertibleUnit(Units.MIRED);
+                if (qt == null) {
+                    logger.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
+                } else {
+                    value = qt.intValue();
+                }
+            } else if (state instanceof PercentType) {
+                double percent = ((PercentType) state).doubleValue();
+                // invert so that 0% == coolest
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+
+                // Dimmer
+                // scale to the originally configured range
+                value = (int) (percent * range / 100) + finalMinValue;
+            } else if (state instanceof DecimalType) {
+                value = ((DecimalType) state).intValue();
+            }
+            return CompletableFuture.completedFuture(value);
+        }, (value) -> {
+            if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                // scale to a percent
+                double percent = (((double) value) - finalMinValue) * 100 / range;
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+                taggedItem.send(new PercentType(BigDecimal.valueOf(percent)));
+            } else if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new QuantityType(value, Units.MIRED));
+            }
+        }, getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COLOR_TEMPERATURE, updater));
     }
 
@@ -728,9 +790,8 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
@@ -742,12 +803,18 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
+    }
+
+    private static CurrentRelativeHumidityCharacteristic createRelativeHumidityCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        return new CurrentRelativeHumidityCharacteristic(getDoubleSupplier(taggedItem, 0.0),
+                getSubscriber(taggedItem, RELATIVE_HUMIDITY, updater),
+                getUnsubscriber(taggedItem, RELATIVE_HUMIDITY, updater));
     }
 
     private static OzoneDensityCharacteristic createOzoneDensityCharacteristic(final HomekitTaggedItem taggedItem,
@@ -800,6 +867,11 @@ public class HomekitCharacteristicFactory {
     private static VOCDensityCharacteristic createVOCDensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new VOCDensityCharacteristic(
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MIN_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MAX_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP, VOCDensityCharacteristic.DEFAULT_STEP),
                 getDoubleSupplier(taggedItem,
                         taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                                 VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),

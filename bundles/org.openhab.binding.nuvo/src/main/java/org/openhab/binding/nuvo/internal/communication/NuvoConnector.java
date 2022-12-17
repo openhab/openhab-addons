@@ -54,21 +54,21 @@ public abstract class NuvoConnector {
 
     private static final Pattern SRC_PATTERN = Pattern.compile("^#S(\\d{1})(.*)$");
     private static final Pattern ZONE_PATTERN = Pattern.compile("^#Z(\\d{1,2}),(.*)$");
-    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})(.*)$");
-    private static final Pattern ZONE_MENUREQ_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})MENUREQ(.*)$");
-    private static final Pattern ZONE_BUTTON2_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})BUTTON(.*)$");
-    private static final Pattern ZONE_BUTTONTWO_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})BUTTONTWO(.*)$");
+    private static final Pattern ZONE_SOURCE_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})(.*)$");
+    private static final Pattern NN_MENUREQ_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})MENUREQ(.*)$");
+    private static final Pattern NN_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})BUTTON(.*)$");
+    private static final Pattern NN_BUTTONTWO_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})BUTTONTWO(.*)$");
 
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
 
     // S2ALBUMARTREQ0x620FD879,80,80,2,0x00C0C0C0,0,0,0,0,1
-    private static final Pattern ALBUM_ART_REQ = Pattern.compile("^#S(\\d{1})ALBUMARTREQ(.*)$");
+    private static final Pattern NN_ALBUM_ART_REQ = Pattern.compile("^#S(\\d{1})ALBUMARTREQ(.*)$");
 
     // S2ALBUMARTFRAGREQ0x620FD879,0,750
-    private static final Pattern ALBUM_ART_FRAG_REQ = Pattern.compile("^#S(\\d{1})ALBUMARTFRAGREQ(.*)$");
+    private static final Pattern NN_ALBUM_ART_FRAG_REQ = Pattern.compile("^#S(\\d{1})ALBUMARTFRAGREQ(.*)$");
 
     // S6FAVORITE0x000003E8
-    private static final Pattern FAVORITE_PATTERN = Pattern.compile("^#S(\\d{1})FAVORITE0x(.*)$");
+    private static final Pattern NN_FAVORITE_PATTERN = Pattern.compile("^#S(\\d{1})FAVORITE0x(.*)$");
 
     private final Logger logger = LoggerFactory.getLogger(NuvoConnector.class);
 
@@ -88,6 +88,7 @@ public abstract class NuvoConnector {
     private List<NuvoMessageEventListener> listeners = new ArrayList<>();
 
     private boolean isEssentia = true;
+    private boolean isAnyOhNuvoNet = false;
 
     /**
      * Get whether the connection is established or not
@@ -114,6 +115,15 @@ public abstract class NuvoConnector {
      */
     public void setEssentia(boolean isEssentia) {
         this.isEssentia = isEssentia;
+    }
+
+    /**
+     * Tell the connector to listen for NuvoNet source messages
+     *
+     * @param true if any sources are configured as openHAB NuvoNet sources
+     */
+    public void setAnyOhNuvoNet(boolean isAnyOhNuvoNet) {
+        this.isAnyOhNuvoNet = isAnyOhNuvoNet;
     }
 
     /**
@@ -307,7 +317,7 @@ public abstract class NuvoConnector {
     }
 
     /**
-     * Analyze an incoming message and dispatch corresponding (type, key, value) to the event listeners
+     * Analyze an incoming message and dispatch corresponding (type, zone, src, value) to the event listeners
      *
      * @param incomingMessage the received message
      */
@@ -327,119 +337,117 @@ public abstract class NuvoConnector {
             } catch (NuvoException e) {
                 logger.debug("Error sending response to PING command");
             }
-            dispatchKeyValue(TYPE_PING, BLANK, BLANK);
+            dispatchKeyValue(TYPE_PING, BLANK);
             return;
         }
 
         if (RESTART.equals(message)) {
-            dispatchKeyValue(TYPE_RESTART, BLANK, BLANK);
+            dispatchKeyValue(TYPE_RESTART, BLANK);
             return;
         }
 
         if (message.contains(VER_STR_E6) || message.contains(VER_STR_GC)) {
             // example: #VER"NV-E6G FWv2.66 HWv0"
             // split on " and return the version number
-            dispatchKeyValue(TYPE_VERSION, "", message.split("\"")[1]);
+            dispatchKeyValue(TYPE_VERSION, message.split("\"")[1]);
             return;
         }
 
         if (message.equals(ALL_OFF)) {
-            dispatchKeyValue(TYPE_ALLOFF, BLANK, BLANK);
+            dispatchKeyValue(TYPE_ALLOFF, BLANK);
             return;
         }
 
         if (message.contains(MUTE)) {
-            dispatchKeyValue(TYPE_ALLMUTE, BLANK, message.substring(message.length() - 1));
+            dispatchKeyValue(TYPE_ALLMUTE, message.substring(message.length() - 1));
             return;
         }
 
         if (message.contains(PAGE)) {
-            dispatchKeyValue(TYPE_PAGE, BLANK, message.substring(message.length() - 1));
+            dispatchKeyValue(TYPE_PAGE, message.substring(message.length() - 1));
             return;
         }
 
-        // Amp controller sent an album art request
-        Matcher matcher = ALBUM_ART_REQ.matcher(message);
-        if (matcher.find()) {
-            // pull out the source id and the remainder of the message
-            dispatchKeyValue(TYPE_ALBUM_ART_REQ, matcher.group(1), matcher.group(2));
-            return;
-        }
+        Matcher matcher;
 
-        // Amp controller sent an album art fragment request
-        matcher = ALBUM_ART_FRAG_REQ.matcher(message);
-        if (matcher.find()) {
-            // pull out the source id and the remainder of the message
-            dispatchKeyValue(TYPE_ALBUM_ART_FRAG_REQ, matcher.group(1), matcher.group(2));
-            return;
-        }
+        if (isAnyOhNuvoNet) {
+            // Amp controller sent a NuvoNet album art request
+            matcher = NN_ALBUM_ART_REQ.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_ALBUM_ART_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
 
-        // Amp controller sent a request to play a favorite
-        matcher = FAVORITE_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out the source id and the remainder of the message
-            dispatchKeyValue(TYPE_FAVORITE_REQ, matcher.group(1), matcher.group(2));
-            return;
+            // Amp controller sent a NuvoNet album art fragment request
+            matcher = NN_ALBUM_ART_FRAG_REQ.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_ALBUM_ART_FRAG_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
+
+            // Amp controller sent a request for a NuvoNet source to play a favorite
+            matcher = NN_FAVORITE_PATTERN.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_FAVORITE_REQ, BLANK, matcher.group(1), matcher.group(2));
+                return;
+            }
         }
 
         // Amp controller sent a source update ie: #S2DISPINFO,DUR3380,POS3090,STATUS2
         // or #S2DISPLINE1,"1 of 17"
         matcher = SRC_PATTERN.matcher(message);
         if (matcher.find()) {
-            // pull out the source id and the remainder of the message
-            dispatchKeyValue(TYPE_SOURCE_UPDATE, matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_SOURCE_UPDATE, BLANK, matcher.group(1), matcher.group(2));
             return;
         }
 
         // Amp controller sent a zone update ie: #Z11,ON,SRC3,VOL63,DND0,LOCK0
         matcher = ZONE_PATTERN.matcher(message);
         if (matcher.find()) {
-            // pull out the zone id and the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), BLANK, matcher.group(2));
             return;
         }
 
-        // Amp controller sent a zone BUTTONTWO press event ie: #Z11S3BUTTONTWO4,2,0,0,0
-        matcher = ZONE_BUTTONTWO_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // redundant - ignore
-            return;
-        }
-
-        // Amp controller sent a zone BUTTON press event ie: #Z4S6BUTTON1,1,0xFFFFFFFF,1,3
-        matcher = ZONE_BUTTON2_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out the remainder of the message: button #, action, menuid, itemid, itemidx
-            String[] buttonSplit = matcher.group(3).split(COMMA);
-
-            // second field is button action, only send DOWNUP (0) or DOWN (1), ignore UP (2)
-            if (ZERO.equals(buttonSplit[1]) || ONE.equals(buttonSplit[1])) {
-                // a button in a menu was pressed, send SxZy,menuid,itemidx
-                if (!ZERO.equals(buttonSplit[2])) {
-                    dispatchKeyValue(TYPE_MENU_ITEM_SELECTED, matcher.group(2), SRC_KEY + matcher.group(2) + ZONE_KEY
-                            + matcher.group(1) + COMMA + buttonSplit[2] + COMMA + buttonSplit[3]);
-                } else {
-                    // send the button # in the event, don't send extra fields menuid, itemid, etc..
-                    dispatchKeyValue(TYPE_ZONE_BUTTON2, matcher.group(2), buttonSplit[0]);
-                }
+        if (isAnyOhNuvoNet) {
+            // Amp controller sent a NuvoNet zone/source BUTTONTWO press event ie: #Z11S3BUTTONTWO4,2,0,0,0
+            matcher = NN_BUTTONTWO_PATTERN.matcher(message);
+            if (matcher.find()) {
+                // redundant - ignore
+                return;
             }
-            return;
+
+            // Amp controller sent a NuvoNet zone/source BUTTON press event ie: #Z4S6BUTTON1,1,0xFFFFFFFF,1,3
+            matcher = NN_BUTTON_PATTERN.matcher(message);
+            if (matcher.find()) {
+                // pull out the remainder of the message: button #, action, menuid, itemid, itemidx
+                String[] buttonSplit = matcher.group(3).split(COMMA);
+
+                // second field is button action, only send DOWNUP (0) or DOWN (1), ignore UP (2)
+                if (ZERO.equals(buttonSplit[1]) || ONE.equals(buttonSplit[1])) {
+                    // a button in a menu was pressed, send 'menuid,itemidx'
+                    if (!ZERO.equals(buttonSplit[2])) {
+                        dispatchKeyValue(TYPE_NN_MENU_ITEM_SELECTED, matcher.group(1), matcher.group(2),
+                                buttonSplit[2] + COMMA + buttonSplit[3]);
+                    } else {
+                        // send the button # in the event, don't send extra fields menuid, itemid, etc..
+                        dispatchKeyValue(TYPE_NN_BUTTON, matcher.group(1), matcher.group(2), buttonSplit[0]);
+                    }
+                }
+                return;
+            }
+
+            // Amp controller sent a NuvoNet zone/source menu request event ie: #Z2S6MENUREQ0x0000000B,1,0,0
+            matcher = NN_MENUREQ_PATTERN.matcher(message);
+            if (matcher.find()) {
+                dispatchKeyValue(TYPE_NN_MENUREQ, matcher.group(1), matcher.group(2), matcher.group(3));
+                return;
+            }
         }
 
-        // Amp controller sent a menu request event ie: #Z2S6MENUREQ0x0000000B,1,0,0
-        matcher = ZONE_MENUREQ_PATTERN.matcher(message);
+        // Amp controller sent a zone/source button press event ie: #Z11S3PLAYPAUSE
+        matcher = ZONE_SOURCE_PATTERN.matcher(message);
         if (matcher.find()) {
-            // pull out the source id and send SxZy plus the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_MENUREQ, matcher.group(2),
-                    SRC_KEY + matcher.group(2) + ZONE_KEY + matcher.group(1) + COMMA + matcher.group(3));
-            return;
-        }
-
-        // Amp controller sent a zone button press event ie: #Z11S3PLAYPAUSE
-        matcher = ZONE_BUTTON_PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out the source id and the remainder of the message, ignore the zone id
-            dispatchKeyValue(TYPE_ZONE_BUTTON, matcher.group(2), matcher.group(3));
+            dispatchKeyValue(TYPE_ZONE_SOURCE_BUTTON, matcher.group(1), matcher.group(2), matcher.group(3));
             return;
         }
 
@@ -447,7 +455,7 @@ public abstract class NuvoConnector {
         matcher = ZONE_CFG_PATTERN.matcher(message);
         if (matcher.find()) {
             // pull out the zone id and the remainder of the message
-            dispatchKeyValue(TYPE_ZONE_CONFIG, matcher.group(1), matcher.group(2));
+            dispatchKeyValue(TYPE_ZONE_CONFIG, matcher.group(1), BLANK, matcher.group(2));
             return;
         }
 
@@ -455,14 +463,25 @@ public abstract class NuvoConnector {
     }
 
     /**
-     * Dispatch an event (type, key, value) to the event listeners
+     * Dispatch a system level event without zone or src to the event listeners
      *
      * @param type the type
-     * @param key the key
      * @param value the value
      */
-    private void dispatchKeyValue(String type, String key, String value) {
-        NuvoMessageEvent event = new NuvoMessageEvent(this, type, key, value);
+    private void dispatchKeyValue(String type, String value) {
+        dispatchKeyValue(type, BLANK, BLANK, value);
+    }
+
+    /**
+     * Dispatch an event (type, zone, src, value) to the event listeners
+     *
+     * @param type the type
+     * @param zone the zone id
+     * @param src the source id
+     * @param value the value
+     */
+    private void dispatchKeyValue(String type, String zone, String src, String value) {
+        NuvoMessageEvent event = new NuvoMessageEvent(this, type, zone, src, value);
         listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

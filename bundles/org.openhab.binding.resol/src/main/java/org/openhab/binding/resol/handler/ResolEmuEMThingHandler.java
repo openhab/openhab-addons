@@ -44,7 +44,7 @@ import de.resol.vbus.SpecificationFile.Language;
 import de.resol.vbus.deviceemulators.EmDeviceEmulator;
 
 /**
- * The {@link ResolEmuEMThingHandler} is responsible for emulating a EM device
+ * The {@link ResolEmuEMThingHandler} is responsible for emulating an EM device
  *
  * @author Raphael Mack - Initial contribution
  */

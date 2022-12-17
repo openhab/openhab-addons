@@ -49,7 +49,8 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        ParadoxPanel panel = ParadoxPanel.getInstance();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
         StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
         updateState(PANEL_STATE_CHANNEL_UID, panelState);
         ParadoxInformation panelInformation = panel.getPanelInformation();

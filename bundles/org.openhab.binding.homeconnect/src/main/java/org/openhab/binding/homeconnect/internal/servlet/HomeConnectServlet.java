@@ -95,6 +95,7 @@ public class HomeConnectServlet extends HttpServlet {
     private static final String PARAM_BRIDGE_ID = "bridgeId";
     private static final String PARAM_THING_ID = "thingId";
     private static final String PARAM_PATH = "path";
+    private static final String PARAM_REDIRECT_URI = "redirectUri";
     private static final String ACTION_AUTHORIZE = "authorize";
     private static final String ACTION_CLEAR_CREDENTIALS = "clearCredentials";
     private static final String ACTION_SHOW_DETAILS = "show-details";
@@ -392,8 +393,11 @@ public class HomeConnectServlet extends HttpServlet {
             HomeConnectBridgeHandler bridgeHandler = bridgeHandlerOptional.get();
             if (ACTION_AUTHORIZE.equals(action)) {
                 try {
-                    String authorizationUrl = bridgeHandler.getOAuthClientService().getAuthorizationUrl(null, null,
-                            bridgeHandler.getThing().getUID().getAsString());
+                    String redirectUri = bridgeHandler.getConfiguration().isSimulator()
+                            ? request.getParameter(PARAM_REDIRECT_URI)
+                            : null;
+                    String authorizationUrl = bridgeHandler.getOAuthClientService().getAuthorizationUrl(redirectUri,
+                            null, bridgeHandler.getThing().getUID().getAsString());
                     logger.debug("Generated authorization url: {}", authorizationUrl);
 
                     response.sendRedirect(authorizationUrl);
@@ -491,8 +495,11 @@ public class HomeConnectServlet extends HttpServlet {
         Optional<HomeConnectBridgeHandler> bridgeHandler = getBridgeHandler(state);
         if (bridgeHandler.isPresent()) {
             try {
+                String redirectUri = bridgeHandler.get().getConfiguration().isSimulator()
+                        ? request.getRequestURL().toString()
+                        : null;
                 AccessTokenResponse accessTokenResponse = bridgeHandler.get().getOAuthClientService()
-                        .getAccessTokenResponseByAuthorizationCode(code, null);
+                        .getAccessTokenResponseByAuthorizationCode(code, redirectUri);
 
                 logger.debug("access token response: {}", accessTokenResponse);
 

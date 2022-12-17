@@ -25,6 +25,7 @@ import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
@@ -78,17 +79,20 @@ public class BooleanItemReader {
                 || (trueThreshold != null && baseItem instanceof NumberItem))) {
             if (trueThreshold != null) {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem, NumberItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             } else {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             }
         }
     }
 
     boolean getValue() {
-        final State state = item.getState();
+        State state = item.getState();
         final BigDecimal localTrueThresheold = trueThreshold;
+        if (state instanceof PercentType) {
+            state = state.as(OnOffType.class);
+        }
         if (state instanceof OnOffType) {
             return state.equals(trueOnOffValue);
         } else if (state instanceof OpenClosedType) {
@@ -104,7 +108,8 @@ public class BooleanItemReader {
                 return result ^ invertThreshold;
             }
         }
-        logger.debug("Unexpected item state,  returning false. Item {}, State {}", item.getName(), state);
+        logger.debug("Unexpected item state,  returning false. Item {}, State {} ({})", item.getName(), state,
+                state.getClass().getSimpleName());
         return false;
     }
 

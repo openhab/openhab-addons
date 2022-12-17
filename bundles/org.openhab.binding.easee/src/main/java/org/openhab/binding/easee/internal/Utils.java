@@ -56,7 +56,12 @@ public final class Utils {
      * @return
      */
     public static ZonedDateTime parseDate(String date) throws DateTimeParseException {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        DateTimeFormatter formatter;
+        if (date.length() == 24) {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        } else {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        }
         LOGGER.trace("parsing: {}", date);
         ZonedDateTime zdt = ZonedDateTime.parse(date, formatter);
         return zdt;

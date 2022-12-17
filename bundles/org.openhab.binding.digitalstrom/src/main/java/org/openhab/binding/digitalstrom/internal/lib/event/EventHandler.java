@@ -34,7 +34,7 @@ import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
 public interface EventHandler {
 
     /**
-     * Handles a {@link EventItem} e.g. which was detected by the {@link EventListener}.
+     * Handles an {@link EventItem} e.g. which was detected by the {@link EventListener}.
      *
      * @param eventItem to handle
      */
@@ -63,14 +63,14 @@ public interface EventHandler {
     String getUID();
 
     /**
-     * Sets a {@link EventListener} to this {@link EventHandler}.
+     * Sets an {@link EventListener} to this {@link EventHandler}.
      *
      * @param eventListener to set
      */
     void setEventListener(EventListener eventListener);
 
     /**
-     * Unsets a {@link EventListener} to this {@link EventHandler}.
+     * Unsets an {@link EventListener} to this {@link EventHandler}.
      *
      * @param eventListener to unset
      */

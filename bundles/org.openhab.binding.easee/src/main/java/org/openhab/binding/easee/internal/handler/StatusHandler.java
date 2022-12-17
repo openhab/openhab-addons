@@ -17,7 +17,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
 /**
- * functional interface to provide an function to update status of a thing or bridge.
+ * functional interface to provide a function to update status of a thing or bridge.
  *
  * @author Alexander Friese - initial contribution
  */

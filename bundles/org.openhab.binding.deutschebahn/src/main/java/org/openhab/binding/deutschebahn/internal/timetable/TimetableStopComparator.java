@@ -32,7 +32,7 @@ public class TimetableStopComparator implements Comparator<TimetableStop> {
     private final EventType eventSelection;
 
     /**
-     * Creates an new {@link TimetableStopComparator} that sorts {@link TimetableStop} according the Event selected
+     * Creates a new {@link TimetableStopComparator} that sorts {@link TimetableStop} according the Event selected
      * selected by the given {@link EventType}.
      */
     public TimetableStopComparator(EventType eventSelection) {

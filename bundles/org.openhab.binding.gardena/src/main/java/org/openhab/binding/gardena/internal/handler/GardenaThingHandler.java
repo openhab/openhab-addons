@@ -145,7 +145,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Converts a Gardena property value to a openHAB state.
+     * Converts a Gardena property value to an openHAB state.
      */
     private @Nullable State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         if (isLocalDurationCommand(channelUID)) {

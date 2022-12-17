@@ -70,6 +70,10 @@ public final class EcobeeUtils {
         return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.doubleValue());
     }
 
+    public static State undefOrLong(@Nullable Number value) {
+        return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.longValue());
+    }
+
     public static State undefOrQuantity(@Nullable Number value, Unit<?> unit) {
         return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }

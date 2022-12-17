@@ -19,7 +19,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 
 /**
- * An handler of an AVR connected through a serial port.
+ * A handler of an AVR connected through a serial port.
  *
  * @author Antoine Besnard - Initial contribution
  */

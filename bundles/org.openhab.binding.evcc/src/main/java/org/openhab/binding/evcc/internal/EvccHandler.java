@@ -66,7 +66,7 @@ public class EvccHandler extends BaseThingHandler {
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
 
-    private int targetSoC = 100;
+    private float targetSoC = 100;
     private boolean targetTimeEnabled = false;
     private ZonedDateTime targetTimeZDT = ZonedDateTime.now().plusHours(12);
 
@@ -85,7 +85,7 @@ public class EvccHandler extends BaseThingHandler {
                 return;
             }
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(groupId.toString().substring(9));
+            int loadpoint = Integer.parseInt(groupId.substring(9));
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
@@ -95,16 +95,27 @@ public class EvccHandler extends BaseThingHandler {
                     case CHANNEL_LOADPOINT_MODE:
                         if (command instanceof StringType) {
                             evccAPI.setMode(loadpoint, command.toString());
+                        } else {
+                            logger.debug("Command has wrong type, StringType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MIN_SOC:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMinSoC(loadpoint, ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
+                        } else if (command instanceof DecimalType) {
+                            evccAPI.setMinSoC(loadpoint, ((DecimalType) command).intValue());
+                        } else {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_SOC:
                         if (command instanceof QuantityType) {
-                            evccAPI.setTargetSoC(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setTargetSoC(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.PERCENT).intValue());
+                        } else if (command instanceof DecimalType) {
+                            evccAPI.setTargetSoC(loadpoint, ((DecimalType) command).intValue());
+                        } else {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_TIME:
@@ -117,9 +128,11 @@ public class EvccHandler extends BaseThingHandler {
                                 try {
                                     evccAPI.setTargetCharge(loadpoint, targetSoC, targetTimeZDT);
                                 } catch (DateTimeParseException e) {
-                                    logger.debug("Failed to set target charge", e);
+                                    logger.debug("Failed to set target charge: ", e);
                                 }
                             }
+                        } else {
+                            logger.debug("Command has wrong type, DateTimeType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_TARGET_TIME_ENABLED:
@@ -129,21 +142,35 @@ public class EvccHandler extends BaseThingHandler {
                         } else if (command == OnOffType.OFF) {
                             evccAPI.unsetTargetCharge(loadpoint);
                             targetTimeEnabled = false;
+                        } else {
+                            logger.debug("Command has wrong type, OnOffType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_PHASES:
                         if (command instanceof DecimalType) {
                             evccAPI.setPhases(loadpoint, ((DecimalType) command).intValue());
+                        } else {
+                            logger.debug("Command has wrong type, DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MIN_CURRENT:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMinCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMinCurrent(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
+                        } else if (command instanceof DecimalType) {
+                            evccAPI.setMinCurrent(loadpoint, ((DecimalType) command).intValue());
+                        } else {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     case CHANNEL_LOADPOINT_MAX_CURRENT:
                         if (command instanceof QuantityType) {
-                            evccAPI.setMaxCurrent(loadpoint, ((QuantityType<?>) command).intValue());
+                            evccAPI.setMaxCurrent(loadpoint,
+                                    ((QuantityType<?>) command).toUnit(Units.AMPERE).intValue());
+                        } else if (command instanceof DecimalType) {
+                            evccAPI.setMaxCurrent(loadpoint, ((DecimalType) command).intValue());
+                        } else {
+                            logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                         }
                         break;
                     default:
@@ -186,7 +213,7 @@ public class EvccHandler extends BaseThingHandler {
      */
     private void refresh() {
         logger.debug("Running refresh job ...");
-        EvccAPI evccAPI = null;
+        EvccAPI evccAPI;
         evccAPI = this.evccAPI;
         if (evccAPI == null) {
             return;
@@ -194,7 +221,7 @@ public class EvccHandler extends BaseThingHandler {
         try {
             this.result = evccAPI.getResult();
         } catch (EvccApiException e) {
-            logger.debug("Failed to get state");
+            logger.debug("Failed to get state: ", e);
         }
         Result result = this.result;
         if (result == null) {
@@ -309,28 +336,28 @@ public class EvccHandler extends BaseThingHandler {
         ChannelUID channel;
         boolean batteryConfigured = this.batteryConfigured;
         if (batteryConfigured) {
-            double batteryPower = result.getBatteryPower();
+            float batteryPower = result.getBatteryPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
-            int batterySoC = result.getBatterySoC();
+            float batterySoC = result.getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_SOC);
             updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
-            int batteryPrioritySoC = result.getBatterySoC();
+            float batteryPrioritySoC = result.getBatterySoC();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
-            double gridPower = result.getGridPower();
+            float gridPower = result.getGridPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
-        double homePower = result.getHomePower();
+        float homePower = result.getHomePower();
         channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_HOME_POWER);
         updateState(channel, new QuantityType<>(homePower, Units.WATT));
         boolean pvConfigured = this.pvConfigured;
         if (pvConfigured) {
-            double pvPower = result.getPvPower();
+            float pvPower = result.getPvPower();
             channel = new ChannelUID(getThing().getUID(), "general", CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
@@ -347,22 +374,22 @@ public class EvccHandler extends BaseThingHandler {
         int activePhases = loadpoint.getActivePhases();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_ACTIVE_PHASES);
         updateState(channel, new DecimalType(activePhases));
-        double chargeCurrent = loadpoint.getChargeCurrent();
+        float chargeCurrent = loadpoint.getChargeCurrent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_CURRENT);
         updateState(channel, new QuantityType<>(chargeCurrent, Units.AMPERE));
         long chargeDuration = loadpoint.getChargeDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_DURATION);
         updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
-        double chargePower = loadpoint.getChargePower();
+        float chargePower = loadpoint.getChargePower();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_POWER);
         updateState(channel, new QuantityType<>(chargePower, Units.WATT));
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
         updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
-        double chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
+        float chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
         updateState(channel, new QuantityType<>(chargeRemainingEnergy, Units.WATT_HOUR));
-        double chargedEnergy = loadpoint.getChargedEnergy();
+        float chargedEnergy = loadpoint.getChargedEnergy();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_CHARGED_ENERGY);
         updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));
         boolean charging = loadpoint.getCharging();
@@ -380,13 +407,13 @@ public class EvccHandler extends BaseThingHandler {
         boolean hasVehicle = loadpoint.getHasVehicle();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_HAS_VEHICLE);
         updateState(channel, OnOffType.from(hasVehicle));
-        double maxCurrent = loadpoint.getMaxCurrent();
+        float maxCurrent = loadpoint.getMaxCurrent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);
         updateState(channel, new QuantityType<>(maxCurrent, Units.AMPERE));
-        double minCurrent = loadpoint.getMinCurrent();
+        float minCurrent = loadpoint.getMinCurrent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MIN_CURRENT);
         updateState(channel, new QuantityType<>(minCurrent, Units.AMPERE));
-        int minSoC = loadpoint.getMinSoC();
+        float minSoC = loadpoint.getMinSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_MIN_SOC);
         updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
         String mode = loadpoint.getMode();
@@ -414,19 +441,19 @@ public class EvccHandler extends BaseThingHandler {
         String title = loadpoint.getTitle();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_TITLE);
         updateState(channel, new StringType(title));
-        double vehicleCapacity = loadpoint.getVehicleCapacity();
+        float vehicleCapacity = loadpoint.getVehicleCapacity();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
         updateState(channel, new QuantityType<>(vehicleCapacity, Units.WATT_HOUR));
-        double vehicleOdometer = loadpoint.getVehicleOdometer();
+        float vehicleOdometer = loadpoint.getVehicleOdometer();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
         boolean vehiclePresent = loadpoint.getVehiclePresent();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_PRESENT);
         updateState(channel, OnOffType.from(vehiclePresent));
-        long vehicleRange = loadpoint.getVehicleRange();
+        float vehicleRange = loadpoint.getVehicleRange();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_RANGE);
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
-        int vehicleSoC = loadpoint.getVehicleSoC();
+        float vehicleSoC = loadpoint.getVehicleSoC();
         channel = new ChannelUID(getThing().getUID(), loadpointName, CHANNEL_LOADPOINT_VEHICLE_SOC);
         updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
         String vehicleTitle = loadpoint.getVehicleTitle();

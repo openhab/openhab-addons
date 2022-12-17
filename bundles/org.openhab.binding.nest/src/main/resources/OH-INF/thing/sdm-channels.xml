@@ -68,7 +68,7 @@
 	<channel-type id="SDMCameraEventImage">
 		<item-type>Image</item-type>
 		<label>Image</label>
-		<description>Static image based on a event</description>
+		<description>Static image based on an event</description>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:nest:sdm_camera_image"/>
 	</channel-type>

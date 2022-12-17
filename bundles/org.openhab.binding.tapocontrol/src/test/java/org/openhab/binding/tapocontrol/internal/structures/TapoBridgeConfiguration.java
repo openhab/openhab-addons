@@ -13,10 +13,6 @@
 package org.openhab.binding.tapocontrol.internal.structures;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TapoBridgeConfiguration} class contains fields mapping bridge configuration parameters.
@@ -26,52 +22,21 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public final class TapoBridgeConfiguration {
-    private final Logger logger = LoggerFactory.getLogger(TapoBridgeConfiguration.class);
-
     /* THING CONFIGUTATION PROPERTYS */
     public static final String CONFIG_EMAIL = "username";
     public static final String CONFIG_PASS = "password";
-    public static final String CONFIG_DEVICE_IP = "ipAddress";
-    public static final String CONFIG_UPDATE_INTERVAL = "pollingInterval";
-    public static final String CONFIG_CLOUD_UPDATE_INTERVAL = "cloudReconnect";
     public static final String CONFIG_DISCOVERY_CLOUD = "cloudDiscovery";
     public static final String CONFIG_DISCOVERY_UDP = "udpDiscovery";
     public static final String CONFIG_DISCOVERY_INTERVAL = "discoveryInterval";
 
+    /* DEFAULT & FIXED CONFIGURATIONS */
+    public static final Integer CONFIG_CLOUD_FIXED_INTERVAL = 1440;
+
     /* thing configuration parameter. */
     public String username = "";
     public String password = "";
-    public Boolean cloudDiscoveryEnabled = false;
-    public Boolean udpDiscoveryEnabled = false;
-    public Integer cloudReconnectIntervalM = 1440;
-    public Integer discoveryIntervalM = 30;
-
-    private Thing bridge;
-
-    /**
-     * Create settings
-     * 
-     * @param thing BridgeThing
-     */
-    public TapoBridgeConfiguration(Thing thing) {
-        this.bridge = thing;
-        loadSettings();
-    }
-
-    /**
-     * LOAD SETTINGS
-     */
-    public void loadSettings() {
-        try {
-            Configuration config = this.bridge.getConfiguration();
-            username = config.get(CONFIG_EMAIL).toString();
-            password = config.get(CONFIG_PASS).toString();
-            cloudDiscoveryEnabled = Boolean.parseBoolean(config.get(CONFIG_DISCOVERY_CLOUD).toString());
-            udpDiscoveryEnabled = Boolean.parseBoolean(config.get(CONFIG_DISCOVERY_UDP).toString());
-            cloudReconnectIntervalM = Integer.valueOf(config.get(CONFIG_CLOUD_UPDATE_INTERVAL).toString());
-            discoveryIntervalM = Integer.valueOf(config.get(CONFIG_DISCOVERY_INTERVAL).toString());
-        } catch (Exception e) {
-            logger.warn("{} error reading configuration: '{}'", bridge.getUID(), e.getMessage());
-        }
-    }
+    public boolean cloudDiscovery = false;
+    public boolean udpDiscovery = false;
+    public int reconnectInterval = CONFIG_CLOUD_FIXED_INTERVAL;
+    public int discoveryInterval = 60;
 }

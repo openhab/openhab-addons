@@ -57,12 +57,6 @@ public class StateInfoResponse extends Packet {
         this.downtime = downtime;
     }
 
-    public StateInfoResponse() {
-        setTagged(false);
-        setAddressable(true);
-        setResponseRequired(true);
-    }
-
     @Override
     public int packetType() {
         return TYPE;

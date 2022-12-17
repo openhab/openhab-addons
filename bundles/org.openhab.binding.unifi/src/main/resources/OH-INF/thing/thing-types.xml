@@ -249,16 +249,18 @@
 	</channel-type>
 
 	<channel-type id="uptime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Uptime of the client (in seconds)</description>
-		<state readOnly="true"></state>
+		<category>Time</category>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="lastSeen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Timestamp of when the client was last seen</description>
+		<category>Time</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -341,7 +343,7 @@
 			<options>
 				<option value="off">Off</option>
 				<option value="auto">Auto</option>
-				<option value="24v">24V</option>
+				<option value="pasv24">24V</option>
 				<option value="passthrough">Passthrough</option>
 			</options>
 		</state>

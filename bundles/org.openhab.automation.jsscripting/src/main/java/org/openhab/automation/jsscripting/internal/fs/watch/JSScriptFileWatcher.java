@@ -15,29 +15,35 @@ package org.openhab.automation.jsscripting.internal.fs.watch;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
+import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
 import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileReference;
-import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Monitors <openHAB-conf>/automation/js for Javascript files, but not libraries
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public class JSScriptFileWatcher extends ScriptFileWatcher {
+@Component(immediate = true, service = ScriptDependencyTracker.Listener.class)
+public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
-    private static final String IGNORE_DIR_NAME = "node_modules";
 
     private final String ignorePath;
 
-    public JSScriptFileWatcher(final ScriptEngineManager manager, final ReadyService readyService,
-            JSDependencyTracker dependencyTracker) {
-        super(manager, dependencyTracker, readyService, FILE_DIRECTORY);
+    @Activate
+    public JSScriptFileWatcher(final @Reference ScriptEngineManager manager,
+            final @Reference ReadyService readyService) {
+        super(manager, readyService, FILE_DIRECTORY);
 
         ignorePath = pathToWatch + File.separator + "node_modules";
     }
@@ -45,8 +51,10 @@ public class JSScriptFileWatcher extends ScriptFileWatcher {
     @Override
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
-        if (!path.startsWith(ignorePath)) {
-            super.processWatchEvent(event, kind, path);
+        if (Objects.nonNull(path)) {
+            if (!path.startsWith(ignorePath)) {
+                super.processWatchEvent(event, kind, path);
+            }
         }
     }
 

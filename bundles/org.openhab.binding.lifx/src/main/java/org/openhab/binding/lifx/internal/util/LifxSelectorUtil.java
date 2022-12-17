@@ -276,8 +276,10 @@ public class LifxSelectorUtil {
 
         try {
             if (castType == UNICAST) {
+                packet.setTagged(false);
                 LifxThrottlingUtil.lock(packet.getTarget());
             } else {
+                packet.setTagged(true);
                 LifxThrottlingUtil.lock();
             }
 

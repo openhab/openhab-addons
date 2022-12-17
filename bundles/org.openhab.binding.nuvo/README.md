@@ -5,9 +5,9 @@ Up to 20 keypad zones can be controlled when zone expansion modules are used (if
 
 The binding supports three different kinds of connections:
 
-* serial connection,
-* serial over IP connection,
-* direct IP connection via a Nuvo MPS4 music server
+- serial connection,
+- serial over IP connection,
+- direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a USB to serial adapter.
 
@@ -40,37 +40,37 @@ The thing has the following configuration parameters:
 |--------------------------|--------------- |-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
 | Serial Port              | serialPort     | Serial port to use for connecting to the Nuvo whole house amplifier device                                                                      | a comm port name                                                                   |
 | Address                  | host           | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server                  | host name or ip                                                                    |
-| Port                     | port           | Communication port (serial over IP).                                                                                                            | ip port number                                                                     |
+| Port                     | port           | Communication port (serial over IP)                                                                                                             | ip port number                                                                     |
 | Number of Zones          | numZones       | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)                     | (1-20; default 6)                                                                  |
 | Favorite Labels          | favoriteLabels | A comma separated list of up to 12 label names that are loaded into the 'favorites' channel of each zone. These represent keypad favorites 1-12 | Optional; Comma separated list, max 12 items. ie: Favorite 1,Favorite 2,Favorite 3 |
 | Sync Clock on GConcerto  | clockSync      | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock              | Boolean; default false                                                             |
 | Source N is NuvoNet      | nuvoNetSrcN    | MPS4 Only! Indicate if the source is a NuvoNet source in the MPS4 or in openHAB. Nuvo tuners & iPod docks and all others set to 0               | 0 = Non-NuvoNet source, 1 = Source is a used by MPS4, 2 = openHAB NuvoNet Source   |
-| Source N Favorites       | favoritesSrcN  | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See *very advanced* rules              | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock    |
-| Source N Favorite Prefix | favPrefixN     | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See *very advanced* rules                   | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'       |
-| Source N Menu XML        | menuXmlSrcN    | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu      | XML Text string; see examples below and *very advanced* rules for usage            |
+| Source N Favorites       | favoritesSrcN  | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See _very advanced_ rules              | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock    |
+| Source N Favorite Prefix | favPrefixN     | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See _very advanced_ rules                   | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'       |
+| Source N Menu XML        | menuXmlSrcN    | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu      | XML Text string; see examples below and _very advanced_ rules for usage            |
 
 Some notes:
 
-* If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
-* MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below.
-* As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
-* By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
-* If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
-* Source display_line1 thru 4 can only be updated on non NuvoNet sources when not using an MPS4 connection.
-* The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
+- If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
+- MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below. In this case,`SxDISPINFOTWO` and `SxDISPLINES` must be used instead. See the _very advanced_ rule examples below.
+- As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
+- By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
+- If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
+- Source display_line1 thru 4 can only be updated on non NuvoNet sources when not using an MPS4 connection.
+- The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
+- On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:57600 8DATABITS NONE 1STOPBIT LOCAL
 ```
 
-* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
+- Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
 
-```
+```yaml
 connection: &conNuvo
     accepter: tcp,4444
     enable: on
@@ -85,40 +85,42 @@ connection: &conNuvo
 
 The following channels are available:
 
-| Channel ID                           | Item Type   | Description                                                                                                                 |
-|--------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------|
-| system#alloff                        | Switch      | Turn all zones off simultaneously                                                                                           |
-| system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                                     |
-| system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                                     |
-| system#sendcmd                       | String      | Send a command to the amplifier                                                                                             |
-| zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                                         |
-| zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                    |
-| zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                 |
-| zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                                       |
-| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12)                                                                                  |
-| zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                                 |
-| zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                             |
-| zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                               |
-| zoneN#balance (where N= 1-20)        | Number      | Adjust the balance control for a zone (-18 to 18 [in increments of 2]) -18=left, 0=center, 18=right                         |
-| zoneN#loudness (where N= 1-20)       | Switch      | Turn on or off the loudness compensation setting for the zone                                                               |
-| zoneN#dnd (where N= 1-20)            | Switch      | Turn on or off the Do Not Disturb for the zone (for when the amplifier's Page All Zones feature is activated)               |
-| zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                                  |
-| zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                                            |
-| sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                     |
-| sourceN#display_line2 (where N= 1-6) | String      | 2nd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                     |
-| sourceN#display_line3 (where N= 1-6) | String      | 3rd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                     |
-| sourceN#display_line4 (where N= 1-6) | String      | 4th line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                     |
-| sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating                |
-| sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                               |
-| sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                             |
-| sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)               |
-| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See *very advanced* rules (SendOnly) |
+| Channel ID                           | Item Type   | Description                                                                                                                    |
+|--------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------------|
+| system#alloff                        | Switch      | Turn all zones off simultaneously                                                                                              |
+| system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                                        |
+| system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                                        |
+| system#sendcmd                       | String      | Send a command to the amplifier                                                                                                |
+| system#buttonpress                   | String      | Indicates the zone number followed by a comma and the last button pressed or NuvoNet menu item selected on a keypad (ReadOnly) |
+| zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                                            |
+| zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                       |
+| zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                    |
+| zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                                          |
+| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12)                                                                                     |
+| zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                                    |
+| zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                |
+| zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                  |
+| zoneN#balance (where N= 1-20)        | Number      | Adjust the balance control for a zone (-18 to 18 [in increments of 2]) -18=left, 0=center, 18=right                            |
+| zoneN#loudness (where N= 1-20)       | Switch      | Turn on or off the loudness compensation setting for the zone                                                                  |
+| zoneN#dnd (where N= 1-20)            | Switch      | Turn on or off the Do Not Disturb for the zone (for when the amplifier's Page All Zones feature is activated)                  |
+| zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                                     |
+| zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                                               |
+| sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
+| sourceN#display_line2 (where N= 1-6) | String      | 2nd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
+| sourceN#display_line3 (where N= 1-6) | String      | 3rd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
+| sourceN#display_line4 (where N= 1-6) | String      | 4th line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
+| sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating                   |
+| sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                                  |
+| sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                                |
+| sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)                  |
+| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See _very advanced_ rules (SendOnly)    |
+| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from the art_url channel for display in a UI widget (ReadOnly)                                            |
 
 ## Full Example
 
 nuvo.things:
 
-```
+```java
 // serial port connection
 nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false]
 
@@ -132,12 +134,13 @@ nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, cl
 
 nuvo.items:
 
-```
+```java
 // system
 Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
 String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd" }
+String nuvo_system_buttonpress "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#buttonpress" }
 
 // zones
 Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
@@ -166,6 +169,7 @@ Number:Time nuvo_s1_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s1_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
 // String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
+// Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
 
 String nuvo_s2_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line1" }
 String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line2" }
@@ -176,6 +180,7 @@ Number:Time nuvo_s2_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s2_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
 // String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
+// Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
 
 String nuvo_s3_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line1" }
 String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line2" }
@@ -186,6 +191,7 @@ Number:Time nuvo_s3_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s3_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
 // String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
+// Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
 
 String nuvo_s4_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line1" }
 String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line2" }
@@ -196,6 +202,7 @@ Number:Time nuvo_s4_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s4_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
 // String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
+// Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
 
 String nuvo_s5_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line1" }
 String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line2" }
@@ -206,6 +213,7 @@ Number:Time nuvo_s5_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s5_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
 // String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
+// Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
 
 String nuvo_s6_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line1" }
 String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line2" }
@@ -216,12 +224,13 @@ Number:Time nuvo_s6_track_length "Track Length: [%s s]" { channel="nuvo:amplifie
 Number:Time nuvo_s6_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
 // String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
+// Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
 
 ```
 
 nuvo.sitemap:
 
-```
+```perl
 sitemap nuvo label="Audio Control" {
     Frame label="System" {
         Switch item=nuvo_system_alloff mappings=[ON=" "]
@@ -301,8 +310,15 @@ sitemap nuvo label="Audio Control" {
             Switch item=nuvo_z1_party
         }
         Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
+
+        // Image item=nuvo_s1_album_art visibility=[nuvo_z1_source=="1"]
+        // Image item=nuvo_s2_album_art visibility=[nuvo_z1_source=="2"]
+        // Image item=nuvo_s3_album_art visibility=[nuvo_z1_source=="3"]
+        // Image item=nuvo_s4_album_art visibility=[nuvo_z1_source=="4"]
+        // Image item=nuvo_s5_album_art visibility=[nuvo_z1_source=="5"]
+        // Image item=nuvo_s6_album_art visibility=[nuvo_z1_source=="6"]
     }
-    
+
     // repeat for zones 2-20 (substitute z1)
 }
 
@@ -310,7 +326,7 @@ sitemap nuvo label="Audio Control" {
 
 nuvo.rules:
 
-```
+```java
 import java.text.Normalizer
 
 // To be used with a direct serial port or serial over IP connection
@@ -349,16 +365,12 @@ rule "Load track play info for Source 3"
 when
     Item Item_Containing_TrackLength received update
 then
-    if (null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
-        return
-    }
     // strip off any non-numeric characters and multiply seconds by 10 (Nuvo expects tenths of a second)
     var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
 
     // '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
     // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
-    actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + ",0,2")
+    sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + ",0,2")
     
 end
 
@@ -411,25 +423,20 @@ then
     var int trackLength = Integer::parseInt(Item_Containing_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
     var int trackPosition = Integer::parseInt(Item_Containing_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
 
-    if (null === actions) {
-        logInfo("actions", "Actions not found, check thing ID")
-        return
-    }
-
     switch playMode {
         case "Nothing playing": {
             // when idle, '1' tells Nuvo to display 'idle' on the keypad
-            actions.sendNuvoCommand("S3DISPINFO,0,0,1")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO,0,0,1")
         }
         case "Playing": {
             // when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
             // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
-            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
         }
         case "Paused": {
             // when playback is paused, '3' tells Nuvo to display 'paused' on the keypad and stop counting up the elapsed time
             // trackPosition should indicate the time elapsed of the track when playback was paused
-            actions.sendNuvoCommand("S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
+            sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",3")
         }
     }
 end
@@ -448,7 +455,7 @@ Each `<topmenu>` item can have up to 20 `<item>` tags contained within.
 The topmenu item does not need to have any sub menu items if not desired as seen in the 'Top menu 2' example.
 A complete XML string for the desired menu is then stored in the `menuXmlSrcN` configuration parameter for a given source and will be loaded into the Nuvo keypads during binding initialization.
 
-```
+```xml
 <topmenu text="Top menu 1">
    <item>menu1 a</item>
    <item>menu1 b</item>
@@ -459,13 +466,58 @@ A complete XML string for the desired menu is then stored in the `menuXmlSrcN` c
     <item>menu3 x</item>
     <item>menu3 y</item>
 </topmenu>
+<topmenu text="Turn off other zones"/>
 ```
 
 When a menu item is selected, the text of the topmenu item and sub menu item (if applicable) will be sent to the button channel in a pipe delimited format.
 For example, when item `menu1 b` is selected, the text `Top menu 1|menu1 b` will be sent to the button channel.
 When the item `Top menu 2` is selected the text sent to the button channel will simply be `Top menu 2` since this menu item does not have any sub menu items.
 
-### MPS4 openHAB NuvoNet source custom integration rules *(very advanced)*
+### Rule to trigger an action based on which keypad zone where a button was pressed or menu item selected
+
+By using the `system#buttonpress` channel it is possible to trigger an action based on which keypad zone was used to send the action.
+This channel appends the zone number and a comma before the button action or menu item selection.  
+
+For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`  
+Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`  
+
+The functionality can be used to create very powerful rules as demontrated below. The following rule triggered from a menu item turns off all zones except for the zone that triggered the rule.
+
+nuvo-turn-off-all-but-caller.rules:
+
+```java
+rule "Turn off all zones except caller zone"
+when
+    Item nuvo_system_buttonpress received update
+then
+    var callerZone = newState.toString().split(",").get(0)
+    var button = newState.toString().split(",").get(1)
+
+    if (button == "Turn off other zones") {
+        if (callerZone != "1") {
+            nuvo_z1_power.sendCommand(OFF)
+        }
+        if (callerZone != "2") {
+            nuvo_z2_power.sendCommand(OFF)
+        }
+        if (callerZone != "3") {
+            nuvo_z3_power.sendCommand(OFF)
+        }
+        if (callerZone != "4") {
+            nuvo_z4_power.sendCommand(OFF)
+        }
+        if (callerZone != "5") {
+            nuvo_z5_power.sendCommand(OFF)
+        }
+        if (callerZone != "6") {
+            nuvo_z6_power.sendCommand(OFF)
+        }
+    }
+end
+
+```
+
+### MPS4 openHAB NuvoNet source custom integration rules _(very advanced)_
 
 The following are a set of example rules necessary to integrate metadata and control of another openHAB connected source (ie: Chromecast) into an openHAB NuvoNet source.
 By using these rules, it is possible to have artist, album and track names displayed on the keypad, transport button presses from the keypad relayed to the source, and album art displayed if using a Nuvo CTP-36 keypad.
@@ -474,7 +526,7 @@ The list of favorite names should be playable via another thing connected to ope
 
 nuvo-advanced.rules:
 
-```
+```java
 import java.text.Normalizer
 
 // all examples using Source 6

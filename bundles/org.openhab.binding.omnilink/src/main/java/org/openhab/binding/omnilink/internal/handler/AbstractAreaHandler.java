@@ -199,7 +199,7 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
                 status.getAlarms(), status.getEntryTimer(), status.getExitTimer());
 
         /*
-         * According to the specification, if the 3rd bit is set on a area mode, then that mode is in a delayed state.
+         * According to the specification, if the 3rd bit is set on an area mode, then that mode is in a delayed state.
          * Unfortunately, this is not the case, but we can fix that by looking to see if the exit timer
          * is set and do this manually.
          */

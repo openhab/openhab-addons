@@ -89,7 +89,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     private static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
     private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int API_SLEEP_INTERVAL_MINUTES = 20;
-    private static final int MOVE_THRESHOLD_INTERVAL_MINUTES = 5;
+    private static final int MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT = 5;
+    private static final int THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES = 60;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
     private static final int EVENT_ERROR_INTERVAL_SECONDS = 15;
     private static final int EVENT_STREAM_PAUSE = 3000;
@@ -111,18 +112,26 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected boolean allowWakeUp;
     protected boolean allowWakeUpForCommands;
     protected boolean enableEvents = false;
+    protected boolean useDriveState = false;
+    protected boolean useAdvancedStates = false;
+    protected boolean lastValidDriveStateNotNull = true;
+
     protected long lastTimeStamp;
     protected long apiIntervalTimestamp;
     protected int apiIntervalErrors;
     protected long eventIntervalTimestamp;
     protected int eventIntervalErrors;
+    protected int inactivity = MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT;
     protected ReentrantLock lock;
 
     protected double lastLongitude;
     protected double lastLatitude;
     protected long lastLocationChangeTimestamp;
-
+    protected long lastDriveStateChangeToNullTimestamp;
+    protected long lastAdvModesTimestamp = System.currentTimeMillis();
     protected long lastStateTimestamp = System.currentTimeMillis();
+    protected int backOffCounter = 0;
+
     protected String lastState = "";
     protected boolean isInactive = false;
 
@@ -150,6 +159,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         allowWakeUp = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ALLOWWAKEUP);
         allowWakeUpForCommands = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ALLOWWAKEUPFORCOMMANDS);
         enableEvents = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ENABLEEVENTS);
+        Number inactivityParam = (Number) getConfig().get(TeslaBindingConstants.CONFIG_INACTIVITY);
+        inactivity = inactivityParam == null ? MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT : inactivityParam.intValue();
+        Boolean useDriveStateParam = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDRIVESTATE);
+        useDriveState = useDriveStateParam == null ? false : useDriveStateParam;
+        Boolean useAdvancedStatesParam = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES);
+        useAdvancedStates = useAdvancedStatesParam == null ? false : useAdvancedStatesParam;
 
         account = (TeslaAccountHandler) getBridge().getHandler();
         lock = new ReentrantLock();
@@ -433,6 +448,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case STEERINGWHEEL_HEATER: {
+                            if (command instanceof OnOffType) {
+                                boolean commandBooleanValue = ((OnOffType) command) == OnOffType.ON ? true : false;
+                                setSteeringWheelHeater(commandBooleanValue);
+                            }
+                            break;
+                        }
                         default:
                             break;
                     }
@@ -535,17 +557,79 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected boolean isInactive() {
         // vehicle is inactive in case
         // - it does not charge
-        // - it has not moved in the observation period
-        return isInactive && !isCharging() && !hasMovedInSleepInterval();
+        // - it has not moved or optionally stopped reporting drive state, in the observation period
+        // - it is not in dog, camp, keep, sentry or any other mode that keeps it online
+        return isInactive && !isCharging() && !notReadyForSleep();
     }
 
     protected boolean isCharging() {
         return chargeState != null && "Charging".equals(chargeState.charging_state);
     }
 
-    protected boolean hasMovedInSleepInterval() {
-        return lastLocationChangeTimestamp > (System.currentTimeMillis()
-                - (MOVE_THRESHOLD_INTERVAL_MINUTES * 60 * 1000));
+    protected boolean notReadyForSleep() {
+        boolean status;
+        int computedInactivityPeriod = inactivity;
+
+        if (useAdvancedStates) {
+            if (vehicleState.is_user_present && !isInMotion()) {
+                logger.debug("Car is occupied but stationary.");
+                if (lastAdvModesTimestamp < (System.currentTimeMillis()
+                        - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {
+                    logger.debug("Ignoring after {} minutes.", THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES);
+                } else {
+                    return (backOffCounter++ % 6 == 0); // using 6 should make sure 1 out of 5 pollers get serviced,
+                                                        // about every min.
+                }
+            } else if (vehicleState.sentry_mode) {
+                logger.debug("Car is in sentry mode.");
+                if (lastAdvModesTimestamp < (System.currentTimeMillis()
+                        - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {
+                    logger.debug("Ignoring after {} minutes.", THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES);
+                } else {
+                    return (backOffCounter++ % 6 == 0);
+                }
+            } else if ((vehicleState.center_display_state != 0) && (!isInMotion())) {
+                logger.debug("Car is in camp, climate keep, dog, or other mode preventing sleep. Mode {}",
+                        vehicleState.center_display_state);
+                return (backOffCounter++ % 6 == 0);
+            } else {
+                lastAdvModesTimestamp = System.currentTimeMillis();
+            }
+        }
+
+        if (vehicleState.homelink_nearby) {
+            computedInactivityPeriod = MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT;
+            logger.debug("Car is at home. Movement or drive state threshold is {} min.",
+                    MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT);
+        }
+
+        if (useDriveState) {
+            if (driveState.shift_state != null) {
+                logger.debug("Car drive state not null and not ready to sleep.");
+                return true;
+            } else {
+                status = lastDriveStateChangeToNullTimestamp > (System.currentTimeMillis()
+                        - (computedInactivityPeriod * 60 * 1000));
+                if (status) {
+                    logger.debug("Drivestate is null but has changed recently, therefore continuing to poll.");
+                    return status;
+                } else {
+                    logger.debug("Drivestate has changed to null after interval {} min and can now be put to sleep.",
+                            computedInactivityPeriod);
+                    return status;
+                }
+            }
+        } else {
+            status = lastLocationChangeTimestamp > (System.currentTimeMillis()
+                    - (computedInactivityPeriod * 60 * 1000));
+            if (status) {
+                logger.debug("Car has moved recently and can not sleep");
+                return status;
+            } else {
+                logger.debug("Car has not moved in {} min, and can sleep", computedInactivityPeriod);
+                return status;
+            }
+        }
     }
 
     protected boolean allowQuery() {
@@ -555,6 +639,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected void setActive() {
         isInactive = false;
         lastLocationChangeTimestamp = System.currentTimeMillis();
+        lastDriveStateChangeToNullTimestamp = System.currentTimeMillis();
         lastLatitude = 0;
         lastLongitude = 0;
     }
@@ -721,6 +806,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         sendCommand(COMMAND_WAKE_UP, account.wakeUpTarget);
     }
 
+    public void setSteeringWheelHeater(boolean isOn) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("on", isOn);
+        sendCommand(COMMAND_STEERING_WHEEL_HEATER, gson.toJson(payloadObject), account.commandTarget);
+    }
+
     protected Vehicle queryVehicle() {
         String authHeader = account.getAuthHeader();
 
@@ -762,9 +853,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     protected void queryVehicleAndUpdate() {
         vehicle = queryVehicle();
-        if (vehicle != null) {
-            parseAndUpdate("queryVehicle", null, vehicleJSON);
-        }
     }
 
     public void parseAndUpdate(String request, String payLoad, String result) {
@@ -787,6 +875,16 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             lastLatitude = driveState.latitude;
                             lastLongitude = driveState.longitude;
                             lastLocationChangeTimestamp = System.currentTimeMillis();
+                        }
+                        logger.trace("Drive state: {}", driveState.shift_state);
+
+                        if ((driveState.shift_state == null) && (lastValidDriveStateNotNull)) {
+                            logger.debug("Set NULL shiftstate time");
+                            lastValidDriveStateNotNull = false;
+                            lastDriveStateChangeToNullTimestamp = System.currentTimeMillis();
+                        } else if (driveState.shift_state != null) {
+                            logger.trace("Clear NULL shiftstate time");
+                            lastValidDriveStateNotNull = true;
                         }
 
                         break;
@@ -817,6 +915,18 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     case "queryVehicle": {
+                        if (vehicle != null) {
+                            logger.debug("Vehicle state is {}", vehicle.state);
+                        } else {
+                            logger.debug("Vehicle state is initializing or unknown");
+                            break;
+                        }
+
+                        if (vehicle != null && "asleep".equals(vehicle.state)) {
+                            logger.debug("Vehicle is asleep.");
+                            break;
+                        }
+
                         if (vehicle != null && !lastState.equals(vehicle.state)) {
                             lastState = vehicle.state;
 
@@ -824,6 +934,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             if (isAwake()) {
                                 logger.debug("Vehicle is now awake, updating all data");
                                 lastLocationChangeTimestamp = System.currentTimeMillis();
+                                lastDriveStateChangeToNullTimestamp = System.currentTimeMillis();
                                 requestAllData();
                             }
 
@@ -837,7 +948,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             setActive();
                         } else {
                             boolean wasInactive = isInactive;
-                            isInactive = !isCharging() && !hasMovedInSleepInterval();
+                            isInactive = !isCharging() && !notReadyForSleep();
 
                             if (!wasInactive && isInactive) {
                                 lastStateTimestamp = System.currentTimeMillis();
@@ -967,7 +1078,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected Runnable slowStateRunnable = () -> {
         try {
             queryVehicleAndUpdate();
-
             boolean allowQuery = allowQuery();
 
             if (allowQuery) {
@@ -980,7 +1090,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     wakeUp();
                 } else {
                     if (isAwake()) {
-                        logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                        logger.debug("slowpoll: Throttled to allow sleep, occupied/idle, or in a console mode");
+                    } else {
+                        lastAdvModesTimestamp = System.currentTimeMillis();
                     }
                 }
             }
@@ -1001,7 +1113,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     wakeUp();
                 } else {
                     if (isAwake()) {
-                        logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                        logger.debug("fastpoll: Throttled to allow sleep, occupied/idle, or in a console mode");
                     }
                 }
             }

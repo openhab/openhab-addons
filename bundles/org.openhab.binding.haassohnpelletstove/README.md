@@ -1,7 +1,7 @@
 # Haas Sohn Pellet Stove Binding
 
 The binding for Haassohnpelletstove communicates with a Haas and Sohn Pelletstove through the optional
-WIFI module. More information about the WIFI module can be found here: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion
+WIFI module. More information about the WIFI module can be found here: <https://www.haassohn.com/de/ihr-plus/WLAN-Funktion>
 
 ## Supported Things
 
@@ -9,20 +9,18 @@ WIFI module. More information about the WIFI module can be found here: https://w
 |--------|--------------|------------|
 | haassohnpelletstove | Control of a Haas & Sohn Pellet Stove| oven|
 
-
 ## Thing Configuration
 
 In general two parameters are required. The IP-Address of the WIFI-Modul of the Stove in the local Network and the Access PIN of the Stove.
 The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN
 
-```
+```java
 Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN="1234"]
 ```
 
 ## Channels
 
 The following channels are yet supported:
-
 
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
@@ -41,7 +39,7 @@ The following channels are yet supported:
 
 demo.items:
 
-```
+```java
 Number:Temperature isTemp { channel="oven:channelIsTemp" }
 Number:Temperature spTemp { channel="oven:channelSpTemp" }
 String mode { channel="oven:channelMode" }
@@ -50,11 +48,11 @@ Switch power { channel="oven:power" }
 
 ## Google Assistant configuration
 
-See also: https://www.openhab.org/docs/ecosystem/google-assistant/
+See also: <https://www.openhab.org/docs/ecosystem/google-assistant/>
 
 googleassistantdemo.items
 
-```
+```java
 Group g_FeuerThermostat "FeuerThermostat" {ga="Thermostat" }
 Number StatusFeuer "Status Feuer" (g_FeuerThermostat) { ga="thermostatMode" }
 Number ZieltemperaturFeuer "ZieltemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureSetpoint"}

@@ -26,4 +26,5 @@ public class ICloudAccountThingConfiguration {
     public @Nullable String appleId;
     public @Nullable String password;
     public int refreshTimeInMinutes = 10;
+    public @Nullable String code;
 }

@@ -18,11 +18,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.dimension.DataAmount;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +60,8 @@ import oshi.util.EdidUtil;
  * @author Christoph Weitkamp - Update to OSHI 3.13.0 - Replaced deprecated method
  *         CentralProcessor#getSystemSerialNumber()
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
+ * @author Mark Herwege - Add dynamic creation of extra channels
+ * @author Mark Herwege - Use units of measure
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
@@ -188,59 +198,59 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getMemoryTotal() {
+    public QuantityType<DataAmount> getMemoryTotal() {
         long totalMemory = memory.getTotal();
         totalMemory = getSizeInMB(totalMemory);
-        return new DecimalType(totalMemory);
+        return new QuantityType<>(totalMemory, Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getMemoryAvailable() {
+    public QuantityType<DataAmount> getMemoryAvailable() {
         long availableMemory = memory.getAvailable();
         availableMemory = getSizeInMB(availableMemory);
-        return new DecimalType(availableMemory);
+        return new QuantityType<>(availableMemory, Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getMemoryUsed() {
+    public QuantityType<DataAmount> getMemoryUsed() {
         long totalMemory = memory.getTotal();
         long availableMemory = memory.getAvailable();
         long usedMemory = totalMemory - availableMemory;
         usedMemory = getSizeInMB(usedMemory);
-        return new DecimalType(usedMemory);
+        return new QuantityType<>(usedMemory, Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
+    public QuantityType<DataAmount> getStorageTotal(int index) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, index);
         fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         totalSpace = getSizeInMB(totalSpace);
-        return new DecimalType(totalSpace);
+        return new QuantityType<>(totalSpace, Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
+    public QuantityType<DataAmount> getStorageAvailable(int index) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, index);
         fileStore.updateAttributes();
         long freeSpace = fileStore.getUsableSpace();
         freeSpace = getSizeInMB(freeSpace);
-        return new DecimalType(freeSpace);
+        return new QuantityType<>(freeSpace, Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
+    public QuantityType<DataAmount> getStorageUsed(int index) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, index);
         fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
         usedSpace = getSizeInMB(usedSpace);
-        return new DecimalType(usedSpace);
+        return new QuantityType<>(usedSpace, Units.MEBIBYTE);
     }
 
     @Override
-    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+    public @Nullable PercentType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, deviceIndex);
         fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
@@ -248,14 +258,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
         if (totalSpace > 0) {
             double freePercentDecimal = (double) freeSpace / (double) totalSpace;
             BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
+            return new PercentType(freePercent);
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+    public @Nullable PercentType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
         OSFileStore fileStore = getDevice(fileStores, deviceIndex);
         fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
@@ -264,7 +274,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         if (totalSpace > 0) {
             double usedPercentDecimal = (double) usedSpace / (double) totalSpace;
             BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
+            return new PercentType(usedPercent);
         } else {
             return null;
         }
@@ -331,17 +341,17 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuTemperature() {
+    public @Nullable QuantityType<Temperature> getSensorsCpuTemperature() {
         BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
         cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
-        return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
+        return cpuTemp.signum() == 1 ? new QuantityType<>(cpuTemp, SIUnits.CELSIUS) : null;
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuVoltage() {
+    public @Nullable QuantityType<ElectricPotential> getSensorsCpuVoltage() {
         BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
         cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
-        return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
+        return cpuVoltage.signum() == 1 ? new QuantityType<>(cpuVoltage, Units.VOLT) : null;
     }
 
     @Override
@@ -350,27 +360,29 @@ public class OSHISysteminfo implements SysteminfoInterface {
         int speed = 0; // 0 means unable to measure speed
         if (index < fanSpeeds.length) {
             speed = fanSpeeds[index];
+        } else {
+            throw new DeviceNotFoundException();
         }
         return speed > 0 ? new DecimalType(speed) : null;
     }
 
     @Override
-    public @Nullable DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
+    public @Nullable QuantityType<Time> getBatteryRemainingTime(int index) throws DeviceNotFoundException {
         PowerSource powerSource = getDevice(powerSources, index);
         powerSource.updateAttributes();
         double remainingTimeInSeconds = powerSource.getTimeRemainingEstimated();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
         BigDecimal remainingTime = getTimeInMinutes(remainingTimeInSeconds);
-        return remainingTime.signum() == 1 ? new DecimalType(remainingTime) : null;
+        return remainingTime.signum() == 1 ? new QuantityType<>(remainingTime, Units.MINUTE) : null;
     }
 
     @Override
-    public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
+    public PercentType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
         PowerSource powerSource = getDevice(powerSources, index);
         powerSource.updateAttributes();
         double remainingCapacity = powerSource.getRemainingCapacityPercent();
         BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
-        return new DecimalType(remainingCapacityPercents);
+        return new PercentType(remainingCapacityPercents);
     }
 
     @Override
@@ -381,27 +393,27 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getMemoryAvailablePercent() {
+    public @Nullable PercentType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
             BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
+            return new PercentType(freePercent);
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getMemoryUsedPercent() {
+    public @Nullable PercentType getMemoryUsedPercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
         long usedMemory = totalMemory - availableMemory;
         if (totalMemory > 0) {
             double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
             BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
+            return new PercentType(usedPercent);
         } else {
             return null;
         }
@@ -429,50 +441,50 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getSwapTotal() {
+    public QuantityType<DataAmount> getSwapTotal() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
-        return new DecimalType(swapTotal);
+        return new QuantityType<>(swapTotal, Units.MEBIBYTE);
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailable() {
+    public QuantityType<DataAmount> getSwapAvailable() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         long swapAvailable = swapTotal - swapUsed;
         swapAvailable = getSizeInMB(swapAvailable);
-        return new DecimalType(swapAvailable);
+        return new QuantityType<>(swapAvailable, Units.MEBIBYTE);
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsed() {
+    public QuantityType<DataAmount> getSwapUsed() {
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         swapUsed = getSizeInMB(swapUsed);
-        return new DecimalType(swapUsed);
+        return new QuantityType<>(swapUsed, Units.MEBIBYTE);
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailablePercent() {
+    public @Nullable PercentType getSwapAvailablePercent() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         long swapAvailable = swapTotal - swapUsed;
         if (swapTotal > 0) {
             double swapAvailablePercentDecimal = (double) swapAvailable / (double) swapTotal;
             BigDecimal swapAvailablePercent = getPercentsValue(swapAvailablePercentDecimal);
-            return new DecimalType(swapAvailablePercent);
+            return new PercentType(swapAvailablePercent);
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsedPercent() {
+    public @Nullable PercentType getSwapUsedPercent() {
         long swapTotal = memory.getVirtualMemory().getSwapTotal();
         long swapUsed = memory.getVirtualMemory().getSwapUsed();
         if (swapTotal > 0) {
             double swapUsedPercentDecimal = (double) swapUsed / (double) swapTotal;
             BigDecimal swapUsedPercent = getPercentsValue(swapUsedPercentDecimal);
-            return new DecimalType(swapUsedPercent);
+            return new PercentType(swapUsedPercent);
         } else {
             return null;
         }
@@ -558,9 +570,9 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getCpuUptime() {
+    public QuantityType<Time> getCpuUptime() {
         long seconds = operatingSystem.getSystemUptime();
-        return new DecimalType(getTimeInMinutes(seconds));
+        return new QuantityType<>(getTimeInMinutes(seconds), Units.MINUTE);
     }
 
     @Override
@@ -593,19 +605,24 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
+    public QuantityType<DataAmount> getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
         NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long bytesSent = network.getBytesSent();
-        return new DecimalType(getSizeInMB(bytesSent));
+        return new QuantityType<>(getSizeInMB(bytesSent), Units.MEBIBYTE);
     }
 
     @Override
-    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
+    public QuantityType<DataAmount> getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
         NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long bytesRecv = network.getBytesRecv();
-        return new DecimalType(getSizeInMB(bytesRecv));
+        return new QuantityType<>(getSizeInMB(bytesRecv), Units.MEBIBYTE);
+    }
+
+    @Override
+    public int getCurrentProcessID() {
+        return operatingSystem.getProcessId();
     }
 
     @Override
@@ -620,11 +637,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable PercentType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
-            PercentType load = (processTicks.containsKey(pid))
-                    ? new PercentType(getPercentsValue(process.getProcessCpuLoadBetweenTicks(processTicks.get(pid))))
+            DecimalType load = (processTicks.containsKey(pid))
+                    ? new DecimalType(getPercentsValue(process.getProcessCpuLoadBetweenTicks(processTicks.get(pid))))
                     : null;
             processTicks.put(pid, process);
             return load;
@@ -634,12 +651,12 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable QuantityType<DataAmount> getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             long memortInBytes = process.getResidentSetSize();
             long memoryInMB = getSizeInMB(memortInBytes);
-            return new DecimalType(memoryInMB);
+            return new QuantityType<>(memoryInMB, Units.MEBIBYTE);
         } else {
             return null;
         }
@@ -665,5 +682,35 @@ public class OSHISysteminfo implements SysteminfoInterface {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public int getNetworkIFCount() {
+        return networks.size();
+    }
+
+    @Override
+    public int getDisplayCount() {
+        return displays.size();
+    }
+
+    @Override
+    public int getFileOSStoreCount() {
+        return fileStores.size();
+    }
+
+    @Override
+    public int getPowerSourceCount() {
+        return powerSources.size();
+    }
+
+    @Override
+    public int getDriveCount() {
+        return drives.size();
+    }
+
+    @Override
+    public int getFanCount() {
+        return sensors.getFanSpeeds().length;
     }
 }

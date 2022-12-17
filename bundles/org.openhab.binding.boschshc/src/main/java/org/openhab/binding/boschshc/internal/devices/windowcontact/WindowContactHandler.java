@@ -17,7 +17,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.shuttercontact.ShutterContactService;
 import org.openhab.binding.boschshc.internal.services.shuttercontact.ShutterContactState;
@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class WindowContactHandler extends BoschSHCDeviceHandler {
+public class WindowContactHandler extends AbstractBatteryPoweredDeviceHandler {
 
     public WindowContactHandler(Thing thing) {
         super(thing);
@@ -40,6 +40,8 @@ public class WindowContactHandler extends BoschSHCDeviceHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
         this.createService(ShutterContactService::new, this::updateChannels, List.of(CHANNEL_CONTACT));
     }
 

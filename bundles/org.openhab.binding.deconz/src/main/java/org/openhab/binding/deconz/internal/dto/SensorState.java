@@ -56,7 +56,7 @@ public class SensorState {
     public @Nullable Boolean carbonmonoxide;
     /** airquality sensors provide a string value. */
     public @Nullable String airquality;
-    /** airquality sensors provide a integer value. */
+    /** airquality sensors provide an integer value. */
     public @Nullable Integer airqualityppb;
     /** Pressure sensors provide a hPa value. */
     public @Nullable Integer pressure;

@@ -170,6 +170,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private String basicAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
+    public boolean newInstarApi = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
     private byte[] currentSnapshot = new byte[] { (byte) 0x00 };
@@ -905,9 +906,9 @@ public class IpCameraHandler extends BaseThingHandler {
             case MJPEG:
                 if (ffmpegMjpeg == null) {
                     if (inputOptions.isEmpty()) {
-                        inputOptions = "-hide_banner -loglevel warning";
+                        inputOptions = "-hide_banner";
                     } else {
-                        inputOptions += " -hide_banner -loglevel warning";
+                        inputOptions += " -hide_banner";
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
@@ -1270,9 +1271,6 @@ public class IpCameraHandler extends BaseThingHandler {
             case HIKVISION_THING:
                 HikvisionHandler hikvisionHandler = new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel());
                 hikvisionHandler.handleCommand(channelUID, command);
-                if (lowPriorityRequests.isEmpty()) {
-                    lowPriorityRequests = hikvisionHandler.getLowPriorityRequests();
-                }
                 break;
             case FOSCAM_THING:
                 FoscamHandler foscamHandler = new FoscamHandler(getHandle(), cameraConfig.getUser(),
@@ -1374,7 +1372,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             return;
         }
-        if (!onvifCamera.isConnected()) {
+        if (cameraConfig.getOnvifPort() > 0 && !onvifCamera.isConnected()) {
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
@@ -1406,7 +1404,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    boolean streamIsStopped(String url) {
+    private boolean streamIsStopped(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
             if (channelTracking.getChannel().isActive()) {
@@ -1524,6 +1522,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
+                noMotionDetected(CHANNEL_HUMAN_ALARM);
+                noMotionDetected(CHANNEL_CAR_ALARM);
+                noMotionDetected(CHANNEL_ANIMAL_ALARM);
                 noAudioDetected();
                 break;
             case HIKVISION_THING:
@@ -1573,6 +1574,12 @@ public class IpCameraHandler extends BaseThingHandler {
             if (localFfmpeg == null || !localFfmpeg.getIsAlive()) {
                 setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
             }
+        }
+        // check if the thread has frozen due to camera doing a soft reboot
+        localFfmpeg = ffmpegMjpeg;
+        if (localFfmpeg != null && !localFfmpeg.getIsAlive()) {
+            logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
+            setupFfmpegFormat(FFmpegFormat.MJPEG);
         }
         if (openChannels.size() > 10) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());
@@ -1631,6 +1638,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (snapshotUri.isEmpty()) {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
                 }
+                if (lowPriorityRequests.isEmpty()) {
+                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
+                }
                 break;
             case INSTAR_THING:
                 if (snapshotUri.isEmpty()) {
@@ -1639,11 +1649,19 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "/mjpegstream.cgi?-chn=12";
                 }
+                // Newer Instar cameras use this to setup the Alarm Server, plus it is used to work out which API is
+                // implemented based on the response to these two requests.
+                sendHttpGET(
+                        "/param.cgi?cmd=setasaction&-server=1&enable=1&-interval=1&cmd=setasattr&-as_index=1&-as_server="
+                                + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
+                                + getThing().getUID().getId()
+                                + "/instar&-as_ssl=0&-as_insecure=0&-as_mode=0&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
+                // Older Instar cameras use this to setup the Alarm Server
                 sendHttpGET(
                         "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
                                 + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
                                 + getThing().getUID().getId()
-                                + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
+                                + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
@@ -1658,7 +1676,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     private void tryConnecting() {
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)
-                && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING)) {
+                && !thing.getThingTypeUID().getId().equals(DOORBIRD_THING) && cameraConfig.getOnvifPort() > 0) {
             onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
                     cameraConfig.getUser(), cameraConfig.getPassword());
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());
@@ -1732,7 +1750,9 @@ public class IpCameraHandler extends BaseThingHandler {
             localFfmpeg.stopConverting();
             ffmpegSnapshot = null;
         }
-        onvifCamera.disconnect();
+        if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {// generic cameras do not have ONVIF support
+            onvifCamera.disconnect();
+        }
         openChannels.close();
     }
 

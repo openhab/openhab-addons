@@ -67,7 +67,7 @@ public abstract class AbstractChannelConfiguration {
     protected @Nullable Device device;
 
     /**
-     * Parse the base properties of the configJSON into a {@link AbstractChannelConfiguration}
+     * Parse the base properties of the configJSON into an {@link AbstractChannelConfiguration}
      *
      * @param configJSON channels configuration in JSON
      * @param gson parser

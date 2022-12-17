@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Profile to offer the XPathTransformationservice on a ItemChannelLink
+ * Profile to offer the XPathTransformationservice on an ItemChannelLink
  *
  * @author Stefan Triller - initial contribution
  *

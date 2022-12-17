@@ -5,7 +5,6 @@ Monitor and control Anel NET-PwrCtrl devices.
 NET-PwrCtrl devices are power sockets / relays that can be configured via browser but they can also be controlled over the network, e.g. with an Android or iPhone app - and also with openHAB via this binding.
 Some NET-PwrCtrl devices also have 8 I/O ports which can either be used to directly switch the sockets / relays, or they can be used as general input / output switches in openHAB.
 
-
 ## Supported Things
 
 There are three kinds of devices ([overview on manufacturer's homepage](https://en.anel.eu/?src=/produkte/produkte.htm)):
@@ -16,28 +15,26 @@ There are three kinds of devices ([overview on manufacturer's homepage](https://
 
 Thing type IDs:
 
-* *home*: The smallest device, the _HOME_, is the only one with only three power sockets and only available in Germany.
-* *simple-firmware*: The _PRO_ and _REDUNDANT_ have eight power sockets and a similar (simplified) firmware as the _HOME_.
-* *advanced-firmware*: All others (_ADV_, _IO_, and the different _HUT_ variants) have eight power sockets / relays, eight IO ports, and an advanced firmware.
+- _home_: The smallest device, the _HOME_, is the only one with only three power sockets and only available in Germany.
+- _simple-firmware_: The _PRO_ and _REDUNDANT_ have eight power sockets and a similar (simplified) firmware as the _HOME_.
+- _advanced-firmware_: All others (_ADV_, _IO_, and the different _HUT_ variants) have eight power sockets / relays, eight IO ports, and an advanced firmware.
 
 An [additional sensor](https://en.anel.eu/?src=/produkte/sensor_1/sensor_1.htm) may be used for monitoring temperature, humidity, and brightness.
 The sensor can be attached to a _HUT_ device via an Ethernet cable (max length is 50m).
-
 
 ## Discovery
 
 Devices can be discovered automatically if their UDP ports are configured as follows:
 
-* 75 / 77 (default)
-* 750 / 770
-* 7500 / 7700
-* 7750 / 7770
+- 75 / 77 (default)
+- 750 / 770
+- 7500 / 7700
+- 7750 / 7770
 
 If a device is found for a specific port (excluding the default port), the subsequent port is also scanned, e.g. 7500/7700 &rarr; 7501/7701 &rarr; 7502/7702 &rarr; etc.
 
 Depending on the network switch and router devices, discovery may or may not work on wireless networks.
 It should work reliably though on local wired networks.
-
 
 ## Thing Configuration
 
@@ -56,13 +53,12 @@ Ports above 1024 are recommended because they are outside the range of system po
 
 Possible entries in your thing file could be (thing types _home_, _simple-firmware_, and _advanced-firmware_ are explained above in _Supported Things_):
 
-```
+```java
 anel:home:mydevice1 [hostname="192.168.0.101", udpSendPort=7500, udpReceivePort=7700, user="user7", password="anel"]
 anel:simple-firmware:mydevice2 [hostname="192.168.0.102", udpSendPort=7501, udpReceivePort=7701, user="user7", password="anel"]
 anel:advanced-firmware:mydevice3 [hostname="192.168.0.103", udpSendPort=7502, udpReceivePort=7702, user="user7", password="anel"]
 anel:advanced-firmware:mydevice4 [hostname="192.168.0.104", udpSendPort=7503, udpReceivePort=7703, user="user7", password="anel"]
 ```
-
 
 ## Channels
 
@@ -127,18 +123,17 @@ Depending on the thing type, the following channels are available.
 \* Relay / socket state is read-only if it is locked; otherwise it is changeable.<br/>
 \** IO port state is read-only if its mode is _input_, it is changeable if its mode is _output_.
 
-
 ## Full Example
 
 `.things` file:
 
-```
+```java
 Thing anel:advanced-firmware:anel1 "Anel1" [hostname="192.168.0.100", udpSendPort=7500, udpReceivePort=7700, user="user7", password="anel"]
 ```
 
 `.items` file:
 
-```
+```java
 // device properties
 String              anel1name               "Anel1 Name"                {channel="anel:advanced-firmware:anel1:prop#name"}
 Number:Temperature  anel1temperature        "Anel1 Temperature"         {channel="anel:advanced-firmware:anel1:prop#temperature"}
@@ -175,7 +170,7 @@ Switch  anel1io8state  "Reed Contact Door"  {channel="anel:advanced-firmware:ane
 
 `.sitemap` file:
 
-```
+```perl
 sitemap anel label="Anel NET-PwrCtrl" {
   Frame label="Device and Sensor" {
     Text   item=anel1name               label="Anel1 Name"
@@ -214,7 +209,7 @@ The locked state / IO mode is also rarely relevant in practice, because it typic
 
 `.rules` file:
 
-```
+```java
 rule "doorbell only at daytime"
 when Item anel1io6state changed then
   if (now.getHoursOfDay >= 6 && now.getHoursOfDay <= 22) {
@@ -224,8 +219,6 @@ when Item anel1io6state changed then
 end
 ```
 
-
 ## Reference Documentation
 
 The UDP protocol of Anel devices is explained [here](https://forum.anel.eu/viewtopic.php?f=16&t=207).
-

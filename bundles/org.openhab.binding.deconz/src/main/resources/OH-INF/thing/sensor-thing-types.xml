@@ -336,7 +336,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Open/Close Sensor</label>
-		<description>A open/close sensor</description>
+		<description>An open/close sensor</description>
 		<channels>
 			<channel typeId="open" id="open"/>
 			<channel typeId="last_updated" id="last_updated"/>

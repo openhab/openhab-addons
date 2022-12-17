@@ -95,9 +95,13 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
         EvdevDevice newDevice = new EvdevDevice(config.path);
         for (EvdevDevice.Key o : newDevice.enumerateKeys()) {
             String name = o.getName();
+            if (name == null) {
+                name = Integer.toString(o.getCode());
+            }
             Channel channel = ChannelBuilder
                     .create(new ChannelUID(thing.getUID(), CHANNEL_GROUP_KEYPRESSES_ID, name), CoreItemFactory.CONTACT)
-                    .withLabel(name).withType(CHANNEL_TYPE_KEY_PRESS).build();
+                    .withLabel(name).withType(CHANNEL_TYPE_KEY_PRESS).withDescription("Event Code " + o.getCode())
+                    .build();
             channels.put(o.getCode(), channel);
             newChannels.add(channel);
         }
@@ -145,7 +149,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
             @Nullable
             EvdevDevice currentDevice = device;
             if (currentDevice == null) {
-                throw new IOException("trying to handle events without an device");
+                throw new IOException("trying to handle events without a device");
             }
             SelectionKey evdevReady = currentDevice.register(selector);
 

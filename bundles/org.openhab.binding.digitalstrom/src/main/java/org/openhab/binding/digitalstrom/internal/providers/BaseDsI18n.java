@@ -85,8 +85,8 @@ public abstract class BaseDsI18n {
     }
 
     /**
-     * Returns the internationalized text in the language of the {@link Locale} of the given key. If the key an does not
-     * exist at the internationalization of the {@link Locale} the {@link Locale#ENGLISH} will be used. If the key dose
+     * Returns the internationalized text in the language of the {@link Locale} of the given key. If the key does not
+     * exist at the internationalization of the {@link Locale} the {@link Locale#ENGLISH} will be used. If the key does
      * not exists in {@link Locale#ENGLISH}, too, the key will be returned.
      *
      * @param key

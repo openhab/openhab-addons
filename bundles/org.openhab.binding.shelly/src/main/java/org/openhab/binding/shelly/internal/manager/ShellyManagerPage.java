@@ -460,7 +460,7 @@ public class ShellyManagerPage {
             list.versions = new ArrayList<FwArchEntry>();
         } else {
             // Create selection list
-            json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it an named array
+            json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
             list = fromJson(gson, json, FwArchList.class);
         }
 

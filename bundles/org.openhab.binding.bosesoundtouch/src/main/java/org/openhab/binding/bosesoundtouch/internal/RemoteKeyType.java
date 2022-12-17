@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RemoteKeyType} class is holding the Keys on a remote. For simulating key presses
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public enum RemoteKeyType {
     PLAY,
     PAUSE,

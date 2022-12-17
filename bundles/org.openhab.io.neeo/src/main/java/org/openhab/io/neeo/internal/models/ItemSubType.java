@@ -51,7 +51,7 @@ public enum ItemSubType {
     }
 
     /**
-     * Parses the text into a ItemSubType enum (ignoring case)
+     * Parses the text into an ItemSubType enum (ignoring case)
      *
      * @param text the text to parse
      * @return the ItemSubType type

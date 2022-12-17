@@ -14,6 +14,7 @@ package org.openhab.persistence.jpa.internal;
 
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -25,16 +26,16 @@ import org.openhab.core.types.State;
  * @author Manfred Bergmann - Initial contribution
  *
  */
+@NonNullByDefault
 public class StateHelper {
 
     /**
-     * Converts the given State to a string that can be persisted in db
+     * Converts the given State to a string that can be persisted in the database.
      *
      * @param state the state of the item to be persisted
      * @return state converted as string
-     * @throws Exception
      */
-    public static String toString(State state) throws Exception {
+    public static String toString(State state) {
         if (state instanceof DateTimeType) {
             return String.valueOf(((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli());
         }

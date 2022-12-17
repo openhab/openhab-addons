@@ -41,6 +41,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ApiBridgeChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
+import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorTagChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
@@ -79,6 +80,9 @@ public enum ModuleType {
     WELCOME(FeatureArea.SECURITY, "NACamera", HOME, Set.of(CameraCapability.class, ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
+
+    TAG(FeatureArea.SECURITY, "NACamDoorTag", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(DoorTagChannelHelper.class, GROUP_TAG)),
 
     SIREN(FeatureArea.SECURITY, "NIS", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
@@ -201,6 +205,11 @@ public enum ModuleType {
                         : equals(HOME) ? "home"
                                 : (isLogical() ? "virtual"
                                         : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+    }
+
+    public int getDepth() {
+        ModuleType parent = bridgeType;
+        return parent == null ? 1 : 1 + parent.getDepth();
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {

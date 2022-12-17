@@ -13,7 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection;
 
 /**
- * The {@link HttpTransport} executes an request to the DigitalSTROM-Server.
+ * The {@link HttpTransport} executes a request to the DigitalSTROM-Server.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

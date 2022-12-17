@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The model representing an NEEO system information (serialize/deserialize json use only). This model only represents a
+ * The model representing a NEEO system information (serialize/deserialize json use only). This model only represents a
  * small portion of the system information
  *
  * @author Tim Roberts - Initial Contribution
