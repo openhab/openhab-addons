@@ -106,7 +106,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             this.initializer = null;
             return;
         }
-        if (localConfig.ipAddress == null) {
+        if (localConfig.ipAddress.isEmpty()) {
             try {
                 String lookupAddress = localConfig.serialNumber + ".local";
                 logger.debug("Attempting to get IP address for Bond Bridge {}", lookupAddress);
@@ -304,7 +304,10 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      */
     public void setBridgeOnline(String bridgeAddress) {
         BondBridgeConfiguration localConfig = config;
-        if (localConfig.ipAddress == null || !localConfig.ipAddress.equals(bridgeAddress)) {
+        if (localConfig == null) {
+            logger.warn("Configuration error, cannot set the bridghe online without configuration");
+            return;
+        } else if (!localConfig.ipAddress.equals(bridgeAddress)) {
             logger.debug("IP address of Bond {} has changed to {}", localConfig.serialNumber, bridgeAddress);
             Configuration c = editConfiguration();
             c.put(CONFIG_IP_ADDRESS, bridgeAddress);

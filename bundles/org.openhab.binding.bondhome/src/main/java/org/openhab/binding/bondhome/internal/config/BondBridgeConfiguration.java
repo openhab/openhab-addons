@@ -29,9 +29,9 @@ public class BondBridgeConfiguration {
      */
     public @Nullable String serialNumber;
     public @Nullable String localToken;
-    public @Nullable String ipAddress;
+    public String ipAddress = "";
 
-    public @Nullable String getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 

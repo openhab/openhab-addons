@@ -59,12 +59,11 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof BondBridgeHandler) {
+            @Nullable
             BondBridgeHandler localHandler = (BondBridgeHandler) handler;
-            if (localHandler != null) {
-                bridgeHandler = localHandler;
-                localHandler.setDiscoveryService(this);
-                api = localHandler.getBridgeAPI();
-            }
+            bridgeHandler = localHandler;
+            localHandler.setDiscoveryService(this);
+            api = localHandler.getBridgeAPI();
         }
     }
 
@@ -97,7 +96,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 for (final String deviceId : deviceList) {
                     BondDevice thisDevice = api.getDevice(deviceId);
                     String deviceName;
-                    if (thisDevice != null && (deviceName = thisDevice.name) != null) {
+                    if ((deviceName = thisDevice.name) != null) {
                         final ThingUID deviceUid = new ThingUID(thisDevice.type.getThingTypeUID(), bridgeUid, deviceId);
                         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(deviceUid)
                                 .withBridge(bridgeUid).withLabel(thisDevice.name)
