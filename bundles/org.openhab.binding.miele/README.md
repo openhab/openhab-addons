@@ -2,14 +2,14 @@
 
 This binding integrates Miele@home appliances.
 Miele@home allows controlling Miele appliances that are equipped with special communication modules.
-There are devices that communicate through ZigBee and others that use WiFi.
+There are devices that communicate through Zigbee and others that use WiFi.
 
 See [www.miele.de](https://www.miele.de) for the list of available appliances.
 
 ## Supported Things
 
 This binding requires the XGW3000 gateway from Miele as all integration with openHAB is done through this gateway.
-While users with ZigBee-enabled Miele appliances usually own such a gateway, this is often not the case for people that have only WiFi-enabled appliances.
+While users with Zigbee-enabled Miele appliances usually own such a gateway, this is often not the case for people that have only WiFi-enabled appliances.
 
 The types of appliances that are supported by this binding are:
 

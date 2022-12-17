@@ -162,14 +162,14 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Init a ZigBee gateway based on config
+     * Init a Zigbee gateway based on config
      */
     private @Nullable OpenGateway initZigBeeGateway() {
-        logger.debug("Initializing ZigBee USB Gateway");
+        logger.debug("Initializing Zigbee USB Gateway");
         OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
-            logger.warn("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
+            logger.warn("Cannot connect Zigbee USB Gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
@@ -539,7 +539,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
         if (gw instanceof USBGateway) {
-            logger.info("---- CONNECTED to ZigBee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
+            logger.info("---- CONNECTED to Zigbee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
                     ((USBGateway) gw).getSerialPortName());
         } else {
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
