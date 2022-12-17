@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -130,9 +131,9 @@ public class RdsAccessToken {
         Date expDate = this.expDate;
         if (expDate == null) {
             try {
-                expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(expires);
+                expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH).parse(expires);
             } catch (ParseException e) {
-                logger.debug("isExpired: expiry date parsing exception");
+                logger.debug("isExpired: expiry date parsing exception", e);
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
