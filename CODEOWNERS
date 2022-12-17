@@ -54,6 +54,7 @@
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
+/bundles/org.openhab.binding.clementineremote/ @StephanRichter
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
