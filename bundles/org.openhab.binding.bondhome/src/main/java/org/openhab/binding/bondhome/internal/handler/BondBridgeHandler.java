@@ -100,7 +100,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private void initializeThing() {
         BondBridgeConfiguration localConfig = config;
-        if (localConfig.localToken == null) {
+        if (localConfig == null || localConfig.localToken == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.incorrect-local-token");
             this.initializer = null;
@@ -204,7 +204,6 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * @param the {@link BPUPUpdate object}
      */
     public void forwardUpdateToThing(BPUPUpdate pushUpdate) {
-
         updateStatus(ThingStatus.ONLINE);
 
         BondDeviceState updateState = pushUpdate.deviceState;
@@ -242,23 +241,39 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the Id of the bridge associated with the handler
      */
     public String getBridgeId() {
-        String serialNumber = config.serialNumber;
-        return serialNumber == null ? "" : serialNumber;
+        BondBridgeConfiguration configuration = config;
+        if (configuration != null) {
+            String serialNumber = configuration.serialNumber;
+            if (serialNumber != null) {
+                return serialNumber;
+            }
+        }
+        return "";
     }
 
     /**
      * Returns the Ip Address of the bridge associated with the handler as a string
      */
     public @Nullable String getBridgeIpAddress() {
-        return config.ipAddress;
+        BondBridgeConfiguration configuration = config;
+        if (configuration != null) {
+            return configuration.ipAddress;
+        }
+        return null;
     }
 
     /**
      * Returns the local token of the bridge associated with the handler as a string
      */
     public String getBridgeToken() {
-        String localToken = config.localToken;
-        return localToken == null ? "" : localToken;
+        BondBridgeConfiguration configuration = config;
+        if (configuration != null) {
+            String localToken = configuration.localToken;
+            if (localToken != null) {
+                return localToken;
+            }
+        }
+        return "";
     }
 
     /**

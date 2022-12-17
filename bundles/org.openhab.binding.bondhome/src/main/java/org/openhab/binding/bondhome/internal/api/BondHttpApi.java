@@ -90,7 +90,6 @@ public class BondHttpApi {
      * @throws BondException
      */
     public List<String> getDevices() throws BondException {
-
         List<String> list = new ArrayList<>();
         String json = request("/v2/devices/");
         try {

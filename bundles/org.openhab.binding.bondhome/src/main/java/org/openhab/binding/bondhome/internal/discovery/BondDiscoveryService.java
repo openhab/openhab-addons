@@ -59,9 +59,12 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof BondBridgeHandler) {
-            bridgeHandler = (BondBridgeHandler) handler;
-            bridgeHandler.setDiscoveryService(this);
-            api = bridgeHandler.getBridgeAPI();
+            BondBridgeHandler localHandler = (BondBridgeHandler) handler;
+            if (localHandler != null) {
+                bridgeHandler = localHandler;
+                localHandler.setDiscoveryService(this);
+                api = localHandler.getBridgeAPI();
+            }
         }
     }
 
