@@ -15,7 +15,7 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Rego6xxProtocolException} is responsible for holding information about an Rego6xx protocol error.
+ * The {@link Rego6xxProtocolException} is responsible for holding information about a Rego6xx protocol error.
  *
  * @author Boris Krivonog - Initial contribution
  */

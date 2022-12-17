@@ -1,6 +1,6 @@
 # Elero Transmitter Stick Binding
 
-Allows to control Elero rollershutters through a connected Elero Transmitter Stick. 
+Allows to control Elero rollershutters through a connected Elero Transmitter Stick.
 
 ## Supported Things
 
@@ -77,20 +77,20 @@ SWITCHED_ON         | 50                       |
 
 A typical thing configuration looks like this:
 
-```
+```java
 Bridge elerotransmitterstick:elerostick:0a0a0a0a [ portName="/dev/ttyElero2", updateInterval=5000 ]
 Thing elerotransmitterstick:elerochannel:0a0a0a0a:1 (elerotransmitterstick:elerostick:0a0a0a0a) [ channelId=1 ]
 ```
 
 A typical item configuration for a rollershutter looks like this:
 
-```
+```java
 Rollershutter Rollershutter1 {channel="elerotransmitterstick:elerochannel:0a0a0a0a:1:control",autoupdate="false" }
 String Rollershutter1State  {channel="elerotransmitterstick:elerochannel:0a0a0a0a:1:status" } 
 ```
 
 A sitemap entry looks like this:
 
-```
+```perl
 Selection item=Rollershutter1 label="Kitchen" mappings=[0="open", 100="closed", 25="shading"]
 ```

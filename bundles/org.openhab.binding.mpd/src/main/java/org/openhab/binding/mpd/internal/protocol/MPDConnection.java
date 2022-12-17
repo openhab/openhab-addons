@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for communicating with the music player daemon through a IP connection
+ * Class for communicating with the music player daemon through an IP connection
  *
  * @author Stefan Röllin - Initial contribution
  */

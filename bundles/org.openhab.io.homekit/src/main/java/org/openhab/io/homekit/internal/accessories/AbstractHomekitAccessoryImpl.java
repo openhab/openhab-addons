@@ -20,6 +20,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
 import io.github.hapjava.services.Service;
 
 /**
@@ -46,7 +51,7 @@ import io.github.hapjava.services.Service;
  *
  * @author Andy Lintner - Initial contribution
  */
-abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
+public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
     private final List<HomekitTaggedItem> characteristics;
     private final HomekitTaggedItem accessory;
@@ -348,5 +353,61 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
         return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+    }
+
+    /**
+     * Calculates a string as json of the configuration for this accessory, suitable for seeing
+     * if the structure has changed, and building a dummy accessory for it. It is _not_ suitable
+     * for actual publishing to by HAP-Java to iOS devices, since all the IIDs will be set to 0.
+     * The IIDs will get replaced by actual values by HAP-Java inside of DummyHomekitCharacteristic.
+     */
+    public String toJson() {
+        var builder = Json.createArrayBuilder();
+        getServices().forEach(s -> {
+            builder.add(serviceToJson(s));
+        });
+        return builder.build().toString();
+    }
+
+    private JsonObjectBuilder serviceToJson(Service service) {
+        var serviceBuilder = Json.createObjectBuilder();
+        serviceBuilder.add("type", service.getType());
+        var characteristics = Json.createArrayBuilder();
+
+        service.getCharacteristics().stream().sorted((l, r) -> l.getClass().getName().compareTo(r.getClass().getName()))
+                .forEach(c -> {
+                    try {
+                        var cJson = c.toJson(0).get();
+                        var cBuilder = Json.createObjectBuilder();
+                        // Need to copy over everything except the current value, which we instead
+                        // reach in and get the default value
+                        cJson.forEach((k, v) -> {
+                            if (k.equals("value")) {
+                                Object defaultValue = ((BaseCharacteristic) c).getDefault();
+                                if (defaultValue instanceof Boolean) {
+                                    cBuilder.add("value", (boolean) defaultValue);
+                                } else if (defaultValue instanceof Integer) {
+                                    cBuilder.add("value", (int) defaultValue);
+                                } else if (defaultValue instanceof Double) {
+                                    cBuilder.add("value", (double) defaultValue);
+                                } else {
+                                    cBuilder.add("value", defaultValue.toString());
+                                }
+                            } else {
+                                cBuilder.add(k, v);
+                            }
+                        });
+                        characteristics.add(cBuilder.build());
+                    } catch (InterruptedException | ExecutionException e) {
+                    }
+                });
+        serviceBuilder.add("c", characteristics);
+
+        if (!service.getLinkedServices().isEmpty()) {
+            var linkedServices = Json.createArrayBuilder();
+            service.getLinkedServices().forEach(s -> linkedServices.add(serviceToJson(s)));
+            serviceBuilder.add("ls", linkedServices);
+        }
+        return serviceBuilder;
     }
 }

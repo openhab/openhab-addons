@@ -170,6 +170,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private String basicAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
+    public boolean newInstarApi = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
     private byte[] currentSnapshot = new byte[] { (byte) 0x00 };
@@ -905,9 +906,9 @@ public class IpCameraHandler extends BaseThingHandler {
             case MJPEG:
                 if (ffmpegMjpeg == null) {
                     if (inputOptions.isEmpty()) {
-                        inputOptions = "-hide_banner -loglevel warning";
+                        inputOptions = "-hide_banner";
                     } else {
-                        inputOptions += " -hide_banner -loglevel warning";
+                        inputOptions += " -hide_banner";
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
@@ -1574,6 +1575,12 @@ public class IpCameraHandler extends BaseThingHandler {
                 setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
             }
         }
+        // check if the thread has frozen due to camera doing a soft reboot
+        localFfmpeg = ffmpegMjpeg;
+        if (localFfmpeg != null && !localFfmpeg.getIsAlive()) {
+            logger.debug("MJPEG was not being produced by FFmpeg when it should have been, restarting FFmpeg.");
+            setupFfmpegFormat(FFmpegFormat.MJPEG);
+        }
         if (openChannels.size() > 10) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());
             cleanChannels();
@@ -1642,7 +1649,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "/mjpegstream.cgi?-chn=12";
                 }
-                // Newer Instar cameras use this to setup the Alarm Server
+                // Newer Instar cameras use this to setup the Alarm Server, plus it is used to work out which API is
+                // implemented based on the response to these two requests.
                 sendHttpGET(
                         "/param.cgi?cmd=setasaction&-server=1&enable=1&-interval=1&cmd=setasattr&-as_index=1&-as_server="
                                 + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"

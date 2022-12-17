@@ -57,12 +57,6 @@ public class StateVersionResponse extends Packet {
         this.version = version;
     }
 
-    public StateVersionResponse() {
-        setTagged(false);
-        setAddressable(true);
-        setResponseRequired(true);
-    }
-
     @Override
     public int packetType() {
         return TYPE;

@@ -127,7 +127,7 @@ public class ConversionsTest {
         assertNotNull(resp);
         assertEquals(new JsonPrimitive(3), resp);
 
-        // test input as jsonString for a array
+        // test input as jsonString for an array
         value = new JsonPrimitive("{\"test\": []}");
         resp = Conversions.execute(transformation, value, deviceVariables);
         assertNotNull(resp);

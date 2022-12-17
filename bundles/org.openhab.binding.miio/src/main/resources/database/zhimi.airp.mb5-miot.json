@@ -510,7 +510,7 @@
 				"property": "bottom-door",
 				"siid": 9,
 				"piid": 6,
-				"friendlyName": "Custom Service - Buttom Door",
+				"friendlyName": "Custom Service - Bottom Door",
 				"channel": "bottom_door",
 				"type": "Switch",
 				"stateDescription": {

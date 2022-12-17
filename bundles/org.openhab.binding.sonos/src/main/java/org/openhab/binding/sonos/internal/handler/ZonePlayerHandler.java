@@ -3112,7 +3112,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     /**
-     * This will attempt to match the station string with a entry in the
+     * This will attempt to match the station string with an entry in the
      * favorites list, this supports both single entries and playlists
      *
      * @param favorite to match

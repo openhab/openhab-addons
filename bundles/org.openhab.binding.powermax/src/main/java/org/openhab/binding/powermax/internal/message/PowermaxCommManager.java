@@ -563,7 +563,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     }
 
     /**
-     * Send a ENROLL message
+     * Send an ENROLL message
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */

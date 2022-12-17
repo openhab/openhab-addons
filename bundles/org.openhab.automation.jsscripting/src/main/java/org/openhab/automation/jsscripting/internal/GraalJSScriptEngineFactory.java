@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.script.ScriptEngine;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
@@ -37,14 +38,18 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.jsscripting", property = Constants.SERVICE_PID
         + "=org.openhab.jsscripting")
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
+@NonNullByDefault
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private final JSDependencyTracker jsDependencyTracker;
     private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
+    private static final String ALT_MIME_TYPE = "text/javascript;version=ECMAScript-2021";
+    private static final String ALIAS = "graaljs";
+
     private final JSScriptServiceUtil jsScriptServiceUtil;
+    private final JSDependencyTracker jsDependencyTracker;
 
     @Activate
     public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil,
@@ -68,7 +73,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         // scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
         // scriptTypes.addAll(graalJSEngineFactory.getExtensions());
 
-        return List.of(MIME_TYPE);
+        return List.of(MIME_TYPE, ALT_MIME_TYPE, ALIAS);
     }
 
     @Override
@@ -77,7 +82,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     @Override
-    public ScriptEngine createScriptEngine(String scriptType) {
+    public @Nullable ScriptEngine createScriptEngine(String scriptType) {
         return new DebuggingGraalScriptEngine<>(
                 new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null, jsScriptServiceUtil));
     }

@@ -198,7 +198,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         // Start all known components and channels within the components and put the Thing offline
         // if any subscribing failed ( == broker connection lost)
         CompletableFuture<@Nullable Void> future = CompletableFuture.allOf(super.start(connection),
-                haComponents.values().parallelStream().map(e -> e.start(connection, scheduler, attributeReceiveTimeout))
+                haComponents.values().stream().map(e -> e.start(connection, scheduler, attributeReceiveTimeout))
                         .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)) // reduce to
                                                                                                           // one
                         .exceptionally(e -> {
@@ -216,7 +216,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             discoverComponents.stopDiscovery();
             delayedProcessing.join();
             // haComponents does not need to be synchronised -> the discovery thread is disabled
-            haComponents.values().parallelStream().map(AbstractComponent::stop) //
+            haComponents.values().stream().map(AbstractComponent::stop) //
                     // we need to join all the stops, otherwise they might not be done when start is called
                     .collect(FutureCollector.allOf()).join();
 

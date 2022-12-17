@@ -16,10 +16,7 @@ import static java.util.Map.entry;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +29,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
@@ -76,35 +74,27 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
     START_TIME("", START_CHANNEL_ID, DateTimeType.class, false, false),
     END_TIME("", END_CHANNEL_ID, DateTimeType.class, false, false),
-    DURATION("duration", "duration", DateTimeType.class, false, false) {
+    DURATION("duration", "duration", QuantityType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            Date date = new Date();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
-                date.setTime(Long.valueOf(s.trim()) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
+                return new QuantityType<>(Long.valueOf(s), Units.MINUTE);
+            } catch (NumberFormatException e) {
+                return UnDefType.UNDEF;
             }
-            return getState(dateFormatter.format(date));
         }
     },
-    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false, false) {
+    ELAPSED_TIME("elapsedTime", "elapsed", QuantityType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            Date date = new Date();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
+                return new QuantityType<>(Long.valueOf(s), Units.MINUTE);
+            } catch (NumberFormatException e) {
+                return UnDefType.UNDEF;
             }
-            return getState(dateFormatter.format(date));
         }
     },
-    FINISH_TIME("", FINISH_CHANNEL_ID, DateTimeType.class, false, false),
+    FINISH_TIME("", FINISH_CHANNEL_ID, QuantityType.class, false, false),
     TARGET_TEMP("targetTemperature", "target", QuantityType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {

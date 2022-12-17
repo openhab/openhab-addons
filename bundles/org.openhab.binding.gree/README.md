@@ -2,7 +2,7 @@
 
 This binding integrates Air Conditioners that use the GREE protocol (GREE, Sinclair and others).
 
-Note: The Air Conditioner must already be set-up on the WiFi network and must have a fixed IP Address.     
+Note: The Air Conditioner must already be set-up on the WiFi network and must have a fixed IP Address.
 
 ## Supported Things
 
@@ -11,7 +11,7 @@ This binding supports one Thing type `airconditioner`.
 ## Discovery
 
 Once the Air Conditioner is on the network (WiFi active) it could be discovered automatically.
-An IP broadcast message is sent and every responding unit gets added to the Inbox. 
+An IP broadcast message is sent and every responding unit gets added to the Inbox.
 
 ## Binding Configuration
 
@@ -26,7 +26,7 @@ No binding configuration is required.
 | refresh                  | Integer    | Refresh interval in seconds for polling the device status.                                    |
 | currentTemperatureOffset | Decimal    | Offset in Celsius for the current temperature value received from the device.                 |
 
-The Air Conditioner's IP address is mandatory, all other parameters are optional. 
+The Air Conditioner's IP address is mandatory, all other parameters are optional.
 If the broadcast is not set (default) it will be derived from openHAB's network setting (Check Network Settings in the openHAB UI).
 Only change this if you have a good reason to.
 
@@ -57,20 +57,19 @@ The following channels are supported for fans:
 | light              | Switch    | Enable/disable the front display on the Air Conditioner if applicable to the Air Conditioner model|
 |                    |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
 
-
 When changing mode, the air conditioner will be turned on unless "off" is selected.
 
 ## Full Example
 
-**Things**
+### Things
 
-```
+```java
 Thing gree:airconditioner:a1234561 [ ipAddress="192.168.1.111", refresh=2 ]
 ```
 
-**Items**
+### Items
 
-```
+```java
 Switch AirconPower                  { channel="gree:airconditioner:a1234561:power" }
 String AirconMode                   { channel="gree:airconditioner:a1234561:mode" }
 Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
@@ -86,11 +85,11 @@ Switch AirconHealth                 { channel="gree:airconditioner:a1234561:heal
 Switch AirconPowerSaving            { channel="gree:airconditioner:a1234561:powersave" }
 ```
 
-**Sitemap**
+### Sitemap
 
 This is an example of how to set up your sitemap.
 
-```
+```perl
 Frame label="Controls"
 {
    Switch item=AirconMode label="Mode" mappings=["auto"="Auto", "cool"="Cool", "eco"="Eco", "dry"="Dry", "fan"="Fan", "turbo"="Turbo", "heat"="Heat", "on"="ON", "off"="OFF"]
@@ -120,13 +119,13 @@ Frame label="Options"
 }
 ```
 
-**Example**
+## Example
 
 This example shows how to make a GREE Air Conditioner controllable by Google HA (A/C mode + temperature)
 
-**Items**
+### Items
 
-```
+```java
 Group Gree_Modechannel              "Gree"                { ga="Thermostat" } // allows mapping for Google Home Assistent
 Switch   GreeAirConditioner_Power   "Aircon"              {channel="gree:airconditioner:a1234561:power", ga="Switch"}
 String   GreeAirConditioner_Mode    "Aircon Mode"         {channel="gree:airconditioner:a1234561:mode", ga="thermostatMode"}
@@ -134,9 +133,9 @@ Number   GreeAirConditioner_Temp    "Aircon Temperature"  {channel="gree:aircond
 Switch   GreeAirConditioner_Light   "Light"               {channel="gree:airconditioner:a1234561:light"}
 ```
 
-**Rules**
+### Rules
 
-```
+```java
 rule "Mode changed"
 when
         Item GreeAirConditioner_Mode changed

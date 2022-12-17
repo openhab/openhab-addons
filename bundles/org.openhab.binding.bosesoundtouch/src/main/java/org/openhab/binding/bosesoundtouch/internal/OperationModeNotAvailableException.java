@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link OperationModeNotAvailableException} class is an exception
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class OperationModeNotAvailableException extends Exception {
     private static final long serialVersionUID = 1L;
 

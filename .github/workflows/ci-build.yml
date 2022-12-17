@@ -20,7 +20,7 @@ jobs:
       matrix:
         java: [ '11', '17' ]
         maven: [ '3.8.6' ]
-        os: [ 'ubuntu-20.04' ]
+        os: [ 'ubuntu-22.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
@@ -51,7 +51,7 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Set up Maven ${{ matrix.maven }}
-        uses: stCarolas/setup-maven@v4.4
+        uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: ${{ matrix.maven }}
 
@@ -64,7 +64,7 @@ jobs:
       - name: Get Changed Files
         if: github.head_ref != ''
         id: files
-        uses: Ana06/get-changed-files@v2.0.0
+        uses: Ana06/get-changed-files@v2.2.0
         with:
           format: 'csv'
 

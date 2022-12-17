@@ -120,7 +120,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
+        return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
                 .collect(FutureCollector.allOf());
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().parallelStream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
+        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**

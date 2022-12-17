@@ -18,9 +18,9 @@ You have to add the thing manually.
 You must create an account and an application on the RTE portal to obtain the OAuth2 credentials required to access the API.
 
 1. Open this [page](https://data.rte-france.com/catalog/-/api/consumption/Ecowatt/v4.0), find the "Ecowatt" tile and click on the "Abonnez-vous à l'API" button.
-2. Create an account by following the instructions (you will receive an email to validate your new account).
-3. Once logged in, create an application by entering a name (for example "openHAB Integration"), choosing "Web Server" as type, entering any description of your choice and finally clicking on the "Valider" button.
-4. You will then see your application details, in particular the "ID client" and "ID Secret" information which you will need later to set up your binding thing.
+1. Create an account by following the instructions (you will receive an email to validate your new account).
+1. Once logged in, create an application by entering a name (for example "openHAB Integration"), choosing "Web Server" as type, entering any description of your choice and finally clicking on the "Valider" button.
+1. You will then see your application details, in particular the "ID client" and "ID Secret" information which you will need later to set up your binding thing.
 
 ## Binding Configuration
 
@@ -48,13 +48,13 @@ All channels are read-only.
 
 example.things:
 
-```
+```java
 Thing ecowatt:signals:signals "Ecowatt Signals" [ idClient="xxxxx", idSecret="yyyyy"]
 ```
 
 example.items:
 
-```
+```java
 Number TodaySignal "Today [%s]" { channel="ecowatt:signals:signals:todaySignal" }
 Number TomorrowSignal "Tomorrow [%s]" { channel="ecowatt:signals:signals:tomorrowSignal" }
 Number CurrentHourSignal "Current hour [%s]" { channel="ecowatt:signals:signals:currentHourSignal" }
@@ -62,7 +62,7 @@ Number CurrentHourSignal "Current hour [%s]" { channel="ecowatt:signals:signals:
 
 example.sitemap:
 
-```
+```perl
     Frame label="Ecowatt" {
         Default item=TodaySignal
         Default item=TomorrowSignal

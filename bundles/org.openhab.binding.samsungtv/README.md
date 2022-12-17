@@ -5,13 +5,13 @@ This binding integrates the [Samsung TV's](https://www.samsung.com).
 ## Supported Things
 
 Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported.
-Also support added for TVs using websocket remote interface (2016+ models) 
+Also support added for TVs using websocket remote interface (2016+ models)
 Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
 
 Tested TV models:
 
 | Model          | State   | Notes                                                                                                                                                  |
-|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | KU6519         | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                                   |
 | LE40D579       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
 | LE40C650       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
@@ -44,7 +44,7 @@ Additionally, a refresh interval can be configured in milliseconds to specify ho
 
 E.g.
 
-```
+```java
 Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress="78:bd:bc:9f:12:34", refreshInterval=1000 ]
 ```
 
@@ -54,29 +54,29 @@ Different ports are used in different models. It may be 55000, 8001 or 8002.
 
 TVs support the following channels:
 
-| Channel Type ID  | Item Type | Description                                                                                             |
-|------------------|-----------|---------------------------------------------------------------------------------------------------------|
-| volume           | Dimmer    | Volume level of the TV.                                                                                 |
-| mute             | Switch    | Mute state of the TV.                                                                                   |
-| brightness       | Dimmer    | Brightness of the TV picture.                                                                           |
-| contrast         | Dimmer    | Contrast of the TV picture.                                                                             |
-| sharpness        | Dimmer    | Sharpness of the TV picture.                                                                            |
-| colorTemperature | Number    | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
-| sourceName       | String    | Name of the current source.                                                                             |
-| sourceId         | Number    | Id of the current source.                                                                               |
-| channel          | Number    | Selected TV channel number.                                                                             |
-| programTitle     | String    | Program title of the current channel.                                                                   |
-| channelName      | String    | Name of the current TV channel.                                                                         |
-| url              | String    | Start TV web browser and go the given web page.                                                         |
-| stopBrowser      | Switch    | Stop TV's web browser and go back to TV mode.                                                           |
-| power            | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| Channel Type ID  | Item Type | Description                                                                                                                         |
+| ---------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| volume           | Dimmer    | Volume level of the TV.                                                                                                             |
+| mute             | Switch    | Mute state of the TV.                                                                                                               |
+| brightness       | Dimmer    | Brightness of the TV picture.                                                                                                       |
+| contrast         | Dimmer    | Contrast of the TV picture.                                                                                                         |
+| sharpness        | Dimmer    | Sharpness of the TV picture.                                                                                                        |
+| colorTemperature | Number    | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                                              |
+| sourceName       | String    | Name of the current source.                                                                                                         |
+| sourceId         | Number    | Id of the current source.                                                                                                           |
+| channel          | Number    | Selected TV channel number.                                                                                                         |
+| programTitle     | String    | Program title of the current channel.                                                                                               |
+| channelName      | String    | Name of the current TV channel.                                                                                                     |
+| url              | String    | Start TV web browser and go the given web page.                                                                                     |
+| stopBrowser      | Switch    | Stop TV's web browser and go back to TV mode.                                                                                       |
+| power            | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                                                     |
 | artMode          | Switch    | TV art mode for e.g. Samsung The Frame TV's. Only relevant if power=off. If set to on when power=on, the power will be switched off |
-| sourceApp        | String    | Currently active App.                                                                                   |
-| keyCode          | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
+| sourceApp        | String    | Currently active App.                                                                                                               |
+| keyCode          | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses.                             |
 
 E.g.
 
-```
+```java
 Group   gLivingRoomTV    "Living room TV" <screen>
 Dimmer  TV_Volume        "Volume"         <soundvolume>        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:volume" }
 Switch  TV_Mute          "Mute"           <soundvolume_mute>   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:mute" }
@@ -95,7 +95,7 @@ List of known apps and the respective name that can be passed on to the `sourceA
 Values are confirmed to work on UE50MU6179.
 
 | App           | Value in sourceApp | Description                       |
-|---------------|--------------------|-----------------------------------|
+| ------------- | ------------------ | --------------------------------- |
 | ARD Mediathek | `ARD Mediathek`    | German public TV broadcasting app |
 | Browser       | `Internet`         | Built-in WWW browser              |
 | Netflix       | `Netflix`          | Netflix App                       |

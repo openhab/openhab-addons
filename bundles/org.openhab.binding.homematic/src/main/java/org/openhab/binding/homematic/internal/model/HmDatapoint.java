@@ -318,7 +318,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a action.
+     * Returns true, if the datapoint is an action.
      */
     public boolean isActionType() {
         return type == HmValueType.ACTION;
@@ -339,7 +339,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a integer.
+     * Returns true, if the datapoint is an integer.
      */
     public boolean isIntegerType() {
         return type == HmValueType.INTEGER;
@@ -360,7 +360,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a enum.
+     * Returns true, if the datapoint is an enum.
      */
     public boolean isEnumType() {
         return type == HmValueType.ENUM;

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Contains the data needed to do an WWN update request back to Nest.
+ * Contains the data needed to do a WWN update request back to Nest.
  *
  * @author David Bennett - Initial contribution
  */

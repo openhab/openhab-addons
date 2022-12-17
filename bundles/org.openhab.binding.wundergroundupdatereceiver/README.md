@@ -5,7 +5,7 @@ Many personal weather stations or similar devices are only capable of submitting
 This binding enables acting as a receiver of updates from devices that post measurements to https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
 If the hostname is configurable - as on weather stations based on the Fine Offset Electronics WH2600-IP - this is simple, otherwise you have to set up dns such that it resolves the above hostname to your server, without preventing the server from resolving the proper ip if you want to forward the request.
 
-The server thus listens at http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php and the device needs to be pointed at this address.
+The server thus listens at `http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php` and the device needs to be pointed at this address.
 If you can't configure the device itself to submit to an alternate hostname you would need to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide it as the DHCP dns-server to the device.
 Make sure not to use this dns server instance for any other DHCP clients.
 
@@ -164,7 +164,7 @@ Thing wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID "Foo" [stat
 }
 ```
 
-The pattern for a given channel is `Type <channel type id> : <request paramter> []` from the channel types table.
+The pattern for a given channel is `Type <channel type id> : <request parameter> []` from the channel types table.
 Casing of the request parameter is significant.
 None of the current channels take config.
 

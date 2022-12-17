@@ -23,7 +23,6 @@ public class GetLocationRequest extends Packet {
     public static final int TYPE = 0x30;
 
     public GetLocationRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

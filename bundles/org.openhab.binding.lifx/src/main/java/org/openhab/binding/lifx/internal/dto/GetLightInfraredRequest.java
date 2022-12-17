@@ -22,7 +22,6 @@ public class GetLightInfraredRequest extends Packet {
     public static final int TYPE = 0x78;
 
     public GetLightInfraredRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

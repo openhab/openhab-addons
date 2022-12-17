@@ -35,7 +35,7 @@ import tuwien.auto.calimero.secure.KnxSecureException;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
- * sent to one of the channels. It implements a KNX/IP Gateway, that either acts a a
+ * sent to one of the channels. It implements a KNX/IP Gateway, that either acts as a
  * conduit for other {@link DeviceThingHandler}s, or for Channels that are
  * directly defined on the bridge
  *
@@ -65,9 +65,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // initialisation would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
-        initJob = scheduler.submit(() -> {
-            initializeLater();
-        });
+        initJob = scheduler.submit(this::initializeLater);
     }
 
     public void initializeLater() {
@@ -106,7 +104,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         }
         String localSource = config.getLocalSourceAddr();
         String connectionTypeString = config.getType();
-        int port = config.getPortNumber().intValue();
+        int port = config.getPortNumber();
         String ip = config.getIpAddress();
         InetSocketAddress localEndPoint = null;
         boolean useNAT = false;
@@ -179,8 +177,8 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
-                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
+                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
 
         final var tmpClient = client;
         if (tmpClient != null) {

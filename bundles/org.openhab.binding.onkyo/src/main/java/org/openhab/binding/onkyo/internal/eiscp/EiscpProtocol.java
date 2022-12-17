@@ -30,7 +30,7 @@ public class EiscpProtocol {
     private static final Logger LOGGER = LoggerFactory.getLogger(EiscpProtocol.class);
 
     /**
-     * Wraps a command in a eISCP data message (data characters).
+     * Wraps a command in an eISCP data message (data characters).
      *
      * @param msg
      *            eISCP command.

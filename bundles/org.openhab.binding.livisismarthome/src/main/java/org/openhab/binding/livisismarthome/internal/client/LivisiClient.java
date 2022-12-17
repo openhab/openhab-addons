@@ -74,7 +74,7 @@ public class LivisiClient {
 
     private final Logger logger = LoggerFactory.getLogger(LivisiClient.class);
 
-    private final GsonOptional gson;
+    private final GsonOptional gson = new GsonOptional();
     private final LivisiBridgeConfiguration bridgeConfiguration;
     private final OAuthClientService oAuthService;
     private final URLConnectionFactory connectionFactory;
@@ -84,7 +84,6 @@ public class LivisiClient {
         this.bridgeConfiguration = bridgeConfiguration;
         this.oAuthService = oAuthService;
         this.connectionFactory = connectionFactory;
-        this.gson = new GsonOptional();
     }
 
     /**
@@ -114,7 +113,6 @@ public class LivisiClient {
      * @return response content
      */
     private <T> Optional<T> executeGet(final String url, final Class<T> clazz) throws IOException {
-
         HttpURLConnection connection = createBaseRequest(url, HttpMethod.GET);
         String responseContent = executeRequest(connection);
         return gson.fromJson(responseContent, clazz);
@@ -172,7 +170,6 @@ public class LivisiClient {
     }
 
     private HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod) throws IOException {
-
         final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
         return connectionFactory.createBaseRequest(url, httpMethod, accessTokenResponse);
     }
@@ -200,7 +197,6 @@ public class LivisiClient {
      */
     private void handleResponseErrors(final HttpURLConnection connection, final String responseContent)
             throws IOException {
-
         final int status = connection.getResponseCode();
         if (HttpStatus.OK_200 == status) {
             logger.debug("Statuscode is OK: [{}]", connection.getURL());

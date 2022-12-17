@@ -105,7 +105,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     public Ipx800v3Handler(Thing thing) {
         super(thing);
-        logger.debug("Create a IPX800 Handler for thing '{}'", getThing().getUID());
+        logger.debug("Create an IPX800 Handler for thing '{}'", getThing().getUID());
     }
 
     @Override

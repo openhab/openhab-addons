@@ -49,6 +49,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLig
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -257,7 +258,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     @Override
     public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
-        if (auto) {
+        if (auto && profile.settings.thermostats != null) {
             uri = uri + "&target_t=" + getDouble(profile.settings.thermostats.get(0).targetTemp.value);
         }
         httpRequest(uri); // percentage to open the valve
@@ -281,8 +282,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void startValveBoost(int valveId, int value) throws ShellyApiException {
-        int minutes = value != -1 ? value : getInteger(profile.settings.thermostats.get(0).boostMinutes);
-        httpRequest("/thermostat/0?boost_minutes=" + minutes);
+        if (profile.settings.thermostats != null) {
+            ShellyThermnostat t = profile.settings.thermostats.get(0);
+            int minutes = value != -1 ? value : getInteger(t.boostMinutes);
+            httpRequest("/thermostat/0?boost_minutes=" + minutes);
+        }
     }
 
     @Override
@@ -459,7 +463,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     /**
-     * Sends a IR key code to the Shelly Sense.
+     * Sends an IR key code to the Shelly Sense.
      *
      * @param keyCode A keyCoud could be a symbolic name (as defined in the key map on the device) or a PRONTO Code in
      *            plain or hex64 format

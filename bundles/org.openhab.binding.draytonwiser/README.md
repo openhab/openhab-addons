@@ -33,7 +33,7 @@ Once discovered, the HeatHub `secret` needs to be configured.
 There are a few ways to obtain this, assuming you have already configured the system using the Wiser App.
 
 1. Temporarily install a packet sniffing tool on your mobile device. Every request made includes the `secret` in the header.
-2. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `secret`.
+1. Enable setup mode on the HeatHub. Connect a machine temporarily to the `WiserHeat_XXXXX` network and browse to `http://192.168.8.1/secret` to obtain the `secret`.
 
 The `refresh` interval defines in seconds, how often the binding will poll the controller for updates.
 
@@ -178,7 +178,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 ### .things file
 
-```
+```java
 Bridge draytonwiser:heathub:HeatHub [ networkAddress="192.168.1.X", refresh=60, secret="secret from hub", awaySetPoint=10 ] {
     boiler-controller controller     "Controller"
     room              livingroom     "Living Room"            [ name="Living Room" ]
@@ -197,7 +197,7 @@ The `serialNumber` corresponds to the device serial number which can be found on
 
 ### .items file
 
-```
+```java
 Switch Heating_Override      "Heating Override"    <fire>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatingOverride" }
 Number Heating_Demand      "Heating Demand [%.0f %%]"    <heating>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatChannel1Demand" }
 Switch Heating_Requesting_Heat      "Heating On"    <fire>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatChannel1DemandState" }
@@ -236,7 +236,7 @@ Number:Humidity livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living)
 
 ### Sitemap
 
-```
+```perl
 Text label="Living Room" icon="sofa" {
     Text item=livingroom_temperature
     Setpoint item=livingroom_setpoint step=0.5

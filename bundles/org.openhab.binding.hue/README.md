@@ -8,21 +8,21 @@ The integration happens through the Hue Bridge, which acts as an IP gateway to t
 ## Supported Things
 
 The Hue Bridge is required as a "bridge" for accessing any other Hue device.
-It supports the ZigBee LightLink protocol as well as the upwards compatible ZigBee 3.0 protocol.
+It supports the Zigbee Light Link protocol as well as the upwards compatible Zigbee 3.0 protocol.
 There are two types of Hue Bridges, generally referred to as v1 (the rounded version) and v2 (the squared version).
 Only noticeable difference between the two generation of bridges is the added support for Apple HomeKit in v2.
 Both bridges are fully supported by this binding.
 
 Almost all available Hue devices are supported by this binding.
 This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
-Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee LightLink compatible products, including the IKEA TRÅDFRI lights (when updated). 
-Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
+Additionally, it is possible to use OSRAM Lightify devices as well as other Zigbee Light Link compatible products, including the IKEA TRÅDFRI lights (when updated).
+Beside bulbs and luminaires the Hue binding also supports some Zigbee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue Bridge before it is possible for this binding to use them.
 
-The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
+The Hue binding supports all seven types of lighting devices defined for Zigbee Light Link ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
 
-| Device type              | ZigBee Device ID | Thing type |
+| Device type              | Zigbee Device ID | Thing type |
 |--------------------------|------------------|------------|
 | On/Off Light             | 0x0000           | 0000       |
 | On/Off Plug-in Unit      | 0x0010           | 0010       |
@@ -46,13 +46,13 @@ The following matrix lists the capabilities (channels) for each type:
 |  0210       |    X   |            |   X   |          X        |
 |  0220       |    X   |     X      |       |          X        |
 
-Beside bulbs and luminaires the Hue binding supports some ZigBee sensors.
+Beside bulbs and luminaires the Hue binding supports some Zigbee sensors.
 Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap, CLIP Sensor).
 The Hue Motion Sensor registers a `ZLLLightLevel` sensor (0106), a `ZLLPresence` sensor (0107) and a `ZLLTemperature` sensor (0302) in one device.
-The Hue CLIP Sensor saves scene states with status or flag for HUE rules. 
-They are presented by the following ZigBee Device ID and _Thing type_:
+The Hue CLIP Sensor saves scene states with status or flag for HUE rules.
+They are presented by the following Zigbee Device ID and _Thing type_:
 
-| Device type                 | ZigBee Device ID | Thing type     |
+| Device type                 | Zigbee Device ID | Thing type     |
 |-----------------------------|------------------|----------------|
 | Light Sensor                | 0x0106           | 0106           |
 | Occupancy Sensor            | 0x0107           | 0107           |
@@ -77,7 +77,7 @@ The Hue Bridge is discovered through mDNS in the local network.
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```
+```text
 discovery.hue:background=false
 ```
 
@@ -89,7 +89,7 @@ Once the binding is authorized, it automatically reads all devices and groups th
 The Hue Bridge requires the IP address as a configuration value in order for the binding to know where to access it.
 In the thing file, this looks e.g. like
 
-```
+```java
 Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 ```
 
@@ -98,7 +98,7 @@ Please note that the generated user name cannot be written automatically to the 
 The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
 
-```
+```java
 Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxcvbnm1234" ]
 ```
 
@@ -117,13 +117,13 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 The devices are identified by the number that the Hue Bridge assigns to them (also shown in the Hue App as an identifier).
 Thus, all it needs for manual configuration is this single value like
 
-```
+```java
 0210 bulb1 "Lamp 1" @ "Office" [ lightId="1" ]
 ```
 
 or
 
-```
+```java
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
 
@@ -131,24 +131,23 @@ You can freely choose the thing identifier (such as motion-sensor), its name (su
 
 The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
 
-* Dimmable Light
-* Dimmable Plug-in Unit
-* Colour Light
-* Extended Colour Light
-* Colour Temperature Light
+- Dimmable Light
+- Dimmable Plug-in Unit
+- Colour Light
+- Extended Colour Light
+- Colour Temperature Light
 
 | Parameter | Description                                                                   |
 |-----------|-------------------------------------------------------------------------------|
 | lightId   | Number of the device provided by the Hue Bridge. **Mandatory**                |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
-
 ### Groups
 
 The groups are identified by the number that the Hue Bridge assigns to them.
 Thus, all it needs for manual configuration is this single value like
 
-```
+```java
 group kitchen-bulbs "Kitchen Lamps" @ "Kitchen" [ groupId="1" ]
 ```
 
@@ -160,7 +159,6 @@ The group type also have an optional configuration value to specify the fade tim
 |-----------|-------------------------------------------------------------------------------|
 | groupId   | Number of the group provided by the Hue Bridge. **Mandatory**                 |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
-
 
 ## Channels
 
@@ -232,7 +230,6 @@ The `tap_switch_event` can trigger one of the following events:
 | Button 3 | Button 3 | 17    |
 | Button 4 | Button 4 | 18    |
 
-
 ## Rule Actions
 
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
@@ -264,7 +261,7 @@ And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimm
 
 ### demo.things:
 
-```
+```java
 Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168.0.64" ] {
     0210  bulb1              "Lamp 1"        @ "Kitchen"    [ lightId="1" ]
     0220  bulb2              "Lamp 2"        @ "Kitchen"    [ lightId="2" ]
@@ -278,7 +275,7 @@ Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168
 
 ### demo.items:
 
-```
+```java
 // Bulb1
 Switch  Light1_Toggle       { channel="hue:0210:1:bulb1:color" }
 Dimmer  Light1_Dimmer       { channel="hue:0210:1:bulb1:color" }
@@ -319,7 +316,7 @@ Also, if you are doing all your configuration through files, you may add the ful
 
 ### demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {
