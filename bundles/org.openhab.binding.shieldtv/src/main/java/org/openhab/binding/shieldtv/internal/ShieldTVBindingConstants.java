@@ -34,7 +34,7 @@ public class ShieldTVBindingConstants {
     public static final String CHANNEL_PINCODE = "pincode";
     public static final String CHANNEL_RAW = "raw";
     public static final String CHANNEL_RAWMSG = "rawmsg";
-    public static final String CHANNEL_FLUSH = "flush";
+    public static final String CHANNEL_STARTAPP = "startapp";
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";
 }

@@ -632,6 +632,9 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                         sendCommand(new ShieldTVCommand(
                                 ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
                         break;
+                    case "KEY_POWER":
+                        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e401e")));
+                        break;
                     default:
                         logger.trace("Unknown Keypress: {}", command.toString());
                 }
@@ -653,9 +656,15 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             if (command instanceof StringType) {
                 shieldtvMessageParser.handleMessage(command.toString());
             }
-        } else if (CHANNEL_FLUSH.equals(channelUID.getId())) {
+        } else if (CHANNEL_STARTAPP.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                flushReader();
+                // 0000 08 f1 07 12 19 08 02 12 15 0a 13 63 6f 6d 2e 61 ...........com.a
+                // 0010 6d 61 7a 6f 6e 2e 6d 75 73 69 63 2e 74 76 mazon.music.tv
+
+                // 0000 08 f1 07 12 27 08 02 12 23 0a 21 63 6f 6d 2e 61 ....'...#.!com.a
+                // 0010 6d 61 7a 6f 6e 2e 61 6d 61 7a 6f 6e 76 69 64 65 mazon.amazonvide
+                // 0020 6f 2e 6c 69 76 69 6e 67 72 6f 6f 6d o.livingroom
+
             }
         }
     }
