@@ -23,21 +23,14 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-		</config-description>
-
-		<config-description>
 			<parameter name="keystore" type="text" required="true">
-				<context>keystore filename</context>
-				<label>Keystore Filename</label>
-				<description>Filename for the keystore</description>
+				<label>Keystore File</label>
+				<description>Java keystore containing caseta key and certs</description>
 			</parameter>
-		</config-description>
-
-		<config-description>
-			<parameter name="keystorePassword" type="text" required="true">
-				<context>keystore password</context>
-				<label>Keystore password</label>
-				<description>Password for the keystore</description>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
 			</parameter>
 		</config-description>
 
