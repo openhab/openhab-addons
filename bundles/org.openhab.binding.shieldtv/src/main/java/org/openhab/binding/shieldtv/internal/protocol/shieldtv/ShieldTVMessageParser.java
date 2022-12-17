@@ -86,19 +86,19 @@ public class ShieldTVMessageParser {
             // Longer hostname reply
             logger.trace("Longer Hostname Reply");
         } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
-            logger.trace("PIN Process Started");
+            logger.debug("PIN Process Started");
         } else if (msg.startsWith("20") && msg.startsWith("10", 4) && msg.length() == 6) {
             // This seems to be 20**10 when observed.
             // This seems to send immediately before the certificate reply and as a reply to the pin being sent
-            logger.trace("PIN Process Successful");
+            logger.debug("PIN Process Successful");
         } else if (msg.startsWith("08f007")) {
             // Login successful???
             // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
             // Maybe this should be what we use to set the shield online?
-            logger.trace("Login Successful");
+            logger.info("Login Successful");
         } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
             // Timeout
-            logger.trace("Timeout");
+            logger.debug("Timeout");
         } else if (msg.startsWith("08ec07")) {
             // Current App
             // 08ec07122a080722262205656e5f5553421d636f6d2e676f6f676c652e616e64726f69642e74766c61756e6368657218ec07
@@ -143,8 +143,9 @@ public class ShieldTVMessageParser {
             String privKeyB64 = Base64.getEncoder().encodeToString(privKeyB64Byte);
             String pubKeyB64 = Base64.getEncoder().encodeToString(pubKeyB64Byte);
 
-            logger.trace("Cert privKey: {}", privKeyB64);
-            logger.trace("Cert pubKey:  {}", pubKeyB64);
+	logger.info("New Private Key Issued:\n-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----",privKeyB64);
+	logger.info("New Certificate Issued:\n-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----",pubKeyB64);
+	logger.info("ACTION REQUIRED: New credentials have been issued and must be saved.\nSave private key to (yourfilename).key and certificate to (yourfilename).crt.\nRun the following commands:\nopenssl pkcs12 -export -in (yourfilename).crt -inkey (yourfilename).key -out (yourfilename).p12 -name nvidia\nkeytool -importkeystore -destkeystore (yourfilename).keystore -srckeystore (yourfilename).p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia");
 
         } else {
             logger.trace("Unknown payload received. {}", msg);

@@ -278,7 +278,6 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                 TimeUnit.SECONDS);
 
         String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
-        logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(login));
         sendCommand(new ShieldTVCommand(login));
 
         updateStatus(ThingStatus.ONLINE);
@@ -344,7 +343,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     }
 
     private synchronized void reconnect() {
-        logger.debug("Attempting to reconnect to the bridge");
+        logger.debug("Attempting to reconnect to the shieldtv");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "reconnecting");
         disconnect(false);
         connect();
@@ -424,7 +423,6 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null
                     && (thisMsg = fixMessage(Integer.toHexString(reader.read()))) != null) {
-                // logger.trace("Reader Current: {} {}", sbReader.length(), sbReader.toString());
                 if (lastMsg.equals("08") && thisMsg.equals("0a") && inMessage == 0) {
                     flushReader();
                     inMessage = 1;

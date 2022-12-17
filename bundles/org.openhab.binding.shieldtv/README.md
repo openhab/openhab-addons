@@ -1,76 +1,105 @@
 # ShieldTV Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding supports a single thing type:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
-
+- **shieldtv** - The ShieldTV
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+Discovery is not currently part of this binding but is on the roadmap.  This will be updated as updates are committed.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+This binding does not require any special configuration files.  
 
-```
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+This binding does require a PIN login process (documented below) upon first connection.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+There are three required fields to connect successfully to a ShieldTV.
 
 ### `sample` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name             | Type    | Description                           | Default | Required | Advanced |
+|------------------|---------|---------------------------------------|---------|----------|----------|
+| ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
+| keystore         | text    | Password to access the device         | N/A     | yes      | no       |
+| keystorePassword | text    | Interval the device is polled in sec. | N/A     | yes      | no       |
+
+```java
+Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/openhab/nvidia-livingroom.keystore", keystorePassword="secret" ]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel  | Type   | Read/Write | Description                 |
+|----------|--------|------------|-----------------------------|
+| keypress | String | RW         | Manual Key Press Entry      |
+| pincode  | String | RW         | PIN Code Entry              |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+```java
+String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
+String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
+```
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+KEYPRESS will accept the following commands as strings (case sensitive):
+
+-KEY_UP
+-KEY_DOWN
+-KEY_RIGHT
+-KEY_LEFT
+-KEY_ENTER
+-KEY_HOME
+-KEY_BACK
+-KEY_MENU
+-KEY_PLAYPAUSE
+-KEY_REWIND
+-KEY_FORWARD
+-KEY_POWER
+
+## Pin Code Process
+
+For the ShieldTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
+
+The process is as follows:
+NOTE: It is critical that the keystore name and password used here matches the keystore and keystorePassword configured on the thing.
+
+From the cli: openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
+              (you may accept all of the defaults, this will be disposed of after successful authentication)
+
+              openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+
+              keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+
+Once this is completed, you can configure the thing and items as shown above.  Please have your CLI watching openhab.log for the new keys.
+
+To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your ShiledTV.  A 6 digit PIN should be displayed on the screen.
+
+To complete the PIN process, send the PIN displayed to the pincode channel.  The display should return back to where it was originally.
+
+At this point you should see a new private key and certificate in openhab.log.  Save the output to nvidia.key and nvidia.crt (overwriting the original data).
+
+Delete the original .p12 and .keystore files.
+
+From the cli: openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+
+              keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+
+This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+```java
+Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/openhab/nvidia-livingroom.keystore", keystorePassword="secret" ]
+```
 
-String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:theater:keypress" }
-String ShiledTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:theater:pincode" }
+```java
+String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
+String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
+```
 
-Thing shieldtv:shieldtv:theater [ ipAddress="x.x.x.x", keystore="/home/openhab/shieldtv.theater.keystore", keystorePassword="secret" ]
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
