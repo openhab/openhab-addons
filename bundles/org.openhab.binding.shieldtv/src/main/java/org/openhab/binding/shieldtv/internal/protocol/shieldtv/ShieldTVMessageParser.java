@@ -143,9 +143,12 @@ public class ShieldTVMessageParser {
             String privKeyB64 = Base64.getEncoder().encodeToString(privKeyB64Byte);
             String pubKeyB64 = Base64.getEncoder().encodeToString(pubKeyB64Byte);
 
-	logger.info("New Private Key Issued:\n-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----",privKeyB64);
-	logger.info("New Certificate Issued:\n-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----",pubKeyB64);
-	logger.info("ACTION REQUIRED: New credentials have been issued and must be saved.\nSave private key to (yourfilename).key and certificate to (yourfilename).crt.\nRun the following commands:\nopenssl pkcs12 -export -in (yourfilename).crt -inkey (yourfilename).key -out (yourfilename).p12 -name nvidia\nkeytool -importkeystore -destkeystore (yourfilename).keystore -srckeystore (yourfilename).p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia");
+            logger.info("New Private Key Issued:\n-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----",
+                    privKeyB64);
+            logger.info("New Certificate Issued:\n-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----",
+                    pubKeyB64);
+            logger.info(
+                    "ACTION REQUIRED: New credentials have been issued and must be saved.\nSave private key to (yourfilename).key and certificate to (yourfilename).crt.\nRun the following commands:\nopenssl pkcs12 -export -in (yourfilename).crt -inkey (yourfilename).key -out (yourfilename).p12 -name nvidia\nkeytool -importkeystore -destkeystore (yourfilename).keystore -srckeystore (yourfilename).p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia");
 
         } else {
             logger.trace("Unknown payload received. {}", msg);

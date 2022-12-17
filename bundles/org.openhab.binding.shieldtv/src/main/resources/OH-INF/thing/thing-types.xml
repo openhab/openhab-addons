@@ -25,21 +25,21 @@
 			</parameter>
 		</config-description>
 
-                <config-description>
-                        <parameter name="keystore" type="text" required="true">
-                                <context>keystore filename</context>
-                                <label>Keystore Filename</label>
-                                <description>Filename for the keystore</description>
-                        </parameter>
+		<config-description>
+			<parameter name="keystore" type="text" required="true">
+				<context>keystore filename</context>
+				<label>Keystore Filename</label>
+				<description>Filename for the keystore</description>
+			</parameter>
 		</config-description>
 
-                <config-description>
-                        <parameter name="keystorePassword" type="text" required="true">
-                                <context>keystore password</context>
-                                <label>Keystore password</label>
-                                <description>Password for the keystore</description>
-                        </parameter>
-                </config-description>
+		<config-description>
+			<parameter name="keystorePassword" type="text" required="true">
+				<context>keystore password</context>
+				<label>Keystore password</label>
+				<description>Password for the keystore</description>
+			</parameter>
+		</config-description>
 
 	</thing-type>
 
