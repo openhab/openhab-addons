@@ -1,7 +1,7 @@
 # Clementine Remote Binding
 
 <img style="float: right; margin: 0 0 5px 5px" src="doc/screenshot.png" alt="Screenshot" />
-This binding brings the benefits of over-the-network control of the [Clementine-Player](https://www.clementine-player.org) to openHAB!
+This binding brings the benefits of over-the-network control of the [Clementine-Player] to openHAB!
 
 It allows control of playback, position and volume and allows display of various title information:
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,11 +86,11 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * used to track the current state of the player
      */
     private enum State {
-        unknown,
-        playing,
-        paused,
-        skipping,
-        stopped
+        UNKNOWN,
+        PLAYING,
+        PAUSED,
+        SKIPPING,
+        STOPPED
     }
 
     private final Logger logger = LoggerFactory.getLogger(ClementineRemoteHandler.class);
@@ -101,7 +102,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     private @Nullable SongMetadata song = null;
 
     private Message.Builder builder = Message.newBuilder();
-    private State state = State.unknown;
+    private State state = State.UNKNOWN;
 
     public ClementineRemoteHandler(Thing thing) {
         super(thing);
@@ -162,7 +163,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      */
     private void disconnect() {
         updateStatus(ThingStatus.OFFLINE);
-        setState(State.unknown);
+        setState(State.UNKNOWN);
 
         if (out != null) { // try to close the output stream
             try {
@@ -211,6 +212,11 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * @return
      */
     private boolean handleControlCommand(Command command) {
+        if (command instanceof RefreshType) {
+            updatePlayerStateChannels(state);
+            updateTrackInfoChannels(song);
+        }
+
         if (command instanceof StringType) {
             var cmd = ((StringType) command).toString();
             switch (cmd) {
@@ -239,12 +245,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleCurrentMeta(ResponseCurrentMetadata meta) {
         song = meta.getSongMetadata();
-        var bytes = song.getArt().toByteArray();
-        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
-        updateState(CHANNEL_ALBUM, new StringType(song.getAlbum()));
-        updateState(CHANNEL_ARTIST, new StringType(song.getArtist()));
-        updateState(CHANNEL_TRACK, new StringType(song.getTrack() + ""));
-        updateState(CHANNEL_TITLE, new StringType(song.getTitle()));
+        updateTrackInfoChannels(song);
     }
 
     private void handleMessages() throws IOException {
@@ -269,10 +270,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
                 handleCurrentMeta(message.getResponseCurrentMetadata());
                 break;
             case PAUSE:
-                setState(State.paused);
+                setState(State.PAUSED);
                 break;
             case PLAY:
-                setState(State.playing);
+                setState(State.PLAYING);
                 break;
             case SET_VOLUME:
                 handleVolume(message.getRequestSetVolume());
@@ -286,19 +287,19 @@ public class ClementineRemoteHandler extends BaseThingHandler {
             case KEEP_ALIVE:
                 break;
             default:
-                logger.info("handleMessageFromClementine(): received {} message from clementine: {}", type, message);
+                logger.debug("handleMessageFromClementine(): received {} message from clementine: {}", type, message);
         }
     }
 
     private void handleStop() {
-        setTrack("-", "-", "-", "-");
-        setState(State.stopped);
+        updateTrackInfoChannels("-", "-", "-", "-");
+        setState(State.STOPPED);
         handleNullableTrackPos(null);
     }
 
     private void handleNullableTrackPos(@Nullable Integer newPos) {
         if (newPos != null) {
-            setState(State.playing);
+            setState(State.PLAYING);
             currentPos = newPos;
         } else {
             currentPos = 0;
@@ -319,9 +320,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(ClementineRemoteConfiguration.class);
-
         updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(this::connect);
     }
 
@@ -342,14 +341,14 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     }
 
     private boolean sendSkip(int d) {
-        state = State.skipping;
+        state = State.SKIPPING;
         var pos = RequestSetTrackPosition.newBuilder().setPosition(currentPos + d);
         Message msg = builder.setType(MsgType.SET_TRACK_POSITION).setRequestSetTrackPosition(pos).build();
         return sendMessage(msg);
     }
 
     private boolean sendMessage(MsgType type) {
-        state = State.unknown;
+        state = State.UNKNOWN;
         return sendMessage(builder.setType(type).build());
     }
 
@@ -384,25 +383,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         if (state == newState) {
             return false;
         }
-        state = newState;
-        switch (state) {
-            case playing:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
-                break;
-            case paused:
-            case stopped:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
-                break;
-        }
-        updateState(CHANNEL_STATE, new StringType(state.toString()));
+        updatePlayerStateChannels(state = newState);
         return true;
-    }
-
-    private void setTrack(String artist, String album, String track, String title) {
-        updateState(CHANNEL_ALBUM, new StringType(album));
-        updateState(CHANNEL_ARTIST, new StringType(artist));
-        updateState(CHANNEL_TRACK, new StringType(track));
-        updateState(CHANNEL_TITLE, new StringType(title));
     }
 
     @Override
@@ -410,5 +392,34 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         super.updateConfiguration(configuration);
         dispose();
         scheduler.execute(this::connect);
+    }
+
+    private void updatePlayerStateChannels(State state) {
+        switch (state) {
+            case PLAYING:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
+                break;
+            case PAUSED:
+            case STOPPED:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
+                break;
+        }
+        updateState(CHANNEL_STATE, new StringType(state.toString()));
+    }
+
+    private void updateTrackInfoChannels(@Nullable SongMetadata song) {
+        if (song == null) {
+            return;
+        }
+        var bytes = song.getArt().toByteArray();
+        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
+        updateTrackInfoChannels(song.getArtist(), song.getAlbum(), song.getTrack() + "", song.getTitle());
+    }
+
+    private void updateTrackInfoChannels(String artist, String album, String track, String title) {
+        updateState(CHANNEL_ALBUM, new StringType(album));
+        updateState(CHANNEL_ARTIST, new StringType(artist));
+        updateState(CHANNEL_TRACK, new StringType(track));
+        updateState(CHANNEL_TITLE, new StringType(title));
     }
 }
