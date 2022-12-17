@@ -14,6 +14,7 @@
 			<channel id="raw" typeId="raw"/>
 			<channel id="pincode" typeId="pincode"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
+			<channel id="flush" typeId="flush"/>
 		</channels>
 
 		<config-description>
@@ -35,6 +36,12 @@
 		<item-type>String</item-type>
 		<label>RAWMSG Command</label>
 		<description>RAW message to handle (for debugging)</description>
+	</channel-type>
+
+	<channel-type id="flush" advanced="true">
+		<item-type>String</item-type>
+		<label>FLUSH Command</label>
+		<description>Flush Reader Buffer (for debugging)</description>
 	</channel-type>
 
 	<channel-type id="keypress" advanced="true">

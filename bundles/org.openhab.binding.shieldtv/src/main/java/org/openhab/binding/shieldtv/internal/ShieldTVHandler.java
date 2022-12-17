@@ -58,7 +58,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +73,7 @@ import org.slf4j.LoggerFactory;
 public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessageParserCallbacks {
 
     private static final int DEFAULT_RECONNECT_MINUTES = 5;
-    private static final int DEFAULT_HEARTBEAT_MINUTES = 5;
+    private static final int DEFAULT_HEARTBEAT_SECONDS = 5;
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
 
     private static final String STATUS_INITIALIZING = "Initializing";
@@ -105,9 +104,24 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
 
+    StringBuffer sbReader = new StringBuffer();
+    String lastMsg = "";
+    String thisMsg = "";
+    int inMessage = 0;
+
+    private String hostName = "";
+
     public ShieldTVHandler(Thing thing) {
         super(thing);
         shieldtvMessageParser = new ShieldTVMessageParser(this);
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public String getHostName() {
+        return this.hostName;
     }
 
     @Override
@@ -125,7 +139,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         }
 
         reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
-        heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
+        heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
         sendDelay = (config.delay < 0) ? 0 : config.delay;
 
         if (config.keystore == null || keystorePassword == null) {
@@ -261,7 +275,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
         logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
         keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
-                TimeUnit.MINUTES);
+                TimeUnit.SECONDS);
 
         String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
         logger.trace("Raw Message Decodes as: {}", ShieldTVRequest.decodeMessage(login));
@@ -375,72 +389,90 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         }
     }
 
+    private void flushReader() {
+        if ((inMessage == 0) && (sbReader.length() > 0)) {
+            sbReader.setLength(sbReader.length() - 2);
+            shieldtvMessageParser.handleMessage(sbReader.toString());
+            sbReader.setLength(0);
+            sbReader.append(lastMsg.toString());
+        }
+        sbReader.append(thisMsg.toString());
+        lastMsg = thisMsg;
+    }
+
+    private void finishReaderMessage() {
+        sbReader.append(thisMsg.toString());
+        lastMsg = "";
+        inMessage = 0;
+        shieldtvMessageParser.handleMessage(sbReader.toString());
+        sbReader.setLength(0);
+    }
+
+    private String fixMessage(String tempMsg) {
+        if (tempMsg.length() % 2 > 0) {
+            tempMsg = "0" + tempMsg;
+        }
+        return tempMsg;
+    }
+
     /**
      * Method executed by the message reader thread (readerThread)
      */
     private void readerThreadJob() {
         logger.debug("Message reader thread started");
-        StringBuffer sb = new StringBuffer();
-        String msg = null;
-        String lastMsg = "";
-        String thisMsg = "";
-        int inMessage = 1;
         try {
             BufferedReader reader = this.reader;
-            while (!Thread.interrupted() && reader != null && (thisMsg = Integer.toHexString(reader.read())) != null) {
-                if (thisMsg.length() % 2 > 0) {
-                    thisMsg = "0" + thisMsg;
-                }
-                if (lastMsg.equals("08") && thisMsg.equals("0a")) {
-                    if ((inMessage == 0) && (sb.length() > 0)) {
-                        sb.setLength(sb.length() - 2);
-                        shieldtvMessageParser.handleMessage(sb.toString());
-                        sb.setLength(0);
-                        sb.append(lastMsg.toString());
-                    }
-                    sb.append(thisMsg.toString());
-                    lastMsg = thisMsg;
+            while (!Thread.interrupted() && reader != null
+                    && (thisMsg = fixMessage(Integer.toHexString(reader.read()))) != null) {
+                // logger.trace("Reader Current: {} {}", sbReader.length(), sbReader.toString());
+                if (lastMsg.equals("08") && thisMsg.equals("0a") && inMessage == 0) {
+                    flushReader();
                     inMessage = 1;
                 } else if (lastMsg.equals("18") && thisMsg.equals("0a") && inMessage == 1) {
-                    sb.append(thisMsg.toString());
-                    lastMsg = "";
-                    inMessage = 0;
-                    shieldtvMessageParser.handleMessage(sb.toString());
-                    sb.setLength(0);
-                } else if (lastMsg.equals("08") && thisMsg.equals("0b")) {
-                    if ((inMessage == 0) && (sb.length() > 0)) {
-                        sb.setLength(sb.length() - 2);
-                        shieldtvMessageParser.handleMessage(sb.toString());
-                        sb.setLength(0);
-                        sb.append(lastMsg.toString());
-                    }
-                    sb.append(thisMsg.toString());
-                    lastMsg = thisMsg;
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("0b") && inMessage == 0) {
+                    flushReader();
                     inMessage = 2;
                 } else if (lastMsg.equals("18") && thisMsg.equals("0b") && inMessage == 2) {
-                    sb.append(thisMsg.toString());
-                    lastMsg = "";
-                    inMessage = 0;
-                    shieldtvMessageParser.handleMessage(sb.toString());
-                    sb.setLength(0);
-                } else if (lastMsg.equals("08") && thisMsg.equals("f1")) {
-                    if ((inMessage == 0) && (sb.length() > 0)) {
-                        sb.setLength(sb.length() - 2);
-                        shieldtvMessageParser.handleMessage(sb.toString());
-                        sb.setLength(0);
-                        sb.append(lastMsg.toString());
-                    }
-                    sb.append(thisMsg.toString());
-                    lastMsg = thisMsg;
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("f1") && inMessage == 0) {
+                    flushReader();
                     inMessage = 3;
                 } else if (lastMsg.equals("18") && thisMsg.equals("f1") && inMessage == 3) {
-                    sb.append(thisMsg.toString());
-                    lastMsg = "";
-                    inMessage = 0;
-                    shieldtvMessageParser.handleMessage(sb.toString());
-                    sb.setLength(0);
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("ec") && inMessage == 0) {
+                    flushReader();
+                    inMessage = 4;
+                } else if (lastMsg.equals("18") && thisMsg.equals("ec") && inMessage == 4) {
+                    sbReader.append(thisMsg.toString());
+                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("00") && inMessage == 0) {
+                    flushReader();
+                    inMessage = 5;
+                } else if (lastMsg.equals("d1") && thisMsg.equals("30") && inMessage == 5) {
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("f0") && inMessage == 0) {
+                    flushReader();
+                    inMessage = 6;
+                } else if (lastMsg.equals("18") && thisMsg.equals("f0") && inMessage == 6) {
+                    sbReader.append(thisMsg.toString());
+                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("f3") && inMessage == 0) {
+                    flushReader();
+                    inMessage = 7;
+                } else if (lastMsg.equals("18") && thisMsg.equals("f3") && inMessage == 7) {
+                    sbReader.append(thisMsg.toString());
+                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
+                    finishReaderMessage();
+                } else if (lastMsg.equals("08") && thisMsg.equals("e9") && inMessage == 0) {
+                    flushReader();
+                    inMessage = 10;
+                } else if (sbReader.length() == 32 && inMessage == 10) {
+                    finishReaderMessage();
                 } else {
-                    sb.append(thisMsg.toString());
+                    sbReader.append(thisMsg.toString());
                     lastMsg = thisMsg;
                 }
             }
@@ -464,6 +496,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     private void sendKeepAlive() {
         logger.trace("Sending keepalive query");
+        String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
+        sendCommand(new ShieldTVCommand(keepalive));
     }
 
     /*
@@ -527,16 +561,81 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         logger.trace("Command received: {}", channelUID.getId().toString());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+            if (command instanceof StringType) {
+                // All key presses require a down and up command to simulate the button being pushed down and then back
+                // up
+                // This probably needs to be handled separately for remote controls TODO
+                switch (command.toString()) {
+                    case "KEY_UP":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202ce01")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202ce01")));
+                        break;
+                    case "KEY_DOWN":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d801")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d801")));
+                        break;
+                    case "KEY_RIGHT":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d401")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d401")));
+                        break;
+                    case "KEY_LEFT":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d201")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d201")));
+                        break;
+                    case "KEY_ENTER":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202c205")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202c205")));
+                        break;
+                    case "KEY_HOME":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d802")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d802")));
+                        break;
+                    case "KEY_BACK":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202bc02")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202bc02")));
+                        break;
+                    case "KEY_MENU":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a280132029602")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a280232029602")));
+                        break;
+                    case "KEY_PLAYPAUSE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202F604")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202F604")));
+                        break;
+                    case "KEY_REWIND":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202D002")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202D002")));
+                        break;
+                    case "KEY_FORWARD":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202A003")));
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
+                        break;
+                    default:
+                        logger.trace("Unknown Keypress: {}", command.toString());
+                }
             }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String pin = ShieldTVRequest.pinRequest(command.toString());
@@ -553,6 +652,10 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         } else if (CHANNEL_RAWMSG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 shieldtvMessageParser.handleMessage(command.toString());
+            }
+        } else if (CHANNEL_FLUSH.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                flushReader();
             }
         }
     }

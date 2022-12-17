@@ -63,4 +63,9 @@ public class ShieldTVRequest {
         String message = "0801121a0801121073616d73756e6720534d2d4739393855180128fbff04";
         return message;
     }
+
+    public static String keepAlive() {
+        String message = "080028fae0a6c0d130";
+        return message;
+    }
 }

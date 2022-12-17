@@ -81,13 +81,17 @@ public class ShieldTVMessageParser {
             }
             logger.trace("Shield Hostname: {} {}", hostname, length);
             logger.trace("Shield Hostname Encoded: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
+
+        } else if (msg.startsWith("080b12")) {
+            // Longer hostname reply
+            logger.trace("Longer Hostname Reply");
         } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
             logger.trace("PIN Process Started");
         } else if (msg.startsWith("20") && msg.startsWith("10", 4) && msg.length() == 6) {
             // This seems to be 20**10 when observed.
             // This seems to send immediately before the certificate reply and as a reply to the pin being sent
             logger.trace("PIN Process Successful");
-        } else if (msg.equals("08f007120c080412")) {
+        } else if (msg.startsWith("08f007")) {
             // Login successful???
             // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
             // Maybe this should be what we use to set the shield online?
@@ -95,6 +99,10 @@ public class ShieldTVMessageParser {
         } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
             // Timeout
             logger.trace("Timeout");
+        } else if (msg.startsWith("08ec07")) {
+            // Current App
+            // 08ec07122a080722262205656e5f5553421d636f6d2e676f6f676c652e616e64726f69642e74766c61756e6368657218ec07
+            //
         } else if (msg.startsWith("080a12") && msg.startsWith("1008b510", 8)) {
             // Certificate Reply
             // |--6---------12----------10--------------16---------6--- = 50 characters long
