@@ -1,5 +1,7 @@
 # Pioneer AVR Binding
 
+This binding integrates Pioneer AVRs.
+
 ## Binding configuration
 
 The binding can auto-discover the Pioneer AVRs present on your local network.
