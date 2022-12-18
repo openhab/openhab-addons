@@ -61,4 +61,6 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_REMOTE_AC_STATUS = "remote-ac-status";
     public static final String CHANNEL_ENABLE_AC = "enable-ac";
     public static final String CHANNEL_DISABLE_AC = "disable-ac";
+    public static final String CHANNEL_LAST_POSITION_UPDATE = "last-position-update";
+    public static final String CHANNEL_LAST_CHARGE_STATE_UPDATE = "last-charge-state-update";
 }
