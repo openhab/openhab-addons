@@ -77,7 +77,7 @@ Some notes:
 
 - Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
-```text
+```yaml
 connection: &conMono
     accepter: tcp,8080
     enable: on
