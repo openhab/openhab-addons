@@ -22,5 +22,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ShieldTVMessageParserCallbacks {
 
-    public void validMessageReceived(String communiqueType);
+    public void validMessageReceived();
+
+    public void checkInitialized();
+
+    public void setHostName(String hostName);
+
+    public String getHostName();
+
+    public void setCurrentApp(String currentApp);
+
+    public String getCurrentApp();
+
+    public void setLoggedIn(boolean isLoggedIn);
+
+    public boolean getLoggedIn();
 }

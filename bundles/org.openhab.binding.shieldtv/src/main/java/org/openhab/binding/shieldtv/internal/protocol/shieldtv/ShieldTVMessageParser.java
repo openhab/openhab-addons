@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
 public class ShieldTVMessageParser {
     private final Logger logger = LoggerFactory.getLogger(ShieldTVMessageParser.class);
 
+    private final ShieldTVMessageParserCallbacks callback;
+
     public ShieldTVMessageParser(ShieldTVMessageParserCallbacks callback) {
-        return;
+        this.callback = callback;
     }
 
     public void handleMessage(String msg) {
@@ -44,6 +46,8 @@ public class ShieldTVMessageParser {
 
         logger.trace("Received message: {}", msg);
         // logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
+
+        callback.validMessageReceived();
 
         char[] charArray = msg.toCharArray();
 
@@ -82,9 +86,15 @@ public class ShieldTVMessageParser {
             logger.trace("Shield Hostname: {} {}", hostname, length);
             logger.trace("Shield Hostname Encoded: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
 
+            callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
+
         } else if (msg.startsWith("080b12")) {
             // Longer hostname reply
             logger.trace("Longer Hostname Reply");
+        } else if (msg.startsWith("08f10712")) {
+            // Massive dump of currently installed apps
+        } else if (msg.equals("080028fae0a6c0d130")) {
+            // Keepalive Reply
         } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
             logger.debug("PIN Process Started");
         } else if (msg.startsWith("20") && msg.startsWith("10", 4) && msg.length() == 6) {
@@ -95,14 +105,20 @@ public class ShieldTVMessageParser {
             // Login successful???
             // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
             // Maybe this should be what we use to set the shield online?
-            logger.info("Login Successful");
+            logger.info("Login Successful to {}", callback.getHostName());
+            callback.setLoggedIn(true);
+            callback.checkInitialized();
         } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
             // Timeout
             logger.debug("Timeout");
         } else if (msg.startsWith("08ec07")) {
             // Current App
             // 08ec07122a080722262205656e5f5553421d636f6d2e676f6f676c652e616e64726f69642e74766c61756e6368657218ec07
-            //
+            StringBuffer appName = new StringBuffer();
+            for (int i = 36; i < msg.length() - 6; i++) {
+                appName.append(charArray[i]);
+            }
+            callback.setCurrentApp(ShieldTVRequest.encodeMessage(appName.toString()));
         } else if (msg.startsWith("080a12") && msg.startsWith("1008b510", 8)) {
             // Certificate Reply
             // |--6---------12----------10--------------16---------6--- = 50 characters long
@@ -115,7 +131,6 @@ public class ShieldTVMessageParser {
             StringBuffer preamble = new StringBuffer();
             StringBuffer privKey = new StringBuffer();
             StringBuffer pubKey = new StringBuffer();
-            String privLenSt = "" + charArray[6] + "" + charArray[7];
             int privLen = 2400;
             for (int i = 0; i < 50; i++) {
                 preamble.append(charArray[i]);
@@ -151,7 +166,7 @@ public class ShieldTVMessageParser {
                     "ACTION REQUIRED: New credentials have been issued and must be saved.\nSave private key to (yourfilename).key and certificate to (yourfilename).crt.\nRun the following commands:\nopenssl pkcs12 -export -in (yourfilename).crt -inkey (yourfilename).key -out (yourfilename).p12 -name nvidia\nkeytool -importkeystore -destkeystore (yourfilename).keystore -srckeystore (yourfilename).p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia");
 
         } else {
-            logger.trace("Unknown payload received. {}", msg);
+            logger.debug("Unknown payload received. {}", msg);
         }
         return;
     }

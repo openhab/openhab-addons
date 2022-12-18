@@ -22,8 +22,6 @@ This binding does require a PIN login process (documented below) upon first conn
 
 There are three required fields to connect successfully to a ShieldTV.
 
-### `sample` Thing Configuration
-
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
@@ -36,30 +34,37 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/op
 
 ## Channels
 
-| Channel  | Type   | Read/Write | Description                 |
-|----------|--------|------------|-----------------------------|
-| keypress | String | RW         | Manual Key Press Entry      |
-| pincode  | String | RW         | PIN Code Entry              |
+| Channel    | Type   | Read/Write | Description                 |
+|------------|--------|------------|-----------------------------|
+| keypress   | String | RW         | Manual Key Press Entry      |
+| pincode    | String | RW         | PIN Code Entry              |
+| devicename | String | RO         | Device Common Name          |
+| currentapp | String | RO         | Currently Running App       |
+| startapp   | String | RW         | Start App by Name           }
 
 ```java
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
+String ShieldTV_DEVICENAME "DEVICENAME [%s]" { channel = "shieldtv:shieldtv:livingroom:devicename" }
+String ShieldTV_CURRENTAPP "CURRENTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:currentapp" }
+String ShieldTV_STARTAPP "STARTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:startapp" }
+
 ```
 
 KEYPRESS will accept the following commands as strings (case sensitive):
 
--KEY_UP
--KEY_DOWN
--KEY_RIGHT
--KEY_LEFT
--KEY_ENTER
--KEY_HOME
--KEY_BACK
--KEY_MENU
--KEY_PLAYPAUSE
--KEY_REWIND
--KEY_FORWARD
--KEY_POWER
+- KEY_UP
+- KEY_DOWN
+- KEY_RIGHT
+- KEY_LEFT
+- KEY_ENTER
+- KEY_HOME
+- KEY_BACK
+- KEY_MENU
+- KEY_PLAYPAUSE
+- KEY_REWIND
+- KEY_FORWARD
+- KEY_POWER
 
 ## Pin Code Process
 
@@ -101,5 +106,9 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/op
 ```java
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
+String ShieldTV_DEVICENAME "DEVICENAME [%s]" { channel = "shieldtv:shieldtv:livingroom:devicename" }
+String ShieldTV_CURRENTAPP "CURRENTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:currentapp" }
+String ShieldTV_STARTAPP "STARTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:startapp" }
+
 ```
 

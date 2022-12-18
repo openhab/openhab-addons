@@ -68,4 +68,16 @@ public class ShieldTVRequest {
         String message = "080028fae0a6c0d130";
         return message;
     }
+
+    public static String startApp(String message) {
+        int length = message.length();
+        String len1 = Integer.toHexString(length + 6);
+        String len2 = Integer.toHexString(length + 2);
+        String len3 = Integer.toHexString(length);
+        String reply = "08f10712" + len1 + "080212" + len2 + "0a" + len3 + decodeMessage(message);
+        return reply;
+    }
+    // 080b120308cd08 - Longer Hostname Reply
+    // 08f30712020805 - Unknown
+    // 08f10712020800 - Get all apps
 }

@@ -56,6 +56,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -104,12 +105,14 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
 
-    StringBuffer sbReader = new StringBuffer();
-    String lastMsg = "";
-    String thisMsg = "";
-    int inMessage = 0;
+    private StringBuffer sbReader = new StringBuffer();
+    private String lastMsg = "";
+    private String thisMsg = "";
+    private int inMessage = 0;
 
+    private boolean isLoggedIn = false;
     private String hostName = "";
+    private String currentApp = "";
 
     public ShieldTVHandler(Thing thing) {
         super(thing);
@@ -118,10 +121,28 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+        updateState(CHANNEL_DEVICENAME, new StringType(hostName));
     }
 
     public String getHostName() {
         return this.hostName;
+    }
+
+    public void setCurrentApp(String currentApp) {
+        this.currentApp = currentApp;
+        updateState(CHANNEL_CURRENTAPP, new StringType(currentApp));
+    }
+
+    public String getCurrentApp() {
+        return this.currentApp;
+    }
+
+    public void setLoggedIn(boolean isLoggedIn) {
+        this.isLoggedIn = isLoggedIn;
+    }
+
+    public boolean getLoggedIn() {
+        return this.isLoggedIn;
     }
 
     @Override
@@ -280,7 +301,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
         sendCommand(new ShieldTVCommand(login));
 
-        updateStatus(ThingStatus.ONLINE);
+        // updateStatus(ThingStatus.ONLINE);
     }
 
     private void scheduleConnectRetry(long waitMinutes) {
@@ -344,6 +365,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     private synchronized void reconnect() {
         logger.debug("Attempting to reconnect to the shieldtv");
+        isLoggedIn = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "reconnecting");
         disconnect(false);
         connect();
@@ -496,18 +518,20 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         logger.trace("Sending keepalive query");
         String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
         sendCommand(new ShieldTVCommand(keepalive));
+        reconnectTaskSchedule();
     }
 
-    /*
-     * private void checkInitialized() {
-     * ThingStatusInfo statusInfo = getThing().getStatusInfo();
-     * if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
-     * if (deviceDataLoaded && buttonDataLoaded) {
-     * updateStatus(ThingStatus.ONLINE);
-     * }
-     * }
-     * }
-     */
+    public void checkInitialized() {
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
+            if (isLoggedIn) {
+                updateStatus(ThingStatus.ONLINE);
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08")));
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805")));
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800")));
+            }
+        }
+    }
 
     /**
      * Schedules the reconnect task keepAliveReconnectJob to execute in KEEPALIVE_TIMEOUT_SECONDS. This should be
@@ -544,7 +568,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     }
 
     @Override
-    public void validMessageReceived(String communiqueType) {
+    public void validMessageReceived() {
         reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
 
@@ -656,13 +680,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             }
         } else if (CHANNEL_STARTAPP.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                // 0000 08 f1 07 12 19 08 02 12 15 0a 13 63 6f 6d 2e 61 ...........com.a
-                // 0010 6d 61 7a 6f 6e 2e 6d 75 73 69 63 2e 74 76 mazon.music.tv
-
-                // 0000 08 f1 07 12 27 08 02 12 23 0a 21 63 6f 6d 2e 61 ....'...#.!com.a
-                // 0010 6d 61 7a 6f 6e 2e 61 6d 61 7a 6f 6e 76 69 64 65 mazon.amazonvide
-                // 0020 6f 2e 6c 69 76 69 6e 67 72 6f 6f 6d o.livingroom
-
+                String message = ShieldTVRequest.encodeMessage(ShieldTVRequest.startApp(command.toString()));
+                sendCommand(new ShieldTVCommand(message));
             }
         }
     }
