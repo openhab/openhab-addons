@@ -69,22 +69,22 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 default:
                     if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
                         ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
-                        if (content.contains("\"dog_cat\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                        if (content.contains("\"dog_cat\" : { \"alarm_state\" : 1")) {
                             ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
                         }
-                        if (content.contains("\"face\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                        if (content.contains("\"face\" : { \"alarm_state\" : 1")) {
                             ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
                         }
-                        if (content.contains("\"people\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                        if (content.contains("\"people\" : { \"alarm_state\" : 1")) {
                             ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
                         }
-                        if (content.contains("\"vehicle\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                        if (content.contains("\"vehicle\" : { \"alarm_state\" : 1")) {
                             ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
