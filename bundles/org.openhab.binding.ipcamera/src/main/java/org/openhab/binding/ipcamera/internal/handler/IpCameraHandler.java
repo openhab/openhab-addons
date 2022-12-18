@@ -57,6 +57,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraActions;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProvider;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
+import org.openhab.binding.ipcamera.internal.ReolinkHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
@@ -566,6 +567,9 @@ public class IpCameraHandler extends BaseThingHandler {
                         case INSTAR_THING:
                             socketChannel.pipeline().addLast(INSTAR_HANDLER, new InstarHandler(getHandle()));
                             break;
+                        case REOLINK_THING:
+                            socketChannel.pipeline().addLast(REOLINK_HANDLER, new ReolinkHandler(getHandle()));
+                            break;
                         default:
                             socketChannel.pipeline().addLast(new HttpOnlyHandler(getHandle()));
                             break;
@@ -629,6 +633,10 @@ public class IpCameraHandler extends BaseThingHandler {
                                 case INSTAR_THING:
                                     InstarHandler instarHandler = (InstarHandler) ch.pipeline().get(INSTAR_HANDLER);
                                     instarHandler.setURL(httpRequestURL);
+                                    break;
+                                case REOLINK_THING:
+                                    ReolinkHandler reolinkHandler = (ReolinkHandler) ch.pipeline().get(REOLINK_HANDLER);
+                                    reolinkHandler.setURL(httpRequestURL);
                                     break;
                             }
                             ch.writeAndFlush(request);
@@ -1287,6 +1295,10 @@ public class IpCameraHandler extends BaseThingHandler {
                     lowPriorityRequests = instarHandler.getLowPriorityRequests();
                 }
                 break;
+            case REOLINK_THING:
+                ReolinkHandler reolinkHandler = new ReolinkHandler(getHandle());
+                reolinkHandler.handleCommand(channelUID, command);
+                break;
             default:
                 HttpOnlyHandler defaultHandler = new HttpOnlyHandler(getHandle());
                 defaultHandler.handleCommand(channelUID, command);
@@ -1538,6 +1550,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
+            case REOLINK_THING:
+                sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
+                        + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
+                break;
             case DAHUA_THING:
                 if (!snapshotPolling) {
                     checkCameraConnection();
@@ -1663,6 +1679,15 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + getThing().getUID().getId()
                                 + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
+            case REOLINK_THING:
+                if (snapshotUri.isEmpty()) {
+                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB";
+                }
+                if (rtspUri.isEmpty()) {
+                    rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
+                            + "_main";
+                }
+                break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
         if (9000 > cameraConfig.getPollTime() && cameraConfig.getUpdateImageWhen().contains("1")) {
@@ -1681,9 +1706,21 @@ public class IpCameraHandler extends BaseThingHandler {
                     cameraConfig.getUser(), cameraConfig.getPassword());
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());
             // Only use ONVIF events if it is not an API camera.
-            onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
+            onvifCamera.connect(supportsOnvifEvents());
         }
         cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, 4, 8, TimeUnit.SECONDS);
+    }
+
+    private boolean supportsOnvifEvents() {
+        switch (thing.getThingTypeUID().getId()) {
+            case ONVIF_THING:
+                return true;
+            case REOLINK_THING:
+                if (cameraConfig.getNvrChannel() < 1) {
+                    return true;
+                }
+        }
+        return false;
     }
 
     private void keepMjpegRunning() {
