@@ -2290,6 +2290,9 @@
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 			<channel id="carAlarm" typeId="carAlarm"/>
 			<channel id="humanAlarm" typeId="humanAlarm"/>
+			<channel id="animalAlarm" typeId="animalAlarm"/>
+			<channel id="faceDetected" typeId="faceDetected"/>
+			<channel id="autoLED" typeId="autoLED"/>
 		</channels>
 		<config-description>
 

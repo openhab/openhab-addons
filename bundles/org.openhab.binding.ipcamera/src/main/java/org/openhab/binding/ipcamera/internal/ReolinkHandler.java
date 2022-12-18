@@ -57,13 +57,20 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         try {
             String content = msg.toString();
             ipCameraHandler.logger.trace("HTTP Result from {} contains \t:{}:", requestUrl, content);
-            if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
-                ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
-                ipCameraHandler.logger
-                        .debug("AI/object detection not implemented yet, report the cameras output from TRACE logs.");
-            } else if (requestUrl.startsWith("/api.cgi?cmd=GetMdState&channel=")) {
-                ipCameraHandler.logger
-                        .debug("Motion detection not implemented yet, report the cameras output from TRACE logs.");
+            switch (requestUrl) {
+                case "/cgi-bin/api.cgi?cmd=Login":
+                    ipCameraHandler.logger.info("Please report that your Reolink camera gave a login response:{}",
+                            content);
+                    break;
+                default:
+                    if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
+                        ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
+                        ipCameraHandler.logger.debug(
+                                "AI/object detection not implemented yet, report the cameras output from TRACE logs.");
+                    } else if (requestUrl.startsWith("/api.cgi?cmd=GetMdState&channel=")) {
+                        ipCameraHandler.logger.debug(
+                                "Motion detection not implemented yet, report the cameras output from TRACE logs.");
+                    }
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -73,11 +80,29 @@ public class ReolinkHandler extends ChannelDuplexHandler {
     // This handles the commands that come from the openHAB event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case CHANNEL_ENABLE_MOTION_ALARM:
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdState");
+                    break;
+                case CHANNEL_ENABLE_AUDIO_ALARM:
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarm");
+                    break;
+                case CHANNEL_AUTO_LED:
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetIrLights");
+                    break;
+            }
             return;
         } // end of "REFRESH"
         switch (channelUID.getId()) {
             case CHANNEL_ENABLE_MOTION_ALARM:
-                return;
+                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm");
+                break;
+            case CHANNEL_ENABLE_AUDIO_ALARM:
+                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm");
+                break;
+            case CHANNEL_AUTO_LED:
+                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights");
+                break;
         }
     }
 

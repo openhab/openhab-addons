@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -101,6 +102,7 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
@@ -151,6 +153,8 @@ public class IpCameraHandler extends BaseThingHandler {
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(1);
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
             "");
+    private FullHttpRequest postRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1,
+            new HttpMethod("POST"), "");
     private String gifFilename = "ipcamera";
     private String gifHistory = "";
     private String mp4History = "";
@@ -471,6 +475,23 @@ public class IpCameraHandler extends BaseThingHandler {
     public void sendHttpPUT(String httpRequestURL, FullHttpRequest request) {
         putRequestWithBody = request; // use Global so the authhandler can use it when resent with DIGEST.
         sendHttpRequest("PUT", httpRequestURL, null);
+    }
+
+    public void sendHttpPOST(String httpPostURL, String content) {
+        logger.trace("Body for POST:{} is going to be:{}", httpPostURL, content);
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), httpPostURL);
+        request.headers().set(HttpHeaderNames.HOST, cameraConfig.getIp());
+        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
+        ByteBuf bbuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
+        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
+        request.content().clear().writeBytes(bbuf);
+        postRequestWithBody = request; // use Global so the authhandler can use it when resent with DIGEST.
+        sendHttpRequest("POST", httpPostURL, null);
+    }
+
+    public void sendHttpPOST(String httpRequestURL) {
+        sendHttpRequest("POST", httpRequestURL, null);
     }
 
     public void sendHttpGET(String httpRequestURL) {
@@ -1553,8 +1574,10 @@ public class IpCameraHandler extends BaseThingHandler {
             case REOLINK_THING:
                 sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
                         + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
-                sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
-                        + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
+                if (cameraConfig.getNvrChannel() > 0) {
+                    sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
+                            + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
+                }
                 break;
             case DAHUA_THING:
                 if (!snapshotPolling) {
@@ -1689,6 +1712,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
                             + "_main";
                 }
+                sendHttpPOST("/cgi-bin/api.cgi?cmd=Login");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
