@@ -197,7 +197,7 @@ public class JuiceNetApi {
             ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new JuiceNetApiException(
-                        cmd.command + "from JuiceNet API unsucessful, please check configuation. (HTTP code :"
+                        cmd.command + "from JuiceNet API unsuccessful, please check configuation. (HTTP code :"
                                 + response.getStatus() + ").");
             }
 
