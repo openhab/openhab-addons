@@ -25,8 +25,8 @@ There are three required fields to connect successfully to a ShieldTV.
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
-| keystore         | text    | Password to access the device         | N/A     | yes      | no       |
-| keystorePassword | text    | Interval the device is polled in sec. | N/A     | yes      | no       |
+| keystore         | text    | Location of the Java Keystore         | N/A     | yes      | no       |
+| keystorePassword | text    | Password of the Java Keystore         | N/A     | yes      | no       |
 
 ```java
 Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/openhab/nvidia-livingroom.keystore", keystorePassword="secret" ]
@@ -73,7 +73,8 @@ For the ShieldTV to be successfully accessed an on-screen PIN authentication is 
 The process is as follows:
 NOTE: It is critical that the keystore name and password used here matches the keystore and keystorePassword configured on the thing.
 
-From the cli: openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
+From the cli: 
+              openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
               (you may accept all of the defaults, this will be disposed of after successful authentication)
 
               openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
@@ -90,7 +91,8 @@ At this point you should see a new private key and certificate in openhab.log.  
 
 Delete the original .p12 and .keystore files.
 
-From the cli: openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+From the cli: 
+              openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
 
               keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
 
