@@ -13,11 +13,12 @@
 package org.openhab.automation.jsscripting.internal.fs.watch;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
+import org.openhab.core.service.WatchService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * Tracks JS module dependencies
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
 @Component(service = JSDependencyTracker.class)
 @NonNullByDefault
@@ -38,25 +40,15 @@ public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
     private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
 
-    public static final String LIB_PATH = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "js",
-            "node_modules");
-
-    public JSDependencyTracker() {
-        super(LIB_PATH);
-    }
+    public static final String LIB_PATH = String.join(File.separator, "automation", "js", "node_modules");
 
     @Activate
-    public void activate() {
-        File directory = new File(LIB_PATH);
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                logger.warn("Failed to create watched directory: {}", LIB_PATH);
-            }
-        } else if (directory.isFile()) {
-            logger.warn("Trying to watch directory {}, however it is a file", LIB_PATH);
-        }
+    public JSDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
+        super(watchService, LIB_PATH);
 
-        super.activate();
+        if (Files.isRegularFile(this.libraryPath)) {
+            logger.warn("Trying to watch directory '{}', however it is a file", this.libraryPath);
+        }
     }
 
     @Deactivate

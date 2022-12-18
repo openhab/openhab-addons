@@ -5,7 +5,7 @@ Fragment-Host: org.openhab.binding.modbus
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.modbus.tests',\
-	bnd.identity;id='org.openhab.core.addon.xml',\
+	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml'
 
 # 1) We would like to use the "volatile" storage only, drop other storage
@@ -67,6 +67,7 @@ Fragment-Host: org.openhab.binding.modbus
 	org.openhab.binding.modbus;version='[4.0.0,4.0.1)',\
 	org.openhab.binding.modbus.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
+	org.openhab.core.binding.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.xml;version='[4.0.0,4.0.1)',\
@@ -77,4 +78,5 @@ Fragment-Host: org.openhab.binding.modbus
 	org.openhab.core.thing.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.transform;version='[4.0.0,4.0.1)',\
 	com.google.gson;version='[2.9.1,2.9.2)',\
-	org.openhab.core.addon.xml;version='[4.0.0,4.0.1)'
+	io.methvin.directory-watcher;version='[0.17.1,0.17.2)',\
+	com.sun.jna;version='[5.12.1,5.12.2)'
