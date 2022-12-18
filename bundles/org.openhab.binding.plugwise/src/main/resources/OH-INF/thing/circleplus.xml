@@ -9,7 +9,7 @@
 			<bridge-type-ref id="stick"/>
 		</supported-bridge-type-refs>
 		<label>Plugwise Circle+</label>
-		<description>A special Circle that coordinates the ZigBee network and acts as network gateway</description>
+		<description>A special Circle that coordinates the Zigbee network and acts as network gateway</description>
 		<channels>
 			<channel id="clock" typeId="clock"/>
 			<channel id="energy" typeId="energy"/>
