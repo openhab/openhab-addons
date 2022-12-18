@@ -17,12 +17,14 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
 import org.openhab.binding.saicismart.internal.asn1.Util;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
@@ -114,6 +116,9 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
                     * ((double) chargingStatusResponseMessage.getApplicationData().getBmsPackVol() * 0.25d) / 1000d;
 
             saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(power, MetricPrefix.KILO(Units.WATT)));
+
+            saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_LAST_CHARGE_STATE_UPDATE,
+                    new DateTimeType(ZonedDateTime.now()));
 
             saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
             return chargingStatusResponseMessage.getApplicationData();

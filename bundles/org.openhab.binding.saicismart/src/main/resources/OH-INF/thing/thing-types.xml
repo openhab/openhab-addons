@@ -74,6 +74,14 @@
 				<label>Last Car Activity</label>
 				<description>Last time either the engine was on or the car was charging</description>
 			</channel>
+			<channel id="last-position-update" typeId="timestamp-channel">
+				<label>Last Position Timestamp</label>
+				<description>Last time the Position data was updated</description>
+			</channel>
+			<channel id="last-charge-state-update" typeId="timestamp-channel">
+				<label>Last Charge State Timestamp</label>
+				<description>Last time the Charge State data was updated</description>
+			</channel>
 			<channel id="remote-ac-status" typeId="remote-ac-status-channel"/>
 			<channel id="enable-ac" typeId="enable-ac-channel"/>
 			<channel id="disable-ac" typeId="disable-ac-channel"/>
