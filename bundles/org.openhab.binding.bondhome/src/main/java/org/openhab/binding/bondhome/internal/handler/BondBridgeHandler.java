@@ -68,7 +68,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     private final BPUPListener udpListener;
     private final BondHttpApi api;
 
-    private @Nullable BondBridgeConfiguration config;
+    private BondBridgeConfiguration config = new BondBridgeConfiguration();
 
     private @Nullable BondDiscoveryService discoveryService;
 
@@ -99,16 +99,15 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     }
 
     private void initializeThing() {
-        BondBridgeConfiguration localConfig = config;
-        if (localConfig == null || localConfig.localToken == null) {
+        if (config.localToken.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.incorrect-local-token");
             this.initializer = null;
             return;
         }
-        if (localConfig.ipAddress.isEmpty()) {
+        if (config.ipAddress.isEmpty()) {
             try {
-                String lookupAddress = localConfig.serialNumber + ".local";
+                String lookupAddress = config.serialNumber + ".local";
                 logger.debug("Attempting to get IP address for Bond Bridge {}", lookupAddress);
                 InetAddress ia = InetAddress.getByName(lookupAddress);
                 String ip = ia.getHostAddress();
@@ -124,7 +123,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             try {
-                InetAddress.getByName(localConfig.ipAddress);
+                InetAddress.getByName(config.ipAddress);
             } catch (UnknownHostException ignored) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.invalid-host");
@@ -241,39 +240,21 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the Id of the bridge associated with the handler
      */
     public String getBridgeId() {
-        BondBridgeConfiguration configuration = config;
-        if (configuration != null) {
-            String serialNumber = configuration.serialNumber;
-            if (serialNumber != null) {
-                return serialNumber;
-            }
-        }
-        return "";
+        return config.serialNumber;
     }
 
     /**
      * Returns the Ip Address of the bridge associated with the handler as a string
      */
-    public @Nullable String getBridgeIpAddress() {
-        BondBridgeConfiguration configuration = config;
-        if (configuration != null) {
-            return configuration.ipAddress;
-        }
-        return null;
+    public String getBridgeIpAddress() {
+        return config.ipAddress;
     }
 
     /**
      * Returns the local token of the bridge associated with the handler as a string
      */
     public String getBridgeToken() {
-        BondBridgeConfiguration configuration = config;
-        if (configuration != null) {
-            String localToken = configuration.localToken;
-            if (localToken != null) {
-                return localToken;
-            }
-        }
-        return "";
+        return config.localToken;
     }
 
     /**
@@ -303,12 +284,11 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Called by the UDP listener when it gets a proper response.
      */
     public void setBridgeOnline(String bridgeAddress) {
-        BondBridgeConfiguration localConfig = config;
-        if (localConfig == null) {
+        if (config.isValid()) {
             logger.warn("Configuration error, cannot set the bridghe online without configuration");
             return;
-        } else if (!localConfig.ipAddress.equals(bridgeAddress)) {
-            logger.debug("IP address of Bond {} has changed to {}", localConfig.serialNumber, bridgeAddress);
+        } else if (!config.ipAddress.equals(bridgeAddress)) {
+            logger.debug("IP address of Bond {} has changed to {}", config.serialNumber, bridgeAddress);
             Configuration c = editConfiguration();
             c.put(CONFIG_IP_ADDRESS, bridgeAddress);
             updateConfiguration(c);
