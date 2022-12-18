@@ -63,4 +63,6 @@ public class SAICiSMARTBindingConstants {
     public static final String CHANNEL_DISABLE_AC = "disable-ac";
     public static final String CHANNEL_LAST_POSITION_UPDATE = "last-position-update";
     public static final String CHANNEL_LAST_CHARGE_STATE_UPDATE = "last-charge-state-update";
+    public static final String CHANNEL_ALARM_MESSAGE_DATE = "last-alarm-message-date";
+    public static final String CHANNEL_ALARM_MESSAGE_CONTENT = "last-alarm-message-content";
 }

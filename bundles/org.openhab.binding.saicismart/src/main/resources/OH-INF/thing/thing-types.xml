@@ -86,6 +86,11 @@
 			<channel id="enable-ac" typeId="enable-ac-channel"/>
 			<channel id="disable-ac" typeId="disable-ac-channel"/>
 			<channel id="force-refresh" typeId="force-refresh-channel"/>
+			<channel id="last-alarm-message-date" typeId="timestamp-channel">
+				<label>Last Alarm Message Timestamp</label>
+				<description>Last time an alarm message was send</description>
+			</channel>
+			<channel id="last-alarm-message-content" typeId="alarm-message-channel"/>
 		</channels>
 
 		<representation-property>vin</representation-property>
@@ -225,5 +230,10 @@
 		<item-type>Switch</item-type>
 		<label>Force Refresh</label>
 		<description>Force an immediate refresh of the car data</description>
+	</channel-type>
+	<channel-type id="alarm-message-channel">
+		<item-type>String</item-type>
+		<label>Vehicle Message</label>
+		<description>Vehicle Message</description>
 	</channel-type>
 </thing:thing-descriptions>
