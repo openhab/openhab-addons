@@ -173,6 +173,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // basicAuth MUST remain private as it holds the cameraConfig.getPassword()
     private String basicAuth = "";
+    public String token = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
     public boolean newInstarApi = false;
@@ -482,7 +483,7 @@ public class IpCameraHandler extends BaseThingHandler {
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), httpPostURL);
         request.headers().set(HttpHeaderNames.HOST, cameraConfig.getIp());
         request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
+        request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json");
         ByteBuf bbuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
         request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
         request.content().clear().writeBytes(bbuf);
@@ -1712,7 +1713,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
                             + "_main";
                 }
-                sendHttpPOST("/cgi-bin/api.cgi?cmd=Login");
+                sendHttpPOST("/cgi-bin/api.cgi?cmd=Login",
+                        "[{\"cmd\":\"Login\",\"action\":0,\"param\":{\"User\":{\"userName\":\"" + cameraConfig.getUser()
+                                + "\",\"password\":\"" + cameraConfig.getPassword() + "\"}}}]");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.

@@ -60,8 +60,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
             ipCameraHandler.logger.trace("HTTP Result from {} contains \t:{}:", requestUrl, content);
             switch (requestUrl) {
                 case "/cgi-bin/api.cgi?cmd=Login":
-                    ipCameraHandler.logger.info("Please report that your Reolink camera gave a login response:{}",
-                            content);
+                    ipCameraHandler.token = Helper.searchString(content, "\"name\" : \"");
+                    ipCameraHandler.logger.info(
+                            "Please report that your Reolink camera gave a login token:{}, in response:{}",
+                            ipCameraHandler.token, content);
                     break;
                 default:
                     if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
@@ -104,33 +106,37 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_ENABLE_MOTION_ALARM:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdState");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdState&token=" + ipCameraHandler.token);
                     break;
                 case CHANNEL_ENABLE_AUDIO_ALARM:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarm");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarm&token=" + ipCameraHandler.token);
                     break;
                 case CHANNEL_AUTO_LED:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetIrLights");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetIrLights&token=" + ipCameraHandler.token);
                     break;
             }
             return;
         } // end of "REFRESH"
         switch (channelUID.getId()) {
             case CHANNEL_ENABLE_MOTION_ALARM:
-                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm");
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm&token=" + ipCameraHandler.token);
+                } else {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm&token=" + ipCameraHandler.token);
+                }
                 break;
             case CHANNEL_ENABLE_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm", "[\r\n" + "    {\r\n"
-                            + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token, "[\r\n"
+                            + "    {\r\n" + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
                             + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
                             + "                    \"enable\": 1,\r\n"
                             + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
                             + "                }\r\n" + "            }\r\n" + "        }\r\n" + "    }\r\n" + "]\r\n"
                             + "");
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm", "[\r\n" + "    {\r\n"
-                            + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token, "[\r\n"
+                            + "    {\r\n" + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
                             + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
                             + "                    \"enable\": 0,\r\n"
                             + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
@@ -140,13 +146,13 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_AUTO_LED:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights",
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights&token=" + ipCameraHandler.token,
                             "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
                                     + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
                                     + "            \"channel\": 0,\r\n" + "            \"state\": \"Auto\"\r\n" + "\r\n"
                                     + "        }\r\n" + "    }\r\n" + "\r\n" + "}]\r\n" + "");
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights",
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights&token=" + ipCameraHandler.token,
                             "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
                                     + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
                                     + "            \"channel\": 0,\r\n" + "            \"state\": \"Off\"\r\n" + "\r\n"
