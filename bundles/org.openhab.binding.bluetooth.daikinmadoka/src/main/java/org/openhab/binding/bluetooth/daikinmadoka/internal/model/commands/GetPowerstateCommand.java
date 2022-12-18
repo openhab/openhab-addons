@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +43,14 @@ public class GetPowerstateCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
-        // here too
-        byte[] powerStateValue = mm.getValues().get(0x20).getRawValue();
+        MadokaValue mValue = mm.getValues().get(0x20);
+        if (mValue == null) {
+            String message = "powerstate is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
 
+        byte[] powerStateValue = mValue.getRawValue();
         if (powerStateValue == null || powerStateValue.length != 1) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect value for PowerState");
@@ -56,7 +61,12 @@ public class GetPowerstateCommand extends BRC1HCommand {
         logger.debug("PowerState: {}", powerState);
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 
 /**
  * Command used to get the Clean Filter Indicator status
@@ -33,9 +34,14 @@ public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        // In similar class GetVersionCommand.java is a note about intentionally leaving the NPE, might be intentionally
-        // here too
-        byte[] valueCleanFilterIndicator = mm.getValues().get(0x62).getRawValue();
+        MadokaValue mValue = mm.getValues().get(0x62);
+        if (mValue == null) {
+            String message = "clean filter indicator is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
+
+        byte[] valueCleanFilterIndicator = mValue.getRawValue();
         if (valueCleanFilterIndicator == null || valueCleanFilterIndicator.length != 1) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect clean filter indicator value");
@@ -48,7 +54,12 @@ public class GetCleanFilterIndicatorCommand extends BRC1HCommand {
         }
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     public @Nullable Boolean getCleanFilterIndicator() {

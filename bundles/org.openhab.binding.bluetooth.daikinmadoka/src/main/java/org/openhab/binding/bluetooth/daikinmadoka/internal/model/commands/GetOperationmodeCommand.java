@@ -61,7 +61,12 @@ public class GetOperationmodeCommand extends BRC1HCommand {
         logger.debug("operationMode: {}", operationMode);
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     @Override

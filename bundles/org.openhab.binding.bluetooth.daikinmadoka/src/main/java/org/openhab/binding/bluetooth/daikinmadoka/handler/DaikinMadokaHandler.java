@@ -441,7 +441,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 }
             }
 
-            if (command.getState() == BRC1HCommand.State.SENT && config != null) {
+            if (command.getState() == BRC1HCommand.State.SENT) {
                 if (!command.awaitStateChange(config.commandTimeout, TimeUnit.MILLISECONDS,
                         BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
                     logger.debug("[{}] Command {} to device {} timed out", super.thing.getUID().getId(), command,
@@ -823,7 +823,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         if (indicatorStatus != null) {
             this.madokaSettings.setCleanFilterIndicator(indicatorStatus);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR,
-                OnOffType.from(indicatorStatus));
+                    OnOffType.from(indicatorStatus));
         }
     }
 
