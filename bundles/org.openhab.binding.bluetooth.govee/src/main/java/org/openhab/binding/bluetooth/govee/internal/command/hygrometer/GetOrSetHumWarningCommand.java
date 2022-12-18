@@ -55,8 +55,11 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
         return 3;
     }
 
-    private static short convertQuantity(QuantityType<Dimensionless> quantity) {
-        var percentQuantity = quantity.toUnit(Units.PERCENT);
+    private static short convertQuantity(@Nullable QuantityType<Dimensionless> quantity) {
+        if (quantity == null) {
+            throw new IllegalArgumentException("Unable to convert quantity to percent");
+        }
+        QuantityType<Dimensionless> percentQuantity = quantity.toUnit(Units.PERCENT);
         if (percentQuantity == null) {
             throw new IllegalArgumentException("Unable to convert quantity to percent");
         }
@@ -69,16 +72,11 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
         if (localSettins == null || localSettins.min == null || localSettins.max == null) {
             return null;
         }
-        QuantityType<Dimensionless> localMin = localSettins.min;
-        QuantityType<Dimensionless> localMax = localSettins.max;
-        if (localMin == null || localMax == null) {
-            return null;
-        }
 
         ByteBuffer buffer = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(localSettins.enableAlarm == OnOffType.ON ? (byte) 1 : 0);
-        buffer.putShort(convertQuantity(localMin));
-        buffer.putShort(convertQuantity(localMax));
+        buffer.putShort(convertQuantity(localSettins.min));
+        buffer.putShort(convertQuantity(localSettins.max));
         return buffer.array();
     }
 
