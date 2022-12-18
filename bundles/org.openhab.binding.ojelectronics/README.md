@@ -13,7 +13,7 @@ There are two things:
 
 ## Discovery
 
-After the ojcloud bridge is succesfully initialized all thermostats will be discovered.
+After the ojcloud bridge is successfully initialized all thermostats will be discovered.
 
 ### OJ Electronics Bridge configuration (ojcloud)
 
