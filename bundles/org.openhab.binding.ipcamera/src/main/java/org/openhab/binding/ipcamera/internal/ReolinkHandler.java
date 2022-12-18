@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -65,11 +66,32 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 default:
                     if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
                         ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
-                        ipCameraHandler.logger.debug(
-                                "AI/object detection not implemented yet, report the cameras output from TRACE logs.");
+                        if (content.contains("\"dog_cat\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                        }
+                        if (content.contains("\"face\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                        }
+                        if (content.contains("\"people\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                        }
+                        if (content.contains("\"vehicle\" : {\r\n" + "            \"alarm_state\" : 1")) {
+                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                        }
                     } else if (requestUrl.startsWith("/api.cgi?cmd=GetMdState&channel=")) {
-                        ipCameraHandler.logger.debug(
-                                "Motion detection not implemented yet, report the cameras output from TRACE logs.");
+                        if (content.contains("\"state\" : 0")) {
+                            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
+                        }
                     }
             }
         } finally {
@@ -98,10 +120,38 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetMdAlarm");
                 break;
             case CHANNEL_ENABLE_AUDIO_ALARM:
-                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm");
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm", "[\r\n" + "    {\r\n"
+                            + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
+                            + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
+                            + "                    \"enable\": 1,\r\n"
+                            + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
+                            + "                }\r\n" + "            }\r\n" + "        }\r\n" + "    }\r\n" + "]\r\n"
+                            + "");
+                } else {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm", "[\r\n" + "    {\r\n"
+                            + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
+                            + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
+                            + "                    \"enable\": 0,\r\n"
+                            + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
+                            + "                }\r\n" + "            }\r\n" + "        }\r\n" + "    }\r\n" + "]\r\n"
+                            + "");
+                }
                 break;
             case CHANNEL_AUTO_LED:
-                ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights");
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights",
+                            "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
+                                    + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
+                                    + "            \"channel\": 0,\r\n" + "            \"state\": \"Auto\"\r\n" + "\r\n"
+                                    + "        }\r\n" + "    }\r\n" + "\r\n" + "}]\r\n" + "");
+                } else {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights",
+                            "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
+                                    + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
+                                    + "            \"channel\": 0,\r\n" + "            \"state\": \"Off\"\r\n" + "\r\n"
+                                    + "        }\r\n" + "    }\r\n" + "\r\n" + "}]\r\n" + "");
+                }
                 break;
         }
     }
