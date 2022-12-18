@@ -2293,6 +2293,9 @@
 			<channel id="animalAlarm" typeId="animalAlarm"/>
 			<channel id="faceDetected" typeId="faceDetected"/>
 			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="textOverlay" typeId="textOverlay"/>
+			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
 		</channels>
 		<config-description>
 

@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -127,38 +128,51 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_ENABLE_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token, "[\r\n"
-                            + "    {\r\n" + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
-                            + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
-                            + "                    \"enable\": 1,\r\n"
-                            + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
-                            + "                }\r\n" + "            }\r\n" + "        }\r\n" + "    }\r\n" + "]\r\n"
-                            + "");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 1,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token, "[\r\n"
-                            + "    {\r\n" + "        \"cmd\": \" SetAudioAlarm\",\r\n" + "        \"param\": {\r\n"
-                            + "            \"Audio\": {\r\n" + "                \"schedule\": {\r\n"
-                            + "                    \"enable\": 0,\r\n"
-                            + "                    \"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"\r\n"
-                            + "                }\r\n" + "            }\r\n" + "        }\r\n" + "    }\r\n" + "]\r\n"
-                            + "");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 0,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
                 }
                 break;
             case CHANNEL_AUTO_LED:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights&token=" + ipCameraHandler.token,
-                            "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
-                                    + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
-                                    + "            \"channel\": 0,\r\n" + "            \"state\": \"Auto\"\r\n" + "\r\n"
-                                    + "        }\r\n" + "    }\r\n" + "\r\n" + "}]\r\n" + "");
+                            "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"Auto\"}}}]");
                 } else {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights&token=" + ipCameraHandler.token,
-                            "[{\r\n" + "    \"cmd\": \"SetIrLights\",\r\n" + "    \"action\": 0,\r\n"
-                                    + "    \"param\": {\r\n" + "        \"IrLights\": {\r\n"
-                                    + "            \"channel\": 0,\r\n" + "            \"state\": \"Off\"\r\n" + "\r\n"
-                                    + "        }\r\n" + "    }\r\n" + "\r\n" + "}]\r\n" + "");
+                            "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"Off\"}}}]");
                 }
                 break;
+            case CHANNEL_ACTIVATE_ALARM_OUTPUT: // cameras built in siren
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=AudioAlarmPlay&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"manual_switch\": 1, \"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
+                } else {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=AudioAlarmPlay&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"manual_switch\": 0, \"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
+                }
+                break;
+            case CHANNEL_ENABLE_LED:
+                if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 0,\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1}}}]");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1}}}]");
+                } else if (command instanceof PercentType) {
+                    int value = ((PercentType) command).toBigDecimal().intValue();
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed&token=" + ipCameraHandler.token,
+                            "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1,\"bright\": " + value
+                                    + "}}}]");
+                }
         }
     }
 
