@@ -83,7 +83,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     private final Logger logger = LoggerFactory.getLogger(DaikinMadokaHandler.class);
 
-    private @NonNullByDefault({}) DaikinMadokaConfiguration config;
+    private DaikinMadokaConfiguration config = new DaikinMadokaConfiguration();
 
     private @Nullable ExecutorService commandExecutor;
 
@@ -823,7 +823,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         if (indicatorStatus != null) {
             this.madokaSettings.setCleanFilterIndicator(indicatorStatus);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR,
-                    indicatorStatus ? OnOffType.ON : OnOffType.OFF);
+                OnOffType.from(indicatorStatus));
         }
     }
 
