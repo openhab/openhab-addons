@@ -303,7 +303,7 @@ The method returns a `Boolean` whose meaning is also described in the table belo
 | thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.             |
 | mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                         |
 | vanePercent | Integer | 25                                  | The target vane position in percent. Integer between 0 and 100.                         |
-| return      | Boolean | `true`                              | Is `true` if the command was sent sucessfully or `false` if any arguments were invalid. |
+| return      | Boolean | `true`                              | Is `true` if the command was sent successfully or `false` if any arguments were invalid. |
 
 Example:
 

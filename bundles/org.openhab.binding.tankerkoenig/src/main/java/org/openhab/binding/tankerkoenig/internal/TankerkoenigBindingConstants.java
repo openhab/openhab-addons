@@ -49,6 +49,6 @@ public class TankerkoenigBindingConstants {
     public static final String CONFIG_REFRESH = "refresh";
     public static final String CONFIG_MODE_OPENINGTIME = "modeOpeningTime";
 
-    // String used Identify unsucessful web-return
+    // String used Identify unsuccessful web-return
     public static final String NO_VALID_RESPONSE = "No valid response from the web-request!";
 }
