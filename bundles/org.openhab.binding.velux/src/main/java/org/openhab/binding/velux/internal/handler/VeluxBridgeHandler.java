@@ -872,7 +872,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             // background execution of reboot process
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.info("Reboot command {}sucessfully sent to {}", bcp.isCommunicationSuccessful() ? "" : "un",
+                    logger.info("Reboot command {}successfully sent to {}", bcp.isCommunicationSuccessful() ? "" : "un",
                             getThing().getUID());
                 }
             });
@@ -900,7 +900,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                                     relativePercent > 0 ? PositionType.OFFSET_POSITIVE : PositionType.OFFSET_NEGATIVE),
                             null);
                     if (thisBridge.bridgeCommunicate(bcp)) {
-                        logger.trace("moveRelative() command {}sucessfully sent to {}",
+                        logger.trace("moveRelative() command {}successfully sent to {}",
                                 bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
                     }
                 }
@@ -970,7 +970,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             bcp.setNodeIdAndParameters(node.toInt(), mainPos, functionalParameters);
             submitCommunicationsJob(() -> {
                 if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.trace("moveMainAndVane() command {}sucessfully sent to {}",
+                    logger.trace("moveMainAndVane() command {}successfully sent to {}",
                             bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
                 }
             });

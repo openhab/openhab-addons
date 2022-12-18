@@ -631,7 +631,7 @@ public class LxWebSocket {
      * This method sends a request to receive Miniserver configuration.
      */
     private void authenticated() {
-        logger.debug("[{}] Websocket authentication successfull.", debugId);
+        logger.debug("[{}] Websocket authentication successful.", debugId);
         webSocketLock.lock();
         try {
             awaitingConfiguration = true;

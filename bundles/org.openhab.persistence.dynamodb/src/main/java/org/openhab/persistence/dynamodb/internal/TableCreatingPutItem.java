@@ -237,7 +237,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
                 .thenAcceptAsync(tableWaitResponse -> {
                     // if waiter fails, the future is completed exceptionally (not entering this step)
                     ResponseOrException<DescribeTableResponse> responseOrException = tableWaitResponse.matched();
-                    logger.trace("PutItem: Table wait completed sucessfully with {} attempts: {}",
+                    logger.trace("PutItem: Table wait completed successfully with {} attempts: {}",
                             tableWaitResponse.attemptsExecuted(), toString(responseOrException));
                 }, executor);
     }
