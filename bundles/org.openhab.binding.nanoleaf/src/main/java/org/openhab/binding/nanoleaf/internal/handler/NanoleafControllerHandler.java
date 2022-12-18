@@ -121,6 +121,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
     private PanelLayout previousPanelLayout = new PanelLayout();
     private final NanoleafPanelColors panelColors = new NanoleafPanelColors();
+    private byte @Nullable [] layoutImage;
 
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
     private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
@@ -763,8 +764,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             } else {
                 logger.debug("Visual state of {} failed to produce any image", getThing().getUID());
             }
-
-            previousPanelLayout = panelLayout;
         } catch (IOException ioex) {
             logger.warn("Failed to create state image", ioex);
         }
@@ -780,7 +779,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             }
         }
 
-        if (previousPanelLayout.equals(panelLayout)) {
+        if (layoutImage != null && previousPanelLayout.equals(panelLayout)) {
             logger.trace("Not rendering panel layout for {} as it is the same as previous rendered panel layout",
                     getThing().getUID());
             return;
@@ -791,13 +790,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             byte[] bytes = NanoleafLayout.render(panelLayout, new LivePanelState(panelColors), settings);
             if (bytes.length > 0) {
                 updateState(layoutChannel, new RawType(bytes, "image/png"));
+                layoutImage = bytes;
+                previousPanelLayout = panelLayout;
                 logger.trace("Rendered layout of panel {} in updateState has {} bytes", getThing().getUID(),
                         bytes.length);
             } else {
                 logger.debug("Layout of {} failed to produce any image", getThing().getUID());
             }
 
-            previousPanelLayout = panelLayout;
         } catch (IOException ioex) {
             logger.warn("Failed to create layout image", ioex);
         }
