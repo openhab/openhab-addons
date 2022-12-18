@@ -702,7 +702,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                         .withMode(GapDiscoverMode.GAP_DISCOVER_OBSERVATION).build();
                 if (sendCommand(discoverCommand, BlueGigaDiscoverResponse.class, false)
                         .getResult() == BgApiResponse.SUCCESS) {
-                    logger.debug("{} scanning succesfully started.", active ? "Active" : "Passive");
+                    logger.debug("{} scanning successfully started.", active ? "Active" : "Passive");
                     return true;
                 }
             }
