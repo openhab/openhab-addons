@@ -14,14 +14,11 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -32,7 +29,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * The {@link InstarHandler} is responsible for handling commands, which are
+ * The {@link ReolinkHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Matthew Skinner - Initial contribution
@@ -59,9 +56,14 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         }
         try {
             String content = msg.toString();
-            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
+            ipCameraHandler.logger.trace("HTTP Result from {} contains \t:{}:", requestUrl, content);
             if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
                 ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
+                ipCameraHandler.logger
+                        .debug("AI/object detection not implemented yet, report the cameras output from TRACE logs.");
+            } else if (requestUrl.startsWith("/api.cgi?cmd=GetMdState&channel=")) {
+                ipCameraHandler.logger
+                        .debug("Motion detection not implemented yet, report the cameras output from TRACE logs.");
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -74,58 +76,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
             return;
         } // end of "REFRESH"
         switch (channelUID.getId()) {
-            case CHANNEL_THRESHOLD_AUDIO_ALARM:
-                if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=0");
-                } else if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1");
-                } else if (command instanceof PercentType) {
-                    int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1&threshold=" + value);
-                }
-                return;
-            case CHANNEL_ENABLE_AUDIO_ALARM:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=0");
-                }
-                return;
             case CHANNEL_ENABLE_MOTION_ALARM:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setalarmattr&armed=1");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setalarmattr&armed=0");
-                }
-                return;
-            case CHANNEL_TEXT_OVERLAY:
-                String text = Helper.encodeSpecialChars(command.toString());
-                if (text.isEmpty()) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setoverlayattr&-region=1&-show=0");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setoverlayattr&-region=1&-show=1&-name=" + text);
-                }
-                return;
-            case CHANNEL_AUTO_LED:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=2");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=0");
-                }
-                return;
-            case CHANNEL_ENABLE_PIR_ALARM:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&enable=1");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&enable=0");
-                }
-                return;
-            case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&enable=1");
-                } else {
-                    ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&enable=0");
-                }
                 return;
         }
     }

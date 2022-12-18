@@ -1553,6 +1553,8 @@ public class IpCameraHandler extends BaseThingHandler {
             case REOLINK_THING:
                 sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
                         + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
+                sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
+                        + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                 break;
             case DAHUA_THING:
                 if (!snapshotPolling) {
