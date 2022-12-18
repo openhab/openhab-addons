@@ -120,23 +120,20 @@ public abstract class AM43Command {
     }
 
     public byte[] getRequest() {
-        byte[] value = new byte[3 + data.length];
-        value[0] = HEADER_PREFIX;
-        value[1] = header;
-        value[2] = (byte) data.length;
-        System.arraycopy(data, 0, value, 3, data.length);
-
-        byte[] combined = new byte[REQUEST_PREFIX.length + value.length + 1];
-        System.arraycopy(REQUEST_PREFIX, 0, combined, 0, REQUEST_PREFIX.length);
-        System.arraycopy(value, 0, combined, REQUEST_PREFIX.length, value.length);
-        combined[combined.length - 1] = createChecksum(value);
-        return combined;
+        byte[] value = new byte[4 + data.length + REQUEST_PREFIX.length];
+        System.arraycopy(REQUEST_PREFIX, 0, value, 0, REQUEST_PREFIX.length);
+        value[REQUEST_PREFIX.length] = HEADER_PREFIX;
+        value[REQUEST_PREFIX.length + 1] = header;
+        value[REQUEST_PREFIX.length + 2] = (byte) data.length;
+        System.arraycopy(data, 0, value, REQUEST_PREFIX.length + 3, data.length);
+        value[value.length-1] = createChecksum(value, REQUEST_PREFIX.length, REQUEST_PREFIX.length + 2);
+        return value;
     }
 
-    protected byte createChecksum(byte[] data) {
+    protected byte createChecksum(byte[] data, int startIndex, int maxIndex) {
         // this is a basic checksum
-        byte crc = data[0];
-        for (int i = 1; i < data.length; i++) {
+        byte crc = data[startIndex];
+        for (int i = startIndex+1; i < maxIndex; i++) {
             crc ^= data[i];
         }
         return crc;
