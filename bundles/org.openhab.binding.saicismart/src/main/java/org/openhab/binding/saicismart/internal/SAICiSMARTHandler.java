@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -53,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 
+import net.heberling.ismart.asn1.v1_1.entity.Message;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVCReq;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVCStatus25857;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
@@ -74,6 +77,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     SAICiSMARTVehicleConfiguration config;
     private @Nullable Future<?> pollingJob;
     private HttpClientFactory httpClientFactory;
+    private ZonedDateTime lastAlarmMessage = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.systemDefault());
 
     // if the binding is initialized, treat the car as active to get some first data
     private ZonedDateTime lastCarActivity = ZonedDateTime.now();
@@ -337,5 +341,19 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
+    }
+
+    public void handleMessage(Message message) {
+        ZonedDateTime time = ZonedDateTime.ofInstant(Instant.ofEpochSecond(message.getMessageTime().getSeconds()),
+                ZoneId.systemDefault());
+
+        if (time.isAfter(lastAlarmMessage)) {
+            lastAlarmMessage = time;
+            updateState(SAICiSMARTBindingConstants.CHANNEL_ALARM_MESSAGE_CONTENT,
+                    new StringType(new String(message.getContent(), StandardCharsets.UTF_8)));
+            updateState(SAICiSMARTBindingConstants.CHANNEL_ALARM_MESSAGE_DATE, new DateTimeType(time));
+        }
+
+        notifyCarActivity(time, false);
     }
 }

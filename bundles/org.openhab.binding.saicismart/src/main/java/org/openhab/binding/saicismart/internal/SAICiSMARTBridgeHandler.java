@@ -15,8 +15,6 @@ package org.openhab.binding.saicismart.internal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -162,7 +160,8 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 // TODO: get all messages
                 // TODO: delete old messages
                 // TODO: handle case when no messages are there
-                // TODO: create a message channel, that delivers the messages to openhab
+                // TODO: create a message channel, that delivers messages to openhab, that don't belong to a specific
+                // car
                 // TODO: automatically subscribe for engine start messages
                 messageListRequestMessage.getApplicationData().setStartEndNumber(new StartEndNumber());
                 messageListRequestMessage.getApplicationData().getStartEndNumber().setStartNumber(1L);
@@ -186,14 +185,11 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                         for (net.heberling.ismart.asn1.v1_1.entity.Message message : messageListResponseMessage
                                 .getApplicationData().getMessages()) {
                             if (message.isVinPresent()) {
-                                ZonedDateTime time = ZonedDateTime.ofInstant(
-                                        Instant.ofEpochSecond(message.getMessageTime().getSeconds()),
-                                        ZoneId.systemDefault());
                                 String vin = message.getVin();
                                 getThing().getThings().stream().filter(t -> t.getUID().getId().equals(vin))
                                         .map(Thing::getHandler).filter(Objects::nonNull)
                                         .filter(SAICiSMARTHandler.class::isInstance).map(SAICiSMARTHandler.class::cast)
-                                        .forEach(t -> t.notifyCarActivity(time, false));
+                                        .forEach(t -> t.handleMessage(message));
                             }
                         }
                     } else {
