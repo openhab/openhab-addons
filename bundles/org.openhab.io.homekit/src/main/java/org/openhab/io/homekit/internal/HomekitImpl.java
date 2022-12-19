@@ -208,10 +208,6 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         changeListener.setBridge(bridge);
         bridges.add(bridge);
         bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-        bridge.refreshAuthInfo();
-
-        final int lastAccessoryCount = changeListener.getLastAccessoryCount();
-        int currentAccessoryCount = changeListener.getAccessories().size();
         bridge.start();
         return bridge;
     }
