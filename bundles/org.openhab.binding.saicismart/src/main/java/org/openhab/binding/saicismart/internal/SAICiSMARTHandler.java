@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.GsonBuilder;
 
 import net.heberling.ismart.asn1.v1_1.entity.Message;
+import net.heberling.ismart.asn1.v2_1.MessageCoder;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVCReq;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVCStatus25857;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusResp25857;
@@ -238,6 +239,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     private void sendACCommand(byte command, byte temperature)
             throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        MessageCoder<OTA_RVCReq> otaRvcReqMessageCoder = new MessageCoder<>(OTA_RVCReq.class);
+
         // we send a command end expect the car to wake up
         notifyCarActivity(ZonedDateTime.now(), false);
 
@@ -258,24 +261,10 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         param.setParamValue(new byte[] { 0 });
         params.add(param);
 
-        net.heberling.ismart.asn1.v2_1.Message<OTA_RVCReq> enableACRequest = new net.heberling.ismart.asn1.v2_1.Message<>(
-                new net.heberling.ismart.asn1.v2_1.MP_DispatcherHeader(), new byte[16],
-                new net.heberling.ismart.asn1.v2_1.MP_DispatcherBody(), req);
-        Util.fillReserved(enableACRequest.getReserved());
+        net.heberling.ismart.asn1.v2_1.Message<OTA_RVCReq> enableACRequest = otaRvcReqMessageCoder.initializeMessage(
+                getBridgeHandler().getUid(), getBridgeHandler().getToken(), config.vin, "510", 25857, 1, req);
 
-        enableACRequest.getBody().setApplicationID("510");
-        enableACRequest.getBody().setTestFlag(2);
-        enableACRequest.getBody().setVin(config.vin);
-        enableACRequest.getBody().setUid(getBridgeHandler().getUid());
-        enableACRequest.getBody().setToken(getBridgeHandler().getToken());
-        enableACRequest.getBody().setMessageID(1);
-        enableACRequest.getBody().setEventCreationTime((int) Instant.now().getEpochSecond());
-        enableACRequest.getBody().setApplicationDataProtocolVersion(25857);
-        enableACRequest.getBody().setEventID(0);
-        // chargingStatusMessage.getHeader().setProtocolVersion(32);
-
-        String enableACRequestMessage = new net.heberling.ismart.asn1.v2_1.MessageCoder<>(OTA_RVCReq.class)
-                .encodeRequest(enableACRequest);
+        String enableACRequestMessage = otaRvcReqMessageCoder.encodeRequest(enableACRequest);
 
         String enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage,
                 "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
@@ -302,8 +291,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 enableACRequest.getBody().setEventID(0);
             }
 
-            enableACRequestMessage = new net.heberling.ismart.asn1.v2_1.MessageCoder<>(OTA_RVCReq.class)
-                    .encodeRequest(enableACRequest);
+            enableACRequestMessage = otaRvcReqMessageCoder.encodeRequest(enableACRequest);
 
             enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage,
                     "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
