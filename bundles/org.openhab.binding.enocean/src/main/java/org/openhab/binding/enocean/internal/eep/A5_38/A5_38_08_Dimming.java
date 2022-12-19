@@ -17,6 +17,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelDimmerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -38,6 +40,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_38_08_Dimming extends _4BSMessage {
 
     static final byte CommandId = 0x02;
@@ -55,7 +58,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
                 byte dimmValue;
@@ -73,27 +76,30 @@ public class A5_38_08_Dimming extends _4BSMessage {
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }
+                if (config != null) {
+                    EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
-                EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
+                    byte storeByte = ZERO; // "Store final value" (standard) vs. "block value" (Eltako)
 
-                byte storeByte = ZERO; // "Store final value" (standard) vs. "block value" (Eltako)
+                    if (!c.eltakoDimmer) {
+                        dimmValue *= 2.55; // 0-100% = 0-255
 
-                if (!c.eltakoDimmer) {
-                    dimmValue *= 2.55; // 0-100% = 0-255
-
-                    if (c.storeValue) {
-                        storeByte = 0x02; // set DB0.1
+                        if (c.storeValue) {
+                            storeByte = 0x02; // set DB0.1
+                        }
+                    } else {
+                        if (c.storeValue) {
+                            storeByte = 0x04; // set DB0.2
+                        }
                     }
+
+                    byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
+                    byte switchingCommand = (dimmValue == ZERO) ? SwitchOff : SwitchOn;
+
+                    setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
                 } else {
-                    if (c.storeValue) {
-                        storeByte = 0x04; // set DB0.2
-                    }
+                    logger.debug("Cannot handle command {}, when configuration is null", outputCommand.toFullString());
                 }
-
-                byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
-                byte switchingCommand = (dimmValue == ZERO) ? SwitchOff : SwitchOn;
-
-                setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
 
                 break;
         }

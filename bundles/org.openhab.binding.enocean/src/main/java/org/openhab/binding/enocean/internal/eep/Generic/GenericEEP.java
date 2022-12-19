@@ -21,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTransformationConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -48,11 +50,11 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class GenericEEP extends EEP {
 
     final List<Class<? extends State>> supportedStates = Collections
             .unmodifiableList(new LinkedList<Class<? extends State>>() {
-
                 private static final long serialVersionUID = 1L;
 
                 {
@@ -81,20 +83,22 @@ public class GenericEEP extends EEP {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (config != null) {
-            EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+        if (config == null) {
+            logger.debug("Cannot handle command {}, when transformation configuration is null", command.toString());
+            return;
+        }
+        EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
-            String input = channelId + "|" + command.toString();
-            String output = Transformation.transform(transformationInfo.transformationType,
-                    transformationInfo.transformationFunction, input);
+        String input = channelId + "|" + command.toString();
+        String output = Transformation.transform(transformationInfo.transformationType,
+                transformationInfo.transformationFunction, input);
 
-            if (output != null && !output.isEmpty() && !input.equals(output)) {
-                try {
-                    setData(HexUtils.hexToBytes(output));
-                } catch (Exception e) {
-                    logger.debug("Command {} could not transformed", command.toString());
-                }
+        if (output != null && !output.isEmpty() && !input.equals(output)) {
+            try {
+                setData(HexUtils.hexToBytes(output));
+            } catch (Exception e) {
+                logger.debug("Command {} could not transformed", command.toString());
             }
         }
     }
@@ -102,43 +106,45 @@ public class GenericEEP extends EEP {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (config != null) {
-            EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
+        EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
-            String payload = HexUtils.bytesToHex(bytes);
-            String input = channelId + "|" + payload;
-            String output = Transformation.transform(transformationInfo.transformationType,
-                    transformationInfo.transformationFunction, input);
+        String payload = HexUtils.bytesToHex(bytes);
+        String input = channelId + "|" + payload;
+        String output = Transformation.transform(transformationInfo.transformationType,
+                transformationInfo.transformationFunction, input);
 
-            if (output != null && !output.isEmpty() && !input.equals(output)) {
-                String[] parts = output.split("\\|");
+        if (output != null && !output.isEmpty() && !input.equals(output)) {
+            String[] parts = output.split("\\|");
 
-                if (parts.length == 2) {
-                    Class<? extends State> state = supportedStates.stream().filter(s -> s.getName().contains(parts[0]))
-                            .findFirst().orElse(null);
+            if (parts.length == 2) {
+                @Nullable
+                Class<? extends State> state = supportedStates.stream().filter(s -> s.getName().contains(parts[0]))
+                        .findFirst().orElse(null);
 
-                    if (state != null) {
-                        if (state.isEnum()) {
-                            for (State s : state.getEnumConstants()) {
+                if (state != null) {
+                    if (state.isEnum()) {
+                        State[] states;
+                        if ((states = state.getEnumConstants()) != null) {
+                            for (State s : states) {
                                 if (s.toString().equalsIgnoreCase(parts[1])) {
                                     return s;
                                 }
                             }
-                            logger.debug("Could not find value '{}' for state '{}'", parts[1], parts[0]);
-                        } else {
-                            try {
-                                return state.getConstructor(String.class).newInstance(parts[1]);
-                            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                                logger.debug("Could not create state '{}' with value '{}'", parts[0], parts[1]);
-                            }
                         }
+                        logger.debug("Could not find value '{}' for state '{}'", parts[1], parts[0]);
                     } else {
-                        logger.debug("State '{}' not found", parts[0]);
+                        try {
+                            return state.getConstructor(String.class).newInstance(parts[1]);
+                        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                            logger.debug("Could not create state '{}' with value '{}'", parts[0], parts[1]);
+                        }
                     }
                 } else {
-                    logger.debug("Transformation result malformed: {}", output);
+                    logger.debug("State '{}' not found", parts[0]);
                 }
+            } else {
+                logger.debug("Transformation result malformed: {}", output);
             }
         }
 
@@ -147,8 +153,10 @@ public class GenericEEP extends EEP {
 
     @Override
     protected int getDataLength() {
-        if (packet != null) {
-            return packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
+        @Nullable
+        ERP1Message localPacket = packet;
+        if (localPacket != null) {
+            return localPacket.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
         } else {
             return bytes.length;
         }

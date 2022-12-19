@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTariffInfoConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
@@ -31,6 +33,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public abstract class A5_12 extends _4BSMessage {
     public A5_12(ERP1Message packet) {
         super(packet);
@@ -133,6 +136,7 @@ public abstract class A5_12 extends _4BSMessage {
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
                 State value = getCumulativeValue();
+                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_CUMULATIVEVALUE:

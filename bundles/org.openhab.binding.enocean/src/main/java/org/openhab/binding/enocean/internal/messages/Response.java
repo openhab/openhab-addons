@@ -14,10 +14,13 @@ package org.openhab.binding.enocean.internal.messages;
 
 import java.security.InvalidParameterException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class Response extends BasePacket {
 
     public enum ResponseType {

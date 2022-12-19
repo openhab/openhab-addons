@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -29,6 +31,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_03_0A extends _VLDMessage {
 
     protected final byte ShortPress = 0x01;
@@ -45,7 +48,7 @@ public class D2_03_0A extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_PUSHBUTTON:

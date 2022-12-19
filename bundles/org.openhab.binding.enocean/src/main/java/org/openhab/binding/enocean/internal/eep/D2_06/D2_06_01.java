@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -39,6 +41,7 @@ import org.openhab.core.types.UnDefType;
  * 
  * @author Thomas Lauterbach - Initial contribution
  */
+@NonNullByDefault
 public class D2_06_01 extends _VLDMessage {
 
     private enum MessageType {
@@ -199,7 +202,7 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
 
         // Sensor values

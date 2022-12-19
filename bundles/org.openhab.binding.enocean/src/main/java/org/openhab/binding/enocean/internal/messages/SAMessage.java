@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class SAMessage extends BasePacket {
 
     public enum SAMessageType {

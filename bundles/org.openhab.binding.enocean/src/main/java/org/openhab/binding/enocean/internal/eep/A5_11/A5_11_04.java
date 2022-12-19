@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Vincent Bakker - Initial contribution
  */
-
+@NonNullByDefault
 public class A5_11_04 extends _4BSMessage {
 
     private enum Error {
@@ -193,6 +195,7 @@ public class A5_11_04 extends _4BSMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
+                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_COUNTER:

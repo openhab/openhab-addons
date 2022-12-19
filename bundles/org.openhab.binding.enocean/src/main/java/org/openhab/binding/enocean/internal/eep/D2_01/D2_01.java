@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelDimmerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.eep.EEPHelper;
@@ -37,6 +39,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class D2_01 extends _VLDMessage {
 
     protected final byte cmdMask = 0x0f;
@@ -197,7 +200,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {
                 setSwitchingQueryData(AllChannels_Mask);
@@ -220,7 +223,11 @@ public abstract class D2_01 extends _VLDMessage {
             if (command == RefreshType.REFRESH) {
                 setSwitchingQueryData(AllChannels_Mask);
             } else {
-                setDimmingData(command, AllChannels_Mask, config);
+                if (config != null) {
+                    setDimmingData(command, AllChannels_Mask, config);
+                } else {
+                    logger.debug("Cannot set dimming data when config is null");
+                }
             }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
             setPowerMeasurementQueryData(AllChannels_Mask);
@@ -245,6 +252,7 @@ public abstract class D2_01 extends _VLDMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
+                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
         }

@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.Channel;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
@@ -31,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class F6_02_02 extends F6_02 {
 
     public F6_02_02() {
@@ -42,9 +45,8 @@ public class F6_02_02 extends F6_02 {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-
         if (t21 && nu) {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
                 return getRockerSwitchAction(config);
@@ -57,9 +59,9 @@ public class F6_02_02 extends F6_02 {
             if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
                 return CommonTriggerEvents.RELEASED;
             } else {
-                if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
+                if (lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
                     return CommonTriggerEvents.DIR1_RELEASED;
-                } else if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
+                } else if (lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
                     return CommonTriggerEvents.DIR2_RELEASED;
                 }
             }
@@ -70,7 +72,7 @@ public class F6_02_02 extends F6_02 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (command instanceof StringType) {
             String s = ((StringType) command).toString();
 
@@ -98,6 +100,7 @@ public class F6_02_02 extends F6_02 {
             Function<String, State> getCurrentStateFunc, Configuration config) {
         // this method is used by the classic device listener channels to convert a rocker switch message into an
         // appropriate item update
+        @Nullable
         State currentState = getCurrentStateFunc.apply(channelId);
         if (t21 && nu) {
             EnOceanChannelRockerSwitchListenerConfig c = config.as(EnOceanChannelRockerSwitchListenerConfig.class);

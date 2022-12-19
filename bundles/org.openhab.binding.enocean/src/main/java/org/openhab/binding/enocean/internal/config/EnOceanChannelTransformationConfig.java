@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.core.Configuration;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelTransformationConfig extends Configuration {
 
-    public String transformationType;
-    public String transformationFunction;
+    public String transformationType = "";
+    public String transformationFunction = "";
 
     public EnOceanChannelTransformationConfig() {
-        put("transformationType", "");
-        put("transformationFunction", "");
+        put("transformationType", transformationType);
+        put("transformationFunction", transformationFunction);
     }
 }

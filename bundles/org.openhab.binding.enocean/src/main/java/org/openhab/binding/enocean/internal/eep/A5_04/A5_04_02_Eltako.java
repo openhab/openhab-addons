@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -26,6 +27,7 @@ import org.openhab.core.types.State;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class A5_04_02_Eltako extends A5_04_02 {
 
     public A5_04_02_Eltako(ERP1Message packet) {

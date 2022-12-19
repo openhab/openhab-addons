@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.EnOceanException;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ESP3Packet {
 
     private static byte[] crc8_table = new byte[] { (byte) 0x00, (byte) 0x07, (byte) 0x0e, (byte) 0x09, (byte) 0x1c,
@@ -85,26 +87,25 @@ public class ESP3Packet {
             byte[] payload = basePacket.getPayload();
             byte[] optionalPayload = basePacket.getOptionalPayload();
 
-            int optionalLength = optionalPayload != null ? optionalPayload.length : 0;
-
             byte[] result = new byte[ESP3_SYNC_BYTE_LENGTH + ESP3_HEADER_LENGTH + ESP3_CRC3_HEADER_LENGTH
-                    + payload.length + optionalLength + ESP3_CRC8_DATA_LENGTH];
+                    + payload.length + optionalPayload.length + ESP3_CRC8_DATA_LENGTH];
 
             result[0] = ESP3_SYNC_BYTE;
             result[1] = (byte) ((payload.length >> 8) & 0xff);
             result[2] = (byte) (payload.length & 0xff);
-            result[3] = (byte) (optionalLength & 0xff);
+            result[3] = (byte) (optionalPayload.length & 0xff);
             result[4] = basePacket.getPacketType().getValue();
             result[5] = calcCRC8(result, ESP3_SYNC_BYTE_LENGTH, ESP3_HEADER_LENGTH);
             for (int i = 0; i < payload.length; i++) {
                 result[6 + i] = payload[i];
             }
-            if (optionalPayload != null) {
-                for (int i = 0; i < optionalPayload.length; i++) {
-                    result[6 + payload.length + i] = (byte) (optionalPayload[i] & 0xff);
-                }
+
+            for (int i = 0; i < optionalPayload.length; i++) {
+                result[6 + payload.length + i] = (byte) (optionalPayload[i] & 0xff);
             }
-            result[6 + payload.length + optionalLength] = calcCRC8(result, 6, payload.length + optionalLength);
+
+            result[6 + payload.length + optionalPayload.length] = calcCRC8(result, 6,
+                    payload.length + optionalPayload.length);
 
             return result;
         } catch (Exception e) {

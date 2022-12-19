@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal.messages;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._1BSMessage;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
@@ -23,6 +24,7 @@ import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ERP1Message extends BasePacket {
 
     // these are just ESP3 RORGs, ESP2 ORGs are converted by ESP2PacketConverter

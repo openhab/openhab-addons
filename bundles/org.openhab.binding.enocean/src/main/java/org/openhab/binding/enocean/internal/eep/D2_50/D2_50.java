@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -37,6 +39,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_50 extends _VLDMessage {
 
     protected static final byte mtMask = (byte) 0xf0;
@@ -76,8 +79,7 @@ public class D2_50 extends _VLDMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         // we need to send just a single message to refresh all channel states, hence just send refresh for OM
         if (command == RefreshType.REFRESH && CHANNEL_VENTILATIONOPERATIONMODE.equals(channelId)) {
             setData((byte) (MT_REMOTE_TRANSMISSION_REQUEST + RMT_BASIC_STATUS));

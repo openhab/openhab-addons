@@ -13,9 +13,13 @@
 package org.openhab.binding.enocean.internal.transceiver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
@@ -28,10 +32,11 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
     public EnOceanESP3Transceiver(String path, TransceiverErrorListener errorListener,
-            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
+            ScheduledExecutorService scheduler, @Nullable SerialPortManager serialPortManager) {
         super(path, errorListener, scheduler, serialPortManager);
     }
 
@@ -56,13 +61,17 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
         try {
             readingBuffer[0] = firstByte;
-
-            bytesRead = this.inputStream.read(readingBuffer, 1, inputStream.available());
+            InputStream localInPutStream = this.inputStream;
+            if (localInPutStream == null) {
+                throw new IOException("could not read from inputstream");
+            }
+            bytesRead = localInPutStream.read(readingBuffer, 1, localInPutStream.available());
             if (bytesRead == -1) {
                 throw new IOException("could not read from inputstream");
             }
 
-            if (readingTask == null || readingTask.isCancelled()) {
+            Future<?> localReadingTask = readingTask;
+            if (localReadingTask == null || localReadingTask.isCancelled()) {
                 return;
             }
 
@@ -181,7 +190,11 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                 }
             }
         } catch (IOException ioexception) {
-            errorListener.ErrorOccured(ioexception);
+            logger.trace("Unable to process message", ioexception);
+            TransceiverErrorListener localListener = errorListener;
+            if (localListener != null) {
+                localListener.ErrorOccured(ioexception);
+            }
             return;
         }
     }

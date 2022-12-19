@@ -17,6 +17,8 @@ import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EEPFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(EEPFactory.class);
@@ -76,7 +79,7 @@ public class EEPFactory {
         }
     }
 
-    private static EEPType getGenericEEPTypeFor(byte rorg) {
+    private static @Nullable EEPType getGenericEEPTypeFor(byte rorg) {
         logger.info("Received unsupported EEP teach in, trying to fallback to generic thing");
         RORG r = RORG.getRORG(rorg);
         if (r == RORG._4BS) {
@@ -91,7 +94,7 @@ public class EEPFactory {
         }
     }
 
-    public static EEP buildEEPFromTeachInERP1(ERP1Message msg) {
+    public static @Nullable EEP buildEEPFromTeachInERP1(ERP1Message msg) {
         if (!msg.getIsTeachIn() && !(msg.getRORG() == RORG.RPS)) {
             return null;
         }
@@ -210,7 +213,7 @@ public class EEPFactory {
         return null;
     }
 
-    public static EEP buildEEPFromTeachInSMACKEvent(EventMessage event) {
+    public static @Nullable EEP buildEEPFromTeachInSMACKEvent(EventMessage event) {
         if (event.getEventMessageType() != EventMessageType.SA_CONFIRM_LEARN) {
             return null;
         }
@@ -235,10 +238,10 @@ public class EEPFactory {
             eepType = getGenericEEPTypeFor(rorg);
         }
 
-        return createEEP(eepType).setSenderId(senderId);
+        return (eepType == null) ? null : createEEP(eepType).setSenderId(senderId);
     }
 
-    public static EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
+    public static @Nullable EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
         switch (msg.getRORG()) {
             case UTE:
                 EEP result = new UTEResponse(msg, teachIn);

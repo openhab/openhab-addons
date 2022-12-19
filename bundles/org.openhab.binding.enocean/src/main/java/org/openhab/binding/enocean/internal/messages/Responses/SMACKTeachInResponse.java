@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.enocean.internal.messages.Responses;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.Response;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class SMACKTeachInResponse extends Response {
 
     // set response time to 250ms

@@ -14,12 +14,14 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class UTEResponse extends _VLDMessage {
 
     public static final byte TeachIn_MASK = 0x3f;

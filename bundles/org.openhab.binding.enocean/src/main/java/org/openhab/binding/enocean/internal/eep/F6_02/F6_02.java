@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -28,6 +30,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class F6_02 extends _RPSMessage {
 
     final byte AI = 0;
@@ -83,7 +86,7 @@ public abstract class F6_02 extends _RPSMessage {
         return dirA + "|" + dirB;
     }
 
-    protected String getChannelEvent(byte dir1, byte dir2) {
+    protected @Nullable String getChannelEvent(byte dir1, byte dir2) {
         if ((bytes[0] & PRESSED_SEC) != 0) {
             // Do not emit an event if channelA is pressed together with channelB as it is undetermined which one gets
             // fired first

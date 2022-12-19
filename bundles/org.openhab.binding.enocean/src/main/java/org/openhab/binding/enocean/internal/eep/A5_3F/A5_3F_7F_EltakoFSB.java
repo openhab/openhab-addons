@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -31,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     static final byte Stop = 0x00;
@@ -50,13 +53,16 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         int shutTime = 0xFF;
-        if (config != null) {
+        if (config == null) {
+            logger.debug("No configuration, shutTime fallback to {}", shutTime);
+        } else {
             shutTime = Math.min(255, config.as(EnOceanChannelRollershutterConfig.class).shutTime);
         }
 
         if (command instanceof PercentType) {
+            @Nullable
             State channelState = getCurrentStateFunc.apply(channelId);
 
             PercentType target = (PercentType) command;
@@ -66,7 +72,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 setData(ZERO, (byte) shutTime, MoveDown, TeachInBit); // => move completely down
             } else if (channelState != null) {
                 PercentType current = channelState.as(PercentType.class);
-                if (config != null && current != null) {
+                if (current != null) {
                     if (current.intValue() != target.intValue()) {
                         byte direction = current.intValue() > target.intValue() ? MoveUp : MoveDown;
                         byte duration = (byte) Math.min(255,
@@ -94,27 +100,25 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
+        @Nullable
         State currentState = getCurrentStateFunc.apply(channelId);
 
         if (currentState != null) {
             int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given
                                                                           // in ms
+            EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
+            if (duration == c.shutTime) {
+                return getDB_1() == MoveUp ? PercentType.ZERO : PercentType.HUNDRED;
+            } else {
+                PercentType current = PercentType.ZERO;
+                if (currentState instanceof PercentType) {
+                    current = currentState.as(PercentType.class);
+                }
 
-            if (config != null) {
-                EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
-                if (duration == c.shutTime) {
-                    return getDB_1() == MoveUp ? PercentType.ZERO : PercentType.HUNDRED;
-                } else {
-                    PercentType current = PercentType.ZERO;
-                    if (currentState instanceof PercentType) {
-                        current = currentState.as(PercentType.class);
-                    }
-
-                    int direction = getDB_1() == MoveUp ? -1 : 1;
-                    if (c.shutTime != -1 && c.shutTime != 0) {
-                        return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
-                    }
+                int direction = getDB_1() == MoveUp ? -1 : 1;
+                if (current != null && c.shutTime != -1 && c.shutTime != 0) {
+                    return new PercentType(Math.min(100, (Math.max(0, current.intValue()
+                            + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
                 }
             }
         }

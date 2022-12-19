@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author Holger Englert - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanChannelContactConfig {
     // Swap Open/Closed value, e.g.
     // Eltako FPE-1: false, Eltako FPE-2: true

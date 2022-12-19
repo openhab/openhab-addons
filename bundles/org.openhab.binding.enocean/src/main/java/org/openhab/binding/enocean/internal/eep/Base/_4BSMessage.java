@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.Base;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTeachInConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPType;
@@ -23,6 +25,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public abstract class _4BSMessage extends EEP {
 
     protected boolean supportsTeachInVariation3 = false;
@@ -75,13 +78,13 @@ public abstract class _4BSMessage extends EEP {
     }
 
     @Override
-    protected void teachInQueryImpl(Configuration config) {
+    protected void teachInQueryImpl(@Nullable Configuration config) {
         if (config == null) {
             return;
         }
 
         EnOceanChannelTeachInConfig c = config.as(EnOceanChannelTeachInConfig.class);
-        if (c.teachInMSG == null || c.teachInMSG.isEmpty()) {
+        if (c.teachInMSG.isEmpty()) {
             EEPType type = getEEPType();
 
             byte db3 = (byte) ((getEEPType().getFunc() << 2) | ((type.getType()) >>> 5));

@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -28,8 +30,9 @@ import org.openhab.core.types.UnDefType;
 
 /**
  *
- * @author Andreas Hofinger
+ * @author Andreas Hofinger - Initial contribution
  */
+@NonNullByDefault
 public class A5_3F_7F_EltakoFRM extends _4BSMessage {
 
     static final byte Stop = 0x00;
@@ -48,8 +51,7 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (command instanceof PercentType) {
             PercentType target = (PercentType) command;
             int rawPosition = Math.round(
@@ -72,7 +74,6 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         // 0x0A.. Move was locked for switch
         // 0x0E.. Move was not locked
         if (getDB_2() == ZERO && getDB_1() == Move && (getDB_0() == 0x0A || getDB_0() == 0x0E)) {

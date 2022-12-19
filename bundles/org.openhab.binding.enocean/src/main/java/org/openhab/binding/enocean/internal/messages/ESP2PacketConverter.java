@@ -15,6 +15,8 @@ package org.openhab.binding.enocean.internal.messages;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.BasePacket.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP2Packet.ESP2PacketType;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class ESP2PacketConverter {
 
     protected static Logger logger = LoggerFactory.getLogger(ESP2PacketConverter.class);
@@ -34,7 +37,7 @@ public class ESP2PacketConverter {
     private static final int ESP3PACKET_BASE_LENGTH = ESP3Packet.ESP3_RORG_LENGTH + ESP3Packet.ESP3_SENDERID_LENGTH
             + ESP3Packet.ESP3_STATUS_LENGTH;
 
-    private static BasePacket handleRadioTelegram(int dataLength, byte packetType, byte[] payload) {
+    private static @Nullable BasePacket handleRadioTelegram(int dataLength, byte packetType, byte[] payload) {
         switch (ESP2Packet.ORG.getORG(payload[1])) {
             case _RPS:
                 return ESP3PacketFactory.BuildPacket(ESP3PACKET_BASE_LENGTH + RORG.RPS.getDataLength(), 0,
@@ -55,7 +58,7 @@ public class ESP2PacketConverter {
         }
     }
 
-    private static BasePacket handleMessageTelegram(int dataLength, byte packetType, byte[] payload) {
+    private static @Nullable BasePacket handleMessageTelegram(int dataLength, byte packetType, byte[] payload) {
         switch (ESP2Packet.ESP2Response.getResponse(payload[1])) {
             case OK:
                 return ESP3PacketFactory.BuildPacket(1, 0, ESPPacketType.RESPONSE.getValue(),
@@ -95,7 +98,7 @@ public class ESP2PacketConverter {
         }
     }
 
-    public static BasePacket BuildPacket(int dataLength, byte packetType, byte[] payload) {
+    public static @Nullable BasePacket BuildPacket(int dataLength, byte packetType, byte[] payload) {
         ESP2PacketType type = ESP2PacketType.getPacketType(packetType);
 
         switch (type) {

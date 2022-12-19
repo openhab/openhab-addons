@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -27,6 +29,7 @@ import org.openhab.core.types.State;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_38_08_Switching extends _4BSMessage {
 
     static final byte CommandId = 0x01;
@@ -43,7 +46,7 @@ public class A5_38_08_Switching extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if ((OnOffType) outputCommand == OnOffType.ON) {
             setData(CommandId, ZERO, ZERO, (byte) (TeachInBit | SwitchOn));
         } else {

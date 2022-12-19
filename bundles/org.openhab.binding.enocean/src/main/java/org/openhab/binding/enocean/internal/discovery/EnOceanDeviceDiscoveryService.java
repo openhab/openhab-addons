@@ -17,6 +17,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.EEP;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements TeachInListener {
     private final Logger logger = LoggerFactory.getLogger(EnOceanDeviceDiscoveryService.class);
 
@@ -70,20 +73,12 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     protected void startScan() {
-        if (bridgeHandler == null) {
-            return;
-        }
-
         logger.info("Starting EnOcean discovery and accepting teach in requests");
         bridgeHandler.startDiscovery(this);
     }
 
     @Override
     public synchronized void stopScan() {
-        if (bridgeHandler == null) {
-            return;
-        }
-
         logger.info("Stopping EnOcean discovery scan");
         bridgeHandler.stopDiscovery();
         super.stopScan();
@@ -183,8 +178,9 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
-    private Integer sendTeachInResponse(ERP1Message msg, String enoceanId) {
+    private @Nullable Integer sendTeachInResponse(ERP1Message msg, String enoceanId) {
         // get new sender Id
+        @Nullable
         Integer offset = bridgeHandler.getNextSenderId(enoceanId);
         if (offset != null) {
             byte[] newSenderId = bridgeHandler.getBaseId();
@@ -193,9 +189,12 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
             // send response
             EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId, true);
             if (response != null) {
-                bridgeHandler.sendMessage(response.getERP1Message(), null);
-                logger.debug("Teach in response for {} with new senderId {} (= offset {}) sent", enoceanId,
-                        HexUtils.bytesToHex(newSenderId), offset);
+                BasePacket bPacket = response.getERP1Message();
+                if (bPacket != null) {
+                    bridgeHandler.sendMessage(bPacket, null);
+                    logger.debug("Teach in response for {} with new senderId {} (= offset {}) sent", enoceanId,
+                            HexUtils.bytesToHex(newSenderId), offset);
+                }
             } else {
                 logger.warn("Teach in response for enoceanId {} not supported!", enoceanId);
             }
@@ -212,16 +211,24 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         // send response
         EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, senderId, false);
         if (response != null) {
-            bridgeHandler.sendMessage(response.getERP1Message(), null);
-            logger.debug("Teach out response for thing {} with EnOceanId {} sent", thing.getUID().getId(), enoceanId);
+            ERP1Message message = response.getERP1Message();
+            if (message != null) {
+                bridgeHandler.sendMessage(message, null);
+                logger.debug("Teach out response for thing {} with EnOceanId {} sent", thing.getUID().getId(),
+                        enoceanId);
+            }
         } else {
             logger.warn("Teach out response for enoceanId {} not supported!", enoceanId);
         }
     }
 
-    protected void createDiscoveryResult(EEP eep, boolean broadcastMessages, Integer senderIdOffset) {
+    protected void createDiscoveryResult(EEP eep, boolean broadcastMessages, @Nullable Integer senderIdOffset) {
         String enoceanId = HexUtils.bytesToHex(eep.getSenderId());
         ThingTypeUID thingTypeUID = eep.getThingTypeUID();
+        if (thingTypeUID == null) {
+            logger.debug("Discovery failed, could not get ThingTypeUID for EnOceanId {}", enoceanId);
+            return;
+        }
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(), enoceanId);
 
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)

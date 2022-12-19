@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -28,6 +29,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Holger Englert - Initial contribution
  */
+@NonNullByDefault
 public class F6_10_00_EltakoFPE extends _RPSMessage {
 
     final byte OPEN = 0x00;

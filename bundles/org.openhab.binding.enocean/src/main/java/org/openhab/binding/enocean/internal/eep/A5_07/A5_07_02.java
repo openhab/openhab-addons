@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_07;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -21,6 +22,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_07_02 extends A5_07 {
 
     public A5_07_02(ERP1Message packet) {

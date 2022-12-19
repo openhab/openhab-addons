@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -27,6 +28,7 @@ import org.openhab.core.types.State;
  *
  * @author Stefan Schimanski - Initial contribution
  */
+@NonNullByDefault
 public class A5_14_0A extends A5_14_09 {
     public A5_14_0A(ERP1Message packet) {
         super(packet);

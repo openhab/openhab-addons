@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.messages.Responses;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.core.library.types.StringType;
 
@@ -22,9 +22,10 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class RDRepeaterResponse extends Response {
 
-    protected String repeaterLevel;
+    protected String repeaterLevel = "";
 
     public RDRepeaterResponse(Response response) {
         this(response.getPayload().length, 0, response.getPayload());
@@ -33,7 +34,7 @@ public class RDRepeaterResponse extends Response {
     RDRepeaterResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (payload == null || payload.length < 3) {
+        if (payload.length < 3) {
             return;
         }
 
@@ -58,7 +59,6 @@ public class RDRepeaterResponse extends Response {
         }
     }
 
-    @NonNull
     public StringType getRepeaterLevel() {
         return StringType.valueOf(repeaterLevel);
     }

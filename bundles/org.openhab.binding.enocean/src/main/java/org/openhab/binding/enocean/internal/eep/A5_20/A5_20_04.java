@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -35,6 +37,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Dominik Vorreiter - Initial contribution
  */
+@NonNullByDefault
 public class A5_20_04 extends A5_20 {
 
     public A5_20_04() {
@@ -46,7 +49,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_STATUS_REQUEST_EVENT:
@@ -62,9 +65,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getPos(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_VALVE_POSITION);
 
-        if ((current != null) && (current instanceof DecimalType)) {
+        if (current instanceof DecimalType) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -76,11 +80,12 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getTsp(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_TEMPERATURE_SETPOINT);
 
         double value = 20.0; // 20 °C
 
-        if ((current != null) && (current instanceof QuantityType)) {
+        if (current instanceof QuantityType) {
             @SuppressWarnings("unchecked")
             QuantityType<Temperature> raw = current.as(QuantityType.class);
 
@@ -97,9 +102,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getMc(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_MEASUREMENT_CONTROL);
 
-        if ((current != null) && (current instanceof OnOffType)) {
+        if (current instanceof OnOffType) {
             OnOffType state = current.as(OnOffType.class);
 
             if (state != null) {
@@ -111,9 +117,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getWuc(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_WAKEUPCYCLE);
 
-        if ((current != null) && (current instanceof DecimalType)) {
+        if (current instanceof DecimalType) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -125,9 +132,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getDso(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_DISPLAY_ORIENTATION);
 
-        if ((current != null) && (current instanceof DecimalType)) {
+        if (current instanceof DecimalType) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -139,9 +147,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getBlc(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_BUTTON_LOCK);
 
-        if ((current != null) && (current instanceof OnOffType)) {
+        if (current instanceof OnOffType) {
             OnOffType state = current.as(OnOffType.class);
 
             if (state != null) {
@@ -153,9 +162,10 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getSer(Function<String, State> getCurrentStateFunc) {
+        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_SERVICECOMMAND);
 
-        if ((current != null) && (current instanceof DecimalType)) {
+        if (current instanceof DecimalType) {
             DecimalType state = current.as(DecimalType.class);
 
             if (state != null) {
@@ -168,7 +178,7 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)) {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
