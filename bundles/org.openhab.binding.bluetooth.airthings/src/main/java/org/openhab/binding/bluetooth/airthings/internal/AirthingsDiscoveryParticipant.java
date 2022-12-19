@@ -98,10 +98,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
 
     private boolean isAirthingsDevice(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
-        if (manufacturerId != null && manufacturerId == AIRTHINGS_COMPANY_ID) {
-            return true;
-        }
-        return false;
+        return manufacturerId != null && manufacturerId == AIRTHINGS_COMPANY_ID;
     }
 
     private DiscoveryResult createResult(BluetoothDiscoveryDevice device, ThingUID thingUID, String label) {

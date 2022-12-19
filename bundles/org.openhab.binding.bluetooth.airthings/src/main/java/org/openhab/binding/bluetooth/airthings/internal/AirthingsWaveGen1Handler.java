@@ -87,7 +87,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 3");
                     updateState(CHANNEL_ID_RADON_ST_AVG,
-                            QuantityType.valueOf(Double.valueOf(intResult), BECQUEREL_PER_CUBIC_METRE));
+                            QuantityType.valueOf(Double.valueOf(intResult), Units.BECQUEREL_PER_CUBIC_METRE));
                     logger.debug("Update channel 3 done");
                     break;
                 case RADON_LTA:
@@ -97,7 +97,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 4");
                     updateState(CHANNEL_ID_RADON_LT_AVG,
-                            QuantityType.valueOf(Double.valueOf(intResult), BECQUEREL_PER_CUBIC_METRE));
+                            QuantityType.valueOf(Double.valueOf(intResult), Units.BECQUEREL_PER_CUBIC_METRE));
                     logger.debug("Update channel 4 done");
                     break;
             }

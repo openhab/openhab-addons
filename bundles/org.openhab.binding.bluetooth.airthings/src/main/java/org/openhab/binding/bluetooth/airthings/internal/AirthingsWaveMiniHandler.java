@@ -63,7 +63,7 @@ public class AirthingsWaveMiniHandler extends AbstractAirthingsHandler {
             }
             Number tvoc = data.get(AirthingsDataParser.TVOC);
             if (tvoc != null) {
-                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, PARTS_PER_BILLION));
+                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, Units.PARTS_PER_BILLION));
             }
         } catch (AirthingsParserException e) {
             logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());
