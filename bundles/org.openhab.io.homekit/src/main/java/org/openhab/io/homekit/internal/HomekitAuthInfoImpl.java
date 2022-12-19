@@ -133,7 +133,8 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     @Override
     public Collection<String> listUsers() {
         Collection<String> keys = storage.getKeys();
-        return keys.stream().filter(this::isUserKey).collect(Collectors.toList());
+        // don't forget to strip user_ prefix
+        return keys.stream().filter(this::isUserKey).map(u -> u.substring(5)).collect(Collectors.toList());
     }
 
     @Override
