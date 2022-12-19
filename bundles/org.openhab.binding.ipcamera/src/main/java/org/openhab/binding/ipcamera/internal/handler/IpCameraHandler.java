@@ -1707,7 +1707,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case REOLINK_THING:
                 if (snapshotUri.isEmpty()) {
-                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB";
+                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel()
+                            + "&rs=openHAB&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
                 }
                 if (rtspUri.isEmpty()) {
                     if (cameraConfig.getNvrChannel() < 1) {
@@ -1718,8 +1719,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 sendHttpPOST("/api.cgi?cmd=Login",
-                        "[{\"cmd\":\"Login\",\"action\":0,\"param\":{\"User\":{\"userName\":\"" + cameraConfig.getUser()
-                                + "\",\"password\":\"" + cameraConfig.getPassword() + "\"}}}]");
+                        "[\r\n{ \"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
+                                + cameraConfig.getUser() + "\", \"password\":\"" + cameraConfig.getPassword()
+                                + "\"\r\n}\r\n}\r\n}\r\n]");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.

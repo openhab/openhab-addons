@@ -119,8 +119,6 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
                     }
                     break;
-                default:
-                    ipCameraHandler.logger.info("Please report this URL:{} is not handled correctly", requestUrl);
             }
         } finally {
             ReferenceCountUtil.release(msg);
