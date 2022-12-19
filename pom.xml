@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -11,7 +9,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>3.4.0</version>
 
   <packaging>pom</packaging>
 
@@ -40,7 +38,7 @@
   <scm>
     <connection>scm:git:https://github.com/openhab/openhab-addons.git</connection>
     <developerConnection>scm:git:https://github.com/openhab/openhab-addons.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>3.4.0</tag>
     <url>https://github.com/openhab/openhab-addons</url>
   </scm>
 
@@ -68,7 +66,7 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>3.4.0-SNAPSHOT</ohc.version>
+    <ohc.version>3.4.0</ohc.version>
     <bnd.version>6.4.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.2.1</eea.version>
