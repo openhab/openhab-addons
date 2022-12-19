@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -49,11 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 
-import net.heberling.ismart.asn1.v1_1.MP_DispatcherBody;
-import net.heberling.ismart.asn1.v1_1.MP_DispatcherHeader;
 import net.heberling.ismart.asn1.v1_1.Message;
 import net.heberling.ismart.asn1.v1_1.MessageCoder;
-import net.heberling.ismart.asn1.v1_1.MessageCounter;
 import net.heberling.ismart.asn1.v1_1.entity.AlarmSwitch;
 import net.heberling.ismart.asn1.v1_1.entity.AlarmSwitchReq;
 import net.heberling.ismart.asn1.v1_1.entity.MP_AlarmSettingType;
@@ -103,14 +99,17 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (uid == null || token == null) {
-                Message<MP_UserLoggingInReq> loginRequestMessage = createMessage(
+                MessageCoder<MP_UserLoggingInReq> mpUserLoggingInRequestMessageCoder = new MessageCoder<>(
+                        MP_UserLoggingInReq.class);
+
+                MP_UserLoggingInReq mpUserLoggingInReq = new MP_UserLoggingInReq();
+                mpUserLoggingInReq.setPassword(config.password);
+                Message<MP_UserLoggingInReq> loginRequestMessage = mpUserLoggingInRequestMessageCoder.initializeMessage(
                         "0000000000000000000000000000000000000000000000000#".substring(config.username.length())
                                 + config.username,
-                        null, "501", 513, 1, new MP_UserLoggingInReq());
+                        null, null, "501", 513, 1, mpUserLoggingInReq);
 
-                loginRequestMessage.getApplicationData().setPassword(config.password);
-
-                String loginRequest = new MessageCoder<>(MP_UserLoggingInReq.class).encodeRequest(loginRequestMessage);
+                String loginRequest = mpUserLoggingInRequestMessageCoder.encodeRequest(loginRequestMessage);
 
                 try {
                     String loginResponse = sendRequest(loginRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
@@ -125,16 +124,17 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     token = loginResponseMessage.getApplicationData().getToken();
                     vinList = loginResponseMessage.getApplicationData().getVinList();
 
-                    // register for all alarm types
+                    MessageCoder<AlarmSwitchReq> alarmSwitchReqMessageCoder = new MessageCoder<>(AlarmSwitchReq.class);
+
+                    // register for all known alarm types (not all might be actually delivered)
                     AlarmSwitchReq alarmSwitchReq = new AlarmSwitchReq();
                     alarmSwitchReq.setAlarmSwitchList(Stream.of(MP_AlarmSettingType.EnumType.values())
                             .map(v -> createAlarmSwitch(v, true)).collect(Collectors.toList()));
                     alarmSwitchReq.setPin(hashMD5("123456"));
 
-                    Message<AlarmSwitchReq> alarmSwitchMessage = createMessage(uid, token, "521", 513, 1,
-                            alarmSwitchReq);
-                    String alarmSwitchRequest = new MessageCoder<>(AlarmSwitchReq.class)
-                            .encodeRequest(alarmSwitchMessage);
+                    Message<AlarmSwitchReq> alarmSwitchMessage = alarmSwitchReqMessageCoder.initializeMessage(uid,
+                            token, null, "521", 513, 1, alarmSwitchReq);
+                    String alarmSwitchRequest = alarmSwitchReqMessageCoder.encodeRequest(alarmSwitchMessage);
                     String alarmSwitchResponse = sendRequest(alarmSwitchRequest,
                             "https://tap-eu.soimt.com/TAP.Web/ota.mp");
                     Message<IASN1PreparedElement> alarmSwitchResponseMessage = new MessageCoder<>(
@@ -155,8 +155,9 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     logger.error("Could not login to SAIC iSMART account", e);
                 }
             } else {
-                Message<MessageListReq> messageListRequestMessage = createMessage(uid, token, "531", 513, 1,
-                        new MessageListReq());
+                MessageCoder<MessageListReq> messageListReqMessageCoder = new MessageCoder<>(MessageListReq.class);
+                Message<MessageListReq> messageListRequestMessage = messageListReqMessageCoder.initializeMessage(uid,
+                        token, null, "531", 513, 1, new MessageListReq());
 
                 messageListRequestMessage.getHeader().setProtocolVersion(18);
 
@@ -166,14 +167,12 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 // TODO: handle case when no messages are there
                 // TODO: create a message channel, that delivers messages to openhab, that don't belong to a specific
                 // car
-                // TODO: automatically subscribe for engine start messages
                 messageListRequestMessage.getApplicationData().setStartEndNumber(new StartEndNumber());
                 messageListRequestMessage.getApplicationData().getStartEndNumber().setStartNumber(1L);
                 messageListRequestMessage.getApplicationData().getStartEndNumber().setEndNumber(5L);
                 messageListRequestMessage.getApplicationData().setMessageGroup("ALARM");
 
-                String messageListRequest = new MessageCoder<>(MessageListReq.class)
-                        .encodeRequest(messageListRequestMessage);
+                String messageListRequest = messageListReqMessageCoder.encodeRequest(messageListRequestMessage);
 
                 try {
                     String messageListResponse = sendRequest(messageListRequest,
@@ -208,30 +207,6 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    private static <X extends IASN1PreparedElement> Message<X> createMessage(@Nullable String uid,
-            @Nullable String token, String applicationID, int applicationDataProtocolVersion, int messageID,
-            X applicationData) {
-        Message<X> loginRequestMessage = new Message<>(new MP_DispatcherHeader(), new MP_DispatcherBody(),
-                applicationData);
-
-        MessageCounter messageCounter = new MessageCounter();
-        messageCounter.setDownlinkCounter(0);
-        messageCounter.setUplinkCounter(1);
-        loginRequestMessage.getBody().setMessageCounter(messageCounter);
-
-        loginRequestMessage.getBody().setMessageID(messageID);
-        loginRequestMessage.getBody().setIccID("12345678901234567890");
-        loginRequestMessage.getBody().setSimInfo("1234567890987654321");
-        loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
-        loginRequestMessage.getBody().setApplicationID(applicationID);
-        loginRequestMessage.getBody().setApplicationDataProtocolVersion(applicationDataProtocolVersion);
-        loginRequestMessage.getBody().setTestFlag(2);
-        loginRequestMessage.getBody().setUid(uid);
-        loginRequestMessage.getBody().setToken(token);
-
-        return loginRequestMessage;
     }
 
     private static AlarmSwitch createAlarmSwitch(MP_AlarmSettingType.EnumType type, boolean enabled) {

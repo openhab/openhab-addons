@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 
-import net.heberling.ismart.asn1.v2_1.MP_DispatcherBody;
-import net.heberling.ismart.asn1.v2_1.MP_DispatcherHeader;
 import net.heberling.ismart.asn1.v2_1.Message;
 import net.heberling.ismart.asn1.v2_1.MessageCoder;
 import net.heberling.ismart.asn1.v2_1.entity.OTA_RVMVehicleStatusReq;
@@ -67,23 +65,19 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
     @Override
     public OTA_RVMVehicleStatusResp25857 call() {
         try {
-            Message<OTA_RVMVehicleStatusReq> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(),
-                    new byte[16], new MP_DispatcherBody(), new OTA_RVMVehicleStatusReq());
+            MessageCoder<OTA_RVMVehicleStatusReq> otaRvmVehicleStatusRequstMessageCoder = new MessageCoder<>(
+                    OTA_RVMVehicleStatusReq.class);
+
+            OTA_RVMVehicleStatusReq otaRvmVehicleStatusReq = new OTA_RVMVehicleStatusReq();
+            otaRvmVehicleStatusReq.setVehStatusReqType(1);
+
+            Message<OTA_RVMVehicleStatusReq> chargingStatusMessage = otaRvmVehicleStatusRequstMessageCoder
+                    .initializeMessage(saiCiSMARTHandler.getBridgeHandler().getUid(),
+                            saiCiSMARTHandler.getBridgeHandler().getToken(), saiCiSMARTHandler.config.vin, "511", 25857,
+                            1, otaRvmVehicleStatusReq);
             Util.fillReserved(chargingStatusMessage.getReserved());
 
-            chargingStatusMessage.getBody().setApplicationID("511");
-            chargingStatusMessage.getBody().setTestFlag(2);
-            chargingStatusMessage.getBody().setVin(saiCiSMARTHandler.config.vin);
-            chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
-            chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
-            chargingStatusMessage.getBody().setMessageID(1);
-            chargingStatusMessage.getBody().setEventCreationTime((int) Instant.now().getEpochSecond());
-            chargingStatusMessage.getBody().setApplicationDataProtocolVersion(25857);
-            chargingStatusMessage.getBody().setEventID(0);
-
-            chargingStatusMessage.getApplicationData().setVehStatusReqType(1);
-
-            String chargingStatusRequestMessage = new MessageCoder<>(OTA_RVMVehicleStatusReq.class)
+            String chargingStatusRequestMessage = otaRvmVehicleStatusRequstMessageCoder
                     .encodeRequest(chargingStatusMessage);
 
             String chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler()
@@ -110,7 +104,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
                 Util.fillReserved(chargingStatusMessage.getReserved());
 
-                chargingStatusRequestMessage = new MessageCoder<>(OTA_RVMVehicleStatusReq.class)
+                chargingStatusRequestMessage = otaRvmVehicleStatusRequstMessageCoder
                         .encodeRequest(chargingStatusMessage);
 
                 chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,

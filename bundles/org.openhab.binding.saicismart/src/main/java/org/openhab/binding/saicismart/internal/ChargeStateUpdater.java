@@ -16,7 +16,6 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -34,8 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 
-import net.heberling.ismart.asn1.v3_0.MP_DispatcherBody;
-import net.heberling.ismart.asn1.v3_0.MP_DispatcherHeader;
 import net.heberling.ismart.asn1.v3_0.Message;
 import net.heberling.ismart.asn1.v3_0.MessageCoder;
 import net.heberling.ismart.asn1.v3_0.entity.OTA_ChrgMangDataResp;
@@ -55,21 +52,13 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
 
     public OTA_ChrgMangDataResp call() {
         try {
-            Message<IASN1PreparedElement> chargingStatusMessage = new Message<>(new MP_DispatcherHeader(), new byte[16],
-                    new MP_DispatcherBody(), null);
-            Util.fillReserved(chargingStatusMessage.getReserved());
+            MessageCoder<IASN1PreparedElement> chargingStatusRequestmessageCoder = new MessageCoder<>(
+                    IASN1PreparedElement.class);
+            Message<IASN1PreparedElement> chargingStatusMessage = chargingStatusRequestmessageCoder.initializeMessage(
+                    saiCiSMARTHandler.getBridgeHandler().getUid(), saiCiSMARTHandler.getBridgeHandler().getToken(),
+                    saiCiSMARTHandler.config.vin, "516", 768, 5, null);
 
-            chargingStatusMessage.getBody().setApplicationID("516");
-            chargingStatusMessage.getBody().setTestFlag(2);
-            chargingStatusMessage.getBody().setVin(saiCiSMARTHandler.config.vin);
-            chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
-            chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
-            chargingStatusMessage.getBody().setMessageID(5);
-            chargingStatusMessage.getBody().setEventCreationTime((int) Instant.now().getEpochSecond());
-            chargingStatusMessage.getBody().setApplicationDataProtocolVersion(768);
-            chargingStatusMessage.getBody().setEventID(0);
-
-            String chargingStatusRequestMessage = new MessageCoder<>(IASN1PreparedElement.class)
+            String chargingStatusRequestMessage = chargingStatusRequestmessageCoder
                     .encodeRequest(chargingStatusMessage);
 
             String chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler()
@@ -96,8 +85,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
 
                 Util.fillReserved(chargingStatusMessage.getReserved());
 
-                chargingStatusRequestMessage = new MessageCoder<>(IASN1PreparedElement.class)
-                        .encodeRequest(chargingStatusMessage);
+                chargingStatusRequestMessage = chargingStatusRequestmessageCoder.encodeRequest(chargingStatusMessage);
 
                 chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,
                         "https://tap-eu.soimt.com/TAP.Web/ota.mpv30");
