@@ -49,7 +49,11 @@ The binding supports the following types of Thing.
 To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
 The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
-And once the Velux Bridge is fully configured, you need to trigger discovering its respective scenes and actuators (like windows and rollershutters). For this log into the OpenHAB webfront go to Settings -> Things and click on the + symbol in the lower right. Then select the Velux Binding and click Scan. After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
+And once the Velux Bridge is fully configured, you need to check your Inbox for discovered scenes and actuators.
+If nothing shows up you need to trigger discovering scenes and actuators (like windows and rollershutters) of the Velux Bridge.
+For this log into the OpenHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
+Then select the Velux Binding and click Scan.
+After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
 
 ## Thing Configuration
 
