@@ -38,23 +38,11 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class NashornScriptEngineFactory extends AbstractScriptEngineFactory {
 
-    private static final String NASHORN_ARGS = "nashorn.args";
-
     private final org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory factory = new org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory();
 
     private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
             .flatMap(List::stream) //
             .collect(Collectors.toUnmodifiableList());
-
-    public NashornScriptEngineFactory() {
-        removeUnsupportedNashornArgs();
-    }
-
-    private void removeUnsupportedNashornArgs() {
-        String property = System.getProperty(NASHORN_ARGS, "");
-        property = property.replaceAll("--no-deprecation-warning", "").trim();
-        System.setProperty(NASHORN_ARGS, property);
-    }
 
     @Override
     public List<String> getScriptTypes() {
