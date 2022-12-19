@@ -330,6 +330,7 @@
     <module>org.openhab.binding.serial</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
+    <module>org.openhab.binding.shieldtv</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
