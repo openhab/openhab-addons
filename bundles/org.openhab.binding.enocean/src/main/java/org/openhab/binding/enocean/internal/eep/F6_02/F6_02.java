@@ -33,16 +33,16 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public abstract class F6_02 extends _RPSMessage {
 
-    final byte AI = 0;
-    final byte A0 = 1;
-    final byte BI = 2;
-    final byte B0 = 3;
-    final byte PRESSED = 16;
-    final byte PRESSED_SEC = 1;
+    protected static final byte AI = 0;
+    protected static final byte A0 = 1;
+    protected static final byte BI = 2;
+    protected static final byte B0 = 3;
+    protected static final byte PRESSED = 16;
+    protected static final byte PRESSED_SEC = 1;
 
-    final String DIR1 = "DIR1";
-    final String DIR2 = "DIR2";
-    final String NODIR = "-";
+    protected static final String DIR1 = "DIR1";
+    protected static final String DIR2 = "DIR2";
+    protected static final String NODIR = "-";
 
     int secondByte = -1;
     int secondStatus = -1;

@@ -36,11 +36,11 @@ public class A5_07_02 extends A5_07 {
 
     @Override
     protected State getMotion() {
-        return getBit(getDB_0Value(), 7) ? OnOffType.ON : OnOffType.OFF;
+        return getBit(getDB0Value(), 7) ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     protected State getSupplyVoltage() {
-        return getSupplyVoltage(getDB_3Value());
+        return getSupplyVoltage(getDB3Value());
     }
 }

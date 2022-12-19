@@ -60,7 +60,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     private String getStatusRequestEvent() {
-        return Boolean.valueOf(getBit(getDB_0Value(), 6)).toString();
+        return Boolean.valueOf(getBit(getDB0Value(), 6)).toString();
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
@@ -183,7 +183,7 @@ public class A5_20_04 extends A5_20 {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
             byte db1 = (byte) (0x00 | getMc(getCurrentStateFunc) | getWuc(getCurrentStateFunc));
-            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TeachInBit | getBlc(getCurrentStateFunc)
+            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TEACHIN_BIT | getBlc(getCurrentStateFunc)
                     | getSer(getCurrentStateFunc));
 
             setData(db3, db2, db1, db0);
@@ -216,62 +216,62 @@ public class A5_20_04 extends A5_20 {
     }
 
     private State getTemperature() {
-        boolean fl = getBit(getDB_0Value(), 0);
-        boolean mst = getBit(getDB_0Value(), 7);
+        boolean fl = getBit(getDB0Value(), 0);
+        boolean mst = getBit(getDB0Value(), 7);
 
         if (fl || mst) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB_1Value() * (20.0 / 255.0) + 10.0;
+        double value = getDB1Value() * (20.0 / 255.0) + 10.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getFailureCode() {
-        boolean fl = getBit(getDB_0Value(), 0);
+        boolean fl = getBit(getDB0Value(), 0);
 
         if (!fl) {
             return new QuantityType<>(-1, Units.ONE);
         }
 
-        return new QuantityType<>(getDB_1Value(), Units.ONE);
+        return new QuantityType<>(getDB1Value(), Units.ONE);
     }
 
     private State getMeasurementControl() {
-        return getBit(getDB_0Value(), 7) ? OnOffType.OFF : OnOffType.ON;
+        return getBit(getDB0Value(), 7) ? OnOffType.OFF : OnOffType.ON;
     }
 
     private State getFeedTemperature() {
-        boolean ts = getBit(getDB_0Value(), 1);
-        boolean mst = getBit(getDB_0Value(), 7);
+        boolean ts = getBit(getDB0Value(), 1);
+        boolean mst = getBit(getDB0Value(), 7);
 
         if (ts || mst) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB_2Value() * (60.0 / 255.0) + 20.0;
+        double value = getDB2Value() * (60.0 / 255.0) + 20.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getTemperatureSetpoint() {
-        boolean ts = getBit(getDB_0Value(), 1);
+        boolean ts = getBit(getDB0Value(), 1);
 
         if (!ts) {
             return UnDefType.UNDEF;
         }
 
-        double value = getDB_2Value() * (20.0 / 255.0) + 10.0;
+        double value = getDB2Value() * (20.0 / 255.0) + 10.0;
 
         return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     private State getButtonLock() {
-        return getBit(getDB_0Value(), 2) ? OnOffType.ON : OnOffType.OFF;
+        return getBit(getDB0Value(), 2) ? OnOffType.ON : OnOffType.OFF;
     }
 
     private State getValvePosition() {
-        return new QuantityType<>(getDB_3Value(), Units.PERCENT);
+        return new QuantityType<>(getDB3Value(), Units.PERCENT);
     }
 }

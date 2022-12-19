@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.Responses;
+package org.openhab.binding.enocean.internal.messages.responses;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
@@ -55,7 +55,7 @@ public class RDRepeaterResponse extends Response {
                     return;
             }
 
-            _isValid = true;
+            isValid = true;
         }
     }
 

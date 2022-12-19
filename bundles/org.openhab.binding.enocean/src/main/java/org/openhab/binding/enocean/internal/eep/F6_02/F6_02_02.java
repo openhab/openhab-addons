@@ -77,7 +77,7 @@ public class F6_02_02 extends F6_02 {
             String s = ((StringType) command).toString();
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
-                setStatus(_RPSMessage.T21Flag);
+                setStatus(_RPSMessage.T21_FLAG);
                 setData((byte) 0x00);
                 return;
             }
@@ -86,10 +86,10 @@ public class F6_02_02 extends F6_02 {
             byte dir2 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHB) ? B0 : A0;
 
             if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
-                setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                setStatus((byte) (_RPSMessage.T21_FLAG | _RPSMessage.NU_FLAG));
                 setData((byte) ((dir1 << 5) | PRESSED));
             } else if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
-                setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                setStatus((byte) (_RPSMessage.T21_FLAG | _RPSMessage.NU_FLAG));
                 setData((byte) ((dir2 << 5) | PRESSED));
             }
         }

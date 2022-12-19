@@ -34,7 +34,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.EventMessage;
 import org.openhab.binding.enocean.internal.messages.EventMessage.EventMessageType;
-import org.openhab.binding.enocean.internal.messages.Responses.SMACKTeachInResponse;
+import org.openhab.binding.enocean.internal.messages.responses.SMACKTeachInResponse;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,19 +153,19 @@ public class EEPFactory {
             case _1BS:
                 return new D5_00_01(msg);
             case _4BS: {
-                int db_0 = msg.getPayload()[4];
-                if ((db_0 & _4BSMessage.LRN_Type_Mask) == 0) { // Variation 1
+                int db0 = msg.getPayload()[4];
+                if ((db0 & _4BSMessage.LRN_TYPE_MASK) == 0) { // Variation 1
                     logger.info("Received 4BS Teach In variation 1 without EEP, fallback to generic thing");
                     return buildEEP(EEPType.Generic4BS, msg);
                 }
 
-                byte db_3 = msg.getPayload()[1];
-                byte db_2 = msg.getPayload()[2];
-                byte db_1 = msg.getPayload()[3];
+                byte db3 = msg.getPayload()[1];
+                byte db2 = msg.getPayload()[2];
+                byte db1 = msg.getPayload()[3];
 
-                int func = (db_3 & 0xFF) >>> 2;
-                int type = ((db_3 & 0b11) << 5) + ((db_2 & 0xFF) >>> 3);
-                int manufId = ((db_2 & 0b111) << 8) + (db_1 & 0xff);
+                int func = (db3 & 0xFF) >>> 2;
+                int type = ((db3 & 0b11) << 5) + ((db2 & 0xFF) >>> 3);
+                int manufId = ((db2 & 0b111) << 8) + (db1 & 0xff);
 
                 logger.debug("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
                         HexUtils.bytesToHex(new byte[] { (byte) func }),

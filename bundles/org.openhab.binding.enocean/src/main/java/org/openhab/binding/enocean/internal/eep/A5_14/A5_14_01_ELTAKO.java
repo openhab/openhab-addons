@@ -37,7 +37,7 @@ public class A5_14_01_ELTAKO extends _4BSMessage {
     }
 
     private State getEnergyStorage() {
-        int db3 = getDB_3Value();
+        int db3 = getDB3Value();
 
         double voltage = db3 / 51.0; // 0..255 = 0.0..5.0V
 
@@ -45,7 +45,7 @@ public class A5_14_01_ELTAKO extends _4BSMessage {
     }
 
     private State getBatteryVoltage() {
-        int db2 = getDB_2Value();
+        int db2 = getDB2Value();
 
         double voltage = db2 / 51.0; // 0..255 = 0.0..5.0V
 

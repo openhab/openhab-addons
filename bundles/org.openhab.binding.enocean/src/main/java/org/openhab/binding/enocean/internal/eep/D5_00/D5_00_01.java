@@ -32,8 +32,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class D5_00_01 extends _1BSMessage {
 
-    final byte OPEN = 0 | TeachInBit;
-    final byte CLOSED = 1 | TeachInBit;
+    protected static final byte OPEN = 0 | TEACHIN_BIT;
+    protected static final byte CLOSED = 1 | TEACHIN_BIT;
 
     public D5_00_01() {
         super();

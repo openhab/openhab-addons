@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.eep.Generic;
+package org.openhab.binding.enocean.internal.eep.generic;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;

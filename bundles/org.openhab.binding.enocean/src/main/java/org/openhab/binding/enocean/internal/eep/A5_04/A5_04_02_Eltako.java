@@ -38,7 +38,7 @@ public class A5_04_02_Eltako extends A5_04_02 {
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_BATTERY_VOLTAGE)) {
-            double voltage = getDB_3Value() * 6.58 / 255.0; // not sure if this is right
+            double voltage = getDB3Value() * 6.58 / 255.0; // not sure if this is right
             return new QuantityType<>(voltage, Units.VOLT);
         }
 

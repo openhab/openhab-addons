@@ -32,16 +32,16 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class A5_14_09 extends A5_14 {
-    public final byte CLOSED = (byte) 0x00;
-    public final byte TILTED = (byte) 0x01;
-    public final byte OPEN = (byte) 0x03;
+    public static final byte CLOSED = (byte) 0x00;
+    public static final byte TILTED = (byte) 0x01;
+    public static final byte OPEN = (byte) 0x03;
 
     public A5_14_09(ERP1Message packet) {
         super(packet);
     }
 
     private State getWindowhandleState() {
-        byte ct = (byte) ((getDB_0() & 0x06) >> 1);
+        byte ct = (byte) ((getDB0() & 0x06) >> 1);
 
         switch (ct) {
             case CLOSED:
@@ -56,7 +56,7 @@ public class A5_14_09 extends A5_14 {
     }
 
     private State getContact(boolean inverted) {
-        byte ct = (byte) ((getDB_0() & 0x06) >> 1);
+        byte ct = (byte) ((getDB0() & 0x06) >> 1);
 
         switch (ct) {
             case CLOSED:

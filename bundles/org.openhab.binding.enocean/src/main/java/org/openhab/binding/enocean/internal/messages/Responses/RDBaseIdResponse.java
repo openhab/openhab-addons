@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.Responses;
+package org.openhab.binding.enocean.internal.messages.responses;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.Helper;
@@ -41,7 +41,7 @@ public class RDBaseIdResponse extends Response {
         baseId = getPayload(1, 4);
         remainingWriteCycles = optionalData[0] & 0xFF;
 
-        _isValid = true;
+        isValid = true;
     }
 
     public final byte[] getBaseId() {

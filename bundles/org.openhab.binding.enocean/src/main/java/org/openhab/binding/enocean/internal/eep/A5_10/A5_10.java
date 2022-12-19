@@ -42,30 +42,29 @@ public abstract class A5_10 extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         switch (channelId) {
             case CHANNEL_FANSPEEDSTAGE:
-                if (getDB_3Value() > 209) {
+                if (getDB3Value() > 209) {
                     return new StringType("-1");
-                } else if (getDB_3Value() > 189) {
+                } else if (getDB3Value() > 189) {
                     return new StringType("0");
-                } else if (getDB_3Value() > 164) {
+                } else if (getDB3Value() > 164) {
                     return new StringType("1");
-                } else if (getDB_3Value() > 144) {
+                } else if (getDB3Value() > 144) {
                     return new StringType("2");
                 } else {
                     return new StringType("3");
                 }
 
             case CHANNEL_SETPOINT:
-                return new DecimalType(getDB_2Value());
+                return new DecimalType(getDB2Value());
 
             case CHANNEL_TEMPERATURE:
-                double temp = (getDB_1Value() - 255) / -6.375;
+                double temp = (getDB1Value() - 255) / -6.375;
                 return new QuantityType<>(temp, SIUnits.CELSIUS);
 
             case CHANNEL_OCCUPANCY:
-                return getBit(getDB_0(), 0) ? OnOffType.OFF : OnOffType.ON;
+                return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;

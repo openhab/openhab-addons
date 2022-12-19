@@ -45,7 +45,6 @@ import org.openhab.core.types.UnDefType;
 public class D2_06_01 extends _VLDMessage {
 
     private enum MessageType {
-
         SENSORVALUES(0x00),
         CONFIGURATIONREPORT(0x10),
         LOGDATA01(0x20),
@@ -66,7 +65,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum SashState {
-
         // WINDOWSTATEUNDEFINED(0x00, "UNDEFINED"),
         NOTTILTED(0x01, "NOT TILTED"),
         TILTED(0x02, "TILTED");
@@ -89,7 +87,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum HandleState {
-
         // HANDLEPOSITIONUNDEFINED(0x00, "UNDEFINED"),
         HANDLEUP(0x01, "UP"),
         HANDLEDOWN(0x02, "DOWN"),
@@ -114,7 +111,6 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     private enum MotionState {
-
         MOTIONNOTTRIGGERED(0x00, "OFF"),
         MOTIONTRIGGERED(0x01, "ON");
 

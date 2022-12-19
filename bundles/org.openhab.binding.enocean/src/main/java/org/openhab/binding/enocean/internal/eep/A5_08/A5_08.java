@@ -63,17 +63,16 @@ public abstract class A5_08 extends _4BSMessage {
     protected abstract double getScaledIlluminationMax();
 
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value();
+        return getDB1Value();
     }
 
     protected int getUnscaledIlluminationValue() {
-        return getDB_2Value();
+        return getDB2Value();
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (channelId.equals(CHANNEL_TEMPERATURE)) {
             double scaledTemp = getScaledTemperatureMin()
                     + ((getUnscaledTemperatureValue() * (getScaledTemperatureMax() - getScaledTemperatureMin()))
@@ -85,9 +84,9 @@ public abstract class A5_08 extends _4BSMessage {
                             / (getUnscaledIlluminationMax() - getUnscaledIlluminationMin()));
             return new QuantityType<>(scaledIllumination, Units.LUX);
         } else if (channelId.equals(CHANNEL_MOTIONDETECTION)) {
-            return getBit(getDB_0(), 1) ? OnOffType.OFF : OnOffType.ON;
+            return getBit(getDB0(), 1) ? OnOffType.OFF : OnOffType.ON;
         } else if (channelId.equals(CHANNEL_OCCUPANCY)) {
-            return getBit(getDB_0(), 0) ? OnOffType.OFF : OnOffType.ON;
+            return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;

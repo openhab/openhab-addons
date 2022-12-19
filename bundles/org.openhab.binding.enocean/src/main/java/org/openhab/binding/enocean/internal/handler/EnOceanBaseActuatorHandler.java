@@ -280,7 +280,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     public void handleRemoval() {
-
         EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             Integer senderOffset = getConfiguration().senderIdOffset;

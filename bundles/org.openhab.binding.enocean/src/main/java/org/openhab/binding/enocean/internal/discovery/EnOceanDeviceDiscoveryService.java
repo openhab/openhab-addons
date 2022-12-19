@@ -29,7 +29,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.EventMessage;
 import org.openhab.binding.enocean.internal.messages.EventMessage.EventMessageType;
-import org.openhab.binding.enocean.internal.messages.Responses.SMACKTeachInResponse;
+import org.openhab.binding.enocean.internal.messages.responses.SMACKTeachInResponse;
 import org.openhab.binding.enocean.internal.transceiver.TeachInListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -120,11 +120,12 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
                     // check for bidirectional communication => do not use broadcast in this case
                     if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0]
-                            & UTEResponse.CommunicationType_MASK) == UTEResponse.CommunicationType_MASK) {
+                            & UTEResponse.COMMUNICATION_TYPE_MASK) == UTEResponse.COMMUNICATION_TYPE_MASK) {
                         broadcastMessages = false;
                     }
 
-                    if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
+                    if (msg.getRORG() == RORG.UTE
+                            && (msg.getPayload(1, 1)[0] & UTEResponse.RESPONSE_NEEDED_MASK) == 0) {
                         // if ute => send response if needed
                         logger.debug("Sending UTE response to {}", enoceanId);
                         senderIdOffset = sendTeachInResponse(msg, enoceanId);

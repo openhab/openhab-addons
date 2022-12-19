@@ -42,14 +42,14 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class D2_50 extends _VLDMessage {
 
-    protected static final byte mtMask = (byte) 0xf0;
+    protected static final byte MT_MASK = (byte) 0xf0;
     protected static final byte MT_REMOTE_TRANSMISSION_REQUEST = 0x00;
     protected static final byte MT_CONTROL = 0x20;
     protected static final byte MT_BASIC_STATUS = 0x40;
     protected static final byte MT_EXTENDED_STATUS = 0x60; // not yet implemented
     protected static final byte MT_UNKNOWN_STATUS = (byte) 0x80; // Sent by some systems during teach in
 
-    protected static final byte rmtMask = (byte) 0x0f;
+    protected static final byte RMT_MASK = (byte) 0x0f;
     protected static final byte RMT_BASIC_STATUS = 0x00;
     protected static final byte RMT_EXTENDED_STATUS = 0x01; // not yet implemented
 
@@ -68,7 +68,7 @@ public class D2_50 extends _VLDMessage {
     }
 
     protected byte getMessageType(byte b) {
-        return (byte) (b & mtMask);
+        return (byte) (b & MT_MASK);
     }
 
     @Override
@@ -106,7 +106,6 @@ public class D2_50 extends _VLDMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (getMessageType(bytes[0]) != MT_BASIC_STATUS) {
             return UnDefType.UNDEF;
         }

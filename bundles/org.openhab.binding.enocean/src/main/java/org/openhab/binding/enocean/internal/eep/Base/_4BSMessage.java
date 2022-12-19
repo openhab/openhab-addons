@@ -42,39 +42,39 @@ public abstract class _4BSMessage extends EEP {
         super();
     }
 
-    public static final byte TeachInBit = 0x08;
-    public static final byte LRN_Type_Mask = (byte) 0x80;
+    public static final byte TEACHIN_BIT = 0x08;
+    public static final byte LRN_TYPE_MASK = (byte) 0x80;
 
-    public byte getDB_0() {
+    public byte getDB0() {
         return bytes[3];
     }
 
-    public int getDB_0Value() {
-        return (getDB_0() & 0xFF);
+    public int getDB0Value() {
+        return (getDB0() & 0xFF);
     }
 
-    public byte getDB_1() {
+    public byte getDB1() {
         return bytes[2];
     }
 
-    public int getDB_1Value() {
-        return (getDB_1() & 0xFF);
+    public int getDB1Value() {
+        return (getDB1() & 0xFF);
     }
 
-    public byte getDB_2() {
+    public byte getDB2() {
         return bytes[1];
     }
 
-    public int getDB_2Value() {
-        return (getDB_2() & 0xFF);
+    public int getDB2Value() {
+        return (getDB2() & 0xFF);
     }
 
-    public byte getDB_3() {
+    public byte getDB3() {
         return bytes[0];
     }
 
-    public int getDB_3Value() {
-        return (getDB_3() & 0xFF);
+    public int getDB3Value() {
+        return (getDB3() & 0xFF);
     }
 
     @Override
@@ -98,7 +98,7 @@ public abstract class _4BSMessage extends EEP {
             } catch (Exception e) {
             }
 
-            setData(db3, db2, db1, LRN_Type_Mask);
+            setData(db3, db2, db1, LRN_TYPE_MASK);
         } else {
             try {
                 byte[] msg = HexUtils.hexToBytes(c.teachInMSG);

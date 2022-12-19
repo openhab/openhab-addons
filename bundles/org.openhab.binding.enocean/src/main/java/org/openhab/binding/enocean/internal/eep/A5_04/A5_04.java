@@ -50,7 +50,7 @@ public abstract class A5_04 extends _4BSMessage {
     protected abstract double getScaledTemperatureMax();
 
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value();
+        return getDB1Value();
     }
 
     protected double getUnscaledHumidityMax() {
@@ -58,13 +58,12 @@ public abstract class A5_04 extends _4BSMessage {
     }
 
     protected int getUnscaledHumidityValue() {
-        return getDB_2Value();
+        return getDB2Value();
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (channelId.equals(CHANNEL_TEMPERATURE)) {
             double scaledTemp = getScaledTemperatureMin()
                     + ((getUnscaledTemperatureValue() * (getScaledTemperatureMax() - getScaledTemperatureMin()))

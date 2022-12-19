@@ -32,8 +32,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class F6_10_00_EltakoFPE extends _RPSMessage {
 
-    final byte OPEN = 0x00;
-    final byte CLOSED = 0x10;
+    protected static final byte OPEN = 0x00;
+    protected static final byte CLOSED = 0x10;
 
     public F6_10_00_EltakoFPE() {
         super();

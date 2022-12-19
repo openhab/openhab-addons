@@ -31,6 +31,6 @@ public class A5_07_03 extends A5_07_02 {
 
     @Override
     protected State getIllumination() {
-        return new QuantityType<>((getDB_2Value() << 8) + ((getDB_1Value() & 0b11000000) >>> 6), Units.LUX);
+        return new QuantityType<>((getDB2Value() << 8) + ((getDB1Value() & 0b11000000) >>> 6), Units.LUX);
     }
 }

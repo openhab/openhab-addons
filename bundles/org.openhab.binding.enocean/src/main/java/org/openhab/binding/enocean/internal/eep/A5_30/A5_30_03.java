@@ -52,7 +52,7 @@ public class A5_30_03 extends _4BSMessage {
             Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                double temp = (getDB_2Value() - 255) / -6.375;
+                double temp = (getDB2Value() - 255) / -6.375;
                 return new QuantityType<>(temp, SIUnits.CELSIUS);
         }
 

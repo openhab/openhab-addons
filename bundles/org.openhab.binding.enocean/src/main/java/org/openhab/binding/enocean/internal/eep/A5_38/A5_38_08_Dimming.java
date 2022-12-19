@@ -43,10 +43,10 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class A5_38_08_Dimming extends _4BSMessage {
 
-    static final byte CommandId = 0x02;
-    static final byte SwitchOff = 0x00;
-    static final byte SwitchOn = 0x01;
-    static final byte Switch100Percent = 0x64;
+    static final byte COMMAND_ID = 0x02;
+    static final byte SWITCH_OFF = 0x00;
+    static final byte SWITCH_ON = 0x01;
+    static final byte SWITCH_100_PERCENT = 0x64;
 
     public A5_38_08_Dimming() {
         super();
@@ -66,13 +66,13 @@ public class A5_38_08_Dimming extends _4BSMessage {
                 if (outputCommand instanceof DecimalType) {
                     dimmValue = ((DecimalType) outputCommand).byteValue();
                 } else if (outputCommand instanceof OnOffType) {
-                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? Switch100Percent : ZERO;
+                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? SWITCH_100_PERCENT : ZERO;
                 } else if (outputCommand instanceof IncreaseDecreaseType) {
                     dimmValue = ((IncreaseDecreaseType) outputCommand == IncreaseDecreaseType.INCREASE)
-                            ? Switch100Percent
+                            ? SWITCH_100_PERCENT
                             : ZERO;
                 } else if (outputCommand instanceof UpDownType) {
-                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? Switch100Percent : ZERO;
+                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? SWITCH_100_PERCENT : ZERO;
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }
@@ -94,9 +94,9 @@ public class A5_38_08_Dimming extends _4BSMessage {
                     }
 
                     byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
-                    byte switchingCommand = (dimmValue == ZERO) ? SwitchOff : SwitchOn;
+                    byte switchingCommand = (dimmValue == ZERO) ? SWITCH_OFF : SWITCH_ON;
 
-                    setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
+                    setData(COMMAND_ID, dimmValue, rampingTime, (byte) (TEACHIN_BIT | storeByte | switchingCommand));
                 } else {
                     logger.debug("Cannot handle command {}, when configuration is null", outputCommand.toFullString());
                 }
@@ -110,17 +110,17 @@ public class A5_38_08_Dimming extends _4BSMessage {
             Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
-                if (!getBit(getDB_0(), 0)) {
+                if (!getBit(getDB0(), 0)) {
                     // Switching Command is OFF (DB0.0==0), return 0%
                     return new PercentType(0);
                 } else {
                     // DB2 contains the Dimming value (absolute[0...255] or relative/Eltako [0...100])
-                    int dimmValue = getDB_2Value();
+                    int dimmValue = getDB2Value();
 
                     EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
                     // if Standard dimmer and Dimming Range is absolute (DB0.2==0),
-                    if (!c.eltakoDimmer && !getBit(getDB_0(), 2)) {
+                    if (!c.eltakoDimmer && !getBit(getDB0(), 2)) {
                         // map range [0...255] to [0%...100%]
                         dimmValue /= 2.55;
                     }

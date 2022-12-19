@@ -49,7 +49,7 @@ public class A5_30_03_ELTAKO extends A5_30_03 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        byte db1 = getDB_1();
+        byte db1 = getDB1();
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
                 return db1 == ALARM_ON ? OnOffType.ON : (db1 == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);

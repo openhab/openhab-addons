@@ -27,11 +27,11 @@ public abstract class A5_13 extends _4BSMessage {
         super(packet);
     }
 
-    protected final int PARTONE = 0x10;
-    protected final int PARTTWO = 0x20;
+    protected static final int PARTONE = 0x10;
+    protected static final int PARTTWO = 0x20;
 
     protected int getMessageIdentifier() {
-        return getDB_0Value() & 0xF0;
+        return getDB0Value() & 0xF0;
     }
 
     protected boolean isPartOne() {

@@ -33,12 +33,12 @@ import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.binding.enocean.internal.messages.Response.ResponseType;
-import org.openhab.binding.enocean.internal.messages.Responses.BaseResponse;
-import org.openhab.binding.enocean.internal.messages.Responses.RDBaseIdResponse;
-import org.openhab.binding.enocean.internal.messages.Responses.RDLearnedClientsResponse;
-import org.openhab.binding.enocean.internal.messages.Responses.RDLearnedClientsResponse.LearnedClient;
-import org.openhab.binding.enocean.internal.messages.Responses.RDRepeaterResponse;
-import org.openhab.binding.enocean.internal.messages.Responses.RDVersionResponse;
+import org.openhab.binding.enocean.internal.messages.responses.BaseResponse;
+import org.openhab.binding.enocean.internal.messages.responses.RDBaseIdResponse;
+import org.openhab.binding.enocean.internal.messages.responses.RDLearnedClientsResponse;
+import org.openhab.binding.enocean.internal.messages.responses.RDLearnedClientsResponse.LearnedClient;
+import org.openhab.binding.enocean.internal.messages.responses.RDRepeaterResponse;
+import org.openhab.binding.enocean.internal.messages.responses.RDVersionResponse;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanESP2Transceiver;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanESP3Transceiver;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanTransceiver;
@@ -187,7 +187,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             EnOceanBridgeConfig c = getThing().getConfiguration().as(EnOceanBridgeConfig.class);
             EnOceanTransceiver localTransceiver = transceiver;
             if (localTransceiver != null) {
-                localTransceiver.ShutDown();
+                localTransceiver.shutDown();
             }
 
             switch (c.getESPVersion()) {
@@ -212,10 +212,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
-            localTransceiver.Initialize();
+            localTransceiver.initilize();
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
-            localTransceiver.StartReceiving(scheduler);
+            localTransceiver.startReceiving(scheduler);
             logger.info("EnOceanSerialTransceiver RX thread up and running");
 
             if (c.rs485) {
@@ -238,13 +238,14 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 logger.debug("request base id");
                 localTransceiver.sendBasePacket(ESP3PacketFactory.CO_RD_IDBASE,
                         new ResponseListenerIgnoringTimeouts<RDBaseIdResponse>() {
+
                             @Override
                             public void responseReceived(RDBaseIdResponse response) {
                                 logger.debug("received response for base id");
                                 if (response.isValid() && response.isOK()) {
                                     baseId = response.getBaseId().clone();
                                     updateProperty(PROPERTY_BASE_ID, HexUtils.bytesToHex(response.getBaseId()));
-                                    updateProperty(PROPERTY_REMAINING_WRITE_CYCLES_Base_ID,
+                                    updateProperty(PROPERTY_REMAINING_WRITE_CYCLES_BASE_ID,
                                             Integer.toString(response.getRemainingWriteCycles()));
                                     EnOceanTransceiver localTransceiver = transceiver;
                                     if (localTransceiver != null) {
@@ -265,7 +266,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
                                 @Override
                                 public void responseReceived(BaseResponse response) {
-
                                     logger.debug("received response for postmaster mailboxes");
                                     if (response.isOK()) {
                                         updateProperty("Postmaster mailboxes:",
@@ -284,6 +284,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             logger.debug("request version info");
             localTransceiver.sendBasePacket(ESP3PacketFactory.CO_RD_VERSION,
                     new ResponseListenerIgnoringTimeouts<RDVersionResponse>() {
+
                         @Override
                         public void responseReceived(RDVersionResponse response) {
                             if (response.isValid() && response.isOK()) {
@@ -308,7 +309,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public synchronized void dispose() {
         EnOceanTransceiver localTransceiver = transceiver;
         if (localTransceiver != null) {
-            localTransceiver.ShutDown();
+            localTransceiver.shutDown();
             transceiver = null;
         }
 
@@ -439,10 +440,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 }
                 localTransceiver.sendBasePacket(ESP3PacketFactory.SA_WR_LEARNMODE(true),
                         new ResponseListenerIgnoringTimeouts<BaseResponse>() {
-
                             @Override
                             public void responseReceived(BaseResponse response) {
-
                                 if (response.isOK()) {
                                     logger.debug("Smack teach in activated");
                                 }
@@ -475,17 +474,14 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     private void refreshProperties() {
         if (getThing().getStatus() == ThingStatus.ONLINE && smackAvailable) {
-
             logger.debug("request learned smack clients");
             try {
                 EnOceanTransceiver localTransceiver = transceiver;
                 if (localTransceiver != null) {
                     localTransceiver.sendBasePacket(ESP3PacketFactory.SA_RD_LEARNEDCLIENTS,
                             new ResponseListenerIgnoringTimeouts<RDLearnedClientsResponse>() {
-
                                 @Override
                                 public void responseReceived(RDLearnedClientsResponse response) {
-
                                     logger.debug("received response for learned smack clients");
                                     if (response.isValid() && response.isOK()) {
                                         LearnedClient[] clients = response.getLearnedClients();
@@ -504,16 +500,15 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Smack packet could not be send: " + e.getMessage());
-
             }
         }
     }
 
     @Override
-    public void ErrorOccured(Throwable exception) {
+    public void errorOccured(Throwable exception) {
         EnOceanTransceiver localTransceiver = transceiver;
         if (localTransceiver != null) {
-            localTransceiver.ShutDown();
+            localTransceiver.shutDown();
             transceiver = null;
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());

@@ -32,9 +32,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class A5_38_08_Switching extends _4BSMessage {
 
-    static final byte CommandId = 0x01;
-    static final byte SwitchOff = 0x00;
-    static final byte SwitchOn = 0x01;
+    static final byte COMMAND_ID = 0x01;
+    static final byte SWITCH_OFF = 0x00;
+    static final byte SWITCH_ON = 0x01;
 
     public A5_38_08_Switching() {
         super();
@@ -48,9 +48,9 @@ public class A5_38_08_Switching extends _4BSMessage {
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if ((OnOffType) outputCommand == OnOffType.ON) {
-            setData(CommandId, ZERO, ZERO, (byte) (TeachInBit | SwitchOn));
+            setData(COMMAND_ID, ZERO, ZERO, (byte) (TEACHIN_BIT | SWITCH_ON));
         } else {
-            setData(CommandId, ZERO, ZERO, (byte) (TeachInBit | SwitchOff));
+            setData(COMMAND_ID, ZERO, ZERO, (byte) (TEACHIN_BIT | SWITCH_OFF));
         }
     }
 }

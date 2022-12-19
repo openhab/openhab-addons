@@ -69,7 +69,7 @@ public class A5_38_08_Blinds extends _4BSMessage {
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
-                byte db0 = ZERO | SEND_NEW_STATE | TeachInBit;
+                byte db0 = ZERO | SEND_NEW_STATE | TEACHIN_BIT;
                 byte db1 = ZERO;
                 byte db2 = ZERO;
 
@@ -117,11 +117,11 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     protected State getPositionData() {
-        byte db0 = getDB_0();
+        byte db0 = getDB0();
         boolean paf = getBit(db0, 1);
 
         if (paf) {
-            int bsp = getDB_2Value();
+            int bsp = getDB2Value();
 
             if ((bsp >= 0) && (bsp <= 100)) {
                 return new PercentType(bsp);
@@ -132,11 +132,11 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     protected State getAngleData() {
-        byte db0 = getDB_0();
+        byte db0 = getDB0();
         boolean paf = getBit(db0, 1);
 
         if (paf) {
-            byte db1 = getDB_1();
+            byte db1 = getDB1();
 
             boolean as = getBit(db1, 7);
             int an = (db1 & 0x7F) * 2;

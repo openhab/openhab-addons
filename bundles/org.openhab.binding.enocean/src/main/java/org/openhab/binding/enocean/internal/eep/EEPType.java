@@ -151,9 +151,9 @@ import org.openhab.binding.enocean.internal.eep.F6_05.F6_05_02;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00_EltakoFPE;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_01;
-import org.openhab.binding.enocean.internal.eep.Generic.Generic4BS;
-import org.openhab.binding.enocean.internal.eep.Generic.GenericRPS;
-import org.openhab.binding.enocean.internal.eep.Generic.GenericVLD;
+import org.openhab.binding.enocean.internal.eep.generic.Generic4BS;
+import org.openhab.binding.enocean.internal.eep.generic.GenericRPS;
+import org.openhab.binding.enocean.internal.eep.generic.GenericVLD;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
@@ -404,7 +404,7 @@ public enum EEPType {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
                         {
-                            put(PARAMETER_CHANNEL_TeachInMSG, "fff80d80");
+                            put(PARAMETER_CHANNEL_TEACHINMSG, "fff80d80");
                         }
                     });
                 }
@@ -417,7 +417,7 @@ public enum EEPType {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
                         {
-                            put(PARAMETER_CHANNEL_TeachInMSG, "fff80d80");
+                            put(PARAMETER_CHANNEL_TEACHINMSG, "fff80d80");
                         }
                     });
                 }
@@ -617,7 +617,6 @@ public enum EEPType {
     }
 
     private void addDefaultChannels() {
-
         if (THING_TYPE_GENERICTHING.equals(this.thingTypeUID)) {
             this.channelIdsWithConfig.put(CHANNEL_GENERIC_SWITCH, new EnOceanChannelTransformationConfig());
 
@@ -701,7 +700,7 @@ public enum EEPType {
         return requestsResponse;
     }
 
-    public Map<String, EnOceanChannelDescription> GetSupportedChannels() {
+    public Map<String, EnOceanChannelDescription> getSupportedChannels() {
         return Collections.unmodifiableMap(supportedChannels);
     }
 

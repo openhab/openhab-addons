@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.Responses;
+package org.openhab.binding.enocean.internal.messages.responses;
 
 import java.util.Arrays;
 
@@ -54,7 +54,7 @@ public class RDVersionResponse extends Response {
                 sb.append((char) (payload[i] & 0xff));
             }
             description = sb.toString();
-            _isValid = true;
+            isValid = true;
 
         } catch (Exception e) {
             responseType = ResponseType.RET_ERROR;

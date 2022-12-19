@@ -142,13 +142,13 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 channelList.removeIf(channel -> !eeps.stream().anyMatch(eep -> eep.isChannelSupported(channel))));
 
         // Next create supported channels of each selected eep
-        eeps.stream().flatMap(eep -> eep.GetSupportedChannels().keySet().stream().map(id -> new SimpleEntry<>(id, eep)))
+        eeps.stream().flatMap(eep -> eep.getSupportedChannels().keySet().stream().map(id -> new SimpleEntry<>(id, eep)))
                 .forEach(entry -> {
                     @Nullable
                     String channelId = entry.getKey();
 
                     @Nullable
-                    EnOceanChannelDescription cd = entry.getValue().GetSupportedChannels().get(channelId);
+                    EnOceanChannelDescription cd = entry.getValue().getSupportedChannels().get(channelId);
 
                     if (cd == null) {
                         return;

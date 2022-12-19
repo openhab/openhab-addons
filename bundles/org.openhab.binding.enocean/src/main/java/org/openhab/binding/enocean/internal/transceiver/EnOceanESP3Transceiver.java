@@ -57,7 +57,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
     protected void processMessage(byte firstByte) {
         byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
         int bytesRead = -1;
-        byte _byte;
+        byte byteBuffer;
 
         try {
             readingBuffer[0] = firstByte;
@@ -77,18 +77,18 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
             bytesRead++;
             for (int p = 0; p < bytesRead; p++) {
-                _byte = readingBuffer[p];
+                byteBuffer = readingBuffer[p];
 
                 switch (state) {
                     case WaitingForSyncByte:
-                        if (_byte == ESP3Packet.ESP3_SYNC_BYTE) {
+                        if (byteBuffer == ESP3Packet.ESP3_SYNC_BYTE) {
                             state = ReadingState.ReadingHeader;
                             logger.trace("Received Sync Byte");
                         }
                         break;
                     case ReadingHeader:
                         if (currentPosition == ESP3Packet.ESP3_HEADER_LENGTH) {
-                            if (ESP3Packet.checkCRC8(dataBuffer, ESP3Packet.ESP3_HEADER_LENGTH, _byte)
+                            if (ESP3Packet.checkCRC8(dataBuffer, ESP3Packet.ESP3_HEADER_LENGTH, byteBuffer)
                                     && ((dataBuffer[0] & 0xFF) << 8) + (dataBuffer[1] & 0xFF)
                                             + (dataBuffer[2] & 0xFF) > 0) {
                                 state = ReadingState.ReadingData;
@@ -119,23 +119,23 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                             ESP3Packet.ESP3_HEADER_LENGTH - copyFrom);
                                     state = ReadingState.ReadingHeader;
                                     currentPosition = ESP3Packet.ESP3_HEADER_LENGTH - copyFrom;
-                                    dataBuffer[currentPosition++] = _byte;
+                                    dataBuffer[currentPosition++] = byteBuffer;
                                 } else {
                                     currentPosition = 0;
-                                    state = _byte == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
+                                    state = byteBuffer == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
                                             : ReadingState.WaitingForSyncByte;
                                 }
                                 logger.trace("CrC8 header check not successful");
                             }
                         } else {
-                            dataBuffer[currentPosition++] = _byte;
+                            dataBuffer[currentPosition++] = byteBuffer;
                         }
                         break;
                     case ReadingData:
                         if (currentPosition == dataLength + optionalLength) {
-                            if (ESP3Packet.checkCRC8(dataBuffer, dataLength + optionalLength, _byte)) {
+                            if (ESP3Packet.checkCRC8(dataBuffer, dataLength + optionalLength, byteBuffer)) {
                                 state = ReadingState.WaitingForSyncByte;
-                                BasePacket packet = ESP3PacketFactory.BuildPacket(dataLength, optionalLength,
+                                BasePacket packet = ESP3PacketFactory.buildPacket(dataLength, optionalLength,
                                         packetType, dataBuffer);
 
                                 if (packet != null) {
@@ -175,7 +175,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                             .bytesToHex(Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
                                 }
                             } else {
-                                state = _byte == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
+                                state = byteBuffer == ESP3Packet.ESP3_SYNC_BYTE ? ReadingState.ReadingHeader
                                         : ReadingState.WaitingForSyncByte;
                                 logger.trace("ESP3Packet malformed: {}",
                                         HexUtils.bytesToHex(Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
@@ -184,7 +184,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                             currentPosition = 0;
                             dataLength = optionalLength = packetType = -1;
                         } else {
-                            dataBuffer[currentPosition++] = _byte;
+                            dataBuffer[currentPosition++] = byteBuffer;
                         }
                         break;
                 }
@@ -193,7 +193,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
             logger.trace("Unable to process message", ioexception);
             TransceiverErrorListener localListener = errorListener;
             if (localListener != null) {
-                localListener.ErrorOccured(ioexception);
+                localListener.errorOccured(ioexception);
             }
             return;
         }

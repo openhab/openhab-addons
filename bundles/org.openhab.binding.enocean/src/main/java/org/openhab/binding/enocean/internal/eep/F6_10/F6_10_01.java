@@ -33,10 +33,10 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class F6_10_01 extends _RPSMessage {
 
-    public final byte Closed = 0x0F; // xxxx1111
-    public final byte Open1 = 0x0E; // xxxx1110
-    public final byte Open2 = 0x0C; // xxxx1100
-    public final byte Tilted = 0x0D; // xxxx1101
+    public static final byte CLOSED = 0x0F; // xxxx1111
+    public static final byte OPEN_1 = 0x0E; // xxxx1110
+    public static final byte OPEN_2 = 0x0C; // xxxx1100
+    public static final byte TILTED = 0x0D; // xxxx1101
 
     public F6_10_01() {
         super();
@@ -54,21 +54,21 @@ public class F6_10_01 extends _RPSMessage {
         // todo localization
         switch (channelId) {
             case CHANNEL_WINDOWHANDLESTATE:
-                if (data == Closed) {
+                if (data == CLOSED) {
                     return new StringType("CLOSED");
-                } else if (data == Tilted) {
+                } else if (data == TILTED) {
                     return new StringType("TILTED");
-                } else if (data == Open1 || data == Open2) {
+                } else if (data == OPEN_1 || data == OPEN_2) {
                     return new StringType("OPEN");
                 }
 
             case CHANNEL_CONTACT:
                 EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
-                if (data == Closed) {
+                if (data == CLOSED) {
                     return c.inverted ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                } else if (data == Tilted) {
+                } else if (data == TILTED) {
                     return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                } else if (data == Open1 || data == Open2) {
+                } else if (data == OPEN_1 || data == OPEN_2) {
                     return c.inverted ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 }
         }

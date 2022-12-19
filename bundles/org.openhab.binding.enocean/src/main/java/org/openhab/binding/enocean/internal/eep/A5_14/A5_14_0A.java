@@ -35,7 +35,7 @@ public class A5_14_0A extends A5_14_09 {
     }
 
     private State getVibration() {
-        boolean alarm = getBit(getDB_0(), 0);
+        boolean alarm = getBit(getDB0(), 0);
         return alarm ? OnOffType.ON : OnOffType.OFF;
     }
 

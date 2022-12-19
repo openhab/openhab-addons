@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.enocean.internal.messages.Responses;
+package org.openhab.binding.enocean.internal.messages.responses;
 
 import java.util.Arrays;
 
@@ -44,7 +44,7 @@ public class RDLearnedClientsResponse extends Response {
         if (payload.length == 0 && (payload.length - 1) % 9 != 0) {
             return;
         } else {
-            _isValid = true;
+            isValid = true;
         }
 
         learnedClients = new LearnedClient[(payload.length - 1) / 9];

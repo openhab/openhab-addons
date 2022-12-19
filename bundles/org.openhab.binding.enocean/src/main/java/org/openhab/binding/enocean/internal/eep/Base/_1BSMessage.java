@@ -23,7 +23,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 @NonNullByDefault
 public abstract class _1BSMessage extends EEP {
 
-    public static final int TeachInBit = 0x08;
+    public static final int TEACHIN_BIT = 0x08;
 
     public _1BSMessage(ERP1Message packet) {
         super(packet);

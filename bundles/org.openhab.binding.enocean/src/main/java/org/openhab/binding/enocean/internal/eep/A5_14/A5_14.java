@@ -36,7 +36,7 @@ public abstract class A5_14 extends _4BSMessage {
     }
 
     private State getBatteryVoltage() {
-        int db3 = getDB_3Value();
+        int db3 = getDB3Value();
 
         if (db3 > 250) {
             logger.warn("EEP A5-14 error code {}", db3);

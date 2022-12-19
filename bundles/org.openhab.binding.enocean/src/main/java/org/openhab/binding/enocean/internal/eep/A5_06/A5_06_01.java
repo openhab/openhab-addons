@@ -37,7 +37,7 @@ public class A5_06_01 extends _4BSMessage {
     }
 
     private State getBatteryVoltage() {
-        int db3 = getDB_3Value();
+        int db3 = getDB3Value();
 
         double voltage = db3 / 50.0; // 0..255 = 0.0..5.1V
 
@@ -45,9 +45,9 @@ public class A5_06_01 extends _4BSMessage {
     }
 
     private State getIllumination() {
-        boolean rs = getBit(getDB_0(), 0);
+        boolean rs = getBit(getDB0(), 0);
 
-        double illumination = rs ? getDB_2Value() * 116.48 + 300.0 : getDB_1Value() * 232.94 + 600.0;
+        double illumination = rs ? getDB2Value() * 116.48 + 300.0 : getDB1Value() * 232.94 + 600.0;
 
         return new QuantityType<>(illumination, Units.LUX);
     }

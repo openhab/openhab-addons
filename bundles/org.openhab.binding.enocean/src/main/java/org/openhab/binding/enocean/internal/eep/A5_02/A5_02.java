@@ -46,13 +46,12 @@ public abstract class A5_02 extends _4BSMessage {
     protected abstract double getScaledMax();
 
     protected int getUnscaledTemperatureValue() {
-        return getDB_1Value();
+        return getDB1Value();
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         double scaledTemp = getScaledMin()
                 - (((getUnscaledMin() - getUnscaledTemperatureValue()) * (getScaledMin() - getScaledMax()))
                         / getUnscaledMin());

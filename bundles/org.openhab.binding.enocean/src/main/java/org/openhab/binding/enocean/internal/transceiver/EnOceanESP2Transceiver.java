@@ -59,7 +59,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
     protected void processMessage(byte firstByte) {
         byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
         int bytesRead = -1;
-        byte _byte;
+        byte byteBuffer;
 
         try {
             readingBuffer[0] = firstByte;
@@ -79,17 +79,17 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
 
             bytesRead++;
             for (int p = 0; p < bytesRead; p++) {
-                _byte = readingBuffer[p];
+                byteBuffer = readingBuffer[p];
 
                 switch (state) {
                     case WaitingForFirstSyncByte:
-                        if (_byte == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE) {
+                        if (byteBuffer == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE) {
                             state = ReadingState.WaitingForSecondSyncByte;
                             logger.trace("Received First Sync Byte");
                         }
                         break;
                     case WaitingForSecondSyncByte:
-                        if (_byte == ESP2Packet.ENOCEAN_ESP2_SECONDSYNC_BYTE) {
+                        if (byteBuffer == ESP2Packet.ENOCEAN_ESP2_SECONDSYNC_BYTE) {
                             state = ReadingState.ReadingHeader;
                             logger.trace("Received Second Sync Byte");
                         }
@@ -98,7 +98,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                         state = ReadingState.ReadingData;
 
                         currentPosition = 0;
-                        dataBuffer[currentPosition++] = _byte;
+                        dataBuffer[currentPosition++] = byteBuffer;
                         dataLength = ((dataBuffer[0] & 0xFF) & 0b11111);
                         packetType = (byte) ((dataBuffer[0] & 0xFF) >> 5);
 
@@ -107,8 +107,8 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                         break;
                     case ReadingData:
                         if (currentPosition == dataLength) {
-                            if (ESP2Packet.validateCheckSum(dataBuffer, dataLength, _byte)) {
-                                BasePacket packet = ESP2PacketConverter.BuildPacket(dataLength, packetType, dataBuffer);
+                            if (ESP2Packet.validateCheckSum(dataBuffer, dataLength, byteBuffer)) {
+                                BasePacket packet = ESP2PacketConverter.buildPacket(dataLength, packetType, dataBuffer);
                                 if (packet != null) {
                                     switch (packet.getPacketType()) {
                                         case RADIO_ERP1: {
@@ -146,14 +146,14 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                                 logger.debug("ESP2Packet malformed: {}", HexUtils.bytesToHex(dataBuffer));
                             }
 
-                            state = _byte == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE
+                            state = byteBuffer == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE
                                     ? ReadingState.WaitingForSecondSyncByte
                                     : ReadingState.WaitingForFirstSyncByte;
 
                             currentPosition = 0;
                             dataLength = packetType = -1;
                         } else {
-                            dataBuffer[currentPosition++] = _byte;
+                            dataBuffer[currentPosition++] = byteBuffer;
                         }
                         break;
                 }
@@ -164,7 +164,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
             logger.trace("Unable to process message", ioexception);
             TransceiverErrorListener localListener = errorListener;
             if (localListener != null) {
-                localListener.ErrorOccured(ioexception);
+                localListener.errorOccured(ioexception);
             }
             return;
         }

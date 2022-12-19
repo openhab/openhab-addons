@@ -89,13 +89,13 @@ public class ERP1Message extends BasePacket {
                 case _1BS:
                     if (dataLength >= 6) {
                         senderId = Arrays.copyOfRange(payload, 2, 6);
-                        teachIn = ((_1BSMessage.TeachInBit & payload[1]) == 0);
+                        teachIn = ((_1BSMessage.TEACHIN_BIT & payload[1]) == 0);
                     }
                     break;
                 case _4BS:
                     if (dataLength >= 9) {
                         senderId = Arrays.copyOfRange(payload, 5, 9);
-                        teachIn = (_4BSMessage.TeachInBit & payload[4]) == 0;
+                        teachIn = (_4BSMessage.TEACHIN_BIT & payload[4]) == 0;
                     }
                     break;
                 case VLD:
@@ -104,8 +104,8 @@ public class ERP1Message extends BasePacket {
                     break;
                 case UTE:
                     if (dataLength >= 6) {
-                        teachIn = (payload[1] & UTEResponse.TeachIn_MASK) == 0
-                                || (payload[1] & UTEResponse.TeachIn_MASK) == UTEResponse.TeachIn_NotSpecified;
+                        teachIn = (payload[1] & UTEResponse.TEACHIN_MASK) == 0
+                                || (payload[1] & UTEResponse.TEACHIN_MASK) == UTEResponse.TEACHIN_NPTSPECIFIED;
                         senderId = Arrays.copyOfRange(payload, dataLength - 5, dataLength - 1);
                     }
                     break;

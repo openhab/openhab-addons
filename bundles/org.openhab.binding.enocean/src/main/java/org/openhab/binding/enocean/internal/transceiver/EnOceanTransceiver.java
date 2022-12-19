@@ -70,11 +70,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
     class Request {
         @Nullable
-        BasePacket RequestPacket;
+        BasePacket requestPacket;
         @Nullable
-        Response ResponsePacket;
+        Response responsePacket;
         @Nullable
-        ResponseListener<? extends @Nullable Response> ResponseListener;
+        ResponseListener<? extends @Nullable Response> responseListener;
     }
 
     private class RequestQueue {
@@ -108,9 +108,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                 try {
                     @Nullable
                     Request localCurrentRequest = currentRequest;
-                    if (localCurrentRequest != null && localCurrentRequest.RequestPacket != null) {
+                    if (localCurrentRequest != null && localCurrentRequest.requestPacket != null) {
                         synchronized (localCurrentRequest) {
-                            BasePacket rqPacket = localCurrentRequest.RequestPacket;
+                            BasePacket rqPacket = localCurrentRequest.requestPacket;
                             if (currentRequest != null && rqPacket != null) {
                                 logger.debug("Sending data, type {}, payload {}{}", rqPacket.getPacketType().name(),
                                         HexUtils.bytesToHex(rqPacket.getPayload()),
@@ -136,7 +136,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                                         logger.trace("Unable to process message", e);
                                         TransceiverErrorListener localListener = errorListener;
                                         if (localListener != null) {
-                                            localListener.ErrorOccured(e);
+                                            localListener.errorOccured(e);
                                         }
                                         return;
                                     }
@@ -181,7 +181,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         this.path = path;
     }
 
-    public void Initialize()
+    public void initilize()
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
         SerialPortManager localSerialPortManager = serialPortManager;
         if (localSerialPortManager == null) {
@@ -221,7 +221,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("EnOceanSerialTransceiver initialized");
     }
 
-    public void StartReceiving(ScheduledExecutorService scheduler) {
+    public void startReceiving(ScheduledExecutorService scheduler) {
         @Nullable
         Future<?> localReadingTask = readingTask;
         if (localReadingTask == null || localReadingTask.isCancelled()) {
@@ -235,7 +235,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("EnOceanSerialTransceiver RX thread started");
     }
 
-    public void ShutDown() {
+    public void shutDown() {
         logger.debug("shutting down transceiver");
         logger.debug("Interrupt rx Thread");
 
@@ -403,9 +403,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         Request localCurrentRequest = currentRequest;
         if (localCurrentRequest != null) {
             @Nullable
-            ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.ResponseListener;
+            ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.responseListener;
             if (listener != null) {
-                localCurrentRequest.ResponsePacket = response;
+                localCurrentRequest.responsePacket = response;
                 try {
                     listener.handleResponse(response);
                 } catch (Exception e) {
@@ -430,8 +430,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.debug("Enqueue new send request with ESP3 type {} {} callback", packet.getPacketType().name(),
                 responseCallback == null ? "without" : "with");
         Request r = new Request();
-        r.RequestPacket = packet;
-        r.ResponseListener = responseCallback;
+        r.requestPacket = packet;
+        r.responseListener = responseCallback;
 
         requestQueue.enqueRequest(r);
     }

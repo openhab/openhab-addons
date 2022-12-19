@@ -36,7 +36,7 @@ public class A5_14_01 extends A5_14 {
     }
 
     private State getContact(boolean inverted) {
-        boolean ct = getBit(getDB_0(), 0);
+        boolean ct = getBit(getDB0(), 0);
 
         if (inverted) {
             return ct ? OpenClosedType.CLOSED : OpenClosedType.OPEN;

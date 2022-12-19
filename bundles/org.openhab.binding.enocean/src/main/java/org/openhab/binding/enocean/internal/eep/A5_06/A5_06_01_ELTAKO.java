@@ -37,10 +37,10 @@ public class A5_06_01_ELTAKO extends _4BSMessage {
     }
 
     private State getIllumination() {
-        int db2 = getDB_2Value();
+        int db2 = getDB2Value();
 
         if (db2 == 0) {
-            int db3 = getDB_3Value();
+            int db3 = getDB3Value();
             return new QuantityType<>(db3 * 0.5, Units.LUX);
         } else {
             return new QuantityType<>(db2 * 116.48 + 300.0, Units.LUX);
