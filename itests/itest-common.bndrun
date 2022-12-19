@@ -19,7 +19,7 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 -runsystempackages: sun.reflect
 
 -runfw: org.eclipse.osgi
--runee: JavaSE-11
+-runee: JavaSE-17
 
 # An unused random HTTP port is used during tests to prevent resource conflicts
 # This property is set by the build-helper-maven-plugin in the itests pom.xml
@@ -39,7 +39,6 @@ Export-Package:
 	bnd.identity;id='junit-jupiter-engine'
 
 -runproperties: \
-	nashorn.args=--no-deprecation-warning,\
 	org.ops4j.pax.logging.DefaultServiceLog.level=WARN
 
 -runvm.java9plus: \
