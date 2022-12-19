@@ -93,6 +93,8 @@ public class ShieldTVMessageParser {
             logger.trace("Longer Hostname Reply");
         } else if (msg.startsWith("08f10712")) {
             // Massive dump of currently installed apps
+	} else if (msg.startsWith("08f30712")) {
+            // This has something to do with successful command response, maybe.
         } else if (msg.equals("080028fae0a6c0d130")) {
             // Keepalive Reply
         } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {

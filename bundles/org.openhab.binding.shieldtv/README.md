@@ -39,15 +39,13 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/op
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | devicename | String | RO         | Device Common Name          |
-| currentapp | String | RO         | Currently Running App       |
-| startapp   | String | RW         | Start App by Name           }
+| app        | String | RW         | App Control                 |
 
 ```java
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
 String ShieldTV_DEVICENAME "DEVICENAME [%s]" { channel = "shieldtv:shieldtv:livingroom:devicename" }
-String ShieldTV_CURRENTAPP "CURRENTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:currentapp" }
-String ShieldTV_STARTAPP "STARTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:startapp" }
+String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
 
 ```
 
@@ -66,6 +64,13 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_FORWARD
 - KEY_POWER
 
+The list above causes an instantanious "press and release" of each button.  
+If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
+(e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
+
+APP will display the currently active app as presented by the ShieldTV.  
+You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.
+
 ## Pin Code Process
 
 For the ShieldTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
@@ -74,12 +79,15 @@ The process is as follows:
 NOTE: It is critical that the keystore name and password used here matches the keystore and keystorePassword configured on the thing.
 
 From the cli: 
-              openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
-              (you may accept all of the defaults, this will be disposed of after successful authentication)
 
-              openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+```java
+openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
+(you may accept all of the defaults, this will be disposed of after successful authentication)
 
-              keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+
+keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+```
 
 Once this is completed, you can configure the thing and items as shown above.  Please have your CLI watching openhab.log for the new keys.
 
@@ -92,9 +100,12 @@ At this point you should see a new private key and certificate in openhab.log.  
 Delete the original .p12 and .keystore files.
 
 From the cli: 
-              openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
 
-              keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+```java
+openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
+
+keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
+```
 
 This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
@@ -109,8 +120,7 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/op
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
 String ShieldTV_DEVICENAME "DEVICENAME [%s]" { channel = "shieldtv:shieldtv:livingroom:devicename" }
-String ShieldTV_CURRENTAPP "CURRENTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:currentapp" }
-String ShieldTV_STARTAPP "STARTAPP [%s]" { channel = "shieldtv:shieldtv:livingroom:startapp" }
+String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
 
 ```
 

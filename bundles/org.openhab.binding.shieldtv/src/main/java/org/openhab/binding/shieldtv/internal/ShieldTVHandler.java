@@ -130,7 +130,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     public void setCurrentApp(String currentApp) {
         this.currentApp = currentApp;
-        updateState(CHANNEL_CURRENTAPP, new StringType(currentApp));
+        updateState(CHANNEL_APP, new StringType(currentApp));
     }
 
     public String getCurrentApp() {
@@ -459,6 +459,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                     flushReader();
                     inMessage = 3;
                 } else if (lastMsg.equals("18") && thisMsg.equals("f1") && inMessage == 3) {
+                    sbReader.append(thisMsg.toString());
+                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
                     finishReaderMessage();
                 } else if (lastMsg.equals("08") && thisMsg.equals("ec") && inMessage == 0) {
                     flushReader();
@@ -654,6 +656,94 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                         sendCommand(new ShieldTVCommand(
                                 ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
                         break;
+                    case "KEY_UP_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202ce01")));
+                        break;
+                    case "KEY_DOWN_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d801")));
+                        break;
+                    case "KEY_RIGHT_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d401")));
+                        break;
+                    case "KEY_LEFT_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d201")));
+                        break;
+                    case "KEY_ENTER_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202c205")));
+                        break;
+                    case "KEY_HOME_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202d802")));
+                        break;
+                    case "KEY_BACK_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202bc02")));
+                        break;
+                    case "KEY_MENU_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a280132029602")));
+                        break;
+                    case "KEY_PLAYPAUSE_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202F604")));
+                        break;
+                    case "KEY_REWIND_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202D002")));
+                        break;
+                    case "KEY_FORWARD_PRESS":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28013202A003")));
+                        break;
+                    case "KEY_UP_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202ce01")));
+                        break;
+                    case "KEY_DOWN_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d801")));
+                        break;
+                    case "KEY_RIGHT_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d401")));
+                        break;
+                    case "KEY_LEFT_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d201")));
+                        break;
+                    case "KEY_ENTER_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202c205")));
+                        break;
+                    case "KEY_HOME_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202d802")));
+                        break;
+                    case "KEY_BACK_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202bc02")));
+                        break;
+                    case "KEY_MENU_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a280232029602")));
+                        break;
+                    case "KEY_PLAYPAUSE_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202F604")));
+                        break;
+                    case "KEY_REWIND_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202D002")));
+                        break;
+                    case "KEY_FORWARD_RELEASE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
+                        break;
                     case "KEY_POWER":
                         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e401e")));
                         break;
@@ -678,7 +768,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             if (command instanceof StringType) {
                 shieldtvMessageParser.handleMessage(command.toString());
             }
-        } else if (CHANNEL_STARTAPP.equals(channelUID.getId())) {
+        } else if (CHANNEL_APP.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String message = ShieldTVRequest.encodeMessage(ShieldTVRequest.startApp(command.toString()));
                 sendCommand(new ShieldTVCommand(message));
