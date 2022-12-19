@@ -14,6 +14,9 @@ package org.openhab.binding.saicismart.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +26,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.bn.coders.IASN1PreparedElement;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,6 +54,9 @@ import net.heberling.ismart.asn1.v1_1.MP_DispatcherHeader;
 import net.heberling.ismart.asn1.v1_1.Message;
 import net.heberling.ismart.asn1.v1_1.MessageCoder;
 import net.heberling.ismart.asn1.v1_1.MessageCounter;
+import net.heberling.ismart.asn1.v1_1.entity.AlarmSwitch;
+import net.heberling.ismart.asn1.v1_1.entity.AlarmSwitchReq;
+import net.heberling.ismart.asn1.v1_1.entity.MP_AlarmSettingType;
 import net.heberling.ismart.asn1.v1_1.entity.MP_UserLoggingInReq;
 import net.heberling.ismart.asn1.v1_1.entity.MP_UserLoggingInResp;
 import net.heberling.ismart.asn1.v1_1.entity.MessageListReq;
@@ -92,25 +103,10 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (uid == null || token == null) {
-                Message<MP_UserLoggingInReq> loginRequestMessage = new Message<>(new MP_DispatcherHeader(),
-                        new MP_DispatcherBody(), new MP_UserLoggingInReq());
-
-                MessageCounter messageCounter = new MessageCounter();
-                messageCounter.setDownlinkCounter(0);
-                messageCounter.setUplinkCounter(1);
-                loginRequestMessage.getBody().setMessageCounter(messageCounter);
-
-                loginRequestMessage.getBody().setMessageID(1);
-                loginRequestMessage.getBody().setIccID("12345678901234567890");
-                loginRequestMessage.getBody().setSimInfo("1234567890987654321");
-                loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
-                loginRequestMessage.getBody().setApplicationID("501");
-                loginRequestMessage.getBody().setApplicationDataProtocolVersion(513);
-                loginRequestMessage.getBody().setTestFlag(2);
-
-                loginRequestMessage.getBody()
-                        .setUid("0000000000000000000000000000000000000000000000000#".substring(config.username.length())
-                                + config.username);
+                Message<MP_UserLoggingInReq> loginRequestMessage = createMessage(
+                        "0000000000000000000000000000000000000000000000000#".substring(config.username.length())
+                                + config.username,
+                        null, "501", 513, 1, new MP_UserLoggingInReq());
 
                 loginRequestMessage.getApplicationData().setPassword(config.password);
 
@@ -128,33 +124,41 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     uid = loginResponseMessage.getBody().getUid();
                     token = loginResponseMessage.getApplicationData().getToken();
                     vinList = loginResponseMessage.getApplicationData().getVinList();
-                    updateStatus(ThingStatus.ONLINE);
 
-                } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
+                    // register for all alarm types
+                    AlarmSwitchReq alarmSwitchReq = new AlarmSwitchReq();
+                    alarmSwitchReq.setAlarmSwitchList(Stream.of(MP_AlarmSettingType.EnumType.values())
+                            .map(v -> createAlarmSwitch(v, true)).collect(Collectors.toList()));
+                    alarmSwitchReq.setPin(hashMD5("123456"));
+
+                    Message<AlarmSwitchReq> alarmSwitchMessage = createMessage(uid, token, "521", 513, 1,
+                            alarmSwitchReq);
+                    String alarmSwitchRequest = new MessageCoder<>(AlarmSwitchReq.class)
+                            .encodeRequest(alarmSwitchMessage);
+                    String alarmSwitchResponse = sendRequest(alarmSwitchRequest,
+                            "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+                    Message<IASN1PreparedElement> alarmSwitchResponseMessage = new MessageCoder<>(
+                            IASN1PreparedElement.class).decodeResponse(alarmSwitchResponse);
+
+                    logger.info("Got message: {}",
+                            new GsonBuilder().setPrettyPrinting().create().toJson(alarmSwitchResponseMessage));
+
+                    if (alarmSwitchResponseMessage.getBody().getErrorMessage() != null) {
+                        throw new TimeoutException(new String(alarmSwitchResponseMessage.getBody().getErrorMessage(),
+                                StandardCharsets.UTF_8));
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException
+                        | NoSuchAlgorithmException e) {
                     updateStatus(ThingStatus.OFFLINE);
                     logger.error("Could not login to SAIC iSMART account", e);
                 }
             } else {
-                Message<MessageListReq> messageListRequestMessage = new Message<>(new MP_DispatcherHeader(),
-                        new MP_DispatcherBody(), new MessageListReq());
+                Message<MessageListReq> messageListRequestMessage = createMessage(uid, token, "531", 513, 1,
+                        new MessageListReq());
 
                 messageListRequestMessage.getHeader().setProtocolVersion(18);
-
-                MessageCounter messageCounter = new MessageCounter();
-                messageCounter.setDownlinkCounter(0);
-                messageCounter.setUplinkCounter(1);
-                messageListRequestMessage.getBody().setMessageCounter(messageCounter);
-
-                messageListRequestMessage.getBody().setMessageID(1);
-                messageListRequestMessage.getBody().setIccID("12345678901234567890");
-                messageListRequestMessage.getBody().setSimInfo("1234567890987654321");
-                messageListRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
-                messageListRequestMessage.getBody().setApplicationID("531");
-                messageListRequestMessage.getBody().setApplicationDataProtocolVersion(513);
-                messageListRequestMessage.getBody().setTestFlag(2);
-
-                messageListRequestMessage.getBody().setUid(uid);
-                messageListRequestMessage.getBody().setToken(token);
 
                 // We currently assume that the newest message is the first.
                 // TODO: get all messages
@@ -204,6 +208,49 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    private static <X extends IASN1PreparedElement> Message<X> createMessage(@Nullable String uid,
+            @Nullable String token, String applicationID, int applicationDataProtocolVersion, int messageID,
+            X applicationData) {
+        Message<X> loginRequestMessage = new Message<>(new MP_DispatcherHeader(), new MP_DispatcherBody(),
+                applicationData);
+
+        MessageCounter messageCounter = new MessageCounter();
+        messageCounter.setDownlinkCounter(0);
+        messageCounter.setUplinkCounter(1);
+        loginRequestMessage.getBody().setMessageCounter(messageCounter);
+
+        loginRequestMessage.getBody().setMessageID(messageID);
+        loginRequestMessage.getBody().setIccID("12345678901234567890");
+        loginRequestMessage.getBody().setSimInfo("1234567890987654321");
+        loginRequestMessage.getBody().setEventCreationTime(Instant.now().getEpochSecond());
+        loginRequestMessage.getBody().setApplicationID(applicationID);
+        loginRequestMessage.getBody().setApplicationDataProtocolVersion(applicationDataProtocolVersion);
+        loginRequestMessage.getBody().setTestFlag(2);
+        loginRequestMessage.getBody().setUid(uid);
+        loginRequestMessage.getBody().setToken(token);
+
+        return loginRequestMessage;
+    }
+
+    private static AlarmSwitch createAlarmSwitch(MP_AlarmSettingType.EnumType type, boolean enabled) {
+        AlarmSwitch alarmSwitch = new AlarmSwitch();
+        MP_AlarmSettingType alarmSettingType = new MP_AlarmSettingType();
+        alarmSettingType.setValue(type);
+        alarmSettingType.setIntegerForm(type.ordinal());
+        alarmSwitch.setAlarmSettingType(alarmSettingType);
+        alarmSwitch.setAlarmSwitch(enabled);
+        alarmSwitch.setFunctionSwitch(enabled);
+        return alarmSwitch;
+    }
+
+    public String hashMD5(String password) throws NoSuchAlgorithmException {
+
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(password.getBytes());
+        byte[] digest = md.digest();
+        return DatatypeConverter.printHexBinary(digest).toUpperCase();
     }
 
     @Override
