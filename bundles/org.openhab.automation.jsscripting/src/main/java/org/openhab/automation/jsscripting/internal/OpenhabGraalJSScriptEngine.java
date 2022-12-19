@@ -178,6 +178,8 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected void beforeInvocation() {
+        super.beforeInvocation();
+
         lock.lock();
 
         if (initialized) {
@@ -230,8 +232,6 @@ public class OpenhabGraalJSScriptEngine
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
-
-        super.beforeInvocation();
     }
 
     @Override
