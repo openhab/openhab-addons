@@ -1710,10 +1710,14 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB";
                 }
                 if (rtspUri.isEmpty()) {
-                    rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
-                            + "_main";
+                    if (cameraConfig.getNvrChannel() < 1) {
+                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_01_main";
+                    } else {
+                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
+                                + "_main";
+                    }
                 }
-                sendHttpPOST("/cgi-bin/api.cgi?cmd=Login",
+                sendHttpPOST("/api.cgi?cmd=Login",
                         "[{\"cmd\":\"Login\",\"action\":0,\"param\":{\"User\":{\"userName\":\"" + cameraConfig.getUser()
                                 + "\",\"password\":\"" + cameraConfig.getPassword() + "\"}}}]");
                 break;

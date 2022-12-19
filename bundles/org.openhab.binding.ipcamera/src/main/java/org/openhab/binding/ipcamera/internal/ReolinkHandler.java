@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAiStateResponse;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -25,6 +26,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+
+import com.google.gson.Gson;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,6 +42,7 @@ import io.netty.util.ReferenceCountUtil;
 
 @NonNullByDefault
 public class ReolinkHandler extends ChannelDuplexHandler {
+    protected final Gson gson = new Gson();
     private IpCameraHandler ipCameraHandler;
     private String requestUrl = "Empty";
 
@@ -59,43 +63,64 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         try {
             String content = msg.toString();
             ipCameraHandler.logger.trace("HTTP Result from {} contains \t:{}:", requestUrl, content);
-            switch (requestUrl) {
-                case "/cgi-bin/api.cgi?cmd=Login":
+            int afterCommand = requestUrl.indexOf("&");
+            String cutDownURL;
+            if (afterCommand < 0) {
+                cutDownURL = requestUrl;
+            } else {
+                cutDownURL = requestUrl.substring(0, afterCommand);
+            }
+            switch (cutDownURL) {// Use a cutdown URL as we can not use variables in a switch()
+                case "/api.cgi?cmd=Login":
                     ipCameraHandler.token = Helper.searchString(content, "\"name\" : \"");
                     ipCameraHandler.logger.info(
                             "Please report that your Reolink camera gave a login token:{}, in response:{}",
                             ipCameraHandler.token, content);
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility&token=" + ipCameraHandler.token,
+                            "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
+                                    + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
+                    break;
+                case "/api.cgi?cmd=GetAbility": // check what channels the camera supports and if user has rights
+                    ipCameraHandler.logger.debug("This reolink camera supports the following for this user:{}",
+                            content);
+                    break;
+                case "/api.cgi?cmd=GetAiState":
+                    ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
+                    GetAiStateResponse[] aiResponse = gson.fromJson(content, GetAiStateResponse[].class);
+                    if (aiResponse == null) {
+                        ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
+                        return;
+                    }
+                    if (aiResponse[0].value.dog_cat.alarm_state == 1) {
+                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                    }
+                    if (aiResponse[0].value.face.alarm_state == 1) {
+                        ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                    }
+                    if (aiResponse[0].value.people.alarm_state == 1) {
+                        ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                    }
+                    if (aiResponse[0].value.vehicle.alarm_state == 1) {
+                        ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "/api.cgi?cmd=GetMdState":
+                    if (content.contains("\"state\" : 0")) {
+                        ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
+                    }
                     break;
                 default:
-                    if (requestUrl.startsWith("/api.cgi?cmd=GetAiState&channel=")) {
-                        ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
-                        if (content.contains("\"dog_cat\" : { \"alarm_state\" : 1")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
-                        }
-                        if (content.contains("\"face\" : { \"alarm_state\" : 1")) {
-                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
-                        }
-                        if (content.contains("\"people\" : { \"alarm_state\" : 1")) {
-                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
-                        }
-                        if (content.contains("\"vehicle\" : { \"alarm_state\" : 1")) {
-                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
-                        }
-                    } else if (requestUrl.startsWith("/api.cgi?cmd=GetMdState&channel=")) {
-                        if (content.contains("\"state\" : 0")) {
-                            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
-                        } else {
-                            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
-                        }
-                    }
+                    ipCameraHandler.logger.info("Please report this URL:{} is not handled correctly", requestUrl);
             }
         } finally {
             ReferenceCountUtil.release(msg);
