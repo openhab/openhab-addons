@@ -13,7 +13,7 @@
 package org.openhab.io.homekit;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -45,9 +45,14 @@ public interface Homekit {
     void allowUnauthenticatedRequests(boolean allow);
 
     /**
-     * returns list of HomeKit accessories registered at bridge.
+     * returns list of HomeKit accessories registered on all bridges.
      */
-    List<HomekitAccessory> getAccessories();
+    Collection<HomekitAccessory> getAccessories();
+
+    /**
+     * returns list of HomeKit accessories registered on a specific instance.
+     */
+    Collection<HomekitAccessory> getAccessories(int instance);
 
     /**
      * clear all pairings with HomeKit clients
@@ -55,7 +60,27 @@ public interface Homekit {
     void clearHomekitPairings();
 
     /**
+     * clear all pairings with HomeKit clients for a specific instance
+     * 
+     * @param instance the instance number (1-based)
+     */
+    void clearHomekitPairings(int instance);
+
+    /**
      * Prune dummy accessories (accessories that no longer have associated items)
      */
     void pruneDummyAccessories();
+
+    /**
+     * Prune dummy accessories (accessories that no longer have associated items)
+     * for a specific instance
+     *
+     * @param instance the instance number (1-based)
+     */
+    void pruneDummyAccessories(int instance);
+
+    /**
+     * returns how many bridge instances there are
+     */
+    int getInstanceCount();
 }
