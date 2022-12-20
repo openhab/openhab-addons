@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifi.internal.api.dto;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -22,7 +21,7 @@ import com.google.gson.JsonObject;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class UnfiPortOverrideJsonElement {
+public class UnfiPortOverrideJsonObject {
 
     private static final String PORT_IDX = "port_idx";
     private static final String PORT_CONF_ID = "port_conf_id";
@@ -30,12 +29,16 @@ public class UnfiPortOverrideJsonElement {
 
     private final JsonObject jsonObject;
 
-    public UnfiPortOverrideJsonElement(final JsonElement element) {
-        this.jsonObject = element.getAsJsonObject();
+    public UnfiPortOverrideJsonObject(final JsonObject Object) {
+        this.jsonObject = Object.getAsJsonObject();
     }
 
     public JsonObject getJsonObject() {
         return jsonObject;
+    }
+
+    public static boolean hasPortIdx(final JsonObject jsonObject) {
+        return jsonObject.has(PORT_IDX);
     }
 
     public int getPortIdx() {

@@ -39,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
@@ -107,13 +108,15 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
+        final UniFiController controller = this.controller;
+
         if (controller != null) {
             try {
                 controller.stop();
             } catch (final UniFiException e) {
                 // mgb: nop as we're in dispose
             }
-            controller = null;
+            this.controller = null;
         }
     }
 
@@ -188,8 +191,10 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             uc.refresh();
             // mgb: then refresh all the client things
             getThing().getThings().forEach((thing) -> {
-                if (thing.getHandler() instanceof UniFiBaseThingHandler) {
-                    ((UniFiBaseThingHandler) thing.getHandler()).refresh();
+                final ThingHandler handler = thing.getHandler();
+
+                if (handler instanceof UniFiBaseThingHandler) {
+                    ((UniFiBaseThingHandler<?, ?>) handler).refresh();
                 }
             });
         }
