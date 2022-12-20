@@ -258,8 +258,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
             // update values with what the cloud tells us even though the controller may be offline
             if (!controller.status.online) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Controller Offline: %s last seen %s", controller.status.summary,
-                                secondsToDateTime(controller.status.lastContact.timestamp)));
+                        "Service reports controller as offline");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -277,7 +276,8 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_SUMMARY,
                 new StringType(controller.status.summary));
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_LAST_CONTACT,
-                secondsToDateTime(controller.status.lastContact.timestamp));
+                controller.status.lastContact != null ? secondsToDateTime(controller.status.lastContact.timestamp)
+                        : UnDefType.NULL);
     }
 
     private void updateZones(List<Zone> zones) {

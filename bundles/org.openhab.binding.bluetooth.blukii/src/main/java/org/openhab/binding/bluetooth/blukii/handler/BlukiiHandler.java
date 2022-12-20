@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.blukii.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
-import org.openhab.binding.bluetooth.BluetoothDeviceListener;
 import org.openhab.binding.bluetooth.blukii.BlukiiBindingConstants;
 import org.openhab.binding.bluetooth.blukii.internal.data.BlukiiData;
 import org.openhab.binding.bluetooth.blukii.internal.data.BlukiiDataDecoder;
@@ -34,7 +33,7 @@ import org.openhab.core.thing.Thing;
  * @author Markus Rathgeb - Split data (decoding and types) and handler
  */
 @NonNullByDefault
-public class BlukiiHandler extends BeaconBluetoothHandler implements BluetoothDeviceListener {
+public class BlukiiHandler extends BeaconBluetoothHandler {
 
     private final BlukiiDataDecoder decoder = new BlukiiDataDecoder();
 

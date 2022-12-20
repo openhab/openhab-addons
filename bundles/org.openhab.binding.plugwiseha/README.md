@@ -1,7 +1,7 @@
 # PlugwiseHA Binding
 
 The Plugwise Home Automation binding adds support to openHAB for the [Plugwise Home Automation ecosystem](https://www.plugwise.com/en_US/adam_zone_control).
-This system is built around a gateway from Plugwise called the 'Adam' which incorporates a ZigBee controller to manage thermostatic radiator valves, room thermostats, floor heating pumps, et cetera.
+This system is built around a gateway from Plugwise called the 'Adam' which incorporates a Zigbee controller to manage thermostatic radiator valves, room thermostats, floor heating pumps, et cetera.
 
 Users can manage and control this system either via a web app or a mobile phone app developed by Plugwise.
 The (web) app allows users to define heating zone's (e.g. rooms) and add radiator valves to those rooms to manage and control their heating irrespective of other rooms.

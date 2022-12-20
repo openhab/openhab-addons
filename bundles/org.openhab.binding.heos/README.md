@@ -103,9 +103,9 @@ To ensure that the players and groups are attached to the bridge the definition 
 
 ```java
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
- player Kitchen "Kitchen"[pid="434523813"]
- player LivingRoom "Living Room"[pid="918797451"]
- group 813793755 "Ground Level"[members="434523813;918797451"]
+    player Kitchen "Kitchen"[pid="434523813"]
+    player LivingRoom "Living Room"[pid="918797451"]
+    group 813793755 "Ground Level"[members="434523813;918797451"]
 }
 ```
 
@@ -269,16 +269,16 @@ String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
 ### demo.sitemap
 
 ```perl
-   Frame label="LivingRoom" {
-     Default item=LivingRoom_Control
-     Default item=LivingRoom_Mute
-     Default item=LivingRoom_Volume
-     Default item=LivingRoom_Title
-     Default item=LivingRoom_Interpret
-     Default item=LivingRoom_Album
-        Selection item=LivingRoom_Favorites     label="Favorite" icon="music"
-        Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
-    }
+Frame label="LivingRoom" {
+    Default item=LivingRoom_Control
+    Default item=LivingRoom_Mute
+    Default item=LivingRoom_Volume
+    Default item=LivingRoom_Title
+    Default item=LivingRoom_Interpret
+    Default item=LivingRoom_Album
+    Selection item=LivingRoom_Favorites label="Favorite" icon="music"
+    Selection item=LivingRoom_Playlists label="Playlist" icon="music"
+}
 ```
 
 ## Detailed Explanation
@@ -318,17 +318,18 @@ Rule for kitchen:
 
 ```java
 rule "Play AuxIn from Living Room"
- when
-  Item HeosKitchen_InputSelect received command
- then
-  if (receivedCommand.toString == "aux_in_1") {
-   sendCommand(HeosKitchen_Input, "aux_in_1")
-
-  } if (receivedCommand.toString == "LivingRoom") {
-   sendCommand(HeosBridge_Play_Living, ON)
-   sendCommand(HeosKitchen_Input, "aux_in_1")
-   sendCommand(HeosBridge_Play_Living, OFF) //Switch player channel off again to be sure that it is OFF
-  }
+when
+    Item HeosKitchen_InputSelect received command
+then
+    if (receivedCommand.toString == "aux_in_1") {
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+    }
+    if (receivedCommand.toString == "LivingRoom") {
+        sendCommand(HeosBridge_Play_Living, ON)
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+        sendCommand(HeosBridge_Play_Living, OFF) //Switch player channel off again to be sure that it is OFF
+    }
+end
 ```
 
 Sitemap:
@@ -373,18 +374,18 @@ Sitemap:
 ```perl
 Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 
- Default item=HeosGroup1_Player
- Default item=HeosGroup1_Volume
- Default item=HeosGroup1_Mute
- Default item=HeosGroup1_Favorites
- Default item=HeosGroup1_Playlist
+    Default item=HeosGroup1_Player
+    Default item=HeosGroup1_Volume
+    Default item=HeosGroup1_Mute
+    Default item=HeosGroup1_Favorites
+    Default item=HeosGroup1_Playlist
 
- Text item=HeosGroup1_Song {
-  Default item=HeosGroup1_Song
-  Default item=HeosGroup1_Artist
-  Default item=HeosGroup1_Album
-  Image item=HeosGroup1_Cover url=""
- }
+    Text item=HeosGroup1_Song {
+        Default item=HeosGroup1_Song
+        Default item=HeosGroup1_Artist
+        Default item=HeosGroup1_Album
+        Image item=HeosGroup1_Cover url=""
+    }
 
 }
 ```
