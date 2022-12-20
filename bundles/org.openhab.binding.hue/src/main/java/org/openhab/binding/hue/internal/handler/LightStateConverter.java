@@ -165,10 +165,10 @@ public class LightStateConverter {
     }
 
     /**
-     * Transforms the given {@link DecimalType} into a light state containing
-     * the color temperature in Kelvin.
+     * Transforms the given color temperature in Kelvin into a Hue Light {@link State}.
      *
      * @param kelvinValue color temperature in Kelvin
+     * @param capabilities color temperature capabilities (e.g. min and max values)
      * @return light state containing the color temperature
      */
     public static StateUpdate toColorTemperatureLightState(int kelvinValue, ColorTemperature capabilities) {
