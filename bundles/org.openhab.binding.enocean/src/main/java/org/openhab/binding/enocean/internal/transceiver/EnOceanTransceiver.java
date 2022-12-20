@@ -472,9 +472,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     public void setFilteredDeviceId(byte[] filteredDeviceId) {
-        if (filteredDeviceId != null) {
-            System.arraycopy(filteredDeviceId, 0, filteredDeviceId, 0, filteredDeviceId.length);
-        }
+        System.arraycopy(filteredDeviceId, 0, filteredDeviceId, 0, filteredDeviceId.length);
     }
 
     @Override

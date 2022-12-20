@@ -200,7 +200,6 @@ public class D2_06_01 extends _VLDMessage {
     @Override
     protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {
@@ -249,7 +248,6 @@ public class D2_06_01 extends _VLDMessage {
     @Override
     public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
-
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {

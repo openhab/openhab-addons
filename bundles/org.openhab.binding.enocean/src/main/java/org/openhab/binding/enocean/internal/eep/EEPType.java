@@ -734,7 +734,7 @@ public enum EEPType {
         @Nullable
         Configuration c = null;
 
-        if (channelIdsWithConfig != null) {
+        if (!channelIdsWithConfig.isEmpty()) {
             c = channelIdsWithConfig.get(channelId);
             if (c != null) {
                 return c;

@@ -52,7 +52,7 @@ public abstract class D2_01 extends _VLDMessage {
     protected static final byte CMD_ACTUATOR_MEASUREMENT_QUERY = 0x06;
     protected static final byte CMD_ACTUATOR_MEASUREMENT_RESPONE = 0x07;
 
-    protected static final byte All_CHANNELS_MASK = 0x1e;
+    protected static final byte ALL_CHANNELS_MASK = 0x1e;
     protected static final byte CHANNEL_A_MASK = 0x00;
     protected static final byte CHANNEL_B_MASK = 0x01;
 
@@ -97,7 +97,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getSwitchingData(byte channel) {
-        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == All_CHANNELS_MASK)) {
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == ALL_CHANNELS_MASK)) {
             return (bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
         }
 
@@ -203,9 +203,9 @@ public abstract class D2_01 extends _VLDMessage {
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(All_CHANNELS_MASK);
+                setSwitchingQueryData(ALL_CHANNELS_MASK);
             } else {
-                setSwitchingData((OnOffType) command, All_CHANNELS_MASK);
+                setSwitchingData((OnOffType) command, ALL_CHANNELS_MASK);
             }
         } else if (channelId.equals(CHANNEL_GENERAL_SWITCHINGA)) {
             if (command == RefreshType.REFRESH) {
@@ -221,18 +221,18 @@ public abstract class D2_01 extends _VLDMessage {
             }
         } else if (channelId.equals(CHANNEL_DIMMER)) {
             if (command == RefreshType.REFRESH) {
-                setSwitchingQueryData(All_CHANNELS_MASK);
+                setSwitchingQueryData(ALL_CHANNELS_MASK);
             } else {
                 if (config != null) {
-                    setDimmingData(command, All_CHANNELS_MASK, config);
+                    setDimmingData(command, ALL_CHANNELS_MASK, config);
                 } else {
                     logger.debug("Cannot set dimming data when config is null");
                 }
             }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
-            setPowerMeasurementQueryData(All_CHANNELS_MASK);
+            setPowerMeasurementQueryData(ALL_CHANNELS_MASK);
         } else if (channelId.equals(CHANNEL_TOTALUSAGE) && command == RefreshType.REFRESH) {
-            setEnergyMeasurementQueryData(All_CHANNELS_MASK);
+            setEnergyMeasurementQueryData(ALL_CHANNELS_MASK);
         }
     }
 
