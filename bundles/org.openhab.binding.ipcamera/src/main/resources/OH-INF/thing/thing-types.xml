@@ -351,6 +351,9 @@
 			<channel id="storageAlarm" typeId="storageAlarm"/>
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBrightAlarm" typeId="tooBrightAlarm"/>
+			<channel id="humanAlarm" typeId="humanAlarm"/>
+			<channel id="animalAlarm" typeId="animalAlarm"/>
+			<channel id="carAlarm" typeId="carAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 			<channel id="pan" typeId="pan"/>
 			<channel id="tilt" typeId="tilt"/>
@@ -2296,6 +2299,7 @@
 			<channel id="enableLED" typeId="enableLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
+			<channel id="doorBell" typeId="doorBell"/>
 		</channels>
 		<config-description>
 

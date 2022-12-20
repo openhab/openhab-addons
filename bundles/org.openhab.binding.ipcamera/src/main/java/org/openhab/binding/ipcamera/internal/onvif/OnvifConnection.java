@@ -692,7 +692,43 @@ public class OnvifConnection {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "RuleEngine/MyRuleDetector/Visitor":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/VehicleDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/DogCatDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/FaceDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                }
+                break;
+            case "RuleEngine/MyRuleDetector/PeopleDetect":
+                if ("true".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                } else if ("false".equals(dataValue)) {
+                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                }
+                break;
             default:
+                logger.debug("Please report this camera has an un-implemented ONVIF event Topic:{}", topic);
         }
         sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
     }

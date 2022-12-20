@@ -479,11 +479,11 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void sendHttpPOST(String httpPostURL, String content) {
-        logger.trace("Body for POST:{} is going to be:{}", httpPostURL, content);
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), httpPostURL);
-        request.headers().set(HttpHeaderNames.HOST, cameraConfig.getIp());
-        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json");
+        request.headers().set("Host", cameraConfig.getIp());
+        request.headers().add("Content-Type", "application/json");
+        request.headers().add("User-Agent", "openHAB/3.x");
+        request.headers().add("Accept", "*/*");
         ByteBuf bbuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
         request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
         request.content().clear().writeBytes(bbuf);
@@ -1573,11 +1573,18 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
             case REOLINK_THING:
-                sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
-                        + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                 if (cameraConfig.getNvrChannel() > 0) {
+                    sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
+                            + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
                             + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
+                } else {
+                    if (!snapshotPolling) {
+                        checkCameraConnection();
+                    }
+                    if (!onvifCamera.isConnected()) {
+                        onvifCamera.connect(true);
+                    }
                 }
                 break;
             case DAHUA_THING:
@@ -1718,10 +1725,10 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + "_main";
                     }
                 }
-                sendHttpPOST("/api.cgi?cmd=Login",
-                        "[\r\n{ \"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
+                sendHttpPOST("/api.cgi?cmd=Login&token=null",
+                        "[{\"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
                                 + cameraConfig.getUser() + "\", \"password\":\"" + cameraConfig.getPassword()
-                                + "\"\r\n}\r\n}\r\n}\r\n]");
+                                + "\"}}}]");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
