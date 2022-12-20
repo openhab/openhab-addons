@@ -39,7 +39,6 @@ Import-Package: \
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.3,2.3.4)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
 	com.google.dagger;version='[2.27.0,2.27.1)',\
-	com.google.gson;version='[2.8.9,2.8.10)',\
 	com.hivemq.client.mqtt;version='[1.2.2,1.2.3)',\
 	io.netty.buffer;version='[4.1.72,4.1.73)',\
 	io.netty.codec;version='[4.1.72,4.1.73)',\
@@ -112,4 +111,5 @@ Import-Package: \
 	org.openhab.core.test;version='[4.0.0,4.0.1)',\
 	org.openhab.core.thing;version='[4.0.0,4.0.1)',\
 	org.openhab.core.thing.xml;version='[4.0.0,4.0.1)',\
-	org.openhab.core.transform;version='[4.0.0,4.0.1)'
+	org.openhab.core.transform;version='[4.0.0,4.0.1)',\
+	com.google.gson;version='[2.9.1,2.9.2)'
