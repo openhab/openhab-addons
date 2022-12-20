@@ -178,6 +178,8 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected void beforeInvocation() {
+        super.beforeInvocation();
+
         lock.lock();
 
         if (initialized) {
@@ -235,13 +237,13 @@ public class OpenhabGraalJSScriptEngine
     @Override
     protected Object afterInvocation(Object obj) {
         lock.unlock();
-        return obj;
+        return super.afterInvocation(obj);
     }
 
     @Override
     protected Exception afterThrowsInvocation(Exception e) {
         lock.unlock();
-        return e;
+        return super.afterThrowsInvocation(e);
     }
 
     @Override
