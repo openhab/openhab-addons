@@ -54,6 +54,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(s, scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -64,6 +66,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(reader, scriptContext));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -74,6 +78,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(s));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -84,6 +90,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(reader));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -94,6 +102,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(s, bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 
@@ -104,6 +114,8 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             return afterInvocation(super.eval(reader, bindings));
         } catch (ScriptException se) {
             throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }
     }
 

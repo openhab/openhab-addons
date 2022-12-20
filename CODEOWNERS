@@ -396,7 +396,6 @@
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
-/bundles/org.openhab.transform.javascript/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314
 /bundles/org.openhab.transform.jsonpath/ @clinique
 /bundles/org.openhab.transform.map/ @openhab/add-ons-maintainers
