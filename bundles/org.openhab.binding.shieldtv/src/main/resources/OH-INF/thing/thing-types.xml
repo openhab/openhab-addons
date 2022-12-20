@@ -55,12 +55,6 @@
 		<description>App Control</description>
 	</channel-type>
 
-	<channel-type id="devicename" advanced="true">
-		<item-type>String</item-type>
-		<label>Device Name</label>
-		<description>Device Name</description>
-	</channel-type>
-
 	<channel-type id="keypress" advanced="true">
 		<item-type>String</item-type>
 		<label>Key Press</label>
