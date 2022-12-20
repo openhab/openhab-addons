@@ -15,7 +15,6 @@
 			<channel id="pincode" typeId="pincode"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="app" typeId="app"/>
-			<channel id="devicename" typeId="devicename"/>
 		</channels>
 
 		<config-description>
