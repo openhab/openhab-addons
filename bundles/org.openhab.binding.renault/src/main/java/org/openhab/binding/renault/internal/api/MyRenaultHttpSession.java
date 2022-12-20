@@ -326,7 +326,7 @@ public class MyRenaultHttpSession {
                 throw new RenaultForbiddenException(
                         "Kamereon request forbidden! Ensure the car is paired in your MyRenault App.");
             case HttpStatus.NOT_FOUND_404:
-                throw new RenaultNotImplementedException("Kamereon serivce not found");
+                throw new RenaultNotImplementedException("Kamereon service not found");
             case HttpStatus.NOT_IMPLEMENTED_501:
                 throw new RenaultNotImplementedException("Kamereon request not implemented");
             case HttpStatus.BAD_GATEWAY_502:
