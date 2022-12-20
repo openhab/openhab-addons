@@ -33,7 +33,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -148,21 +150,39 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel6500Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel6500Kelvin() {
         String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(6500), new HueLightState(), expectedReply);
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel4500Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel4500Kelvin() {
         String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(4500), new HueLightState(), expectedReply);
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel2000Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel2000Kelvin() {
         String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(2000), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel6500Kelvin() {
+        String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(6500, Units.KELVIN), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel4500Kelvin() {
+        String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(4500, Units.KELVIN), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel2000Kelvin() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(2000, Units.KELVIN), new HueLightState(), expectedReply);
     }
 
     @Test
