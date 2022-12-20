@@ -103,6 +103,7 @@
 		<item-type>DateTime</item-type>
 		<label>Battery Status Updated</label>
 		<description>Timestamp of the last battery status update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
