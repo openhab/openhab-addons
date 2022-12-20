@@ -91,7 +91,7 @@ public class OwserverConnectionTest extends JavaTest {
     }
 
     @Test
-    public void successfullConnectionReportedToBridgeHandler() {
+    public void successfulConnectionReportedToBridgeHandler() {
         final OwserverConnection owserverConnection = this.owserverConnection;
         if (owserverConnection == null) {
             fail("connection is null");

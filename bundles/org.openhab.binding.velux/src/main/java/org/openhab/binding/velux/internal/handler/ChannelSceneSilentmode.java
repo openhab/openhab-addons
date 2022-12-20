@@ -73,8 +73,8 @@ final class ChannelSceneSilentmode extends ChannelHandlerTemplate {
         LOGGER.debug("handleCommand({},{},{},{}) called.", channelUID, channelId, command, thisBridgeHandler);
         Command newValue = null;
         do { // just for common exit
-            assert thisBridgeHandler.bridgeParameters.scenes
-                    .getChannel().existingScenes != null : "VeluxBridgeHandler.existingScenes not initialized.";
+            assert thisBridgeHandler.bridgeParameters.scenes.getChannel().existingScenes != null
+                    : "VeluxBridgeHandler.existingScenes not initialized.";
             if (!ThingConfiguration.exists(thisBridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_SCENE_NAME)) {
                 LOGGER.trace("handleCommand(): aborting processing as scene name is not set.");
                 break;

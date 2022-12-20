@@ -5,9 +5,9 @@ Up to 20 keypad zones can be controlled when zone expansion modules are used (if
 
 The binding supports three different kinds of connections:
 
-* serial connection,
-* serial over IP connection,
-* direct IP connection via a Nuvo MPS4 music server
+- serial connection,
+- serial over IP connection,
+- direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a USB to serial adapter.
 
@@ -45,32 +45,32 @@ The thing has the following configuration parameters:
 | Favorite Labels          | favoriteLabels | A comma separated list of up to 12 label names that are loaded into the 'favorites' channel of each zone. These represent keypad favorites 1-12 | Optional; Comma separated list, max 12 items. ie: Favorite 1,Favorite 2,Favorite 3 |
 | Sync Clock on GConcerto  | clockSync      | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock              | Boolean; default false                                                             |
 | Source N is NuvoNet      | nuvoNetSrcN    | MPS4 Only! Indicate if the source is a NuvoNet source in the MPS4 or in openHAB. Nuvo tuners & iPod docks and all others set to 0               | 0 = Non-NuvoNet source, 1 = Source is a used by MPS4, 2 = openHAB NuvoNet Source   |
-| Source N Favorites       | favoritesSrcN  | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See *very advanced* rules              | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock    |
-| Source N Favorite Prefix | favPrefixN     | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See *very advanced* rules                   | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'       |
-| Source N Menu XML        | menuXmlSrcN    | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu      | XML Text string; see examples below and *very advanced* rules for usage            |
+| Source N Favorites       | favoritesSrcN  | MPS4 Only! A comma separated list of favorite names to load into the global favorites list for Source N. See _very advanced_ rules              | Comma separated list, max 20 items. Each item max 40 chars, ie: Oldies,Pop,Rock    |
+| Source N Favorite Prefix | favPrefixN     | MPS4 Only! To quickly locate a Source's favorites, this prefix will be added to the favorite names. See _very advanced_ rules                   | Text; ie: 'S2-' will cause the favorite names to be prefixed, e.g. 'S2-Rock'       |
+| Source N Menu XML        | menuXmlSrcN    | MPS4 Only! Will load a custom menu for a given source into the keypads. Up to 10 items in the top menu and up to 20 items in each sub menu      | XML Text string; see examples below and _very advanced_ rules for usage            |
 
 Some notes:
 
-* If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
-* MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below. In this case,`SxDISPINFOTWO` and `SxDISPLINES` must be used instead. See the *very advanced* rule examples below.
-* As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
-* By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
-* If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
-* Source display_line1 thru 4 can only be updated on non NuvoNet sources when not using an MPS4 connection.
-* The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
+- If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
+- MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below. In this case,`SxDISPINFOTWO` and `SxDISPLINES` must be used instead. See the _very advanced_ rule examples below.
+- As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
+- By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
+- If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
+- Source display_line1 thru 4 can only be updated on non NuvoNet sources when not using an MPS4 connection.
+- The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
+- On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:57600 8DATABITS NONE 1STOPBIT LOCAL
 ```
 
-* Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
+- Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
 
-```
+```yaml
 connection: &conNuvo
     accepter: tcp,4444
     enable: on
@@ -113,14 +113,14 @@ The following channels are available:
 | sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                                  |
 | sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                                |
 | sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)                  |
-| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See *very advanced* rules (SendOnly)    |
+| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See _very advanced_ rules (SendOnly)    |
 | sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from the art_url channel for display in a UI widget (ReadOnly)                                            |
 
 ## Full Example
 
 nuvo.things:
 
-```
+```java
 // serial port connection
 nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false]
 
@@ -134,7 +134,7 @@ nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, cl
 
 nuvo.items:
 
-```
+```java
 // system
 Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
@@ -230,7 +230,7 @@ String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:sourc
 
 nuvo.sitemap:
 
-```
+```perl
 sitemap nuvo label="Audio Control" {
     Frame label="System" {
         Switch item=nuvo_system_alloff mappings=[ON=" "]
@@ -326,7 +326,7 @@ sitemap nuvo label="Audio Control" {
 
 nuvo.rules:
 
-```
+```java
 import java.text.Normalizer
 
 // To be used with a direct serial port or serial over IP connection
@@ -455,7 +455,7 @@ Each `<topmenu>` item can have up to 20 `<item>` tags contained within.
 The topmenu item does not need to have any sub menu items if not desired as seen in the 'Top menu 2' example.
 A complete XML string for the desired menu is then stored in the `menuXmlSrcN` configuration parameter for a given source and will be loaded into the Nuvo keypads during binding initialization.
 
-```
+```xml
 <topmenu text="Top menu 1">
    <item>menu1 a</item>
    <item>menu1 b</item>
@@ -485,7 +485,7 @@ The functionality can be used to create very powerful rules as demontrated below
 
 nuvo-turn-off-all-but-caller.rules:
 
-```
+```java
 rule "Turn off all zones except caller zone"
 when
     Item nuvo_system_buttonpress received update
@@ -517,7 +517,7 @@ end
 
 ```
 
-### MPS4 openHAB NuvoNet source custom integration rules *(very advanced)*
+### MPS4 openHAB NuvoNet source custom integration rules _(very advanced)_
 
 The following are a set of example rules necessary to integrate metadata and control of another openHAB connected source (ie: Chromecast) into an openHAB NuvoNet source.
 By using these rules, it is possible to have artist, album and track names displayed on the keypad, transport button presses from the keypad relayed to the source, and album art displayed if using a Nuvo CTP-36 keypad.
@@ -526,7 +526,7 @@ The list of favorite names should be playable via another thing connected to ope
 
 nuvo-advanced.rules:
 
-```
+```java
 import java.text.Normalizer
 
 // all examples using Source 6

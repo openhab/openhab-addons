@@ -91,7 +91,8 @@ public class NanoleafBindingConstants {
     public static final String SERVICE_TYPE = "_nanoleafapi._tcp.local.";
 
     // Effect/scene name for static color
-    public static final String EFFECT_NAME_STATIC_COLOR = "*Dynamic*";
+    public static final String EFFECT_NAME_STATIC_COLOR = "*Static*";
+    public static final String EFFECT_NAME_SOLID_COLOR = "*Solid*";
 
     // Color channels increase/decrease brightness step size
     public static final int BRIGHTNESS_STEP_SIZE = 5;

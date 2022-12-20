@@ -30,7 +30,6 @@ public class HomekitSettings {
     public String pin = "031-45-154";
     public String setupId;
     public String qrCode;
-    public int startDelay = 30;
     public boolean useDummyAccessories = false;
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;

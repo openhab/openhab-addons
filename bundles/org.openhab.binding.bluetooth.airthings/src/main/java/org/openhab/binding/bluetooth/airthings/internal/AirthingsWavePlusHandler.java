@@ -73,17 +73,17 @@ public class AirthingsWavePlusHandler extends AbstractAirthingsHandler {
             }
             Number tvoc = data.get(AirthingsDataParser.TVOC);
             if (tvoc != null) {
-                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, PARTS_PER_BILLION));
+                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, Units.PARTS_PER_BILLION));
             }
             Number radonShortTermAvg = data.get(AirthingsDataParser.RADON_SHORT_TERM_AVG);
             if (radonShortTermAvg != null) {
                 updateState(CHANNEL_ID_RADON_ST_AVG,
-                        new QuantityType<Density>(radonShortTermAvg, BECQUEREL_PER_CUBIC_METRE));
+                        new QuantityType<Density>(radonShortTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
             Number radonLongTermAvg = data.get(AirthingsDataParser.RADON_LONG_TERM_AVG);
             if (radonLongTermAvg != null) {
                 updateState(CHANNEL_ID_RADON_LT_AVG,
-                        new QuantityType<Density>(radonLongTermAvg, BECQUEREL_PER_CUBIC_METRE));
+                        new QuantityType<Density>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (AirthingsParserException e) {
             logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());
