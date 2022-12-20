@@ -75,7 +75,7 @@ public class ShieldTVPKI {
 
     public void saveKeys() {
         try {
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(null, null);
             logger.trace("PrivKey to store: {}", this.privKey);
             byte[] pkcs8EncodedBytes = Base64.getDecoder().decode(this.privKey);

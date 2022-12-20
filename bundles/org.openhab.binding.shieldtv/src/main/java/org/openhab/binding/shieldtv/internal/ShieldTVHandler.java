@@ -193,7 +193,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
         try (FileInputStream keystoreInputStream = new FileInputStream(shieldtvPKI.getKeystoreFileName())) {
             logger.trace("Initializing keystore");
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            KeyStore keystore = KeyStore.getInstance("JKS");
 
             keystore.load(keystoreInputStream, shieldtvPKI.getKeystorePassword().toCharArray());
 
