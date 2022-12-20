@@ -79,8 +79,10 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -641,7 +643,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
         int hue;
         int saturation;
         if (colorTemperature != null) {
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new DecimalType(colorTemperature.getValue()));
+            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType(colorTemperature.getValue(), Units.KELVIN));
             Integer min = colorTemperature.getMin();
             hue = min == null ? 0 : min;
             Integer max = colorTemperature.getMax();
@@ -899,15 +901,25 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 }
                 break;
             case CHANNEL_COLOR_TEMPERATURE_ABS:
+                // Color temperature (absolute)
+                int colorTempKelvin;
+
+                IntegerState state = new Ct();
                 if (command instanceof DecimalType) {
-                    // Color temperature (absolute)
-                    IntegerState state = new Ct();
                     state.setValue(((DecimalType) command).intValue());
-                    stateObject.setState(state);
+                } else if (command instanceof QuantityType) {
+                    QuantityType<?> tempKelvin = ((QuantityType) command).toInvertibleUnit(Units.KELVIN);
+                    if (tempKelvin == null) {
+                        logger.warn("Cannot convert color temperature {} to Kelvin.", command);
+                        return;
+                    }
+                    state.setValue(tempKelvin.toBigDecimal().intValue());
                 } else {
                     logger.warn("Unhandled command type: {}", command.getClass().getName());
                     return;
                 }
+
+                stateObject.setState(state);
                 break;
             default:
                 logger.warn("Unhandled command type: {}", command.getClass().getName());
