@@ -25,11 +25,11 @@ There are three required fields to connect successfully to a ShieldTV.
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
-| keystore         | text    | Location of the Java Keystore         | N/A     | yes      | no       |
-| keystorePassword | text    | Password of the Java Keystore         | N/A     | yes      | no       |
+| keystore         | text    | Location of the Java Keystore         | N/A     | no       | no       |
+| keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
 
 ```java
-Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/openhab/nvidia-livingroom.keystore", keystorePassword="secret" ]
+Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 ```
 
 ## Channels
@@ -75,37 +75,9 @@ You may also send it a command of the app package name (e.g. com.google.android.
 
 For the ShieldTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
 
-The process is as follows:
-NOTE: It is critical that the keystore name and password used here matches the keystore and keystorePassword configured on the thing.
-
-From the cli: 
-
-```java
-openssl req -x509 -newkey rsa:2084 -keyout nvidia.key -out nvidia.crt -sha256 -days 365
-(you may accept all of the defaults, this will be disposed of after successful authentication)
-
-openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
-
-keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
-```
-
-Once this is completed, you can configure the thing and items as shown above.  Please have your CLI watching openhab.log for the new keys.
-
 To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your ShiledTV.  A 6 digit PIN should be displayed on the screen.
 
 To complete the PIN process, send the PIN displayed to the pincode channel.  The display should return back to where it was originally.
-
-At this point you should see a new private key and certificate in openhab.log.  Save the output to nvidia.key and nvidia.crt (overwriting the original data).
-
-Delete the original .p12 and .keystore files.
-
-From the cli: 
-
-```java
-openssl pkcs12 -export -in nvidia.crt -inkey nvidia.key -out nvidia.p12 -name nvidia
-
-keytool -importkeystore -destkeystore nvidia.keystore -srckeystore nvidia.p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia
-```
 
 This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
@@ -113,7 +85,7 @@ This completes the PIN process.  Upon reconnection (either from reconfiguration 
 ## Full Example
 
 ```java
-Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", keystore="/home/openhab/nvidia-livingroom.keystore", keystorePassword="secret" ]
+Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", ]
 ```
 
 ```java

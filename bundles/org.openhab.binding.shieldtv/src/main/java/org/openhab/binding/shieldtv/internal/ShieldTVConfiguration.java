@@ -28,7 +28,6 @@ public class ShieldTVConfiguration {
      */
     public @Nullable String ipAddress;
     public int port = 8987;
-    public boolean certValidate = false;
     public int reconnect;
     public int heartbeat;
     public @Nullable String keystore;

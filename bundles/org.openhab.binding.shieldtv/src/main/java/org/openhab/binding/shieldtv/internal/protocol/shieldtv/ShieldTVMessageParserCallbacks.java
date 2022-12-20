@@ -36,5 +36,7 @@ public interface ShieldTVMessageParserCallbacks {
 
     public void setLoggedIn(boolean isLoggedIn);
 
+    public void setKeys(String privKey, String cert);
+
     public boolean getLoggedIn();
 }

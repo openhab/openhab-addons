@@ -16,6 +16,7 @@ import static org.openhab.binding.shieldtv.internal.ShieldTVBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,7 +43,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,6 +51,7 @@ import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVCommand;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParser;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVMessageParserCallbacks;
 import org.openhab.binding.shieldtv.internal.protocol.shieldtv.ShieldTVRequest;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -114,6 +115,8 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     private String hostName = "";
     private String currentApp = "";
 
+    private ShieldTVPKI shieldtvPKI = new ShieldTVPKI();
+
     public ShieldTVHandler(Thing thing) {
         super(thing);
         shieldtvMessageParser = new ShieldTVMessageParser(this);
@@ -145,13 +148,26 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         return this.isLoggedIn;
     }
 
+    public void setKeys(String privKey, String cert) {
+        shieldtvPKI.setKeys(privKey, cert);
+        shieldtvPKI.saveKeys();
+    }
+
     @Override
     public void initialize() {
         SSLContext sslContext;
+        String folderName = OpenHAB.getUserDataFolder() + "/shieldtv";
+        File folder = new File(folderName);
+
+        if (!folder.exists()) {
+            logger.debug("Creating directory {}", folderName);
+            folder.mkdirs();
+        }
 
         config = getConfigAs(ShieldTVConfiguration.class);
 
         String ipAddress = config.ipAddress;
+        String keystoreFileName = folderName + "/shieldtv." + getThing().getUID().getId() + ".keystore";
         String keystorePassword = (config.keystorePassword == null) ? "" : config.keystorePassword;
 
         if (ipAddress == null || ipAddress.isEmpty()) {
@@ -159,60 +175,56 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
             return;
         }
 
+        if (keystorePassword.equals("")) {
+            keystorePassword = "secret";
+        }
+
+        shieldtvPKI.setKeystore(keystoreFileName, keystorePassword);
+
+        File keystoreFile = new File(keystoreFileName);
+
+        if (!keystoreFile.exists()) {
+            shieldtvPKI.createKeystore();
+        }
+
         reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
         heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
         sendDelay = (config.delay < 0) ? 0 : config.delay;
 
-        if (config.keystore == null || keystorePassword == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Keystore/keystore password not configured");
+        try (FileInputStream keystoreInputStream = new FileInputStream(shieldtvPKI.getKeystoreFileName())) {
+            logger.trace("Initializing keystore");
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+
+            keystore.load(keystoreInputStream, shieldtvPKI.getKeystorePassword().toCharArray());
+
+            logger.trace("Initializing SSL Context");
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(keystore, shieldtvPKI.getKeystorePassword().toCharArray());
+
+            TrustManager[] trustManagers = defineNoOpTrustManager();
+
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+
+            sslsocketfactory = sslContext.getSocketFactory();
+        } catch (FileNotFoundException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
             return;
-        } else {
-            try (FileInputStream keystoreInputStream = new FileInputStream(config.keystore)) {
-                logger.trace("Initializing keystore");
-                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-
-                keystore.load(keystoreInputStream, keystorePassword.toCharArray());
-
-                logger.trace("Initializing SSL Context");
-                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                kmf.init(keystore, keystorePassword.toCharArray());
-
-                TrustManager[] trustManagers;
-                if (config.certValidate) {
-                    // Use default trust manager which will attempt to validate server certificate from hub
-                    TrustManagerFactory tmf = TrustManagerFactory
-                            .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                    tmf.init(keystore);
-                    trustManagers = tmf.getTrustManagers();
-                } else {
-                    // Use no-op trust manager which will not verify certificates
-                    trustManagers = defineNoOpTrustManager();
-                }
-
-                sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(kmf.getKeyManagers(), trustManagers, null);
-
-                sslsocketfactory = sslContext.getSocketFactory();
-            } catch (FileNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
-                return;
-            } catch (CertificateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
-                return;
-            } catch (UnrecoverableKeyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Key unrecoverable with supplied password");
-                return;
-            } catch (KeyManagementException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
-                logger.debug("Key management exception", e);
-                return;
-            } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
-                logger.debug("Error initializing keystore", e);
-                return;
-            }
+        } catch (CertificateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
+            return;
+        } catch (UnrecoverableKeyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Key unrecoverable with supplied password");
+            return;
+        } catch (KeyManagementException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
+            logger.debug("Key management exception", e);
+            return;
+        } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+            logger.debug("Error initializing keystore", e);
+            return;
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");

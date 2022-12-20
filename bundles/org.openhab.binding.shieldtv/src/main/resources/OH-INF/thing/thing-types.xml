@@ -7,7 +7,7 @@
 	<thing-type id="shieldtv">
 
 		<label>ShieldTV Binding Thing</label>
-		<description>Sample thing for ShieldTV Binding</description>
+		<description>Nvidia ShieldTV Binding</description>
 
 		<channels>
 			<channel id="keypress" typeId="keypress"/>
@@ -24,9 +24,9 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="keystore" type="text" required="true">
+			<parameter name="keystore" type="text">
 				<label>Keystore File</label>
-				<description>Java keystore containing caseta key and certs</description>
+				<description>Java keystore containing key and certs</description>
 			</parameter>
 			<parameter name="keystorePassword" type="text">
 				<context>password</context>

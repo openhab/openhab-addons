@@ -93,16 +93,15 @@ public class ShieldTVMessageParser {
             logger.trace("Longer Hostname Reply");
         } else if (msg.startsWith("08f10712")) {
             // Massive dump of currently installed apps
-	} else if (msg.startsWith("08f30712")) {
+        } else if (msg.startsWith("08f30712")) {
             // This has something to do with successful command response, maybe.
         } else if (msg.equals("080028fae0a6c0d130")) {
             // Keepalive Reply
         } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
             logger.debug("PIN Process Started");
-        } else if (msg.startsWith("20") && msg.startsWith("10", 4) && msg.length() == 6) {
-            // This seems to be 20**10 when observed.
+        } else if (msg.startsWith("20") && msg.length() == 6) {
+            // This seems to be 20**** when observed. It is unclear what this does.
             // This seems to send immediately before the certificate reply and as a reply to the pin being sent
-            logger.debug("PIN Process Successful");
         } else if (msg.startsWith("08f007")) {
             // Login successful???
             // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
@@ -160,12 +159,7 @@ public class ShieldTVMessageParser {
             String privKeyB64 = Base64.getEncoder().encodeToString(privKeyB64Byte);
             String pubKeyB64 = Base64.getEncoder().encodeToString(pubKeyB64Byte);
 
-            logger.info("New Private Key Issued:\n-----BEGIN PRIVATE KEY-----\n{}\n-----END PRIVATE KEY-----",
-                    privKeyB64);
-            logger.info("New Certificate Issued:\n-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----",
-                    pubKeyB64);
-            logger.info(
-                    "ACTION REQUIRED: New credentials have been issued and must be saved.\nSave private key to (yourfilename).key and certificate to (yourfilename).crt.\nRun the following commands:\nopenssl pkcs12 -export -in (yourfilename).crt -inkey (yourfilename).key -out (yourfilename).p12 -name nvidia\nkeytool -importkeystore -destkeystore (yourfilename).keystore -srckeystore (yourfilename).p12 -srcstoretype PKCS12 -srcstorepass secret -alias nvidia");
+            callback.setKeys(privKeyB64, pubKeyB64);
 
         } else {
             logger.debug("Unknown payload received. {}", msg);
