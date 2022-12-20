@@ -124,7 +124,7 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        thing.setProperty("devicename", hostName);
+        thing.setProperty("Device Name", hostName);
     }
 
     public String getHostName() {

@@ -17,6 +17,10 @@
 			<channel id="app" typeId="app"/>
 		</channels>
 
+		<properties>
+			<property name="Device Name">unknown</property>
+		</properties>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
