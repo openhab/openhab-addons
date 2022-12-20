@@ -119,7 +119,7 @@ public class ShieldTVPKI {
 
     public void createKeystore() {
         try {
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(null, null);
             KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection(keystorePassword.toCharArray());
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
