@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Interface defining callback routines used by LeapMessageParser
  *
- * @author Bob Adair - Initial contribution
+ * @author Ben Rosenblum - Initial contribution
  */
 @NonNullByDefault
 public interface ShieldTVMessageParserCallbacks {
