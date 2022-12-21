@@ -472,7 +472,7 @@ public class OnvifConnection {
         ptzXAddr = Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr");
         if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
-            logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
+            logger.debug("Camera has no ONVIF PTZ support.");
         } else {
             logger.debug("ptzXAddr:{}", ptzXAddr);
         }
@@ -601,11 +601,12 @@ public class OnvifConnection {
 
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
+        if (!topic.isEmpty()) {
+            return;
+        }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
-        if (!topic.isEmpty()) {
-            logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
-        }
+        logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
                 if ("true".equals(dataValue)) {
@@ -728,7 +729,7 @@ public class OnvifConnection {
                 }
                 break;
             default:
-                logger.debug("Please report this camera has an un-implemented ONVIF event Topic:{}", topic);
+                logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
         }
         sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
     }

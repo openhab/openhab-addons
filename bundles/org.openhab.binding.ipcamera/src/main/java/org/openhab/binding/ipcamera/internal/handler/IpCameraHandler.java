@@ -102,7 +102,6 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
@@ -151,10 +150,8 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> snapshotJob = null;
     private @Nullable Bootstrap mainBootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(1);
-    private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
-            "");
-    private FullHttpRequest postRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1,
-            new HttpMethod("POST"), "");
+    private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "");
+    private FullHttpRequest postRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, "");
     private String gifFilename = "ipcamera";
     private String gifHistory = "";
     private String mp4History = "";
@@ -331,7 +328,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             // Foscam needs this as will other cameras with chunks//
                             if (isChunked && bytesAlreadyRecieved != 0) {
-                                logger.debug("Reply is chunked.");
+                                logger.trace("Reply is chunked.");
                                 reply = incomingMessage;
                                 super.channelRead(ctx, reply);
                             }
@@ -341,7 +338,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     // Foscam cameras need this
                     if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
                         reply = incomingMessage;
-                        logger.debug("Packet back from camera is {}", incomingMessage);
+                        logger.trace("Packet back from camera is {}", incomingMessage);
                         super.channelRead(ctx, reply);
                     }
                 }
@@ -479,13 +476,13 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void sendHttpPOST(String httpPostURL, String content) {
-        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), httpPostURL);
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, httpPostURL);
         request.headers().set("Host", cameraConfig.getIp());
         request.headers().add("Content-Type", "application/json");
         request.headers().add("User-Agent", "openHAB/3.x");
         request.headers().add("Accept", "*/*");
         ByteBuf bbuf = Unpooled.copiedBuffer(content, StandardCharsets.UTF_8);
-        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
+        request.headers().set("Content-Length", bbuf.readableBytes());
         request.content().clear().writeBytes(bbuf);
         postRequestWithBody = request; // use Global so the authhandler can use it when resent with DIGEST.
         sendHttpRequest("POST", httpPostURL, null);
@@ -601,12 +598,14 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         FullHttpRequest request;
-        if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
+        if ("GET".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
             request.headers().set("Host", cameraConfig.getIp() + ":" + port);
             request.headers().set("Connection", HttpHeaderValues.CLOSE);
-        } else {
+        } else if ("PUT".equals(httpMethod)) {
             request = putRequestWithBody;
+        } else {
+            request = postRequestWithBody;
         }
 
         if (!basicAuth.isEmpty()) {

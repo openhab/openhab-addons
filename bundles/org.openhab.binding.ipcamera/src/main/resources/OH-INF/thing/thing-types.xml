@@ -2485,7 +2485,7 @@
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
 				</description>
-				<default>80</default>
+				<default>8000</default>
 				<advanced>true</advanced>
 			</parameter>
 
