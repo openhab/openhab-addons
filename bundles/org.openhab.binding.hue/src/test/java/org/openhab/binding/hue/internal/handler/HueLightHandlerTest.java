@@ -186,6 +186,12 @@ public class HueLightHandlerTest {
     }
 
     @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel500Mired() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(500, Units.MIRED), new HueLightState(), expectedReply);
+    }
+
+    @Test
     public void assertPercentageValueOfColorTemperatureWhenCt153() {
         int expectedReply = 0;
         asserttoColorTemperaturePercentType(153, expectedReply);
@@ -270,7 +276,7 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void asserCommandForColorChannelIncrease() {
+    public void assertCommandForColorChannelIncrease() {
         HueLightState currentState = new HueLightState().bri(1).on(false);
         String expectedReply = "{\"bri\" : 30, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
@@ -285,7 +291,7 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void asserCommandForColorChannelDecrease() {
+    public void assertCommandForColorChannelDecrease() {
         HueLightState currentState = new HueLightState().bri(200);
         String expectedReply = "{\"bri\" : 170, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.DECREASE, currentState, expectedReply);

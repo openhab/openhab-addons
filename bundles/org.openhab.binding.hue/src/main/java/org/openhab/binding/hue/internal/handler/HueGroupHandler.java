@@ -23,8 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
@@ -230,9 +228,7 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
                 if (command instanceof QuantityType) {
-                    @SuppressWarnings("unchecked")
-                    QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
-                            .toUnit(Units.KELVIN);
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
                     if (convertedCommand != null) {
                         newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
                                 colorTemperatureCapabilties);
