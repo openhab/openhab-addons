@@ -113,8 +113,8 @@ public final class LifxMessageUtil {
         } else if (temperature instanceof DecimalType) {
             return decimalTypeToKelvin((DecimalType) temperature, temperatureRange);
         } else {
-            assert false; // we've already done a type check before calling this method
-            return 0;
+            throw new IllegalStateException(
+                    "Unexpected command type " + temperature.getClass().getName() + " for color temperature command.");
         }
     }
 
@@ -130,9 +130,12 @@ public final class LifxMessageUtil {
 
     public static int quantityTypeToKelvin(QuantityType temperature, TemperatureRange temperatureRange) {
         QuantityType<?> asKelvin = temperature.toInvertibleUnit(Units.KELVIN);
-        assert asKelvin != null;
+        if (asKelvin == null) {
+            throw new IllegalStateException(
+                    "Cannot convert color temperature " + temperature.toString() + " to Kelvin");
+        }
 
-        return asKelvin.toBigDecimal().intValue();
+        return asKelvin.intValue();
     }
 
     public static PercentType infraredToPercentType(int infrared) {

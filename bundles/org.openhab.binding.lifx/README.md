@@ -175,44 +175,44 @@ Thing lifx:whitelight:kitchen [ deviceId="D073D5D4D4D4", fadetime=150 ]
 // Living
 Color Living_Color { channel="lifx:colorlight:living:color" }
 Dimmer Living_Temperature { channel="lifx:colorlight:living:temperature" }
-Number Living_Abs_Temperature { channel="lifx:colorlight:living:abstemperature" }
+Number:Number Living_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living:abstemperature" }
 
 // Living2 (alternative approach)
 Color Living2_Color { channel="lifx:colorlight:living2:color" }
 Switch Living2_Switch { channel="lifx:colorlight:living2:color" }
 Dimmer Living2_Dimmer { channel="lifx:colorlight:living2:color" }
 Dimmer Living2_Temperature { channel="lifx:colorlight:living2:temperature" }
-Number Living2_Abs_Temperature { channel="lifx:colorlight:living2:abstemperature" }
+Number:Temperature Living2_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living2:abstemperature" }
 
 // Desk
 Color Desk_Color { channel="lifx:colorhevlight:desk:color" }
 Dimmer Desk_Temperature { channel="lifx:colorhevlight:desk:temperature" }
-Number Desk_Abs_Temperature { channel="lifx:colorhevlight:desk:abstemperature" }
+Number:Temperature Desk_Abs_Temperature "Desk Lamp Color Temperature [%d K]" { channel="lifx:colorhevlight:desk:abstemperature" }
 Switch Desk_HEV_Cycle { channel="lifx:colorhevlight:desk:hevcycle" }
 
 // Porch
 Color Porch_Color { channel="lifx:colorirlight:porch:color" }
 Dimmer Porch_Infrared { channel="lifx:colorirlight:porch:infrared" }
 Dimmer Porch_Temperature { channel="lifx:colorirlight:porch:temperature" }
-Number Porch_Abs_Temperature { channel="lifx:colorirlight:porch:abstemperature" }
+Number:Temperature Porch_Abs_Temperature "Porch Light Color Temperature [%d K]" { channel="lifx:colorirlight:porch:abstemperature" }
 Number Porch_Signal_Strength { channel="lifx:colorirlight:porch:signalstrength" }
 
 // Ceiling
 Color Ceiling_Color { channel="lifx:colormzlight:ceiling:color" }
 Dimmer Ceiling_Temperature { channel="lifx:colormzlight:ceiling:temperature" }
-Number Ceiling_Abs_Temperature { channel="lifx:colormzlight:ceiling:abstemperature" }
+Number:Temperature Ceiling_Abs_Temperature "Ceiling Light Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperature" }
 Color Ceiling_Color_Zone_0 { channel="lifx:colormzlight:ceiling:colorzone0" }
 Dimmer Ceiling_Temperature_Zone_0 { channel="lifx:colormzlight:ceiling:temperaturezone0" }
-Number Ceiling_Abs_Temperature_Zone_0 { channel="lifx:colormzlight:ceiling:abstemperaturezone0" }
+Number:Temperature Ceiling_Abs_Temperature_Zone_0 "Ceiling Light 0 Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperaturezone0" }
 Color Ceiling_Color_Zone_15 { channel="lifx:colormzlight:ceiling:colorzone15" }
 Dimmer Ceiling_Temperature_Zone_15 { channel="lifx:colormzlight:ceiling:temperaturezone15" }
-Number Ceiling_Abs_Temperature_Zone_15 { channel="lifx:colormzlight:ceiling:abstemperaturezone15" }
+Number:Temperature Ceiling_Abs_Temperature_Zone_15 "Ceiling Light 15 Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperaturezone15" }
 
 // Kitchen
 Switch Kitchen_Toggle { channel="lifx:whitelight:kichen:brightness" }
 Dimmer Kitchen_Brightness { channel="lifx:whitelight:kitchen:brightness" }
 Dimmer Kitchen_Temperature { channel="lifx:whitelight:kitchen:temperature" }
-Number Kitchen_Abs_Temperature { channel="lifx:whitelight:kitchen:abstemperature" }
+Number:Temperature Kitchen_Abs_Temperature "Kitchen Light Color Temperature [%d K]" { channel="lifx:whitelight:kitchen:abstemperature" }
 ```
 
 ### demo.sitemap:
