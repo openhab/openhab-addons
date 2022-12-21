@@ -35,6 +35,7 @@ public class OpenGarageBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_OG_DISTANCE = "distance";
     public static final String CHANNEL_OG_STATUS = "status"; // now deprecated
+    public static final String CHANNEL_OG_STATUS_TEXT = "status-text";
     public static final String CHANNEL_OG_STATUS_SWITCH = "status-switch";
     public static final String CHANNEL_OG_STATUS_CONTACT = "status-contact";
     public static final String CHANNEL_OG_STATUS_ROLLERSHUTTER = "status-rollershutter";

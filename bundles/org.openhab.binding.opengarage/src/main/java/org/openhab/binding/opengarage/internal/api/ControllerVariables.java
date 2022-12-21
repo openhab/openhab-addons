@@ -40,6 +40,11 @@ public class ControllerVariables {
     private ControllerVariables() {
     }
 
+    public static ControllerVariables empty() {
+        ControllerVariables info = new ControllerVariables();
+        return info;
+    }
+
     public static ControllerVariables parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */

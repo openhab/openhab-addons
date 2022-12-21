@@ -22,4 +22,10 @@ public class OpenGarageConfiguration {
     public long port = 80;
     public String password = "opendoor";
     public long refresh = 10;
+
+    public String door_opening_state = "OPENING";
+    public String door_open_state = "OPEN";
+    public String door_closed_state = "CLOSED";
+    public String door_closing_state = "CLOSING";
+    public long door_transition_time_seconds = 17;
 }
