@@ -175,7 +175,7 @@ Thing lifx:whitelight:kitchen [ deviceId="D073D5D4D4D4", fadetime=150 ]
 // Living
 Color Living_Color { channel="lifx:colorlight:living:color" }
 Dimmer Living_Temperature { channel="lifx:colorlight:living:temperature" }
-Number:Number Living_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living:abstemperature" }
+Number:Temperature Living_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living:abstemperature" }
 
 // Living2 (alternative approach)
 Color Living2_Color { channel="lifx:colorlight:living2:color" }
