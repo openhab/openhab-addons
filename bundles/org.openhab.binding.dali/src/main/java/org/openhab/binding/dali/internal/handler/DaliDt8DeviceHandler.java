@@ -76,7 +76,7 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                         logger.warn("Unable to convert command {} to mireks", command);
                         return;
                     }
-                    mirek = commandQuantity.toBigDecimal().intValue();
+                    mirek = commandQuantity.intValue();
                 } else {
                     logger.warn("Unable to convert command {} to mireks", command);
                     return;
