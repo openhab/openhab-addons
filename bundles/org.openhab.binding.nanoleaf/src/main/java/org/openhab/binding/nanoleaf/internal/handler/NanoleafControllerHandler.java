@@ -913,7 +913,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                         logger.warn("Cannot convert color temperature {} to Kelvin.", command);
                         return;
                     }
-                    state.setValue(tempKelvin.toBigDecimal().intValue());
+                    state.setValue(tempKelvin.intValue());
                 } else {
                     logger.warn("Unhandled command type: {}", command.getClass().getName());
                     return;

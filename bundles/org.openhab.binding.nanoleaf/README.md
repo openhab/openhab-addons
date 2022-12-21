@@ -235,7 +235,7 @@ Dimmer NanoleafBrightness "Brightness [%.0f]" { channel="nanoleaf:controller:MyL
 String NanoleafHue "Hue [%s]"
 String NanoleafSaturation "Saturation [%s]"
 Dimmer NanoleafColorTemp "Color temperature [%.0f]" { channel="nanoleaf:controller:MyLightPanels:colorTemperature" }
-Number NanoleafColorTempAbs "Color temperature [%.000f]" { channel="nanoleaf:controller:MyLightPanels:colorTemperatureAbs" }
+Number:Temperature NanoleafColorTempAbs "Color temperature [%d K]" { channel="nanoleaf:controller:MyLightPanels:colorTemperatureAbs" }
 String NanoleafColorMode "Color mode [%s]" { channel="nanoleaf:controller:MyLightPanels:colorMode" }
 String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effect" }
 Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
