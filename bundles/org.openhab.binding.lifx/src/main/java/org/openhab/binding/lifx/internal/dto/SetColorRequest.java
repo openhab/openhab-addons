@@ -51,7 +51,6 @@ public class SetColorRequest extends Packet {
 
     public SetColorRequest() {
         stream = ByteBuffer.allocate(1);
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

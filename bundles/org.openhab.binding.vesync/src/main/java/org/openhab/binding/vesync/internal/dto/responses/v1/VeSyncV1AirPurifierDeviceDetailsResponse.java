@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link VeSyncV1AirPurifierDeviceDetailsResponse} is a Java class used as a DTO to hold the Vesync's V1 API's
  * common response
- * data, in regards to a Air Purifier device.
+ * data, in regards to an Air Purifier device.
  *
  * @author David Goodyear - Initial contribution
  */

@@ -28,8 +28,8 @@ public class Zone extends Entity {
 
     private ZoneState zoneState;
 
-    public Zone(int id, String label) {
-        super(id, label);
+    public Zone(ParadoxPanel panel, int id, String label) {
+        super(panel, id, label);
     }
 
     public ZoneState getZoneState() {

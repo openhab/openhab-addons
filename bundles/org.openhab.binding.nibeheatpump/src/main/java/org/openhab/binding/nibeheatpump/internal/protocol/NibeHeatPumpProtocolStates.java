@@ -148,12 +148,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                 return msgStatus.INVALID;
             }
 
-            if (len >= 2) {
-                if (!(byteBuffer.get(1) == 0x00)) {
-                    return msgStatus.INVALID;
-                }
-            }
-
             if (len >= 6) {
                 int datalen = byteBuffer.get(NibeHeatPumpProtocol.RES_OFFS_LEN);
 
@@ -164,7 +158,7 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
 
                 // calculate XOR checksum
                 byte calcChecksum = 0;
-                for (int i = 2; i < (datalen + 5); i++) {
+                for (int i = 1; i < (datalen + 5); i++) {
                     calcChecksum ^= byteBuffer.get(i);
                 }
 

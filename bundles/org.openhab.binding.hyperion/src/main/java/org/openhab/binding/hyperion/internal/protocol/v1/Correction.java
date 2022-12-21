@@ -17,7 +17,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Correction} is a POJO for an color correction on the Hyperion server.
+ * The {@link Correction} is a POJO for a color correction on the Hyperion server.
  *
  * @author Daniel Walters - Initial contribution
  */

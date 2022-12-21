@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DarkSkyJsonWeatherData} is the Java class used to map the JSON response to an Dark Sky request.
+ * The {@link DarkSkyJsonWeatherData} is the Java class used to map the JSON response to a Dark Sky request.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

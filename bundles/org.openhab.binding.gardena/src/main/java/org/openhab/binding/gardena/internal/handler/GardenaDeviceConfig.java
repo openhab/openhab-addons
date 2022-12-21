@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to an Gardena account.
+ * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to a Gardena account.
  *
  * @author Gerhard Riegler - Initial contribution
  */

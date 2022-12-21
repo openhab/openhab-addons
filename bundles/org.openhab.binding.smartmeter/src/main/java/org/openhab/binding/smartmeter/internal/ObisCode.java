@@ -47,7 +47,7 @@ public class ObisCode {
     }
 
     /**
-     * Gets a {@link ObisCode} from a String. It must follow the pattern {@value #OBIS_PATTERN}
+     * Gets an {@link ObisCode} from a String. It must follow the pattern {@value #OBIS_PATTERN}
      *
      * @param obis The obis as String.
      * @return The new Obis code. Can not be null.

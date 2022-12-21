@@ -215,7 +215,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("yyMMddHHmm");
 
     /**
-     * Creates an new {@link EventAttribute}.
+     * Creates a new {@link EventAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.
@@ -377,7 +377,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     /**
-     * Returns an single station from an path value (i.e. pipe separated value of stations).
+     * Returns a single station from a path value (i.e. pipe separated value of stations).
      * 
      * @param getPath Getter for the path.
      * @param returnFirst if <code>true</code> the first value will be returned, <code>false</code> will return the last
@@ -401,8 +401,8 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     /**
-     * Returns all intermediate stations from an path. The first or last station will be omitted. The values will be
-     * separated by an single dash -.
+     * Returns all intermediate stations from a path. The first or last station will be omitted. The values will be
+     * separated by a single dash -.
      * 
      * @param getPath Getter for the path.
      * @param removeFirst if <code>true</code> the first value will be removed, <code>false</code> will remove the last

@@ -76,7 +76,7 @@ public class AutelisHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AutelisHandler.class);
 
     /**
-     * Default timeout for http connections to a Autelis controller
+     * Default timeout for http connections to an Autelis controller
      */
     static final int TIMEOUT_SECONDS = 5;
 
@@ -84,7 +84,7 @@ public class AutelisHandler extends BaseThingHandler {
      * Autelis controllers will not update their XML immediately after we change
      * a value. To compensate we cache previous values for a {@link Channel}
      * using the item name as a key. After a polling run has been executed we
-     * only update an channel if the value is different then what's in the
+     * only update a channel if the value is different then what's in the
      * cache. This cache is cleared after a fixed time period when commands are
      * sent.
      */
@@ -224,7 +224,7 @@ public class AutelisHandler extends BaseThingHandler {
                     } else if (command instanceof DecimalType) {
                         value = ((DecimalType) command).intValue();
                         if (!isJandy() && value >= 3) {
-                            // this is a autelis dim type. not sure what 2 does
+                            // this is an autelis dim type. not sure what 2 does
                             cmd = "dim";
                         }
                     } else {
@@ -468,7 +468,7 @@ public class AutelisHandler extends BaseThingHandler {
     }
 
     /**
-     * Simple logic to perform a authenticated GET request
+     * Simple logic to perform an authenticated GET request
      *
      * @param url
      * @param timeout

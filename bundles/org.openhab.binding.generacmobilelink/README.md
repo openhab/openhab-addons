@@ -4,7 +4,6 @@ This binding communicates with the Generac MobileLink API and reports on the sta
 
 ## Supported Things
 
-
 ### MobileLink Account
 
 A MobileLink account bridge thing represents a user's MobileLink account and is responsible for authentication and polling for updates.
@@ -13,7 +12,7 @@ ThingTypeUID: `account`
 
 ### Generator
 
-A Generator thing represents a individual generator linked to an account bridge. Multiple generators are supported.  
+A Generator thing represents an individual generator linked to an account bridge. Multiple generators are supported.  
 
 ThingTypeUID: `generator`
 
@@ -31,12 +30,11 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 | password        | The password used to login to the MobileLink service                               |
 | refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds        |
 
-
 ## Channels
 
 ### Generator Channels
 
-All channels are read-only. 
+All channels are read-only.
 
 | channel                 | type                 | description                               |
 |-------------------------|----------------------|-------------------------------------------|
@@ -55,12 +53,11 @@ All channels are read-only.
 | batteryVoltage          | String               | Battery voltage status                    |
 | serviceStatus           | Switch               | Service status                            |
 
-
 ## Full Example
 
 ### Things
 
-```xtend
+```java
 Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.com", password="secret",refreshInterval=60 ] {
     Thing generator 123456 "MobileLink Generator" [ generatorId="123456" ]
 }
@@ -68,7 +65,7 @@ Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.c
 
 ### Items
 
-```xtend
+```java
 Switch GeneratorConnected "Connected [%s]" {channel="generacmobilelink:generator:main:123456:connected"}
 Switch GeneratorGreenLight "Green Light [%s]" {channel="generacmobilelink:generator:main:123456:greenLight"}
 Switch GeneratorYellowLight "Yellow Light [%s]" {channel="generacmobilelink:generator:main:123456:yellowLight"}
@@ -80,7 +77,7 @@ String GeneratorAlarm "Alarm [%s]" {channel="generacmobilelink:generator:main:12
 
 ### Sitemap
 
-```xtend
+```perl
 sitemap MobileLink label="Demo Sitemap" {
   Frame label="Generator" {
     Switch item=GeneratorConnected

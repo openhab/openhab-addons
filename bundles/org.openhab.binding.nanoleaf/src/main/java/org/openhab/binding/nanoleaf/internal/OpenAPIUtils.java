@@ -154,11 +154,7 @@ public class OpenAPIUtils {
 
             for (int i = 0; i < currentVer.length; ++i) {
                 if (currentVer[i] != requiredVer[i]) {
-                    if (currentVer[i] > requiredVer[i]) {
-                        return true;
-                    }
-
-                    return false;
+                    return (currentVer[i] > requiredVer[i]);
                 }
             }
 

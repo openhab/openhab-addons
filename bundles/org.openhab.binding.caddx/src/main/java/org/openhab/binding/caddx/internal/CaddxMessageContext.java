@@ -15,7 +15,7 @@ package org.openhab.binding.caddx.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Used to map thing types from the binding string to a ENUM value.
+ * Used to map thing types from the binding string to an ENUM value.
  *
  * @author Georgios Moutsos - Initial contribution
  */

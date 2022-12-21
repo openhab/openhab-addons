@@ -27,11 +27,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class AlarmControlPanelTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "alarm_control_panel/0x0000000000000000_alarm_control_panel_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void testAlarmControlPanel() {
         // @formatter:off

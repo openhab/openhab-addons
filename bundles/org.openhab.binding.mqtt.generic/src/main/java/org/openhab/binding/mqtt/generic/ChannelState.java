@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This object consists of an {@link Value}, which is updated on the respective MQTT topic change.
+ * This object consists of a {@link Value}, which is updated on the respective MQTT topic change.
  * Updates to the value are propagated via the {@link ChannelStateUpdateListener}.
  *
  * @author David Graeff - Initial contribution

@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 
 /**
- * The {@link EkeyPacketListener} is in interface for a Ekey packet received consumer
+ * The {@link EkeyPacketListener} is in interface for an Ekey packet received consumer
  *
  * @author Hans-Jörg Merk - Initial contribution
  */

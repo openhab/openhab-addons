@@ -97,7 +97,7 @@ public class SceneManagerImpl implements SceneManager {
 
     /**
      * Same constructor like {@link #SceneManagerImpl(ConnectionManager, StructureManager, ManagerStatusListener)}, but
-     * a {@link EventListener} can be set, too.
+     * an {@link EventListener} can be set, too.
      *
      * @param connectionManager (must not be null)
      * @param structureManager (must not be null)

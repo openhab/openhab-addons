@@ -199,8 +199,8 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     /**
-     * This method build the digitalSTROM structure as an {@link HashMap} with the zone id as key
-     * and an {@link HashMap} as value. This {@link HashMap} has the group id as key and a {@link List}
+     * This method build the digitalSTROM structure as a {@link HashMap} with the zone id as key
+     * and a {@link HashMap} as value. This {@link HashMap} has the group id as key and a {@link List}
      * with all digitalSTROM {@link Device}s.<br>
      * <br>
      * <b>Note:</b> the zone id 0 is the broadcast address and the group id 0, too.

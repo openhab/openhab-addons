@@ -1,6 +1,6 @@
 # Xiaomi Wifi devices (Mi IO) Binding
 
-This binding is used to control Xiaomi products implementing the Mi IO protocol. 
+This binding is used to control Xiaomi products implementing the Mi IO protocol.
 This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
 If your Xiaomi wifi device is controlled by the mihome app, most likely it communicates using the Mi IO protocol and can communicate with openHAB using this binding.
 
@@ -30,9 +30,9 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 ## Tokens
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
-The binding can retrieve the needed tokens from the Xiaomi cloud. 
-Go to the binding config page and enter your cloud username and password. 
-The server(s) to which your devices are connected need to be entered as well. 
+The binding can retrieve the needed tokens from the Xiaomi cloud.
+Go to the binding config page and enter your cloud username and password.
+The server(s) to which your devices are connected need to be entered as well.
 Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
 Multiple servers can be separated with comma, or leave blank to test all known servers.
 See [binding configuration](#binding-configuration) for more details about the binding config.
@@ -42,12 +42,12 @@ See [binding configuration](#binding-configuration) for more details about the b
 Some devices provide the token upon discovery. This may depends on the firmware version.
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
 
-The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
-It seems that version was released with debug messages turned on by mistake. 
-An APK file with the old version can be easily found using one of the popular web search engines. 
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android.
+It seems that version was released with debug messages turned on by mistake.
+An APK file with the old version can be easily found using one of the popular web search engines.
 After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
 
-For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
+For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it:
 Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
 
 Note. The Xiaomi devices change the token when inclusion is done. Hence if you get your token after reset and than include it with the Mi Home app, the token will change.
@@ -57,7 +57,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
 The list of the known countries and related severs is [here](#country-servers).
 
-After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud.
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
 
 To enter your cloud details go to the bindings page, click the Xiaomi Mi IO binding and than configure.
@@ -72,7 +72,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
-The configuration for model is automatically retrieved from the device in normal operation. 
+The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
 
 | Parameter       | Type    | Required | Description                                                         |
@@ -86,13 +86,13 @@ However, for devices that are unsupported, you may override the value and try to
 | communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
 | cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
 
-Note: Suggest to use the cloud communication only for devices that require it. 
+Note: Suggest to use the cloud communication only for devices that require it.
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]`
 
 or in case of unknown models include the model information of a similar device that is supported:
 
@@ -100,8 +100,7 @@ or in case of unknown models include the model information of a similar device t
 
 in case of gateway, instead of defining it as a Thing, use Bridge
 
-`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]` 
-
+`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]`
 
 # Advanced: Unsupported devices
 
@@ -114,7 +113,7 @@ There are 2 ways to get unsupported devices working, by overriding the model wit
 ## Substitute model for unsupported devices
 
 Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing. 
+For this, first remove your unsupported thing. Manually add a miio:basic thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
@@ -132,11 +131,11 @@ After validation, please share the logfile and json files on the openHAB forum o
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
-During the start of the binding the exact path used in your system will be printed in the _debug_ log. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices.
+During the start of the binding the exact path used in your system will be printed in the _debug_ log.
 Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …` (
-If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
-Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files.
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used.
 For format, please check the current database files in openHAB GitHub.
 
 # FAQ.. what to do in case of problems
@@ -144,7 +143,7 @@ For format, please check the current database files in openHAB GitHub.
 If your device is not getting online:
 
 _Are you using text config?_
-Make sure you define all the fields as per above example. 
+Make sure you define all the fields as per above example.
 Or, better, try to get it going first without text config.
 
 _The token is wrong_
@@ -153,13 +152,13 @@ When you reset, or change wifi or update firmware, and possibly other cases as w
 
 _My token is coming from the cloud... how can it be wrong?_
 Is not very likely but still can happen._
-This can happen e.g. if your device is defined on multiple country servers. 
+This can happen e.g. if your device is defined on multiple country servers.
 The binding may pull the token from the wrong country server.
 First try to get the token from all country servers by leave the county setting empty.
 If that does not solve it, you define only the country that the device is on in the binding config page (where the cloud userid/pwd is entered) this should pull the right token.
 
 _You have the same device added multiple times._
-The communication each time send a sequential number. 
+The communication each time send a sequential number.
 If the device is twice defined, the numbers received by the device are no longer sequential and it will stop responding for some time.
 
 _The connection is not too good, so you have timeouts etc._
@@ -167,29 +166,37 @@ Position your device closer to wifi / check in the mihome app if the wifi streng
 Alternatively as described above, double check for multiple connections for single device.
 
 _Your device is on a different subnet?_
-This is in most cases not working. 
+This is in most cases not working.
 Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password.
-If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
+The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
+If the problem persists you can try the following:
+
+- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
+In order to pass validation your (openHAB server) ip need to be validated/confirmed.
+Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
+- If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+- Several users also reported success by resetting their Xiaomi password.
+
+If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies.
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
 _My Roborock vacuum is not found or not reacting_
-Did you link the vacuum with the Roborock app? 
-This won't work, the Roborock app is using a different communication method. 
-Reset your vacuum and connect it to the Xiaomi MiHome app. 
+Did you link the vacuum with the Roborock app?
+This won't work, the Roborock app is using a different communication method.
+Reset your vacuum and connect it to the Xiaomi MiHome app.
 This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
 # Mi IO Devices
 
 !!!devices
-note: Supported means we received feedback from users this device is working with the binding. 
-For devices with experimental support, we did not yet confirmation that channels are correctly working. 
+note: Supported means we received feedback from users this device is working with the binding.
+For devices with experimental support, we did not yet confirmation that channels are correctly working.
 Please feedback your findings for these devices (e.g. Are all channels working, do they contain the right information, is controlling the devices working etc.)
 
-# Channels
+## Channels
 
 Depending on the device, different channels are available.
 
@@ -205,8 +212,7 @@ All devices have available the following channels (marked as advanced) besides t
 | actions#rpc      | String  | send commands via cloud. see below  |
 
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
-
+e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
 ### Robo Rock vacuum Channels
 
@@ -248,13 +254,11 @@ To (re-)read the file either restart openHAB, restart the binding or alternative
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
-
 !!!channelList
-
 
 ## Example item file Rockrobo vacuum
 
-```
+```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>
 Group  gVacStat "Status Details"           <status> (gVac)
 Group  gVacCons "Consumables Usage"        <line-increase> (gVac)
@@ -298,7 +302,6 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
-
 !!!itemFileExamples
 
 ### Country Servers
@@ -308,7 +311,7 @@ Known country Servers: cn, de, i2, ru, sg, us
 Mapping of countries in mihome app to server:
 
 | Country                  | Country Code | Server |
-|--------------------------|--------------|--------|    
+|--------------------------|--------------|--------|
 | Afghanistan              | AF           | sg     |
 | Albania                  | AL           | de     |
 | Algeria                  | DZ           | sg     |

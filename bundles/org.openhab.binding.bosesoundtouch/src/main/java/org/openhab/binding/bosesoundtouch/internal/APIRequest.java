@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link APIRequest} class handles the API requests
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+
+@NonNullByDefault
 public enum APIRequest {
     KEY("key"),
     SELECT("select"),

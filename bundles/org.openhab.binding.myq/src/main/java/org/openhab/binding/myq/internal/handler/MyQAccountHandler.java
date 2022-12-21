@@ -556,7 +556,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     }
 
     /**
-     * Final step of the login process to get a oAuth access response token
+     * Final step of the login process to get an oAuth access response token
      *
      * @param redirectLocation
      * @param codeVerifier

@@ -15,6 +15,8 @@ package org.openhab.binding.systeminfo.internal.handler;
 import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,12 +24,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.systeminfo.internal.SysteminfoThingTypeProvider;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -36,7 +43,11 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -51,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papzov - Separate the creation of the systeminfo object and its initialization
  * @author Wouter Born - Add null annotations
+ * @author Mark Herwege - Add dynamic creation of extra channels
  */
 @NonNullByDefault
 public class SysteminfoHandler extends BaseThingHandler {
@@ -91,31 +103,59 @@ public class SysteminfoHandler extends BaseThingHandler {
      */
     public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
+    /**
+     * String used to extend thingUID and channelGroupTypeUID for thing definition with added dynamic channels and
+     * extended channels. It is set in the constructor and unique to the thing.
+     */
+    public final String idExtString;
+
+    public final SysteminfoThingTypeProvider thingTypeProvider;
+
     private SysteminfoInterface systeminfo;
 
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
 
-    private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
+    /**
+     * Caches for cpu process load and process load for a given pid. Using this cache limits the process load refresh
+     * interval to the minimum interval. Too frequent refreshes leads to inaccurate results. This could happen when the
+     * same process is tracked as current process and as a channel with pid parameter, or when the task interval is set
+     * too low.
+     */
+    private static final int MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS = 2000;
+    private ExpiringCache<PercentType> cpuLoadCache = new ExpiringCache<>(MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS,
+            () -> getSystemCpuLoad());
+    private ExpiringCacheMap<Integer, @Nullable DecimalType> processLoadCache = new ExpiringCacheMap<>(
+            MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS);
 
-    public SysteminfoHandler(Thing thing, @Nullable SysteminfoInterface systeminfo) {
+    private final Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
+
+    public SysteminfoHandler(Thing thing, SysteminfoThingTypeProvider thingTypeProvider,
+            SysteminfoInterface systeminfo) {
         super(thing);
-        if (systeminfo != null) {
-            this.systeminfo = systeminfo;
-        } else {
-            throw new IllegalArgumentException("No systeminfo service was provided");
-        }
+        this.thingTypeProvider = thingTypeProvider;
+        this.systeminfo = systeminfo;
+
+        idExtString = "-" + thing.getUID().getId();
     }
 
     @Override
     public void initialize() {
+        logger.trace("Initializing thing {} with thing type {}", thing.getUID().getId(),
+                thing.getThingTypeUID().getId());
+        restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
+                                 // be restored here.
         if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
-            groupChannelsByPriority();
-            scheduleUpdates();
-            updateStatus(ThingStatus.ONLINE);
+            if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
+                                         // thing type and this handler will be disposed. Therefore do not do anything
+                                         // further here.
+                groupChannelsByPriority();
+                scheduleUpdates();
+                updateStatus(ThingStatus.ONLINE);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Thing cannot be initialized!");
+                    "@text/offline.cannot-initialize");
         }
     }
 
@@ -169,15 +209,129 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Retrieve info on available storages, drives, displays, batteries, network interfaces and fans in the system. If
+     * there is more than 1, create additional channel groups and channels representing each of the entities with an
+     * index added to the channel groups and channels. The base channel groups and channels will remain without index
+     * and are equal to the channel groups and channels with index 0. If there is only one entity in a group, do not add
+     * a channels group and channels with index 0.
+     * <p>
+     * If channel groups are added, the thing type will change to systeminfo:computer-Ext, with Ext equal to the thing
+     * id. A new handler will be created and initialization restarted. Therefore further initialization of the current
+     * handler can be aborted if the method returns true.
+     *
+     * @return true if channel groups where added
+     */
+    private boolean addDynamicChannels() {
+        ThingUID thingUID = thing.getUID();
+
+        List<ChannelGroupDefinition> newChannelGroups = new ArrayList<>();
+        newChannelGroups.addAll(createChannelGroups(thingUID, CHANNEL_GROUP_STORAGE, CHANNEL_GROUP_TYPE_STORAGE,
+                systeminfo.getFileOSStoreCount()));
+        newChannelGroups.addAll(createChannelGroups(thingUID, CHANNEL_GROUP_DRIVE, CHANNEL_GROUP_TYPE_DRIVE,
+                systeminfo.getDriveCount()));
+        newChannelGroups.addAll(createChannelGroups(thingUID, CHANNEL_GROUP_DISPLAY, CHANNEL_GROUP_TYPE_DISPLAY,
+                systeminfo.getDisplayCount()));
+        newChannelGroups.addAll(createChannelGroups(thingUID, CHANNEL_GROUP_BATTERY, CHANNEL_GROUP_TYPE_BATTERY,
+                systeminfo.getPowerSourceCount()));
+        newChannelGroups.addAll(createChannelGroups(thingUID, CHANNEL_GROUP_NETWORK, CHANNEL_GROUP_TYPE_NETWORK,
+                systeminfo.getNetworkIFCount()));
+        if (!newChannelGroups.isEmpty()) {
+            logger.debug("Creating additional channel groups");
+            newChannelGroups.addAll(0, thingTypeProvider.getChannelGroupDefinitions(thing.getThingTypeUID()));
+            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_COMPUTER_ID + idExtString);
+            if (thingTypeProvider.updateThingType(thingTypeUID, newChannelGroups)) {
+                logger.trace("Channel groups were added, changing the thing type");
+                changeThingType(thingTypeUID, thing.getConfiguration());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "@text/offline.cannot-initialize");
+            }
+            return true;
+        }
+
+        List<Channel> newChannels = new ArrayList<>();
+        newChannels.addAll(createChannels(thingUID, CHANNEL_SENSORS_FAN_SPEED, systeminfo.getFanCount()));
+        if (!newChannels.isEmpty()) {
+            logger.debug("Creating additional channels");
+            newChannels.addAll(0, thing.getChannels());
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannels(newChannels);
+            updateThing(thingBuilder.build());
+        }
+
+        return false;
+    }
+
+    private List<ChannelGroupDefinition> createChannelGroups(ThingUID thingUID, String channelGroupID,
+            String channelGroupTypeID, int count) {
+        if (count <= 1) {
+            return Collections.emptyList();
+        }
+
+        List<String> channelGroups = thingTypeProvider.getChannelGroupDefinitions(thing.getThingTypeUID()).stream()
+                .map(ChannelGroupDefinition::getId).collect(Collectors.toList());
+
+        List<ChannelGroupDefinition> newChannelGroups = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            String index = String.valueOf(i);
+            ChannelGroupDefinition channelGroupDef = thingTypeProvider
+                    .createChannelGroupDefinitionWithIndex(channelGroupID, channelGroupTypeID, i);
+            if (!(channelGroupDef == null || channelGroups.contains(channelGroupID + index))) {
+                logger.trace("Adding channel group {}", channelGroupID + index);
+                newChannelGroups.add(channelGroupDef);
+            }
+        }
+        return newChannelGroups;
+    }
+
+    private List<Channel> createChannels(ThingUID thingUID, String channelID, int count) {
+        if (count <= 1) {
+            return Collections.emptyList();
+        }
+
+        List<Channel> newChannels = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Channel channel = thingTypeProvider.createChannelWithIndex(thing, channelID, i);
+            if (channel != null && thing.getChannel(channel.getUID()) == null) {
+                logger.trace("Creating channel {}", channel.getUID().getId());
+                newChannels.add(channel);
+            }
+        }
+        return newChannels;
+    }
+
+    private void storeChannelsConfig() {
+        logger.trace("Storing channel configurations");
+        thingTypeProvider.storeChannelsConfig(thing);
+    }
+
+    private void restoreChannelsConfig() {
+        logger.trace("Restoring channel configurations");
+        Map<String, Configuration> channelsConfig = thingTypeProvider.restoreChannelsConfig(thing.getUID());
+        for (String channelId : channelsConfig.keySet()) {
+            Channel channel = thing.getChannel(channelId);
+            Configuration config = channelsConfig.get(channelId);
+            if (channel != null && config != null) {
+                Configuration currentConfig = channel.getConfiguration();
+                for (String param : config.keySet()) {
+                    if (isConfigurationKeyChanged(currentConfig, config, param)) {
+                        handleChannelConfigurationChange(channel, config, param);
+                    }
+                }
+            }
+        }
+    }
+
     private void groupChannelsByPriority() {
-        logger.trace("Grouping channels by priority.");
+        logger.trace("Grouping channels by priority");
         List<Channel> channels = this.thing.getChannels();
 
         for (Channel channel : channels) {
             Configuration properties = channel.getConfiguration();
             String priority = (String) properties.get(PRIOIRITY_PARAM);
             if (priority == null) {
-                logger.debug("Channel with UID {} will not be updated. The channel has no priority set !",
+                logger.debug("Channel with UID {} will not be updated. The channel has no priority set!",
                         channel.getUID());
                 break;
             }
@@ -220,23 +374,27 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private void scheduleUpdates() {
-        logger.debug("Schedule high priority tasks at fixed rate {} s.", refreshIntervalHighPriority);
+        logger.debug("Schedule high priority tasks at fixed rate {} s", refreshIntervalHighPriority);
         highPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
             publishData(highPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalHighPriority.intValue(), TimeUnit.SECONDS);
 
-        logger.debug("Schedule medium priority tasks at fixed rate {} s.", refreshIntervalMediumPriority);
+        logger.debug("Schedule medium priority tasks at fixed rate {} s", refreshIntervalMediumPriority);
         mediumPriorityTasks = scheduler.scheduleWithFixedDelay(() -> {
             publishData(mediumPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
 
-        logger.debug("Schedule one time update for low priority tasks.");
+        logger.debug("Schedule one time update for low priority tasks");
         scheduler.schedule(() -> {
             publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
     }
 
     private void publishData(Set<ChannelUID> channels) {
+        // if handler disposed while waiting for the links, don't update the channel states
+        if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
+            return;
+        }
         Iterator<ChannelUID> iter = channels.iterator();
         while (iter.hasNext()) {
             ChannelUID channeUID = iter.next();
@@ -276,16 +434,16 @@ public class SysteminfoHandler extends BaseThingHandler {
         State state = null;
 
         String channelID = channelUID.getId();
-        String channelIDWithoutGroup = channelUID.getIdWithoutGroup();
-        String channelGroupID = channelUID.getGroupId();
-
         int deviceIndex = getDeviceIndex(channelUID);
 
-        // The channelGroup may contain deviceIndex. It must be deleted from the channelID, because otherwise the
-        // switch will not find the correct method below.
-        // All digits are deleted from the ID
-        if (channelGroupID != null) {
-            channelID = channelGroupID.replaceAll("\\d+", "") + "#" + channelIDWithoutGroup;
+        logger.trace("Getting state for channel {} with device index {}", channelID, deviceIndex);
+
+        // The channelGroup or channel may contain deviceIndex. It must be deleted from the channelID, because otherwise
+        // the switch will not find the correct method below.
+        // All digits are deleted from the ID, except for CpuLoad channels.
+        if (!(CHANNEL_CPU_LOAD_1.equals(channelID) || CHANNEL_CPU_LOAD_5.equals(channelID)
+                || CHANNEL_CPU_LOAD_15.equals(channelID))) {
+            channelID = channelID.replaceAll("\\d+", "");
         }
 
         try {
@@ -304,7 +462,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getBatteryName(deviceIndex);
                     break;
                 case CHANNEL_BATTERY_REMAINING_CAPACITY:
-                    state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
+                    state = new QuantityType<>(systeminfo.getBatteryRemainingCapacity(deviceIndex), Units.PERCENT);
                     break;
                 case CHANNEL_BATTERY_REMAINING_TIME:
                     state = systeminfo.getBatteryRemainingTime(deviceIndex);
@@ -319,7 +477,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
                     break;
                 case CHANNEL_CPU_LOAD:
-                    PercentType cpuLoad = systeminfo.getSystemCpuLoad();
+                    PercentType cpuLoad = cpuLoadCache.getValue();
                     state = (cpuLoad != null) ? new QuantityType<>(cpuLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_CPU_LOAD_1:
@@ -353,10 +511,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getMemoryTotal();
                     break;
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
-                    state = systeminfo.getMemoryAvailablePercent();
+                    PercentType memoryAvailablePercent = systeminfo.getMemoryAvailablePercent();
+                    state = (memoryAvailablePercent != null) ? new QuantityType<>(memoryAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_MEMORY_USED_PERCENT:
-                    state = systeminfo.getMemoryUsedPercent();
+                    PercentType memoryUsedPercent = systeminfo.getMemoryUsedPercent();
+                    state = (memoryUsedPercent != null) ? new QuantityType<>(memoryUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_SWAP_AVAILABLE:
                     state = systeminfo.getSwapAvailable();
@@ -368,10 +529,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getSwapTotal();
                     break;
                 case CHANNEL_SWAP_AVAILABLE_PERCENT:
-                    state = systeminfo.getSwapAvailablePercent();
+                    PercentType swapAvailablePercent = systeminfo.getSwapAvailablePercent();
+                    state = (swapAvailablePercent != null) ? new QuantityType<>(swapAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_SWAP_USED_PERCENT:
-                    state = systeminfo.getSwapUsedPercent();
+                    PercentType swapUsedPercent = systeminfo.getSwapUsedPercent();
+                    state = (swapUsedPercent != null) ? new QuantityType<>(swapUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_DRIVE_MODEL:
                     state = systeminfo.getDriveModel(deviceIndex);
@@ -401,10 +565,14 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getStorageType(deviceIndex);
                     break;
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
-                    state = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    PercentType storageAvailablePercent = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    state = (storageAvailablePercent != null)
+                            ? new QuantityType<>(storageAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_STORAGE_USED_PERCENT:
-                    state = systeminfo.getStorageUsedPercent(deviceIndex);
+                    PercentType storageUsedPercent = systeminfo.getStorageUsedPercent(deviceIndex);
+                    state = (storageUsedPercent != null) ? new QuantityType<>(storageUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_NETWORK_IP:
                     state = systeminfo.getNetworkIp(deviceIndex);
@@ -431,32 +599,50 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getNetworkPacketsSent(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_LOAD:
-                    PercentType processLoad = systeminfo.getProcessCpuUsage(deviceIndex);
+                case CHANNEL_CURRENT_PROCESS_LOAD:
+                    DecimalType processLoad = processLoadCache.putIfAbsentAndGet(deviceIndex,
+                            () -> getProcessCpuUsage(deviceIndex));
                     state = (processLoad != null) ? new QuantityType<>(processLoad, Units.PERCENT) : null;
                     break;
                 case CHANNEL_PROCESS_MEMORY:
+                case CHANNEL_CURRENT_PROCESS_MEMORY:
                     state = systeminfo.getProcessMemoryUsage(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_NAME:
+                case CHANNEL_CURRENT_PROCESS_NAME:
                     state = systeminfo.getProcessName(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_PATH:
+                case CHANNEL_CURRENT_PROCESS_PATH:
                     state = systeminfo.getProcessPath(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_THREADS:
+                case CHANNEL_CURRENT_PROCESS_THREADS:
                     state = systeminfo.getProcessThreads(deviceIndex);
                     break;
                 default:
                     logger.debug("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
-            logger.warn("No information for channel {} with device index {} :", channelID, deviceIndex);
+            logger.warn("No information for channel {} with device index: {}", channelID, deviceIndex);
         } catch (Exception e) {
             logger.debug("Unexpected error occurred while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
         }
         return state != null ? state : UnDefType.UNDEF;
+    }
+
+    private @Nullable PercentType getSystemCpuLoad() {
+        return systeminfo.getSystemCpuLoad();
+    }
+
+    private @Nullable DecimalType getProcessCpuUsage(int pid) {
+        try {
+            return systeminfo.getProcessCpuUsage(pid);
+        } catch (DeviceNotFoundException e) {
+            logger.warn("Process with pid {} does not exist", pid);
+            return null;
+        }
     }
 
     /**
@@ -469,6 +655,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
+        String channelID = channelUID.getId();
         String channelGroupID = channelUID.getGroupId();
         if (channelGroupID == null) {
             return 0;
@@ -481,10 +668,20 @@ public class SysteminfoHandler extends BaseThingHandler {
             return pid;
         }
 
-        char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
-        if (Character.isDigit(lastChar)) {
-            // All non-digits are deleted from the ID
+        if (channelGroupID.contains(CHANNEL_GROUP_CURRENT_PROCESS)) {
+            int pid = systeminfo.getCurrentProcessID();
+            return pid;
+        }
+
+        // First try to get device index in group id, delete all non-digits from id
+        if (Character.isDigit(channelGroupID.charAt(channelGroupID.length() - 1))) {
             String deviceIndexPart = channelGroupID.replaceAll("\\D+", "");
+            return Integer.parseInt(deviceIndexPart);
+        }
+
+        // If not found, try to find it in channel id, delete all non-digits from id
+        if (Character.isDigit(channelID.charAt(channelID.length() - 1))) {
+            String deviceIndexPart = channelID.replaceAll("\\D+", "");
             return Integer.parseInt(deviceIndexPart);
         }
 
@@ -510,10 +707,10 @@ public class SysteminfoHandler extends BaseThingHandler {
                     pid = pidValue.intValue();
                 }
             } else {
-                logger.debug("Channel does not exist ! Fall back to default value.");
+                logger.debug("Channel does not exist! Fall back to default value.");
             }
         } catch (ClassCastException e) {
-            logger.debug("Channel configuration cannot be read ! Fall back to default value.", e);
+            logger.debug("Channel configuration cannot be read! Fall back to default value.", e);
         } catch (IllegalArgumentException e) {
             logger.debug("PID (Process Identifier) must be positive number. Fall back to default value. ", e);
         }
@@ -524,10 +721,10 @@ public class SysteminfoHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
             if (command instanceof RefreshType) {
-                logger.debug("Refresh command received for channel {}!", channelUID);
+                logger.debug("Refresh command received for channel {} !", channelUID);
                 publishDataForChannel(channelUID);
             } else {
-                logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
+                logger.debug("Unsupported command {} ! Supported commands: REFRESH", command);
             }
         } else {
             logger.debug("Cannot handle command. Thing is not ONLINE.");
@@ -546,9 +743,10 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void thingUpdated(Thing thing) {
-        logger.trace("About to update thing.");
+    public synchronized void thingUpdated(Thing thing) {
+        logger.trace("About to update thing");
         boolean isChannelConfigChanged = false;
+
         List<Channel> channels = thing.getChannels();
 
         for (Channel channel : channels) {
@@ -557,7 +755,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             Channel oldChannel = this.thing.getChannel(channelUID.getId());
 
             if (oldChannel == null) {
-                logger.warn("Channel with UID {} cannot be updated, as it cannot be found !", channelUID);
+                logger.warn("Channel with UID {} cannot be updated, as it cannot be found!", channelUID);
                 continue;
             }
             Configuration currentChannelConfig = oldChannel.getConfiguration();
@@ -594,16 +792,22 @@ public class SysteminfoHandler extends BaseThingHandler {
         publishDataForChannel(channel.getUID());
     }
 
+    @Override
+    protected void changeThingType(ThingTypeUID thingTypeUID, Configuration configuration) {
+        storeChannelsConfig();
+        super.changeThingType(thingTypeUID, configuration);
+    }
+
     private void stopScheduledUpdates() {
         ScheduledFuture<?> localHighPriorityTasks = highPriorityTasks;
         if (localHighPriorityTasks != null) {
-            logger.debug("High prioriy tasks will not be run anymore !");
+            logger.debug("High prioriy tasks will not be run anymore!");
             localHighPriorityTasks.cancel(true);
         }
 
         ScheduledFuture<?> localMediumPriorityTasks = mediumPriorityTasks;
         if (localMediumPriorityTasks != null) {
-            logger.debug("Medium prioriy tasks will not be run anymore !");
+            logger.debug("Medium prioriy tasks will not be run anymore!");
             localMediumPriorityTasks.cancel(true);
         }
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Alarm Zone -->
+	<thing-type id="bus_alarm_zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Alarm Zone</label>
+		<description>A OpenWebNet BUS/SCS configured alarm zone.</description>
+
+		<channels>
+			<!-- read only -->
+			<channel id="state" typeId="alarmZoneState"/>
+			<channel id="alarm" typeId="zoneAlarm"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">Alarm zone as configured in the Alarm System Unit</property>
+			<property name="ownDeviceType">5200</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>Example: alarm zone 2 --> where=2.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

@@ -38,7 +38,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.library.types.DateTimeType;
 
 /**
- * Helper for loading the required amount of {@link TimetableStop} via an {@link TimetablesV1Api}.
+ * Helper for loading the required amount of {@link TimetableStop} via a {@link TimetablesV1Api}.
  * This consists of a series of calls.
  *
  * @author Sönke Küper - initial contribution
@@ -73,7 +73,7 @@ public final class TimetableLoader {
     private Date lastRequestedChanges;
 
     /**
-     * Creates an new {@link TimetableLoader}.
+     * Creates a new {@link TimetableLoader}.
      *
      * @param api {@link TimetablesV1Api} to use.
      * @param stopPredicate Filter for selection of loaded {@link TimetableStop}.
@@ -193,7 +193,7 @@ public final class TimetableLoader {
             requestTime.setTime(currentTime);
         }
 
-        // Determine the max. time for which an plan is available
+        // Determine the max. time for which a plan is available
         final GregorianCalendar maxRequestTime = new GregorianCalendar();
         maxRequestTime.setTime(currentTime);
         maxRequestTime.set(Calendar.HOUR_OF_DAY, maxRequestTime.get(Calendar.HOUR_OF_DAY) + MAX_ADVANCE_HOUR);
@@ -225,7 +225,7 @@ public final class TimetableLoader {
     private void processLoadedPlan(List<TimetableStop> stops, Date currentTime) {
         for (final TimetableStop stop : stops) {
 
-            // Check if an change for the stop was cached and apply it
+            // Check if a change for the stop was cached and apply it
             final TimetableStop change = this.cachedChanges.remove(stop.getId());
             if (change != null) {
                 TimetableStopMerger.merge(stop, change);
@@ -275,7 +275,7 @@ public final class TimetableLoader {
             return Collections.emptyList();
         }
 
-        // The recent changes are only available for 120 seconds, so if last update is older perform an full update.
+        // The recent changes are only available for 120 seconds, so if last update is older perform a full update.
         if (secondsSinceLastUpdate >= MAX_RECENT_CHANGE_UPDATE) {
             fullChanges = true;
         }

@@ -88,7 +88,7 @@ public class VeluxProduct {
         }
 
         /**
-         * Create an ProductState from an integer seed value.
+         * Create a ProductState from an integer seed value.
          *
          * @param value the seed value.
          * @return the ProductState.

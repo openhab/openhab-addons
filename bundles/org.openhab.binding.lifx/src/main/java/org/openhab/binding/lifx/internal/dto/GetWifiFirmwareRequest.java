@@ -23,7 +23,6 @@ public class GetWifiFirmwareRequest extends Packet {
     public static final int TYPE = 0x12;
 
     public GetWifiFirmwareRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

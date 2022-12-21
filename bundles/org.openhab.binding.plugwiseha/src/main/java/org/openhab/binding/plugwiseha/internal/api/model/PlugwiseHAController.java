@@ -37,6 +37,7 @@ import org.openhab.binding.plugwiseha.internal.api.model.dto.DomainObjects;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.GatewayInfo;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Locations;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.LocationsArray;
 import org.openhab.binding.plugwiseha.internal.api.xml.PlugwiseHAXStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,7 +396,15 @@ public class PlugwiseHAController {
 
         request.setPath("/core/locations");
         request.addPathParameter("id", String.format("%s", location.getId()));
-        request.setBodyParameter(new Location(state));
+
+        Location locationWithChangesOnly = new Location();
+        locationWithChangesOnly.setPreset(state);
+        locationWithChangesOnly.setId(location.getId());
+
+        LocationsArray locations = new LocationsArray();
+        locations.items = new Location[] { locationWithChangesOnly };
+
+        request.setBodyParameter(locations);
 
         executeRequest(request);
     }

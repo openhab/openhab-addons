@@ -43,6 +43,14 @@ public class AndroidDebugBridgeConfiguration {
      */
     public int recordDuration = 5;
     /**
+     * Assumed max volume for devices with android versions that do not expose this value (>=android 11).
+     */
+    public int deviceMaxVolume = 25;
+    /**
+     * Settings key for android versions where volume is gather using settings command (>=android 11).
+     */
+    public String volumeSettingKey = "volume_music_hdmi";
+    /**
      * Configure media state detection behavior by package
      */
     public @Nullable String mediaStateJSONConfig;

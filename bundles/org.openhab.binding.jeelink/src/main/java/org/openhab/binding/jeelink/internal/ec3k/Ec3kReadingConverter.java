@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
 
 /**
- * Converter for converting a line read from a ec3kSerial sketch to a Ec3kReading.
+ * Converter for converting a line read from an ec3kSerial sketch to an Ec3kReading.
  *
  * @author Volker Bier - Initial contribution
  */

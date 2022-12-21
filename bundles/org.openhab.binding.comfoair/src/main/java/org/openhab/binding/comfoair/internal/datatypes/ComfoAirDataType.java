@@ -27,7 +27,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public interface ComfoAirDataType {
     /**
-     * Generate a openHAB State object based on response data.
+     * Generate an openHAB State object based on response data.
      *
      * @param response
      * @param commandType
@@ -36,7 +36,7 @@ public interface ComfoAirDataType {
     State convertToState(int[] response, ComfoAirCommandType commandType);
 
     /**
-     * Generate byte array based on a openHAB State.
+     * Generate byte array based on an openHAB State.
      *
      * @param value
      * @param commandType

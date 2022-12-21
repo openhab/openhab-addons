@@ -48,8 +48,8 @@ public class Constants {
     public static final String GROUP_LOCATION = "location";
     public static final String GROUP_IMAGE = "image";
 
-    public static final String MB_AUTH_URL = "https://id.mercedes-benz.com/as/authorization.oauth2";
-    public static final String MB_TOKEN_URL = "https://id.mercedes-benz.com/as/token.oauth2";
+    public static final String MB_AUTH_URL = "https://ssoalpha.dvb.corpinter.net/v1/auth";
+    public static final String MB_TOKEN_URL = "https://ssoalpha.dvb.corpinter.net/v1/token";
     public static final String CALLBACK_ENDPOINT = "/mb-callback";
     public static final String OAUTH_CLIENT_NAME = "#byocar";
 
@@ -64,6 +64,7 @@ public class Constants {
     // https://developer.mercedes-benz.com/products/vehicle_status/docs
     public static final String SCOPE_STATUS = "mb:vehicle:mbdata:vehiclestatus";
     public static final String SCOPE_OFFLINE = "offline_access";
+    public static final String SCOPE_OPENID = "openid";
 
     public static final String BASE_URL = "https://api.mercedes-benz.com/vehicledata/v2";
     public static final String ODO_URL = BASE_URL + "/vehicles/%s/containers/payasyoudrive";

@@ -15,7 +15,7 @@ package org.openhab.binding.icloud.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation;
 
 /**
  * Classes that implement this interface are interested in device information updates.

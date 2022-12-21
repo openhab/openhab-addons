@@ -20,7 +20,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Type;
 
 /**
- * Converts between a Homematic datapoint value and a openHAB OnOffType.
+ * Converts between a Homematic datapoint value and an openHAB OnOffType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

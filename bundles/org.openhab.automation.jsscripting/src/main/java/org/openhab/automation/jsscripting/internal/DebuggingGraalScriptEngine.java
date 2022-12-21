@@ -15,7 +15,6 @@ package org.openhab.automation.jsscripting.internal;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import org.graalvm.polyglot.PolyglotException;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
@@ -38,11 +37,11 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     }
 
     @Override
-    public ScriptException afterThrowsInvocation(ScriptException se) {
-        Throwable cause = se.getCause();
+    public Exception afterThrowsInvocation(Exception e) {
+        Throwable cause = e.getCause();
         if (cause instanceof PolyglotException) {
             STACK_LOGGER.error("Failed to execute script:", cause);
         }
-        return se;
+        return e;
     }
 }

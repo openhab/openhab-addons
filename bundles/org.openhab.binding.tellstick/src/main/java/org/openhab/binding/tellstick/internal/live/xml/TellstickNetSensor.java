@@ -143,10 +143,7 @@ public class TellstickNetSensor implements Device {
             return false;
         }
         TellstickNetSensor other = (TellstickNetSensor) obj;
-        if (deviceId != other.deviceId) {
-            return false;
-        }
-        return true;
+        return deviceId == other.deviceId;
     }
 
     public void setUpdated(boolean b) {

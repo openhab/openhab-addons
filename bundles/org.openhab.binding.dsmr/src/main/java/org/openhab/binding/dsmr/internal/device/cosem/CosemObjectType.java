@@ -110,7 +110,7 @@ public enum CosemObjectType {
             new CosemString("val1"), // Specification is not clear what this value is
             new CosemDecimal("val2"), // Specification is not clear what this value is
             new CosemDecimal("val3"), // Specification is not clear what this value is
-            new CosemString("obisId"), // String containing a OBIS Identifier
+            new CosemString("obisId"), // String containing an OBIS Identifier
             new CosemString("unit"), // String containing the type (m3)
             CosemDecimal.INSTANCE),
     GMETER_VALVE_POSITION_V2_1(new OBISIdentifier(7, 96, 3, 10), CosemDecimal.INSTANCE),

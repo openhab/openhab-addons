@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Contains the next collection dates for an given waste type.
+ * Contains the next collection dates for a given waste type.
  * 
  * @author Sönke Küper - Initial contribution
  */
@@ -70,7 +70,7 @@ final class CollectionDate {
     private final List<Date> dates;
 
     /**
-     * Creates an new {@link CollectionDate}.
+     * Creates a new {@link CollectionDate}.
      */
     public CollectionDate(final WasteType type, final List<Date> dates) {
         this.type = type;

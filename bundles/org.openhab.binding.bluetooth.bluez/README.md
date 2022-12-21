@@ -30,7 +30,7 @@ sudo adduser openhab bluetooth
 Also, in case you don't want to manually enable your bluetooth adapters with `bluetoothctl`, ensure that it's automatically enabled by setting the option `AutoEnable` in your `/etc/bluetooth/main.conf` to `true`.
 Restart running services for changes to take effect.
 
-```
+```shell
 systemctl restart dbus
 systemctl restart bluetooth
 systemctl restart openhab2
@@ -48,7 +48,6 @@ It defines the following bridge type:
 
 If BlueZ is enabled and can be accessed, all available adapters are automatically discovered.
 
-
 ## Bridge Configuration
 
 The bluez bridge requires the configuration parameter `address`, which corresponds to the Bluetooth address of the adapter (in format "XX:XX:XX:XX:XX:XX").
@@ -57,8 +56,8 @@ Additionally, the parameter `backgroundDiscovery` can be set to true/false.When 
 
 ## Example
 
-This is how an BlueZ adapter can be configured textually in a *.things file:
+This is how a BlueZ adapter can be configured textually in a *.things file:
 
-```
+```java
 Bridge bluetooth:bluez:hci0 [ address="12:34:56:78:90:AB", backgroundDiscovery=false ]
 ```

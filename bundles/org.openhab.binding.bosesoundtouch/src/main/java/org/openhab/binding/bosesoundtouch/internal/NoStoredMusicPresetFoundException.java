@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NoStoredMusicPresetFoundException} class is an exception
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class NoStoredMusicPresetFoundException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 

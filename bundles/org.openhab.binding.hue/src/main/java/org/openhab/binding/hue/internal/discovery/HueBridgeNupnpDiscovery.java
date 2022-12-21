@@ -93,7 +93,7 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
      * Checks if the Bridge is a reachable Hue Bridge with a valid id.
      *
      * @param bridge the {@link BridgeJsonParameters}s
-     * @return true if Hue Bridge is a reachable Hue Bridge with a id containing
+     * @return true if Hue Bridge is a reachable Hue Bridge with an id containing
      *         BRIDGE_INDICATOR longer then 10
      */
     private boolean isReachableAndValidHueBridge(BridgeJsonParameters bridge) {

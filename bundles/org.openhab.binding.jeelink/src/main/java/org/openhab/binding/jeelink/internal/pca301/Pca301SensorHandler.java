@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for a EC3000 sensor thing.
+ * Handler for an EC3000 sensor thing.
  *
  * @author Volker Bier - Initial contribution
  */

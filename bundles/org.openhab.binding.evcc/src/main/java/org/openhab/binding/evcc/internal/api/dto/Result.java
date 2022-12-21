@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.91.
+ * This DTO was written for evcc version 0.106.3
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -24,39 +24,37 @@ public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    // TO DO LATER
-    // @SerializedName("auth")
-    // private Auth auth;
+    // "auth" is left out because it does not provide any useful information
 
     @SerializedName("batteryConfigured")
     private boolean batteryConfigured;
 
     @SerializedName("batteryPower")
-    private double batteryPower;
+    private float batteryPower;
 
     @SerializedName("batterySoC")
-    private int batterySoC;
+    private float batterySoC;
 
     @SerializedName("gridConfigured")
     private boolean gridConfigured;
 
     @SerializedName("gridPower")
-    private double gridPower;
+    private float gridPower;
 
     @SerializedName("homePower")
-    private double homePower;
+    private float homePower;
 
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoC")
-    private double batteryPrioritySoC;
+    private float batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
     private boolean pvConfigured;
 
     @SerializedName("pvPower")
-    private double pvPower;
+    private float pvPower;
 
     @SerializedName("siteTitle")
     private String siteTitle;
@@ -71,21 +69,21 @@ public class Result {
     /**
      * @return battery's power
      */
-    public double getBatteryPower() {
+    public float getBatteryPower() {
         return batteryPower;
     }
 
     /**
      * @return battery's priority state of charge
      */
-    public double getBatteryPrioritySoC() {
+    public float getBatteryPrioritySoC() {
         return batteryPrioritySoC;
     }
 
     /**
      * @return battery's state of charge
      */
-    public int getBatterySoC() {
+    public float getBatterySoC() {
         return batterySoC;
     }
 
@@ -99,14 +97,14 @@ public class Result {
     /**
      * @return grid's power
      */
-    public double getGridPower() {
+    public float getGridPower() {
         return gridPower;
     }
 
     /**
      * @return home's power
      */
-    public double getHomePower() {
+    public float getHomePower() {
         return homePower;
     }
 
@@ -127,7 +125,7 @@ public class Result {
     /**
      * @return pv's power
      */
-    public double getPvPower() {
+    public float getPvPower() {
         return pvPower;
     }
 

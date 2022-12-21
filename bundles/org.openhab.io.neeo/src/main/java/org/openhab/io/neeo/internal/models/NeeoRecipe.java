@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The model representing an NEEO recipe (serialize/deserialize json use only).
+ * The model representing a NEEO recipe (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
@@ -29,7 +30,8 @@ import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAuto
  * Class providing script extensions via CommonJS modules.
  *
  * @author Jonathan Gilbert - Initial contribution
- * @author Florian Hotze - Pass in lock object for multi-thread synchronization
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread
+ *         synchronization
  */
 
 @NonNullByDefault
@@ -37,11 +39,11 @@ public class ScriptExtensionModuleProvider {
 
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
-    private final Object lock;
+    private final Lock lock;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
-    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Object lock) {
+    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
         this.lock = lock;
     }

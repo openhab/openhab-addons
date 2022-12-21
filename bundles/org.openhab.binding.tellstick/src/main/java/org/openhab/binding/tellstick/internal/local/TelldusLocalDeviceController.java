@@ -56,7 +56,6 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     private final Logger logger = LoggerFactory.getLogger(TelldusLocalDeviceController.class);
     private long lastSend = 0;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND_SEC = 250;
-    static final int REQUEST_TIMEOUT_MS = 5000;
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private String localApiUrl;

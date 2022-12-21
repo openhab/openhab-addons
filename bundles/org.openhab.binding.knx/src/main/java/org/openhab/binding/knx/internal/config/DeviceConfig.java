@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.knx.internal.config;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -27,8 +25,8 @@ public class DeviceConfig {
 
     private String address = "";
     private boolean fetch = false;
-    private BigDecimal pingInterval = BigDecimal.valueOf(0);
-    private BigDecimal readInterval = BigDecimal.valueOf(0);
+    private int pingInterval = 0;
+    private int readInterval = 0;
 
     public String getAddress() {
         return address;
@@ -38,11 +36,11 @@ public class DeviceConfig {
         return fetch;
     }
 
-    public BigDecimal getPingInterval() {
+    public int getPingInterval() {
         return pingInterval;
     }
 
-    public BigDecimal getReadInterval() {
+    public int getReadInterval() {
         return readInterval;
     }
 }

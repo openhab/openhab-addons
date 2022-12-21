@@ -31,7 +31,6 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitc
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.JsonElement;
@@ -60,8 +59,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     public void testHandleCommand()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
 
-        when(getThing().getUID()).thenReturn(new ThingUID("boschshc", "abcdef"));
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("PowerSwitch"), serviceStateCaptor.capture());
@@ -76,12 +73,8 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         assertSame(PowerSwitchState.OFF, state.switchState);
     }
 
-    protected abstract ThingTypeUID getThingTypeUID();
-
     @Test
     public void testUpdateChannel_PowerSwitchState() {
-        when(getThing().getUID()).thenReturn(new ThingUID("boschshc", "abcdef"));
-
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
         getFixture().processUpdate("PowerSwitch", jsonObject);
@@ -97,8 +90,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
     @Test
     public void testUpdateChannel_PowerMeterServiceState() {
-        when(getThing().getUID()).thenReturn(new ThingUID("boschshc", "abcdef"));
-
         JsonElement jsonObject = JsonParser.parseString("{\n" + "  \"@type\": \"powerMeterState\",\n"
                 + "  \"powerConsumption\": \"23\",\n" + "  \"energyConsumption\": 42\n" + "}");
         getFixture().processUpdate("PowerMeter", jsonObject);

@@ -182,7 +182,7 @@ Additionally, these advanced channels are available (not all are available on al
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
-| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Indicates if the steering wheel heater is switched on                                                            |
+| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                      |
 | sunroofstate              | String                   | Sunroof State                 | Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".            |
 | sunroof                   | Dimmer                   | Sunroof                       | Indicates the opening state of the sunroof (0% closed, 100% fully open)                                          |
 | temperature               | Number:Temperature       | Temperature                   | Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced. |

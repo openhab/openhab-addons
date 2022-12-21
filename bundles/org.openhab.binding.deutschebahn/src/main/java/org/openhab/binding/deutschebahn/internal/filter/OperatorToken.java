@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public abstract class OperatorToken extends FilterToken {
 
     /**
-     * Creates an new {@link OperatorToken}.
+     * Creates a new {@link OperatorToken}.
      */
     public OperatorToken(int position) {
         super(position);

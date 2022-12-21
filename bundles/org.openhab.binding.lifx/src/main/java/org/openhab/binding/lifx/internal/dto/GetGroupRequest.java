@@ -23,7 +23,6 @@ public class GetGroupRequest extends Packet {
     public static final int TYPE = 0x33;
 
     public GetGroupRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

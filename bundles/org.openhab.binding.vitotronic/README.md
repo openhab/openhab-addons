@@ -10,7 +10,7 @@ It supports the separation of the heating adaption from the integration in [open
 
 The adapter transforms the address oriented raw interface of the Vitotronic to an abstract format.
 The adapter itself is not a part of the binding.
-[A alpha version is available here](https://github.com/steand/optolink)
+[An alpha version is available here](https://github.com/steand/optolink)
 [More Information about the adapter](https://github.com/steand/optolink/wiki)
 
 ## Supported Things
@@ -100,6 +100,7 @@ The follow channels are implemented:
 | flowtemperature        | Number    | Temperature sensor of the ciruit flow                 |
 | pump                   | Switch    | Pump state                                            |
 | operationmode          | Number    | Operationmode                                         |
+| currentmode            | Number    | Current Mode
 | savemode               | Switch    | Savemode on/off                                       |
 | partymode              | Switch    | Partymode on/off                                      |
 | party_temp_setpoint    | Number    | Party mode temperature setpoint (target)              |

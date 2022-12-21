@@ -32,17 +32,17 @@ import com.google.gson.JsonElement;
  * same endpoint.
  * <p>
  * The endpoints of this service have the following URL structure:
- * 
+ *
  * <pre>
  * https://{IP}:8444/smarthome/devices/{deviceId}/services/{serviceName}/state
  * </pre>
- * 
+ *
  * The HTTP client of the bridge will use <code>GET</code> requests to retrieve the state and <code>PUT</code> requests
  * to set the state.
  * <p>
  * The services of the devices and their official APIs can be found
  * <a href="https://apidocs.bosch-smarthome.com/local/">here</a>.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  * @author David Pace - Service abstraction
  */
@@ -63,7 +63,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Constructor
-     * 
+     *
      * @param serviceName Unique name of the service.
      * @param stateClass State class that this service uses for data transfers
      *            from/to the device.
@@ -75,7 +75,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Initializes the service
-     * 
+     *
      * @param bridgeHandler Bridge to use for communication from/to the device
      * @param deviceId Id of device this service is for
      * @param stateUpdateListener Function to call when a state update was received
@@ -89,7 +89,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Returns the class of the state this service provides.
-     * 
+     *
      * @return Class of the state this service provides.
      */
     public Class<TState> getStateClass() {
@@ -98,7 +98,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Requests the current state of the service and updates it.
-     * 
+     *
      * @throws ExecutionException
      * @throws TimeoutException
      * @throws InterruptedException
@@ -114,7 +114,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Requests the current state of the device with the specified id.
-     * 
+     *
      * @return Current state of the device.
      * @throws ExecutionException
      * @throws TimeoutException
@@ -136,7 +136,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * Sets the state of the device with the specified id.
-     * 
+     *
      * @param state State to set.
      * @throws InterruptedException
      * @throws ExecutionException
@@ -156,10 +156,10 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * A state update was received from the bridge
-     * 
+     *
      * @param stateData Current state of service. Serialized as JSON.
      */
-    public void onStateUpdate(JsonElement stateData) {
+    public void onStateUpdate(@Nullable JsonElement stateData) {
         @Nullable
         TState state = BoschSHCServiceState.fromJson(stateData, this.stateClass);
         if (state == null) {
@@ -171,7 +171,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
 
     /**
      * A state update was received from the bridge.
-     * 
+     *
      * @param state Current state of service as an instance of the state class.
      */
     private void onStateUpdate(TState state) {
@@ -184,7 +184,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
     /**
      * Allows a service to handle a command and create a new state out of it.
      * The new state still has to be set via setState.
-     * 
+     *
      * @param command Command to handle
      * @throws BoschSHCException If service can not handle command
      */

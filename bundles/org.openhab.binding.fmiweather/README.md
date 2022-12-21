@@ -1,6 +1,6 @@
 # FMI Weather Binding
 
-This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data). 
+This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data).
 
 Binding provides access to weather observations from FMI weather stations and [HIRLAM weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
 Forecast covers all of Europe, see previous link for more information.
@@ -33,7 +33,6 @@ The binding automatically discovers weather stations and forecasts for nearby pl
 | Parameter | Type | Required | Description                                                                                                                                                                                                                                                                                                                                                         | Example                              |
 | --------- | ---- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `fmisid`  | text | ✓        | FMI Station ID. You can FMISID of see all weathers stations at [FMI web site](https://en.ilmatieteenlaitos.fi/observation-stations?p_p_id=stationlistingportlet_WAR_fmiwwwweatherportlets&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-4&p_p_col_count=1&_stationlistingportlet_WAR_fmiwwwweatherportlets_stationGroup=WEATHER#station-listing) | `"852678"` for Espoo Nuuksio station |
-
 
 ### `forecast` thing configuration
 
@@ -107,7 +106,7 @@ Please use the [Units Of Measurement](https://www.openhab.org/docs/concepts/unit
 
 `fmi.things`:
 
-```
+```java
 Thing fmiweather:observation:station_Helsinki_Kumpula "Helsinki Kumpula Observation" [fmisid="101004"]
 Thing fmiweather:forecast:forecast_Paris "Paris Forecast" [location="48.864716, 2.349014"]
 ```
@@ -144,7 +143,7 @@ for channel in observation['value']['channels']:
      '"{label} [{unit}]" {{ channel="{channel_id}" }}').format(**locals()))    
 -->
 
-```
+```java
 DateTime HelsinkiObservationTime "Observation Time [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#time" }
 Number:Temperature HelsinkiTemperature "Temperature [%.1f %unit%]" <temperature> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#temperature" }
 Number:Dimensionless HelsinkiHumidity "Humidity [%.1f %unit%]" <humidity> { channel="fmiweather:observation:station_Helsinki_Kumpula:current#humidity" }
@@ -216,7 +215,7 @@ for channel in forecast['channels']:
      '"{label} [{unit}]" {icon} {{ channel="{channel_id}" }}').format(**locals()))       
 -->
 
-```
+```java
 DateTime ParisForecastNowTime "Forecast Time Now [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="fmiweather:forecast:forecast_Paris:forecastNow#time" }
 Number:Temperature ParisForecastNowTemperature "Temperature Now [%.1f %unit%]" <temperature> { channel="fmiweather:forecast:forecast_Paris:forecastNow#temperature" }
 Number:Dimensionless ParisForecastNowHumidity "Humidity Now [%.1f %unit%]" <humidity> { channel="fmiweather:forecast:forecast_Paris:forecastNow#humidity" }
@@ -783,7 +782,7 @@ Number ParisForecastHours50WeatherId "Prevailing weather id hour 50 [%.1f %unit%
 
 `fmi_weather.sitemap`:
 
-```
+```perl
 sitemap fmi_weather label="FMI Weather" {
     Frame label="Observation Helsinki" {
         Text item=HelsinkiObservationTime

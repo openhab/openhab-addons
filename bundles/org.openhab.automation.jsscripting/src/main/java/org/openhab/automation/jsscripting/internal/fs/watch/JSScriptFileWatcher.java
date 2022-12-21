@@ -20,24 +20,30 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
+import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
 import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileReference;
-import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Monitors <openHAB-conf>/automation/js for Javascript files, but not libraries
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public class JSScriptFileWatcher extends ScriptFileWatcher {
+@Component(immediate = true, service = ScriptDependencyTracker.Listener.class)
+public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
 
     private final String ignorePath;
 
-    public JSScriptFileWatcher(final ScriptEngineManager manager, final ReadyService readyService,
-            JSDependencyTracker dependencyTracker) {
-        super(manager, dependencyTracker, readyService, FILE_DIRECTORY);
+    @Activate
+    public JSScriptFileWatcher(final @Reference ScriptEngineManager manager,
+            final @Reference ReadyService readyService) {
+        super(manager, readyService, FILE_DIRECTORY);
 
         ignorePath = pathToWatch + File.separator + "node_modules";
     }

@@ -171,6 +171,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
             // Broadcast the message over all the network interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
+                @Nullable
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue;

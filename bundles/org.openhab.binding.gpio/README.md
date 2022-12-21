@@ -1,7 +1,7 @@
 # GPIO Binding
 
 This binding adds GPIO support via the pigpio daemon to openhab.
-It requires the pigpio (http://abyz.me.uk/rpi/pigpio/) to be running on the pi that should be controlled.
+It requires the pigpio (<http://abyz.me.uk/rpi/pigpio/>) to be running on the pi that should be controlled.
 
 ## Supported Things
 
@@ -15,7 +15,7 @@ This thing represents a remote pigpio instance running as daemon on a raspberry 
 
 On a raspberry (or a compatible device) you have to install pigpio:
 
-```
+```shell
 sudo apt-get install pigpiod
 sudo raspi-config 
 ```
@@ -24,22 +24,24 @@ sudo raspi-config
 
 Note: if you are setting this up on a Raspberry Pi without `raspi-config` you can create the service config file manually:
 
-```
+```shell
 sudo mkdir -p /etc/systemd/system/pigpiod.service.d/
 sudo nano /etc/systemd/system/pigpiod.service.d/public.conf
 ```
 
-    [Service]
-    ExecStart=
-    ExecStart=/usr/bin/pigpiod
-
+```text
+[Service]
+ExecStart=
+ExecStart=/usr/bin/pigpiod
 ```
+
+```shell
 sudo systemctl daemon-reload
 ```
 
 Now that Remote GPIO is enabled, get the daemon going (even if installed with apt-get):
 
-```
+```shell
 sudo systemctl enable pigpiod 
 sudo systemctl start pigpiod
 ```
