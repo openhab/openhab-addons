@@ -57,6 +57,10 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         initializeStorage();
     }
 
+    public void setBlockUserDeletion(boolean blockUserDeletion) {
+        this.blockUserDeletion = blockUserDeletion;
+    }
+
     @Override
     public void createUser(String username, byte[] publicKey) {
         logger.trace("create user {}", username);
