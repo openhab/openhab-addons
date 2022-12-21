@@ -372,6 +372,9 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toOnOffEffectState((OnOffType) command);
                 }
                 break;
+            default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+                break;
         }
         if (newState != null) {
             // Cache values which we have sent
@@ -385,7 +388,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             }
             bridgeHandler.updateLightState(this, light, newState, fadeTime);
         } else {
-            logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 

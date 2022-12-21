@@ -300,13 +300,14 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
                 break;
         }
         if (newState != null) {
             cacheNewState(newState);
             bridgeHandler.updateGroupState(group, newState, fadeTime);
         } else {
-            logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 
