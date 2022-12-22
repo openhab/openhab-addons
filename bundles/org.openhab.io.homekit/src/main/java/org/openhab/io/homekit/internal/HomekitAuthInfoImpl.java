@@ -17,6 +17,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
@@ -62,7 +63,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     @Override
-    public void createUser(String username, byte[] publicKey) {
+    public void createUser(String username, byte[] publicKey, boolean isAdmin) {
         logger.trace("create user {}", username);
         final String userKey = createUserKey(username);
         final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey);
@@ -131,6 +132,18 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     public boolean hasUser() {
         Collection<String> keys = storage.getKeys();
         return keys.stream().anyMatch(this::isUserKey);
+    }
+
+    @Override
+    public Collection<String> listUsers() {
+        Collection<String> keys = storage.getKeys();
+        // don't forget to strip user_ prefix
+        return keys.stream().filter(this::isUserKey).map(u -> u.substring(5)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean userIsAdmin(String username) {
+        return true;
     }
 
     public void clear() {
