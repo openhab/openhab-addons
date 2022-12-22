@@ -181,11 +181,13 @@ public class PigpioRemoteHandler extends BaseThingHandler {
     }
 
     protected void setChannelJPigpio(@Nullable JPigpio jPigpio) throws PigpioException {
-        if (this.channelHandlers.isEmpty())
+        if (this.channelHandlers.isEmpty()) {
             createChannelHandlers();
+        }
 
-        for (ChannelHandler handler : this.channelHandlers.values())
+        for (ChannelHandler handler : this.channelHandlers.values()) {
             handler.listen(jPigpio);
+        }
 
         logger.debug("gpio jPigpio listening");
     }
