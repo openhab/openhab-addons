@@ -126,14 +126,22 @@ public abstract class AM43Command {
         value[REQUEST_PREFIX.length + 1] = header;
         value[REQUEST_PREFIX.length + 2] = (byte) data.length;
         System.arraycopy(data, 0, value, REQUEST_PREFIX.length + 3, data.length);
-        value[value.length-1] = createChecksum(value, REQUEST_PREFIX.length, REQUEST_PREFIX.length + 2);
+        value[value.length - 1] = createChecksum(value, REQUEST_PREFIX.length, 3 + data.length);
         return value;
     }
 
-    protected byte createChecksum(byte[] data, int startIndex, int maxIndex) {
-        // this is a basic checksum
+    /**
+     *  A basic method to calculate the cecksum
+     * 
+     * @param data source for the checksum calculation
+     * @param startIndex the zero-based start index to include in the calculation
+     * @param length the length of the range to include in the calculation
+     * @return the CRC-checksum result in {@link byte}
+     */
+    protected byte createChecksum(byte[] data, int startIndex, int length) {
+ 
         byte crc = data[startIndex];
-        for (int i = startIndex+1; i < maxIndex; i++) {
+        for (int i = startIndex+1; i < startIndex + length; i++) {
             crc ^= data[i];
         }
         return crc;
