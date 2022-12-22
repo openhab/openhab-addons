@@ -46,6 +46,7 @@
 			<channel id="obstruct" typeId="obstruct"/>
 			<channel id="moving" typeId="moving"/>
 			<channel id="command" typeId="command"/>
+			<channel id="t4command" typeId="t4command"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -71,6 +72,7 @@
 			<channel id="obstruct" typeId="obstruct"/>
 			<channel id="moving" typeId="moving"/>
 			<channel id="command" typeId="command"/>
+			<channel id="t4command" typeId="t4command"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -122,12 +124,13 @@
 				<option value="close">Close</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="t4command">
 		<item-type>String</item-type>
-		<label>Command</label>
-		<description>Send a given command to the gate</description>
+		<label>T4 Command</label>
+		<description>Send a T4 Command to the gate</description>
 		<state readOnly="false">
 			<options>
 				<option value="MDAx">Step by Step</option>
@@ -155,6 +158,7 @@
 				<option value="MDFh">Release and Close</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -29,6 +29,7 @@ public class MyNiceBindingConstants {
     public static final String DOOR_OBSTRUCTED = "obstruct";
     public static final String DOOR_MOVING = "moving";
     public static final String DOOR_COMMAND = "command";
+    public static final String DOOR_T4_COMMAND = "t4command";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");
@@ -37,4 +38,6 @@ public class MyNiceBindingConstants {
 
     // Configuration element of a portal
     public static final String DEVICE_ID = "id";
+
+    public static final String ALLOWED_T4 = "allowedT4";
 }

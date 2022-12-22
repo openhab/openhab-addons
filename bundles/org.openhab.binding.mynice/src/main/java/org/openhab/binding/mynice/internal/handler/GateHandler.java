@@ -18,10 +18,12 @@ import static org.openhab.core.thing.Thing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
+import org.openhab.binding.mynice.internal.xml.dto.T4Command;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -32,6 +34,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +43,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class GateHandler extends BaseThingHandler implements MyNiceDataListener {
+    private final Logger logger = LoggerFactory.getLogger(GateHandler.class);
 
     private String id = "";
 
@@ -68,8 +73,24 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
         if (command instanceof RefreshType) {
             return;
         } else {
-            if (DOOR_COMMAND.equals(channelUID.getId())) {
-                getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, command.toString()));
+            handleCommand(channelUID.getId(), command.toString());
+        }
+    }
+
+    private void handleCommand(String channelId, String command) {
+        if (DOOR_COMMAND.equals(channelId)) {
+            getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, command));
+        } else if (DOOR_T4_COMMAND.equals(channelId)) {
+            String allowed = thing.getProperties().get(ALLOWED_T4);
+            if (allowed != null && allowed.contains(command)) {
+                try {
+                    T4Command t4 = T4Command.fromCode(command);
+                    getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, t4));
+                } catch (IllegalArgumentException e) {
+                    logger.info("{} is not a valid T4 command", command);
+                }
+            } else {
+                logger.info("This thing does not accept the T4 command '{}'", command);
             }
         }
     }
@@ -79,9 +100,12 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
         devices.stream().filter(d -> id.equals(d.id)).findFirst().map(device -> {
             updateStatus(ThingStatus.ONLINE);
             if (thing.getProperties().isEmpty()) {
+                int value = Integer.parseInt(device.properties.t4allowed.values, 16);
+                List<String> t4Allowed = T4Command.fromBitmask(value).stream().map(Enum::name)
+                        .collect(Collectors.toList());
                 Map<String, String> properties = Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
                         PROPERTY_SERIAL_NUMBER, device.serialNr, PROPERTY_HARDWARE_VERSION, device.versionHW,
-                        PROPERTY_FIRMWARE_VERSION, device.versionFW);
+                        PROPERTY_FIRMWARE_VERSION, device.versionFW, ALLOWED_T4, String.join(",", t4Allowed));
                 updateProperties(properties);
             }
             if (device.prod != null) {

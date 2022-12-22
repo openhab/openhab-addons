@@ -22,6 +22,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
+import org.openhab.binding.mynice.internal.xml.dto.T4Command;
 
 /**
  * The {@link RequestBuilder} is responsible for building a string request from the CommandType
@@ -37,6 +38,7 @@ public class RequestBuilder {
     private static final String START_REQUEST = "<Request id=\"%s\" source=\"openhab\" target=\"%s\" gw=\"gwID\" protocolType=\"NHK\" protocolVersion=\"1.0\" type=\"%s\">\r\n";
     private static final String END_REQUEST = "%s%s</Request>";
     private static final String DOOR_ACTION = "<DoorAction>%s</DoorAction>";
+    private static final String T4_ACTION = "<T4Action>%s</T4Action>";
     private static final String SIGN = "<Sign>%s</Sign>";
 
     private final String clientChallenge = UUID.randomUUID().toString().substring(0, 8);
@@ -70,6 +72,10 @@ public class RequestBuilder {
 
     public String buildMessage(String id, String command) {
         return buildMessage(CommandType.CHANGE, id, String.format(DOOR_ACTION, command.toLowerCase()));
+    }
+
+    public String buildMessage(String id, T4Command t4) {
+        return buildMessage(CommandType.CHANGE, id, String.format(T4_ACTION, t4.name()));
     }
 
     public String buildMessage(CommandType command, Object... bodyParms) {

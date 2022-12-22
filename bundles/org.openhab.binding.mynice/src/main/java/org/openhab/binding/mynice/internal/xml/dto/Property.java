@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.mynice.internal.xml.dto;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@XStreamAlias("Properties")
-public class Properties {
-    @XStreamAlias("DoorStatus")
-    public String doorStatus;
-    @XStreamAlias("Obstruct")
-    public String obstruct;
-    @XStreamAlias("T4_allowed")
-    public Property t4allowed;
+public class Property {
+    @XStreamAsAttribute
+    public String type;
+    @XStreamAsAttribute
+    public String values;
+    @XStreamAsAttribute
+    public String perm;
 }
