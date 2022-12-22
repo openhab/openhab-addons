@@ -23,7 +23,6 @@ import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
-import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileReference;
 import org.openhab.core.service.ReadyService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -49,24 +48,12 @@ public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
     }
 
     @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
-            @Nullable Path path) {
-        if (Objects.nonNull(path)) {
-            if (!path.startsWith(ignorePath)) {
-                super.processWatchEvent(event, kind, path);
-            }
+    protected Optional<String> getScriptType(Path scriptFilePath) {
+        if (!scriptFilePath.startsWith(ignorePath) && "js".equals(super.getScriptType(scriptFilePath).orElse(null))) {
+            return Optional.of(GraalJSScriptEngineFactory.MIME_TYPE);
+        } else {
+            return Optional.empty();
         }
-    }
-
-    @Override
-    protected boolean createAndLoad(ScriptFileReference ref) {
-        return super.createAndLoad(new ScriptFileReference(ref.getScriptFileURL()) {
-            @Override
-            public Optional<String> getScriptType() {
-                assert super.getScriptType().get().equalsIgnoreCase("js");
-                return Optional.of(GraalJSScriptEngineFactory.MIME_TYPE);
-            }
-        });
     }
 
     @Override

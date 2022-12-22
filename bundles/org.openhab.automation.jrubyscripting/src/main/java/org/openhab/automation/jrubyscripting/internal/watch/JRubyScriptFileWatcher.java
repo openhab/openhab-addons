@@ -14,16 +14,14 @@ package org.openhab.automation.jrubyscripting.internal.watch;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.util.Objects;
+import java.util.Optional;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
-import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileReference;
 import org.openhab.core.service.ReadyService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -38,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Cody Cutrer - Initial contribution
  */
 @Component(immediate = true, service = ScriptDependencyTracker.Listener.class)
+@NonNullByDefault
 public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     private final Logger logger = LoggerFactory.getLogger(JRubyScriptFileWatcher.class);
 
@@ -55,24 +54,13 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     }
 
     @Override
-    protected void importFile(ScriptFileReference ref) {
-        if (isIgnored(ref.getScriptFileURL().getFile())) {
-            return;
+    protected Optional<String> getScriptType(Path scriptFilePath) {
+        String path = scriptFilePath.toString();
+
+        if (scriptEngineFactory.isFileInGemHome(path) || scriptEngineFactory.isFileInLoadPath(path)) {
+            return Optional.empty();
         }
-        super.importFile(ref);
+        return super.getScriptType(scriptFilePath);
     }
 
-    @Override
-    protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
-            @Nullable Path path) {
-        if (Objects.nonNull(path)) {
-            if (!isIgnored(path.toString())) {
-                super.processWatchEvent(event, kind, path);
-            }
-        }
-    }
-
-    private boolean isIgnored(String path) {
-        return scriptEngineFactory.isFileInGemHome(path) || scriptEngineFactory.isFileInLoadPath(path);
-    }
 }
