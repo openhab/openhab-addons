@@ -74,6 +74,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -1089,6 +1090,14 @@ public class IpCameraHandler extends BaseThingHandler {
                 updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                         + getThing().getUID().getId() + "/ipcamera.jpg"));
                 break;
+        }
+    }
+
+    public void removeChannels(List<org.openhab.core.thing.Channel> removeChannels) {
+        if (!removeChannels.isEmpty()) {
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withoutChannels(removeChannels);
+            updateThing(thingBuilder.build());
         }
     }
 

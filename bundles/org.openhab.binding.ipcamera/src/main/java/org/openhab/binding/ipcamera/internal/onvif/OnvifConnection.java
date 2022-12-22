@@ -473,6 +473,20 @@ public class OnvifConnection {
         if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
             logger.debug("Camera has no ONVIF PTZ support.");
+            List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
+            org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = ipCameraHandler.getThing().getChannel(CHANNEL_ZOOM);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            ipCameraHandler.removeChannels(removeChannels);
         } else {
             logger.debug("ptzXAddr:{}", ptzXAddr);
         }
