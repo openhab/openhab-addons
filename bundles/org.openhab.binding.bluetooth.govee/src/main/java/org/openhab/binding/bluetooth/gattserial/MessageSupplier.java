@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.bluetooth.gattserial;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Connor Petty - Initial Contribution
  *
  */
+@NonNullByDefault
 public interface MessageSupplier<M extends GattMessage> {
 
     public M createMessage();
