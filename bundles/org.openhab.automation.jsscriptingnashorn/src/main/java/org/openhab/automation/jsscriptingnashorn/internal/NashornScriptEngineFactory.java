@@ -40,9 +40,17 @@ public class NashornScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory factory = new org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory();
 
-    private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
-            .flatMap(List::stream) //
-            .collect(Collectors.toUnmodifiableList());
+    private final List<String> scriptTypes = createScriptTypes();
+
+    private List<String> createScriptTypes() {
+        List<String> extensions = List.of("nashornjs");
+
+        String mimeTypeVersion = ";version=ECMAScript-5.1";
+        List<String> mimeTypes = factory.getMimeTypes().stream().map(mimeType -> mimeType + mimeTypeVersion)
+                .collect(Collectors.toUnmodifiableList());
+
+        return Stream.of(extensions, mimeTypes).flatMap(List::stream).collect(Collectors.toUnmodifiableList());
+    }
 
     @Override
     public List<String> getScriptTypes() {
