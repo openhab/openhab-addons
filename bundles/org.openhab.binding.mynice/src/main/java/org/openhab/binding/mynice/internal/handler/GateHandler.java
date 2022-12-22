@@ -57,6 +57,11 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
         getBridgeHandler().ifPresent(h -> h.registerDataListener(this));
     }
 
+    @Override
+    public void dispose() {
+        getBridgeHandler().ifPresent(h -> h.unregisterDataListener(this));
+    }
+
     private Optional<It4WifiHandler> getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
