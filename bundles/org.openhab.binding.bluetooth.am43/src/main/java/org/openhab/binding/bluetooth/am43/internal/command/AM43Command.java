@@ -131,7 +131,7 @@ public abstract class AM43Command {
     }
 
     /**
-     *  A basic method to calculate the cecksum
+     * A basic method to calculate the checksum
      * 
      * @param data source for the checksum calculation
      * @param startIndex the zero-based start index to include in the calculation
@@ -139,9 +139,8 @@ public abstract class AM43Command {
      * @return the CRC-checksum result in {@link byte}
      */
     protected byte createChecksum(byte[] data, int startIndex, int length) {
- 
         byte crc = data[startIndex];
-        for (int i = startIndex+1; i < startIndex + length; i++) {
+        for (int i = startIndex + 1; i < startIndex + length; i++) {
             crc ^= data[i];
         }
         return crc;
