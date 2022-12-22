@@ -24,6 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.repeater.Repeater;
 import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,16 +56,18 @@ public class RepeaterHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        logger.debug("Polling Repeater status");
-        RepeaterManager repeaterManager = getManager(RepeaterManager.class);
+        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Polling Repeater status");
+            RepeaterManager repeaterManager = getManager(RepeaterManager.class);
 
-        ClientConfiguration config = getConfigAs(ClientConfiguration.class);
-        List<LanHost> hosts = repeaterManager.getRepeaterHosts(config.id);
-        updateChannelDecimal(REPEATER_MISC, HOST_COUNT, hosts.size());
+            ClientConfiguration config = getConfigAs(ClientConfiguration.class);
+            List<LanHost> hosts = repeaterManager.getRepeaterHosts(config.id);
+            updateChannelDecimal(REPEATER_MISC, HOST_COUNT, hosts.size());
 
-        Repeater repeater = repeaterManager.getDevice(config.id);
-        updateChannelDateTimeState(REPEATER_MISC, RPT_TIMESTAMP, repeater.getBootTime());
-        updateChannelOnOff(REPEATER_MISC, LED, repeater.getLedActivated());
-        updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.getConnection());
+            Repeater repeater = repeaterManager.getDevice(config.id);
+            updateChannelDateTimeState(REPEATER_MISC, RPT_TIMESTAMP, repeater.getBootTime());
+            updateChannelOnOff(REPEATER_MISC, LED, repeater.getLedActivated());
+            updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.getConnection());
+        }
     }
 }
