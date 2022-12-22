@@ -108,7 +108,7 @@
 	</channel-type>
 
 	<channel-type id="rain-rate">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Rain Rate</label>
 		<category>Rain</category>
 		<tags>
