@@ -28,6 +28,7 @@ import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.config.PlayerConfiguration;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.framework.BundleContext;
 
@@ -48,7 +49,9 @@ public class ActivePlayerHandler extends PlayerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        fetchPlayerStatus();
+        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+            fetchPlayerStatus();
+        }
     }
 
     private void fetchPlayerStatus() throws FreeboxException {

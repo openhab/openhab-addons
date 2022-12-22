@@ -118,7 +118,9 @@ public abstract class FreeDeviceHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        fetchSystemConfig();
+        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+            fetchSystemConfig();
+        }
     }
 
     protected abstract Optional<DeviceConfig> getDeviceConfig() throws FreeboxException;
