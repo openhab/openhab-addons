@@ -994,3 +994,32 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
 - if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
+
+### Re-adding the OpenHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
+
+There are various reasons this may happen. Try the following:
+
+* In [openhab-cli](https://www.openhab.org/docs/administration/console.html), run `openhab:homekit clearPairing`. Reboot openHAB. Reboot your iOS device. Try again.
+* In the Homekit settings, change the port, setupId, and pin. Save the settings, then re-open the settings so as to refresh the QR code. Re-add the device.
+* Remove Homekit state in `/var/lib/openhab/jsondb/homekit.json`, and homekit config in `/var/lib/openhab/config/org/openhab/homekit.config`. Restart openHAB. Reboot iPhone. Try again.
+
+### A stale Homekit device will not go away after deleting the related item.
+
+You probably have `useDummyAccessories` enabled in the OpenHAB Homekit settings. See the "Use Dummy Accessories" section in the help, above.
+
+### I added an accessory as the wrong type in Home, and updating the item configuration does not cause the change to reflect in the Home app
+
+Homekit remembers certain configurations about an accessory, from its name to its fundamental type (i.e. fan, light or
+switch?). If you added it incorrectly, simply updating the item type will not cause Home to update the type. To resolve:
+
+1) If using text configuration: Comment out the item temporarily. If in the GUI, you'll need to delete the item.
+
+2) If you have `useDummyAccessories` enabled, open the
+[openhab-cli](https://www.openhab.org/docs/administration/console.html). Run `openhab:homekit listDummyAccessories` and
+confirm your item is in the list. Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
+
+3) Close your Home app on your iOS device. Re-open it, and confirm that the accessory is gone.
+
+4) Uncomment the item or re-add it (this time with the correct configuration).
+
+5) You should now see the updated configuration for your accessory.
