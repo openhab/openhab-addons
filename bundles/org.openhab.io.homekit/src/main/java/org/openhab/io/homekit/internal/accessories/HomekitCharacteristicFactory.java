@@ -474,11 +474,18 @@ public class HomekitCharacteristicFactory {
 
     private static HoldPositionCharacteristic createHoldPositionCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
+        final Item item = taggedItem.getBaseItem();
+        if (!(item instanceof SwitchItem || item instanceof RollershutterItem)) {
+            logger.warn(
+                    "Item {} cannot be used for the HoldPosition characteristic; only SwitchItem and RollershutterItem are supported. Hold requests will be ignored.",
+                    item.getName());
+        }
+
         return new HoldPositionCharacteristic(value -> {
             if (!value) {
                 return;
             }
-            Item item = taggedItem.getBaseItem();
+
             if (item instanceof SwitchItem) {
                 ((SwitchItem) item).send(OnOffType.ON);
             } else if (item instanceof RollershutterItem) {
