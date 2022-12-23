@@ -198,7 +198,7 @@ The following examples defines a single HomeKit accessory _with multiple service
 Note that `AccessoryGroup` doesn't expose any services itself, but allows you to group other services together underneath it.
 Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic, and not its accessory type, since it would be ambiguous if that item belongs to a secondary service, or to the primary service it's nested under.
 
-```xtend
+```java
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="AccessoryGroup"}
 Switch light1 "Light 1" (gLight) {homekit="Lighting"}
 Switch light2 "Light 2" (gLight) {homekit="Lighting"}
@@ -220,7 +220,7 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting"}
 
 You can also mix and match accessories:
 
-```xtend
+```java
 Group gFan {homekit="Fan"}
 Switch fan1 "Fan" (gFan) {homekit="Fan.Active"}
 Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
@@ -231,7 +231,7 @@ Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
 Another way to build complex accessories is to associate multiple accessory types with the root group, and then define all of the individual characteristics on group members.
 When using this style, you cannot have multiple instance of the same accessory type.
 
-```xtend
+```java
 Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
 Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
 Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
@@ -246,14 +246,14 @@ or in MainUI:
 
 Finally, you can link one openHAB item to one or more HomeKit accessories, as well:
 
-```xtend
+```java
 Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
 ```
 
 You can even form complex sensors this way.
 Just be sure that you fully specify additional characteristics, so that the addon knows which root service to add it to.
 
-```xtend
+```java
 Group eBunkAirthings "Bunk Room Airthings Wave Plus" { homekit="AirQualitySensor,TemperatureSensor,HumiditySensor" }
 
 String Bunk_AirQuality "Bunk Room Air Quality" (eBunkAirthings) { homekit="AirQualitySensor.AirQuality" }
@@ -267,10 +267,10 @@ A sensor with a battery configured in MainUI:
 ![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
 
 The Home app uses the first accessory in a group as the icon for the group as a whole.
-e.g. an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
+E.g. an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
 You can also override the primary service by using adding `primary=<type>` to the HomeKit metadata configuration:
 
-```xtend
+```java
 Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary = "Fan"]}
 ```
 

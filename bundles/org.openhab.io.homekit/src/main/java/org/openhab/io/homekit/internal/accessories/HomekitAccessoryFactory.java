@@ -433,6 +433,10 @@ public class HomekitAccessoryFactory {
             try {
                 subAccessory.addCharacteristic(new NameCharacteristic(() -> subAccessory.getName()));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // This should never happen; all services should support NameCharacteristic as an optional
+                // Characteristic.
+                // If HAP-Java defined a service that doesn't support addOptionalCharacteristic(NameCharacteristic),
+                // Then it's a bug there, and we're just going to ignore the exception here.
             }
 
             if (subAccessory.isLinkable(accessory)) {

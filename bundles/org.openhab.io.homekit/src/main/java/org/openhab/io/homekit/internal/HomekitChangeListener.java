@@ -440,8 +440,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private void createRootAccessories(Item item) {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
-        if (accessoryTypes.isEmpty())
+        if (accessoryTypes.isEmpty()) {
             return;
+        }
 
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
         // Don't create accessories that are sub-accessories of other accessories
@@ -451,8 +452,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
         final @Nullable Map<String, Object> itemConfiguration = HomekitAccessoryFactory.getItemConfiguration(item,
                 metadataRegistry);
-        if (!itemIsForThisBridge(item, itemConfiguration))
+        if (!itemIsForThisBridge(item, itemConfiguration)) {
             return;
+        }
 
         final HomekitAccessoryType primaryAccessoryType = getPrimaryAccessoryType(item, accessoryTypes,
                 itemConfiguration);
@@ -477,12 +479,17 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                             final AbstractHomekitAccessoryImpl additionalAccessory = HomekitAccessoryFactory
                                     .create(additionalTaggedItem, metadataRegistry, updater, settings);
                             // Secondary accessories that don't explicitly specify a name will implicitly
-                            // get a name characteristic based
+                            // get a name characteristic based on the item's name
                             if (!additionalAccessory.getCharacteristic(HomekitCharacteristicType.NAME).isPresent()) {
                                 try {
                                     additionalAccessory.addCharacteristic(
                                             new NameCharacteristic(() -> additionalAccessory.getName()));
                                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                    // This should never happen; all services should support NameCharacteristic as an
+                                    // optional Characteristic.
+                                    // If HAP-Java defined a service that doesn't support
+                                    // addOptionalCharacteristic(NameCharacteristic), then it's a bug there, and we're
+                                    // just going to ignore the exception here.
                                 }
                             }
                             accessory.getServices().add(additionalAccessory.getPrimaryService());
