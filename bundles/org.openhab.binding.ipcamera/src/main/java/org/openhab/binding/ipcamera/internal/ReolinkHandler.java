@@ -73,16 +73,18 @@ public class ReolinkHandler extends ChannelDuplexHandler {
             switch (cutDownURL) {// Use a cutdown URL as we can not use variables in a switch()
                 case "/api.cgi?cmd=Login":
                     ipCameraHandler.token = Helper.searchString(content, "\"name\" : \"");
-                    ipCameraHandler.logger.info(
-                            "Please report that your Reolink camera gave a login token:{}, in response:{}",
-                            ipCameraHandler.token, content);
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility&token=" + ipCameraHandler.token,
-                            "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
-                                    + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
+                    if (!ipCameraHandler.token.isEmpty()) {
+                        ipCameraHandler.logger.debug("Your Reolink camera gave a login token:{}",
+                                ipCameraHandler.token);
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility&token=" + ipCameraHandler.token,
+                                "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
+                                        + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
+                    } else {
+                        ipCameraHandler.logger
+                                .info("Please report that your Reolink camera gave a bad login response:{}", content);
+                    }
                     break;
                 case "/api.cgi?cmd=GetAbility": // check what channels the camera supports and if user has rights
-                    ipCameraHandler.logger.debug("This reolink camera supports the following for this user:{}",
-                            content);
                     break;
                 case "/api.cgi?cmd=GetAiState":
                     ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));

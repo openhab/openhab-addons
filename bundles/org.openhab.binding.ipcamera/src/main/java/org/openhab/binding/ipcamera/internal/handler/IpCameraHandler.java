@@ -149,6 +149,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> cameraConnectionJob = null;
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
     private @Nullable ScheduledFuture<?> snapshotJob = null;
+    private @Nullable ScheduledFuture<?> authenticationJob = null;
     private @Nullable Bootstrap mainBootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(1);
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.PUT, "");
@@ -329,9 +330,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             // Foscam needs this as will other cameras with chunks//
                             if (isChunked && bytesAlreadyRecieved != 0) {
-                                logger.trace("Reply is chunked.");
                                 reply = incomingMessage;
-                                super.channelRead(ctx, reply);
                             }
                         }
                     }
@@ -1055,6 +1054,12 @@ public class IpCameraHandler extends BaseThingHandler {
         setChannelState(CHANNEL_RECORDING_GIF, DecimalType.valueOf(new String("" + seconds)));
     }
 
+    private void getReolinkToken() {
+        sendHttpPOST("/api.cgi?cmd=Login",
+                "[{\"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
+                        + cameraConfig.getUser() + "\", \"password\":\"" + cameraConfig.getPassword() + "\"}}}]");
+    }
+
     public String returnValueFromString(String rawString, String searchedString) {
         String result = "";
         int index = rawString.indexOf(searchedString);
@@ -1721,9 +1726,10 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
             case REOLINK_THING:
+                authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45, TimeUnit.MINUTES);
                 if (snapshotUri.isEmpty()) {
                     snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel()
-                            + "&rs=openHAB&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
+                            + "&rs=openHAB&token=" + token;
                 }
                 if (rtspUri.isEmpty()) {
                     if (cameraConfig.getNvrChannel() < 1) {
@@ -1733,10 +1739,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + "_main";
                     }
                 }
-                sendHttpPOST("/api.cgi?cmd=Login&token=null",
-                        "[{\"cmd\":\"Login\", \"param\":{ \"User\":{ \"Version\": \"0\", \"userName\":\""
-                                + cameraConfig.getUser() + "\", \"password\":\"" + cameraConfig.getPassword()
-                                + "\"}}}]");
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
@@ -1793,6 +1795,11 @@ public class IpCameraHandler extends BaseThingHandler {
         isOnline = false;
         snapshotPolling = false;
         Future<?> localFuture = pollCameraJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            localFuture = null;
+        }
+        localFuture = authenticationJob;
         if (localFuture != null) {
             localFuture.cancel(true);
             localFuture = null;
