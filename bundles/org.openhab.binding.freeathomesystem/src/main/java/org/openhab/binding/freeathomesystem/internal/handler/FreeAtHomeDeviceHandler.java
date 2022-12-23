@@ -263,7 +263,8 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
                     ChannelUID channelUID = UidUtils.generateChannelUID(thingUID, device.getDeviceId(),
                             channel.getChannelId(), dpg.getLabel());
 
-                    String channelLabel = String.format("%s - %s", channel.getFunctionIdText(), dpg.getLabel());
+                    String channelLabel = String.format("%s - %s - %s", channel.getChannelLabel(),
+                            channel.getFunctionIdText(), dpg.getLabel());
 
                     Channel thingChannel = ChannelBuilder.create(channelUID)
                             .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)

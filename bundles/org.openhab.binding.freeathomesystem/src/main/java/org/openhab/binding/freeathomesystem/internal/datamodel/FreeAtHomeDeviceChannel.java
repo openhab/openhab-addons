@@ -69,11 +69,10 @@ public class FreeAtHomeDeviceChannel {
 
                 logger.info("Switch sensor channel found - Channel FID: {}", channelFunctionID);
 
-                /* usage of sensor channel is intentionally switched off */
-                // FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
-                // newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1, channelId, channelObject);
-                //
-                // datapointGroups.add(newDatapointGroup);
+                FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
+                newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1, channelId, channelObject);
+
+                datapointGroups.add(newDatapointGroup);
 
                 break;
             }
