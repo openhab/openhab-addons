@@ -357,6 +357,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     @Override
     public Collection<HomekitAccessory> getAccessories(int instance) {
         if (instance < 1 || instance > changeListeners.size()) {
+            logger.warn("Instance {} is out of range 1..{}.", instance, changeListeners.size());
             return List.of();
         }
 
@@ -373,6 +374,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     @Override
     public void clearHomekitPairings(int instance) {
         if (instance < 1 || instance > authInfos.size()) {
+            logger.warn("Instance {} is out of range 1..{}.", instance, authInfos.size());
             return;
         }
 
@@ -394,6 +396,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     @Override
     public void pruneDummyAccessories(int instance) {
         if (instance < 1 || instance > authInfos.size()) {
+            logger.warn("Instance {} is out of range 1..{}.", instance, authInfos.size());
             return;
         }
 

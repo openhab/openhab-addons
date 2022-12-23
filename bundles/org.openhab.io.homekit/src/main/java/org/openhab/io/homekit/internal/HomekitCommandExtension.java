@@ -200,7 +200,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void listAccessories(Console console, @Nullable Integer instance) {
-        getIntanceAccessories(instance).forEach(v -> {
+        getInstanceAccessories(instance).forEach(v -> {
             try {
                 console.println(v.getId() + " " + v.getName().get());
             } catch (InterruptedException | ExecutionException e) {
@@ -210,7 +210,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void listDummyAccessories(Console console, @Nullable Integer instance) {
-        getIntanceAccessories(instance).forEach(v -> {
+        getInstanceAccessories(instance).forEach(v -> {
             try {
                 if (v instanceof DummyHomekitAccessory) {
                     console.println(v.getSerialNumber().get());
@@ -240,7 +240,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void printAccessory(String id, Console console, @Nullable Integer instance) {
-        getIntanceAccessories(instance).forEach(v -> {
+        getInstanceAccessories(instance).forEach(v -> {
             try {
                 if (("" + v.getId()).contains(id) || ((v.getName().get() != null)
                         && (v.getName().get().toUpperCase().contains(id.toUpperCase())))) {
@@ -255,7 +255,12 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         });
     }
 
-    private Collection<HomekitAccessory> getIntanceAccessories(@Nullable Integer instance) {
+    /**
+     * Get in-scope accessories
+     * 
+     * @param instance if null, means all accessories from all instances
+     */
+    private Collection<HomekitAccessory> getInstanceAccessories(@Nullable Integer instance) {
         if (instance != null) {
             return homekit.getAccessories(instance);
         } else {

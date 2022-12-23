@@ -45,7 +45,7 @@ public interface Homekit {
     void allowUnauthenticatedRequests(boolean allow);
 
     /**
-     * returns list of HomeKit accessories registered on all bridges.
+     * returns list of HomeKit accessories registered on all bridge instances.
      */
     Collection<HomekitAccessory> getAccessories();
 
@@ -55,12 +55,12 @@ public interface Homekit {
     Collection<HomekitAccessory> getAccessories(int instance);
 
     /**
-     * clear all pairings with HomeKit clients
+     * clear all pairings with HomeKit clients on all bridge instances.
      */
     void clearHomekitPairings();
 
     /**
-     * clear all pairings with HomeKit clients for a specific instance
+     * clear all pairings with HomeKit clients for a specific instance.
      * 
      * @param instance the instance number (1-based)
      */
@@ -68,6 +68,7 @@ public interface Homekit {
 
     /**
      * Prune dummy accessories (accessories that no longer have associated items)
+     * on all bridge instances.
      */
     void pruneDummyAccessories();
 
