@@ -14,11 +14,8 @@ package org.openhab.automation.jsscripting.internal.fs.watch;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;

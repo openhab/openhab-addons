@@ -62,5 +62,4 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
         }
         return super.getScriptType(scriptFilePath);
     }
-
 }
