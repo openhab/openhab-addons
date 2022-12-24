@@ -223,9 +223,7 @@ It is created by the ETS tool and cannot be changed via the ETS user interface.
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 
-- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
-`tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
-`tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`. `tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...). `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
 
 ### KNX Data Secure
 
