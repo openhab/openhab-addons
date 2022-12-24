@@ -38,16 +38,16 @@ public class KNXBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // Property IDs
-    public static final String DEVICE_MASK_VERSION = "devicemaskversion";
-    public static final String DEVICE_PROFILE = "deviceprofile";
-    public static final String DEVICE_MEDIUM_TYPE = "devicemediumtype";
-    public static final String FRIENDLY_NAME = "devicename";
-    public static final String MANUFACTURER_NAME = "manufacturername";
-    public static final String MANUFACTURER_SERIAL_NO = "manufacturerserialnumber";
-    public static final String MANUFACTURER_HARDWARE_TYPE = "manufacturerhardwaretype";
-    public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerfirmwarerevision";
-    public static final String MANUFACTURER_ORDER_INFO = "manufacturerorderinfo";
-    public static final String MAX_APDU_LENGTH = "maxapdulength";
+    public static final String DEVICE_MASK_VERSION = "deviceMaskVersion";
+    public static final String DEVICE_PROFILE = "deviceProfile";
+    public static final String DEVICE_MEDIUM_TYPE = "deviceMediumType";
+    public static final String FRIENDLY_NAME = "deviceName";
+    public static final String MANUFACTURER_NAME = "manufacturerName";
+    public static final String MANUFACTURER_SERIAL_NO = "manufacturerSerialNumber";
+    public static final String MANUFACTURER_HARDWARE_TYPE = "manufacturerHardwareType";
+    public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerFirmwareRevision";
+    public static final String MANUFACTURER_ORDER_INFO = "manufacturerOrderInfo";
+    public static final String MAX_APDU_LENGTH = "maxApduLength";
 
     // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";

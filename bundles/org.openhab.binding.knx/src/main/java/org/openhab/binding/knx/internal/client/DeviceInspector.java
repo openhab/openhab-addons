@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.Manufacturer;
@@ -149,8 +148,8 @@ public class DeviceInspector {
                 } catch (Exception e) {
                     // allowed to fail, optional
                 }
-                if ((maxApdu != null) && (!maxApdu.isEmpty())) {
-                    logger.trace("Max APDU for device {} is {} bytes (routing)", address, maxApdu);
+                if (!maxApdu.isEmpty()) {
+                    logger.trace("Max APDU of device {} is {} bytes (routing)", address, maxApdu);
                 } else {
                     // fallback: MAX_APDU_LENGTH; if availble set the default is 14 according to spec
                     Thread.sleep(OPERATION_INTERVAL);
@@ -163,10 +162,10 @@ public class DeviceInspector {
                     } catch (Exception e) {
                         // allowed to fail, optional
                     }
-                    if ((maxApdu != null) && (!maxApdu.isEmpty())) {
-                        logger.trace("Max APDU for device {} is {} bytes", address, maxApdu);
+                    if (!maxApdu.isEmpty()) {
+                        logger.trace("Max APDU of device {} is {} bytes", address, maxApdu);
                     } else {
-                        logger.trace("Max APDU for device {} not set, fallback to 14 bytes", address);
+                        logger.trace("Max APDU of device {} not set, fallback to 14 bytes", address);
                         maxApdu = "14"; // see spec
                     }
                 }
@@ -178,14 +177,16 @@ public class DeviceInspector {
                     final String hexString = toHex(orderInfo, "");
                     if ((!"ffffffffffffffffffff".equals(hexString)) && (!"00000000000000000000".equals(hexString))) {
                         String result = new String(orderInfo);
-                        // result = result.trim();
-                        result = StringUtils.strip(result, "\0");
-                        if ((result == null) || result.isEmpty()) {
+                        result = result.trim();
+                        if (result.isEmpty()) {
                             result = "0x" + hexString;
-                        } else if (!StringUtils.isAsciiPrintable(result)) {
-                            result = result.replaceAll("[^\\x20-\\x7E]", ".") + " (0x" + toHex(orderInfo, "") + ")";
+                        } else {
+                            final String printable = result.replaceAll("[^\\x20-\\x7E]", ".");
+                            if (!printable.equals(result)) {
+                                result = printable + " (0x" + toHex(orderInfo, "") + ")";
+                            }
                         }
-                        logger.trace("Order code for device {} is \"{}\"", address, result);
+                        logger.trace("Order code of device {} is \"{}\"", address, result);
                         ret.put(MANUFACTURER_ORDER_INFO, result);
                     }
                 }
@@ -212,13 +213,14 @@ public class DeviceInspector {
                             }
                         }
                         final String result = buf.toString();
-                        if ((result != null) && (StringUtils.isAsciiPrintable(result))) {
+                        if (result.matches("^[\\x20-\\x7E]+$")) {
                             logger.debug("Identified device {} as \"{}\"", address, result);
                             ret.put(FRIENDLY_NAME, result);
                         } else {
                             // this is due to devices which have a buggy implememtation (and show a broken string also
                             // in ETS tool)
-                            logger.debug("Ignoring FRIENDLY_NAME as it contains non-printable characters");
+                            logger.debug("Ignoring FRIENDLY_NAME of device {} as it contains non-printable characters",
+                                    address);
                         }
                     }
                 } catch (Exception e) {
@@ -265,8 +267,7 @@ public class DeviceInspector {
                 logger.debug("The device with address {} has mask {} ({}, medium {})", address,
                         ret.get(DEVICE_MASK_VERSION), ret.get(DEVICE_PROFILE), ret.get(DEVICE_MEDIUM_TYPE));
             } catch (KNXIllegalArgumentException e) {
-                logger.info("Can not parse Device Descriptor 0 for device with address {}: {}", address,
-                        e.getMessage());
+                logger.info("Can not parse Device Descriptor 0 of device with address {}: {}", address, e.getMessage());
             }
         } else {
             logger.debug("The device with address {} does not expose a Device Descriptor type 0", address);
@@ -277,8 +278,7 @@ public class DeviceInspector {
                 final DD2 dd = DeviceDescriptor.DD2.from(data);
                 logger.debug("The device with address {} is has DD2 {}", address, dd.toString());
             } catch (KNXIllegalArgumentException e) {
-                logger.info("Can not parse device descriptor 2 for device with address {}: {}", address,
-                        e.getMessage());
+                logger.info("Can not parse device descriptor 2 of device with address {}: {}", address, e.getMessage());
             }
         }
         return ret;
