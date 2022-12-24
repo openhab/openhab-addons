@@ -157,9 +157,13 @@ public interface CommonInterface {
         }
         // Prevent turning ONLINE myself if in the meantime something turned account OFFLINE
         ApiBridgeHandler accountHandler = getAccountHandler();
-        if (accountHandler != null && accountHandler.isConnected() && !newData.isIgnoredForThingUpdate()) {
-            setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    finalReason);
+        if (accountHandler != null && accountHandler.isConnected()) {
+            if (newData.isIgnoredForThingUpdate()) {
+                setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            } else {
+                setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        finalReason);
+            }
         }
     }
 
