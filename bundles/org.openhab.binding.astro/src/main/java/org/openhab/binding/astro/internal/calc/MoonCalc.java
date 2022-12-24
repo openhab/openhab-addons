@@ -121,7 +121,7 @@ public class MoonCalc {
         double julianDateEndOfDay = DateTimeUtils.endOfDayDateToJulianDate(calendar);
         double parentNewMoon = getPreviousPhase(calendar, julianDateEndOfDay, NEW_MOON);
         double age = Math.abs(parentNewMoon - julianDateEndOfDay);
-        phase.setAge((int) age);
+        phase.setAge(age);
 
         long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon).getTimeInMillis();
         long ageRangeTimeMillis = phase.getNew().getTimeInMillis() - parentNewMoonMillis;
