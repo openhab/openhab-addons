@@ -2300,6 +2300,8 @@
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
 			<channel id="doorBell" typeId="doorBell"/>
+			<channel id="enableRecordings" typeId="enableRecordings"/>
+			<channel id="enableFTP" typeId="enableFTP"/>
 		</channels>
 		<config-description>
 
@@ -2941,6 +2943,18 @@
 		<item-type>Switch</item-type>
 		<label>Enable Privacy Mode</label>
 		<description>Turn the Privacy Mode on and off.</description>
+	</channel-type>
+
+	<channel-type id="enableRecordings" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable Recordings</label>
+		<description>Enable/Disable the cameras internal recordings</description>
+	</channel-type>
+
+	<channel-type id="enableFTP" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable FTP</label>
+		<description>Turn the FTP features of the camera on and off</description>
 	</channel-type>
 
 	<channel-type id="autoLED" advanced="true">

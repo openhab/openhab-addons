@@ -142,4 +142,6 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_CAR_ALARM = "carAlarm";
     public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
     public static final String CHANNEL_ANIMAL_ALARM = "animalAlarm";
+    public static final String CHANNEL_ENABLE_FTP = "enableFTP";
+    public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
 }
