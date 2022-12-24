@@ -883,7 +883,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     matcher = ZONE_CFG_PATTERN.matcher(updateData);
                     // example: ENABLE1,NAME"Great Room",SLAVETO0,GROUP1,SOURCES63,XSRC0,IR1,DND0,LOCKED0,SLAVEEQ0
                     if (matcher.find()) {
-                        // Future; utilize other info such as zone name, available sources bitmask, etc.
+                        // TODO: utilize other info such as zone name, available sources bitmask, etc.
 
                         // if this zone is a member of a group (1-4), add the zone's id to the appropriate group map
                         if (!ZERO.equals(matcher.group(3))) {
