@@ -20,6 +20,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>biz.aQute.bnd</groupId>
+      <artifactId>biz.aQute.bnd.annotation</artifactId>
+      <version>${bnd.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.github.calimero</groupId>
       <artifactId>calimero-core</artifactId>
       <version>2.5.1</version>
@@ -48,6 +54,23 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd><![CDATA[${oh.bndDefaults}
+Require-Capability:
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=tuwien.auto.calimero.serial.spi.SerialCom)";
+      cardinality:=multiple
+SPI-Provider: tuwien.auto.calimero.serial.spi.SerialCom
+SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.serial.spi.SerialCom])
+            ]]>
+            </bnd>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>

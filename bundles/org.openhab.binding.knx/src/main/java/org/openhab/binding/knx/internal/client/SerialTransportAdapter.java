@@ -31,15 +31,24 @@ import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import aQute.bnd.annotation.spi.ServiceProvider;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.serial.spi.SerialCom;
 
 /**
  * The {@link SerialTransportAdapter} provides org.openhab.core.io.transport.serial
  * services to the Calimero library.
- *
+ * 
+ * @ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
+ *                  /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
+ *                  to register SerialTransportAdapter to the service loader.
+ *                  Additional attributes for SerialTansportAdapter can be specified as well, e.g.
+ *                  attribute = { "position=1" }
+ *                  and will be part of MANIFEST.MF
+ * 
  * @author Holger Friedrich - Initial contribution
  */
+@ServiceProvider(value = SerialCom.class)
 @NonNullByDefault
 public class SerialTransportAdapter implements SerialCom {
     private static final int OPEN_TIMEOUT_MS = 200;
