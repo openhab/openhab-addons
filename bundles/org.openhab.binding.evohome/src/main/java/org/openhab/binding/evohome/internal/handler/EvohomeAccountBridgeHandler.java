@@ -277,10 +277,12 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
                             if (systemId != null) {
                                 idToTcsMap.put(systemId, tcs);
                                 tcsIdToGatewayMap.put(systemId, gateway);
-                                for (ZoneStatus zone : tcs.getZones()) {
-                                    String zoneId = zone.getZoneId();
-                                    if (zoneId != null) {
-                                        idToZoneMap.put(zoneId, zone);
+                            }
+                            for (ZoneStatus zone : tcs.getZones()) {
+                                String zoneId = zone.getZoneId();
+                                if (zoneId != null) {
+                                    idToZoneMap.put(zoneId, zone);
+                                    if (systemId != null) {
                                         zoneIdToTcsIdMap.put(zoneId, systemId);
                                     }
                                 }
