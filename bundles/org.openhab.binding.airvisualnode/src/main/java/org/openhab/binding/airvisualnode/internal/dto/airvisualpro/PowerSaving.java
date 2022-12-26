@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisual;
+package org.openhab.binding.airvisualnode.internal.dto.airvisualpro;
 
 import java.util.List;
 
-import org.openhab.binding.airvisualnode.internal.json.PowerSavingTime;
-import org.openhab.binding.airvisualnode.internal.json.PowerSavingTimeSlot;
+import org.openhab.binding.airvisualnode.internal.dto.PowerSavingTime;
+import org.openhab.binding.airvisualnode.internal.dto.PowerSavingTimeSlot;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,12 +28,18 @@ public class PowerSaving {
 
     @SerializedName("2slots")
     private List<PowerSavingTimeSlot> timeSlots = null;
+
     private String mode;
+
+    private long runningTime;
+
     @SerializedName("yes")
     private List<PowerSavingTime> times = null;
 
-    public PowerSaving(List<PowerSavingTimeSlot> timeSlots, String mode, List<PowerSavingTime> times) {
+    public PowerSaving(List<PowerSavingTimeSlot> timeSlots, String mode, long runningTime,
+            List<PowerSavingTime> times) {
         this.mode = mode;
+        this.runningTime = runningTime;
         this.times = times;
         this.timeSlots = timeSlots;
     }
@@ -60,5 +66,13 @@ public class PowerSaving {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public long getRunningTime() {
+        return runningTime;
+    }
+
+    public void setRunningTime(long runningTime) {
+        this.runningTime = runningTime;
     }
 }

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json.airvisualpro;
+package org.openhab.binding.airvisualnode.internal.dto.airvisualpro;
 
-import org.openhab.binding.airvisualnode.internal.json.MeasurementsInterface;
+import org.openhab.binding.airvisualnode.internal.dto.MeasurementsInterface;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -54,7 +54,6 @@ public class Measurements implements MeasurementsInterface {
 
     public Measurements(int co2Ppm, int humidityRH, int pm25AQICN, int pm25AQIUS, float pm01Ugm3, float pm10Ugm3,
             float pm25Ugm3, float temperatureC, float temperatureF, int vocPpb) {
-
         this.co2Ppm = co2Ppm;
         this.humidityRH = humidityRH;
         this.pm25AQICN = pm25AQICN;
