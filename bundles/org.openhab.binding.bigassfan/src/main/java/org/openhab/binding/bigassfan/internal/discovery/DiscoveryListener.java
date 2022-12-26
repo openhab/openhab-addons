@@ -84,15 +84,13 @@ public class DiscoveryListener {
         }
 
         if (localDatagramSocket != null && localPacket != null) {
-            localDatagramSocket.receive(rcvPacket);
+            localDatagramSocket.receive(localPacket);
 
             // Process the received packet
             device.reset();
 
             String address = localPacket.getAddress().getHostAddress();
-            if (address != null) {
-                device.setIpAddress(address);
-            }
+            device.setIpAddress(address != null ? address : "");
 
             String message = (new String(rcvBuffer, 0, localPacket.getLength()));
             device.setDiscoveryMessage(message);
@@ -112,8 +110,8 @@ public class DiscoveryListener {
         logger.debug("Sending poll request for fans: {}", POLL_MESSAGE);
         try {
             localDatagramSocket.send(bcastPacket);
-        } catch (IllegalArgumentException | SecurityException | IOException ioe) {
-            logger.warn("Unexpected exception while sending poll request for fans: {}", ioe.getMessage(), ioe);
+        } catch (IllegalArgumentException | SecurityException | IOException e) {
+            logger.warn("Unexpected exception while sending poll request for fans: {}", e.getMessage(), e);
         }
     }
 

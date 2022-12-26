@@ -119,21 +119,19 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting discovery listener job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
 
         if (this.listenerJob == null) {
+            terminate = false;
             this.listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
                     TimeUnit.SECONDS);
         }
     }
 
-    @SuppressWarnings("null")
-    private synchronized void cancelListenerJob() {
+    private void cancelListenerJob() {
         logger.debug("Canceling discovery listener job");
-
-        if (this.listenerJob != null) {
-            if (!this.listenerJob.isCancelled()) {
-                this.listenerJob.cancel(true);
-                terminate = true;
-                listenerJob = null;
-            }
+        ScheduledFuture<?> localListenerJob = this.listenerJob;
+        if (localListenerJob != null) {
+            localListenerJob.cancel(true);
+            terminate = true;
+            this.listenerJob = null;
         }
     }
 
@@ -177,10 +175,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         logger.debug("DiscoveryListener job is exiting");
     }
 
-    private void processMessage(@Nullable BigAssFanDevice device) {
-        if (device == null) {
-            return;
-        }
+    private void processMessage(BigAssFanDevice device) {
         Matcher matcher = announcementPattern.matcher(device.getDiscoveryMessage());
         if (matcher.find()) {
             logger.debug("Match: grp1={}, grp2={}, grp(3)={}", matcher.group(1), matcher.group(2), matcher.group(3));
@@ -249,6 +244,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     }
 
     private synchronized void schedulePollJob() {
+        cancelPollJob();
         if (this.pollJob == null) {
             logger.debug("Scheduling discovery poll job to run every {} seconds starting in {} sec", POLL_FREQ,
                     POLL_DELAY);
@@ -265,12 +261,12 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    @SuppressWarnings("null")
-    private synchronized void cancelPollJob() {
-        if (this.pollJob != null) {
+    private void cancelPollJob() {
+        ScheduledFuture<?> localPollJob = pollJob;
+        if (localPollJob != null) {
             logger.debug("Canceling poll job");
-            this.pollJob.cancel(true);
-            pollJob = null;
+            localPollJob.cancel(true);
+            this.pollJob = null;
         }
     }
 }

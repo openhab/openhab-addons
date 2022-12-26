@@ -316,7 +316,6 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMaxSpeed(PercentType command, String channelId, String commandFragment) {
         int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
-        @Nullable
         State fanState = fanStateMap.get(channelId);
         if (fanState != null) {
             currentMax = ((PercentType) fanState).intValue();
@@ -457,7 +456,6 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMaxLevel(PercentType command) {
         int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
-        @Nullable
         State fanState = fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX);
         if (fanState != null) {
             currentMax = ((PercentType) fanState).intValue();
@@ -471,7 +469,6 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMinLevel(PercentType command) {
         int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
-        @Nullable
         State fanState = fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN);
         if (fanState != null) {
             currentMin = ((PercentType) fanState).intValue();
@@ -596,13 +593,13 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
         }
 
-        @SuppressWarnings("null")
-        public synchronized void stopFanListener() {
-            if (listenerJob != null) {
+        public void stopFanListener() {
+            ScheduledFuture<?> localListenerJob = listenerJob;
+            if (localListenerJob != null) {
                 logger.debug("Stopping listener for {} at {}", thing.getUID(), ipAddress);
                 terminate = true;
-                listenerJob.cancel(true);
-                listenerJob = null;
+                localListenerJob.cancel(true);
+                this.listenerJob = null;
             }
 
             conn.cancelConnectionMonitorJob();
