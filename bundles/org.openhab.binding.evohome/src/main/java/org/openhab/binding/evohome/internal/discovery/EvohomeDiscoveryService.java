@@ -90,25 +90,28 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
         Locations localEvohomeConfig = bridge.getEvohomeConfig();
-        if (localEvohomeConfig != null) {
-            for (Location location : localEvohomeConfig) {
-                if (location != null) {
-                    for (Gateway gateway : location.getGateways()) {
-                        for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
-                            if (tcs != null) {
-                                addDisplayDiscoveryResult(location, tcs);
-                                for (Zone zone : tcs.getZones()) {
-                                    if (zone != null) {
-                                        addZoneDiscoveryResult(location, zone);
-                                    }
-                                }
-                            }
+
+        if (localEvohomeConfig == null) {
+            return;
+        }
+        for (Location location : localEvohomeConfig) {
+            if (location == null) {
+                continue;
+            }
+            for (Gateway gateway : location.getGateways()) {
+                for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
+                    if (tcs == null) {
+                        continue;
+                    }
+                    addDisplayDiscoveryResult(location, tcs);
+                    for (Zone zone : tcs.getZones()) {
+                        if (zone != null) {
+                            addZoneDiscoveryResult(location, zone);
                         }
                     }
                 }
             }
         }
-
         stopScan();
     }
 
