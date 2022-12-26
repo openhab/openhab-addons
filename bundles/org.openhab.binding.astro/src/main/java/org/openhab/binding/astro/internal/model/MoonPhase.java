@@ -105,7 +105,7 @@ public class MoonPhase {
     /**
      * Sets the age in days.
      */
-    public void setAge(Double age) {
+    public void setAge(double age) {
         this.age = age;
     }
 
