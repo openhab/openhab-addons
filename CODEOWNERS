@@ -62,7 +62,6 @@
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
-/bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.dbquery/ @lujop
 /bundles/org.openhab.binding.deconz/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
