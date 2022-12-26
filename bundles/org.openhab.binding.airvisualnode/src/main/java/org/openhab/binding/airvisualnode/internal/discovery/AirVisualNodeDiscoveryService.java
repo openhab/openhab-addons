@@ -46,7 +46,7 @@ import jcifs.smb.SmbFile;
 public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AirVisualNodeDiscoveryService.class);
-    private static final int REFRESH_MINUTES = 600;
+    private static final int REFRESH_MINUTES = 5;
 
     public static final String AVISUAL_WORKGROUP_NAME = "MSHOME";
 
@@ -69,7 +69,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting background discovery");
         ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
         if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
-            backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH_MINUTES,
+            backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, REFRESH_MINUTES,
                     TimeUnit.MINUTES);
         }
     }
@@ -80,10 +80,8 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
         ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
         if (localDiscoveryFuture != null) {
-            if (!localDiscoveryFuture.isCancelled()) {
-                localDiscoveryFuture.cancel(true);
-                localDiscoveryFuture = null;
-            }
+            localDiscoveryFuture.cancel(true);
+            backgroundDiscoveryFuture = null;
         }
     }
 
@@ -113,35 +111,36 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
             String nodeSerialNumber = m.group(1);
 
             if (nodeSerialNumber != null) {
-                // The Node Thing UID is serial number converted to lower case
-                ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
-                        nodeSerialNumber.toLowerCase());
-
-                try {
-                    // Get the Node address by name
-                    NbtAddress nodeNbtAddress = NbtAddress.getByName(serverName);
-                    if (nodeNbtAddress == null) {
-                        // The Node address not found by some reason, skip it
-                        continue;
-                    }
-
-                    // Create discovery result
-                    String nodeAddress = nodeNbtAddress.getInetAddress().getHostAddress();
-                    if (nodeAddress != null) {
-                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                                .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
-                                .withRepresentationProperty(AirVisualNodeConfig.ADDRESS)
-                                .withLabel("AirVisual Node (" + nodeSerialNumber + ")").build();
-                        thingDiscovered(result);
-                    } else {
-                        logger.debug("Getting the node address from the host failed");
-                    }
-                } catch (UnknownHostException e) {
-                    logger.debug("The Node address resolving failed ", e);
-                }
-            } else {
                 logger.debug("Extracting the Node serial number failed");
+                return;
             }
+            // The Node Thing UID is serial number converted to lower case
+            ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
+                    nodeSerialNumber.toLowerCase());
+
+            try {
+                // Get the Node address by name
+                NbtAddress nodeNbtAddress = NbtAddress.getByName(serverName);
+                if (nodeNbtAddress == null) {
+                    // The Node address not found by some reason, skip it
+                    continue;
+                }
+
+                // Create discovery result
+                String nodeAddress = nodeNbtAddress.getInetAddress().getHostAddress();
+                if (nodeAddress != null) {
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
+                            .withRepresentationProperty(AirVisualNodeConfig.ADDRESS)
+                            .withLabel("AirVisual Node (" + nodeSerialNumber + ")").build();
+                    thingDiscovered(result);
+                } else {
+                    logger.debug("Getting the node address from the host failed");
+                }
+            } catch (UnknownHostException e) {
+                logger.debug("The Node address resolving failed ", e);
+            }
+
         }
     }
 }

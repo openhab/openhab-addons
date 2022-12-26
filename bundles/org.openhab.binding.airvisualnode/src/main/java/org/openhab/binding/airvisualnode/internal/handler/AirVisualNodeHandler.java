@@ -174,7 +174,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
     private synchronized void stopPoll() {
         ScheduledFuture<?> localFuture = pollFuture;
-        if (localFuture != null && !localFuture.isCancelled()) {
+        if (localFuture != null) {
             localFuture.cancel(false);
         }
     }
