@@ -1,19 +1,19 @@
 # GPIO Binding
 
-This binding adds GPIO support via the pigpio daemon to openhab.
-It requires the pigpio (<http://abyz.me.uk/rpi/pigpio/>) to be running on the pi that should be controlled.
+This binding adds GPIO support via the pigpiod daemon to OpenHAB.
+It requires the pigpiod daemon (<http://abyz.me.uk/rpi/pigpio/>) to be installed on the pi that should be controlled.
 
 ## Supported Things
 
 ### pigpio-remote
 
-This thing represents a remote pigpio instance running as daemon on a raspberry pi.
+This thing represents a remote pigpiod instance running as daemon on a raspberry pi.
 
 ## Thing Configuration
 
 ### Pigpio Remote  (`pigpio-remote`)
 
-On a raspberry (or a compatible device) you have to install pigpio:
+On a raspberry (or a compatible device) you have to install pigpiod.
 
 ```shell
 sudo apt-get install pigpiod
@@ -39,7 +39,7 @@ ExecStart=/usr/bin/pigpiod
 sudo systemctl daemon-reload
 ```
 
-Now that Remote GPIO is enabled, get the daemon going (even if installed with apt-get):
+Now that Remote GPIO is enabled, get the pigpiod daemon going (even if installed with apt-get):
 
 ```shell
 sudo systemctl enable pigpiod 
@@ -53,20 +53,20 @@ Binding general configuration options. If you do not see all options, ensure `Sh
 Host:
 
 ```
-Set Host to the address of the Pi that gpiod is running on. Default is 127.0.0.1.
-Note: If you are running pigpiod on same host as openHAB, set the host to ::1 (IPV6) or 127.0.0.1 (IPV4).
+Set Host to the address of the Pi that pigpiod is running on. Default is 127.0.0.1 (IPV4).
+Note: If you are running pigpiod on same host as OpenHAB, set the host to 127.0.0.1 (IPV4) or ::1 (IPV6).
 ```
 
 Port:
 
 ```
-Set Port to the network port that gpiod is listening on. Default is 8888.
+Set Port to the network port that pigpiod is listening on. Default is 8888.
 ```
 
 Heart Beat Interval:
 
 ```
-The binding will poll gpiod running on the Pi to determine if a network disconnect has occurred. 
+The binding will poll pigpiod running on the Pi to determine if a network disconnect has occurred. 
 This is the interval in milliseconds that the heart beat poll occurs. Defaults to 30000 (30 seconds).
 ```
 
@@ -191,7 +191,7 @@ mode that gpio inputs are used.
 
 ### GPIO digital output channel
 
-Output channels provide a means of controlling the output  value of the gpio pin using the OnOffType datatype.
+Output channels provide a means of controlling the output value of the gpio pin using the OnOffType datatype.
 
 GPIO Pin:
 
@@ -226,7 +226,7 @@ of time.
                     ON command after the Pulse duration.
   Blink           : Cycles the channel ON, OFF, ON indefinitely with a 50% duty cycle. The Blink
                     operation continues regardless of the commanded channel state. This was originaly
-                    developed as a way to flash a status LED to visually confirm that a remote gpiod 
+                    developed as a way to flash a status LED to visually confirm that a remote pigpiod
                     instance has connectivity to OpenHAB.
 ```
 
