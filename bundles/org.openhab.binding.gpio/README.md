@@ -77,7 +77,7 @@ Input Channel Connect Action determines what happens when the binding initially 
 This action only occurs once after binding startup.
   
   Do Nothing      : The default, do nothing. Input channels will retain their default value (UNDEF).
-  Refresh Channel : Issues a refresh command on the input channel. This will refresh the channel from
+  Refresh Channel : Issues a refresh command on the input channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state.
 ```
 
@@ -87,7 +87,7 @@ Input Channel Disconnect Connect Action:
 Input Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
   
   Do Nothing : The default, do nothing. Input channels will retain their current value.
-  Set Undef  : Sets the channel state to UNDEF to indicate that pigpiod has disconnected.
+  Set Undef  : Sets the input channel states to UNDEF to indicate that pigpiod has disconnected.
 ```
 
 Input Channel Reconnect Connect Action:
@@ -98,7 +98,7 @@ after a disconnect. This action does not occur on the initial binding connect to
 startup.
   
   Do Nothing      : The default, do nothing. Input channels will retain their current value.
-  Refresh Channel : Issues a refresh command on the input channel. This will refresh the channel from
+  Refresh Channel : Issues a refresh command on the input channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state.
 ```
 
@@ -111,7 +111,7 @@ This action only occurs once after binding startup.
   Do Nothing      : The default, do nothing. Output channels will retain their default value (UNDEF).
   All On          : Issues a ON command to all configured output channels.
   All Off         : Issues a OFF command to all configured output channels.
-  Refresh Channel : Issues a refresh command on the output channel. This will refresh the channel from
+  Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
                     within OpenHAB.
@@ -123,7 +123,7 @@ Output Channel Disconnect Connect Action:
 Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod. 
   
   Do Nothing : The default, do nothing. Input channels will retain their current value.
-  Set Undef  : Sets the channel state to UNDEF to indicate that pigpiod has disconnected.
+  Set Undef  : Sets the output channel states to UNDEF to indicate that pigpiod has disconnected.
 ```
 
 Output Channel Reconnect Connect Action:
@@ -132,8 +132,8 @@ Output Channel Reconnect Connect Action:
 Output Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
   
-  Do Nothing      : The default, do nothing. Input channels will retain their current value.
-  Refresh Channel : Issues a refresh command on the input channel. This will refresh the channel from
+  Do Nothing      : The default, do nothing. Output channels will retain their current value.
+  Refresh Channel : Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
                     not update the gpio pin state on the Pi itself. It only updates the channel state
                     within OpenHAB.
