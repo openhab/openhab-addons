@@ -181,7 +181,6 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     private @Nullable Integer sendTeachInResponse(ERP1Message msg, String enoceanId) {
         // get new sender Id
-        @Nullable
         Integer offset = bridgeHandler.getNextSenderId(enoceanId);
         if (offset != null) {
             byte[] newSenderId = bridgeHandler.getBaseId();
