@@ -98,7 +98,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
                     setData(COMMAND_ID, dimmValue, rampingTime, (byte) (TEACHIN_BIT | storeByte | switchingCommand));
                 } else {
-                    logger.debug("Cannot handle command {}, when configuration is null", outputCommand.toFullString());
+                    logger.error("Cannot handle command {}, when configuration is null", outputCommand.toFullString());
                 }
 
                 break;
@@ -106,8 +106,8 @@ public class A5_38_08_Dimming extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
                 if (!getBit(getDB0(), 0)) {

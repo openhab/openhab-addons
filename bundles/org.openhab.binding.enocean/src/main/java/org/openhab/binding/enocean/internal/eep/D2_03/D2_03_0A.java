@@ -64,8 +64,8 @@ public class D2_03_0A extends _VLDMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             return new QuantityType<>(bytes[0] & 0xFF, Units.PERCENT);
         }

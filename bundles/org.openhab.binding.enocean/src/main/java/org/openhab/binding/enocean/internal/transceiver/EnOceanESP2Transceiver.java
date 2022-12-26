@@ -158,9 +158,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                         break;
                 }
             }
-        } catch (
-
-        IOException ioexception) {
+        } catch (IOException ioexception) {
             logger.trace("Unable to process message", ioexception);
             TransceiverErrorListener localListener = errorListener;
             if (localListener != null) {

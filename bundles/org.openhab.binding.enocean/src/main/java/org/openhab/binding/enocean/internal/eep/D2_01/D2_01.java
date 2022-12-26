@@ -226,7 +226,7 @@ public abstract class D2_01 extends _VLDMessage {
                 if (config != null) {
                     setDimmingData(command, ALL_CHANNELS_MASK, config);
                 } else {
-                    logger.debug("Cannot set dimming data when config is null");
+                    logger.error("Cannot set dimming data when config is null");
                 }
             }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
@@ -238,7 +238,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
                 return getSwitchingData();
@@ -252,7 +252,6 @@ public abstract class D2_01 extends _VLDMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
-                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
         }

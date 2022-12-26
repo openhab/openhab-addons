@@ -122,7 +122,7 @@ public abstract class A5_12 extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         EnOceanChannelTariffInfoConfig c = config.as(EnOceanChannelTariffInfoConfig.class);
         if (c.tariff != getTariffInfo()) {
             return UnDefType.UNDEF;
@@ -135,7 +135,6 @@ public abstract class A5_12 extends _4BSMessage {
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
                 State value = getCumulativeValue();
-                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_CUMULATIVEVALUE:

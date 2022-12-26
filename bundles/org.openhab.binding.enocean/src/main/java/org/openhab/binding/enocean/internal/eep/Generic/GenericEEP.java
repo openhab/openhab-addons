@@ -85,7 +85,7 @@ public class GenericEEP extends EEP {
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (config == null) {
-            logger.debug("Cannot handle command {}, when transformation configuration is null", command.toString());
+            logger.error("Cannot handle command {}, when transformation configuration is null", command.toString());
             return;
         }
         EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
@@ -97,15 +97,16 @@ public class GenericEEP extends EEP {
         if (output != null && !output.isEmpty() && !input.equals(output)) {
             try {
                 setData(HexUtils.hexToBytes(output));
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.debug("Command {} could not transformed", command.toString());
+                throw e;
             }
         }
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
         String payload = HexUtils.bytesToHex(bytes);
@@ -153,7 +154,6 @@ public class GenericEEP extends EEP {
 
     @Override
     protected int getDataLength() {
-        @Nullable
         ERP1Message localPacket = packet;
         if (localPacket != null) {
             return localPacket.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;

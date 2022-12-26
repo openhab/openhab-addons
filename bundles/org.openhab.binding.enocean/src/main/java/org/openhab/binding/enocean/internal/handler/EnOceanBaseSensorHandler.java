@@ -86,7 +86,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         try {
             config.receivingEEPId.forEach(receivingEEP -> {
                 EEPType receivingEEPType = EEPType.getType(receivingEEP);
-                @Nullable
                 EEPType existingKey = receivingEEPTypes.putIfAbsent(receivingEEPType.getRORG(), receivingEEPType);
                 if (existingKey != null) {
                     throw new IllegalArgumentException("Receiving more than one EEP of the same RORG is not supported");
@@ -96,7 +95,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 receivingEEPTypes.put(EEPType.SigBatteryStatus.getRORG(), EEPType.SigBatteryStatus);
             }
         } catch (IllegalArgumentException e) {
-            @Nullable
             String eMessage = e.getMessage();
             configurationErrorDescription = eMessage != null ? eMessage
                     : "IllegalArgumentException without a message was thrown";
@@ -156,7 +154,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     public void packetReceived(BasePacket packet) {
         ERP1Message msg = (ERP1Message) packet;
 
-        @Nullable
         EEPType localReceivingType = receivingEEPTypes.get(msg.getRORG());
         if (localReceivingType == null) {
             return;
@@ -191,10 +188,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                 }
                                 break;
                             case TRIGGER:
-                                @Nullable
                                 String lastEvent = lastEvents.get(channelId);
                                 if (lastEvent != null) {
-                                    @Nullable
                                     String event = eep.convertToEvent(channelId, channelTypeId, lastEvent,
                                             channelConfig);
                                     if (event != null) {

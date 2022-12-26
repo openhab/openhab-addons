@@ -73,7 +73,7 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // 0x0A.. Move was locked for switch
         // 0x0E.. Move was not locked
         if (getDB2() == ZERO && getDB1() == MOVE && (getDB0() == 0x0A || getDB0() == 0x0E)) {

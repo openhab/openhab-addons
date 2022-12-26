@@ -57,7 +57,7 @@ public class PTM200Message extends _RPSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
                 return bytes[0] == SWITCH_ON ? OnOffType.ON : OnOffType.OFF;

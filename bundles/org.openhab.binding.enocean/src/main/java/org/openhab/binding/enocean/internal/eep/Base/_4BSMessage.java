@@ -103,7 +103,9 @@ public abstract class _4BSMessage extends EEP {
             try {
                 byte[] msg = HexUtils.hexToBytes(c.teachInMSG);
                 setData(msg);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
+                logger.debug("Command TeachIn could not transformed");
+                throw e;
             }
         }
     }

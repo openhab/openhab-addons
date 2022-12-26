@@ -181,7 +181,7 @@ public class A5_11_04 extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (isErrorState()) {
             return UnDefType.UNDEF;
         }
@@ -195,7 +195,6 @@ public class A5_11_04 extends _4BSMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
-                @Nullable
                 State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_COUNTER:

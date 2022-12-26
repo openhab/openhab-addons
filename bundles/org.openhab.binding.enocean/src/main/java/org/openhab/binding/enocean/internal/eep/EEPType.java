@@ -583,7 +583,6 @@ public enum EEPType {
         for (String id : channelIds) {
             if (id != null) {
                 this.channelIdsWithConfig.put(id, new Configuration());
-                @Nullable
                 EnOceanChannelDescription description = CHANNELID2CHANNELDESCRIPTION.get(id);
                 if (description != null) {
                     this.supportedChannels.put(id, description);
@@ -731,9 +730,7 @@ public enum EEPType {
     }
 
     public Configuration getChannelConfig(String channelId) {
-        @Nullable
         Configuration c = null;
-
         if (!channelIdsWithConfig.isEmpty()) {
             c = channelIdsWithConfig.get(channelId);
             if (c != null) {

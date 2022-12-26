@@ -41,8 +41,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EnOceanHandlerFactory} is responsible for creating things and thing
@@ -53,8 +51,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.enocean")
 public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(EnOceanHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(EnOceanBridgeHandler.SUPPORTED_THING_TYPES.stream(),
@@ -85,17 +81,16 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        ItemChannelLinkRegistry localItemChannelLinkRegistry = itemChannelLinkRegistry;
         if (EnOceanBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             EnOceanBridgeHandler bridgeHandler = new EnOceanBridgeHandler((Bridge) thing, serialPortManager);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseActuatorHandler(thing, localItemChannelLinkRegistry);
+            return new EnOceanBaseActuatorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseSensorHandler(thing, localItemChannelLinkRegistry);
+            return new EnOceanBaseSensorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanClassicDeviceHandler(thing, localItemChannelLinkRegistry);
+            return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry);
         }
 
         return null;
@@ -103,7 +98,6 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        @Nullable
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
         if (serviceReg != null) {
             serviceReg.unregister();

@@ -119,7 +119,7 @@ public class D2_05_00 extends _VLDMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 return getPositionData();

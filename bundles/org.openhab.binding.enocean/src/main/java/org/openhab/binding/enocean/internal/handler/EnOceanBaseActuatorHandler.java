@@ -120,7 +120,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             configurationErrorDescription = "Sending EEP must be provided";
             return false;
         }
-        @Nullable
+
         EEPType localEEPType = null;
         try {
             localEEPType = EEPType.getType(getConfiguration().sendingEEPId);
@@ -215,10 +215,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     protected void sendMessage(String channelId, String channelTypeId, Command command,
             @Nullable Configuration channelConfig) {
-        @Nullable
         EEPType sendType = sendingEEPType;
         if (sendType == null) {
-            logger.debug("cannot send a message with an empty EEPType");
+            logger.warn("cannot send a message with an empty EEPType");
             return;
         }
         EEP eep = EEPFactory.createEEP(sendType);
@@ -227,7 +226,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
             if (msg == null) {
-                logger.debug("cannot send an empty message");
+                logger.warn("cannot send an empty message");
                 return;
             }
             EnOceanBridgeHandler handler = getBridgeHandler();

@@ -106,7 +106,6 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             if (!queue.isEmpty()) {
                 currentRequest = queue.peek();
                 try {
-                    @Nullable
                     Request localCurrentRequest = currentRequest;
                     if (localCurrentRequest != null && localCurrentRequest.requestPacket != null) {
                         synchronized (localCurrentRequest) {
@@ -334,8 +333,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                         msg.getRORG().name(), HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
                 if (msg.getRORG() != RORG.Unknown) {
-                    if (senderId != null) {
-                        if (filteredDeviceId.length > 0 && senderId[0] == filteredDeviceId[0]
+                    if (senderId.length > 0) {
+                        if (senderId.length > 2 && filteredDeviceId.length > 2 && senderId[0] == filteredDeviceId[0]
                                 && senderId[1] == filteredDeviceId[1] && senderId[2] == filteredDeviceId[2]) {
                             // filter away own messages which are received through a repeater
                             return;
@@ -402,7 +401,6 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     protected void handleResponse(Response response) throws IOException {
         Request localCurrentRequest = currentRequest;
         if (localCurrentRequest != null) {
-            @Nullable
             ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.responseListener;
             if (listener != null) {
                 localCurrentRequest.responsePacket = response;
@@ -445,7 +443,6 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     public synchronized void removePacketListener(PacketListener listener, long senderIdToListenTo) {
-        @Nullable
         HashSet<PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);

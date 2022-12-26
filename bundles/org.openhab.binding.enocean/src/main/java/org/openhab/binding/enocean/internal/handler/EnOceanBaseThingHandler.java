@@ -144,10 +144,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         // Next create supported channels of each selected eep
         eeps.stream().flatMap(eep -> eep.getSupportedChannels().keySet().stream().map(id -> new SimpleEntry<>(id, eep)))
                 .forEach(entry -> {
-                    @Nullable
                     String channelId = entry.getKey();
-
-                    @Nullable
                     EnOceanChannelDescription cd = entry.getValue().getSupportedChannels().get(channelId);
 
                     if (cd == null) {

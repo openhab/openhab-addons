@@ -17,6 +17,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -72,7 +73,7 @@ public class A5_13_01 extends A5_13 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (isPartOne()) {
             switch (channelId) {
                 case CHANNEL_ILLUMINATION:

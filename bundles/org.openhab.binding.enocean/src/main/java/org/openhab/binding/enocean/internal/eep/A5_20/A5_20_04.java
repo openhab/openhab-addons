@@ -65,7 +65,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getPos(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_VALVE_POSITION);
 
         if (current instanceof DecimalType) {
@@ -80,7 +79,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getTsp(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_TEMPERATURE_SETPOINT);
 
         double value = 20.0; // 20 °C
@@ -102,7 +100,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getMc(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_MEASUREMENT_CONTROL);
 
         if (current instanceof OnOffType) {
@@ -117,7 +114,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getWuc(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_WAKEUPCYCLE);
 
         if (current instanceof DecimalType) {
@@ -132,7 +128,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getDso(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_DISPLAY_ORIENTATION);
 
         if (current instanceof DecimalType) {
@@ -147,7 +142,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getBlc(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_BUTTON_LOCK);
 
         if (current instanceof OnOffType) {
@@ -162,7 +156,6 @@ public class A5_20_04 extends A5_20 {
     }
 
     private byte getSer(Function<String, State> getCurrentStateFunc) {
-        @Nullable
         State current = getCurrentStateFunc.apply(CHANNEL_SERVICECOMMAND);
 
         if (current instanceof DecimalType) {
@@ -194,7 +187,7 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_VALVE_POSITION:
                 return getValvePosition();

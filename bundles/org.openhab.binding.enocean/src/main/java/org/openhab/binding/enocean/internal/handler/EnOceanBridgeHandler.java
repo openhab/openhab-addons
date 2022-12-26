@@ -84,13 +84,13 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     private byte[] baseId = new byte[0];
     private Thing[] sendingThings = new Thing[128];
 
-    private @Nullable SerialPortManager serialPortManager;
+    private SerialPortManager serialPortManager;
 
     private boolean smackAvailable = false;
     private boolean sendTeachOuts = true;
     private Set<String> smackClients = Set.of();
 
-    public EnOceanBridgeHandler(Bridge bridge, @Nullable SerialPortManager serialPortManager) {
+    public EnOceanBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
     }
@@ -164,21 +164,17 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     @Override
     public void initialize() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
-        if (this.serialPortManager == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "SerialPortManager could not be found");
-        } else {
-            ScheduledFuture<?> localConnectorTask = connectorTask;
-            if (localConnectorTask == null || localConnectorTask.isDone()) {
-                localConnectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (thing.getStatus() != ThingStatus.ONLINE) {
-                            initTransceiver();
-                        }
+
+        ScheduledFuture<?> localConnectorTask = connectorTask;
+        if (localConnectorTask == null || localConnectorTask.isDone()) {
+            localConnectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    if (thing.getStatus() != ThingStatus.ONLINE) {
+                        initTransceiver();
                     }
-                }, 0, 60, TimeUnit.SECONDS);
-            }
+                }
+            }, 0, 60, TimeUnit.SECONDS);
         }
     }
 
@@ -354,17 +350,16 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     public @Nullable Integer getNextSenderId(String enoceanId) {
         EnOceanBridgeConfig config = getConfigAs(EnOceanBridgeConfig.class);
-        @Nullable
         Integer senderId = config.nextSenderId;
         if (senderId == null) {
             return null;
         }
-        if (config.nextSenderId != null && sendingThings[senderId] == null) {
+        if (sendingThings[senderId] == null) {
             Configuration c = this.editConfiguration();
             c.put(PARAMETER_NEXT_SENDERID, null);
             updateConfiguration(c);
 
-            return config.nextSenderId;
+            return senderId;
         }
 
         for (int i = 1; i < sendingThings.length; i++) {

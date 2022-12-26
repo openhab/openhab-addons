@@ -62,7 +62,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         }
 
         if (command instanceof PercentType) {
-            @Nullable
             State channelState = getCurrentStateFunc.apply(channelId);
 
             PercentType target = (PercentType) command;
@@ -99,8 +98,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
-        @Nullable
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         State currentState = getCurrentStateFunc.apply(channelId);
 
         if (currentState != null) {

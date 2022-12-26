@@ -17,6 +17,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._SIGMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -41,8 +42,8 @@ public class D0_06 extends _SIGMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             return new QuantityType<>(bytes[1] & 0xFF, Units.PERCENT);
         }

@@ -41,7 +41,7 @@ public class RDLearnedClientsResponse extends Response {
     RDLearnedClientsResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (payload.length == 0 && (payload.length - 1) % 9 != 0) {
+        if (payload.length == 0 || (payload.length - 1) % 9 != 0) {
             return;
         } else {
             isValid = true;

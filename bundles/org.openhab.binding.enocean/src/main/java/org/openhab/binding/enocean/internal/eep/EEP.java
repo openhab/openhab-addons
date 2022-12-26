@@ -88,7 +88,7 @@ public abstract class EEP {
     }
 
     public State convertToState(String channelId, String channelTypeId, Configuration config,
-            Function<String, State> getCurrentStateFunc) {
+            Function<String, @Nullable State> getCurrentStateFunc) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
@@ -129,7 +129,7 @@ public abstract class EEP {
         return this;
     }
 
-    public EEP setData(byte... bytes) {
+    public EEP setData(byte... bytes) throws IllegalArgumentException {
         if (!validateData(bytes)) {
             throw new IllegalArgumentException();
         }
@@ -219,7 +219,7 @@ public abstract class EEP {
     }
 
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         return UnDefType.UNDEF;
     }
 

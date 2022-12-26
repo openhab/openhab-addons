@@ -17,6 +17,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -48,7 +49,7 @@ public class A5_30_03_ELTAKO extends A5_30_03 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         byte db1 = getDB1();
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:

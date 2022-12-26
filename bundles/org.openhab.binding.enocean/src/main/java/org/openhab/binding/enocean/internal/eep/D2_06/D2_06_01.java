@@ -246,8 +246,8 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // Sensor values
         if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {

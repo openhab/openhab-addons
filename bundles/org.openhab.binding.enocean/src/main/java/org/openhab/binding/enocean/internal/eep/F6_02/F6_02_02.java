@@ -97,12 +97,11 @@ public class F6_02_02 extends F6_02 {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
-            Function<String, State> getCurrentStateFunc, Configuration config) {
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         // this method is used by the classic device listener channels to convert a rocker switch message into an
         // appropriate item update
-        @Nullable
         State currentState = getCurrentStateFunc.apply(channelId);
-        if (t21 && nu) {
+        if (t21 && nu && currentState != null) {
             EnOceanChannelRockerSwitchListenerConfig c = config.as(EnOceanChannelRockerSwitchListenerConfig.class);
             byte dir1 = c.getChannel() == Channel.ChannelA ? AI : BI;
             byte dir2 = c.getChannel() == Channel.ChannelA ? A0 : B0;
