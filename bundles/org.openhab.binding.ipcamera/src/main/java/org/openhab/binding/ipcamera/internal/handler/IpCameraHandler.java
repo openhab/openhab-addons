@@ -172,7 +172,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // basicAuth MUST remain private as it holds the cameraConfig.getPassword()
     private String basicAuth = "";
-    public String token = "";
+    public String reolinkAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
     public boolean newInstarApi = false;
@@ -1726,10 +1726,15 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
             case REOLINK_THING:
-                authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45, TimeUnit.MINUTES);
+                if (cameraConfig.useToken) {
+                    authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45,
+                            TimeUnit.MINUTES);
+                } else {
+                    reolinkAuth = "&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
+                }
                 if (snapshotUri.isEmpty()) {
-                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel()
-                            + "&rs=openHAB&token=" + token;
+                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB"
+                            + reolinkAuth;
                 }
                 if (rtspUri.isEmpty()) {
                     if (cameraConfig.getNvrChannel() < 1) {

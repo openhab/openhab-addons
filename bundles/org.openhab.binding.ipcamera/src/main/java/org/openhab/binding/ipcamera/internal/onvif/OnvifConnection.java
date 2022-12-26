@@ -316,13 +316,19 @@ public class OnvifConnection {
             } finally {
                 connecting.unlock();
             }
-            sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
+            // sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
             sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
+            connecting.lock();
+            try {
+                isConnected = true;
+            } finally {
+                connecting.unlock();
+            }
             parseProfiles(message);
             sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
             sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
@@ -907,6 +913,7 @@ public class OnvifConnection {
                 threadPool = Executors.newScheduledThreadPool(2);
                 sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
                 usingEvents = useEvents;
+                sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             }
         } finally {
             connecting.unlock();
