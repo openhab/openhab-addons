@@ -1050,6 +1050,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             logger.trace("Connecting to {} at {}", thing.getUID(), ipAddress);
 
             Socket localFanSocket = new Socket();
+            fanSocket = localFanSocket;
             // Open socket
             try {
                 localFanSocket.bind(new InetSocketAddress(ifAddress, 0));
@@ -1090,6 +1091,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 DataOutputStream localFanWriter = fanWriter;
                 if (localFanWriter != null) {
                     localFanWriter.close();
+                    fanWriter = null;
                 }
                 Scanner localFanScanner = fanScanner;
                 if (localFanScanner != null) {
@@ -1098,6 +1100,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 Socket localFanSocket = fanSocket;
                 if (localFanSocket != null) {
                     localFanSocket.close();
+                    fanSocket = null;
                 }
             } catch (IllegalStateException | IOException e) {
                 logger.warn("Exception closing connection to {} at {}: {}", thing.getUID(), ipAddress, e.getMessage(),
@@ -1165,14 +1168,12 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
         }
 
-        @SuppressWarnings("null")
         private void cancelConnectionMonitorJob() {
-            synchronized (this) {
-                if (connectionMonitorJob != null) {
-                    logger.debug("Canceling connection monitor job for {} at {}", thing.getUID(), ipAddress);
-                    connectionMonitorJob.cancel(true);
-                    connectionMonitorJob = null;
-                }
+            ScheduledFuture<?> localConnectionMonitorJob = connectionMonitorJob;
+            if (localConnectionMonitorJob != null) {
+                logger.debug("Canceling connection monitor job for {} at {}", thing.getUID(), ipAddress);
+                localConnectionMonitorJob.cancel(true);
+                connectionMonitorJob = null;
             }
         }
 

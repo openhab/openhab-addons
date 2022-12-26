@@ -43,7 +43,6 @@ public class BigAssFanConverter {
      * Dimmer item will produce PercentType value, which is 0-100
      * Convert that value to what the fan expects, which is 0-7
      */
-    @SuppressWarnings("null")
     public static String percentToSpeed(PercentType command) {
         return String.valueOf((int) Math.round(command.doubleValue() / SPEED_CONVERSION_FACTOR));
     }
@@ -60,7 +59,6 @@ public class BigAssFanConverter {
      * Dimmer item will produce PercentType value, which is 0-100
      * Convert that value to what the light expects, which is 0-16
      */
-    @SuppressWarnings("null")
     public static String percentToLevel(PercentType command) {
         return String.valueOf((int) Math.round(command.doubleValue() / BRIGHTNESS_CONVERSION_FACTOR));
     }
@@ -77,7 +75,6 @@ public class BigAssFanConverter {
      * Dimmer item will produce PercentType value, which is 0-100
      * Convert that value to what the light expects, which is 2200-5000
      */
-    @SuppressWarnings("null")
     public static String percentToHue(PercentType command) {
         return String.valueOf(2200 + (int) Math.round(command.doubleValue() * HUE_CONVERSION_FACTOR));
     }
