@@ -184,23 +184,19 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    @SuppressWarnings("null")
     private void disposeApiClient() {
-        synchronized (this) {
-            if (this.apiClient != null) {
-                this.apiClient.logout();
-                this.apiClient = null;
-            }
+        EvohomeApiClient localApiClient = apiClient;
+        if (localApiClient != null) {
+            localApiClient.logout();
+            this.apiClient = null;
         }
     }
 
-    @SuppressWarnings("null")
     private void disposeRefreshTask() {
-        synchronized (this) {
-            if (this.refreshTask != null) {
-                this.refreshTask.cancel(true);
-                this.refreshTask = null;
-            }
+        ScheduledFuture<?> localRefreshTask = refreshTask;
+        if (localRefreshTask != null) {
+            localRefreshTask.cancel(true);
+            this.refreshTask = null;
         }
     }
 
