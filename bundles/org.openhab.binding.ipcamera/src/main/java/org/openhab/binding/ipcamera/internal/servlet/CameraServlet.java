@@ -212,6 +212,7 @@ public class CameraServlet extends IpCameraServlet {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
                                 if (localMjpeg != null) {
                                     localMjpeg.stopConverting();
+                                    handler.ffmpegMjpeg = null;
                                 }
                             } else {
                                 handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
