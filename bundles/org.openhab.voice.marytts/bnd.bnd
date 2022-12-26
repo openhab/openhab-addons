@@ -1,0 +1,15 @@
+Bundle-SymbolicName: ${project.artifactId}
+DynamicImport-Package: *
+Import-Package: org.osgi.framework;version="[1.8,2)"
+Require-Capability: 
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=marytts.config.MaryConfig)";
+      cardinality:=multiple
+
+SPI-Provider: *
+SPI-Consumer: *
+
+-fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
+-fixupmessages "Unused Export-Package instructions"
