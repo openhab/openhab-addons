@@ -263,31 +263,28 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         Map<String, ThingStatus> idToTcsThingsStatusMap = new HashMap<>();
 
         EvohomeApiClient localApiClient = apiClient;
-        if (localApiClient == null) {
-            return;
-        }
-        // First, create a lookup table
-        LocationsStatus localLocationsStatus = localApiClient.getInstallationStatus();
-        if (localLocationsStatus == null) {
-            return;
-        }
-        for (LocationStatus location : localLocationsStatus) {
-            for (GatewayStatus gateway : location.getGateways()) {
-                if (gateway == null) {
-                    continue;
-                }
-                for (TemperatureControlSystemStatus tcs : gateway.getTemperatureControlSystems()) {
-                    String systemId = tcs.getSystemId();
-                    if (systemId == null) {
-                        continue;
-                    }
-                    idToTcsMap.put(systemId, tcs);
-                    tcsIdToGatewayMap.put(systemId, gateway);
-                    for (ZoneStatus zone : tcs.getZones()) {
-                        String zoneId = zone.getZoneId();
-                        if (zoneId != null) {
-                            idToZoneMap.put(zoneId, zone);
-                            zoneIdToTcsIdMap.put(zoneId, systemId);
+        if (localApiClient != null) {
+            // First, create a lookup table
+            LocationsStatus localLocationsStatus = localApiClient.getInstallationStatus();
+            if (localLocationsStatus != null) {
+                for (LocationStatus location : localLocationsStatus) {
+                    for (GatewayStatus gateway : location.getGateways()) {
+                        if (gateway == null) {
+                            continue;
+                        }
+                        for (TemperatureControlSystemStatus tcs : gateway.getTemperatureControlSystems()) {
+                            String systemId = tcs.getSystemId();
+                            if (systemId != null) {
+                                idToTcsMap.put(systemId, tcs);
+                                tcsIdToGatewayMap.put(systemId, gateway);
+                                for (ZoneStatus zone : tcs.getZones()) {
+                                    String zoneId = zone.getZoneId();
+                                    if (zoneId != null) {
+                                        idToZoneMap.put(zoneId, zone);
+                                        zoneIdToTcsIdMap.put(zoneId, systemId);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
