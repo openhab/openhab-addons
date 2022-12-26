@@ -44,7 +44,7 @@ public class ApiAccess {
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
-    private final @Nullable Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().create();
 
     private @Nullable Authentication authenticationData;
     private @Nullable String applicationId;
@@ -171,10 +171,7 @@ public class ApiAccess {
             @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
         String json = null;
         if (requestContainer != null) {
-            Gson localGson = gson;
-            if (localGson != null) {
-                json = localGson.toJson(requestContainer);
-            }
+            json = gson.toJson(requestContainer);
         }
 
         return doRequest(method, url, headers, json, "application/json", outClass);
@@ -196,14 +193,16 @@ public class ApiAccess {
             @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
         Map<String, String> headers = new HashMap<>();
         Authentication localAuthenticationData = authenticationData;
-        String localApplicaitonId = applicationId;
+        String localApplicationId = applicationId;
 
-        if (localAuthenticationData != null && localApplicaitonId != null) {
+        if (localAuthenticationData != null) {
             headers.put("Authorization", "Bearer " + localAuthenticationData.getAccessToken());
-            headers.put("applicationId", localApplicaitonId);
-            headers.put("Accept",
-                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }
+        if (localApplicationId != null) {
+            headers.put("applicationId", localApplicationId);
+        }
+        headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+
         return doRequest(method, url, headers, requestContainer, outClass);
     }
 }
