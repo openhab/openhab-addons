@@ -19,15 +19,15 @@ No discovery
 
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
 
-| Parameter         | Description                                                                | Required                |
-|-------------------|----------------------------------------------------------------------------|-------------------------|
-| myRenaultUsername | MyRenault Username.                                                        | Yes                     |
-| myRenaultPassword | MyRenault Password.                                                        | Yes                     |
-| locale            | MyRenault Location (language_country).                                     | Yes                     |
-| vin               | Vehicle Identification Number.                                             | Yes                     |
-| refreshInterval   | Interval the car is polled in minutes.                                     | Yes (default available) |
-| updateDelay       | How long to wait for commands to reach car and update to server in seconds.| Yes (default available) |
-| kamereonApiKey    | Kamereon API Key.                                                          | Yes (default available) |
+| Parameter         | Description                                                                | Default                          |
+|-------------------|----------------------------------------------------------------------------|----------------------------------|
+| myRenaultUsername | MyRenault Username.                                                        |                                  |
+| myRenaultPassword | MyRenault Password.                                                        |                                  |
+| locale            | MyRenault Location (language_country).                                     |                                  |
+| vin               | Vehicle Identification Number.                                             |                                  |
+| refreshInterval   | Interval the car is polled in minutes.                                     |                               10 |
+| updateDelay       | How long to wait for commands to reach car and update to server in seconds.|                               30 |
+| kamereonApiKey    | Kamereon API Key.                                                          | VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss |
 
 ## Channels
 

@@ -97,7 +97,8 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
-		<state pattern="%.1f kWh" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+		<category>Energy</category>
 	</channel-type>
 	<channel-type id="batterystatusupdated">
 		<item-type>DateTime</item-type>
@@ -105,6 +106,7 @@
 		<description>Timestamp of the last battery status update</description>
 		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
+		<category>Time</category>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
@@ -119,6 +121,7 @@
 				<option value="UNKNOWN">Unknown</option>
 			</options>
 		</state>
+		<category>PowerOutlet</category>
 	</channel-type>
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
@@ -202,6 +205,7 @@
 		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
+		<category>Time</category>
 	</channel-type>
 	<channel-type id="lockstatus">
 		<item-type>String</item-type>
@@ -214,6 +218,7 @@
 				<option value="UNKNOWN">Unknown</option>
 			</options>
 		</state>
+		<category>Lock</category>
 	</channel-type>
 	<channel-type id="updatenow">
 		<item-type>Switch</item-type>
