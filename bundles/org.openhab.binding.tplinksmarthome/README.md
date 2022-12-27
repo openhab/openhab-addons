@@ -439,3 +439,24 @@ Color        TP_LB_Color  "Color"                     <slider> { channel="tplink
 Switch       TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:bulb2:color" }
 Switch       TP_O_OUTLET  "Outdoor Outlet"                     { channel="tplinksmarthome:kp401:outlet:switch" }
 ```
+
+## Sending Raw Commands to Devices (Advanced Usage)
+
+TPLinkSmarthome Things can be sent a raw JSON string to control a device in a way not directly supported by this binding.
+You can find several JSON commands in the [test fixtures](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.tplinksmarthome/src/test/resources/org/openhab/binding/tplinksmarthome/internal/model) for this binding.
+
+As an example, you might want to change the brightness level of a dimmer without turning it on or off.
+Given the dimmer Thing has an id of `tplinksmarthome:hs220:123ABC`, you could accomplish just that with the following rule:
+
+`example.rules`
+
+```java
+rule "Directly set the dimmer level when desired dimmer level changes, without turning the light on/off"
+when
+    Item Room_DesiredDimmerLevel changed
+then
+    val cmd = '{"smartlife.iot.dimmer":{"set_brightness":{"brightness":' + Room_DesiredDimmerLevel.state + '}}}'
+    val actions = getActions("tplinksmarthome", "tplinksmarthome:hs220:123ABC")
+    actions.send(cmd)
+end
+```
