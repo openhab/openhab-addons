@@ -284,7 +284,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Called by the UDP listener when it gets a proper response.
      */
     public void setBridgeOnline(String bridgeAddress) {
-        if (config.isValid()) {
+        if (!config.isValid()) {
             logger.warn("Configuration error, cannot set the bridghe online without configuration");
             return;
         } else if (!config.ipAddress.equals(bridgeAddress)) {
