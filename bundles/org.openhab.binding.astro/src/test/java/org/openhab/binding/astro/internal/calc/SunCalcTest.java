@@ -274,6 +274,33 @@ public class SunCalcTest {
                 sun.getAllRanges().get(SunPhaseName.EVENING_NIGHT).getStart());
     }
 
+    @Test
+    public void testIssue7642CivilDawnEnd() {
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 12, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.CIVIL_DAWN, sun.getPhase().getName());
+    }
+
+    @Test
+    public void testIssue7642SunRiseStart() {
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 13, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
+    }
+    
+    @Test
+    public void testIssue7642DaylightStart() {
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 18, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.DAYLIGHT, sun.getPhase().getName());
+    }
+
     /***
      * Constructs a <code>GregorianCalendar</code> with the given date and time set
      * for the provided time zone.
