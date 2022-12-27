@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.renault.internal.api;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -48,13 +50,13 @@ public class Car {
     private double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
     private @Nullable Double batteryAvailableEnergy;
-    private @Nullable String batteryStatusUpdated;
+    private @Nullable ZonedDateTime batteryStatusUpdated;
     private @Nullable Integer chargingRemainingTime;
     private @Nullable Boolean hvacstatus;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
-    private @Nullable String locationUpdated;
+    private @Nullable ZonedDateTime locationUpdated;
     private LockStatus lockStatus = LockStatus.UNKNOWN;
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
@@ -115,7 +117,7 @@ public class Car {
                     chargingRemainingTime = attributes.get("chargingRemainingTime").getAsInt();
                 }
                 if (attributes.get("timestamp") != null) {
-                    batteryStatusUpdated = attributes.get("timestamp").getAsString();
+                    batteryStatusUpdated = ZonedDateTime.parse(attributes.get("timestamp").getAsString());
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -165,7 +167,7 @@ public class Car {
                     gpsLongitude = attributes.get("gpsLongitude").getAsDouble();
                 }
                 if (attributes.get("lastUpdateTime") != null) {
-                    locationUpdated = attributes.get("lastUpdateTime").getAsString();
+                    locationUpdated = ZonedDateTime.parse(attributes.get("lastUpdateTime").getAsString());
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -237,7 +239,7 @@ public class Car {
         return batteryLevel;
     }
 
-    public @Nullable String getBatteryStatusUpdated() {
+    public @Nullable ZonedDateTime getBatteryStatusUpdated() {
         return batteryStatusUpdated;
     }
 
@@ -261,7 +263,7 @@ public class Car {
         return gpsLongitude;
     }
 
-    public @Nullable String getLocationUpdated() {
+    public @Nullable ZonedDateTime getLocationUpdated() {
         return locationUpdated;
     }
 

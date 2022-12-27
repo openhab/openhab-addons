@@ -49,7 +49,6 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
 | lockstatus             | String             | Lock status of the car                          | Yes       |
-| updatenow              | Switch             | Switch to force an immediate update of channels | No        |
 
 ## Limitations
 
@@ -90,8 +89,6 @@ sitemap renaultcar label="Renault Car" {
     }
 }
 ```
-
-![Sitemap](doc/sitemap.png)
 
 If you want to limit the charge of the car battery to less than 100%, this can be done as follows.
 

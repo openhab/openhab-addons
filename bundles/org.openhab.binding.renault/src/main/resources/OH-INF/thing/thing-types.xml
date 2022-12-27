@@ -26,7 +26,6 @@
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
 			<channel id="lockstatus" typeId="lockstatus"/>
-			<channel id="updatenow" typeId="updatenow"/>
 		</channels>
 		<config-description>
 
@@ -98,15 +97,12 @@
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
-		<category>Energy</category>
 	</channel-type>
 	<channel-type id="batterystatusupdated">
 		<item-type>DateTime</item-type>
 		<label>Battery Status Updated</label>
 		<description>Timestamp of the last battery status update</description>
-		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
-		<category>Time</category>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
@@ -121,7 +117,6 @@
 				<option value="UNKNOWN">Unknown</option>
 			</options>
 		</state>
-		<category>PowerOutlet</category>
 	</channel-type>
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
@@ -154,7 +149,6 @@
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>
 		<label>Charging Time Remaining</label>
-		<category>Time</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange">
@@ -205,7 +199,6 @@
 		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
-		<category>Time</category>
 	</channel-type>
 	<channel-type id="lockstatus">
 		<item-type>String</item-type>
@@ -218,12 +211,6 @@
 				<option value="UNKNOWN">Unknown</option>
 			</options>
 		</state>
-		<category>Lock</category>
-	</channel-type>
-	<channel-type id="updatenow">
-		<item-type>Switch</item-type>
-		<label>Update Now</label>
-		<description>Switch to force an immediate update of channels</description>
 	</channel-type>
 
 </thing:thing-descriptions>

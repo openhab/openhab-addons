@@ -46,5 +46,4 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_LOCK_STATUS = "lockstatus";
     public static final String CHANNEL_ODOMETER = "odometer";
     public static final String CHANNEL_PLUG_STATUS = "plugstatus";
-    public static final String CHANNEL_UPDATE_NOW = "updatenow";
 }
