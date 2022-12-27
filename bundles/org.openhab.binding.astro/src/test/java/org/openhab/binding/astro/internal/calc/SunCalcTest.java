@@ -80,8 +80,8 @@ public class SunCalcTest {
         assertNotNull(sun.getMorningNight());
         assertNotNull(sun.getEveningNight());
 
-        // for an old date the phase is always null
-        assertNull(sun.getPhase().getName());
+        // for an old date the phase should also be calculated
+        assertNotNull(sun.getPhase().getName());
     }
 
     @Test
