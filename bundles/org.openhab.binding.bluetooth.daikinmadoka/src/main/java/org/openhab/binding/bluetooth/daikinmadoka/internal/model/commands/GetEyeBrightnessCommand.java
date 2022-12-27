@@ -39,24 +39,32 @@ public class GetEyeBrightnessCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        byte[] bEyeBrightness = mm.getValues().get(0x33).getRawValue();
+        MadokaValue mValue = mm.getValues().get(0x33);
+        if (mValue == null) {
+            String message = "eye brightness is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
 
-        if (bEyeBrightness == null || bEyeBrightness == null) {
+        byte[] bEyeBrightness = mValue.getRawValue();
+        if (bEyeBrightness == null) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect eye brightness value");
         }
 
         Integer iEyeBrightness = Integer.valueOf(bEyeBrightness[0]);
-
-        if (iEyeBrightness != null) {
-            // The values accepted by the device are from 0 to 19 - integers so conversion needed for Dimmer channel
-            eyeBrightness = new PercentType((int) Math.round(iEyeBrightness / 0.19));
-        }
+        // The values accepted by the device are from 0 to 19 - integers so conversion needed for Dimmer channel
+        eyeBrightness = new PercentType((int) Math.round(iEyeBrightness / 0.19));
 
         logger.debug("Eye Brightness: {}", eyeBrightness);
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     @Override
