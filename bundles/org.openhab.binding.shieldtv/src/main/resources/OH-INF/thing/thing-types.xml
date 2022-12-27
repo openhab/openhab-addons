@@ -52,19 +52,19 @@
 		<description>RAW message to handle (for debugging)</description>
 	</channel-type>
 
-	<channel-type id="app" advanced="true">
+	<channel-type id="app">
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>App Control</description>
 	</channel-type>
 
-	<channel-type id="keypress" advanced="true">
+	<channel-type id="keypress">
 		<item-type>String</item-type>
 		<label>Key Press</label>
 		<description>Send key press</description>
 	</channel-type>
 
-	<channel-type id="pincode" advanced="true">
+	<channel-type id="pincode">
 		<item-type>String</item-type>
 		<label>Pin Code</label>
 		<description>Send Pin Code</description>
