@@ -291,7 +291,7 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
         assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
     }
-    
+
     @Test
     public void testIssue7642DaylightStart() {
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
