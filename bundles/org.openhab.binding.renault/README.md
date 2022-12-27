@@ -71,14 +71,13 @@ renaultcar.sitemap:
 sitemap renaultcar label="Renault Car" {
     Frame {
         Image item=RenaultCar_ImageURL
-        Switch icon="switch" item=RenaultCar_UpdateNow
         Default icon="batterylevel" item=RenaultCar_BatteryLevel
         Default icon="energy" item=RenaultCar_BatteryEnergyAvailable
         Default icon="time" item=RenaultCar_BatteryStatusUpdated
         Default icon="poweroutlet" item=RenaultCar_PlugStatus
         Default icon="switch" item=RenaultCar_ChargingStatus
         Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
-        Default icon="time" item=RenaultCar_ChargingTimeRemaining
+        Default item=RenaultCar_ChargingTimeRemaining
         Default icon="pressure" item=RenaultCar_EstimatedRange
         Default icon="pressure" item=RenaultCar_Odometer
         Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
