@@ -2504,14 +2504,14 @@
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
-			
-            <parameter name="useToken" type="boolean" groupName="Settings">
-                <label>Use API Token</label>
-                <description>True if you want to use a Token, or false to use the user/password in each URL sent.
-                </description>
-                <default>true</default>
-            </parameter>
-            
+
+			<parameter name="useToken" type="boolean" groupName="Settings">
+				<label>Use API Token</label>
+				<description>True if you want to use a Token, or false to use the user/password in each URL sent.
+				</description>
+				<default>true</default>
+			</parameter>
+
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will

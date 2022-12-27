@@ -81,11 +81,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
                                         + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
                     } else {
-                        ipCameraHandler.logger
-                                .info("Please report that your Reolink camera gave a bad login response:{}", content);
+                        ipCameraHandler.logger.info("Your Reolink camera gave a bad login response:{}", content);
                     }
                     break;
-                case "/api.cgi?cmd=GetAbility": // check what channels the camera supports and if user has rights
+                case "/api.cgi?cmd=GetAbility": // Used to check what channels the camera supports
                     List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
                     org.openhab.core.thing.Channel channel;
                     if (content.contains("\"supportFtpEnable\": { \"permit\": 0")) {
@@ -97,16 +96,17 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     if (content.contains("\"supportRecordEnable\": { \"permit\": 0")) {
                         ipCameraHandler.logger.debug("Camera has no enable recording support.");
-                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_FTP);
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_RECORDINGS);
                         if (channel != null) {
                             removeChannels.add(channel);
                         }
                     }
-                    if (content.contains("\"supportBuzzerEnable\": { \"permit\": 0")) {
-                        ipCameraHandler.logger.info("Camera has no enable buzzer support.");
-                    }
                     if (content.contains("\"floodLight\": { \"permit\": 0")) {
-                        ipCameraHandler.logger.info("Camera has no Flood light support.");
+                        ipCameraHandler.logger.debug("Camera has no Flood light support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_LED);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
                     }
                     ipCameraHandler.removeChannels(removeChannels);
                     break;
@@ -138,6 +138,20 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);
                     }
                     break;
+                case "/api.cgi?cmd=GetAudioAlarmV20":
+                    if (content.contains("\"enable\" : 1")) {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "/api.cgi?cmd=GetIrLights":
+                    if (content.contains("\"state\" : 0")) {
+                        ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
+                    }
+                    break;
                 case "/api.cgi?cmd=GetMdState":
                     if (content.contains("\"state\" : 0")) {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
@@ -159,10 +173,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdState" + ipCameraHandler.reolinkAuth);
                     break;
                 case CHANNEL_ENABLE_AUDIO_ALARM:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarm" + ipCameraHandler.reolinkAuth);
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarmV20" + ipCameraHandler.reolinkAuth,
+                            "[{ \"cmd\":\"GetAudioAlarmV20\", \"action\":1, \"param\":{ \"channel\": 0}}]");
                     break;
                 case CHANNEL_AUTO_LED:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetIrLights" + ipCameraHandler.reolinkAuth);
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetIrLights" + ipCameraHandler.reolinkAuth,
+                            "[{ \"cmd\":\"GetIrLights\"}]");
                     break;
             }
             return;
