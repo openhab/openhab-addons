@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -21,6 +21,7 @@
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jrubyscripting</module>
     <module>org.openhab.automation.jsscripting</module>
+    <module>org.openhab.automation.jsscriptingnashorn</module>
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
@@ -34,7 +35,6 @@
     <!-- transformations -->
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
-    <module>org.openhab.transform.javascript</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
@@ -94,7 +94,6 @@
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
-    <module>org.openhab.binding.darksky</module>
     <module>org.openhab.binding.dbquery</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>

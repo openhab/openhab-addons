@@ -32,7 +32,7 @@ public class MoonPhase {
     private Calendar full;
     private Calendar thirdQuarter;
     private Calendar _new;
-    private int age;
+    private double age;
     private double illumination;
     private double agePercent;
     private double ageDegree;
@@ -105,7 +105,7 @@ public class MoonPhase {
     /**
      * Sets the age in days.
      */
-    public void setAge(int age) {
+    public void setAge(double age) {
         this.age = age;
     }
 

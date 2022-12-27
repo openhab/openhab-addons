@@ -330,13 +330,13 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
+                        warn += "\tMySQL:     version >= 8.0.31 from             https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
                         warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.40.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                 }
             }

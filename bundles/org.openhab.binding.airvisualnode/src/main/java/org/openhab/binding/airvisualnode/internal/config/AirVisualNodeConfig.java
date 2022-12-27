@@ -12,22 +12,25 @@
  */
 package org.openhab.binding.airvisualnode.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration for AirVisual Node.
  *
  * @author Victor Antonovich - Initial contribution
  */
+@NonNullByDefault
 public class AirVisualNodeConfig {
 
     public static final String ADDRESS = "address";
 
-    public String address;
+    public String address = "";
 
-    public String username;
+    public String username = "";
 
-    public String password;
+    public String password = "";
 
-    public String share;
+    public String share = "";
 
     public long refresh;
 

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * ZigBee USB Bridge configuration object
+ * Zigbee USB Bridge configuration object
  *
  * @author Massimo Valla - Initial contribution
  *

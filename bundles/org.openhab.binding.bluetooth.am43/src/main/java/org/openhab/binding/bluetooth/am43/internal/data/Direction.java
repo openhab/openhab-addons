@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bluetooth.am43.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This is an enum representing possible motor direction settings
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public enum Direction {
     Forward(0x1),
     Reverse(0x0);

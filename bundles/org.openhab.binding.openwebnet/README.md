@@ -1,16 +1,16 @@
 # OpenWebNet (BTicino/Legrand) Binding
 
-This binding integrates BTicino / Legrand MyHOME&reg; BUS and ZigBee wireless (MyHOME_Play&reg;) devices using the [OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol.
+This binding integrates BTicino / Legrand MyHOME&reg; BUS and Zigbee wireless (MyHOME_Play&reg;) devices using the [OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol.
 
 The binding supports:
 
-- both wired BUS/SCS (MyHOME) and wireless setups (MyHOME ZigBee). The two networks can be configured simultaneously
-- auto discovery of BUS/SCS IP and ZigBee USB gateways; auto discovery of devices
+- both wired BUS/SCS (MyHOME) and wireless setups (MyHOME Zigbee). The two networks can be configured simultaneously
+- auto discovery of BUS/SCS IP and Zigbee USB gateways; auto discovery of devices
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
 
 ![MyHOMEServer1 Gateway](doc/MyHOMEServer1_gateway.jpg)
 ![F454 Gateway](doc/F454_gateway.png)
-![ZigBee USB Gateway](doc/USB_gateway.jpg)
+![Zigbee USB Gateway](doc/USB_gateway.jpg)
 
 ## Supported Things
 
@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2469209&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),
 [F453](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2703566&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),  etc.
 
-- **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
+- **Zigbee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
 **NOTE** The new BTicino Living Now&reg; and Livinglight Smart&reg; wireless systems are not supported by this binding as they do not use the OpenWebNet protocol.
 
@@ -49,13 +49,13 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
 
-### For ZigBee (Radio)
+### For Zigbee (Radio)
 
 | Category             | WHO    | Thing Type IDs                                        | Description                                                           | Status                               |
 | -------------------- | :----: | :---------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
-| Gateway Management   | `13`   | `zb_gateway`                                          | ZigBee USB Gateway (models: BTI-3578 / LG 088328)                     | Tested: BTI-3578 and LG 088328       |
-| Lighting             | `1`    | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches                          | Tested: BTI-4591, BTI-3584, BTI-4585 |
-| Automation           | `2`    | `zb_automation`                                       | ZigBee roller shutters                                                |                                      |
+| Gateway Management   | `13`   | `zb_gateway`                                          | Zigbee USB Gateway (models: BTI-3578 / LG 088328)                     | Tested: BTI-3578 and LG 088328       |
+| Lighting             | `1`    | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | Zigbee dimmers, switches and 2-unit switches                          | Tested: BTI-4591, BTI-3584, BTI-4585 |
+| Automation           | `2`    | `zb_automation`                                       | Zigbee roller shutters                                                |                                      |
 
 ## Discovery
 
@@ -78,9 +78,9 @@ Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes
 
 If a device cannot be discovered automatically from Inbox it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
-### ZigBee Discovery
+### Zigbee Discovery
 
-- The ZigBee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
+- The Zigbee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
 - _**IMPORTANT NOTE:**_ As for other openHAB bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group to be able to use USB/serial port; set the group with the following command:
 
 ```shell
@@ -88,10 +88,10 @@ sudo usermod -a -G dialout openhab
 ```
 
 - The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the `openhab` user.
-- Once the ZigBee USB Gateway is added and online, a second Inbox Scan will discover devices connected to it. Because of the ZigBee radio network, device discovery will take ~40-60 sec. Be patient!
-- Wireless devices must be part of the same ZigBee network of the ZigBee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a ZigBee wireless network which includes the ZigBee USB Gateway
-- Only powered wireless devices part of the same ZigBee network and within radio coverage of the ZigBee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as _GENERIC_ devices and cannot be controlled
-- Wireless control units cannot be discovered by the ZigBee USB Gateway and therefore are not supported
+- Once the Zigbee USB Gateway is added and online, a second Inbox Scan will discover devices connected to it. Because of the Zigbee radio network, device discovery will take ~40-60 sec. Be patient!
+- Wireless devices must be part of the same Zigbee network of the Zigbee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a Zigbee wireless network which includes the Zigbee USB Gateway
+- Only powered wireless devices part of the same Zigbee network and within radio coverage of the Zigbee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as _GENERIC_ devices and cannot be controlled
+- Wireless control units cannot be discovered by the Zigbee USB Gateway and therefore are not supported
 
 ## Thing Configuration
 
@@ -110,14 +110,14 @@ Configuration parameters are:
 
 Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
-### Configuring Wireless ZigBee USB Gateway
+### Configuring Wireless Zigbee USB Gateway
 
 Configuration parameters are:
 
-- `serialPort` : the serial port where the ZigBee USB Gateway is connected (`String`, _mandatory_)
+- `serialPort` : the serial port where the Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
-Alternatively the ZigBee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+Alternatively the Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
 ### Configuring Devices
 
@@ -137,7 +137,7 @@ For any manually added device, you must configure:
     - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
     - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
     - alarm zone `2` --> `where="2"`
-  - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
+  - example for Zigbee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
 #### Configuring Thermo
 
@@ -210,7 +210,7 @@ OPEN command to execute: *5*8#134##
 
 | Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                           | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for ZigBee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                   |     R/W     |
+| `switch` or `switch_01`/`02` for Zigbee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                                   |     R/W     |
 | `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                 |     R/W     |
 | `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))               |     R/W     |
 | `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                   | R (TRIGGER) |
@@ -334,7 +334,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 }
 ```
 
-ZigBee USB Gateway and things configuration - for radio devices:
+Zigbee USB Gateway and things configuration - for radio devices:
 
 ```java
 Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
@@ -400,7 +400,7 @@ Switch              iAlarm_Zone_3_State         "Zone 3 state"                 (
 String              iAlarm_Zone_3_Alarm         "Zone 3 alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:alarm" }
 ```
 
-Example items linked to OpenWebNet ZigBee devices:
+Example items linked to OpenWebNet Zigbee devices:
 
 ```java
 Dimmer          iDimmer             "Dimmer [%.0f %%]"                  <DimmableLight>  (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_dimmer:myZBgateway:myZB_dimmer:brightness" }

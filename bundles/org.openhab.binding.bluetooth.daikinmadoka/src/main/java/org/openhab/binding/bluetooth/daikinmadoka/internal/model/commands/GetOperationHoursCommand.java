@@ -24,7 +24,6 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingEx
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,33 +61,34 @@ public class GetOperationHoursCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        try {
+        MadokaValue opHours = mm.getValues().get(0x40);
+        MadokaValue fanHours = mm.getValues().get(0x41);
+        MadokaValue powerHours = mm.getValues().get(0x42);
+        if (opHours == null || fanHours == null || powerHours == null) {
+            String message = "indoorOperationHours, indoorFanHours or indoorPowerHours is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
 
-            byte[] msg = mm.getRawMessage();
-            if (logger.isDebugEnabled() && msg != null) {
-                logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
-            }
-
-            // The specific GetOperationHours requires 2 consecutive runs for some reason.
-            // If value size is 0, then it will be for the next query!
-            if (mm.getValues().get(0x40).getSize() == 0) {
-                setState(State.SUCCEEDED);
-                return;
-            }
-
-            Integer iIndoorOperationHours = (int) (mm.getValues().get(0x40).getComputedValue(ByteOrder.LITTLE_ENDIAN));
-            Integer iIndoorFanHours = (int) (mm.getValues().get(0x41).getComputedValue(ByteOrder.LITTLE_ENDIAN));
-            Integer iIndoorPowerHours = (int) (mm.getValues().get(0x42).getComputedValue(ByteOrder.LITTLE_ENDIAN));
-
-            this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours, Units.HOUR);
-            this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, Units.HOUR);
-            this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, Units.HOUR);
-
-            logger.debug("indoorOperationHours: {}", indoorOperationHours);
-            logger.debug("indoorFanHours: {}", indoorFanHours);
-            logger.debug("indoorPowerHours: {}", indoorPowerHours);
-
+        if (opHours.getSize() == 0) {
             setState(State.SUCCEEDED);
+            return;
+        }
+
+        Integer iIndoorOperationHours = (int) (opHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
+        Integer iIndoorFanHours = (int) (fanHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
+        Integer iIndoorPowerHours = (int) (powerHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
+
+        this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours, Units.HOUR);
+        this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, Units.HOUR);
+        this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, Units.HOUR);
+
+        logger.debug("indoorOperationHours: {}", indoorOperationHours);
+        logger.debug("indoorFanHours: {}", indoorFanHours);
+        logger.debug("indoorPowerHours: {}", indoorPowerHours);
+
+        setState(State.SUCCEEDED);
+        try {
             executor.execute(() -> listener.receivedResponse(this));
         } catch (Exception e) {
             setState(State.FAILED);

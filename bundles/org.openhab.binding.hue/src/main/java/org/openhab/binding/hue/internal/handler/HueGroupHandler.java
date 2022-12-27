@@ -35,7 +35,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -225,8 +227,18 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
-                if (command instanceof DecimalType) {
-                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                if (command instanceof QuantityType) {
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
+                    if (convertedCommand != null) {
+                        newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
+                                colorTemperatureCapabilties);
+                        newState.setTransitionTime(fadeTime);
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), Units.KELVIN);
+                    }
+                } else if (command instanceof DecimalType) {
+                    newState = LightStateConverter.toColorTemperatureLightState(((DecimalType) command).intValue(),
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
@@ -284,13 +296,14 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
                 break;
         }
         if (newState != null) {
             cacheNewState(newState);
             bridgeHandler.updateGroupState(group, newState, fadeTime);
         } else {
-            logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 
