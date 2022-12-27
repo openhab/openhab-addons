@@ -202,7 +202,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                                     .hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_BROADCAST))
                             .collect(Collectors.toUnmodifiableList());
 
-                    if (broadcastCharacteristics.size() == 0) {
+                    if (broadcastCharacteristics.isEmpty()) {
                         logger.info(
                                 "No Characteristic of service with UUID {} on {} has the broadcast property set, ignored.",
                                 uuidStr, scanNotification.getAddress());
@@ -298,7 +298,6 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         }
 
         public void handleCommand(ChannelUID channelUID, Command command) {
-
             // Handle REFRESH
             if (command == RefreshType.REFRESH) {
                 if (canRead()) {
