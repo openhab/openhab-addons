@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.dpt.ValueEncoder;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.ThingStatus;
@@ -52,16 +53,14 @@ import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.NetworkLinkListener;
 import tuwien.auto.calimero.mgmt.Destination;
 import tuwien.auto.calimero.mgmt.ManagementClient;
-import tuwien.auto.calimero.mgmt.ManagementClientImpl;
 import tuwien.auto.calimero.mgmt.ManagementProcedures;
-import tuwien.auto.calimero.mgmt.ManagementProceduresImpl;
+import tuwien.auto.calimero.mgmt.TransportLayerImpl;
 import tuwien.auto.calimero.process.ProcessCommunication;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
 import tuwien.auto.calimero.process.ProcessListener;
 import tuwien.auto.calimero.secure.KnxSecureException;
-import tuwien.auto.calimero.secure.SecureApplicationLayer;
 import tuwien.auto.calimero.secure.Security;
 
 /**
@@ -208,38 +207,46 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             KNXNetworkLink link = establishConnection();
             this.link = link;
 
-            // ManagementProcedures provided by Calimero: allow managing other KNX devices, e.g. check if an address is
-            // reachable.
-            // Note for KNX Secure: ManagmentProcedueresImpl currently does not provide a ctor with external SAL,
-            // it internally creates an instance of ManagementClientImpl, which uses
-            // Security.defaultInstallation().deviceToolKeys()
-            // Protected ctor using given ManagementClientImpl is avalable (custom class to be inherited)
-            managementProcedures = new ManagementProceduresImpl(link);
+            // one transport layer implementation, to be shared by all following classes
+            TransportLayerImpl tl = new TransportLayerImpl(link);
+
+            // new Securemanagement / SecureApplicationLayer, based on the keyring (if any)
+            // SecureManagement does not offer a public ctor which can use a given TL.
+            // Protected ctor using given TransportLayerImpl is available (custom class to be inherited)
+            // which also copies the relevant content of the supplied SAL to a new SAL instance created
+            // by SecureManagement ctor.
+            CustomSecureManagement sal = new CustomSecureManagement(tl, openhabSecurity);
+
+            logger.debug("GAs: {}  Send: {}, S={}", sal.security().groupKeys().size(),
+                    sal.security().groupSenders().size(),
+                    KNXBridgeBaseThingHandler.secHelperGetSecureGroupAdresses(sal.security()));
 
             // ManagementClient provided by Calimero: allow reading device info, etc.
-            // Note for KNX Secure: ManagementClientImpl does not provide a ctor with external SAL in Calimero 2.5,
-            // is uses global Security.defaultInstalltion().deviceToolKeys()
-            // Current main branch includes a protected ctor (custom class to be inherited)
-            // TODO Calimero>2.5: check if there is a new way to provide security info, there is a new protected ctor
-            // TODO check if we can avoid creating another ManagementClient and re-use this from ManagemntProcedures
-            ManagementClient managementClient = new ManagementClientImpl(link);
+            // Note for KNX Secure: ManagementClientImpl does not provide a ctor with external SAL in Calimero 2.5.
+            // Protected ctor using given ManagementClientImpl is avalable in >2.5 (custom class to be inherited)
+            ManagementClient managementClient = new CustomManagementClientImpl(link, sal);
             managementClient.responseTimeout(Duration.ofSeconds(responseTimeout));
             this.managementClient = managementClient;
+
+            // ManagementProcedures provided by Calimero: allow managing other KNX devices, e.g. check if an address is
+            // reachable.
+            // Note for KNX Secure: ManagmentProcedueresImpl currently does not provide a public ctor with external SAL.
+            // Protected ctor using given ManagementClientImpl is avalable (custom class to be inherited)
+            managementProcedures = new CustomManagementProceduresImpl(managementClient, tl);
 
             // OH helper for reading device info, based on managementClient above
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            // Note for KNX Secure: SAL to be provided
-            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link);
+            final var useGoDiagnostics = true;
+            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal, useGoDiagnostics);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
             // ProcessCommunicationResponder provides responses to requests from KNX bus (Calimero).
-            // Note for KNX Secure: SAL to be provided
-            this.responseCommunicator = new ProcessCommunicationResponder(link,
-                    new SecureApplicationLayer(link, Security.defaultInstallation()));
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, sal);
+            this.responseCommunicator = responseCommunicator;
 
             // register this class, callbacks will be triggered
             link.addLinkListener(this);
@@ -279,7 +286,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    private void disconnect(@Nullable Exception e) {
+    private synchronized void disconnect(@Nullable Exception e) {
         disconnect(e, Optional.empty());
     }
 
@@ -299,19 +306,19 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         if (tmplink != null) {
             tmplink.removeLinkListener(this);
         }
-        busJob = nullify(busJob, j -> j.cancel(true));
         readDatapoints.clear();
-        responseCommunicator = nullify(responseCommunicator, rc -> {
-            rc.removeProcessListener(processListener);
-            rc.detach();
-        });
+        busJob = nullify(busJob, j -> j.cancel(true));
+        deviceInfoClient = null;
+        managementProcedures = nullify(managementProcedures, ManagementProcedures::detach);
+        managementClient = nullify(managementClient, ManagementClient::detach);
         processCommunicator = nullify(processCommunicator, pc -> {
             pc.removeProcessListener(processListener);
             pc.detach();
         });
-        deviceInfoClient = null;
-        managementClient = nullify(managementClient, ManagementClient::detach);
-        managementProcedures = nullify(managementProcedures, ManagementProcedures::detach);
+        responseCommunicator = nullify(responseCommunicator, rc -> {
+            rc.removeProcessListener(processListener);
+            rc.detach();
+        });
         link = nullify(link, KNXNetworkLink::close);
         logger.trace("Bridge {} disconnected from KNX bus", thingUID);
     }
