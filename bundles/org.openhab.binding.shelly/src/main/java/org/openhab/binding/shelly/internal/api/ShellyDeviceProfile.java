@@ -351,8 +351,8 @@ public class ShellyDeviceProfile {
 
     public String getValueProfile(int valveId, int profileId) {
         int id = profileId;
-        if (id <= 0 && settings.thermostats != null) {
-            id = settings.thermostats.get(0).profile;
+        if (id <= 0 || id > 5) {
+            id = 0;
         }
         return "" + id;
     }

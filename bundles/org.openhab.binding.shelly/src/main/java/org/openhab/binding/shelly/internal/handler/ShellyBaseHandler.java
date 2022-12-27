@@ -602,6 +602,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             String channelId = mkChannelId(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE);
             logger.debug("{}: Adding TRV profile names to channel description: {}", thingName, profileNames);
             channelDefinitions.clearStateOptions(channelId);
+            channelDefinitions.addStateOption(channelId, "0",
+                    "0: " + messages.get("channel-type.shelly.controlProfile.disabled"));
             int fid = 1;
             for (String name : profileNames) {
                 channelDefinitions.addStateOption(channelId, "" + fid, fid + ": " + name);
