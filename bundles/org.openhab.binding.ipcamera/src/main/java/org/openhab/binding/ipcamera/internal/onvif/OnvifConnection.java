@@ -622,134 +622,133 @@ public class OnvifConnection {
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
         if (!topic.isEmpty()) {
-            return;
-        }
-        String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
-        String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
-        logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
-        switch (topic) {
-            case "RuleEngine/CellMotionDetector/Motion":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.motionDetected(CHANNEL_CELL_MOTION_ALARM);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
-                }
-                break;
-            case "VideoSource/MotionAlarm":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                }
-                break;
-            case "AudioAnalytics/Audio/DetectedSound":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.audioDetected();
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.noAudioDetected();
-                }
-                break;
-            case "RuleEngine/FieldDetector/ObjectsInside":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                }
-                break;
-            case "RuleEngine/LineDetector/Crossed":
-                if ("ObjectId".equals(dataName)) {
-                    ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                } else {
-                    ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                }
-                break;
-            case "RuleEngine/TamperDetector/Tamper":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "Device/HardwareFailure/StorageFailure":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "VideoSource/ImageTooDark/AnalyticsService":
-            case "VideoSource/ImageTooDark/ImagingService":
-            case "VideoSource/ImageTooDark/RecordingService":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "VideoSource/GlobalSceneChange/AnalyticsService":
-            case "VideoSource/GlobalSceneChange/ImagingService":
-            case "VideoSource/GlobalSceneChange/RecordingService":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "VideoSource/ImageTooBright/AnalyticsService":
-            case "VideoSource/ImageTooBright/ImagingService":
-            case "VideoSource/ImageTooBright/RecordingService":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "VideoSource/ImageTooBlurry/AnalyticsService":
-            case "VideoSource/ImageTooBlurry/ImagingService":
-            case "VideoSource/ImageTooBlurry/RecordingService":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/Visitor":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/VehicleDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/DogCatDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/FaceDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
-                }
-                break;
-            case "RuleEngine/MyRuleDetector/PeopleDetect":
-                if ("true".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
-                }
-                break;
-            default:
-                logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
+            String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
+            String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
+            logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
+            switch (topic) {
+                case "RuleEngine/CellMotionDetector/Motion":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.motionDetected(CHANNEL_CELL_MOTION_ALARM);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
+                    }
+                    break;
+                case "VideoSource/MotionAlarm":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                    }
+                    break;
+                case "AudioAnalytics/Audio/DetectedSound":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.audioDetected();
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.noAudioDetected();
+                    }
+                    break;
+                case "RuleEngine/FieldDetector/ObjectsInside":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
+                    }
+                    break;
+                case "RuleEngine/LineDetector/Crossed":
+                    if ("ObjectId".equals(dataName)) {
+                        ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
+                    } else {
+                        ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
+                    }
+                    break;
+                case "RuleEngine/TamperDetector/Tamper":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "Device/HardwareFailure/StorageFailure":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "VideoSource/ImageTooDark/AnalyticsService":
+                case "VideoSource/ImageTooDark/ImagingService":
+                case "VideoSource/ImageTooDark/RecordingService":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "VideoSource/GlobalSceneChange/AnalyticsService":
+                case "VideoSource/GlobalSceneChange/ImagingService":
+                case "VideoSource/GlobalSceneChange/RecordingService":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "VideoSource/ImageTooBright/AnalyticsService":
+                case "VideoSource/ImageTooBright/ImagingService":
+                case "VideoSource/ImageTooBright/RecordingService":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "VideoSource/ImageTooBlurry/AnalyticsService":
+                case "VideoSource/ImageTooBlurry/ImagingService":
+                case "VideoSource/ImageTooBlurry/RecordingService":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "RuleEngine/MyRuleDetector/Visitor":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_DOORBELL, OnOffType.OFF);
+                    }
+                    break;
+                case "RuleEngine/MyRuleDetector/VehicleDetect":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_CAR_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "RuleEngine/MyRuleDetector/DogCatDetect":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                case "RuleEngine/MyRuleDetector/FaceDetect":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
+                    }
+                    break;
+                case "RuleEngine/MyRuleDetector/PeopleDetect":
+                    if ("true".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
+                    } else if ("false".equals(dataValue)) {
+                        ipCameraHandler.changeAlarmState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
+                    }
+                    break;
+                default:
+                    logger.debug("Please report this camera has an un-implemented ONVIF event. Topic:{}", topic);
+            }
         }
         sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
     }

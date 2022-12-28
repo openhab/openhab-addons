@@ -77,6 +77,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     if (ipCameraHandler.reolinkAuth.length() > 7) {
                         ipCameraHandler.logger.debug("Your Reolink camera gave a login:{}",
                                 ipCameraHandler.reolinkAuth);
+                        ipCameraHandler.snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel="
+                                + ipCameraHandler.cameraConfig.getNvrChannel() + "&rs=openHAB"
+                                + ipCameraHandler.reolinkAuth;
                         ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility" + ipCameraHandler.reolinkAuth,
                                 "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
                                         + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
