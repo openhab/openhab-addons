@@ -36,6 +36,7 @@ import org.openhab.binding.renault.internal.RenaultBindingConstants;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
+import org.openhab.binding.renault.internal.api.Car.LockStatus;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
@@ -112,15 +113,10 @@ public class RenaultHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
-        updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
 
-        // Background initialization:
-        ScheduledFuture<?> job = pollingJob;
-        if (job == null || job.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.MINUTES);
-        }
+        reschedulePollingJob();
     }
 
     @Override
@@ -359,6 +355,7 @@ public class RenaultHandler extends BaseThingHandler {
                 httpSession.getLockStatus(car);
                 updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
             } catch (RenaultNotImplementedException e) {
+                updateState(CHANNEL_LOCK_STATUS, new StringType(LockStatus.UNKNOWN.name()));
                 logger.warn("Disable lock status update.");
                 car.setDisableLockStatus(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {

@@ -96,12 +96,14 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
+		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterystatusupdated">
 		<item-type>DateTime</item-type>
 		<label>Battery Status Updated</label>
 		<description>Timestamp of the last battery status update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
@@ -149,6 +151,7 @@
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>
 		<label>Charging Time Remaining</label>
+		<category>Time</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange">
@@ -198,6 +201,7 @@
 		<item-type>DateTime</item-type>
 		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="lockstatus">
