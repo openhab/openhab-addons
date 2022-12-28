@@ -13,6 +13,7 @@
 package org.openhab.binding.renault.internal.api;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,7 +118,11 @@ public class Car {
                     chargingRemainingTime = attributes.get("chargingRemainingTime").getAsInt();
                 }
                 if (attributes.get("timestamp") != null) {
-                    batteryStatusUpdated = ZonedDateTime.parse(attributes.get("timestamp").getAsString());
+                    try {
+                        batteryStatusUpdated = ZonedDateTime.parse(attributes.get("timestamp").getAsString());
+                    } catch (DateTimeParseException e) {
+                        logger.warn("Error updating battery status updated timestamp. {}", e.getMessage());
+                    }
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -167,7 +172,11 @@ public class Car {
                     gpsLongitude = attributes.get("gpsLongitude").getAsDouble();
                 }
                 if (attributes.get("lastUpdateTime") != null) {
-                    locationUpdated = ZonedDateTime.parse(attributes.get("lastUpdateTime").getAsString());
+                    try {
+                        locationUpdated = ZonedDateTime.parse(attributes.get("lastUpdateTime").getAsString());
+                    } catch (DateTimeParseException e) {
+                        logger.warn("Error updating location updated timestamp. {}", e.getMessage());
+                    }
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
