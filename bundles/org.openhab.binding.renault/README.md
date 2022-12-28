@@ -72,8 +72,8 @@ sitemap renaultcar label="Renault Car" {
     Frame {
         Image item=RenaultCar_ImageURL
         Default icon="batterylevel" item=RenaultCar_BatteryLevel
-        Default icon="energy" item=RenaultCar_BatteryEnergyAvailable
-        Default icon="time" item=RenaultCar_BatteryStatusUpdated
+        Default item=RenaultCar_BatteryEnergyAvailable
+        Default item=RenaultCar_BatteryStatusUpdated
         Default icon="poweroutlet" item=RenaultCar_PlugStatus
         Default icon="switch" item=RenaultCar_ChargingStatus
         Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
@@ -83,7 +83,7 @@ sitemap renaultcar label="Renault Car" {
         Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
         Setpoint icon="temperature" item=RenaultCar_HVACTargetTemperature maxValue=21 minValue=19 step=1
         Default icon="lock" item=RenaultCar_LockStatus
-        Default icon="time" item=RenaultCar_LocationUpdate
+        Default item=RenaultCar_LocationUpdate
         Default icon="zoom" item=RenaultCar_Location
     }
 }
