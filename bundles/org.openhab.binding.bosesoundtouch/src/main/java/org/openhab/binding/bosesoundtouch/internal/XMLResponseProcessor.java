@@ -47,6 +47,7 @@ public class XMLResponseProcessor {
 
     public void handleMessage(String msg) throws SAXException, IOException, ParserConfigurationException {
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
         SAXParser parser = parserFactory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
         reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
