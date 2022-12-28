@@ -149,33 +149,40 @@ public class RenaultHandler extends BaseThingHandler {
                 }
                 break;
             case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
-                // We can only trigger pre-conditioning of the car.
-                if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)
-                        && !car.isDisableHvac()) {
-                    final MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
-                    try {
-                        updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
-                        car.resetHVACStatus();
-                        httpSession.initSesssion(car);
-                        httpSession.actionHvacOn(car.getHvacTargetTemperature());
-                        ScheduledFuture<?> job = pollingJob;
-                        if (job != null) {
-                            job.cancel(true);
+                if (!car.isDisableHvac()) {
+                    if (command instanceof RefreshType) {
+                        reschedulePollingJob();
+                    } else if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)
+                            && !car.isDisableHvac()) {
+                        // We can only trigger pre-conditioning of the car.
+                        final MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                        try {
+                            updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
+                            car.resetHVACStatus();
+                            httpSession.initSesssion(car);
+                            httpSession.actionHvacOn(car.getHvacTargetTemperature());
+                            ScheduledFuture<?> job = pollingJob;
+                            if (job != null) {
+                                job.cancel(true);
+                            }
+                            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.updateDelay,
+                                    config.refreshInterval * 60, TimeUnit.SECONDS);
+                        } catch (InterruptedException e) {
+                            logger.warn("Error My Renault Http Session.", e);
+                            Thread.currentThread().interrupt();
+                        } catch (RenaultException | RenaultForbiddenException | RenaultUpdateException
+                                | RenaultActionException | RenaultNotImplementedException | ExecutionException
+                                | TimeoutException e) {
+                            logger.warn("Error during action HVAC on.", e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-                        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.updateDelay,
-                                config.refreshInterval * 60, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        logger.warn("Error My Renault Http Session.", e);
-                        Thread.currentThread().interrupt();
-                    } catch (RenaultException | RenaultForbiddenException | RenaultUpdateException
-                            | RenaultActionException | RenaultNotImplementedException | ExecutionException
-                            | TimeoutException e) {
-                        logger.warn("Error during action HVAC on.", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 }
+                break;
             case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
-                if (command instanceof StringType) {
+                if (command instanceof RefreshType) {
+                    reschedulePollingJob();
+                } else if (command instanceof StringType) {
                     try {
                         ChargingMode newMode = ChargingMode.valueOf(command.toString());
                         if (!ChargingMode.UNKNOWN.equals(newMode)) {
@@ -201,14 +208,10 @@ public class RenaultHandler extends BaseThingHandler {
                         return;
                     }
                 }
+                break;
             default:
                 if (command instanceof RefreshType) {
-                    ScheduledFuture<?> job = pollingJob;
-                    if (job != null) {
-                        job.cancel(true);
-                    }
-                    pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval,
-                            TimeUnit.MINUTES);
+                    reschedulePollingJob();
                 }
                 break;
         }
@@ -363,5 +366,13 @@ public class RenaultHandler extends BaseThingHandler {
                 logger.warn("Error updating lock status.", e);
             }
         }
+    }
+
+    private void reschedulePollingJob() {
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.MINUTES);
     }
 }
