@@ -174,7 +174,6 @@ public class RenaultHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 }
-                break;
             case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
                 if (command instanceof StringType) {
                     try {
@@ -202,7 +201,6 @@ public class RenaultHandler extends BaseThingHandler {
                         return;
                     }
                 }
-                break;
             default:
                 if (command instanceof RefreshType) {
                     ScheduledFuture<?> job = pollingJob;
