@@ -90,12 +90,10 @@ public class BondHttpApi {
      * @throws BondException
      */
     public List<String> getDevices() throws BondException {
-
         List<String> list = new ArrayList<>();
         String json = request("/v2/devices/");
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(json);
+            JsonElement element = JsonParser.parseString(json);
             JsonObject obj = element.getAsJsonObject();
             Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
             for (Map.Entry<String, JsonElement> entry : entries) {
