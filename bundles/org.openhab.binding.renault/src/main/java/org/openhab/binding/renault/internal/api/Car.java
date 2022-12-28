@@ -121,6 +121,7 @@ public class Car {
                     try {
                         batteryStatusUpdated = ZonedDateTime.parse(attributes.get("timestamp").getAsString());
                     } catch (DateTimeParseException e) {
+                        batteryStatusUpdated = null;
                         logger.debug("Error updating battery status updated timestamp. {}", e.getMessage());
                     }
                 }
@@ -175,6 +176,7 @@ public class Car {
                     try {
                         locationUpdated = ZonedDateTime.parse(attributes.get("lastUpdateTime").getAsString());
                     } catch (DateTimeParseException e) {
+                        locationUpdated = null;
                         logger.debug("Error updating location updated timestamp. {}", e.getMessage());
                     }
                 }
