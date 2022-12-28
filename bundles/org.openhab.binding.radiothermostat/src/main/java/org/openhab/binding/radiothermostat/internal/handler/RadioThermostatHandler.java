@@ -41,6 +41,7 @@ import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
+import org.openhab.binding.radiothermostat.internal.util.RadioThermostatScheduleJson;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -95,6 +96,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private boolean disableLogs = false;
     private boolean clockSync = false;
     private String setpointCmdKeyPrefix = "t_";
+    private String heatProgramJson = "";
+    private String coolProgramJson = "";
 
     public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
             HttpClient httpClient) {
@@ -118,7 +121,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         if (hostName == null || "".equals(hostName)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thermostat Host Name must be specified");
+                    "@text/offline.configuration-error-hostname");
             return;
         }
 
@@ -150,6 +153,26 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             updateThing(editThing().withChannels(channels).build());
         }
 
+        final RadioThermostatScheduleJson thermostatSchedule = new RadioThermostatScheduleJson(config);
+
+        try {
+            heatProgramJson = thermostatSchedule.getHeatProgramJson();
+            logger.debug("heat program: {}", heatProgramJson);
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error-heating-program");
+            return;
+        }
+
+        try {
+            coolProgramJson = thermostatSchedule.getCoolProgramJson();
+            logger.debug("cool program: {}", coolProgramJson);
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error-cooling-program");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
 
         startAutomaticRefresh();
@@ -175,6 +198,22 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
+                // populate the heat and cool programs on the thermostat from the user configuration,
+                // the commands will be sent each time the refresh job runs until a success response is seen
+                if (!"".equals(heatProgramJson)) {
+                    final String response = connector.sendCommand(null, null, heatProgramJson, HEAT_PROGRAM_RESOURCE);
+                    if (response.contains("success")) {
+                        heatProgramJson = "";
+                    }
+                }
+
+                if (!"".equals(coolProgramJson)) {
+                    final String response = connector.sendCommand(null, null, coolProgramJson, COOL_PROGRAM_RESOURCE);
+                    if (response.contains("success")) {
+                        coolProgramJson = "";
+                    }
+                }
+
                 // send an async call to the thermostat to get the 'tstat' data
                 connector.getAsyncThermostatData(DEFAULT_RESOURCE);
             };
@@ -363,7 +402,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         if (KEY_ERROR.equals(evtKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Error retrieving data from Thermostat ");
+                    "@text/offline.communication-error-get-data");
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
 
