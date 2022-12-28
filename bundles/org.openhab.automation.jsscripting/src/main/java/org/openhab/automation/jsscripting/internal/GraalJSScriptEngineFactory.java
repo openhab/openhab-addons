@@ -50,13 +50,10 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
 
     public static final String MIME_TYPE = "application/javascript";
-    private static final String ALIAS = "graaljs";
     private static final List<String> SCRIPT_TYPES = createScriptTypes();
 
     private static List<String> createScriptTypes() {
-        // Add those for backward compatibility (existing scripts may rely on those MIME types)
-        List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", ALIAS);
-        return Stream.of(factory.getMimeTypes(), factory.getExtensions(), backwardCompat).flatMap(List::stream)
+        return Stream.of(factory.getMimeTypes(), factory.getExtensions()).flatMap(List::stream)
                 .collect(Collectors.toUnmodifiableList());
     }
 
