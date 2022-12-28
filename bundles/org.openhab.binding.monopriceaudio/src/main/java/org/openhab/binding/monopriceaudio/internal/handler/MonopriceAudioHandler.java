@@ -80,13 +80,13 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private static final int MIN_VOLUME = 0;
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioHandler.class);
+    private final AmplifierModel amp;
     private final MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
     private final SerialPortManager serialPortManager;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    private AmplifierModel amp = AmplifierModel.AMPLIFIER;
     private MonopriceAudioConnector connector = new MonopriceAudioDefaultConnector();
 
     private Map<String, MonopriceAudioZoneDTO> zoneDataMap = Map.of(ZONE, new MonopriceAudioZoneDTO());
@@ -99,9 +99,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private boolean disableKeypadPolling = false;
     private Object sequenceLock = new Object();
 
-    public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
+    public MonopriceAudioHandler(Thing thing, AmplifierModel amp,
+            MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
             SerialPortManager serialPortManager) {
         super(thing);
+        this.amp = amp;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
     }
@@ -115,7 +117,6 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         final Integer port = config.port;
         numZones = config.numZones;
         final String ignoreZonesConfig = config.ignoreZones;
-        amp = AmplifierModel.valueOf(thing.getThingTypeUID().getId().toUpperCase());
         disableKeypadPolling = config.disableKeypadPolling || amp == AmplifierModel.MONOPRICE70;
 
         // build a Map with a MonopriceAudioZoneDTO for each zoneId

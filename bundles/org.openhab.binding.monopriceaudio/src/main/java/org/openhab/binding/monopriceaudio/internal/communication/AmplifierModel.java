@@ -31,8 +31,8 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public enum AmplifierModel {
 
-    // to avoid breaking existing installations, the 10761/DAX66 will still be known as 'amplifier'
-    AMPLIFIER("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
+    // Monoprice 10761/Dayon Audio DAX66
+    MONOPRICE("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
             6, true, List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33",
                     "34", "35", "36")) {
         @Override

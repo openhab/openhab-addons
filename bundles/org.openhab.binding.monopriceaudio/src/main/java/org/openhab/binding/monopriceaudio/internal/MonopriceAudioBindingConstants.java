@@ -28,6 +28,7 @@ public class MonopriceAudioBindingConstants {
     public static final String BINDING_ID = "monopriceaudio";
 
     // List of all Thing Type UIDs
+    // to avoid breaking existing installations, the 10761/DAX66 will still be known as 'amplifier'
     public static final ThingTypeUID THING_TYPE_MP = new ThingTypeUID(BINDING_ID, "amplifier");
     public static final ThingTypeUID THING_TYPE_MP70 = new ThingTypeUID(BINDING_ID, "monoprice70");
     public static final ThingTypeUID THING_TYPE_DAX88 = new ThingTypeUID(BINDING_ID, "dax88");

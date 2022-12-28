@@ -52,7 +52,7 @@ public abstract class MonopriceAudioConnector {
     private boolean connected;
     private boolean pingResponseOnly;
 
-    private AmplifierModel amp = AmplifierModel.AMPLIFIER;
+    private AmplifierModel amp = AmplifierModel.MONOPRICE;
 
     private @Nullable Thread readerThread;
 
