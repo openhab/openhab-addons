@@ -36,7 +36,6 @@ import org.openhab.binding.renault.internal.RenaultBindingConstants;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
-import org.openhab.binding.renault.internal.api.Car.LockStatus;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
@@ -56,6 +55,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -355,7 +355,7 @@ public class RenaultHandler extends BaseThingHandler {
                 httpSession.getLockStatus(car);
                 updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
             } catch (RenaultNotImplementedException e) {
-                updateState(CHANNEL_LOCK_STATUS, new StringType(LockStatus.UNKNOWN.name()));
+                updateState(CHANNEL_LOCK_STATUS, UnDefType.UNDEF);
                 logger.warn("Disable lock status update.");
                 car.setDisableLockStatus(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
