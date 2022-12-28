@@ -23,7 +23,6 @@
       !jdk.vm.ci.services
     </bnd.importpackage>
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 -->
-    <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
     <ohjs.version>openhab@3.1.2</ohjs.version>
   </properties>
@@ -143,32 +142,6 @@
       <version>${graal.version}</version>
     </dependency>
     <!-- com.ibm.icu.icu4j/69.1 is not required on GraalJS >= 22.0.0 as it moved to org.graalvm.truffle -->
-
-    <!-- include as version required is older than OH provides -->
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-commons</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-tree</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-util</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-analysis</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
+    <!-- org.ow2.asm is not required as compile dependency anymore for GraalJS >= 20.3.0 -->
   </dependencies>
 </project>
