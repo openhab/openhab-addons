@@ -152,8 +152,7 @@ public class RenaultHandler extends BaseThingHandler {
                 if (!car.isDisableHvac()) {
                     if (command instanceof RefreshType) {
                         reschedulePollingJob();
-                    } else if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)
-                            && !car.isDisableHvac()) {
+                    } else if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)) {
                         // We can only trigger pre-conditioning of the car.
                         final MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                         try {
