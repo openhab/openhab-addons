@@ -429,7 +429,7 @@
 		<description>Primary Channels</description>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="power"/>
 			<channel id="panellock" typeId="panellock"/>
 			<channel id="irenable" typeId="irenable"/>
 			<channel id="presetcmd" typeId="presetcmd"/>
@@ -468,11 +468,16 @@
 		<description>Volume channels</description>
 		<channels>
 			<channel id="volume" typeId="volume"/>
-			<channel id="volumemute" typeId="system.mute"/>
+			<channel id="volumemute" typeId="volumemute"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Port Channel Type -->
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Whether the matrix is on or not</description>
+	</channel-type>
 	<channel-type id="panellock" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Panel Lock</label>
@@ -518,5 +523,10 @@
 		<label>Output Volume</label>
 		<description>Sets the volume (in db) of the output port (default: -40db with range from -79db to 15db)</description>
 		<state min="-79" max="15"/>
+	</channel-type>
+	<channel-type id="volumemute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Sets the output to muted or not</description>
 	</channel-type>
 </thing:thing-descriptions>
