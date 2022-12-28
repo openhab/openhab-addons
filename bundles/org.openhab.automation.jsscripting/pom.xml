@@ -121,11 +121,7 @@
       <artifactId>js-scriptengine</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-launcher</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
+    <!-- org.graalvm.js/js-launcher is GraalJS's command line interpreter and not required here -->
     <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
