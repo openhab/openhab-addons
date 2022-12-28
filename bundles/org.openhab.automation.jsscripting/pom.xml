@@ -139,11 +139,6 @@
     </dependency>
     <!-- GraalJS changelog says that com.ibm.icu/icu4j is not required for GraalJS >= 22.0.0 as it moved to org.graalvm.truffle;
       but GraalJS >= 22.2.0 requires it -->
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>71.1</version>
-    </dependency>
     <!-- org.ow2.asm is not required as compile dependency for GraalJS >= 20.3.0 -->
   </dependencies>
 </project>
