@@ -99,6 +99,7 @@ public class ChromecastStatusUpdater {
 
     public void processStatusUpdate(final @Nullable Status status) {
         if (status == null) {
+            logger.trace("Chromecast {} / processStatusUpdate", thing.getUID());
             updateStatus(ThingStatus.OFFLINE);
             updateAppStatus(null);
             updateVolumeStatus(null);

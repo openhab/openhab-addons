@@ -91,6 +91,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
 
         final String ipAddress = config.ipAddress;
         if (ipAddress == null || ipAddress.isBlank()) {
+            logger.trace("Chromecast {} / {} trying to initialize", thing.getUID(), thing.getLabel());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is not valid or missing.");
             return;
@@ -240,6 +241,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         private final ChromecastEventReceiver eventReceiver;
         private final ChromecastStatusUpdater statusUpdater;
         private final ChromecastScheduler scheduler;
+        private final Thing thing;
 
         /**
          * used internally to represent the connection state
@@ -265,6 +267,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
             this.commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);
             this.eventReceiver = new ChromecastEventReceiver(scheduler, statusUpdater);
             this.audioSink = new ChromecastAudioSink(commander, audioHttpServer, callbackURL);
+            this.thing = thing;
         }
 
         void initialize() {
@@ -306,9 +309,11 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
 
         private void connect() {
             try {
+                logger.trace("Chromecast {} / {} trying to connect", thing.getUID(), thing.getLabel());
                 chromeCast.connect();
-
+                logger.trace("Chromecast {} / {} updateMediaStatus", thing.getUID(), thing.getLabel());
                 statusUpdater.updateMediaStatus(null);
+                logger.trace("Chromecast {} / {} updateStatus", thing.getUID(), thing.getLabel());
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
 
                 connectionState = ConnectionState.CONNECTED;

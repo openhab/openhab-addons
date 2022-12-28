@@ -48,6 +48,7 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
             scheduler.scheduleRefresh();
         } else {
             scheduler.cancelRefresh();
+            logger.trace("Chromecast / connectionEventReceived");
             statusUpdater.updateStatus(ThingStatus.OFFLINE);
             // We might have just had a connection problem, let's try to reconnect.
             scheduler.scheduleConnect();
