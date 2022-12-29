@@ -52,7 +52,7 @@ public class SoundTouch20Tests {
     private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
     private @NonNullByDefault({}) Thing soundTouchThing;
     private @NonNullByDefault({}) BoseSoundTouchHandler thingHandler;
-    private @NonNullByDefault({}) XMLResponseProcessor processer;
+    private @NonNullByDefault({}) XMLResponseProcessor processor;
     private ThingUID thingUID = new ThingUID(BoseSoundTouchBindingConstants.BINDING_ID, "soundtouch20");
     private ChannelUID volumeChannelUID = new ChannelUID(thingUID, BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
     private ChannelUID presetChannelUID = new ChannelUID(thingUID, BoseSoundTouchBindingConstants.CHANNEL_PRESET);
@@ -67,17 +67,17 @@ public class SoundTouch20Tests {
 
         soundTouchThing = ThingBuilder.create(BoseSoundTouchBindingConstants.BST_20_THING_TYPE_UID, thingUID)
                 .withConfiguration(config).withChannel(ChannelBuilder.create(volumeChannelUID, "Number").build())
-                .withConfiguration(config).withChannel(ChannelBuilder.create(presetChannelUID, "Number").build())
+                .withChannel(ChannelBuilder.create(presetChannelUID, "Number").build())
                 .build();
 
         PresetContainer container = new PresetContainer(storage);
         thingHandler = new BoseSoundTouchHandler(soundTouchThing, container, stateDescriptionProvider);
-        processer = new XMLResponseProcessor(thingHandler);
+        processor = new XMLResponseProcessor(thingHandler);
     }
 
     private void processIncomingMessage(String mesage) {
         try {
-            processer.handleMessage(mesage);
+            processor.handleMessage(mesage);
         } catch (Exception e) {
             assert false : MessageFormat.format("handleMessage throws an exception: {0} Stacktrace: {1}",
                     e.getMessage(), e.getStackTrace());
