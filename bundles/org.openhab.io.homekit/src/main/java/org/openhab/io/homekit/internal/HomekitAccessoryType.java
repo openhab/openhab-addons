@@ -39,6 +39,7 @@ public enum HomekitAccessoryType {
     SMOKE_SENSOR("SmokeSensor"),
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
     CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    BASIC_FAN("BasicFan"),
     FAN("Fan"),
     LOCK("Lock"),
     SECURITY_SYSTEM("SecuritySystem"),
@@ -54,6 +55,7 @@ public enum HomekitAccessoryType {
     FAUCET("Faucet"),
     MICROPHONE("Microphone"),
     SLAT("Slat"),
+    ACCESSORY_GROUP("AccessoryGroup"),
     DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();

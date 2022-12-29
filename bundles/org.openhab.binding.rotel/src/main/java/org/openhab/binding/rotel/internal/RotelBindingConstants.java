@@ -139,6 +139,7 @@ public class RotelBindingConstants {
     public static final String CHANNEL_RANDOM = "random";
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_FREQUENCY = "frequency";
+    public static final String CHANNEL_RADIO_PRESET = "radioPreset";
     public static final String CHANNEL_LINE1 = "mainZone#line1";
     public static final String CHANNEL_LINE2 = "mainZone#line2";
     public static final String CHANNEL_BRIGHTNESS = "brightness";

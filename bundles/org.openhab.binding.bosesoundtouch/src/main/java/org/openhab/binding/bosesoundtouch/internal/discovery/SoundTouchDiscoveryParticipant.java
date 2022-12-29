@@ -26,6 +26,8 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "discovery.bosesoundtouch")
 public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
@@ -55,7 +58,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo info) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(info);
         if (uid != null) {
@@ -89,9 +92,10 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
             }
 
             properties.put(BoseSoundTouchConfiguration.HOST, addrs[0].getHostAddress());
-            if (getMacAddress(info) != null) {
+            byte[] localMacAddress = getMacAddress(info);
+            if (localMacAddress.length > 0) {
                 properties.put(BoseSoundTouchConfiguration.MAC_ADDRESS,
-                        new String(getMacAddress(info), StandardCharsets.UTF_8));
+                        new String(localMacAddress, StandardCharsets.UTF_8));
             }
 
             // Set manufacturer as thing property (if available)
@@ -105,7 +109,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo info) {
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
         logger.trace("ServiceInfo: {}", info);
         ThingTypeUID typeUID = getThingTypeUID(info);
         if (typeUID != null) {
@@ -113,10 +117,8 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
                 if (info.getType().equals(getServiceType())) {
                     logger.trace("Discovered a Bose SoundTouch thing with name '{}'", info.getName());
                     byte[] mac = getMacAddress(info);
-                    if (mac != null) {
+                    if (mac.length > 0) {
                         return new ThingUID(typeUID, new String(mac, StandardCharsets.UTF_8));
-                    } else {
-                        return null;
                     }
                 }
             }
@@ -129,13 +131,13 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
         return "_soundtouch._tcp.local.";
     }
 
-    private ThingTypeUID getThingTypeUID(ServiceInfo info) {
+    private @Nullable ThingTypeUID getThingTypeUID(ServiceInfo info) {
         InetAddress[] addrs = info.getInetAddresses();
         if (addrs.length > 0) {
             String ip = addrs[0].getHostAddress();
             String deviceId = null;
             byte[] mac = getMacAddress(info);
-            if (mac != null) {
+            if (mac.length > 0) {
                 deviceId = new String(mac, StandardCharsets.UTF_8);
             }
             String deviceType;
@@ -143,6 +145,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
                 String content = DiscoveryUtil.executeUrl("http://" + ip + ":8090/info");
                 deviceType = DiscoveryUtil.getContentOfFirstElement(content, "type");
             } catch (IOException e) {
+                logger.debug("Ignoring IOException during Discovery: {}", e.getMessage());
                 return null;
             }
 
@@ -163,6 +166,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
                         return BST_10_THING_TYPE_UID;
                     }
                 } catch (IOException e) {
+                    logger.debug("Ignoring IOException during Discovery: {}", e.getMessage());
                     return null;
                 }
             }
@@ -190,24 +194,21 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     private byte[] getMacAddress(ServiceInfo info) {
-        if (info != null) {
-            // sometimes we see empty messages - ignore them
-            if (!info.hasData()) {
-                return null;
-            }
-            byte[] mac = info.getPropertyBytes("MAC");
-            if (mac == null) {
-                logger.warn("SoundTouch Device {} delivered no MAC address!", info.getName());
-                return null;
-            }
-            if (mac.length != 12) {
-                BigInteger bi = new BigInteger(1, mac);
-                logger.warn("SoundTouch Device {} delivered an invalid MAC address: 0x{}", info.getName(),
-                        String.format("%0" + (mac.length << 1) + "X", bi));
-                return null;
-            }
-            return mac;
+        // sometimes we see empty messages - ignore them
+        if (!info.hasData()) {
+            return new byte[0];
         }
-        return null;
+        byte[] mac = info.getPropertyBytes("MAC");
+        if (mac == null) {
+            logger.warn("SoundTouch Device {} delivered no MAC address!", info.getName());
+            return new byte[0];
+        }
+        if (mac.length != 12) {
+            BigInteger bi = new BigInteger(1, mac);
+            logger.warn("SoundTouch Device {} delivered an invalid MAC address: 0x{}", info.getName(),
+                    String.format("%0" + (mac.length << 1) + "X", bi));
+            return new byte[0];
+        }
+        return mac;
     }
 }

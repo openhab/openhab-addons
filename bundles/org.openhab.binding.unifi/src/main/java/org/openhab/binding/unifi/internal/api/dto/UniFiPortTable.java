@@ -12,14 +12,23 @@
  */
 package org.openhab.binding.unifi.internal.api.dto;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * The {@link UniFiPortTable} represents the data model of UniFi port table, which is an extend of port override.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class UniFiPortTable extends UnfiPortOverride {
+public class UniFiPortTable {
 
-    private transient UniFiDevice device;
+    @Expose
+    private int portIdx;
+
+    @Expose
+    private String portconfId;
+
+    @Expose
+    private String poeMode;
 
     private String name;
 
@@ -40,12 +49,16 @@ public class UniFiPortTable extends UnfiPortOverride {
 
     private String poeCurrent;
 
-    public UniFiDevice getDevice() {
-        return device;
+    public int getPortIdx() {
+        return portIdx;
     }
 
-    public void setDevice(final UniFiDevice device) {
-        this.device = device;
+    public String getPortconfId() {
+        return portconfId;
+    }
+
+    public String getPoeMode() {
+        return poeMode;
     }
 
     public String getName() {
@@ -83,7 +96,7 @@ public class UniFiPortTable extends UnfiPortOverride {
     @Override
     public String toString() {
         return String.format(
-                "UniFiPortTable{name: '%s', enable: '%b', up: '%b', portPoe: '%b', poeEnable: '%b, poePower: '%s', poeVoltage: '%s', poeCurrent: '%s'}",
-                name, enable, up, portPoe, poeEnable, poePower, poeVoltage, poeCurrent);
+                "UniFiPortTable{portIx: '%d', portconfId: '%s', poeMode: '%s', name: '%s', enable: '%b', up: '%b', portPoe: '%b', poeEnable: '%b, poePower: '%s', poeVoltage: '%s', poeCurrent: '%s'}",
+                portIdx, portconfId, poeMode, name, enable, up, portPoe, poeEnable, poePower, poeVoltage, poeCurrent);
     }
 }

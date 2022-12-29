@@ -200,7 +200,7 @@ public class NeeoUtil {
     }
 
     /**
-     * Utility function to close a {@link AutoCloseable} and log any exception thrown.
+     * Utility function to close an {@link AutoCloseable} and log any exception thrown.
      *
      * @param closeable a possibly null {@link AutoCloseable}. If null, no action is done.
      */

@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.bluetooth.notification;
 
+import java.util.Map;
+
 /**
  * The {@link BluetoothScanNotification} provides a notification of a received scan packet
  *
  * @author Chris Jackson - Initial contribution
+ * @author Peter Rosenberg - Add support for ServiceData
  */
 public class BluetoothScanNotification extends BluetoothNotification {
     /**
@@ -32,6 +35,13 @@ public class BluetoothScanNotification extends BluetoothNotification {
      * The manufacturer specific data
      */
     private byte[] manufacturerData = null;
+
+    /**
+     * The service data.
+     * Key: UUID of the service
+     * Value: Data of the characteristic
+     */
+    private Map<String, byte[]> serviceData = null;
 
     /**
      * The beacon type
@@ -104,6 +114,14 @@ public class BluetoothScanNotification extends BluetoothNotification {
      */
     public byte[] getManufacturerData() {
         return manufacturerData;
+    }
+
+    public void setServiceData(Map<String, byte[]> serviceData) {
+        this.serviceData = serviceData;
+    }
+
+    public Map<String, byte[]> getServiceData() {
+        return serviceData;
     }
 
     /**

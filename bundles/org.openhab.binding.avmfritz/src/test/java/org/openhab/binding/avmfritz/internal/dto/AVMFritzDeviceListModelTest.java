@@ -725,6 +725,8 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(colorModel);
         assertEquals(254, colorModel.hue);
         assertEquals(100, colorModel.saturation);
+        assertEquals(0, colorModel.unmappedHue);
+        assertEquals(0, colorModel.unmappedSaturation);
         assertEquals(2700, colorModel.temperature);
     }
 

@@ -169,7 +169,7 @@ public class GreeAirDevice {
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
             resp.packJson = gson.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
 
-            // Now set the key and flag to indicate the bind was succesful
+            // Now set the key and flag to indicate the bind was successful
             encKey = resp.packJson.key;
 
             // save the outcome

@@ -15,13 +15,13 @@ This procedure opens TCP/IP port 1012 on your FRITZ!Box.
 (It can be deactivated again by dialing `#96*4*`.)
 You can test if everything is working with the Telnet program from your openHAB server:
 
-```
+```shell
 telnet fritz.box 1012
 ```
 
 If you see an output like this:
 
-```
+```shell
 Trying 192.168.178.1...
 Connected to fritz.box.
 Escape character is '^]'.
@@ -65,7 +65,7 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) and [FRITZ!DECT 440](https://avm.de/produkte/fritzdect/fritzdect-440/) are buttons for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08  or higher for FRITZ!DECT 400, 7.20  or higher for FRITZ!DECT 440).
 The FRITZ!DECT 400 supports a configurable button to trigger short or long press events.
 Beside four customizable buttons the FRITZ!DECT 440 supports temperature readings.
-** NOTE: ** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
+**NOTE:** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
 
 ### FRITZ!DECT 500
 
@@ -99,7 +99,7 @@ The use of other Sensors should be possible, if these are compatible with DECT-U
 
 The FRITZ!Box has to run at least on firmware FRITZ!OS 7.
 
-### FRITZ! Groups 
+### FRITZ! Groups
 
 The FRITZ!OS supports two different types of groups.
 On the one hand there are groups for heating thermostats on the other hand there are groups for switchable outlets and power meters.
@@ -126,7 +126,7 @@ To do so
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```
+```text
 discovery.avmfritz:background=false
 ```
 
@@ -199,6 +199,8 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7       |
 | last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, FRITZ!DECT 440, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7             |
 | rollershutter   | Rollershutter            | Rollershutter control and status. Accepts UP/DOWN/STOP commands and the opening level in percent. States the opening level in percent.             | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
+| obstruction_alarm | Obstruction Alarm        | Rollershutter obstruction alarm (ON/OFF)                                                                                                         | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
+| temperature_alarm | Temperature Alarm        | Rollershutter temperature alarm (ON/OFF)                                                                                                    | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                |
 
 ### Triggers
 
@@ -215,13 +217,13 @@ The trigger channel `press` for a FRITZ!DECT 400 device is of type `system.butto
 With the new [templates feature](https://en.avm.de/guide/smart-home/meet-the-smart-home-templates-from-fritz/) in FRITZ!OS 7, you can now save the settings of your Smart Home devices and groups as a template for certain occasions e.g. holidays or vacation.
 Unfortunately it is not that simple to find out the unique identifier (AIN) for a template needed for sending it as command to the `apply_template` channel.
 Here is a work-around:
-To retrieve the list of AINs assigned by FRITZ! for your templates, go to the FRITZ!Box' Support page at http://fritz.box/html/support.html within your local network and login.
+To retrieve the list of AINs assigned by FRITZ! for your templates, go to the FRITZ!Box' Support page at [http://fritz.box/html/support.html](http://fritz.box/html/support.html) within your local network and login.
 Then in the section "Support Data" ("Support-Daten") press the button "Create Support Data" ("Support-Daten erstellen") and save the generated text file.
 Open the file in a text editor and search for the term "avm_home_device_type_template".
 You will find entries like the attached one.
 The `identifyer 'tmpFC0F2C-3960B7EE6'` contains the templates AINs you need for using them in rules.
 
-```
+```text
 Name 'Demo Template', identifyer 'tmpFC0F2C-3960B7EE6', firmware version '0.1' 
     [aktive] ID 60013, emc 0x0, model 0x0, grouphash=0x0, devicetype 'avm_home_device_type_template', functionbitmask 0x4000, sortid 0, batt perc 255 low 255, pollinterval 0, polltimeout 0, validchangetime: 0
     --------------------
@@ -243,8 +245,7 @@ end
 For heating devices and heating groups there are two actions available to set Boost or Window Open mode for a given duration: `setBoostMode(long)` and `setWindowOpenMode(long)`.
 The duration has to be given in seconds, min. 1, max. 86400, 0 for deactivation.
 
-
-```
+```java
 val actions = getActions("avmfritz","avmfritz:Comet_DECT:1:aaaaaabbbbbb")
 
 // set Boost mode for 5 min

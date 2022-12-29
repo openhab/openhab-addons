@@ -1,160 +1,161 @@
 {
-	"deviceMapping":{
-		"id":[
+	"deviceMapping": {
+		"id": [
 			"ijai.vacuum.v19"
 		],
-		"propertyMethod":"get_properties",
-		"maxProperties":4,
-		"channels":[
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
 			{
-				"property":"",
-				"friendlyName":"Robot Cleaner - Actions",
-				"channel":"actions",
-				"type":"String",
-				"stateDescription":{
-					"options":[
+				"property": "",
+				"friendlyName": "Robot Cleaner - Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"vacuum-start-sweep",
-							"label":"Start"
+							"value": "vacuum-start-sweep",
+							"label": "Start"
 						},
 						{
-							"value":"vacuum-start-sweep-mop",
-							"label":"Start Sweep+Mop"
+							"value": "vacuum-start-sweep-mop",
+							"label": "Start Sweep+Mop"
 						},
 						{
-							"value":"vacuum-start-only-sweep",
-							"label":"Start Sweep"
+							"value": "vacuum-start-only-sweep",
+							"label": "Start Sweep"
 						},
 						{
-							"value":"vacuum-start-only-mop",
-							"label":"Start Mop"
+							"value": "vacuum-start-only-mop",
+							"label": "Start Mop"
 						},
 						{
-							"value":"vacuum-dock",
-							"label":"Dock"
+							"value": "vacuum-dock",
+							"label": "Dock"
 						},
 						{
-							"value":"vacuum-stop-sweeping",
-							"label":"Pause"
+							"value": "vacuum-stop-sweeping",
+							"label": "Pause"
 						},
 						{
-							"value":"vacuum-start-room-sweep",
-							"label":"Start Room Sweep"
+							"value": "vacuum-start-room-sweep",
+							"label": "Start Room Sweep"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":2,
-						"aiid":1,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-start-sweep"
+									"matchValue": "vacuum-start-sweep"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":2,
-						"aiid":2,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-stop-sweeping"
+									"matchValue": "vacuum-stop-sweeping"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":2,
-						"aiid":3,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-start-only-sweep"
+									"matchValue": "vacuum-start-only-sweep"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":2,
-						"aiid":5,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-start-sweep-mop"
+									"matchValue": "vacuum-start-sweep-mop"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":2,
-						"aiid":6,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-start-only-mop"
+									"matchValue": "vacuum-start-only-mop"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"NUMBER",
-						"parameters":[
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
 							10.0
 						],
-						"siid":2,
-						"aiid":7,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"siid": 2,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-start-room-sweep"
+									"matchValue": "vacuum-start-room-sweep"
 								}
 							]
 						}
 					},
 					{
-						"command":"action",
-						"parameterType":"EMPTY",
-						"siid":3,
-						"aiid":1,
-						"condition":{
-							"name":"matchValue",
-							"parameters":[
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
 								{
-									"matchValue":"vacuum-dock"
+									"matchValue": "vacuum-dock"
 								}
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-start-sweep-mop\"\u003d\"Start Sweep+Mop\",\"vacuum-start-only-sweep\"\u003d\"Start Sweep\",\"vacuum-start-only-mop\"\u003d\"Start Mop\",\"vacuum-dock\"\u003d\"Dock\",\"vacuum-stop-sweeping\"\u003d\"Pause\",\"vacuum-start-room-sweep\"\u003d\"Start Room Sweep\"]`"
 			},
 			{
-				"property":"",
-				"friendlyName":"Robot Cleaner - Advanced Actions",
-				"channel":"advanced_actions",
-				"type":"String",
-				"stateDescription":{
-					"options":[
+				"property": "",
+				"friendlyName": "Robot Cleaner - Advanced Actions",
+				"channel": "advanced_actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
 						{
 							"value": "sweep-reset-consumable",
 							"label": "Sweep Reset Consumable"
@@ -1134,213 +1135,208 @@
 							]
 						}
 					}
-				]
-			},
-			{
-				"property":"status",
-				"siid":2,
-				"piid":1,
-				"friendlyName":"Robot Cleaner - Status",
-				"channel":"status",
-				"type":"Number",
-				"stateDescription":{
-					"readOnly":true,
-					"options":[
-						{
-							"value":"0",
-							"label":"Sleep"
-						},
-						{
-							"value":"1",
-							"label":"Idle"
-						},
-						{
-							"value":"2",
-							"label":"Paused"
-						},
-						{
-							"value":"3",
-							"label":"Go Charging"
-						},
-						{
-							"value":"4",
-							"label":"Charging"
-						},
-						{
-							"value":"5",
-							"label":"Sweeping"
-						},
-						{
-							"value":"6",
-							"label":"Sweeping and Mopping"
-						},
-						{
-							"value":"7",
-							"label":"Mopping"
-						},
-						{
-							"value":"8",
-							"label":"Upgrading"
-						}
-					]
-				},
-				"refresh":true,
-				"actions":[
-					
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\",\"8\"\u003d\"Upgrading\"]"
+				"readmeComment": "Value mapping `[\"sweep-reset-consumable\"\u003d\"Sweep Reset Consumable\",\"sweep-set-calibration\"\u003d\"Sweep Set Calibration\",\"sweep-set-room-clean\"\u003d\"Sweep Set Room Clean\",\"sweep-set-preference-clean\"\u003d\"Sweep Set Preference Clean\",\"sweep-get-preference-clean\"\u003d\"Sweep Get Preference Clean\",\"sweep-set-preference-type\"\u003d\"Sweep Set Preference Type\",\"sweep-set-go-charging\"\u003d\"Sweep Set Go Charging\",\"sweep-erase-preference\"\u003d\"Sweep Erase Preference\",\"sweep-set-preference-ii\"\u003d\"Sweep Set Preference Ii\",\"sweep-get-preference-ii\"\u003d\"Sweep Get Preference Ii\",\"order-add\"\u003d\"Order Add\",\"order-del\"\u003d\"Order Del\",\"order-get\"\u003d\"Order Get\",\"order-add-ii\"\u003d\"Order Add Ii\",\"order-get-map-order-count\"\u003d\"Order Get Map Order Count\",\"order-add-iii\"\u003d\"Order Add Iii\",\"point-zone-start-point-clean\"\u003d\"Point Zone Start Point Clean\",\"point-zone-pause-point-clean\"\u003d\"Point Zone Pause Point Clean\",\"point-zone-start-zone-clean\"\u003d\"Point Zone Start Zone Clean\",\"point-zone-pause-zone-clean\"\u003d\"Point Zone Pause Zone Clean\",\"point-zone-set-beauty-wall\"\u003d\"Point Zone Set Beauty Wall\",\"point-zone-set-virtual-wall\"\u003d\"Point Zone Set Virtual Wall\",\"point-zone-set-zone-point\"\u003d\"Point Zone Set Zone Point\",\"point-zone-start-point-clean-ii\"\u003d\"Point Zone Start Point Clean Ii\",\"map-get-map-list\"\u003d\"Map Get Map List\",\"map-upload-by-mapid\"\u003d\"Map Upload By Mapid\",\"map-set-cur-map\"\u003d\"Map Set Cur Map\",\"map-del-map\"\u003d\"Map Del Map\",\"map-rename-map\"\u003d\"Map Rename Map\",\"map-upload-by-maptype\"\u003d\"Map Upload By Maptype\",\"map-rename-room\"\u003d\"Map Rename Room\",\"map-arrange-room\"\u003d\"Map Arrange Room\",\"map-split-room\"\u003d\"Map Split Room\",\"map-reset-map\"\u003d\"Map Reset Map\",\"map-build-new-map\"\u003d\"Map Build New Map\",\"map-get-cur-path\"\u003d\"Map Get Cur Path\",\"map-get-map-room-list\"\u003d\"Map Get Map Room List\",\"map-upload-by-mapid-ii\"\u003d\"Map Upload By Mapid Ii\",\"map-upload-by-maptype-ii\"\u003d\"Map Upload By Maptype Ii\",\"map-reset-map-ii\"\u003d\"Map Reset Map Ii\",\"map-build-map-ii\"\u003d\"Map Build Map Ii\",\"map-set-mijia-room-list\"\u003d\"Map Set Mijia Room List\",\"disturb-set-notdisturb\"\u003d\"Disturb Set Notdisturb\",\"language-download-voice\"\u003d\"Language Download Voice\",\"language-get-download-status\"\u003d\"Language Get Download Status\"]`"
 			},
 			{
-				"property":"fault",
-				"siid":2,
-				"piid":2,
-				"friendlyName":"Robot Cleaner - Device Fault",
-				"channel":"fault",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":3000,
-					"step":1,
-					"pattern":"%.0f",
-					"readOnly":true
-				},
-				"refresh":true,
-				"actions":[
-					
-				]
-			},
-			{
-				"property":"mode",
-				"siid":2,
-				"piid":4,
-				"friendlyName":"Robot Cleaner - Mode",
-				"channel":"mode",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
 						{
-							"value":"0",
-							"label":"Sweep"
+							"value": "0",
+							"label": "Sleep"
 						},
 						{
-							"value":"1",
-							"label":"Sweep And Mop"
+							"value": "1",
+							"label": "Idle"
 						},
 						{
-							"value":"2",
-							"label":"Mop"
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Go Charging"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Sweeping"
+						},
+						{
+							"value": "6",
+							"label": "Sweeping and Mopping"
+						},
+						{
+							"value": "7",
+							"label": "Mopping"
+						},
+						{
+							"value": "8",
+							"label": "Upgrading"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\",\"8\"\u003d\"Upgrading\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Sweep"
+						},
+						{
+							"value": "1",
+							"label": "Sweep And Mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Sweep\",\"1\"\u003d\"Sweep And Mop\",\"2\"\u003d\"Mop\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sweep\",\"1\"\u003d\"Sweep And Mop\",\"2\"\u003d\"Mop\"]`"
 			},
 			{
-				"property":"sweep-type",
-				"siid":2,
-				"piid":8,
-				"friendlyName":"Robot Cleaner - Sweep Type",
-				"channel":"sweep_type",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Robot Cleaner - Sweep Type",
+				"channel": "sweep_type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Global"
+							"value": "0",
+							"label": "Global"
 						},
 						{
-							"value":"1",
-							"label":"Mop"
+							"value": "1",
+							"label": "Mop"
 						},
 						{
-							"value":"2",
-							"label":"Edge"
+							"value": "2",
+							"label": "Edge"
 						},
 						{
-							"value":"3",
-							"label":"Area"
+							"value": "3",
+							"label": "Area"
 						},
 						{
-							"value":"4",
-							"label":"Point"
+							"value": "4",
+							"label": "Point"
 						},
 						{
-							"value":"5",
-							"label":"Remote"
+							"value": "5",
+							"label": "Remote"
 						},
 						{
-							"value":"6",
-							"label":"Explore"
+							"value": "6",
+							"label": "Explore"
 						},
 						{
-							"value":"7",
-							"label":"Room"
+							"value": "7",
+							"label": "Room"
 						},
 						{
-							"value":"8",
-							"label":"Floor"
+							"value": "8",
+							"label": "Floor"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Global\",\"1\"\u003d\"Mop\",\"2\"\u003d\"Edge\",\"3\"\u003d\"Area\",\"4\"\u003d\"Point\",\"5\"\u003d\"Remote\",\"6\"\u003d\"Explore\",\"7\"\u003d\"Room\",\"8\"\u003d\"Floor\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Global\",\"1\"\u003d\"Mop\",\"2\"\u003d\"Edge\",\"3\"\u003d\"Area\",\"4\"\u003d\"Point\",\"5\"\u003d\"Remote\",\"6\"\u003d\"Explore\",\"7\"\u003d\"Room\",\"8\"\u003d\"Floor\"]`"
 			},
 			{
-				"property":"on",
-				"siid":2,
-				"piid":9,
-				"friendlyName":"Robot Cleaner - Switch Status",
-				"channel":"on",
-				"type":"String",
-				"refresh":true,
-				"actions":[
+				"property": "on",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Robot Cleaner - Switch Status",
+				"channel": "on",
+				"type": "String",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"battery-level",
-				"siid":3,
-				"piid":1,
-				"friendlyName":"Robot Cleaner - Battery Level",
-				"channel":"battery_level",
-				"type":"Number:Dimensionless",
-				"unit":"percentage",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":100,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"alarm",
-				"siid":4,
-				"piid":1,
-				"friendlyName":"Robot Cleaner - Locate",
-				"channel":"alarm",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Locate",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
@@ -1348,1204 +1344,1152 @@
 				]
 			},
 			{
-				"property":"volume",
-				"siid":4,
-				"piid":2,
-				"friendlyName":"Robot Cleaner - Locate Volume",
-				"channel":"volume",
-				"type":"Number:Dimensionless",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":10,
-					"step":1,
-					"pattern":"%.0f"
+				"property": "volume",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Locate Volume",
+				"channel": "volume",
+				"type": "Number:Dimensionless",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"repeat-state",
-				"siid":7,
-				"piid":1,
-				"friendlyName":"Sweep - Repeat State",
-				"channel":"repeat_state",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "repeat-state",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Sweep - Repeat State",
+				"channel": "repeat_state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"door-state",
-				"siid":7,
-				"piid":3,
-				"friendlyName":"Sweep - Door State",
-				"channel":"door_state",
-				"type":"Number",
-				"stateDescription":{
-					"readOnly":true,
-					"options":[
+				"property": "door-state",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Sweep - Door State",
+				"channel": "door_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
 						{
-							"value":"0",
-							"label":"None"
+							"value": "0",
+							"label": "None"
 						},
 						{
-							"value":"1",
-							"label":"DustBox"
+							"value": "1",
+							"label": "DustBox"
 						},
 						{
-							"value":"2",
-							"label":"WaterBox"
+							"value": "2",
+							"label": "WaterBox"
 						},
 						{
-							"value":"3",
-							"label":"TwoInOne"
+							"value": "3",
+							"label": "TwoInOne"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
-					
-				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"None\",\"1\"\u003d\"DustBox\",\"2\"\u003d\"WaterBox\",\"3\"\u003d\"TwoInOne\"]"
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"DustBox\",\"2\"\u003d\"WaterBox\",\"3\"\u003d\"TwoInOne\"]`"
 			},
 			{
-				"property":"cloth-state",
-				"siid":7,
-				"piid":4,
-				"friendlyName":"Sweep - Cloth State",
-				"channel":"cloth_state",
-				"type":"Contact",
-				"stateDescription":{
-					"readOnly":true
+				"property": "cloth-state",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Sweep - Cloth State",
+				"channel": "cloth_state",
+				"type": "Contact",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"suction-state",
-				"siid":7,
-				"piid":5,
-				"friendlyName":"Robot Cleaner - Power",
-				"channel":"suction_state",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "suction-state",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Robot Cleaner - Power",
+				"channel": "suction_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Slient"
+							"value": "0",
+							"label": "Slient"
 						},
 						{
-							"value":"1",
-							"label":"Standard"
+							"value": "1",
+							"label": "Standard"
 						},
 						{
-							"value":"2",
-							"label":"Medium"
+							"value": "2",
+							"label": "Medium"
 						},
 						{
-							"value":"3",
-							"label":"Turbo"
+							"value": "3",
+							"label": "Turbo"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Slient\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Slient\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
 			},
 			{
-				"property":"water-state",
-				"siid":7,
-				"piid":6,
-				"friendlyName":"Sweep - Water State",
-				"channel":"water_state",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "water-state",
+				"siid": 7,
+				"piid": 6,
+				"friendlyName": "Sweep - Water State",
+				"channel": "water_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Low"
+							"value": "0",
+							"label": "Low"
 						},
 						{
-							"value":"1",
-							"label":"Mid"
+							"value": "1",
+							"label": "Mid"
 						},
 						{
-							"value":"2",
-							"label":"High"
+							"value": "2",
+							"label": "High"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Low\",\"1\"\u003d\"Mid\",\"2\"\u003d\"High\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Low\",\"1\"\u003d\"Mid\",\"2\"\u003d\"High\"]`"
 			},
 			{
-				"property":"mop-route",
-				"siid":7,
-				"piid":7,
-				"friendlyName":"Sweep - Mop Route",
-				"channel":"mop_route",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "mop-route",
+				"siid": 7,
+				"piid": 7,
+				"friendlyName": "Sweep - Mop Route",
+				"channel": "mop_route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"S"
+							"value": "0",
+							"label": "S"
 						},
 						{
-							"value":"1",
-							"label":"Y"
+							"value": "1",
+							"label": "Y"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"S\",\"1\"\u003d\"Y\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"S\",\"1\"\u003d\"Y\"]`"
 			},
 			{
-				"property":"side-brush-life",
-				"siid":7,
-				"piid":8,
-				"friendlyName":"Sweep - Side Brush Life",
-				"channel":"side_brush_life",
-				"type":"Number:Dimensionless",
-				"unit":"percentage",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":100,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "side-brush-life",
+				"siid": 7,
+				"piid": 8,
+				"friendlyName": "Sweep - Side Brush Life",
+				"channel": "side_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"side-brush-hours",
-				"siid":7,
-				"piid":9,
-				"friendlyName":"Sweep - Side Brush Hours",
-				"channel":"side_brush_hours",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":180,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "side-brush-hours",
+				"siid": 7,
+				"piid": 9,
+				"friendlyName": "Sweep - Side Brush Hours",
+				"channel": "side_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"main-brush-life",
-				"siid":7,
-				"piid":10,
-				"friendlyName":"Sweep - Main Brush Life",
-				"channel":"main_brush_life",
-				"type":"Number:Dimensionless",
-				"unit":"percentage",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":100,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "main-brush-life",
+				"siid": 7,
+				"piid": 10,
+				"friendlyName": "Sweep - Main Brush Life",
+				"channel": "main_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"main-brush-hours",
-				"siid":7,
-				"piid":11,
-				"friendlyName":"Sweep - Main Brush Hours",
-				"channel":"main_brush_hours",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":360,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "main-brush-hours",
+				"siid": 7,
+				"piid": 11,
+				"friendlyName": "Sweep - Main Brush Hours",
+				"channel": "main_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"hypa-life",
-				"siid":7,
-				"piid":12,
-				"friendlyName":"Sweep - Hypa Life",
-				"channel":"hypa_life",
-				"type":"Number:Dimensionless",
-				"unit":"percentage",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":100,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "hypa-life",
+				"siid": 7,
+				"piid": 12,
+				"friendlyName": "Sweep - Hypa Life",
+				"channel": "hypa_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"hypa-hours",
-				"siid":7,
-				"piid":13,
-				"friendlyName":"Sweep - Hypa Hours",
-				"channel":"hypa_hours",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":180,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "hypa-hours",
+				"siid": 7,
+				"piid": 13,
+				"friendlyName": "Sweep - Hypa Hours",
+				"channel": "hypa_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"mop-life",
-				"siid":7,
-				"piid":14,
-				"friendlyName":"Sweep - Mop Life",
-				"channel":"mop_life",
-				"type":"Number:Dimensionless",
-				"unit":"percentage",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":100,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "mop-life",
+				"siid": 7,
+				"piid": 14,
+				"friendlyName": "Sweep - Mop Life",
+				"channel": "mop_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"mop-hours",
-				"siid":7,
-				"piid":15,
-				"friendlyName":"Sweep - Mop Hours",
-				"channel":"mop_hours",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":180,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "mop-hours",
+				"siid": 7,
+				"piid": 15,
+				"friendlyName": "Sweep - Mop Hours",
+				"channel": "mop_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"direction",
-				"siid":7,
-				"piid":16,
-				"friendlyName":"Sweep - Direction",
-				"channel":"direction",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "direction",
+				"siid": 7,
+				"piid": 16,
+				"friendlyName": "Sweep - Direction",
+				"channel": "direction",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"1",
-							"label":"Forward"
+							"value": "1",
+							"label": "Forward"
 						},
 						{
-							"value":"2",
-							"label":"Left"
+							"value": "2",
+							"label": "Left"
 						},
 						{
-							"value":"3",
-							"label":"Right"
+							"value": "3",
+							"label": "Right"
 						},
 						{
-							"value":"4",
-							"label":"Back"
+							"value": "4",
+							"label": "Back"
 						},
 						{
-							"value":"5",
-							"label":"Stop"
+							"value": "5",
+							"label": "Stop"
 						},
 						{
-							"value":"10",
-							"label":"Exit"
+							"value": "10",
+							"label": "Exit"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"1\"\u003d\"Forward\",\"2\"\u003d\"Left\",\"3\"\u003d\"Right\",\"4\"\u003d\"Back\",\"5\"\u003d\"Stop\",\"10\"\u003d\"Exit\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Forward\",\"2\"\u003d\"Left\",\"3\"\u003d\"Right\",\"4\"\u003d\"Back\",\"5\"\u003d\"Stop\",\"10\"\u003d\"Exit\"]`"
 			},
 			{
-				"property":"time-zone",
-				"siid":7,
-				"piid":20,
-				"friendlyName":"Sweep - Time Zone",
-				"channel":"time_zone",
-				"type":"Number",
-				"stateDescription":{
-					"step":1,
-					"pattern":"%.0f"
+				"property": "time-zone",
+				"siid": 7,
+				"piid": 20,
+				"friendlyName": "Sweep - Time Zone",
+				"channel": "time_zone",
+				"type": "Number",
+				"stateDescription": {
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"cur-lang",
-				"siid":7,
-				"piid":21,
-				"friendlyName":"Sweep - Cur Lang",
-				"channel":"cur_lang",
-				"type":"String",
-				"refresh":true,
-				"actions":[
+				"property": "cur-lang",
+				"siid": 7,
+				"piid": 21,
+				"friendlyName": "Sweep - Cur Lang",
+				"channel": "cur_lang",
+				"type": "String",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"cleaning-time",
-				"siid":7,
-				"piid":22,
-				"friendlyName":"Sweep - Cleaning Time",
-				"channel":"cleaning_time",
-				"type":"Number:Time",
-				"unit":"minutes",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":360,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "cleaning-time",
+				"siid": 7,
+				"piid": 22,
+				"friendlyName": "Sweep - Cleaning Time",
+				"channel": "cleaning_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"cleaning-area",
-				"siid":7,
-				"piid":23,
-				"friendlyName":"Sweep - Cleaning Area",
-				"channel":"cleaning_area",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":1200,
-					"step":1,
-					"pattern":"%.0f",
-					"readOnly":true
+				"property": "cleaning-area",
+				"siid": 7,
+				"piid": 23,
+				"friendlyName": "Sweep - Cleaning Area",
+				"channel": "cleaning_area",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1200,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"dirt-recognize",
-				"siid":7,
-				"piid":35,
-				"friendlyName":"Sweep - Dirt Recognize",
-				"channel":"dirt_recognize",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "dirt-recognize",
+				"siid": 7,
+				"piid": 35,
+				"friendlyName": "Sweep - Dirt Recognize",
+				"channel": "dirt_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"pet-recognize",
-				"siid":7,
-				"piid":36,
-				"friendlyName":"Sweep - Pet Recognize",
-				"channel":"pet_recognize",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "pet-recognize",
+				"siid": 7,
+				"piid": 36,
+				"friendlyName": "Sweep - Pet Recognize",
+				"channel": "pet_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"ai-recognize",
-				"siid":7,
-				"piid":42,
-				"friendlyName":"Sweep - Ai Recognize",
-				"channel":"ai_recognize",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "ai-recognize",
+				"siid": 7,
+				"piid": 42,
+				"friendlyName": "Sweep - Ai Recognize",
+				"channel": "ai_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"carpet-booster",
-				"siid":7,
-				"piid":44,
-				"friendlyName":"Sweep - Carpet Booster",
-				"channel":"carpet_booster",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "carpet-booster",
+				"siid": 7,
+				"piid": 44,
+				"friendlyName": "Sweep - Carpet Booster",
+				"channel": "carpet_booster",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"multi-prop-vacuum",
-				"siid":7,
-				"piid":45,
-				"friendlyName":"Sweep - Multi Prop Vacuum",
-				"channel":"multi_prop_vacuum",
-				"type":"String",
-				"stateDescription":{
-					"readOnly":true
+				"property": "multi-prop-vacuum",
+				"siid": 7,
+				"piid": 45,
+				"friendlyName": "Sweep - Multi Prop Vacuum",
+				"channel": "multi_prop_vacuum",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"carpet-avoid",
-				"siid":7,
-				"piid":47,
-				"friendlyName":"Sweep - Carpet Avoid",
-				"channel":"carpet_avoid",
-				"type":"Switch",
-				"refresh":false,
-				"actions":[
+				"property": "carpet-avoid",
+				"siid": 7,
+				"piid": 47,
+				"friendlyName": "Sweep - Carpet Avoid",
+				"channel": "carpet_avoid",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"tank-shake",
-				"siid":7,
-				"piid":48,
-				"friendlyName":"Sweep - Tank Shake",
-				"channel":"tank_shake",
-				"type":"Switch",
-				"refresh":true,
-				"actions":[
+				"property": "tank-shake",
+				"siid": 7,
+				"piid": 48,
+				"friendlyName": "Sweep - Tank Shake",
+				"channel": "tank_shake",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"shake-shift",
-				"siid":7,
-				"piid":50,
-				"friendlyName":"Sweep - Shake Shift",
-				"channel":"shake_shift",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "shake-shift",
+				"siid": 7,
+				"piid": 50,
+				"friendlyName": "Sweep - Shake Shift",
+				"channel": "shake_shift",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"1",
-							"label":"Low"
+							"value": "1",
+							"label": "Low"
 						},
 						{
-							"value":"2",
-							"label":"Mid"
+							"value": "2",
+							"label": "Mid"
 						},
 						{
-							"value":"3",
-							"label":"High"
+							"value": "3",
+							"label": "High"
 						}
 					]
 				},
-				"refresh":true,
-				"actions":[
+				"refresh": true,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"1\"\u003d\"Low\",\"2\"\u003d\"Mid\",\"3\"\u003d\"High\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Mid\",\"3\"\u003d\"High\"]`"
 			},
 			{
-				"property":"map-encrypt",
-				"siid":7,
-				"piid":55,
-				"friendlyName":"Sweep - Map Encrypt",
-				"channel":"map_encrypt",
-				"type":"Contact",
-				"stateDescription":{
-					"readOnly":true
+				"property": "map-encrypt",
+				"siid": 7,
+				"piid": 55,
+				"friendlyName": "Sweep - Map Encrypt",
+				"channel": "map_encrypt",
+				"type": "Contact",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"order-id",
-				"siid":8,
-				"piid":1,
-				"friendlyName":"Order - Order Id",
-				"channel":"order_id",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"step":1,
-					"pattern":"%.0f"
+				"property": "order-id",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Order - Order Id",
+				"channel": "order_id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"enable",
-				"siid":8,
-				"piid":2,
-				"friendlyName":"Order - Enable",
-				"channel":"enable",
-				"type":"Switch",
-				"refresh":false,
-				"actions":[
+				"property": "enable",
+				"siid": 8,
+				"piid": 2,
+				"friendlyName": "Order - Enable",
+				"channel": "enable",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"day",
-				"siid":8,
-				"piid":3,
-				"friendlyName":"Order - Day",
-				"channel":"day",
-				"type":"Number:Time",
-				"unit":"days",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":255,
-					"step":1,
-					"pattern":"%.0f %unit%"
+				"property": "day",
+				"siid": 8,
+				"piid": 3,
+				"friendlyName": "Order - Day",
+				"channel": "day",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f %unit%"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"hour",
-				"siid":8,
-				"piid":4,
-				"friendlyName":"Order - Hour",
-				"channel":"hour",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":23,
-					"step":1,
-					"pattern":"%.0f %unit%"
+				"property": "hour",
+				"siid": 8,
+				"piid": 4,
+				"friendlyName": "Order - Hour",
+				"channel": "hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"minute",
-				"siid":8,
-				"piid":5,
-				"friendlyName":"Order - Minute",
-				"channel":"minute",
-				"type":"Number:Time",
-				"unit":"minutes",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":59,
-					"step":1,
-					"pattern":"%.0f %unit%"
+				"property": "minute",
+				"siid": 8,
+				"piid": 5,
+				"friendlyName": "Order - Minute",
+				"channel": "minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"repeat",
-				"siid":8,
-				"piid":6,
-				"friendlyName":"Order - Repeat",
-				"channel":"repeat",
-				"type":"Switch",
-				"refresh":false,
-				"actions":[
+				"property": "repeat",
+				"siid": 8,
+				"piid": 6,
+				"friendlyName": "Order - Repeat",
+				"channel": "repeat",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"clean-way",
-				"siid":8,
-				"piid":7,
-				"friendlyName":"Order - Clean Way",
-				"channel":"clean_way",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "clean-way",
+				"siid": 8,
+				"piid": 7,
+				"friendlyName": "Order - Clean Way",
+				"channel": "clean_way",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Sweep"
+							"value": "0",
+							"label": "Sweep"
 						},
 						{
-							"value":"1",
-							"label":"Sweep Mop"
+							"value": "1",
+							"label": "Sweep Mop"
 						},
 						{
-							"value":"2",
-							"label":"Mop"
+							"value": "2",
+							"label": "Mop"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Sweep\",\"1\"\u003d\"Sweep Mop\",\"2\"\u003d\"Mop\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sweep\",\"1\"\u003d\"Sweep Mop\",\"2\"\u003d\"Mop\"]`"
 			},
 			{
-				"property":"suction",
-				"siid":8,
-				"piid":8,
-				"friendlyName":"Order - Suction",
-				"channel":"suction",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "suction",
+				"siid": 8,
+				"piid": 8,
+				"friendlyName": "Order - Suction",
+				"channel": "suction",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Slient"
+							"value": "0",
+							"label": "Slient"
 						},
 						{
-							"value":"1",
-							"label":"Normal"
+							"value": "1",
+							"label": "Normal"
 						},
 						{
-							"value":"2",
-							"label":"Medium"
+							"value": "2",
+							"label": "Medium"
 						},
 						{
-							"value":"3",
-							"label":"Turbo"
+							"value": "3",
+							"label": "Turbo"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Slient\",\"1\"\u003d\"Normal\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Slient\",\"1\"\u003d\"Normal\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
 			},
 			{
-				"property":"water",
-				"siid":8,
-				"piid":9,
-				"friendlyName":"Order - Water",
-				"channel":"water",
-				"type":"Number",
-				"stateDescription":{
-					"options":[
+				"property": "water",
+				"siid": 8,
+				"piid": 9,
+				"friendlyName": "Order - Water",
+				"channel": "water",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
 						{
-							"value":"0",
-							"label":"Low"
+							"value": "0",
+							"label": "Low"
 						},
 						{
-							"value":"1",
-							"label":"Mid"
+							"value": "1",
+							"label": "Mid"
 						},
 						{
-							"value":"2",
-							"label":"High"
+							"value": "2",
+							"label": "High"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"Low\",\"1\"\u003d\"Mid\",\"2\"\u003d\"High\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Low\",\"1\"\u003d\"Mid\",\"2\"\u003d\"High\"]`"
 			},
 			{
-				"property":"twice-clean",
-				"siid":8,
-				"piid":10,
-				"friendlyName":"Order - Twice Clean",
-				"channel":"twice_clean",
-				"type":"Switch",
-				"refresh":false,
-				"actions":[
+				"property": "twice-clean",
+				"siid": 8,
+				"piid": 10,
+				"friendlyName": "Order - Twice Clean",
+				"channel": "twice_clean",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"mapid",
-				"siid":8,
-				"piid":11,
-				"friendlyName":"Order - Mapid",
-				"channel":"mapid",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"step":1,
-					"pattern":"%.0f"
+				"property": "mapid",
+				"siid": 8,
+				"piid": 11,
+				"friendlyName": "Order - Mapid",
+				"channel": "mapid",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"room-count",
-				"siid":8,
-				"piid":12,
-				"friendlyName":"Order - Room Count",
-				"channel":"room_count",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":64,
-					"step":1,
-					"pattern":"%.0f"
+				"property": "room-count",
+				"siid": 8,
+				"piid": 12,
+				"friendlyName": "Order - Room Count",
+				"channel": "room_count",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 64,
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"room-data",
-				"siid":8,
-				"piid":13,
-				"friendlyName":"Order - Room Data",
-				"channel":"room_data",
-				"type":"String",
-				"refresh":false,
-				"actions":[
+				"property": "room-data",
+				"siid": 8,
+				"piid": 13,
+				"friendlyName": "Order - Room Data",
+				"channel": "room_data",
+				"type": "String",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"time-zone1",
-				"siid":8,
-				"piid":14,
-				"friendlyName":"Order - Time Zone",
-				"channel":"time_zone1",
-				"type":"Number",
-				"stateDescription":{
-					"step":1,
-					"pattern":"%.0f"
+				"property": "time-zone1",
+				"siid": 8,
+				"piid": 14,
+				"friendlyName": "Order - Time Zone",
+				"channel": "time_zone1",
+				"type": "Number",
+				"stateDescription": {
+					"step": 1,
+					"pattern": "%.0f"
 				},
-				"refresh":false,
-				"actions":[
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"NUMBER"
+						"command": "set_properties",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property":"all-enable-count",
-				"siid":8,
-				"piid":18,
-				"friendlyName":"Order - All Enable Count",
-				"channel":"all_enable_count",
-				"type":"String",
-				"stateDescription":{
-					"readOnly":true
+				"property": "all-enable-count",
+				"siid": 8,
+				"piid": 18,
+				"friendlyName": "Order - All Enable Count",
+				"channel": "all_enable_count",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"zone-points",
-				"siid":9,
-				"piid":2,
-				"friendlyName":"Point Zone - Zone Points",
-				"channel":"zone_points",
-				"type":"String",
-				"refresh":false,
-				"actions":[
+				"property": "zone-points",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Point Zone - Zone Points",
+				"channel": "zone_points",
+				"type": "String",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"restrict-points",
-				"siid":9,
-				"piid":3,
-				"friendlyName":"Point Zone - Restrict Points",
-				"channel":"restrict_points",
-				"type":"String",
-				"refresh":false,
-				"actions":[
+				"property": "restrict-points",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Point Zone - Restrict Points",
+				"channel": "restrict_points",
+				"type": "String",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"target-point",
-				"siid":9,
-				"piid":5,
-				"friendlyName":"Point Zone - Target Point",
-				"channel":"target_point",
-				"type":"String",
-				"refresh":false,
-				"actions":[
+				"property": "target-point",
+				"siid": 9,
+				"piid": 5,
+				"friendlyName": "Point Zone - Target Point",
+				"channel": "target_point",
+				"type": "String",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"STRING"
+						"command": "set_properties",
+						"parameterType": "STRING"
 					}
 				]
 			},
 			{
-				"property":"remember-state",
-				"siid":10,
-				"piid":1,
-				"friendlyName":"Map - Remember State",
-				"channel":"remember_state",
-				"type":"Switch",
-				"refresh":false,
-				"actions":[
+				"property": "remember-state",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "Map - Remember State",
+				"channel": "remember_state",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
 					{
-						"command":"set_properties",
-						"parameterType":"ONOFFNUMBER"
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
 					}
 				]
 			},
 			{
-				"property":"cur-map-id",
-				"siid":10,
-				"piid":2,
-				"friendlyName":"Map - Cur Map Id",
-				"channel":"cur_map_id",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"step":1,
-					"pattern":"%.0f",
-					"readOnly":true
+				"property": "cur-map-id",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "Map - Cur Map Id",
+				"channel": "cur_map_id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
 				},
-				"refresh":false,
-				"actions":[
-					
-				]
+				"refresh": false,
+				"actions": []
 			},
 			{
-				"property":"map-num",
-				"siid":10,
-				"piid":3,
-				"friendlyName":"Map - Map Num",
-				"channel":"map_num",
-				"type":"Number",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":5,
-					"step":1,
-					"pattern":"%.0f",
-					"readOnly":true
+				"property": "map-num",
+				"siid": 10,
+				"piid": 3,
+				"friendlyName": "Map - Map Num",
+				"channel": "map_num",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
 				},
-				"refresh":false,
-				"actions":[
-					
-				]
+				"refresh": false,
+				"actions": []
 			},
 			{
-				"property":"cur-cleaning-path",
-				"siid":10,
-				"piid":5,
-				"friendlyName":"Map - Cur Cleaning Path",
-				"channel":"cur_cleaning_path",
-				"type":"String",
-				"stateDescription":{
-					"readOnly":true
+				"property": "cur-cleaning-path",
+				"siid": 10,
+				"piid": 5,
+				"friendlyName": "Map - Cur Cleaning Path",
+				"channel": "cur_cleaning_path",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":false,
-				"actions":[
-					
-				]
+				"refresh": false,
+				"actions": []
 			},
 			{
-				"property":"build-map",
-				"siid":10,
-				"piid":14,
-				"friendlyName":"Map - Build Map",
-				"channel":"build_map",
-				"type":"Number",
-				"stateDescription":{
-					"readOnly":true,
-					"options":[
+				"property": "build-map",
+				"siid": 10,
+				"piid": 14,
+				"friendlyName": "Map - Build Map",
+				"channel": "build_map",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
 						{
-							"value":"0",
-							"label":"None"
+							"value": "0",
+							"label": "None"
 						},
 						{
-							"value":"1",
-							"label":"Build"
+							"value": "1",
+							"label": "Build"
 						},
 						{
-							"value":"2",
-							"label":"Clean"
+							"value": "2",
+							"label": "Clean"
 						}
 					]
 				},
-				"refresh":false,
-				"actions":[
-					
-				],
-				"readmeComment":"Value mapping [\"0\"\u003d\"None\",\"1\"\u003d\"Build\",\"2\"\u003d\"Clean\"]"
+				"refresh": false,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Build\",\"2\"\u003d\"Clean\"]`"
 			},
 			{
-				"property":"has-new-map",
-				"siid":10,
-				"piid":19,
-				"friendlyName":"Map - Has New Map",
-				"channel":"has_new_map",
-				"type":"Contact",
-				"stateDescription":{
-					"readOnly":true
+				"property": "has-new-map",
+				"siid": 10,
+				"piid": 19,
+				"friendlyName": "Map - Has New Map",
+				"channel": "has_new_map",
+				"type": "Contact",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":false,
-				"actions":[
-					
-				]
+				"refresh": false,
+				"actions": []
 			},
 			{
-				"property":"dnd-enable",
-				"siid":12,
-				"piid":1,
-				"friendlyName":"Disturb - Dnd Enable",
-				"channel":"dnd_enable",
-				"type":"Contact",
-				"stateDescription":{
-					"readOnly":true
+				"property": "dnd-enable",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Disturb - Dnd Enable",
+				"channel": "dnd_enable",
+				"type": "Contact",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"dnd-start-hour",
-				"siid":12,
-				"piid":2,
-				"friendlyName":"Disturb - Dnd Start Hour",
-				"channel":"dnd_start_hour",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":23,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "dnd-start-hour",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Disturb - Dnd Start Hour",
+				"channel": "dnd_start_hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"dnd-start-minute",
-				"siid":12,
-				"piid":3,
-				"friendlyName":"Disturb - Dnd Start Minute",
-				"channel":"dnd_start_minute",
-				"type":"Number:Time",
-				"unit":"minutes",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":59,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "dnd-start-minute",
+				"siid": 12,
+				"piid": 3,
+				"friendlyName": "Disturb - Dnd Start Minute",
+				"channel": "dnd_start_minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"dnd-end-hour",
-				"siid":12,
-				"piid":4,
-				"friendlyName":"Disturb - Dnd End Hour",
-				"channel":"dnd_end_hour",
-				"type":"Number:Time",
-				"unit":"hours",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":23,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "dnd-end-hour",
+				"siid": 12,
+				"piid": 4,
+				"friendlyName": "Disturb - Dnd End Hour",
+				"channel": "dnd_end_hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"dnd-end-minute",
-				"siid":12,
-				"piid":5,
-				"friendlyName":"Disturb - Dnd End Minute",
-				"channel":"dnd_end_minute",
-				"type":"Number:Time",
-				"unit":"minutes",
-				"stateDescription":{
-					"minimum":0,
-					"maximum":59,
-					"step":1,
-					"pattern":"%.0f %unit%",
-					"readOnly":true
+				"property": "dnd-end-minute",
+				"siid": 12,
+				"piid": 5,
+				"friendlyName": "Disturb - Dnd End Minute",
+				"channel": "dnd_end_minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			},
 			{
-				"property":"multi-prop-dnd",
-				"siid":12,
-				"piid":7,
-				"friendlyName":"Disturb - Multi Prop Dnd",
-				"channel":"multi_prop_dnd",
-				"type":"String",
-				"stateDescription":{
-					"readOnly":true
+				"property": "multi-prop-dnd",
+				"siid": 12,
+				"piid": 7,
+				"friendlyName": "Disturb - Multi Prop Dnd",
+				"channel": "multi_prop_dnd",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
 				},
-				"refresh":true,
-				"actions":[
-					
-				]
+				"refresh": true,
+				"actions": []
 			}
 		],
-		"experimental":false
+		"experimental": false
 	}
 }

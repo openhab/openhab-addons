@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 
 /**
- * Stub Implementation of {@link TimetablesV1Api}, that may return an preconfigured Timetable or
+ * Stub Implementation of {@link TimetablesV1Api}, that may return a preconfigured Timetable or
  * throws an {@link IOException} if not data has been set.
  * 
  * @author Sönke Küper - initial contribution
@@ -36,14 +36,14 @@ public final class TimetablesV1ApiStub implements TimetablesV1Api {
     }
 
     /**
-     * Creates an new {@link TimetablesV1ApiStub}, that returns the given result.
+     * Creates a new {@link TimetablesV1ApiStub}, that returns the given result.
      */
     public static TimetablesV1ApiStub createWithResult(Timetable timetable) {
         return new TimetablesV1ApiStub(timetable);
     }
 
     /**
-     * Creates an new {@link TimetablesV1ApiStub} that throws an Exception.
+     * Creates a new {@link TimetablesV1ApiStub} that throws an Exception.
      */
     public static TimetablesV1ApiStub createWithException() {
         return new TimetablesV1ApiStub(null);

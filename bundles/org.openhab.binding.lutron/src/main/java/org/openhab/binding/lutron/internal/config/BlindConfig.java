@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration settings for an {@link org.openhab.binding.lutron.internal.handler.BlindHandler}.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.BlindHandler}.
  *
  * @author Bob Adair - Initial contribution
  */

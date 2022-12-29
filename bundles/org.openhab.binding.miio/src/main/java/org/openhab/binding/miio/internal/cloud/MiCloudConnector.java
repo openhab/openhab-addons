@@ -411,8 +411,9 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
         try {
             JsonElement resp = JsonParser.parseString(parseJson(content));
-            if (resp.isJsonObject() && resp.getAsJsonObject().has("_sign")) {
-                String sign = resp.getAsJsonObject().get("_sign").getAsString();
+            CloudLogin1DTO jsonResp = GSON.fromJson(resp, CloudLogin1DTO.class);
+            final String sign = jsonResp.getSign();
+            if (sign != null && !sign.isBlank()) {
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
                 return sign;
             } else {
@@ -472,6 +473,13 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login passToken = {}", passToken);
         logger.trace("Xiaomi login location = {}", location);
         logger.trace("Xiaomi login code = {}", code);
+        if (0 != jsonResp.getSecurityStatus()) {
+            logger.debug("Xiaomi Cloud Step2 response: {}", parseJson(content2));
+            logger.debug(
+                    "Xiaomi Login code: {} \r\nSecurityStatus: {}\r\nPwd code: {}\r\nLocation logon URL: {}\r\nIn case of login issues check userId/password details are correct.\r\n"
+                            + "If login details are correct, try to logon using browser from the openHAB ip using the browser. Alternatively try to complete logon with above URL.",
+                    jsonResp.getCode(), jsonResp.getSecurityStatus(), jsonResp.getPwd(), jsonResp.getLocation());
+        }
         if (logger.isTraceEnabled()) {
             dumpCookies(url, false);
         }
@@ -535,7 +543,7 @@ public class MiCloudConnector {
             logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
             if (cookie.getName().contentEquals("serviceToken")) {
                 serviceToken = cookie.getValue();
-                logger.debug("Xiaomi cloud logon succesfull.");
+                logger.debug("Xiaomi cloud logon successful.");
                 logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
             }
         }

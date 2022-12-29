@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,9 +40,9 @@ public class SmokeCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            Collection<HomeEvent> events = cap.getDeviceEvents(handler.getId(), moduleType.apiName);
-            if (!events.isEmpty()) {
-                result.add(events.iterator().next());
+            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
+            if (event != null) {
+                result.add(event);
             }
         });
         return result;

@@ -13,8 +13,9 @@
 package org.openhab.binding.hdpowerview.internal.handler;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
-import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
+import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +29,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.SurveyData;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.dto.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
+import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.dto.SurveyData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
@@ -50,6 +52,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -80,10 +83,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private static final String DETECTED_SECONDARY_RAIL = "secondaryRailDetected";
     private static final String DETECTED_TILT_ANYWHERE = "tiltAnywhereDetected";
-    private final Map<String, String> detectedCapabilities = new HashMap<>();
+    private static final ShadeCapabilitiesDatabase DB = new ShadeCapabilitiesDatabase();
 
+    private final Map<String, String> detectedCapabilities = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
-    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
@@ -107,7 +110,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -265,13 +267,15 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // Already cached.
             return;
         }
-        Capabilities capabilities = db.getCapabilities(shade.type, shade.capabilities);
+        Capabilities capabilities = DB.getCapabilities(shade.type, shade.capabilities);
         if (capabilities.getValue() < 0) {
             logger.debug("Unable to set capabilities for shade {}", shade.id);
             return;
         }
         logger.debug("Caching capabilities {} for shade {}", capabilities.getValue(), shade.id);
         this.capabilities = capabilities;
+
+        updateDynamicChannels(capabilities, shade);
     }
 
     private Capabilities getCapabilitiesOrDefault() {
@@ -298,17 +302,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         final int type = shadeData.type;
         String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
         String propOldVal = properties.getOrDefault(propKey, "");
-        String propNewVal = db.getType(type).toString();
+        String propNewVal = DB.getType(type).toString();
         if (!propNewVal.equals(propOldVal)) {
             propChanged = true;
             getThing().setProperty(propKey, propNewVal);
-            if ((type > 0) && !db.isTypeInDatabase(type)) {
-                db.logTypeNotInDatabase(type);
+            if ((type > 0) && !DB.isTypeInDatabase(type)) {
+                DB.logTypeNotInDatabase(type);
             }
         }
 
         // update 'capabilities' property
-        Capabilities capabilities = db.getCapabilities(shadeData.capabilities);
+        Capabilities capabilities = DB.getCapabilities(shadeData.capabilities);
         final int capabilitiesVal = capabilities.getValue();
         propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
         propOldVal = properties.getOrDefault(propKey, "");
@@ -316,14 +320,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!propNewVal.equals(propOldVal)) {
             propChanged = true;
             getThing().setProperty(propKey, propNewVal);
-            if ((capabilitiesVal >= 0) && !db.isCapabilitiesInDatabase(capabilitiesVal)) {
-                db.logCapabilitiesNotInDatabase(type, capabilitiesVal);
+            if ((capabilitiesVal >= 0) && !DB.isCapabilitiesInDatabase(capabilitiesVal)) {
+                DB.logCapabilitiesNotInDatabase(type, capabilitiesVal);
             }
         }
 
-        if (propChanged && db.isCapabilitiesInDatabase(capabilitiesVal) && db.isTypeInDatabase(type)
-                && (capabilitiesVal != db.getType(type).getCapabilities()) && (shadeData.capabilities != null)) {
-            db.logCapabilitiesMismatch(type, capabilitiesVal);
+        if (propChanged && DB.isCapabilitiesInDatabase(capabilitiesVal) && DB.isTypeInDatabase(type)
+                && (capabilitiesVal != DB.getType(type).getCapabilities()) && (shadeData.capabilities != null)) {
+            DB.logCapabilitiesMismatch(type, capabilitiesVal);
         }
     }
 
@@ -364,7 +368,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!capsNewVal.equals(capsOldVal)) {
             detectedCapabilities.put(capsKey, capsNewVal);
             if (capsNewBool != capabilities.supportsSecondary()) {
-                db.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
+                DB.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
             }
         }
 
@@ -376,7 +380,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (!capsNewVal.equals(capsOldVal)) {
             detectedCapabilities.put(capsKey, capsNewVal);
             if (capsNewBool != capabilities.supportsTiltAnywhere()) {
-                db.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
+                DB.logPropertyMismatch(capsKey, shadeData.type, capabilities.getValue(), capsNewBool);
             }
         }
     }
@@ -594,6 +598,54 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (!isDisposing) {
                 logger.warn("Unexpected error: {}", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * If the given channel exists in the thing, but is NOT required in the thing, then add it to a list of channels to
+     * be removed. Or if the channel does NOT exist in the thing, but is required in the thing, then log a warning.
+     *
+     * @param removeList the list of channels to be removed from the thing.
+     * @param channelId the id of the channel to be (eventually) removed.
+     * @param channelRequired true if the thing requires this channel.
+     */
+    private void removeListProcessChannel(List<Channel> removeList, String channelId, boolean channelRequired) {
+        Channel channel = thing.getChannel(channelId);
+        if (!channelRequired && channel != null) {
+            removeList.add(channel);
+        } else if (channelRequired && channel == null) {
+            logger.warn("Shade {} does not have a '{}' channel => please reinitialize the thing", shadeId, channelId);
+        }
+    }
+
+    /**
+     * Remove previously statically created channels if the shade does not support them or they are not relevant.
+     *
+     * @param capabilities the capabilities of the shade.
+     * @param shade the shade data.
+     */
+    private void updateDynamicChannels(Capabilities capabilities, ShadeData shade) {
+        List<Channel> removeList = new ArrayList<>();
+
+        removeListProcessChannel(removeList, CHANNEL_SHADE_POSITION, capabilities.supportsPrimary());
+
+        removeListProcessChannel(removeList, CHANNEL_SHADE_SECONDARY_POSITION,
+                capabilities.supportsSecondary() || capabilities.supportsSecondaryOverlapped());
+
+        removeListProcessChannel(removeList, CHANNEL_SHADE_VANE,
+                capabilities.supportsTiltAnywhere() || capabilities.supportsTiltOnClosed());
+
+        boolean batteryChannelsRequired = shade.getBatteryKind() != BatteryKind.HARDWIRED_POWER_SUPPLY;
+        removeListProcessChannel(removeList, CHANNEL_SHADE_BATTERY_LEVEL, batteryChannelsRequired);
+        removeListProcessChannel(removeList, CHANNEL_SHADE_LOW_BATTERY, batteryChannelsRequired);
+
+        if (!removeList.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                StringJoiner joiner = new StringJoiner(", ");
+                removeList.forEach(c -> joiner.add(c.getUID().getId()));
+                logger.debug("Removing unsupported channels for {}: {}", shadeId, joiner.toString());
+            }
+            updateThing(editThing().withoutChannels(removeList).build());
         }
     }
 }

@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nanoleaf.internal.layout.ShapeType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,21 +36,15 @@ public class PositionDatum {
     @SerializedName("shapeType")
     private int shapeType;
 
-    private static Map<Integer, Integer> panelSizes = new HashMap<Integer, Integer>();
-
     public PositionDatum() {
-        // initialize constant sidelengths for panels. See https://forum.nanoleaf.me/docs chapter 3.3
-        if (panelSizes.isEmpty()) {
-            panelSizes.put(0, 150); // Triangle
-            panelSizes.put(1, 0); // Rhythm N/A
-            panelSizes.put(2, 100); // Square
-            panelSizes.put(3, 100); // Control Square Master
-            panelSizes.put(4, 100); // Control Square Passive
-            panelSizes.put(7, 67); // Hexagon
-            panelSizes.put(8, 134); // Triangle Shapes
-            panelSizes.put(9, 67); // Mini Triangle Shapes
-            panelSizes.put(12, 0); // Shapes Controller (N/A)
-        }
+    }
+
+    public PositionDatum(int panelId, int posX, int posY, int orientation, int shapeType) {
+        this.panelId = panelId;
+        this.posX = posX;
+        this.posY = posY;
+        this.orientation = orientation;
+        this.shapeType = shapeType;
     }
 
     public int getPanelId() {
@@ -105,6 +98,33 @@ public class PositionDatum {
     }
 
     public Integer getPanelSize() {
-        return panelSizes.getOrDefault(shapeType, 0);
+        return (int) ShapeType.valueOf(shapeType).getSideLength();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        PositionDatum pd = (PositionDatum) o;
+        return (posX == pd.getPosX()) && (posY == pd.getPosY()) && (orientation == pd.getOrientation())
+                && (shapeType == pd.getShapeType()) && (panelId == pd.getPanelId());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + posX;
+        result = prime * result + posY;
+        result = prime * result + orientation;
+        result = prime * result + shapeType;
+        result = prime * result + panelId;
+        return result;
     }
 }

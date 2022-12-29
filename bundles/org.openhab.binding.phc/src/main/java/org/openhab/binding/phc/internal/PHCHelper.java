@@ -44,7 +44,7 @@ public class PHCHelper {
     }
 
     /**
-     * Convert the byte b into an binary String
+     * Convert the byte b into a binary String
      *
      * @param b
      * @return

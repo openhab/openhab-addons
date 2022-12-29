@@ -284,7 +284,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     }
 
     /**
-     * Returns true, if the display is a EP display.
+     * Returns true, if the display is an EP display.
      */
     private boolean isEpDisplay(HmDevice device) {
         return DEVICE_TYPE_EP_STATUS_DISPLAY.equals(device.getType());

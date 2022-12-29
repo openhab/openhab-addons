@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mercedesme:bridge">
+		<parameter name="clientId" type="text" required="true">
+			<label>MB Developer Client ID</label>
+			<description>Mercedes Benz Developer Client ID</description>
+		</parameter>
+		<parameter name="clientSecret" type="text" required="true">
+			<label>MB Developer Client Secret</label>
+			<description>Mercedes Benz Developer Client Secret</description>
+		</parameter>
+		<parameter name="imageApiKey" type="text">
+			<label>MB Developer Image API Key</label>
+			<description>Mercedes Benz Developer Image API Key</description>
+		</parameter>
+		<parameter name="odoScope" type="boolean">
+			<label>PayAsYourDrive Insurance</label>
+			<description>Provides total Mileage</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="vehicleScope" type="boolean">
+			<label>Vehicle Status</label>
+			<description>Status of doors, windows lights</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="lockScope" type="boolean">
+			<label>Vehicle Lock Status</label>
+			<description>Lock status of doors and trunk</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="fuelScope" type="boolean">
+			<label>Fuel Status</label>
+			<description>Tank level and range</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="evScope" type="boolean">
+			<label>Electric Vehicle Status</label>
+			<description>Electric charge and range</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="callbackIP" type="text">
+			<label>Callback IP Address</label>
+			<description>IP address for openHAB callback URL</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="callbackPort" type="integer">
+			<label>Callback Port Number</label>
+			<description>Port Number for openHAB callback URL</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

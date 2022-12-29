@@ -27,9 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
@@ -139,15 +141,20 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
 
+            boolean gen2 = "2".equals(service.getPropertyString("gen"));
             try {
-                Shelly1HttpApi api = new Shelly1HttpApi(name, config, httpClient);
-
+                ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
+                        : new Shelly1HttpApi(name, config, httpClient);
+                if (name.contains("plus1pm")) {
+                    int i = 1;
+                }
+                api.initialize();
                 profile = api.getDeviceProfile(thingType);
+                api.close();
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
                 deviceName = profile.name;
                 model = profile.deviceType;
                 mode = profile.mode;
-
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
                 logger.trace("{}: thingType={}, deviceType={}, mode={}, symbolic name={}", name, thingType,
                         profile.deviceType, mode.isEmpty() ? "<standard>" : mode, deviceName);
@@ -174,7 +181,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 addProperty(properties, PROPERTY_SERVICE_NAME, name);
                 addProperty(properties, PROPERTY_DEV_NAME, deviceName);
                 addProperty(properties, PROPERTY_DEV_TYPE, thingType);
-                addProperty(properties, PROPERTY_DEV_GEN, "1");
+                addProperty(properties, PROPERTY_DEV_GEN, gen2 ? "2" : "1");
                 addProperty(properties, PROPERTY_DEV_MODE, mode);
 
                 logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());

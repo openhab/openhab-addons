@@ -114,7 +114,7 @@ public final class RequestResponseFactory {
     }
 
     /**
-     * Return a IpControlResponse object based on the given response data.
+     * Return an IpControlResponse object based on the given response data.
      *
      * @param responseData
      * @return

@@ -24,7 +24,7 @@ import org.openhab.core.types.State;
 
 /**
  * Defines an implementation of {@link AtlonaHandlerCallback} that will remember the last state
- * for an channelId and suppress the callback if the state hasn't changed
+ * for a channelId and suppress the callback if the state hasn't changed
  *
  * @author Tim Roberts - Initial contribution
  */

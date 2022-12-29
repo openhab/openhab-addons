@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
@@ -42,8 +47,17 @@ import org.slf4j.LoggerFactory;
 class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
+    private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
+    private @Nullable ZonedDateTime freshestEventTime;
+
     SecurityCapability(CommonInterface handler) {
         super(handler, SecurityApi.class);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        freshestEventTime = null;
     }
 
     @Override
@@ -110,7 +124,57 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                 });
     }
 
-    public Collection<HomeEvent> getDeviceEvents(String cameraId, String deviceType) {
+    @Override
+    protected List<NAObject> updateReadings(SecurityApi api) {
+        List<NAObject> result = new ArrayList<>();
+        try {
+            for (HomeEvent event : api.getHomeEvents(handler.getId(), freshestEventTime)) {
+                HomeEvent previousEvent = eventBuffer.get(event.getCameraId());
+                if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
+                    eventBuffer.put(event.getCameraId(), event);
+                }
+                String personId = event.getPersonId();
+                if (personId != null) {
+                    previousEvent = eventBuffer.get(personId);
+                    if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
+                        eventBuffer.put(personId, event);
+                    }
+                }
+                if (freshestEventTime == null || event.getTime().isAfter(freshestEventTime)) {
+                    freshestEventTime = event.getTime();
+                }
+            }
+        } catch (NetatmoException e) {
+            logger.warn("Error retrieving last events for home '{}' : {}", handler.getId(), e.getMessage());
+        }
+        return result;
+    }
+
+    public @Nullable HomeEvent getLastPersonEvent(String personId) {
+        HomeEvent event = eventBuffer.get(personId);
+        if (event == null) {
+            Collection<HomeEvent> events = requestPersonEvents(personId);
+            if (!events.isEmpty()) {
+                event = events.iterator().next();
+                eventBuffer.put(personId, event);
+            }
+        }
+        return event;
+    }
+
+    public @Nullable HomeEvent getLastDeviceEvent(String cameraId, String deviceType) {
+        HomeEvent event = eventBuffer.get(cameraId);
+        if (event == null) {
+            Collection<HomeEvent> events = requestDeviceEvents(cameraId, deviceType);
+            if (!events.isEmpty()) {
+                event = events.iterator().next();
+                eventBuffer.put(cameraId, event);
+            }
+        }
+        return event;
+    }
+
+    private Collection<HomeEvent> requestDeviceEvents(String cameraId, String deviceType) {
         return getApi().map(api -> {
             try {
                 return api.getDeviceEvents(handler.getId(), cameraId, deviceType);
@@ -121,7 +185,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         }).orElse(List.of());
     }
 
-    public Collection<HomeEvent> getPersonEvents(String personId) {
+    private Collection<HomeEvent> requestPersonEvents(String personId) {
         return getApi().map(api -> {
             try {
                 return api.getPersonEvents(handler.getId(), personId);
@@ -145,12 +209,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
 
     public @Nullable String ping(String vpnUrl) {
         return getApi().map(api -> {
-            try {
-                return api.ping(vpnUrl);
-            } catch (NetatmoException e) {
-                logger.warn("Error pinging camera '{}' : {}", vpnUrl, e.getMessage());
-                return null;
-            }
+            return api.ping(vpnUrl);
         }).orElse(null);
     }
 

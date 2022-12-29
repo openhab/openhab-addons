@@ -184,7 +184,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
                     try {
                         owHandler.updateSensorProperties(this);
                         owHandler.initialize();
-                        logger.debug("{} sucessfully updated properties, removing from property update list",
+                        logger.debug("{} successfully updated properties, removing from property update list",
                                 updateThing.getUID());
                     } catch (OwException e) {
                         thingPropertiesUpdateQueue.add(updateThing);

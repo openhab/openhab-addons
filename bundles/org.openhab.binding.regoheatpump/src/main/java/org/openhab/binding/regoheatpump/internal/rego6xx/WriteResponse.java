@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link WriteResponse} is responsible for parsing write responses
  * coming from the rego 6xx unit.
  *
  * @author Boris Krivonog - Initial contribution
  */
-class WriteResponse extends AbstractResponseParser<Void> {
+@NonNullByDefault
+class WriteResponse extends AbstractResponseParser<String> {
     @Override
     public int responseLength() {
         return 1;
     }
 
     @Override
-    protected Void convert(byte[] responseBytes) {
-        return null;
+    protected String convert(byte[] responseBytes) {
+        return "";
     }
 }

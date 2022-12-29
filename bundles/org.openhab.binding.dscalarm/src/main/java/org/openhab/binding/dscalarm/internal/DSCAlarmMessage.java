@@ -323,7 +323,7 @@ public class DSCAlarmMessage {
     }
 
     /**
-     * Returns a string representation of a APIMessage.
+     * Returns a string representation of an APIMessage.
      *
      * @return APIMessage string
      */

@@ -36,8 +36,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfiguration> {
 
-    public NukiOpenerHandler(Thing thing) {
-        super(thing);
+    public NukiOpenerHandler(Thing thing, boolean readOnly) {
+        super(thing, readOnly);
     }
 
     private volatile Instant lastRingAction = Instant.EPOCH;

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class takes data coming from the serial port and turns it
- * into an message. For that, it has to figure out the length of the
+ * into a message. For that, it has to figure out the length of the
  * message from the header, and read enough bytes until it hits the
  * message boundary. The code is tricky, partly because the Insteon protocol is.
  * Most of the time the command code (second byte) is enough to determine the length

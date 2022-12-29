@@ -24,17 +24,19 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.dto.Capabilities;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
+import org.openhab.binding.hue.internal.dto.FullLight;
+import org.openhab.binding.hue.internal.dto.State;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -51,7 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link HueLightHandler} is the handler for a hue light. It uses the {@link HueClient} to execute the actual
+ * {@link HueLightHandler} is the handler for a Hue light. It uses the {@link HueClient} to execute the actual
  * command.
  *
  * @author Dennis Nobel - Initial contribution
@@ -116,7 +118,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void initialize() {
-        logger.debug("Initializing hue light handler.");
+        logger.debug("Initializing Hue light handler.");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
@@ -234,13 +236,13 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
     public void handleCommand(String channel, Command command, long fadeTime) {
         HueClient bridgeHandler = getHueClient();
         if (bridgeHandler == null) {
-            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            logger.warn("Hue Bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
         final FullLight light = lastFullLight == null ? bridgeHandler.getLightById(lightId) : lastFullLight;
         if (light == null) {
-            logger.debug("hue light not known on bridge. Cannot handle command.");
+            logger.debug("Hue light not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-wrong-light-id");
             return;
@@ -267,8 +269,18 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
-                if (command instanceof DecimalType) {
-                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                if (command instanceof QuantityType) {
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
+                    if (convertedCommand != null) {
+                        newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
+                                colorTemperatureCapabilties);
+                        newState.setTransitionTime(fadeTime);
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), Units.KELVIN);
+                    }
+                } else if (command instanceof DecimalType) {
+                    newState = LightStateConverter.toColorTemperatureLightState(((DecimalType) command).intValue(),
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
@@ -356,6 +368,9 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toOnOffEffectState((OnOffType) command);
                 }
                 break;
+            default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+                break;
         }
         if (newState != null) {
             // Cache values which we have sent
@@ -369,7 +384,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             }
             bridgeHandler.updateLightState(this, light, newState, fadeTime);
         } else {
-            logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 

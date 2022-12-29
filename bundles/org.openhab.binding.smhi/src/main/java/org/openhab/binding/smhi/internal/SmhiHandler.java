@@ -317,7 +317,7 @@ public class SmhiHandler extends BaseThingHandler {
                 return;
             } catch (PointOutOfBoundsException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Coordinates outside valid area");
+                        "@text/thing-status.invalidCoordinates");
                 cancelPolling();
                 return;
             }

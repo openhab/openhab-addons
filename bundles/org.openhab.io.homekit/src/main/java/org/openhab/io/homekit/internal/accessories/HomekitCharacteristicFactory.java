@@ -33,6 +33,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
@@ -41,9 +42,11 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.homekit.Homekit;
@@ -97,6 +100,7 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
+import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
@@ -115,7 +119,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltA
 import tech.units.indriya.unit.UnitDimension;
 
 /**
- * Creates a optional characteristics .
+ * Creates an optional characteristics .
  *
  * @author Eugen Freiter - Initial contribution
  */
@@ -160,6 +164,7 @@ public class HomekitCharacteristicFactory {
             put(VOLUME, HomekitCharacteristicFactory::createVolumeCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
             put(HEATING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createHeatingThresholdCharacteristic);
+            put(RELATIVE_HUMIDITY, HomekitCharacteristicFactory::createRelativeHumidityCharacteristic);
             put(REMAINING_DURATION, HomekitCharacteristicFactory::createRemainingDurationCharacteristic);
             put(OZONE_DENSITY, HomekitCharacteristicFactory::createOzoneDensityCharacteristic);
             put(NITROGEN_DIOXIDE_DENSITY, HomekitCharacteristicFactory::createNitrogenDioxideDensityCharacteristic);
@@ -188,8 +193,8 @@ public class HomekitCharacteristicFactory {
         if (optional.containsKey(type)) {
             return optional.get(type).apply(item, updater);
         }
-        logger.warn("Unsupported optional characteristic. Accessory type {}, characteristic type {}",
-                item.getAccessoryType(), type.getTag());
+        logger.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
+                item.getName(), item.getAccessoryType(), type.getTag());
         throw new HomekitException(
                 "Unsupported optional characteristic. Characteristic type \"" + type.getTag() + "\"");
     }
@@ -225,20 +230,20 @@ public class HomekitCharacteristicFactory {
 
     private static void setValueFromEnum(HomekitTaggedItem taggedItem, CharacteristicEnum value,
             CharacteristicEnum offEnum, CharacteristicEnum onEnum) {
-        if (taggedItem.getItem() instanceof SwitchItem) {
+        if (taggedItem.getBaseItem() instanceof SwitchItem) {
             if (value.equals(offEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF);
+                taggedItem.send(taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF);
             } else if (value.equals(onEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON);
+                taggedItem.send(taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON);
             } else {
-                logger.warn("Enum value {} is not supported. Only following values are supported: {},{}", value,
-                        offEnum, onEnum);
+                logger.warn("Enum value {} is not supported for {}. Only following values are supported: {},{}", value,
+                        taggedItem.getName(), offEnum, onEnum);
             }
-        } else if (taggedItem.getItem() instanceof NumberItem) {
-            ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.getCode()));
+        } else if (taggedItem.getBaseItem() instanceof NumberItem) {
+            taggedItem.send(new DecimalType(value.getCode()));
         } else {
-            logger.warn("Item type {} is not supported. Only Switch and Number item types are supported.",
-                    taggedItem.getItem().getType());
+            logger.warn("Item {} of type {} is not supported. Only Switch and Number item types are supported.",
+                    taggedItem.getName(), taggedItem.getBaseItem().getType());
         }
     }
 
@@ -300,6 +305,11 @@ public class HomekitCharacteristicFactory {
         return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
     }
 
+    public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
+        return taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                new QuantityType(defaultValue, SIUnits.CELSIUS), true).doubleValue();
+    }
+
     private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
             int defaultValue) {
         return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem, defaultValue));
@@ -311,38 +321,38 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Integer> setIntConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only NumberItem is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
 
     private static ExceptionalConsumer<Integer> setPercentConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                taggedItem.send(new PercentType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
 
     private static ExceptionalConsumer<Integer> setAngleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 value = (int) (value * 50.0 / 90.0 + 50.0);
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+                taggedItem.send(new PercentType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -356,6 +366,8 @@ public class HomekitCharacteristicFactory {
                 value = ((PercentType) state).doubleValue();
             } else if (state instanceof DecimalType) {
                 value = ((DecimalType) state).doubleValue();
+            } else if (state instanceof QuantityType) {
+                value = ((QuantityType) state).doubleValue();
             }
             return CompletableFuture.completedFuture(value);
         };
@@ -363,13 +375,13 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setDoubleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value.doubleValue()));
-            } else if (taggedItem.getItem() instanceof DimmerItem) {
-                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value.intValue()));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(value.doubleValue()));
+            } else if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                taggedItem.send(new PercentType(value.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Number and Dimmer type are supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -384,11 +396,11 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getItem() instanceof NumberItem) {
-                ((NumberItem) taggedItem.getItem()).send(new DecimalType(convertFromCelsius(value)));
+            if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new DecimalType(convertFromCelsius(value)));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         };
     }
@@ -406,9 +418,14 @@ public class HomekitCharacteristicFactory {
     // create method for characteristic
     private static StatusLowBatteryCharacteristic createStatusLowBatteryCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
+        BigDecimal lowThreshold = taggedItem.getConfiguration(HomekitTaggedItem.BATTERY_LOW_THRESHOLD,
+                BigDecimal.valueOf(20));
+        BooleanItemReader lowBatteryReader = new BooleanItemReader(taggedItem.getItem(),
+                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, lowThreshold, true);
         return new StatusLowBatteryCharacteristic(
-                () -> getEnumFromItem(taggedItem, StatusLowBatteryEnum.NORMAL, StatusLowBatteryEnum.LOW,
-                        StatusLowBatteryEnum.NORMAL),
+                () -> CompletableFuture.completedFuture(
+                        lowBatteryReader.getValue() ? StatusLowBatteryEnum.LOW : StatusLowBatteryEnum.NORMAL),
                 getSubscriber(taggedItem, BATTERY_LOW_STATUS, updater),
                 getUnsubscriber(taggedItem, BATTERY_LOW_STATUS, updater));
     }
@@ -457,7 +474,24 @@ public class HomekitCharacteristicFactory {
 
     private static HoldPositionCharacteristic createHoldPositionCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new HoldPositionCharacteristic(value -> ((SwitchItem) taggedItem.getItem()).send(OnOffType.from(value)));
+        final Item item = taggedItem.getBaseItem();
+        if (!(item instanceof SwitchItem || item instanceof RollershutterItem)) {
+            logger.warn(
+                    "Item {} cannot be used for the HoldPosition characteristic; only SwitchItem and RollershutterItem are supported. Hold requests will be ignored.",
+                    item.getName());
+        }
+
+        return new HoldPositionCharacteristic(value -> {
+            if (!value) {
+                return;
+            }
+
+            if (item instanceof SwitchItem) {
+                ((SwitchItem) item).send(OnOffType.ON);
+            } else if (item instanceof RollershutterItem) {
+                ((RollershutterItem) item).send(StopMoveType.STOP);
+            }
+        });
     }
 
     private static CarbonMonoxideLevelCharacteristic createCarbonMonoxideLevelCharacteristic(
@@ -552,11 +586,11 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (hue) -> {
-            if (taggedItem.getItem() instanceof ColorItem) {
+            if (taggedItem.getBaseItem() instanceof ColorItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.HUE_COMMAND, new DecimalType(hue));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, HUE, updater), getUnsubscriber(taggedItem, HUE, updater));
     }
@@ -573,12 +607,11 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (brightness) -> {
-            final Item item = taggedItem.getItem();
-            if (item instanceof DimmerItem) {
+            if (taggedItem.getBaseItem() instanceof DimmerItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.BRIGHTNESS_COMMAND, new PercentType(brightness));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only ColorItem and DimmerItem are supported.",
-                        item.getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, BRIGHTNESS, updater), getUnsubscriber(taggedItem, BRIGHTNESS, updater));
     }
@@ -595,25 +628,77 @@ public class HomekitCharacteristicFactory {
             }
             return CompletableFuture.completedFuture(value);
         }, (saturation) -> {
-            if (taggedItem.getItem() instanceof ColorItem) {
+            if (taggedItem.getBaseItem() instanceof ColorItem) {
                 taggedItem.sendCommandProxy(HomekitCommandType.SATURATION_COMMAND,
                         new PercentType(saturation.intValue()));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only Color type is supported.",
-                        taggedItem.getItem().getType(), taggedItem.getName());
+                        taggedItem.getBaseItem().getType(), taggedItem.getName());
             }
         }, getSubscriber(taggedItem, SATURATION, updater), getUnsubscriber(taggedItem, SATURATION, updater));
     }
 
     private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        int minValue = taggedItem.getConfigurationAsInt(HomekitTaggedItem.MIN_VALUE,
-                ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE);
-        return new ColorTemperatureCharacteristic(minValue,
-                taggedItem.getConfigurationAsInt(HomekitTaggedItem.MAX_VALUE,
-                        ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE),
-                getIntSupplier(taggedItem, minValue), setIntConsumer(taggedItem),
-                getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
+        final boolean inverted = taggedItem.isInverted();
+
+        int minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED), false)
+                .intValue();
+        int maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED), false)
+                .intValue();
+
+        // It's common to swap these if you're providing in Kelvin instead of mired
+        if (minValue > maxValue) {
+            int temp = minValue;
+            minValue = maxValue;
+            maxValue = temp;
+        }
+
+        final int finalMinValue = minValue;
+        final int range = maxValue - minValue;
+
+        return new ColorTemperatureCharacteristic(minValue, maxValue, () -> {
+            int value = finalMinValue;
+            final State state = taggedItem.getItem().getState();
+            if (state instanceof QuantityType<?>) {
+                // Number:Temperature
+                QuantityType<?> qt = (QuantityType<?>) state;
+                qt = qt.toInvertibleUnit(Units.MIRED);
+                if (qt == null) {
+                    logger.warn("Item {}'s state '{}' is not convertible to mireds.", taggedItem.getName(), state);
+                } else {
+                    value = qt.intValue();
+                }
+            } else if (state instanceof PercentType) {
+                double percent = ((PercentType) state).doubleValue();
+                // invert so that 0% == coolest
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+
+                // Dimmer
+                // scale to the originally configured range
+                value = (int) (percent * range / 100) + finalMinValue;
+            } else if (state instanceof DecimalType) {
+                value = ((DecimalType) state).intValue();
+            }
+            return CompletableFuture.completedFuture(value);
+        }, (value) -> {
+            if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                // scale to a percent
+                double percent = (((double) value) - finalMinValue) * 100 / range;
+                if (inverted) {
+                    percent = 100.0 - percent;
+                }
+                taggedItem.send(new PercentType(BigDecimal.valueOf(percent)));
+            } else if (taggedItem.getBaseItem() instanceof NumberItem) {
+                taggedItem.send(new QuantityType(value, Units.MIRED));
+            }
+        }, getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COLOR_TEMPERATURE, updater));
     }
 
@@ -725,9 +810,8 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
@@ -739,12 +823,18 @@ public class HomekitCharacteristicFactory {
                 HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
         double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
                 HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue,
-                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
-                        HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
+        double step = getTemperatureStep(taggedItem, HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
+    }
+
+    private static CurrentRelativeHumidityCharacteristic createRelativeHumidityCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        return new CurrentRelativeHumidityCharacteristic(getDoubleSupplier(taggedItem, 0.0),
+                getSubscriber(taggedItem, RELATIVE_HUMIDITY, updater),
+                getUnsubscriber(taggedItem, RELATIVE_HUMIDITY, updater));
     }
 
     private static OzoneDensityCharacteristic createOzoneDensityCharacteristic(final HomekitTaggedItem taggedItem,
@@ -797,6 +887,11 @@ public class HomekitCharacteristicFactory {
     private static VOCDensityCharacteristic createVOCDensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new VOCDensityCharacteristic(
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MIN_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        VOCDensityCharacteristic.DEFAULT_MAX_VALUE),
+                taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP, VOCDensityCharacteristic.DEFAULT_STEP),
                 getDoubleSupplier(taggedItem,
                         taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                                 VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),

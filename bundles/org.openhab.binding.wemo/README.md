@@ -1,11 +1,11 @@
 # Belkin Wemo Binding
 
 This binding integrates the [Belkin WeMo Family](https://www.belkin.com/us/Products/c/home-automation/).
-The integration happens either through the WeMo-Link bridge, which acts as an IP gateway to the ZigBee devices or through WiFi connection to standalone devices.
+The integration happens either through the WeMo-Link bridge, which acts as an IP gateway to the Zigbee devices or through WiFi connection to standalone devices.
 
 ## Supported Things
 
-The WeMo Binding supports the Socket, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs. 
+The WeMo Binding supports the Socket, Outdoor Plug, Insight, Lightswitch, Motion, Dimmer, Coffemaker and Maker devices, as well as the WeMo-Link bridge with WeMo LED bulbs.
 The Binding also supports the Crock-Pot Smart Slow Cooker, Mr. Coffee Smart Coffemaker as well as the Holmes Smart Air Purifier, Holmes Smart Humidifier and Holmes Smart Heater.
 
 ## Discovery

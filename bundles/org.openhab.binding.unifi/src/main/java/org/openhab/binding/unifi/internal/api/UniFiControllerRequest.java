@@ -230,6 +230,7 @@ class UniFiControllerRequest<T> {
         if (!bodyParameters.isEmpty()) {
             final String jsonBody = gson.toJson(bodyParameters);
 
+            logger.debug("Body parameters for request '{}': {}", request.getPath(), jsonBody);
             request.content(
                     new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON_UTF_8, jsonBody, StandardCharsets.UTF_8));
         }

@@ -152,7 +152,11 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateHumiditySensor(deviceModel.getHumidity());
                 }
                 if (deviceModel.isHANFUNAlarmSensor()) {
-                    updateHANFUNAlarmSensor(deviceModel.getAlert());
+                    if (deviceModel.isHANFUNBlinds()) {
+                        updateHANFUNBlindsAlarmSensor(deviceModel.getAlert());
+                    } else {
+                        updateHANFUNAlarmSensor(deviceModel.getAlert());
+                    }
                 }
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
@@ -171,6 +175,17 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (alertModel != null) {
             updateThingChannelState(CHANNEL_CONTACT_STATE,
                     AlertModel.ON.equals(alertModel.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        }
+    }
+
+    private void updateHANFUNBlindsAlarmSensor(@Nullable AlertModel alertModel) {
+        if (alertModel != null) {
+            updateThingChannelState(CHANNEL_OBSTRUCTION_ALARM,
+                    OnOffType.from(alertModel.hasObstructionAlarmOccurred()));
+            updateThingChannelState(CHANNEL_TEMPERATURE_ALARM, OnOffType.from(alertModel.hasTemperaturAlarmOccurred()));
+            if (alertModel.hasUnknownAlarmOccurred()) {
+                logger.warn("Unknown blinds alarm {}", alertModel.getState());
+            }
         }
     }
 
@@ -397,6 +412,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             case CHANNEL_BATTERY_LOW:
             case CHANNEL_CONTACT_STATE:
             case CHANNEL_LAST_CHANGE:
+            case CHANNEL_OBSTRUCTION_ALARM:
+            case CHANNEL_TEMPERATURE_ALARM:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
@@ -411,12 +428,19 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof HSBType) {
                     HSBType hsbType = (HSBType) command;
                     brightness = hsbType.getBrightness().toBigDecimal();
-                    fritzBox.setHueAndSaturation(ain, hsbType.getHue().intValue(),
+                    fritzBox.setUnmappedHueAndSaturation(ain, hsbType.getHue().intValue(),
                             ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
                 } else if (command instanceof PercentType) {
                     brightness = ((PercentType) command).toBigDecimal();
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    brightness = ((DeviceModel) currentDevice).getLevelControlModel().getLevelPercentage();
+                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                        brightness.add(BigDecimal.TEN);
+                    } else {
+                        brightness.subtract(BigDecimal.TEN);
+                    }
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);

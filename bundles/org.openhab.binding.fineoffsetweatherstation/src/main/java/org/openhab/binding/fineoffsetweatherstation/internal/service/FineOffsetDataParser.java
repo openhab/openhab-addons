@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurands;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
@@ -174,17 +174,25 @@ public class FineOffsetDataParser {
         if (protocol == Protocol.ELV) {
             idx++; // at index 5 there is an additional Byte being set to 0x04
         }
+        return readMeasuredValues(data, idx, context, protocol.getParserCustomizationType());
+    }
+
+    List<MeasuredValue> getRainData(byte[] data, ConversionContext context) {
+        return readMeasuredValues(data, 5, context, Measurand.ParserCustomizationType.RAIN_READING);
+    }
+
+    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx, ConversionContext context,
+            Measurand.@Nullable ParserCustomizationType protocol) {
         var size = toUInt16(data, 3);
         List<MeasuredValue> result = new ArrayList<>();
-        Measurands measurands = Measurands.getInstance(protocol);
         while (idx < size) {
             byte code = data[idx++];
-            try {
-                idx += measurands.extractMeasuredValues(code, data, idx, context, result);
-            } catch (IllegalArgumentException e) {
-                logger.warn("", e);
+            Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
+            if (measurand == null) {
+                logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 return result;
             }
+            idx += measurand.extractMeasuredValues(data, idx, context, protocol, result);
         }
         return result;
     }

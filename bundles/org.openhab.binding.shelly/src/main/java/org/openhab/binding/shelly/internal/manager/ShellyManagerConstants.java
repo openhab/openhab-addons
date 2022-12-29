@@ -39,7 +39,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_SETCOIOT_PEER = "setcoiotpeer";
     public static final String ACTION_SETCOIOT_MCAST = "setcoiotmcast";
     public static final String ACTION_SETTZ = "settz";
-    public static final String ACTION_SETNTP = "setntp";
     public static final String ACTION_ENCLOUD = "encloud";
     public static final String ACTION_DISCLOUD = "discloud";
     public static final String ACTION_RES_STATS = "reset_stat";
@@ -49,6 +48,12 @@ public class ShellyManagerConstants {
     public static final String ACTION_DISWIFIREC = "diswifirec";
     public static final String ACTION_ENAPROAMING = "enaproaming";
     public static final String ACTION_DISAPROAMING = "disaproaming";
+    public static final String ACTION_ENRANGEEXT = "enrangeext";
+    public static final String ACTION_ENETHERNET = "enethernet";
+    public static final String ACTION_DISETHERNET = "disethernet";
+    public static final String ACTION_ENBLUETOOTH = "enbluetooth";
+    public static final String ACTION_DISBLUETOOTH = "disbluetooth";
+    public static final String ACTION_DISRANGEEXT = "disrangeext";
     public static final String ACTION_OTACHECK = "otacheck";
     public static final String ACTION_ENDEBUG = "endebug";
     public static final String ACTION_DISDEBUG = "disdebug";

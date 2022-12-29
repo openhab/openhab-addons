@@ -26,17 +26,17 @@ import org.openhab.core.library.types.QuantityType;
  *
  */
 @NonNullByDefault
-public class KNXCoreTypeMapperTest {
+class KNXCoreTypeMapperTest {
 
     @Test
-    public void testToDPTValueTrailingZeroesStrippedOff() {
+    void testToDPTValueTrailingZeroesStrippedOff() {
         assertEquals("3", new KNXCoreTypeMapper().toDPTValue(new DecimalType("3"), "17.001"));
         assertEquals("3", new KNXCoreTypeMapper().toDPTValue(new DecimalType("3.0"), "17.001"));
     }
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT5ValueFromQuantityType() {
+    void testToDPT5ValueFromQuantityType() {
         assertEquals("80.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("80 %"), "5.001"));
 
         assertEquals("180.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("180 °"), "5.003"));
@@ -46,7 +46,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT7ValueFromQuantityType() {
+    void testToDPT7ValueFromQuantityType() {
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "7.002"));
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "7.003"));
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "7.004"));
@@ -63,7 +63,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT8ValueFromQuantityType() {
+    void testToDPT8ValueFromQuantityType() {
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "8.002"));
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "8.003"));
         assertEquals("1000.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1000 ms"), "8.004"));
@@ -77,7 +77,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT9ValueFromQuantityType() {
+    void testToDPT9ValueFromQuantityType() {
         assertEquals("23.1", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("23.1 °C"), "9.001"));
         assertEquals("5.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("41 °F"), "9.001"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("274.15 K"), "9.001"));
@@ -121,7 +121,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT10ValueFromQuantityType() {
+    void testToDPT10ValueFromQuantityType() {
         // DateTimeTyype, not QuantityType
         assertEquals("Wed, 17:30:00",
                 new KNXCoreTypeMapper().toDPTValue(new DateTimeType("2019-06-12T17:30:00Z"), "10.001"));
@@ -129,7 +129,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT11ValueFromQuantityType() {
+    void testToDPT11ValueFromQuantityType() {
         // DateTimeTyype, not QuantityType
         assertEquals("2019-06-12",
                 new KNXCoreTypeMapper().toDPTValue(new DateTimeType("2019-06-12T17:30:00Z"), "11.001"));
@@ -137,7 +137,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT12ValueFromQuantityType() {
+    void testToDPT12ValueFromQuantityType() {
         // 12.001: dimensionless
 
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 s"), "12.100"));
@@ -151,7 +151,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT13ValueFromQuantityType() {
+    void testToDPT13ValueFromQuantityType() {
         // 13.001 dimensionless
         assertEquals("24.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("24 m³/h"), "13.002"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("24 m³/d"), "13.002"));
@@ -166,14 +166,13 @@ public class KNXCoreTypeMapperTest {
 
         assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 s"), "13.100"));
 
-        // DPTs 13.1200 and 13.1201 not available in Calimero 2.5, fix once we update
-        assertNotEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 l"), "13.1200"));
-        assertNotEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 m³"), "13.1201"));
+        assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 l"), "13.1200"));
+        assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 m³"), "13.1201"));
     }
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT14ValueFromQuantityType() {
+    void testToDPT14ValueFromQuantityType() {
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 m/s²"), "14.000"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 rad/s²"), "14.001"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 J/mol"), "14.002"));
@@ -258,14 +257,13 @@ public class KNXCoreTypeMapperTest {
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 J"), "14.079"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 VA"), "14.080"));
 
-        // DPTs 14.1200 and 14.1201 not available in Calimero 2.5, fix once we update
-        assertNotEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 m³/h"), "14.1200"));
-        assertNotEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 l/s"), "14.1201"));
+        assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 m³/h"), "14.1200"));
+        assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 l/s"), "14.1201"));
     }
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT19ValueFromQuantityType() {
+    void testToDPT19ValueFromQuantityType() {
         // DateTimeTyype, not QuantityType
         assertEquals("2019-06-12 17:30:00",
                 new KNXCoreTypeMapper().toDPTValue(new DateTimeType("2019-06-12T17:30:00Z"), "19.001"));
@@ -273,7 +271,7 @@ public class KNXCoreTypeMapperTest {
 
     @Test
     @SuppressWarnings("null")
-    public void testToDPT29ValueFromQuantityType() {
+    void testToDPT29ValueFromQuantityType() {
         assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 Wh"), "29.010"));
         assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 VAh"), "29.011"));
         assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 varh"), "29.012"));

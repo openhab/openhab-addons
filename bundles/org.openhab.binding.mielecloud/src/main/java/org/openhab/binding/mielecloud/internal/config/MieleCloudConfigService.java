@@ -203,6 +203,7 @@ public final class MieleCloudConfigService {
         unregisterWebResource(RESULT_ALIAS);
         unregisterWebResource(SUCCESS_ALIAS);
         unregisterWebResource(CREATE_BRIDGE_THING_ALIAS);
+        unregisterWebResource(FAILURE_ALIAS);
         unregisterWebResource(CSS_ALIAS);
         unregisterWebResource(JS_ALIAS);
         unregisterWebResource(IMG_ALIAS);

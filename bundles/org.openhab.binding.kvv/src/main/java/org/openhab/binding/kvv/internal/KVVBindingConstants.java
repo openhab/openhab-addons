@@ -39,7 +39,7 @@ public class KVVBindingConstants {
     public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STOP);
 
     /** URL of the KVV API */
-    public static final String API_URL = "https://live.kvv.de/webapp";
+    public static final String API_FORMAT = "https://projekte.kvv-efa.de/sl3-alone/XSLT_DM_REQUEST?outputFormat=JSON&coordOutputFormat=WGS84%%5Bdd.ddddd%%5D&depType=stopEvents&locationServerActive=1&mode=direct&name_dm=%s&type_dm=stop&useOnlyStops=1&useRealtime=1&limit=%d";
 
     /** timeout for API calls in seconds */
     public static final int TIMEOUT_IN_SECONDS = 10;

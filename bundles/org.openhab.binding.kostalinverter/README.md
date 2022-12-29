@@ -25,22 +25,22 @@ All of these devices contain the same communication board (SCB = **S**mart**C**o
 
 Currently supported things are:
 
-* PIKO IQ 4.2
-* PIKO IQ 5.5
-* PIKO IQ 7.0
-* PIKO IQ 8.5
-* PIKO IQ 10.0
-* PLENTICORE plus 4.2 (with or without battery attached)
-* PLENTICORE plus 5.5 (with or without battery attached)
-* PLENTICORE plus 7.0 (with or without battery attached)
-* PLENTICORE plus 8.5 (with or without battery attached)
-* PLENTICORE plus 10.0 (with or without battery attached)
+- PIKO IQ 4.2
+- PIKO IQ 5.5
+- PIKO IQ 7.0
+- PIKO IQ 8.5
+- PIKO IQ 10.0
+- PLENTICORE plus 4.2 (with or without battery attached)
+- PLENTICORE plus 5.5 (with or without battery attached)
+- PLENTICORE plus 7.0 (with or without battery attached)
+- PLENTICORE plus 8.5 (with or without battery attached)
+- PLENTICORE plus 10.0 (with or without battery attached)
 
 Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, ...), but they were not tested!
 
-Kostal bindings to third generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use 
-strong cryptography in your country, you can achieve this by modifying the $JAVA_HOME/jre/lib/security/java.security file (find the line *crypto.policy=limited* and set it to *unlimited*). 
-If you're using the official openHAB docker image you may also enable Java's strong cryptography by specifying an environment variable *CRYPTO_POLICY="unlimited"*.
+Kostal bindings to third generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use
+strong cryptography in your country, you can achieve this by modifying the $JAVA_HOME/jre/lib/security/java.security file (find the line _crypto.policy=limited_ and set it to _unlimited_).
+If you're using the official openHAB docker image you may also enable Java's strong cryptography by specifying an environment variable _CRYPTO_POLICY="unlimited"_.
 
 ## Discovery
 
@@ -50,27 +50,27 @@ None
 
 ### First generation devices (PIKO)
 
--   acPower
--   totalEnergy
--   dayEnergy
--   status
--   str1Voltage
--   str1Current
--   str2Voltage
--   str2Current
--   l1Voltage
--   l1Power
--   l2Voltage
--   l2Power
--   l3Voltage
--   l3Power
+- acPower
+- totalEnergy
+- dayEnergy
+- status
+- str1Voltage
+- str1Current
+- str2Voltage
+- str2Current
+- l1Voltage
+- l1Power
+- l2Voltage
+- l2Power
+- l3Voltage
+- l3Power
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
 | Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
-|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|    
-| device-local-grid-output-power           | Number:Power             | Current output power to the grid                                                 |     R      |              
-| statistic-yield-day-second-gen           | Number:Energy            | Total produced power today                                                       |     R      |                
+|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|
+| device-local-grid-output-power           | Number:Power             | Current output power to the grid                                                 |     R      |
+| statistic-yield-day-second-gen           | Number:Energy            | Total produced power today                                                       |     R      |
 | statistic-yield-total-second-gen         | Number:Energy            | Total produced power                                                             |     R      |
 | device-local-operating-status            | Number:Dimensionless     | Current operating status, 0 = Standby, 3 = WO-IDLE                               |     R      |
 | device-local-grid-voltage-l1             | Number:ElectricPotential | Current output voltage to the grid, L1                                           |     R      |
@@ -109,10 +109,10 @@ None
 | statistic-operating-time-total           | Number:Time              | Total operating time                                                             |     R      |
 | device-local-current                     | Number:ElectricCurrent   | Current                                                                          |     R      |
 | device-local-current-dir                 | Number:Dimensionless     | Current direction of loading/unloading the battery                               |     R      |
-| device-local-charge-cycles               | Number:Dimensionless     | Total number of charge cycles                                                    |     R      |       
+| device-local-charge-cycles               | Number:Dimensionless     | Total number of charge cycles                                                    |     R      |
 | device-local-battery-temperature         | Number:Temperature       | Battery current temperature                                                      |     R      |
 | device-local-loginterval                 | Number:Time              | Value for loginterval                                                            |     R      |
-| device-local-s0-inpulse-cnt              | Number:Dimensionless     | S0-pulse counter                                                                 |     R      | 
+| device-local-s0-inpulse-cnt              | Number:Dimensionless     | S0-pulse counter                                                                 |     R      |
 | statistic-own-cons-rate-total            | Number:Dimensionless     | Total own comsumption rate                                                       |     R      |
 | statistic-autonomy-degree-total          | Number:Dimensionless     | Total autonomy degree                                                            |     R      |
 | device-local-battery-voltage             | Number:ElectricPotential | Battery current voltage                                                          |     R      |
@@ -126,16 +126,15 @@ None
 The following Channels are writeable
 
 | Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
-|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|    
+|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|
 | device-local-battery-usage-consumption-set| String                  | Battery usage consumption level for power-consumption from battery, value = 100 (W)                                                                                                                                                         |     W      |
-| device-local-battery-usage-strategy-set  | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |             
+| device-local-battery-usage-strategy-set  | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |
 | device-local-smart-battery-control-set   | Switch                   | Smart battery control, Value = OFF / ON                                          |     W      |
 | device-local-battery-charge-time-from-set| String                   | Battery charge time from, Value = 00:00                                          |     W      |
 | device-local-battery-charge-time-to-set  | String                   | Battery charge time to, Value = 23:59                                            |     W      |
 | device-local-max-depth-of-discharge-set  | String                   | Max depth of discharge (SoC), Value = 10                                         |     W      |
 | device-local-shadow-management-set       | String                   | Shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2               |     W      |
 | device-local-external-module-control-set | String                   | External module control, Value = 0 = Not Activated, Value = 1 = Activated                                        |     W      |
-
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -218,14 +217,13 @@ The following Channels are writeable
 
 demo.things
 
-```
+```java
 Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 ```
 
 If the thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
-
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
@@ -237,19 +235,15 @@ Second generation inverters require 4 mandatory parameters and 1 optional (hasBa
 | username                 | Username for your inverter                             | Text    | ---     | ---           | myUsername    |
 | password                 | Password for your inverter                             | Text    | ---     | ---           | myPassword    |
 | refreshInterval          | Pollingintervall of your inverter                      | Integer | Seconds | 60            | 60            |
-| hasBattery               | Type of PIKO 10-20 inverter, with or without battery   | boolean | ---     | --            | false/true    |   
+| hasBattery               | Type of PIKO 10-20 inverter, with or without battery   | boolean | ---     | --            | false/true    |
 
 demo.things
 
-```
-
+```java
 Thing kostalinverter:piko1020:mypiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60, hasBattery=false]
-
 ```
 
 You can define which type of PIKO10-20 inverter you will connect to with parameter hasBattery.
-
-
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -268,7 +262,7 @@ It is recommended to use an interval of 30 seconds.
 
 Full sample of thing configuration:
 
-```
+```java
 Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ url = "192.168.1.2", userPassword="myPassword", refreshInternalInSeconds="30"]
 ```
 
@@ -278,20 +272,19 @@ Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ u
 
 demo.items:
 
-```
+```java
 Number:Power SolarPower "Solar power [%.1f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:acPower" }
 Number:Energy SolarEnergyDay "Solar day energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:dayEnergy" }
 Number:Energy SolarTotalEnergy "Solar total energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
 String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostalinverter:inverter:status" }
 ```
 
-
 ### Second generation devices (PIKO NEW GENERATION)
 
 demo.items:
 
-```
-Number:Power                GridOutputPower             "PV Output Power"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
+```java
+Number:Power                GridOutputPower             "Grid Output Power"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
 Number:Energy               YieldDaySecondGen           "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDaySecondGen" }
 Number:Energy               YieldTotalSecondGen         "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotalSecondgen" }  
 Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingStatus" }
@@ -353,8 +346,7 @@ Number:Dimensionless        ExternalModuleControl       "External Module Control
 
 demo.items:
 
-```
-
+```java
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_DC_POWER                         <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalDCPower"}
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_HOMECONSUMPTION_FROM_BATTERY     <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalHomeconsumptionFromBattery"}
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_HOMECONSUMPTION_FROM_GRID        <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalHomeconsumptionFromGrid"}
@@ -425,15 +417,12 @@ Number:Energy                MyPlentiCore100WithBattery_STATISTIC_YIELD_YEAR    
 
 ```
 
-
 ### Rules
 
 Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
-
-```
-
 Ex. Set Smart battery control OFF with cron trigger:
 
+```yaml
 triggers:
    id: "1"
     configuration:
@@ -447,5 +436,4 @@ actions:
       type: application/vnd.openhab.dsl.rule
       script: KOSTALPIKO1020_SmartBatteryControlSet.sendCommand("OFF")
     type: script.ScriptAction
-    
-
+```

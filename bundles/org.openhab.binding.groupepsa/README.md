@@ -19,7 +19,7 @@ If you need to add for multiple brands or multiple different users, add multiple
 You need to select a brand and enter the user name and password.
 The Polling Interval (in minutes) determines how often the API will be polled for new cars.
 The Client ID and Client Secret should not need to be updated.
-(However you can register your own app via https://developer.groupe-psa.com/inc/ and use this client information if you wish.)
+(However you can register your own app via <https://developer.groupe-psa.com/inc/> and use this client information if you wish.)
 
 ### parameters
 
@@ -29,8 +29,8 @@ The Client ID and Client Secret should not need to be updated.
 | userName        | None    | Yes      | The user name for the mypeugot/mycitroen/myds/myopel/myvauxhall website or app.                                                                         |
 | password        | None    | Yes      | The password for the given user.                                                                                                                        |
 | pollingInterval | 60      | No       | The Polling Interval (in minutes) determines how often the available vehicles are queried.                                                              |
-| clientId        |         | Yes      | The Client ID for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article)     |
-| clientSecret    |         | Yes      | The Client Secret for API access: can normally left at the default value. (see: https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article) |
+| clientId        |         | Yes      | The Client ID for API access: can normally left at the default value. (see: <https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article>)     |
+| clientSecret    |         | Yes      | The Client Secret for API access: can normally left at the default value. (see: <https://developer.groupe-psa.io/webapi/b2c/quickstart/connect/#article>) |
 
 ## Vehicle Configuration
 
@@ -70,7 +70,7 @@ The Polling Interval and Online Timeout can be adjusted.
 | emergency               | String                    | Emergency call status                            |
 | service                 | String                    | Service Type                                     |
 | preconditioning         | String                    | Air conditioning status                          |
-| preconditioningFailure  | String                    | Airr conditioning failure cause                  |
+| preconditioningFailure  | String                    | Air conditioning failure cause                   |
 | level                   | Number:Dimensionless      | Fuel level                                       |
 | autonomy                | Number:Length             | Remaining distance                               |
 | consumption             | Number:VolumetricFlowRate | Fuel consumption                                 |
@@ -85,13 +85,13 @@ The Polling Interval and Online Timeout can be adjusted.
 | chargingRemainingTime   | Number:Time               | Time remaining till charged                      |
 | chargingNextDelayedTime | Number:Time               | Time till the next charging starts               |
 
-Further documentation can be found at: https://developer.groupe-psa.io/webapi/b2c/api-reference/specification/#article
+Further documentation can be found at: <https://developer.groupe-psa.io/webapi/b2c/api-reference/specification/#article>
 
 ## Full Example
 
 ### Things file
 
-```
+```java
 Bridge groupepsa:bridge:opel "Auto Interface" [
     pollingInterval=60,
     userName="anonymous@anonymous.email",
@@ -111,7 +111,7 @@ Bridge groupepsa:bridge:opel "Auto Interface" [
 
 ### Items file
 
-```
+```java
 Group Auto
 
 Number:ElectricCurrent Auto_Aux_Current "Auxillliary Battery Current [%.1f %unit%]" (Auto) ["Measurement","Current"] {channel="groupepsa:vehicle:opel:zafira:battery#current"}

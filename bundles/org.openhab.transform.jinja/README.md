@@ -35,7 +35,7 @@ extracts the string `4.7`.
 #### Outgoing data
 The JINJA transformation can be used to publish simple JSON strings through, for example, the HTTP Binding's `commandTransformation` parameter.
 
-Say we have an String Item which holds the following value:
+Say we have a String Item which holds the following value:
 
 ```
 This is my string

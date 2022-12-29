@@ -77,7 +77,7 @@ public class BoschHttpClient extends HttpClient {
     /**
      * Returns the pairing URL for the Bosch SHC clients, using port 8443.
      * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
-     * 
+     *
      * @return URL for pairing
      */
     public String getPairingUrl() {
@@ -86,8 +86,8 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Returns a Bosch SHC URL for the endpoint, using port 8444.
-     * 
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     *
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return Bosch SHC URL for passed endpoint
      */
     public String getBoschShcUrl(String endpoint) {
@@ -96,8 +96,8 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
-     * 
-     * @param endpoint a endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
+     *
+     * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint
      */
     public String getBoschSmartHomeUrl(String endpoint) {
@@ -105,15 +105,41 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns a device & service URL.
+     * Returns a URL to get or put a service state.
+     * <p>
+     * Example:
+     *
+     * <pre>
+     * https://localhost:8444/smarthome/devices/hdm:ZigBee:000d6f0016d1cdae/services/AirQualityLevel/state
+     * </pre>
+     *
      * see https://apidocs.bosch-smarthome.com/local/index.html
-     * 
+     *
      * @param serviceName the name of the service
      * @param deviceId the device identifier
-     * @return SmartHome URL for passed endpoint
+     * @return a URL to get or put a service state
+     */
+    public String getServiceStateUrl(String serviceName, String deviceId) {
+        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+    }
+
+    /**
+     * Returns a URL to get general information about a service.
+     * <p>
+     * Example:
+     *
+     * <pre>
+     * https://localhost:8444/smarthome/devices/hdm:ZigBee:000d6f0016d1cdae/services/BatteryLevel
+     * </pre>
+     *
+     * In some cases this URL has to be used to get the service state, for example for battery levels.
+     *
+     * @param serviceName the name of the service
+     * @param deviceId the device identifier
+     * @return a URL to retrieve general service information
      */
     public String getServiceUrl(String serviceName, String deviceId) {
-        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+        return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s", deviceId, serviceName));
     }
 
     /**
@@ -177,7 +203,7 @@ public class BoschHttpClient extends HttpClient {
     /**
      * Pairs this client with the Bosch SHC.
      * Press pairing button on the Bosch Smart Home Controller!
-     * 
+     *
      * @return true if pairing was successful, otherwise false
      * @throws InterruptedException in case of an interrupt
      */
@@ -228,7 +254,7 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Creates a HTTP request.
-     * 
+     *
      * @param url for the HTTP request
      * @param method for the HTTP request
      * @return created HTTP request instance
@@ -239,7 +265,7 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Creates a HTTP request.
-     * 
+     *
      * @param url for the HTTP request
      * @param method for the HTTP request
      * @param content for the HTTP request
@@ -265,7 +291,7 @@ public class BoschHttpClient extends HttpClient {
 
     /**
      * Sends a request and expects a response of the specified type.
-     * 
+     *
      * @param request Request to send
      * @param responseContentClass Type of expected response
      * @param contentValidator Checks if the parsed response is valid

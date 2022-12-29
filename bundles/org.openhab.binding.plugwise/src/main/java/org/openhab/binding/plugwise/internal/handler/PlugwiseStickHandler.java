@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
  * The {@link PlugwiseStickHandler} handles channel updates and commands for a Plugwise Stick device.
  * </p>
  * <p>
- * The Stick is an USB ZigBee controller that communicates with the Circle+. It is a {@link Bridge} to the devices on a
- * Plugwise ZigBee mesh network.
+ * The Stick is an USB Zigbee controller that communicates with the Circle+. It is a {@link Bridge} to the devices on a
+ * Plugwise Zigbee mesh network.
  * </p>
  *
  * @author Wouter Born, Karel Goderis - Initial contribution

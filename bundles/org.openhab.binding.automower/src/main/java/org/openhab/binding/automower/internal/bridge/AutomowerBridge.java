@@ -13,7 +13,7 @@
 package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +55,7 @@ public class AutomowerBridge {
     private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
         try {
             AccessTokenResponse result = authService.getAccessTokenResponse();
-            if (result == null || result.isExpired(LocalDateTime.now(), 120)) {
+            if (result == null || result.isExpired(Instant.now(), 120)) {
                 result = authService.getAccessTokenByClientCredentials(null);
             }
             return result;

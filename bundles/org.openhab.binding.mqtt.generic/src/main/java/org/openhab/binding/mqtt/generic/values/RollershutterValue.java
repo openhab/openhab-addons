@@ -24,7 +24,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
 
 /**
- * Implements an rollershutter value.
+ * Implements a rollershutter value.
  * <p>
  * The stop, up and down strings have multiple purposes.
  * For one if those strings are received via MQTT they are recognised as corresponding commands

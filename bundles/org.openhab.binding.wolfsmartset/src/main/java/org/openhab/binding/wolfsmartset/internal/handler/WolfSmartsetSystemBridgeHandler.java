@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WolfSmartsetSystemBridgeHandler} is the handler for an WolfSmartset system.
+ * The {@link WolfSmartsetSystemBridgeHandler} is the handler for a WolfSmartset system.
  *
  * @author Bo Biene - Initial contribution
  */

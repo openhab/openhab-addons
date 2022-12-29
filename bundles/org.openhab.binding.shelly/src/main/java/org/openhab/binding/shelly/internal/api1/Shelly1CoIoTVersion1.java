@@ -152,8 +152,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                                 toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
                         break;
                     case "pf":
-                        updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR,
-                                toQuantityType(getDecimal(s.value), Units.PERCENT));
+                        updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
                         break;
                     case "position":
                         // work around: Roller reports 101% instead max 100

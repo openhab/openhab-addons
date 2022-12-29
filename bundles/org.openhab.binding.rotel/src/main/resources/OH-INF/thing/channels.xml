@@ -278,4 +278,12 @@
 		<label>Other Command</label>
 		<description>Choose the command to send to the device</description>
 	</channel-type>
+
+	<channel-type id="radioPreset">
+		<item-type>Number</item-type>
+		<label>Radio Preset</label>
+		<description>Select a radio preset</description>
+		<state pattern="%d" readOnly="false" min="1" max="30"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 </thing:thing-descriptions>

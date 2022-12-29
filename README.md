@@ -125,7 +125,7 @@ In some cases the command does not work, and requires the full plug-in name.
 In that case use:
 
 ```shell
-mvn org.openhab.core.tools:i18n-maven-plugin:3.3.0:generate-default-translations
+mvn org.openhab.core.tools:i18n-maven-plugin:3.4.0:generate-default-translations
 ```
 
 

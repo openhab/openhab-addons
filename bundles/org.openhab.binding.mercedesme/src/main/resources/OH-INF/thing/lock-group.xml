@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="lock-values">
+		<label>Lock Status</label>
+		<description>Vehicle Lock Status</description>
+		<channels>
+			<channel id="doors" typeId="doors-lock-channel"/>
+			<channel id="deck-lid" typeId="deck-lid-lock-channel"/>
+			<channel id="flap" typeId="flap-lock-channel"/>
+			<channel id="last-update" typeId="last-lock-update-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

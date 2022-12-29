@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Command used to disable the Clean Filter Indicator notification
@@ -29,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DisableCleanFilterIndicatorCommand extends BRC1HCommand {
-
-    private final Logger logger = LoggerFactory.getLogger(DisableCleanFilterIndicatorCommand.class);
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)

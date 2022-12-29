@@ -15,7 +15,7 @@ package org.openhab.binding.hydrawise.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when command responses return a error message
+ * Thrown when command responses return an error message
  *
  * @author Dan Cunningham - Initial contribution
  */

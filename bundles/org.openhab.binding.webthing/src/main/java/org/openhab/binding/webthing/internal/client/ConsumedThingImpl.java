@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 
 /**
  * The implementation of the client-side Webthing representation. This is based on HTTP. Bindings to alternative
- * application protocols such as CoAP may be defined in the future (which may be implemented by a another class)
+ * application protocols such as CoAP may be defined in the future (which may be implemented by another class)
  *
  * @author Gregor Roth - Initial contribution
  */

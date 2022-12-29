@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBl
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses inverter modbus data into an SystemB Information lock
+ * Parses inverter modbus data into a SystemB Information lock
  *
  * @author Paul Frank - Initial contribution
  *

@@ -18,7 +18,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 /**
  * Class to implement the BlueGiga command <b>getStatus</b>.
  * <p>
- * This command returns the status of the given connection. Status is returned in a event.
+ * This command returns the status of the given connection. Status is returned in an event.
  * <p>
  * This class provides methods for processing BlueGiga API commands.
  * <p>

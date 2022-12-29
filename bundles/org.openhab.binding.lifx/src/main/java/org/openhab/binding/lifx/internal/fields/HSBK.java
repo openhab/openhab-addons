@@ -126,10 +126,7 @@ public class HSBK {
         if (brightness != other.brightness) {
             return false;
         }
-        if (kelvin != other.kelvin) {
-            return false;
-        }
-        return true;
+        return kelvin == other.kelvin;
     }
 
     @Override

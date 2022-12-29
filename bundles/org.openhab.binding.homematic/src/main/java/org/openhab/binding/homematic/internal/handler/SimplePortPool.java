@@ -27,7 +27,7 @@ public class SimplePortPool {
     private List<PortInfo> availablePorts = new ArrayList<>();
 
     /**
-     * Adds the specified port to the pool an mark it as in use.
+     * Adds the specified port to the pool and mark it as in use.
      */
     public void setInUse(int port) {
         PortInfo portInfo = new PortInfo();

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import de.kaizencode.tchaikovsky.exception.SpeakerException;
 
 /**
- * The {@link AllPlayAudioSink} make AllPlay speakers available as a {@link AudioSink}.
+ * The {@link AllPlayAudioSink} make AllPlay speakers available as an {@link AudioSink}.
  *
  * @author Dominic Lerbs - Initial contribution
  */

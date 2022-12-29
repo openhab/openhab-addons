@@ -14,7 +14,7 @@ package org.openhab.binding.bluetooth.bluez.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
@@ -25,6 +25,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEventListener;
  * @author Benjamin Lafois - Initial Contribution
  * @author Connor Petty - Added additional test cases
  */
+@NonNullByDefault
 public class BlueZEventTest {
 
     @Test
@@ -83,7 +84,7 @@ public class BlueZEventTest {
         }
 
         @Override
-        public void dispatch(@NonNull BlueZEventListener listener) {
+        public void dispatch(BlueZEventListener listener) {
             listener.onDBusBlueZEvent(this);
         }
     }

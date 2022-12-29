@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link AvailableSources} is used to find out, which sources and functions are available
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+
+@NonNullByDefault
 public interface AvailableSources {
 
     public boolean isBluetoothAvailable();

@@ -38,30 +38,24 @@
 		<channels>
 			<channel typeId="currentTemperature" id="currentTemperature"></channel>
 			<channel typeId="humidity" id="humidity"></channel>
-
 			<channel typeId="heatingPower" id="heatingPower"></channel>
-
-			<channel typeId="hvacMode" id="hvacMode"></channel>
-			<channel typeId="targetTemperature" id="targetTemperature"></channel>
+			<channel typeId="acPower" id="acPower"></channel>
 			<channel typeId="fanspeed" id="fanspeed"></channel>
-			<channel typeId="swing" id="swing"></channel>
-			<channel typeId="light" id="light"></channel>
 			<channel typeId="fanLevel" id="fanLevel"></channel>
+			<channel typeId="swing" id="swing"></channel>
 			<channel typeId="horizontalSwing" id="horizontalSwing"></channel>
 			<channel typeId="verticalSwing" id="verticalSwing"></channel>
-
+			<channel typeId="light" id="light"></channel>
+			<channel typeId="hvacMode" id="hvacMode"></channel>
+			<channel typeId="targetTemperature" id="targetTemperature"></channel>
+			<channel typeId="operationMode" id="operationMode"></channel>
 			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
 			<channel typeId="timerDuration" id="timerDuration"></channel>
-
-			<channel typeId="operationMode" id="operationMode"></channel>
-
+			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
 			</channel>
-
-			<channel typeId="acPower" id="acPower"></channel>
-			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
 		</channels>
 
 		<properties>
@@ -152,6 +146,7 @@
 		<item-type>Number</item-type>
 		<label>Heating Power</label>
 		<description>Current heating power</description>
+		<category>Fire</category>
 		<state readOnly="true" pattern="%.0f %%"></state>
 	</channel-type>
 
@@ -183,6 +178,7 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>AC fan speed (only if supported by AC)</description>
+		<category>Fan</category>
 		<state readOnly="false">
 			<options>
 				<option value="LOW">Low</option>
@@ -197,18 +193,21 @@
 		<item-type>Switch</item-type>
 		<label>Swing</label>
 		<description>State of AC swing (only if supported by AC)</description>
+		<category>Flow</category>
 	</channel-type>
 
 	<channel-type id="light">
 		<item-type>Switch</item-type>
 		<label>Light</label>
 		<description>State of control panel light (only if supported by AC)</description>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="fanLevel">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>AC fan level (only if supported by AC)</description>
+		<category>Fan</category>
 		<state readOnly="false">
 			<options>
 				<option value="SILENT">SILENT</option>
@@ -226,6 +225,7 @@
 		<item-type>String</item-type>
 		<label>Horizontal Swing</label>
 		<description>State of AC horizontal swing (only if supported by AC)</description>
+		<category>Flow</category>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -244,6 +244,7 @@
 		<item-type>String</item-type>
 		<label>Vertical Swing</label>
 		<description>State of AC vertical swing (only if supported by AC)</description>
+		<category>Flow</category>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -276,6 +277,7 @@
 		<item-type>Number</item-type>
 		<label>Timer Duration</label>
 		<description>Total duration of a timer</description>
+		<category>Time</category>
 		<state min="0" step="1" pattern="%d min" readOnly="false"></state>
 	</channel-type>
 
@@ -283,6 +285,7 @@
 		<item-type>DateTime</item-type>
 		<label>Overlay End Time</label>
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -294,8 +297,9 @@
 
 	<channel-type id="acPower">
 		<item-type>Switch</item-type>
-		<label>AirCon Power State</label>
-		<description>Indicates if the air-conditioning is Off or On</description>
+		<label>Air-conditioning Power</label>
+		<description>Current power state of the air-conditioning</description>
+		<category>Climate</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -303,7 +307,7 @@
 		<item-type>Switch</item-type>
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
-		<category>window</category>
+		<category>Window</category>
 		<state readOnly="true"></state>
 	</channel-type>
 

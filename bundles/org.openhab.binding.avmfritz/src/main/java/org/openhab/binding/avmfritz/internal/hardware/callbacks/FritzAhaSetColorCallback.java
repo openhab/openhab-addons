@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FritzAhaSetColorCallback extends FritzAhaReauthCallback {
 
+    private static final String WEBSERVICE_SET_COLOR_COMMAND = "switchcmd=setcolor";
+    private static final String WEBSERVICE_SET_UNMAPPED_COLOR_COMMAND = "switchcmd=setunmappedcolor";
+
     private final Logger logger = LoggerFactory.getLogger(FritzAhaSetColorCallback.class);
 
     private final String ain;
@@ -41,8 +44,25 @@ public class FritzAhaSetColorCallback extends FritzAhaReauthCallback {
      * @param duration Duration of the change in 100ms. 0 immediately.
      */
     public FritzAhaSetColorCallback(FritzAhaWebInterface webIface, String ain, int hue, int saturation, int duration) {
+        this(webIface, ain, hue, saturation, duration, true);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param webIface Interface to FRITZ!Box
+     * @param ain AIN of the device that should be switched
+     * @param hue New hue
+     * @param saturation New saturation
+     * @param duration Duration of the change in 100ms. 0 immediately.
+     * @param mapped Use mapped or unmapped color command
+     */
+    public FritzAhaSetColorCallback(FritzAhaWebInterface webIface, String ain, int hue, int saturation, int duration,
+            boolean mapped) {
         super(WEBSERVICE_PATH,
-                "switchcmd=setcolor&ain=" + ain + "&hue=" + hue + "&saturation=" + saturation + "&duration=" + duration,
+                mapped ? WEBSERVICE_SET_COLOR_COMMAND
+                        : WEBSERVICE_SET_UNMAPPED_COLOR_COMMAND + "&ain=" + ain + "&hue=" + hue + "&saturation="
+                                + saturation + "&duration=" + duration,
                 webIface, GET, 1);
         this.ain = ain;
     }

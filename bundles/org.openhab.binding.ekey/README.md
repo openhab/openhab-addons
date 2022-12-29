@@ -41,13 +41,13 @@ The binding uses the following configuration parameters.
 
 example.things
 
-```
+```java
 Thing ekey:cvlan:de3b8db06e "Ekey Udp Converter" @ "Control Panel" [ ipAddress="xxx.xxx.xxx.xxx", port="56000", protocol="RARE", delimiter="_" ]
 ```
 
 rare.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
@@ -58,7 +58,7 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 
 multi.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 String FsName "Name of Scanner [%s]                                            { channel="ekey:cvlan:de3b8db06e:fsName" }
@@ -72,7 +72,7 @@ Number UserStatus "Last user that accessed the house was [MAP(ekey_names.map):%d
 
 home.items
 
-```
+```java
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerId" }
 Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
@@ -82,7 +82,7 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 
 transform/ekey_finger.map [This is just an example, as there is no strict rule what finger belongs to what number]
 
-```javascript
+```text
 0=leftlittle
 1=leftring
 2=leftmiddle
@@ -98,7 +98,7 @@ transform/ekey_finger.map [This is just an example, as there is no strict rule w
 
 transform/ekey_names.map [NO spaces allowed]
 
-```javascript
+```text
 -1=Unspecified
 1=JohnDoe
 2=JaneDoe
@@ -106,14 +106,14 @@ transform/ekey_names.map [NO spaces allowed]
 
 transform/ekey_terminal.map
 
-```javascript
+```text
 80156839130911=Front
 80156839130914=Back
 ```
 
 transform/ekey_multi_action.map
 
-```javascript
+```text
 0=granted
 -1=rejected
 1=timeoutA
@@ -126,10 +126,7 @@ transform/ekey_multi_action.map
 
 transform/ekey_rare_action.map
 
-```javascript
+```text
 136=granted
 137=rejected
 ```
-
-
-

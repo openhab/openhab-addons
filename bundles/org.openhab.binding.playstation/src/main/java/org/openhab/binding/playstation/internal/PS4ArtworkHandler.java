@@ -72,8 +72,8 @@ public class PS4ArtworkHandler {
     }
 
     /**
-     * Builds a artwork request string for the specified TitleId, also takes into account if the language should be from
-     * the specified locale or just "en".
+     * Builds an artwork request string for the specified TitleId, also takes into account if the language should be
+     * from the specified locale or just "en".
      *
      * @param locale The country and language to use for the store look up.
      * @param titleId The Title ID of the Application/game.

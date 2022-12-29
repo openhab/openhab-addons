@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.neeo.internal.NeeoUtil;
 
 /**
- * The model representing an NEEO notification (serialize/deserialize json use only).
+ * The model representing a NEEO notification (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial Contribution
  */

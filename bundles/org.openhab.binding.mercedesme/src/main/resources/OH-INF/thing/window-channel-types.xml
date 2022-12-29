@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="window-driver-front-channel">
+		<item-type>Number</item-type>
+		<label>Driver Window</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Intermediate</option>
+				<option value="1">Open</option>
+				<option value="2">Closed</option>
+				<option value="3">Airing</option>
+				<option value="4">Intermediate</option>
+				<option value="5">Running</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="window-driver-rear-channel">
+		<item-type>Number</item-type>
+		<label>Driver Window Rear</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Intermediate</option>
+				<option value="1">Open</option>
+				<option value="2">Closed</option>
+				<option value="3">Airing</option>
+				<option value="4">Intermediate</option>
+				<option value="5">Running</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="window-passenger-front-channel">
+		<item-type>Number</item-type>
+		<label>Passenger Window</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Intermediate</option>
+				<option value="1">Open</option>
+				<option value="2">Closed</option>
+				<option value="3">Airing</option>
+				<option value="4">Intermediate</option>
+				<option value="5">Running</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="window-passenger-rear-channel">
+		<item-type>Number</item-type>
+		<label>Passenger Window Rear</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Intermediate</option>
+				<option value="1">Open</option>
+				<option value="2">Closed</option>
+				<option value="3">Airing</option>
+				<option value="4">Intermediate</option>
+				<option value="5">Running</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="last-windows-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Window Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

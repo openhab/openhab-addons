@@ -13,14 +13,38 @@ This includes the name of the train, the final destination and the estimated tim
 
 Since every stop is represented by a KVV-provided id, this id has to be figured out via an API call.
 
-### Example Call for Stop 'Karlsruhe Volkswohnung'
+### Example Call for Stop 'Gottesauer Platz/BGV'
 
-```bash
-# Request
-curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
+```shell
+export QUERY="gottesauer"
+curl https://www.kvv.de/tunnelEfaDirect.php?action=XSLT_STOPFINDER_REQUEST&name_sf=${QUERY}&outputFormat=JSON&type_sf=any
+```
 
-# Response
-{"stops":[{"id":"de:8212:72","name":"Karlsruhe Volkswohnung","lat":49.00381654,"lon":8.40393026}]}
+The exact `id` may be extracted from the JSON-encoded reponse. E.g.
+
+```json
+"points": [
+{
+    "usage": "sf",
+    "type": "any",
+    "name": "Karlsruhe, Gottesauer Platz/BGV",
+    "stateless": "7000006",
+    "anyType": "stop",
+    "sort": "2",
+    "quality": "949",
+    "best": "0",
+    "object": "Gottesauer Platz/BGV",
+    "mainLoc": "Karlsruhe",
+    "modes": "1,4,5",
+    "ref": {
+        "id": "7000006",
+        "gid": "de:08212:6",
+        "omc": "8212000",
+        "placeID": "15",
+        "place": "Karlsruhe",
+        "coords": "937855.00000,5723868.00000"
+    }
+}
 ```
 
 ## Channel Configuration
@@ -40,8 +64,8 @@ Each set consists of the following three channels:
 ### Things
 
 ```things
-Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" [ maxTrains="3", updateInterval="10", apiKey="" ] {
-    stop gottesauerplatz        "Gottesauer Platz/BGV"      [ stopId="de:8212:6" ]
+Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" [ maxTrains="3", updateInterval="10" ] {
+    stop gottesauerplatz        "Gottesauer Platz/BGV"      [ stopId="7000006" ]
 }
 ```
 

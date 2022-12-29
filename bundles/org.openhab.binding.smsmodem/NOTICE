@@ -1,0 +1,24 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third-party Content
+This binding includes code (under the org.smslib package) from the SMSlib project
+The code have been slighly modified to use the serial library provided by the openHAB runtime (amongst small other fixes, and code compliance for openHAB)  
+
+smslib
+* license Apache 2.0 License
+* https://github.com/tdelenikas/smslib
+
+PduUtils Library
+* license Apache 2.0 License

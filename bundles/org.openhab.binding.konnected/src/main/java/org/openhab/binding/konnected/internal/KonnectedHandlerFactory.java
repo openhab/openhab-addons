@@ -65,7 +65,8 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
-        callbackUrl = (String) properties.get("callbackUrl");
+        callbackUrl = (String) properties.get(CALLBACK_URL);
+        logger.debug("Callback URL from OSGI service: {}", callbackUrl);
         try {
             this.servlet = registerWebHookServlet();
         } catch (KonnectedWebHookFail e) {
@@ -81,8 +82,8 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        KonnectedHandler thingHandler = new KonnectedHandler(thing, '/' + BINDING_ID, createCallbackUrl(),
-                createCallbackPort());
+
+        KonnectedHandler thingHandler = new KonnectedHandler(thing, getCallbackUrl());
         if (servlet != null) {
             logger.debug("Adding thinghandler for thing {} to webhook.", thing.getUID().getId());
             servlet.add(thingHandler);
@@ -119,22 +120,28 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = null;
     }
 
-    private String createCallbackUrl() {
-        if (callbackUrl != null) {
-            logger.debug("The callback ip address from the OSGI is:{}", callbackUrl);
-            return callbackUrl;
-        } else {
-            final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
-                logger.warn("No network interface could be found.");
-                return null;
+    private String getCallbackUrl() {
+        if (callbackUrl == null) {
+            String callbackIP = discoverCallbackIP();
+            String callbackPort = discoverCallbackPort();
+            if (callbackPort != null && callbackIP != null) {
+                callbackUrl = "http://" + discoverCallbackIP() + ":" + discoverCallbackPort() + '/' + BINDING_ID;
             }
-            logger.debug("The callback ip address obtained from the Network Address Service was:{}", ipAddress);
-            return ipAddress;
         }
+        return callbackUrl;
     }
 
-    private String createCallbackPort() {
+    private String discoverCallbackIP() {
+        final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        if (ipAddress == null) {
+            logger.warn("No network interface could be found.");
+            return null;
+        }
+        logger.debug("The callback ip address obtained from the Network Address Service was:{}", ipAddress);
+        return ipAddress;
+    }
+
+    private String discoverCallbackPort() {
         // we do not use SSL as it can cause certificate validation issues.
         final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
         if (port == -1) {

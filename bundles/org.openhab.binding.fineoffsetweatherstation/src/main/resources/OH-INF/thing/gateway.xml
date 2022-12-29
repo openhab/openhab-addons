@@ -108,7 +108,7 @@
 	</channel-type>
 
 	<channel-type id="rain-rate">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Rain Rate</label>
 		<category>Rain</category>
 		<tags>
@@ -143,7 +143,7 @@
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂</label>
-		<description>Air quality indicator</description>
+		<description>Air Quality Indicator</description>
 		<category>CarbonDioxide</category>
 		<tags>
 			<tag>Measurement</tag>

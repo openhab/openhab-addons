@@ -14,6 +14,8 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -31,11 +33,12 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bosesoundtouch")
 public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
 
-    private StorageService storageService;
-    private BoseStateDescriptionOptionProvider stateOptionProvider;
+    private @Nullable StorageService storageService;
+    private @Nullable BoseStateDescriptionOptionProvider stateOptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,12 +46,19 @@ public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
-        Storage<ContentItem> storage = storageService.getStorage(thing.getUID().toString(),
-                ContentItem.class.getClassLoader());
-        BoseSoundTouchHandler handler = new BoseSoundTouchHandler(thing, new PresetContainer(storage),
-                stateOptionProvider);
-        return handler;
+    protected @Nullable ThingHandler createHandler(Thing thing) {
+        StorageService localStorageService = storageService;
+        if (localStorageService != null) {
+            Storage<ContentItem> storage = localStorageService.getStorage(thing.getUID().toString(),
+                    ContentItem.class.getClassLoader());
+            BoseStateDescriptionOptionProvider localDescriptionOptionProvider = stateOptionProvider;
+            if (localDescriptionOptionProvider != null) {
+                BoseSoundTouchHandler handler = new BoseSoundTouchHandler(thing, new PresetContainer(storage),
+                        localDescriptionOptionProvider);
+                return handler;
+            }
+        }
+        return null;
     }
 
     @Reference
