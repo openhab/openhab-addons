@@ -59,11 +59,11 @@ public class AirbaseControlInfo {
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
-        int f_rate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> InfoParser.parseInt(value))
+        int fRate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(1);
-        boolean f_auto = "1".equals(responseMap.getOrDefault("f_auto", "0"));
-        boolean f_airside = "1".equals(responseMap.getOrDefault("f_airside", "0"));
-        info.fanSpeed = AirbaseFanSpeed.fromValue(f_rate, f_auto, f_airside);
+        boolean fAuto = "1".equals(responseMap.getOrDefault("f_auto", "0"));
+        boolean fAirside = "1".equals(responseMap.getOrDefault("f_airside", "0"));
+        info.fanSpeed = AirbaseFanSpeed.fromValue(fRate, fAuto, fAirside);
 
         // determine if device has combined direction (f_dir) or seperated directions (f_dir_ud/f_dir_lr)
         if (response.contains("f_dir=")) {
@@ -71,8 +71,8 @@ public class AirbaseControlInfo {
                     .flatMap(value -> InfoParser.parseInt(value)).map(value -> AirbaseFanMovement.fromValue(value))
                     .orElse(AirbaseFanMovement.STOPPED);
         } else {
-            var ud = responseMap.get("f_dir_ud");
-            var lr = responseMap.get("f_dir_lr");
+            String ud = responseMap.get("f_dir_ud");
+            String lr = responseMap.get("f_dir_lr");
             if (ud != null && lr != null) {
                 int combinedValue = InfoParser.parseSpecial(ud, lr);
                 info.fanMovement = AirbaseFanMovement.fromValue(combinedValue);
