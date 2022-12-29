@@ -67,8 +67,7 @@ public class SoundTouch20Tests {
 
         soundTouchThing = ThingBuilder.create(BoseSoundTouchBindingConstants.BST_20_THING_TYPE_UID, thingUID)
                 .withConfiguration(config).withChannel(ChannelBuilder.create(volumeChannelUID, "Number").build())
-                .withChannel(ChannelBuilder.create(presetChannelUID, "Number").build())
-                .build();
+                .withChannel(ChannelBuilder.create(presetChannelUID, "Number").build()).build();
 
         PresetContainer container = new PresetContainer(storage);
         thingHandler = new BoseSoundTouchHandler(soundTouchThing, container, stateDescriptionProvider);
