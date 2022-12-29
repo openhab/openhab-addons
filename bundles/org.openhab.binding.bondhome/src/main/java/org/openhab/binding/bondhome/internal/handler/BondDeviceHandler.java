@@ -625,7 +625,7 @@ public class BondDeviceHandler extends BaseThingHandler {
             BondDeviceProperties devProperties = this.deviceProperties;
             if (devProperties != null) {
                 double maxSpeed = devProperties.maxSpeed;
-                value = (int) ((updateState.speed / maxSpeed) * 100);
+                value = (int) (((double) updateState.speed / maxSpeed) * 100);
                 logger.trace("Raw fan speed: {}, Percent: {}", updateState.speed, value);
             } else if (updateState.speed != 0 && this.getThing().getThingTypeUID().equals(THING_TYPE_BOND_FAN)) {
                 logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
