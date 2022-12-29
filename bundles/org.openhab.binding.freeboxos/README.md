@@ -67,7 +67,7 @@ The *player* thing requires the following configuration parameters:
 |------------------|-----------------|----------------------------------------------------------------------------|----------|---------|
 | MAC Address      | macAddress      | The MAC address of the player device.                                      | Yes      |         |
 | ID               | id              | Id of the player within Freebox Api                                        | Yes      | 1       |
-| Player port      | port            |                                                                            | No       | 24322   |            
+| Player port      | port            |                                                                            | No       | 24322   |
 | Password         | password        | AirPlay password                                                           | No       |         |
 | Remote Code      | remoteCode      | Code associated to remote control                                          | No       |         |
 | Accept all MP3   | acceptAllMp3    | Accept any bitrate for MP3 audio or only bitrates greater than 64 kbps     | No       | true    |
@@ -86,10 +86,10 @@ The *landline* thing requires the following configuration parameters:
 
 The *host* and *wifihost* things requires the following configuration parameters:
 
-| Parameter Label  | Parameter ID    | Description                                                                | Required | Default |
-|------------------|-----------------|----------------------------------------------------------------------------|----------|---------|
-| MAC Address      | macAddress      | The MAC address of the network host .                                      | Yes      |         |
-| Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state.     | No       | 30      |
+| Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
+|------------------|-----------------|------------------------------------------------------------------------|----------|---------|
+| MAC Address      | macAddress      | The MAC address of the network host .                                  | Yes      |         |
+| Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 30      |
 
 ### Repeater and Vm thing 
 
@@ -107,7 +107,7 @@ The *basic_shutter* thing requires the following configuration parameters:
 
 | Parameter Label  | Parameter ID    | Description                                                      | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------|----------|---------|
-| Node ID          | nodeId          | Id of the Home Node.                                             | Yes      |         |
+| ID               | id              | Id of the Home Node                                              | Yes      | 1       |
 | UP Slot ID       | upSlotId        | Id of the UP Slot.                                               | Yes      | 0       |
 | STOP Slot ID     | stopSlotId      | Id of the STOP Slot.                                             | Yes      | 1       |
 | DOWN Slot ID     | downSlotId      | Id of the DOWN Slot.                                             | Yes      | 2       |

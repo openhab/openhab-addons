@@ -24,8 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 
 /**
- * The {@link HomeManager} is the Java class used to handle api requests
- * related to home
+ * The {@link HomeManager} is the Java class used to handle api requests related to home
  *
  * @author ben12 - Initial contribution
  */

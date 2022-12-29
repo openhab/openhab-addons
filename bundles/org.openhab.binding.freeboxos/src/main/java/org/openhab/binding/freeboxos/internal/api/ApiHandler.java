@@ -52,11 +52,11 @@ public class ApiHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
-    private final FBDeserializer deserializer;
+    private final FreeboxDeserializer deserializer;
     private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
 
     @Activate
-    public ApiHandler(@Reference HttpClientFactory httpClientFactory, @Reference FBDeserializer deserializer,
+    public ApiHandler(@Reference HttpClientFactory httpClientFactory, @Reference FreeboxDeserializer deserializer,
             Map<String, Object> config) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.deserializer = deserializer;

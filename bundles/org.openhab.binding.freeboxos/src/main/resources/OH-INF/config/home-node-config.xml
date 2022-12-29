@@ -6,10 +6,16 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:freeboxos:basic_shutter">
-		<parameter name="nodeId" type="integer" required="true">
-			<label>Node ID</label>
-			<description>Id of the Home Node</description>
-		</parameter>
+        <parameter name="id" type="integer" required="true">
+            <label>ID</label>
+            <description>Id of the Home Node</description>
+            <default>1</default>
+        </parameter>
+        <parameter name="refreshInterval" type="integer" min="1" unit="s">
+            <label>Refresh Interval</label>
+            <description>The refresh interval in seconds which is used to poll the Node</description>
+            <default>30</default>
+        </parameter>
 		<parameter name="upSlotId" type="integer" required="true">
 			<label>UP Slot ID</label>
 			<description>Id of the UP Slot</description>
@@ -31,5 +37,43 @@
 			<default>3</default>
 		</parameter>
 	</config-description>
+	
+    <config-description uri="thing-type:freeboxos:shutter">
+        <parameter name="id" type="integer" required="true">
+            <label>ID</label>
+            <description>Id of the Home Node</description>
+            <default>1</default>
+        </parameter>
+        <parameter name="refreshInterval" type="integer" min="1" unit="s">
+            <label>Refresh Interval</label>
+            <description>The refresh interval in seconds which is used to poll the Node</description>
+            <default>30</default>
+        </parameter>
+        <parameter name="positionSlotId" type="integer" required="true">
+            <label>POSITION Slot ID</label>
+            <description>Id of the Position Slot</description>
+            <default>0</default>
+        </parameter>
+        <parameter name="stopSlotId" type="integer" required="true">
+            <label>STOP Slot ID</label>
+            <description>Id of the STOP Slot</description>
+            <default>1</default>
+        </parameter>
+        <parameter name="toggleSlotId" type="integer" required="true">
+            <label>TOGGLE Slot ID</label>
+            <description>Id of the TOGGLE Slot</description>
+            <default>2</default>
+        </parameter>
+        <parameter name="positionSignalId" type="integer" required="true">
+            <label>POSITION Signal ID</label>
+            <description>Id of the POSITION Signal</description>
+            <default>3</default>
+        </parameter>
+        <parameter name="stateSignalId" type="integer" required="true">
+            <label>STATE Signal ID</label>
+            <description>Id of the STATE Signal</description>
+            <default>4</default>
+        </parameter>
+    </config-description>
 
 </config-description:config-descriptions>
