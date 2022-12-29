@@ -27,7 +27,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
- * Base class for all various rest managers
+ * Base class for the various rest managers available through the API
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -38,7 +38,7 @@ public class RestManager {
     protected static final String SYSTEM_SUB_PATH = "system";
 
     private final UriBuilder uriBuilder;
-    protected FreeboxOsSession session;
+    protected final FreeboxOsSession session;
 
     public RestManager(FreeboxOsSession session, String... pathElements) {
         this.uriBuilder = assemblePath(session.getUriBuilder(), pathElements);
@@ -74,8 +74,8 @@ public class RestManager {
 
     protected <F, T extends Response<List<F>>> List<F> getList(Class<T> clazz, String... pathElements)
             throws FreeboxException {
-        // GetList may return null object because API does not return anything for empty lists
         List<F> result = session.execute(buildUri(pathElements), GET, clazz, null);
+        // GetList may return null object because API does not return anything for empty lists
         return result != null ? result : List.of();
     }
 

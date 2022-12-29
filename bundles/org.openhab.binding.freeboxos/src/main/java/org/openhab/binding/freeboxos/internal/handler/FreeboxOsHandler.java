@@ -14,10 +14,10 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FreeboxOsHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsHandler.class);
-
-    private @Nullable Future<?> openConnectionJob;
     private final FreeboxOsSession session;
+
+    private Optional<Future<?>> openConnectionJob = Optional.empty();
 
     public FreeboxOsHandler(Bridge thing, FreeboxOsSession session) {
         super(thing);
@@ -54,46 +54,52 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Freebox OS API handler for thing {}.", getThing().getUID());
-        Future<?> job = openConnectionJob;
-        if (job == null || job.isCancelled()) {
-            openConnectionJob = scheduler.submit(() -> {
-                try {
-                    FreeboxOsConfiguration config = getConfiguration();
+        freeConnectionJob();
 
+        openConnectionJob = Optional.of(scheduler.submit(() -> {
+            try {
+                FreeboxOsConfiguration config = getConfiguration();
+
+                if (config.appToken.isBlank()) {
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                             "Please accept pairing request directly on your freebox");
-
-                    String currentAppToken = session.initialize(config);
-
-                    if (!currentAppToken.equals(config.appToken)) {
-                        Configuration thingConfig = editConfiguration();
-                        thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, currentAppToken);
-                        updateConfiguration(thingConfig);
-                        logger.info(
-                                "App token updated in Configuration, please give needed permissions to openHAB app in your Freebox management console");
-                    }
-
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (FreeboxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                } else {
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
                 }
-            });
-        }
+
+                String currentAppToken = session.initialize(config);
+
+                if (!currentAppToken.equals(config.appToken)) {
+                    Configuration thingConfig = editConfiguration();
+                    thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, currentAppToken);
+                    updateConfiguration(thingConfig);
+                    logger.info(
+                            "App token updated in Configuration, please give needed permissions to openHAB app in your Freebox management console");
+                }
+
+                updateStatus(ThingStatus.ONLINE);
+            } catch (FreeboxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+        }));
     }
 
     public <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
         return session.getManager(clazz);
     }
 
+    private void freeConnectionJob() {
+        openConnectionJob.ifPresent(job -> job.cancel(true));
+        openConnectionJob = Optional.empty();
+    }
+
     @Override
     public void dispose() {
         logger.debug("Disposing Freebox OS API handler for thing {}", getThing().getUID());
-        Future<?> job = openConnectionJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-            openConnectionJob = null;
-        }
+
+        freeConnectionJob();
         session.closeSession();
+
         super.dispose();
     }
 

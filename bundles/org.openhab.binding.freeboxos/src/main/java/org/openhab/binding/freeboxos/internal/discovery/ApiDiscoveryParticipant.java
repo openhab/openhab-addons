@@ -31,19 +31,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ApiDiscoveryParticipant} is responsible for discovering
- * the various servers flavors of bridges thing using mDNS discovery service
+ * The {@link ApiDiscoveryParticipant} is responsible for discovering the various servers flavors of bridges thing using
+ * mDNS discovery service
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component // (service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.freeboxos")
+@Component
 @NonNullByDefault
 public class ApiDiscoveryParticipant implements MDNSDiscoveryParticipant {
+    private static final String DOMAIN_PROPERTY = "api_domain";
+    private static final String PORT_PROPERTY = "https_port";
+    private static final String HTTPS_PROPERTY = "https_available";
+
     private final Logger logger = LoggerFactory.getLogger(ApiDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return BRIDGE_TYPE_UID;
+        return BRIDGE_TYPE_UIDS;
     }
 
     @Override
@@ -58,17 +62,17 @@ public class ApiDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return thingUID != null
                 ? DiscoveryResultBuilder.create(thingUID).withLabel("Bridge Freebox OS")
                         .withRepresentationProperty(API_DOMAIN)
-                        .withProperty(HTTPS_AVAILABLE, "1".equals(service.getPropertyString(HTTPS_AVAILABLE)))
-                        .withProperty(HTTPS_PORT, service.getPropertyString(HTTPS_PORT))
-                        .withProperty(API_DOMAIN, service.getPropertyString(API_DOMAIN)).build()
+                        .withProperty(HTTPS_AVAILABLE, "1".equals(service.getPropertyString(HTTPS_PROPERTY)))
+                        .withProperty(HTTPS_PORT, service.getPropertyString(PORT_PROPERTY))
+                        .withProperty(API_DOMAIN, service.getPropertyString(DOMAIN_PROPERTY)).build()
                 : null;
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        String apiDomain = service.getPropertyString(API_DOMAIN);
-        if (apiDomain != null) {
-            String[] elements = apiDomain.split("\\.");
+        String domain = service.getPropertyString(DOMAIN_PROPERTY);
+        if (domain != null) {
+            String[] elements = domain.split("\\.");
             if (elements.length > 0) {
                 return new ThingUID(BRIDGE_TYPE_API, elements[0]);
             }

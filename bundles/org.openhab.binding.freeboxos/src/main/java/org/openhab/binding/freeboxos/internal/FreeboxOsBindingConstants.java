@@ -56,13 +56,13 @@ public class FreeboxOsBindingConstants {
     public static final String TIMEOUT = "timeout";
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Set.of(BRIDGE_TYPE_API);
+    public static final Set<ThingTypeUID> BRIDGE_TYPE_UIDS = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_LANDLINE, THING_TYPE_HOST,
             THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION,
             THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_HOME_BASIC_SHUTTER);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(BRIDGE_TYPE_UID.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
+            .concat(BRIDGE_TYPE_UIDS.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
 
     // Thing properties
     public static final String PHONE_TYPE = "Phone Type";
