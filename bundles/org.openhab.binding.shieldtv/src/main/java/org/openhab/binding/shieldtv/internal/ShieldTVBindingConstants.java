@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shieldtv.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -28,7 +30,7 @@ public class ShieldTVBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SHIELDTV = new ThingTypeUID(BINDING_ID, "shieldtv");
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SHIELDTV);
     // List of all Channel ids
     public static final String CHANNEL_KEYPRESS = "keypress";
     public static final String CHANNEL_PINCODE = "pincode";

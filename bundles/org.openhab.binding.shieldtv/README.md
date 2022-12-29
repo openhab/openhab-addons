@@ -10,7 +10,7 @@ This binding supports a single thing type:
 
 ## Discovery
 
-Discovery is not currently part of this binding but is on the roadmap.  This will be updated as updates are committed.
+ShieldTVs should be added automatically to the inbox through the mDNS discovery process.  
 
 ## Binding Configuration
 
@@ -39,6 +39,7 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | app        | String | RW         | App Control                 |
+
 
 ```java
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
