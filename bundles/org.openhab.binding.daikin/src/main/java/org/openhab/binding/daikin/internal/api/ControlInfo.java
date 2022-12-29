@@ -63,7 +63,7 @@ public class ControlInfo {
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);
-        // determine if device has combined direction (f_dir) or seperated directions (f_dir_ud/f_dir_lr)
+        // determine if device has combined direction (f_dir) or separated directions (f_dir_ud/f_dir_lr)
         if (response.contains("f_dir=")) {
             info.fanMovement = Optional.ofNullable(responseMap.get("f_dir"))
                     .flatMap(value -> InfoParser.parseInt(value)).map(value -> FanMovement.fromValue(value))
@@ -72,8 +72,7 @@ public class ControlInfo {
             String ud = responseMap.get("f_dir_ud");
             String lr = responseMap.get("f_dir_lr");
             if (ud != null && lr != null) {
-                int combinedValue = parseFanMovement(ud, lr);
-                info.fanMovement = FanMovement.fromValue(combinedValue);
+                info.fanMovement = parseFanMovement(ud, lr);
             } else {
                 info.fanMovement = FanMovement.UNKNOWN;
             }
@@ -93,9 +92,10 @@ public class ControlInfo {
         params.put("f_rate", fanSpeed.getValue());
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
         params.put("f_dir_lr",
-                fanMovement.getValue() == FanMovement.VERTICAL.getValue() || fanMovement.getValue() == 3 ? "S" : "0");
-        params.put("f_dir_ud", fanMovement.getValue() == FanMovement.HORIZONTAL.getValue()
-                || fanMovement.getValue() == FanMovement.VERTICAL_AND_HORIZONTAL.getValue() ? "S" : "0");
+                fanMovement == FanMovement.VERTICAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S" : "0");
+        params.put("f_dir_ud",
+                fanMovement == FanMovement.HORIZONTAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S"
+                        : "0");
         params.put("stemp", temp.orElse(20.0).toString());
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 
@@ -113,13 +113,13 @@ public class ControlInfo {
      * 
      * @param lr left/ right value S or 0
      * 
-     * @return combined int value based on {@link FanMovement} enum
+     * @return combined value based on {@link FanMovement} enum
      */
-    public static int parseFanMovement(String ud, String lr) {
+    public static FanMovement parseFanMovement(String ud, String lr) {
         if ("S".equals(ud)) {
-            return "S".equals(lr) ? FanMovement.VERTICAL_AND_HORIZONTAL.getValue() : FanMovement.VERTICAL.getValue();
+            return "S".equals(lr) ? FanMovement.VERTICAL_AND_HORIZONTAL : FanMovement.VERTICAL;
         } else {
-            return "S".equals(lr) ? FanMovement.HORIZONTAL.getValue() : FanMovement.STOPPED.getValue();
+            return "S".equals(lr) ? FanMovement.HORIZONTAL : FanMovement.STOPPED;
         }
     }
 }

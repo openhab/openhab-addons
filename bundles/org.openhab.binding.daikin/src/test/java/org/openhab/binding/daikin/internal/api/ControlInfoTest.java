@@ -36,7 +36,7 @@ public class ControlInfoTest {
     }
 
     @Test
-    public void seperateUpAndDown() {
+    public void separateUpAndDown() {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=S0,ndfd4=00,ndfd6=00,ndfdh=00";
 
@@ -48,7 +48,7 @@ public class ControlInfoTest {
     }
 
     @Test
-    public void seperateLeftAndRightTest() {
+    public void separateLeftAndRightTest() {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=0S,ndfd4=00,ndfd6=00,ndfdh=00";
 
@@ -60,7 +60,7 @@ public class ControlInfoTest {
     }
 
     @Test
-    public void seperateStoppedTest() {
+    public void separateStoppedTest() {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=00,ndfd4=00,ndfd6=00,ndfdh=00";
 
@@ -72,7 +72,7 @@ public class ControlInfoTest {
     }
 
     @Test
-    public void seperateThreeDimensionalTest() {
+    public void separateThreeDimensionalTest() {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=SS,ndfd4=00,ndfd6=00,ndfdh=00";
 
