@@ -14,6 +14,7 @@ package org.openhab.binding.chromecast.internal.discovery;
 
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 
+import java.net.Inet4Address;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +90,11 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         if (isAutoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
             if (uid != null) {
-                String host = service.getHostAddresses()[0];
+                Inet4Address[] addresses = service.getInet4Addresses();
+                if (addresses.length == 0) {
+                    return null;
+                }
+                String host = addresses[0].getHostAddress();
                 int port = service.getPort();
                 logger.debug("Chromecast Found: {} {}", host, port);
                 String id = service.getPropertyString(PROPERTY_DEVICE_ID);
