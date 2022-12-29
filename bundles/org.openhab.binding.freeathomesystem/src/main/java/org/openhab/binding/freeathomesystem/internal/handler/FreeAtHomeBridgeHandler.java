@@ -546,6 +546,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
                 websocketClient.connect(socket, uri, request);
+                websocketClient.setMaxIdleTimeout(3000000);
 
                 logger.debug("Websocket connection to SysAP is OK");
 
@@ -754,17 +755,19 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             reconnectDelay.set(0);
 
             try {
-                // while (!isInterrupted()) {
-                if (httpConnectionOK.get()) {
-                    if (connectSession()) {
-                        socket.awaitEndCommunication();
+                while (!isInterrupted()) {
+                    if (httpConnectionOK.get()) {
+                        if (connectSession()) {
+                            socket.awaitEndCommunication();
+
+                            logger.debug("Socket connection closed");
+                        }
+                    } else {
+                        TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     }
-                } else {
-                    TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                 }
-                // }
             } catch (InterruptedException e) {
-                // logger.debug("Thread interrupted [{}]", e.getMessage());
+                logger.debug("Thread interrupted [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Problem in websocket connection");
             }
