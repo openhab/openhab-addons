@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.shieldtv")
 public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(ShieldTVDiscoveryParticipant.class);
