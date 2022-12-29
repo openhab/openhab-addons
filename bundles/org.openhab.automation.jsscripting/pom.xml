@@ -121,7 +121,6 @@
       <artifactId>js-scriptengine</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <!-- org.graalvm.js/js-launcher is GraalVM's JavaScript command line interpreter and not required here -->
     <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
@@ -138,7 +137,6 @@
       <version>${graal.version}</version>
     </dependency>
     <!-- GraalJS changelog says that com.ibm.icu/icu4j is not required for GraalJS >= 22.0.0 as it moved to org.graalvm.truffle;
-      but GraalJS >= 22.2.0 requires it -->
-    <!-- org.ow2.asm is not required as compile dependency for GraalJS >= 20.3.0 -->
+      but GraalJS >= 22.2.0 requires it, so we'll need to add it when we upgrade -->
   </dependencies>
 </project>
