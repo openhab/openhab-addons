@@ -15,7 +15,8 @@ package org.openhab.binding.shieldtv.internal.discovery;
 import static org.openhab.binding.shieldtv.internal.ShieldTVBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -23,6 +24,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -36,15 +38,15 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.shieldtv")
+@Component
 public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(ShieldTVDiscoveryParticipant.class);
     private static final String SHIELDTV_MDNS_SERVICE_TYPE = "_nv_shield_remote._tcp.local.";
 
     @Override
-    public Set<@Nullable ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_SHIELDTV);
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+        return SUPPORTED_THING_TYPES;
     }
 
     @Override
@@ -72,7 +74,14 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
         logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
 
-        return null;
+        final ThingUID uid = getThingUID(service);
+        final String id = uid.getId();
+        final String label = service.getName() + " (" + id + ")";
+        final Map<String, Object> properties = new HashMap<>(2);
+
+        properties.put(IPADDRESS, ipAddresses);
+
+        return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
     }
 
     @Nullable
