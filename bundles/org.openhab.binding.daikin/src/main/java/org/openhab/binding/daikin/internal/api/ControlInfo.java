@@ -46,6 +46,7 @@ public class ControlInfo {
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
     public Optional<Integer> targetHumidity = Optional.empty();
     public AdvancedMode advancedMode = AdvancedMode.UNKNOWN;
+    public boolean separatedDirectionParams = false;
 
     private ControlInfo() {
     }
@@ -69,6 +70,7 @@ public class ControlInfo {
                     .flatMap(value -> InfoParser.parseInt(value)).map(value -> FanMovement.fromValue(value))
                     .orElse(FanMovement.STOPPED);
         } else {
+            info.separatedDirectionParams = true;
             String ud = responseMap.get("f_dir_ud");
             String lr = responseMap.get("f_dir_lr");
             if (ud != null && lr != null) {
@@ -90,12 +92,16 @@ public class ControlInfo {
         params.put("pow", power ? "1" : "0");
         params.put("mode", Integer.toString(mode.getValue()));
         params.put("f_rate", fanSpeed.getValue());
-        params.put("f_dir", Integer.toString(fanMovement.getValue()));
-        params.put("f_dir_lr",
-                fanMovement == FanMovement.VERTICAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S" : "0");
-        params.put("f_dir_ud",
-                fanMovement == FanMovement.HORIZONTAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S"
-                        : "0");
+        if (separatedDirectionParams) {
+            params.put("f_dir_lr",
+                    fanMovement == FanMovement.VERTICAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S"
+                            : "0");
+            params.put("f_dir_ud",
+                    fanMovement == FanMovement.HORIZONTAL || fanMovement == FanMovement.VERTICAL_AND_HORIZONTAL ? "S"
+                            : "0");
+        } else {
+            params.put("f_dir", Integer.toString(fanMovement.getValue()));
+        }
         params.put("stemp", temp.orElse(20.0).toString());
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 
