@@ -282,14 +282,13 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             return localNetworkInterface;
         }
 
+        String interfaceName = ((settings.networkInterface != null) && (!settings.networkInterface.isEmpty()))
+                ? settings.networkInterface
+                : networkAddressService.getPrimaryIpv4HostAddress();
         try {
-            String interfaceName = ((settings.networkInterface != null) && (!settings.networkInterface.isEmpty()))
-                    ? settings.networkInterface
-                    : networkAddressService.getPrimaryIpv4HostAddress();
             return (networkInterface = Objects.requireNonNull(InetAddress.getByName(interfaceName)));
         } catch (UnknownHostException e) {
-            logger.warn("cannot resolve the IPv4 address / hostname {}.",
-                    networkAddressService.getPrimaryIpv4HostAddress());
+            logger.warn("cannot resolve the IPv4 address / hostname {}.", interfaceName);
             throw e;
         }
     }
