@@ -35,7 +35,7 @@ public class AirbaseModelInfo {
     public String ret = "";
     public int zonespresent;
     public int commonzone;
-    public int fRateSteps;
+    public int fRateSteps; // fan rate steps
     public EnumSet<AirbaseFeature> features;
 
     private AirbaseModelInfo() {

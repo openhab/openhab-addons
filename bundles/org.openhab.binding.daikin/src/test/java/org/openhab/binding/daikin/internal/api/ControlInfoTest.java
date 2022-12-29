@@ -19,8 +19,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMovement;
+import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 
 /**
  * This class provides tests for deconz lights
@@ -30,7 +29,7 @@ import org.openhab.binding.daikin.internal.api.airbase.AirbaseEnums.AirbaseFanMo
  */
 
 @NonNullByDefault
-public class AirbaseControlInfoTest {
+public class ControlInfoTest {
 
     @BeforeEach
     public void initialize() {
@@ -42,10 +41,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=S0,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.VERTICAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.VERTICAL, Info.fanMovement);
     }
 
     @Test
@@ -54,10 +53,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=0S,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.HORIZONTAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.HORIZONTAL, Info.fanMovement);
     }
 
     @Test
@@ -66,10 +65,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=00,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.STOPPED, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.STOPPED, Info.fanMovement);
     }
 
     @Test
@@ -78,10 +77,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=SS,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.VERTICAL_AND_HORIZONTAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, Info.fanMovement);
     }
 
     @Test
@@ -90,10 +89,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=1,ndfd1=00,ndfd2=00,ndfd3=S0,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.VERTICAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.VERTICAL, Info.fanMovement);
     }
 
     @Test
@@ -102,10 +101,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=2,ndfd1=00,ndfd2=00,ndfd3=0S,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.HORIZONTAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.HORIZONTAL, Info.fanMovement);
     }
 
     @Test
@@ -114,10 +113,10 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=0,ndfd1=00,ndfd2=00,ndfd3=00,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.STOPPED, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.STOPPED, Info.fanMovement);
     }
 
     @Test
@@ -126,9 +125,9 @@ public class AirbaseControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=3,ndfd1=00,ndfd2=00,ndfd3=SS,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        AirbaseControlInfo airBaseInfo = AirbaseControlInfo.parse(incomingMessage);
+        ControlInfo Info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(AirbaseFanMovement.VERTICAL_AND_HORIZONTAL, airBaseInfo.fanMovement);
+        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, Info.fanMovement);
     }
 }

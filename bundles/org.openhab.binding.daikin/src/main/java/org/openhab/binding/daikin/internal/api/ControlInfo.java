@@ -63,8 +63,22 @@ public class ControlInfo {
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
                 .orElse(FanSpeed.AUTO);
-        info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> InfoParser.parseInt(value))
-                .map(value -> FanMovement.fromValue(value)).orElse(FanMovement.STOPPED);
+        // determine if device has combined direction (f_dir) or seperated directions (f_dir_ud/f_dir_lr)
+        if (response.contains("f_dir=")) {
+            info.fanMovement = Optional.ofNullable(responseMap.get("f_dir"))
+                    .flatMap(value -> InfoParser.parseInt(value)).map(value -> FanMovement.fromValue(value))
+                    .orElse(FanMovement.STOPPED);
+        } else {
+            String ud = responseMap.get("f_dir_ud");
+            String lr = responseMap.get("f_dir_lr");
+            if (ud != null && lr != null) {
+                int combinedValue = parseFanMovement(ud, lr);
+                info.fanMovement = FanMovement.fromValue(combinedValue);
+            } else {
+                info.fanMovement = FanMovement.UNKNOWN;
+            }
+        }
+
         info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
 
         info.advancedMode = Optional.ofNullable(responseMap.get("adv")).map(value -> AdvancedMode.fromValue(value))
@@ -78,6 +92,10 @@ public class ControlInfo {
         params.put("mode", Integer.toString(mode.getValue()));
         params.put("f_rate", fanSpeed.getValue());
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
+        params.put("f_dir_lr",
+                fanMovement.getValue() == FanMovement.VERTICAL.getValue() || fanMovement.getValue() == 3 ? "S" : "0");
+        params.put("f_dir_ud", fanMovement.getValue() == FanMovement.HORIZONTAL.getValue()
+                || fanMovement.getValue() == FanMovement.VERTICAL_AND_HORIZONTAL.getValue() ? "S" : "0");
         params.put("stemp", temp.orElse(20.0).toString());
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 
@@ -86,5 +104,22 @@ public class ControlInfo {
 
     public SpecialMode getSpecialMode() {
         return SpecialMode.fromAdvancedMode(advancedMode);
+    }
+
+    /*
+     * This method combines different direction parameters to one.
+     * 
+     * @param ud up/ down value S or 0
+     * 
+     * @param lr left/ right value S or 0
+     * 
+     * @return combined int value based on {@link FanMovement} enum
+     */
+    public static int parseFanMovement(String ud, String lr) {
+        if ("S".equals(ud)) {
+            return "S".equals(lr) ? FanMovement.VERTICAL_AND_HORIZONTAL.getValue() : FanMovement.VERTICAL.getValue();
+        } else {
+            return "S".equals(lr) ? FanMovement.HORIZONTAL.getValue() : FanMovement.STOPPED.getValue();
+        }
     }
 }
