@@ -6,7 +6,7 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:freeboxos:api">
-		<parameter name="api_domain" type="text">
+		<parameter name="apiDomain" type="text">
 			<label>Freebox Server Address</label>
 			<context>network-address</context>
 			<description>The domain to use in place of hardcoded Freebox ip</description>
@@ -22,13 +22,13 @@
 			<description>Enable the discovery of network device things</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="https_available" type="boolean">
+		<parameter name="httpsAvailable" type="boolean">
 			<label>HTTPS Available</label>
 			<description>Tells if https has been configured on the Freebox</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
-		<parameter name="https_port" type="integer">
+		<parameter name="httpsPort" type="integer">
 			<label>HTTPS port</label>
 			<description>Port to use for remote https access to the Freebox Api</description>
 			<advanced>true</advanced>

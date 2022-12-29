@@ -24,8 +24,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * The {@link LoginManager} is the Java class used to handle api requests
- * related to session handling and login
+ * The {@link LoginManager} is the Java class used to handle api requests related to session handling and login
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -79,11 +78,11 @@ public class LoginManager extends RestManager {
         if (authorize != null) {
             Status track = Status.PENDING;
             try {
-                while (track == Status.PENDING) {
+                while (Status.PENDING.equals(track)) {
                     Thread.sleep(2000);
                     track = trackAuthorize(authorize.getTrackId());
                 }
-                if (track == Status.GRANTED) {
+                if (Status.GRANTED.equals(track)) {
                     String appToken = authorize.getAppToken();
                     if (appToken != null) {
                         return appToken;

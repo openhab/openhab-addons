@@ -53,30 +53,28 @@ public class ApiHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
     private final FBDeserializer deserializer;
-    private long defaultTimeoutInMs = TimeUnit.SECONDS.toMillis(8);
+    private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
 
     @Activate
     public ApiHandler(@Reference HttpClientFactory httpClientFactory, @Reference FBDeserializer deserializer,
             Map<String, Object> config) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.deserializer = deserializer;
-        configChanged(config);
+        bindingConfigChanged(config);
     }
 
     @Modified
-    public void configChanged(Map<String, Object> config) {
-        String timeout = (String) config.get(TIMEOUT);
-        if (timeout != null) {
-            defaultTimeoutInMs = TimeUnit.SECONDS.toMillis(Long.parseLong(timeout));
-            logger.debug("Timeout set to {} seconds", timeout);
-        }
+    public void bindingConfigChanged(Map<String, Object> config) {
+        String timeout = (String) config.getOrDefault(TIMEOUT, "8");
+        timeoutInMs = TimeUnit.SECONDS.toMillis(Long.parseLong(timeout));
+        logger.debug("Timeout set to {} seconds", timeout);
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
             @Nullable Object payload) throws FreeboxException {
         logger.debug("executeUrl {} - {} ", method, uri);
 
-        Request request = httpClient.newRequest(uri).method(method).timeout(defaultTimeoutInMs, TimeUnit.MILLISECONDS)
+        Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS)
                 .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
 
         if (sessionToken != null) {

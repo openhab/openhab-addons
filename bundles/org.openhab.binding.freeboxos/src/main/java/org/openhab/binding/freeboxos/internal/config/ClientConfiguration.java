@@ -15,8 +15,8 @@ package org.openhab.binding.freeboxos.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ClientConfiguration} is responsible for holding
- * configuration informations for a controllable client of the API
+ * The {@link ClientConfiguration} is responsible for holding configuration informations for a controllable client of
+ * the API
  *
  * @author Gaël L'hopital - Initial contribution
  */

@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link HomeNode} is a Java class used to map the
  * structure used by the home API
@@ -29,16 +31,22 @@ public class HomeNode {
     public class HomeNodesResponse extends Response<List<HomeNode>> {
     }
 
+    public static enum HomeNodeStatus {
+        @SerializedName("unreachable")
+        UNREACHABLE,
+        @SerializedName("disabled")
+        DISABLED,
+        @SerializedName("active")
+        ACTIVE,
+        @SerializedName("unpaired")
+        UNPAIRED;
+    }
+
     private int id;
-
     private @Nullable String label;
-
     private @Nullable String name;
-
-    private @Nullable String category;
-
-    private @Nullable String status;
-
+    private String category = "";
+    private HomeNodeStatus status = HomeNodeStatus.UNREACHABLE;
     private @Nullable List<HomeNodeEndpoint> showEndpoints;
 
     public int getId() {
@@ -53,15 +61,15 @@ public class HomeNode {
         return name;
     }
 
-    public @Nullable String getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public @Nullable String getStatus() {
+    public HomeNodeStatus getStatus() {
         return status;
     }
 
-    public @Nullable List<HomeNodeEndpoint> getShowEndpoints() {
-        return showEndpoints;
+    public List<HomeNodeEndpoint> getShowEndpoints() {
+        return showEndpoints != null ? showEndpoints : List.of();
     }
 }

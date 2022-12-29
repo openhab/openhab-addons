@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -39,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FreeboxOsSession} is responsible for sending requests toward
- * a given url and transform the answer in appropriate dto.
+ * The {@link FreeboxOsSession} is responsible for sending requests toward a given url and transform the answer in
+ * appropriate dto.
  *
  * @author Gaël L'Hopital - Initial contribution
  */
@@ -48,12 +49,11 @@ import org.slf4j.LoggerFactory;
 public class FreeboxOsSession {
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsSession.class);
     private final Map<Class<? extends RestManager>, RestManager> restManagers = new HashMap<>();
-
     private final ApiHandler apiHandler;
 
     private @NonNullByDefault({}) UriBuilder uriBuilder;
-    private @Nullable String appToken;
-    private @Nullable Session session;
+    private String appToken = "";
+    private Optional<Session> session = Optional.empty();
 
     public FreeboxOsSession(ApiHandler apiHandler) {
         this.apiHandler = apiHandler;
@@ -68,7 +68,7 @@ public class FreeboxOsSession {
         UriBuilder uriBuilder = UriBuilder.fromPath("/").scheme(configuration.getScheme()).port(configuration.getPort())
                 .host(configuration.apiDomain);
         ApiVersion version = apiHandler.executeUri(uriBuilder.clone().path("api_version").build(), HttpMethod.GET,
-                ApiVersion.class, null, configuration);
+                ApiVersion.class, null, null);
         this.appToken = configuration.appToken;
         this.uriBuilder = uriBuilder.path(version.baseUrl());
         return initiateConnection();
@@ -76,19 +76,16 @@ public class FreeboxOsSession {
 
     private String initiateConnection() throws FreeboxException {
         try {
-            String localToken = appToken;
-            if (localToken != null && !localToken.isBlank()) {
-                session = null;
-                session = getManager(LoginManager.class).openSession(localToken);
+            if (!appToken.isBlank()) {
+                session = Optional.of(getManager(LoginManager.class).openSession(appToken));
                 getManager(NetShareManager.class);
                 getManager(LanManager.class);
                 getManager(WifiManager.class);
-                return localToken;
+                return appToken;
             }
             throw new FreeboxException(ErrorCode.INVALID_TOKEN);
         } catch (FreeboxException e) {
-            ErrorCode errorCode = e.getErrorCode();
-            if (ErrorCode.INVALID_TOKEN.equals(errorCode)) {
+            if (ErrorCode.INVALID_TOKEN.equals(e.getErrorCode())) {
                 appToken = getManager(LoginManager.class).grant();
                 return initiateConnection();
             }
@@ -97,21 +94,20 @@ public class FreeboxOsSession {
     }
 
     public void closeSession() {
-        if (session != null) {
+        session.ifPresent(s -> {
             try {
                 getManager(LoginManager.class).closeSession();
             } catch (FreeboxException e) {
                 logger.info("Error closing session : {}", e.getMessage());
             }
-            session = null;
-        }
-        appToken = null;
+        });
+        session = Optional.empty();
+        appToken = "";
         restManagers.clear();
     }
 
     private @Nullable String sessionToken() {
-        Session localSession = session;
-        return localSession != null ? localSession.getSessionToken() : null;
+        return session.map(Session::getSessionToken).orElse(null);
     }
 
     private synchronized <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
@@ -169,8 +165,7 @@ public class FreeboxOsSession {
     }
 
     boolean hasPermission(Permission required) {
-        Session localSession = session;
-        return localSession != null && localSession.hasPermission(required);
+        return session.map(s -> s.hasPermission(required)).orElse(false);
     }
 
     public UriBuilder getUriBuilder() {

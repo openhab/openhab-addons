@@ -18,8 +18,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 
 /**
- * The {@link ConnectionManager} is the Java class used to handle api requests
- * related to connection
+ * The {@link ConnectionManager} is the Java class used to handle api requests related to connection
  * https://dev.freebox.fr/sdk/os/system/#
  *
  * @author Gaël L'hopital - Initial contribution

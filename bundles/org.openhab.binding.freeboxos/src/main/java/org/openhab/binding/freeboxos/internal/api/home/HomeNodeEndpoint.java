@@ -15,14 +15,31 @@ package org.openhab.binding.freeboxos.internal.api.home;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link HomeNodeEndpoint} is a Java class used to map the
- * structure used by the home API
+ * The {@link HomeNodeEndpoint} is a Java class used to map the structure used by the home API
  *
  * @author ben12 - Initial contribution
  */
 @NonNullByDefault
 public class HomeNodeEndpoint {
+
+    public static enum EpType {
+        @SerializedName("signal")
+        SIGNAL,
+        @SerializedName("slot")
+        SLOT;
+    }
+
+    public static enum Visibility {
+        @SerializedName("internal")
+        INTERNAL,
+        @SerializedName("normal")
+        NORMAL,
+        @SerializedName("dashboard")
+        DASHBOARD;
+    }
 
     private int id;
 
@@ -30,9 +47,8 @@ public class HomeNodeEndpoint {
 
     private @Nullable String name;
 
-    private @Nullable String epType;
-
-    private @Nullable String visibility;
+    private @NonNullByDefault({}) EpType epType;
+    private @NonNullByDefault({}) Visibility visibility;
 
     private @Nullable String valueType;
 
@@ -52,11 +68,11 @@ public class HomeNodeEndpoint {
         return name;
     }
 
-    public @Nullable String getEpType() {
+    public EpType getEpType() {
         return epType;
     }
 
-    public @Nullable String getVisibility() {
+    public Visibility getVisibility() {
         return visibility;
     }
 

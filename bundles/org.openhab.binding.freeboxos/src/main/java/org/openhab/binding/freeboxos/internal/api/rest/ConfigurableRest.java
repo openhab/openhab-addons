@@ -28,37 +28,35 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
-    private final Class<Y> responseClass;
+    private final Class<Y> responseClazz;
     private final @Nullable String configPath;
 
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, String path,
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, String path,
             @Nullable String configPath) {
         super(session, path);
-        this.responseClass = classOfResponse;
+        this.responseClazz = responseClazz;
         this.configPath = configPath;
     }
 
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, UriBuilder parentUri, String path,
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, UriBuilder parentUri, String path,
             @Nullable String configPath) {
         super(session, parentUri, path);
-        this.responseClass = classOfResponse;
+        this.responseClazz = responseClazz;
         this.configPath = configPath;
     }
 
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, Permission required, String path,
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, Permission required, String path,
             @Nullable String configPath) throws FreeboxException {
         super(session, required, path);
-        this.responseClass = classOfResponse;
+        this.responseClazz = responseClazz;
         this.configPath = configPath;
     }
 
     public T getConfig() throws FreeboxException {
-        String path = configPath;
-        return path != null ? get(responseClass, path) : get(responseClass);
+        return configPath != null ? get(responseClazz, configPath) : get(responseClazz);
     }
 
     public T setConfig(T config) throws FreeboxException {
-        String path = configPath;
-        return path != null ? put(responseClass, config, path) : put(responseClass, config);
+        return configPath != null ? put(responseClazz, config, configPath) : put(responseClazz, config);
     }
 }

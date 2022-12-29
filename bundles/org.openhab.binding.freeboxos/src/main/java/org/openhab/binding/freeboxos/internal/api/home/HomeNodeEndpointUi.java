@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link HomeNodeEndpointUi} is a Java class used to map the
- * structure used by the home API
+ * The {@link HomeNodeEndpointUi} is a Java class used to map the structure used by the home API
  *
  * @author ben12 - Initial contribution
  */
