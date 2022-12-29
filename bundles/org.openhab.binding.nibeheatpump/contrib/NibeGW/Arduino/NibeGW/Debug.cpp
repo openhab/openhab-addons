@@ -21,8 +21,13 @@
 char debugBuf[DEBUG_BUFFER_SIZE];
 
 #ifdef ENABLE_REMOTE_DEBUG
+
   #if (CONN_MODE == CONN_MODE_ETH)
-    #include "KMPProDinoESP32.h"
+    #if defined(PRODINO_BOARD)
+      #include "KmpDinoEthernet.h"
+    #else
+      #include "KMPProDinoESP32.h"
+    #endif
     EthernetServer telnet(23);
     EthernetClient client;
   #elif (CONN_MODE == CONN_MODE_WIFI)

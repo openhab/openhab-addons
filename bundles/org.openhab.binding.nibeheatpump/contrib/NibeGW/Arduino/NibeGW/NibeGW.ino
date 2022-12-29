@@ -34,7 +34,6 @@
 
 #include "NibeGw.h"
 #include "Debug.h"
-#include "WebServer.h"
 
 #if defined(PRODINO_BOARD)
   #include "KmpDinoEthernet.h"
@@ -58,6 +57,7 @@
   #include <avr/wdt.h>
 #elif (BASE_ARCH == BASE_ARCH_ESP32)
   #include <esp_task_wdt.h>
+  #include "WebServer.h"
 #endif
 
 // ######### DEFINITIONS #######################
@@ -96,8 +96,9 @@ IPAddress targetIp;
   WiFiUDP udp4writeCmnds;
 #endif
 
-WebServer otaServer(8080);
-
+#if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
+  WebServer otaServer(8080);
+#endif
 
 #if (BASE_ARCH == BASE_ARCH_ESP32)
   HardwareSerial RS485_PORT(1);
@@ -427,14 +428,18 @@ void sendUdpPacket(const byte* const data, int len) {
   #if (CONN_MODE == CONN_MODE_WIFI)
     int status = WiFi.status();
     if (status != WL_CONNECTED)
-  #elif defined(PRODINO_BOARD_ESP32)
-    int status = Ethernet.linkStatus();
-    if (status != LinkON)
-  #endif
     {
       DEBUG_PRINT_VARS(0, "Ethernet link is down, link status = %d\n", status);
       return;
     }
+  #elif defined(PRODINO_BOARD_ESP32)
+    int status = Ethernet.linkStatus();
+    if (status != LinkON)
+    {
+      DEBUG_PRINT_VARS(0, "Ethernet link is down, link status = %d\n", status);
+      return;
+    }
+  #endif
     
   udp.beginPacket(targetIp, config.nibe.targetPort);
   
