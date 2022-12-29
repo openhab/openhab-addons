@@ -35,7 +35,7 @@ public class AirbaseModelInfo {
     public String ret = "";
     public int zonespresent;
     public int commonzone;
-    public int frate_steps; // fan rate steps
+    public int fRateSteps; // fan rate steps
     public EnumSet<AirbaseFeature> features;
 
     private AirbaseModelInfo() {
@@ -53,7 +53,7 @@ public class AirbaseModelInfo {
                 .orElse(0);
         info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))
                 .flatMap(value -> InfoParser.parseInt(value)).orElse(0);
-        info.frate_steps = Optional.ofNullable(responseMap.get("frate_steps"))
+        info.fRateSteps = Optional.ofNullable(responseMap.get("frate_steps"))
                 .flatMap(value -> InfoParser.parseInt(value)).orElse(1);
         for (AirbaseFeature f : AirbaseFeature.values()) {
             if ("1".equals(responseMap.get(f.getValue()))) {
