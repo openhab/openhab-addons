@@ -9,8 +9,8 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>Freebox Home Shutter</label>
-		<description>The Shutter configured in your Freebox Delta Server</description>
+		<label>Freebox Home Basic Shutter</label>
+		<description>The Basic Shutter (UP,DOWN,STOP) configured in your Freebox Delta Server</description>
 
 		<channel-groups>
 			<channel-group typeId="basic-shutter" id="basic-shutter"/>
@@ -21,4 +21,20 @@
 		<config-description-ref uri="thing-type:freeboxos:basic_shutter"/>
 	</thing-type>
 
+    <thing-type id="shutter">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="api"/>
+        </supported-bridge-type-refs>
+
+        <label>Freebox Home Shutter</label>
+        <description>The Shutter configured in your Freebox Delta Server</description>
+
+        <channel-groups>
+            <channel-group typeId="shutter" id="shutter"/>
+        </channel-groups>
+
+        <representation-property>id</representation-property>
+
+        <config-description-ref uri="thing-type:freeboxos:shutter"/>
+    </thing-type>
 </thing:thing-descriptions>

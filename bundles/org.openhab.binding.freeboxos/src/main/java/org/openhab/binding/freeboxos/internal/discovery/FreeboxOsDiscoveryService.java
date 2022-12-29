@@ -42,7 +42,6 @@ import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
 import org.openhab.binding.freeboxos.internal.api.wifi.APManager;
 import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
-import org.openhab.binding.freeboxos.internal.config.NodeConfiguration;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -135,7 +134,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
             HomeManager homeManager = localHandler.getManager(HomeManager.class);
             List<HomeNode> homeNodes = homeManager.getHomeNodes();
             homeNodes.forEach(node -> {
-                DiscoveryResultBuilder discoveryResultBuilder = NodeConfiguration.builder().configure(bridgeUID, node);
+                DiscoveryResultBuilder discoveryResultBuilder = NodeConfigurationBuilder.getInstance()
+                        .configure(bridgeUID, node);
                 if (discoveryResultBuilder != null) {
                     DiscoveryResult discoveryResult = discoveryResultBuilder.withLabel(node.getLabel())
                             .withBridge(bridgeUID).build();

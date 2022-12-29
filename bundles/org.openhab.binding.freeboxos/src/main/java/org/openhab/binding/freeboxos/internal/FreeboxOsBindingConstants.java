@@ -51,6 +51,7 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, "vm");
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
     public static final ThingTypeUID THING_TYPE_HOME_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, "basic_shutter");
+    public static final ThingTypeUID THING_TYPE_HOME_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
 
     // Configuration elements
     public static final String TIMEOUT = "timeout";
@@ -59,7 +60,7 @@ public class FreeboxOsBindingConstants {
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UIDS = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_LANDLINE, THING_TYPE_HOST,
             THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION,
-            THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_HOME_BASIC_SHUTTER);
+            THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_HOME_BASIC_SHUTTER, THING_TYPE_HOME_SHUTTER);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(BRIDGE_TYPE_UIDS.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());

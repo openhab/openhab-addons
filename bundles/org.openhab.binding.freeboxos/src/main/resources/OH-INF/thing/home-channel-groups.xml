@@ -10,5 +10,12 @@
 			<channel id="basic-shutter" typeId="basic-shutter"/>
 		</channels>
 	</channel-group-type>
+	
+    <channel-group-type id="shutter">
+        <label>Shutter status</label>
+        <channels>
+            <channel id="shutter" typeId="basic-shutter"/>
+        </channels>
+    </channel-group-type>
 
 </thing:thing-descriptions>

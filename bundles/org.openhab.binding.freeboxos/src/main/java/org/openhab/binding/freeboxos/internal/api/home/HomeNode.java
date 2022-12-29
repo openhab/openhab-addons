@@ -70,6 +70,7 @@ public class HomeNode {
     }
 
     public List<HomeNodeEndpoint> getShowEndpoints() {
-        return showEndpoints != null ? showEndpoints : List.of();
+        List<HomeNodeEndpoint> localList = showEndpoints;
+        return localList != null ? localList : List.of();
     }
 }

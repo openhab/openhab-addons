@@ -19,14 +19,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
+import org.openhab.binding.freeboxos.internal.handler.BasicShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
-import org.openhab.binding.freeboxos.internal.handler.HomeNodeBasicShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
 import org.openhab.binding.freeboxos.internal.handler.RevolutionHandler;
 import org.openhab.binding.freeboxos.internal.handler.ServerHandler;
+import org.openhab.binding.freeboxos.internal.handler.ShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
 import org.openhab.binding.freeboxos.internal.handler.WifiHostHandler;
 import org.openhab.core.audio.AudioHTTPServer;
@@ -96,7 +97,9 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new RepeaterHandler(thing);
         } else if (THING_TYPE_HOME_BASIC_SHUTTER.equals(thingTypeUID)) {
-            return new HomeNodeBasicShutterHandler(thing);
+            return new BasicShutterHandler(thing);
+        } else if (THING_TYPE_HOME_SHUTTER.equals(thingTypeUID)) {
+            return new ShutterHandler(thing);
         }
         return null;
     }
