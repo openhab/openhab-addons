@@ -250,7 +250,7 @@ public class BondHttpApi {
                     logger.debug("Repeated Bond API calls to {} failed.", uri);
                     bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.api-call-failed");
-                    throw new BondException("@text/offline.conf-error.api-call-failed", true);
+                    throw new BondException("@text/offline.comm-error.api-call-failed", true);
                 }
             }
         } while (true);
