@@ -7,6 +7,7 @@
 
 	<config-description uri="bridge-type:freeboxos:api">
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 		<parameter name="apiDomain" type="text">
 			<label>Freebox Server Address</label>
 			<context>network-address</context>
@@ -32,6 +33,9 @@
 		<parameter name="httpsPort" type="integer">
 =======
 		<parameter name="api_domain" type="text">
+=======
+		<parameter name="apiDomain" type="text">
+>>>>>>> bce4476 Switching to Snapshot 4.0.0 Correcting apiDomain was not used as expected Code cleansing.
 			<label>Freebox Server Address</label>
 			<context>network-address</context>
 			<description>The domain to use in place of hardcoded Freebox ip</description>
@@ -47,14 +51,18 @@
 			<description>Enable the discovery of network device things</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="https_available" type="boolean">
+		<parameter name="httpsAvailable" type="boolean">
 			<label>HTTPS Available</label>
 			<description>Tells if https has been configured on the Freebox</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
+<<<<<<< Upstream, based on origin/main
 		<parameter name="https_port" type="integer">
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+		<parameter name="httpsPort" type="integer">
+>>>>>>> bce4476 Switching to Snapshot 4.0.0 Correcting apiDomain was not used as expected Code cleansing.
 			<label>HTTPS port</label>
 			<description>Port to use for remote https access to the Freebox Api</description>
 			<advanced>true</advanced>

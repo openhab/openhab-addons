@@ -21,8 +21,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Session} is the Java class used to map the
- * structure used by the response of the open session API
+ * The {@link Session} is the Java class used to map the structure used by the response of the open session API
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Gaël L'hopital - Initial contribution

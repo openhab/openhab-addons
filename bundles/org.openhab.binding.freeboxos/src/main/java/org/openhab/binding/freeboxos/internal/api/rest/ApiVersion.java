@@ -25,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ApiVersion {
     private static final String API_BASE_URL = "/api/";
+
     @SerializedName(value = "api_version", alternate = { "api_ver" })
     private String apiVersion = "0.0";
 

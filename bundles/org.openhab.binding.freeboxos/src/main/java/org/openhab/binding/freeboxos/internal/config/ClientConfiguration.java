@@ -35,9 +35,14 @@ package org.openhab.binding.freeboxos.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+<<<<<<< Upstream, based on origin/main
  * The {@link ClientConfiguration} is responsible for holding
  * configuration informations for a controllable client of the API
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+ * The {@link ClientConfiguration} is responsible for holding configuration informations for a controllable client of
+ * the API
+>>>>>>> bce4476 Switching to Snapshot 4.0.0 Correcting apiDomain was not used as expected Code cleansing.
  *
  * @author Gaël L'hopital - Initial contribution
  */

@@ -10,6 +10,7 @@
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>4.0.0-SNAPSHOT</version>
+<<<<<<< Upstream, based on origin/main
   </parent>
 
   <artifactId>org.openhab.binding.freeboxos</artifactId>
@@ -40,6 +41,8 @@
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>3.4.0-SNAPSHOT</version>
+=======
+>>>>>>> bce4476 Switching to Snapshot 4.0.0 Correcting apiDomain was not used as expected Code cleansing.
   </parent>
 
   <artifactId>org.openhab.binding.freeboxos</artifactId>
