@@ -263,7 +263,7 @@ public class RenaultHandler extends BaseThingHandler {
                             new QuantityType<Temperature>(externalTemperature.doubleValue(), SIUnits.CELSIUS));
                 }
             } catch (RenaultNotImplementedException e) {
-                logger.warn("Disable HVAC status update.");
+                logger.warn("Disabling unsupported HVAC status update.");
                 car.setDisableHvac(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating HVAC status.", e);
@@ -286,7 +286,7 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_LOCATION_UPDATED, new DateTimeType(locationUpdated));
                 }
             } catch (RenaultNotImplementedException e) {
-                logger.warn("Disable location update.");
+                logger.warn("Disabling unsupported location update.");
                 car.setDisableLocation(true);
             } catch (IllegalArgumentException | RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating location.", e);
@@ -303,7 +303,7 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
                 }
             } catch (RenaultNotImplementedException e) {
-                logger.warn("Disable cockpit status update.");
+                logger.warn("Disabling unsupported cockpit status update.");
                 car.setDisableCockpit(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating cockpit status.", e);
@@ -341,7 +341,7 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_BATTERY_STATUS_UPDATED, new DateTimeType(batteryStatusUpdated));
                 }
             } catch (RenaultNotImplementedException e) {
-                logger.warn("Disable cockpit battery update.");
+                logger.warn("Disabling unsupported battery update.");
                 car.setDisableBattery(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating battery status.", e);
@@ -356,7 +356,7 @@ public class RenaultHandler extends BaseThingHandler {
                 updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
             } catch (RenaultNotImplementedException e) {
                 updateState(CHANNEL_LOCK_STATUS, UnDefType.UNDEF);
-                logger.warn("Disable lock status update.");
+                logger.warn("Disabling unsupported lock status update.");
                 car.setDisableLockStatus(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
                 logger.warn("Error updating lock status.", e);
