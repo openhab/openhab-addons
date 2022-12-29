@@ -113,9 +113,9 @@ public class OpenhabGraalJSScriptEngine
                         .build(),
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
                         .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
-                        .option("js.nashorn-compat", "false") // Disable Nashorn compat mode as it's functionality
-                                                              // shouldn't be used (openhab-js does not use it), see
-                                                              // https://www.graalvm.org/22.3/reference-manual/js/NashornMigrationGuide/
+                        .option("js.nashorn-compat", "true") // Enable Nashorn compat mode as openhab-js relies on
+                                                             // accessors, see
+                                                             // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors
                         .option("js.ecmascript-version", "2022") // If Nashorn compat is enabled, it will enforce ES5
                                                                  // compatibility, we want ECMA2022
                         .option("js.commonjs-require", "true") // Enable CommonJS module support
