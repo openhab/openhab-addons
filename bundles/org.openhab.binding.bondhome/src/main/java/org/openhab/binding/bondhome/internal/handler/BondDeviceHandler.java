@@ -554,12 +554,10 @@ public class BondDeviceHandler extends BaseThingHandler {
         Set<String> availableChannelIds = new HashSet<>();
 
         for (BondDeviceAction action : currentActions) {
-            if (action != null) {
-                String actionType = action.getChannelTypeId();
-                if (actionType != null) {
-                    availableChannelIds.add(actionType);
-                    logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(), actionType);
-                }
+            String actionType = action.getChannelTypeId();
+            if (actionType != null) {
+                availableChannelIds.add(actionType);
+                logger.trace(" Action: {}, Relevant Channel Type Id: {}", action.getActionId(), actionType);
             }
         }
         // Remove power channels if we have a dimmer channel for them;
@@ -627,7 +625,7 @@ public class BondDeviceHandler extends BaseThingHandler {
             BondDeviceProperties devProperties = this.deviceProperties;
             if (devProperties != null) {
                 double maxSpeed = devProperties.maxSpeed;
-                value = (int) (((double) updateState.speed / maxSpeed) * 100);
+                value = (int) ((updateState.speed / maxSpeed) * 100);
                 logger.trace("Raw fan speed: {}, Percent: {}", updateState.speed, value);
             } else if (updateState.speed != 0 && this.getThing().getThingTypeUID().equals(THING_TYPE_BOND_FAN)) {
                 logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());

@@ -120,7 +120,9 @@ public class BondHttpApi {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
         try {
-            return Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            BondDevice device = Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            device.actions.removeIf(Objects::isNull);
+            return device;
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
