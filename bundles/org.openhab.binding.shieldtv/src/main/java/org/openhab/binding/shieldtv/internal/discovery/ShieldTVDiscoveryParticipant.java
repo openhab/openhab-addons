@@ -65,12 +65,14 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String qualifiedName = service.getQualifiedName();
 
         InetAddress[] ipAddresses = service.getInetAddresses();
+        String ipAddress = ipAddresses[0].getHostAddress();
         String serverId = service.getPropertyString("SERVER");
         String serverCapability = service.getPropertyString("SERVER_CAPABILITY");
 
-        logger.debug("ShieldTV mDNS bridge discovery notified of ShieldTV mDNS service: {}", nice);
+        logger.debug("ShieldTV mDNS discovery notified of ShieldTV mDNS service: {}", nice);
         logger.trace("ShieldTV mDNS service qualifiedName: {}", qualifiedName);
         logger.trace("ShieldTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
+        logger.trace("ShieldTV mDNS service selected ipAddress: {}", ipAddress);
         logger.trace("ShieldTV mDNS service property SERVER: {}", serverId);
         logger.trace("ShieldTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
 
@@ -79,7 +81,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         final String label = service.getName() + " (" + id + ")";
         final Map<String, Object> properties = new HashMap<>(2);
 
-        properties.put(IPADDRESS, ipAddresses);
+        properties.put(IPADDRESS, ipAddress);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
     }
@@ -87,17 +89,6 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if (service == null) {
-            return null;
-        }
-
-        logger.debug("getThingUID is evaluating: {}", service);
-
-        String serverId = service.getPropertyString("SERVER"); // serverId
-
-        final String id = serverId.substring(5);
-        logger.debug("SHIELDTV Brain Found: {}", id);
-
-        return new ThingUID(THING_TYPE_SHIELDTV, id);
+        return new ThingUID(THING_TYPE_SHIELDTV, service.getPropertyString("SERVER").substring(8));
     }
 }
