@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link DishWasherHandler} is responsible for handling commands,
+ * The {@link DishwasherHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
@@ -46,16 +46,16 @@ import com.google.gson.JsonElement;
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN), added power/water consumption channels
  */
 @NonNullByDefault
-public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSelector>
+public class DishwasherHandler extends MieleApplianceHandler<DishwasherChannelSelector>
         implements ExtendedDeviceStateListener {
 
     private static final int POWER_CONSUMPTION_BYTE_POSITION = 16;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 18;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 19;
 
-    private final Logger logger = LoggerFactory.getLogger(DishWasherHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DishwasherHandler.class);
 
-    public DishWasherHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+    public DishwasherHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
             TimeZoneProvider timeZoneProvider) {
         super(thing, i18nProvider, localeProvider, timeZoneProvider, DishwasherChannelSelector.class,
                 MIELE_DEVICE_CLASS_DISHWASHER);
