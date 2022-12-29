@@ -64,8 +64,23 @@ public class AirbaseControlInfo {
         boolean f_auto = "1".equals(responseMap.getOrDefault("f_auto", "0"));
         boolean f_airside = "1".equals(responseMap.getOrDefault("f_airside", "0"));
         info.fanSpeed = AirbaseFanSpeed.fromValue(f_rate, f_auto, f_airside);
-        info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> InfoParser.parseInt(value))
-                .map(value -> AirbaseFanMovement.fromValue(value)).orElse(AirbaseFanMovement.STOPPED);
+
+        // determine if device has combined direction (f_dir) or seperated directions (f_dir_ud/f_dir_lr)
+        if (response.contains("f_dir=")) {
+            info.fanMovement = Optional.ofNullable(responseMap.get("f_dir"))
+                    .flatMap(value -> InfoParser.parseInt(value)).map(value -> AirbaseFanMovement.fromValue(value))
+                    .orElse(AirbaseFanMovement.STOPPED);
+        } else {
+            var ud = responseMap.get("f_dir_ud");
+            var lr = responseMap.get("f_dir_lr");
+            if (ud != null && lr != null) {
+                int combinedValue = InfoParser.parseSpecial(ud, lr);
+                info.fanMovement = AirbaseFanMovement.fromValue(combinedValue);
+            } else {
+                info.fanMovement = AirbaseFanMovement.UNKNOWN;
+            }
+        }
+
         info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> InfoParser.parseInt(value));
         return info;
     }
@@ -78,6 +93,8 @@ public class AirbaseControlInfo {
         params.put("f_auto", fanSpeed.getAuto() ? "1" : "0");
         params.put("f_airside", fanSpeed.getAirside() ? "1" : "0");
         params.put("f_dir", Integer.toString(fanMovement.getValue()));
+        params.put("f_dir_lr", fanMovement.getValue() == 1 || fanMovement.getValue() == 3 ? "S" : "0");
+        params.put("f_dir_ud", fanMovement.getValue() == 2 || fanMovement.getValue() == 3 ? "S" : "0");
         params.put("stemp", temp.orElse(20.0).toString());
         params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 

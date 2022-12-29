@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +95,21 @@ public class InfoParser {
         } catch (UnsupportedEncodingException e) {
             logger.warn("Unsupported encoding error in '{}'", value, e);
             return value;
+        }
+    }
+
+    /**
+     * This method combines different direction parameters to one.
+     * 
+     * @param ud up/ down value S or 0
+     * @param lr left/ right value S or 0
+     * @return combined int value based on {@link FanMovement} enum
+     */
+    public static int parseSpecial(String ud, String lr) {
+        if ("S".equals(ud)) {
+            return "S".equals(lr) ? FanMovement.VERTICAL_AND_HORIZONTAL.getValue() : FanMovement.VERTICAL.getValue();
+        } else {
+            return "S".equals(lr) ? FanMovement.HORIZONTAL.getValue() : FanMovement.STOPPED.getValue();
         }
     }
 }
