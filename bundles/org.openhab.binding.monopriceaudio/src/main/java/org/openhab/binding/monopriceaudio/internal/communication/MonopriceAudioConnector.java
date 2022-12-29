@@ -163,7 +163,7 @@ public abstract class MonopriceAudioConnector {
     }
 
     /**
-     * Get ping success events from the amplifier only. If amplifier does not have keypads or supports
+     * Get only ping success events from the connector. If amplifier does not have keypads or supports
      * unsolicited updates, the use of this method will cause the connector to only send ping success events until the
      * next time the connection is reset.
      *

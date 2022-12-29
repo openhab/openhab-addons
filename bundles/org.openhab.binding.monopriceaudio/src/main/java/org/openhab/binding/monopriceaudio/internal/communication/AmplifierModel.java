@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public enum AmplifierModel {
 
-    // Monoprice 10761/Dayon Audio DAX66
+    // Monoprice 10761/Dayton Audio DAX66
     MONOPRICE("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
             6, true, List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33",
                     "34", "35", "36")) {
@@ -160,7 +160,7 @@ public enum AmplifierModel {
         return zoneData;
     }
 
-    // Monoprice 10761 / DAX66 status string: #>1200010000130809100601
+    // Monoprice 10761/DAX66 status string: #>1200010000130809100601
     // DAX88 status string is the same but does not have leading '#': >xxaabbccddeeffgghhiijj
     private static final Pattern MONOPRICE_PATTERN = Pattern
             .compile("^#?>(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})");
