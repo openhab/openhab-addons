@@ -9,10 +9,14 @@
 		<description>Bridge between hosts and the API rest service</description>
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 		<representation-property>apiDomain</representation-property>
 =======
 		<representation-property>api_domain</representation-property>
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+		<representation-property>apiDomain</representation-property>
+>>>>>>> e4c7780 Implementing SHUTTER Home Node
 
 		<config-description-ref uri="bridge-type:freeboxos:api"/>
 	</bridge-type>

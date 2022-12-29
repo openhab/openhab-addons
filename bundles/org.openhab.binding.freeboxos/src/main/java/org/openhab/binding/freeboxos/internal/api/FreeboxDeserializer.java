@@ -33,17 +33,17 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link FBDeserializer} is responsible to instantiate suitable Gson (de)serializer
+ * The {@link FreeboxDeserializer} is responsible to instantiate suitable Gson (de)serializer
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-@Component(service = FBDeserializer.class)
-public class FBDeserializer {
+@Component(service = FreeboxDeserializer.class)
+public class FreeboxDeserializer {
     private final Gson gson;
 
     @Activate
-    public FBDeserializer(@Reference TimeZoneProvider timeZoneProvider) {
+    public FreeboxDeserializer(@Reference TimeZoneProvider timeZoneProvider) {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
