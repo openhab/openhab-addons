@@ -11,5 +11,4 @@ Require-Capability:
 SPI-Provider: *
 SPI-Consumer: *
 
--fixupmessages "Classes found in the wrong directory"; restrict:=error; is:=warning
 -fixupmessages "Unused Export-Package instructions"
