@@ -71,7 +71,7 @@ public class OpenhabGraalJSScriptEngine
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Final CommonJS search path for our library */
     private static final Path NODE_DIR = Paths.get("node_modules");
-    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} for performance and memory improvements */
+    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
@@ -229,7 +229,9 @@ public class OpenhabGraalJSScriptEngine
         initialized = true;
 
         try {
+            LOGGER.debug("Evaluating global script...");
             eval(globalScript);
+            LOGGER.debug("Successfully initialized GraalJS script engine.");
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
