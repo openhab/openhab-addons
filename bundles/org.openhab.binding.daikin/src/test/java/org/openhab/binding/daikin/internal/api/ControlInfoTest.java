@@ -41,10 +41,10 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=S0,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.VERTICAL, Info.fanMovement);
+        assertEquals(FanMovement.VERTICAL, info.fanMovement);
     }
 
     @Test
@@ -53,10 +53,10 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=0S,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.HORIZONTAL, Info.fanMovement);
+        assertEquals(FanMovement.HORIZONTAL, info.fanMovement);
     }
 
     @Test
@@ -65,22 +65,22 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=0,f_dir_lr=0,ndfd1=00,ndfd2=00,ndfd3=00,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.STOPPED, Info.fanMovement);
+        assertEquals(FanMovement.STOPPED, info.fanMovement);
     }
 
     @Test
-    public void separateThreeDimensionalTest() {
+    public void separateTwoDimensionalTest() {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir_ud=S,f_dir_lr=S,ndfd1=00,ndfd2=00,ndfd3=SS,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, Info.fanMovement);
+        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, info.fanMovement);
     }
 
     @Test
@@ -89,10 +89,10 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=1,ndfd1=00,ndfd2=00,ndfd3=S0,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.VERTICAL, Info.fanMovement);
+        assertEquals(FanMovement.VERTICAL, info.fanMovement);
     }
 
     @Test
@@ -101,10 +101,10 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=2,ndfd1=00,ndfd2=00,ndfd3=0S,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.HORIZONTAL, Info.fanMovement);
+        assertEquals(FanMovement.HORIZONTAL, info.fanMovement);
     }
 
     @Test
@@ -113,21 +113,21 @@ public class ControlInfoTest {
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=0,ndfd1=00,ndfd2=00,ndfd3=00,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.STOPPED, Info.fanMovement);
+        assertEquals(FanMovement.STOPPED, info.fanMovement);
     }
 
     @Test
-    public void combinedThreeDimensionalTest() throws IOException {
+    public void combinedTwoDimensionalTest() throws IOException {
         // arrange
         String incomingMessage = "ret=OK,pow=0,mode=3,stemp=21.0,shum=0,adv=13,dt1=21.0,dt2=M,dt3=21.0,dt4=25.0,dh1=0,dh2=0,dh3=0,dh4=0,dhh=0,alert=16,f_rate=3,dfr1=A,dfr2=A,dfr3=3,dfr4=A,dfr6=A,dfrh=0,f_dir=3,ndfd1=00,ndfd2=00,ndfd3=SS,ndfd4=00,ndfd6=00,ndfdh=00";
 
         // act
-        ControlInfo Info = ControlInfo.parse(incomingMessage);
+        ControlInfo info = ControlInfo.parse(incomingMessage);
 
         // assert
-        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, Info.fanMovement);
+        assertEquals(FanMovement.VERTICAL_AND_HORIZONTAL, info.fanMovement);
     }
 }
