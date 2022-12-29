@@ -71,6 +71,9 @@ public class OpenhabGraalJSScriptEngine
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Final CommonJS search path for our library */
     private static final Path NODE_DIR = Paths.get("node_modules");
+    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} for performance and memory improvements */
+    private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
+            .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
@@ -108,9 +111,7 @@ public class OpenhabGraalJSScriptEngine
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
-        delegate = GraalJSScriptEngine.create(
-                Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
-                        .build(),
+        delegate = GraalJSScriptEngine.create(ENGINE,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
                         .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
                         .option("js.nashorn-compat", "true") // to ease migration
