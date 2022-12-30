@@ -163,7 +163,7 @@
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>A numeric value read from C.M.I.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f"/>
 		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
 	<channel-type id="schema-state-ro">
