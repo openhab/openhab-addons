@@ -96,7 +96,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 for (final String deviceId : deviceList) {
                     BondDevice thisDevice = api.getDevice(deviceId);
                     String deviceName;
-                    if ((deviceName = thisDevice.name) != null) {
+                    if (thisDevice.type != null && (deviceName = thisDevice.name) != null) {
                         final ThingUID deviceUid = new ThingUID(thisDevice.type.getThingTypeUID(), bridgeUid, deviceId);
                         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(deviceUid)
                                 .withBridge(bridgeUid).withLabel(thisDevice.name)
