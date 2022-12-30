@@ -13,9 +13,30 @@
 package org.openhab.binding.clementineremote.internal;
 
 import static java.lang.Thread.sleep;
-import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.*;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_ALBUM;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_ARTIST;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_COVER;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_PLAYBACK;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_POSITION;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_STATE;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_TITLE;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_TRACK;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_FORWARD;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_NEXT;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_PAUSE;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_PLAY;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_PREVIOUS;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_REWIND;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CMD_STOP;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.MAX_SIZE;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLConnection;
@@ -24,7 +45,11 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -35,13 +60,11 @@ import org.slf4j.LoggerFactory;
 
 import de.qspool.clementineremote.backend.pb.ClementineRemote.Message;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.MsgType;
-import de.qspool.clementineremote.backend.pb.ClementineRemote.RequestConnect;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.RequestSetTrackPosition;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.RequestSetVolume;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.ResponseCurrentMetadata;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.ResponseUpdateTrackPosition;
 import de.qspool.clementineremote.backend.pb.ClementineRemote.SongMetadata;
-import tech.units.indriya.unit.Units;
 
 /**
  * The {@link ClementineRemoteHandler} is responsible for handling commands, which are
@@ -88,14 +111,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     private void connect() {
         enabled = true;
         while (enabled) {
-            try {
-                sleep(15000);
-            } catch (InterruptedException e) {
-                logger.warn("sleep interrupted: {}", e.getMessage());
-            }
             connectionStart();
             if (enabled) {
                 logger.debug("Connection broken. Reconnectiong in 15 secs…");
+                sleep15secs();
             }
         }
     }
@@ -298,42 +317,25 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(ClementineRemoteConfiguration.class);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(this::connect);
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    private void sleep15secs() {
+        try {
+            sleep(15000);
+        } catch (InterruptedException e) {
+            logger.warn("sleep interrupted: {}", e.getMessage());
+        }
     }
 
     private void sendConnectMessage() throws IOException {
-        RequestConnect req = builder.getRequestConnectBuilder().build();
-        Message msg = builder.setRequestConnect(req).build();
-        sendMessageOrThrow(msg);
+        var req = builder.getRequestConnectBuilder();
+        if (config.authCode != null && config.authCode != 0) {
+            req.setAuthCode(config.authCode);
+        }
+        sendMessageOrThrow(builder.setRequestConnect(req.build()).build());
     }
 
     private boolean sendSkip(int d) {

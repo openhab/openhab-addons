@@ -32,7 +32,6 @@ public class ClementineRemoteBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_ARTIST = "artist";
-
     public static final String CHANNEL_PLAYBACK = "playback-control";
     public static final String CHANNEL_VOLUME = "volume-control";
     public static final String CHANNEL_COVER = "cover";
@@ -41,6 +40,7 @@ public class ClementineRemoteBindingConstants {
     public static final String CHANNEL_TITLE = "title";
     public static final String CHANNEL_TRACK = "track";
 
+    // List of commands
     public static final String CMD_FORWARD = "FASTFORWARD";
     public static final String CMD_NEXT = "NEXT";
     public static final String CMD_PAUSE = "PAUSE";
@@ -49,8 +49,8 @@ public class ClementineRemoteBindingConstants {
     public static final String CMD_REWIND = "REWIND";
     public static final String CMD_STOP = "STOP";
 
+    // remote config
     public static final String DEFAULT_HOST = "localhost";
     public static final int DEFAULT_PORT = 5500;
-
-    public static final int MAX_SIZE = 52428800; // TODO: where does this come from?
+    public static final int MAX_SIZE = 52428800;
 }

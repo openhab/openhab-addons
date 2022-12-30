@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.clementineremote.internal;
 
-import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.*;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.THING_TYPE_CLEMENTINE;
 
 import java.util.Set;
 

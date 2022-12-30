@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.clementineremote.internal;
 
-import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.*;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.DEFAULT_HOST;
+import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.DEFAULT_PORT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ClementineRemoteConfiguration} class contains fields mapping thing configuration parameters.
@@ -28,6 +30,7 @@ public class ClementineRemoteConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname = DEFAULT_HOST;
-    public String password = "";
+    @Nullable
+    public Integer authCode = null;
     public int port = DEFAULT_PORT;
 }

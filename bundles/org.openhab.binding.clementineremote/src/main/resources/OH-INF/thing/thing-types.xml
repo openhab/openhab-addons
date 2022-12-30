@@ -27,10 +27,10 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of Clementine player</description>
 			</parameter>
-			<parameter name="password" type="text" required="false">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the Clementine player</description>
+			<parameter name="authCode" type="integer" required="false">
+				<context>authCode</context>
+				<label>Auth Code</label>
+				<description>Authentication code to access the Clementine player</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<context>port</context>
