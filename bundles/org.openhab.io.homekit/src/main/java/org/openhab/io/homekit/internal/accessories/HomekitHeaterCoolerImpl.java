@@ -28,6 +28,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -66,6 +67,11 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
                 customCurrentStateList);
         targetStateMapping = createMapping(TARGET_HEATER_COOLER_STATE, TargetHeaterCoolerStateEnum.class,
                 customTargetStateList);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         final HeaterCoolerService service = new HeaterCoolerService(this);
         service.addOptionalCharacteristic(new TemperatureDisplayUnitCharacteristic(this::getTemperatureDisplayUnit,
                 this::setTemperatureDisplayUnit, this::subscribeTemperatureDisplayUnit,
