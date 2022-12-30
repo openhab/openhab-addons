@@ -279,16 +279,17 @@ public class SunCalcTest {
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 12, tZone);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
         assertEquals(SunPhaseName.CIVIL_DAWN, sun.getPhase().getName());
     }
 
     @Test
     public void testIssue7642SunRiseStart() {
+        // SunCalc.ranges was not sorted, causing unexpected output in corner cases.
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 13, tZone);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
         assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
     }
 
@@ -297,7 +298,7 @@ public class SunCalcTest {
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 18, tZone);
 
-        Sun sun = sunCalc.getSunInfo(tDate, 53.47092, -2.4, 0.0, true);
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
         assertEquals(SunPhaseName.DAYLIGHT, sun.getPhase().getName());
     }
 
