@@ -31,7 +31,7 @@ public class MoonPhase {
     private Calendar firstQuarter;
     private Calendar full;
     private Calendar thirdQuarter;
-    private Calendar _new;
+    private Calendar newCalendar;
     private int age;
     private double illumination;
     private double agePercent;
@@ -85,14 +85,14 @@ public class MoonPhase {
      * Returns the date of the new moon.
      */
     public Calendar getNew() {
-        return _new;
+        return newCalendar;
     }
 
     /**
      * Sets the date of the new moon.
      */
     public void setNew(Calendar _new) {
-        this._new = _new;
+        this.newCalendar = _new;
     }
 
     /**
