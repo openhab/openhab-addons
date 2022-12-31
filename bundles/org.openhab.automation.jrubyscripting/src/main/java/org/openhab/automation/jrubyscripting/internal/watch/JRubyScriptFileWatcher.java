@@ -22,7 +22,9 @@ import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
+import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cody Cutrer - Initial contribution
  */
-@Component(immediate = true, service = ScriptDependencyTracker.Listener.class)
+@Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
 public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     private final Logger logger = LoggerFactory.getLogger(JRubyScriptFileWatcher.class);
@@ -46,9 +48,9 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Activate
     public JRubyScriptFileWatcher(final @Reference ScriptEngineManager manager,
-            final @Reference ReadyService readyService, final @Reference(target = "(" + Constants.SERVICE_PID
+            final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,  final @Reference(target = "(" + Constants.SERVICE_PID
                     + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory) {
-        super(manager, readyService, FILE_DIRECTORY);
+        super(manager, readyService, startLevelService, FILE_DIRECTORY);
 
         this.scriptEngineFactory = (JRubyScriptEngineFactory) scriptEngineFactory;
     }

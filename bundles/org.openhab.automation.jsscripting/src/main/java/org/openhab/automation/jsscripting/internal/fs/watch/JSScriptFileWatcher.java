@@ -20,7 +20,9 @@ import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
+import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-@Component(immediate = true, service = ScriptDependencyTracker.Listener.class)
+@Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
 
@@ -38,8 +40,8 @@ public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Activate
     public JSScriptFileWatcher(final @Reference ScriptEngineManager manager,
-            final @Reference ReadyService readyService) {
-        super(manager, readyService, FILE_DIRECTORY);
+            final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService) {
+        super(manager, readyService, startLevelService, FILE_DIRECTORY);
 
         ignorePath = pathToWatch + File.separator + "node_modules";
     }
