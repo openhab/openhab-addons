@@ -33,7 +33,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 
 /**
  *
- * @author Benjamin Lafois
+ * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault

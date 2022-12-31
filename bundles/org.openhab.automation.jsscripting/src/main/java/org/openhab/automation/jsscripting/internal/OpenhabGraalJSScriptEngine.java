@@ -16,6 +16,8 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.AccessMode;
 import java.nio.file.FileSystems;
@@ -42,6 +44,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
@@ -67,10 +70,23 @@ public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
-    private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
+    private static Source GLOBAL_SOURCE;
+
+    static {
+        try {
+            GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
+                    "@jsscripting-globals.js").cached(true).build();
+        } catch (IOException e) {
+            LOGGER.error("Failed to load global script", e);
+        }
+    }
+
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Final CommonJS search path for our library */
     private static final Path NODE_DIR = Paths.get("node_modules");
+    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
+    private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
+            .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
@@ -95,7 +111,7 @@ public class OpenhabGraalJSScriptEngine
     private @Nullable Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
-    private final String globalScript;
+    private final String injectionCode;
 
     /**
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
@@ -103,20 +119,20 @@ public class OpenhabGraalJSScriptEngine
      */
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode, JSScriptServiceUtil jsScriptServiceUtil) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+        this.injectionCode = (injectionCode != null ? injectionCode : "");
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         LOGGER.debug("Initializing GraalJS script engine...");
 
-        delegate = GraalJSScriptEngine.create(
-                Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
-                        .build(),
+        delegate = GraalJSScriptEngine.create(ENGINE,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
                         .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
-                        .option("js.nashorn-compat", "true") // to ease migration
-                        .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
-                                                                 // want ecma2021
-                        .option("js.commonjs-require", "true") // enable CommonJS module support
+                        .option("js.nashorn-compat", "true") // Enable Nashorn compat mode as openhab-js relies on
+                                                             // accessors, see
+                                                             // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors
+                        .option("js.ecmascript-version", "2022") // If Nashorn compat is enabled, it will enforce ES5
+                                                                 // compatibility, we want ECMA2022
+                        .option("js.commonjs-require", "true") // Enable CommonJS module support
                         .hostClassLoader(getClass().getClassLoader())
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
@@ -228,7 +244,10 @@ public class OpenhabGraalJSScriptEngine
         initialized = true;
 
         try {
-            eval(globalScript);
+            LOGGER.debug("Evaluating global script...");
+            delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
+            eval(injectionCode);
+            LOGGER.debug("Successfully initialized GraalJS script engine.");
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
@@ -270,5 +289,19 @@ public class OpenhabGraalJSScriptEngine
      */
     private String nodeFileToResource(Path path) {
         return "/" + path.subpath(0, path.getNameCount()).toString().replace('\\', '/');
+    }
+
+    /**
+     * @param fileName filename relative to the resources folder
+     * @return file as {@link InputStreamReader}
+     */
+    private static Reader getFileAsReader(String fileName) {
+        InputStream ioStream = OpenhabGraalJSScriptEngine.class.getClassLoader().getResourceAsStream(fileName);
+
+        if (ioStream == null) {
+            throw new IllegalArgumentException(fileName + " not found");
+        }
+
+        return new InputStreamReader(ioStream);
     }
 }

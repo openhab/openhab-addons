@@ -1,6 +1,6 @@
 # Groovy Scripting
 
-This add-on provides support for [Groovy](https://groovy-lang.org/) 3.0.13 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
+This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.7 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
 
 ## Creating Groovy Scripts
 

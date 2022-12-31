@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.sql.Time;
 import java.util.Calendar;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Time;
 
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -31,8 +31,8 @@ public class MoonPhase {
     private Calendar firstQuarter;
     private Calendar full;
     private Calendar thirdQuarter;
-    private Calendar newCalendar;
-    private int age;
+    private Calendar _new;
+    private double age;
     private double illumination;
     private double agePercent;
     private double ageDegree;
@@ -105,7 +105,7 @@ public class MoonPhase {
     /**
      * Sets the age in days.
      */
-    public void setAge(int age) {
+    public void setAge(double age) {
         this.age = age;
     }
 

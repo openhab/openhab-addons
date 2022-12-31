@@ -14,6 +14,8 @@ package org.openhab.automation.jsscripting.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
@@ -29,6 +31,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
+import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
+
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
@@ -42,23 +46,21 @@ import org.osgi.service.component.annotations.Reference;
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private boolean injectionEnabled = true;
 
-    /*
-     * Whilst we run in parallel with Nashorn, we use a custom mime-type to avoid
-     * disrupting Nashorn scripts. When Nashorn is removed, we take over the standard
-     * JS runtime.
-     */
+    private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
 
-    // GraalJSEngineFactory graalJSEngineFactory = new GraalJSEngineFactory();
-    //
-    // scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
-    // scriptTypes.addAll(graalJSEngineFactory.getExtensions());
-
-    public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
-    private static final String ALT_MIME_TYPE = "text/javascript;version=ECMAScript-2021";
+    public static final String MIME_TYPE = "application/javascript";
     private static final String ALIAS = "graaljs";
-    private static final List<String> SCRIPT_TYPES = List.of(MIME_TYPE, ALT_MIME_TYPE, ALIAS);
+    private static final List<String> SCRIPT_TYPES = createScriptTypes();
+
+    private static List<String> createScriptTypes() {
+        // Add those for backward compatibility (existing scripts may rely on those MIME types)
+        List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", ALIAS);
+        return Stream.of(factory.getMimeTypes(), factory.getExtensions(), backwardCompat).flatMap(List::stream)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private boolean injectionEnabled = true;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
