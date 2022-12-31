@@ -48,7 +48,8 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Activate
     public JRubyScriptFileWatcher(final @Reference ScriptEngineManager manager,
-            final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,  final @Reference(target = "(" + Constants.SERVICE_PID
+            final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,
+            final @Reference(target = "(" + Constants.SERVICE_PID
                     + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory) {
         super(manager, readyService, startLevelService, FILE_DIRECTORY);
 

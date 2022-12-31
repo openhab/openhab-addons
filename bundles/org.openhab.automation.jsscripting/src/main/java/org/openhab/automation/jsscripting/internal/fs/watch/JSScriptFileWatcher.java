@@ -36,19 +36,16 @@ import org.osgi.service.component.annotations.Reference;
 public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
     private static final String FILE_DIRECTORY = "automation" + File.separator + "js";
 
-    private final String ignorePath;
-
     @Activate
-    public JSScriptFileWatcher(final @Reference ScriptEngineManager manager,
-            final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService) {
+    public JSScriptFileWatcher(final @Reference ScriptEngineManager manager, final @Reference ReadyService readyService,
+            final @Reference StartLevelService startLevelService) {
         super(manager, readyService, startLevelService, FILE_DIRECTORY);
-
-        ignorePath = pathToWatch + File.separator + "node_modules";
     }
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        if (!scriptFilePath.startsWith(ignorePath) && "js".equals(super.getScriptType(scriptFilePath).orElse(null))) {
+        if (!scriptFilePath.startsWith(pathToWatch + File.separator + "node_modules")
+                && "js".equals(super.getScriptType(scriptFilePath).orElse(null))) {
             return Optional.of(GraalJSScriptEngineFactory.MIME_TYPE);
         } else {
             return Optional.empty();
