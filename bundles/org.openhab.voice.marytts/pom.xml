@@ -25,17 +25,7 @@
           <groupId>biz.aQute.bnd</groupId>
           <artifactId>bnd-maven-plugin</artifactId>
           <configuration>
-            <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
-Automatic-Module-Name: ${def;bsn}
-Import-Package: \\
-  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
-  javax.annotation.security.*;resolution:=optional,\\
-  org.eclipse.jdt.annotation.*;resolution:=optional,\\
-  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
-  org.openhab.*;version=!,\\
-  com.google.common.*;version="14.0",\\
-  ${bnd.importpackage},\\
-  *
+            <bnd><![CDATA[${oh.bndDefaults}
 Require-Capability:
     osgi.extender:=
       filter:="(osgi.extender=osgi.serviceloader.processor)",
@@ -44,19 +34,6 @@ Require-Capability:
       cardinality:=multiple
 SPI-Provider: marytts.config.MaryConfig
 SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryConfig])
--exportcontents: \\
-  !*.internal.*,\\
-  !*.impl.*, \\
-  org.openhab.*, \\
-  ${bnd.exportpackage}
--noimportjava: true
--sources: false
--contract: *
--includeresource: ${bnd.includeresource}
--fixupmessages: \\
-  'Unused Import-Package instructions';is:=ignore,\\
-  'Unused Export-Package instructions';is:=ignore,\\
-  ${bnd.fixupmessages}
 ]]>
             </bnd>
           </configuration>
