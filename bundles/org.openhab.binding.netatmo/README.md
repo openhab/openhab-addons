@@ -48,7 +48,7 @@ The Account bridge has the following configuration elements:
 | clientId          | String | Yes      | Client ID provided for the application you created on http://dev.netatmo.com/createapp                                 |
 | clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
 | webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
-| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "\")                                               |
+| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                               |
 | reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
 | refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
 
