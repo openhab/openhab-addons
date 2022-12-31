@@ -91,8 +91,8 @@ public class MoonPhase {
     /**
      * Sets the date of the new moon.
      */
-    public void setNew(Calendar _new) {
-        this.newCalendar = _new;
+    public void setNew(Calendar newCalendar) {
+        this.newCalendar = newCalendar;
     }
 
     /**
