@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.sql.Time;
 import java.util.Calendar;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Time;
 
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
