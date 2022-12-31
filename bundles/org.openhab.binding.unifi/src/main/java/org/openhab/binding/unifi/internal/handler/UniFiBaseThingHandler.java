@@ -61,6 +61,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
             return;
         }
         // mgb: derive the config class from the generic type
+        @SuppressWarnings("null")
         final Class<?> clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
                 .getActualTypeArguments()[1]);
         final C config = (C) getConfigAs(clazz);
@@ -99,7 +100,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         // mgb: only handle commands if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
-            final E entity = getEntity();
+            final @Nullable E entity = getEntity();
             final UniFiController controller = getController();
 
             if (command == REFRESH) {
@@ -128,13 +129,13 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
     protected final void refresh() {
         // mgb: only refresh if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
-            final E entity = getEntity();
+            final @Nullable E entity = getEntity();
 
             getThing().getChannels().forEach(channel -> updateState(entity, channel.getUID()));
         }
     }
 
-    private void updateState(final E entity, final ChannelUID channelUID) {
+    private void updateState(final @Nullable E entity, final ChannelUID channelUID) {
         final String channelId = channelUID.getId();
         final State state = Optional.ofNullable(entity).map(e -> getChannelState(e, channelId))
                 .orElseGet(() -> getDefaultState(channelId));

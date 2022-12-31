@@ -21,7 +21,6 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -34,6 +33,7 @@ import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -161,9 +161,8 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private void discoverPoePorts(final UniFiControllerCache cache, final ThingUID bridgeUID) {
-        for (final Map<Integer, UniFiPortTuple> uc : cache.getSwitchPorts()) {
-            for (final Entry<Integer, UniFiPortTuple> sp : uc.entrySet()) {
-                final UniFiPortTuple pt = sp.getValue();
+        for (final UniFiSwitchPorts uc : cache.getSwitchPorts()) {
+            for (final UniFiPortTuple pt : uc.getPoePorts()) {
                 final String deviceMac = pt.getDevice().getMac();
                 final String id = deviceMac.replace(":", "") + "_" + pt.getPortIdx();
                 final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_POE_PORT, bridgeUID, id);

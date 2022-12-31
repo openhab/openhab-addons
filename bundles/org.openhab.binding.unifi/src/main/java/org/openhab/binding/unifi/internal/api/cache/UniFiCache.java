@@ -106,7 +106,9 @@ abstract class UniFiCache<T extends @Nullable HasId> {
             logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
                     lazyFormatAsList(values));
             for (final T value : values) {
-                put(value.getId(), value);
+                if (value != null) {
+                    put(value.getId(), value);
+                }
             }
         }
     }
