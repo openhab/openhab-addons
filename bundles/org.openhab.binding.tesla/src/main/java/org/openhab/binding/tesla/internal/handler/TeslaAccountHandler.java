@@ -32,6 +32,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaVehicleDiscoveryService;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
@@ -43,6 +44,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeMigrationService;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -80,6 +82,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     final WebTarget wakeUpTarget;
 
     private final TeslaSSOHandler ssoHandler;
+    private final ThingTypeMigrationService thingTypeMigrationService;
 
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
@@ -96,10 +99,12 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     private TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
-    public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory) {
+    public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory,
+            ThingTypeMigrationService thingTypeMigrationService) {
         super(bridge);
         this.teslaTarget = teslaClient.target(URI_OWNERS);
         this.ssoHandler = new TeslaSSOHandler(httpClientFactory.getCommonHttpClient());
+        this.thingTypeMigrationService = thingTypeMigrationService;
 
         this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
         this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
@@ -222,10 +227,10 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, VEHICLE_CONFIG, null, dataRequestTarget, 0);
-                if (responseString == null || responseString.isBlank()) {
-                    continue;
+                VehicleConfig vehicleConfig = null;
+                if (responseString != null && !responseString.isBlank()) {
+                    vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
                 }
-                VehicleConfig vehicleConfig = gson.fromJson(responseString, VehicleConfig.class);
                 for (VehicleListener listener : vehicleListeners) {
                     listener.vehicleFound(vehicle, vehicleConfig);
                 }
@@ -233,6 +238,15 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                     if (vehicle.vin.equals(vehicleThing.getConfiguration().get(VIN))) {
                         TeslaVehicleHandler vehicleHandler = (TeslaVehicleHandler) vehicleThing.getHandler();
                         if (vehicleHandler != null) {
+                            if (TeslaBindingConstants.THING_TYPE_VEHICLE.equals(vehicleThing.getThingTypeUID())
+                                    && vehicleConfig != null) {
+                                // Seems the type of this vehicle has not been identified before, so let's switch the
+                                // thing type of it
+                                thingTypeMigrationService.migrateThingType(vehicleThing, vehicleConfig.identifyModel(),
+                                        vehicleThing.getConfiguration());
+                                break;
+
+                            }
                             logger.debug("Querying the vehicle: VIN {}", vehicle.vin);
                             String vehicleJSON = gson.toJson(vehicle);
                             vehicleHandler.parseAndUpdate("queryVehicle", null, vehicleJSON);
@@ -353,8 +367,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             lock.lock();
 
             ThingStatusInfo status = getThing().getStatusInfo();
-            if (status.getStatus() != ThingStatus.ONLINE
-                    && status.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            if ((status.getStatus() != ThingStatus.ONLINE
+                    && status.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR)
+                    || hasUnidentifiedVehicles()) {
                 logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
                 ThingStatusInfo authenticationResult = authenticate();
@@ -414,6 +429,11 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             lock.unlock();
         }
     };
+
+    private boolean hasUnidentifiedVehicles() {
+        return getThing().getThings().stream()
+                .anyMatch(vehicle -> TeslaBindingConstants.THING_TYPE_VEHICLE.equals(vehicle.getThingTypeUID()));
+    }
 
     protected class Request implements Runnable {
 
