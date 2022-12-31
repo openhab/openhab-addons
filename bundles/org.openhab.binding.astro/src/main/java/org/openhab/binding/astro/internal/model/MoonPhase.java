@@ -31,7 +31,7 @@ public class MoonPhase {
     private Calendar firstQuarter;
     private Calendar full;
     private Calendar thirdQuarter;
-    private Calendar _new;
+    private Calendar newCalendar;
     private double age;
     private double illumination;
     private double agePercent;
