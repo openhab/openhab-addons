@@ -126,10 +126,6 @@
 		<label>Temperature</label>
 		<description>Temperature reported by the appliance</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
