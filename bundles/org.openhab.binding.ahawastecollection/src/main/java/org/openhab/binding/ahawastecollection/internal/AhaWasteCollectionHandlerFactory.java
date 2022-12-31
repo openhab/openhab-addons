@@ -59,16 +59,8 @@ public class AhaWasteCollectionHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SCHEDULE.equals(thingTypeUID)) {
-            final AhaCollectionScheduleFactory factory = new AhaCollectionScheduleFactory() {
-
-                @Override
-                public AhaCollectionScheduleImpl create(final String commune, final String street,
-                        final String houseNumber, final String houseNumberAddon, final String collectionPlace) {
-                    return new AhaCollectionScheduleImpl(commune, street, houseNumber, houseNumberAddon,
-                            collectionPlace);
-                }
-            };
-            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider, factory);
+            return new AhaWasteCollectionHandler(thing, this.scheduler, this.timeZoneProvider,
+                    AhaCollectionScheduleImpl::new, null);
         }
         return null;
     }

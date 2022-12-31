@@ -320,8 +320,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
             loadMediaStateConfig(mediaStateJSONConfig);
         }
-        adbConnection.configure(currentConfig.ip, currentConfig.port, currentConfig.timeout,
-                currentConfig.recordDuration);
+        adbConnection.configure(currentConfig);
         var androidVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
         if (androidVersion != null) {
             // configure android implementation to use

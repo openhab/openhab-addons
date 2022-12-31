@@ -272,8 +272,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             logger.trace("executeUri returned : code {} body {}", statusCode, responseBody);
 
             if (statusCode != Code.OK) {
-                ApiError error = deserializer.deserialize(ApiError.class, responseBody);
-                throw new NetatmoException(error);
+                try {
+                    ApiError error = deserializer.deserialize(ApiError.class, responseBody);
+                    throw new NetatmoException(error);
+                } catch (NetatmoException e) {
+                    logger.debug("Error deserializing payload from error response", e);
+                    throw new NetatmoException(statusCode.getMessage());
+                }
             }
             return deserializer.deserialize(clazz, responseBody);
         } catch (NetatmoException e) {

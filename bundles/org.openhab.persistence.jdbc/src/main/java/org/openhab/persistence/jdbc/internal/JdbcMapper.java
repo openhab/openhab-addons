@@ -27,10 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.types.State;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.dto.JdbcPersistenceItemInfo;
@@ -48,8 +50,9 @@ import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
  */
 @NonNullByDefault
 public class JdbcMapper {
-    private final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
+    private static final int MIGRATION_PERCENTAGE_THRESHOLD = 50;
 
+    private final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
     private final TimeZoneProvider timeZoneProvider;
 
     // Error counter - used to reconnect to database on error
@@ -171,6 +174,17 @@ public class JdbcMapper {
         return vol;
     }
 
+    protected List<Column> getTableColumns(String tableName) throws JdbcSQLException {
+        logger.debug("JDBC::getTableColumns");
+        long timerStart = System.currentTimeMillis();
+        ItemsVO isvo = new ItemsVO();
+        isvo.setJdbcUriDatabaseName(conf.getDbName());
+        isvo.setTableName(tableName);
+        List<Column> is = conf.getDBDAO().doGetTableColumns(isvo);
+        logTime("getTableColumns", timerStart, System.currentTimeMillis());
+        return is;
+    }
+
     /****************
      * MAPPERS ITEM *
      ****************/
@@ -187,6 +201,14 @@ public class JdbcMapper {
         conf.getDBDAO().doCreateItemTable(vo);
         logTime("createItemTable", timerStart, System.currentTimeMillis());
         return vo;
+    }
+
+    protected void alterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
+            throws JdbcSQLException {
+        logger.debug("JDBC::alterTableColumn");
+        long timerStart = System.currentTimeMillis();
+        conf.getDBDAO().doAlterTableColumn(tableName, columnName, columnType, nullable);
+        logTime("alterTableColumn", timerStart, System.currentTimeMillis());
     }
 
     protected void storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) throws JdbcException {
@@ -319,6 +341,11 @@ public class JdbcMapper {
             }
         } else {
             for (ItemsVO vo : getItemIDTableNames()) {
+                String itemName = vo.getItemName();
+                if (!ItemUtil.isValidItemName(itemName)) {
+                    logger.warn("Skipping invalid item name {}", itemName);
+                    continue;
+                }
                 itemNameToTableNameMap.put(vo.getItemName(),
                         namingStrategy.getTableName(vo.getItemId(), vo.getItemName()));
             }
@@ -387,8 +414,31 @@ public class JdbcMapper {
                 initialized = tmpinit;
                 return;
             }
+            // Safety valve to prevent accidental migrations.
+            int numberOfTables = itemTables.size();
+            if (numberOfTables > 0) {
+                String prefix = conf.getTableNamePrefix();
+                long numberOfItemsWithPrefix = itemTables.stream()
+                        .filter(i -> i.startsWith(prefix) || i.toLowerCase().startsWith("item")).count();
+                long percentageWithPrefix = (numberOfItemsWithPrefix * 100) / itemTables.size();
+                if (!prefix.isBlank() && percentageWithPrefix >= MIGRATION_PERCENTAGE_THRESHOLD) {
+                    logger.error(
+                            "JDBC::formatTableNames: {}% of all tables start with table name prefix '{}' or 'item', but items manage table '{}' was not found or is empty. Check configuration parameter 'itemsManageTable'",
+                            percentageWithPrefix, conf.getTableNamePrefix(), conf.getItemsManageTable());
+                    if (ifTableExists("items")) {
+                        logger.error(
+                                "JDBC::formatTableNames: Table 'items' was found, consider updating configuration parameter 'itemsManageTable' accordingly");
+                    }
+                    initialized = tmpinit;
+                    return;
+                }
+            }
             oldNewTableNames = new ArrayList<>();
             for (String itemName : itemTables) {
+                if (!ItemUtil.isValidItemName(itemName)) {
+                    logger.warn("JDBC::formatTableNames: Skipping invalid item name {}", itemName);
+                    continue;
+                }
                 ItemsVO isvo = new ItemsVO();
                 isvo.setItemName(itemName);
                 isvo.setItemsManageTable(conf.getItemsManageTable());

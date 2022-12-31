@@ -30,7 +30,7 @@ import org.openhab.core.thing.Thing;
  *
  */
 @NonNullByDefault
-public class AbstractBatteryPoweredDeviceHandler extends BoschSHCDeviceHandler {
+public abstract class AbstractBatteryPoweredDeviceHandler extends BoschSHCDeviceHandler {
 
     /**
      * Service to monitor the battery level of the device

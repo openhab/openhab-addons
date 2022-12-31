@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>3.4.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.jdbc</artifactId>
@@ -30,8 +30,8 @@
     <hsqldb.version>2.3.3</hsqldb.version>
     <mariadb.version>3.0.8</mariadb.version>
     <mysql.version>8.0.30</mysql.version>
-    <postgresql.version>42.4.1</postgresql.version>
-    <sqlite.version>3.16.1</sqlite.version>
+    <postgresql.version>42.4.3</postgresql.version>
+    <sqlite.version>3.40.0.0</sqlite.version>
   </properties>
 
   <dependencies>

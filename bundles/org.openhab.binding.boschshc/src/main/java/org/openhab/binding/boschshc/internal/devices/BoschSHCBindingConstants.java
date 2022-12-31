@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christian Oeing - added Shutter Control, ThermostatHandler
  * @author Christian Oeing - Added WallThermostatHandler
  * @author David Pace - Added cameras, intrusion detection system, smart plugs, battery state support and smart bulbs
+ * @author Christian Oeing - Added smoke detector
  */
 @NonNullByDefault
 public class BoschSHCBindingConstants {
@@ -46,6 +47,7 @@ public class BoschSHCBindingConstants {
             "intrusion-detection-system");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
+    public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -79,6 +81,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

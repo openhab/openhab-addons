@@ -333,10 +333,10 @@ public class JdbcConfiguration {
                         warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.4.1 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.40.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                 }
             }

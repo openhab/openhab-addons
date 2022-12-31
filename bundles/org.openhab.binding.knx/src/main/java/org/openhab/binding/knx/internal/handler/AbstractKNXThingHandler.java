@@ -152,7 +152,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                     if (!filledDescription && config.getFetch()) {
                         Future<?> descriptionJob = this.descriptionJob;
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
-                            long initialDelay = Math.round(config.getPingInterval().longValue() * random.nextFloat());
+                            long initialDelay = Math.round(config.getPingInterval() * random.nextFloat());
                             this.descriptionJob = getBackgroundScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
                             }, initialDelay, TimeUnit.SECONDS);
@@ -181,7 +181,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
-                long pingInterval = config.getPingInterval().longValue();
+                long pingInterval = config.getPingInterval();
                 long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
                 ScheduledFuture<?> pollingJob = this.pollingJob;

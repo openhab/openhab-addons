@@ -4,6 +4,8 @@ This binding connects openHAB with Yamaha Receivers of product line CX-A5000, RX
 
 If your hardware is on the list but still does not work, please fill a bug report!
 
+If your Yamaha receiver is not on the list, it likely is a newer model that supports MusicCast, please try the [MusicCast Binding](https://www.openhab.org/addons/bindings/yamahamusiccast/) instead.
+
 ## Supported Things
 
 | Thing    | Type   | Description              |

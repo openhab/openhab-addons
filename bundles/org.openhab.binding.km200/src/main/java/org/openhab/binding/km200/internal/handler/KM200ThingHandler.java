@@ -362,7 +362,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             logger.trace("Create things: {} id: {} channel: {}", thing.getUID(), subKey, thing.getUID().getId());
             switch (subKeyType) {
                 case DATA_TYPE_STRING_VALUE:
-                    /* Creating an new channel type with capabilities from service */
+                    /* Creating a new channel type with capabilities from service */
                     List<StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
                         options = new ArrayList<>();
@@ -409,7 +409,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                     }
                     /* Check the capabilities of this service */
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
-                        /* Creating an new channel type with capabilities from service */
+                        /* Creating a new channel type with capabilities from service */
                         // The type is definitely correct here
                         @SuppressWarnings("unchecked")
                         List<Object> subValParas = (List<Object>) serObj.serviceTreeMap.get(subKey).getValueParameter();

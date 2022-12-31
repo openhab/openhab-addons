@@ -240,7 +240,7 @@ public class TapoDeviceHttpApi {
             if (jsonObject != null) {
                 Integer errorCode = jsonObjectToInt(jsonObject, "error_code", ERR_JSON_DECODE_FAIL);
                 if (errorCode == 0) {
-                    /* return result if set / else request was successfull */
+                    /* return result if set / else request was successful */
                     result = jsonObjectToString(jsonObject.getAsJsonObject("result"), "token");
                 } else {
                     /* return errorcode from device */
@@ -344,7 +344,7 @@ public class TapoDeviceHttpApi {
                         logger.debug("({}) sendAsyncRequest response error'{}'", uid, response.getStatus());
                         handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE, getContentAsString()));
                     } else {
-                        /* request succesfull */
+                        /* request successful */
                         String rBody = getContentAsString();
                         logger.trace("({}) receivedRespose '{}'", uid, rBody);
                         if (!hasErrorCode(rBody)) {

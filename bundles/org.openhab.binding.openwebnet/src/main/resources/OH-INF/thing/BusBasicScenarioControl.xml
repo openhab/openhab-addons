@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Scenario Control</label>
-		<description>A OpenWebNet BUS/SCS Scenario Control device. BTicino models: F420/IR3456</description>
+		<description>An OpenWebNet BUS/SCS Scenario Control device. BTicino models: F420/IR3456</description>
 
 		<channels>
 			<channel id="scenario" typeId="scenarioEvent"/>

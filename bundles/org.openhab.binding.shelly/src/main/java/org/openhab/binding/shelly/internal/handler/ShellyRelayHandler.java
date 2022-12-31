@@ -144,8 +144,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Brightness channel has 2 functions: Switch On/Off (OnOnType) and setting brightness (PercentType)
      * There is some more logic in the control. When brightness is set to 0 the control sends also an OFF command
-     * When current brightness is 0 and slider will be moved the new brightness will be set, but also a ON command is
-     * send.
+     * When current brightness is 0 and slider will be moved the new brightness will be set, but also an ON command is
+     * sent.
      *
      * @param command
      * @param index
@@ -379,8 +379,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 createDimmerChannels(dstatus, l);
 
                 // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
-                // and send a OFF status to the same channel.
-                // When the device's brightness is > 0 we send the new value to the channel and a ON command
+                // and send an OFF status to the same channel.
+                // When the device's brightness is > 0 we send the new value to the channel and an ON command
                 if (dimmer.ison) {
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
                     updated |= updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",

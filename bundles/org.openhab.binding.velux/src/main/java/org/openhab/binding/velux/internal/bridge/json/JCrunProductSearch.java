@@ -58,7 +58,7 @@ class JCrunProductSearch extends RunProductSearch implements JsonBridgeCommunica
      * </pre>
      *
      * NOTE: the gateway software is extremely sensitive to this exact JSON structure.
-     * Any modifications (like omitting empty params) will lead to an gateway error.
+     * Any modifications (like omitting empty params) will lead to a gateway error.
      */
     private static class Request {
 

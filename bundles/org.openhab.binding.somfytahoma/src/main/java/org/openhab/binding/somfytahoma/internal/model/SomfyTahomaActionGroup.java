@@ -15,7 +15,7 @@ package org.openhab.binding.somfytahoma.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SomfyTahomaActionGroup} holds information about a action
+ * The {@link SomfyTahomaActionGroup} holds information about an action
  * group and current actions.
  *
  * @author Ondrej Pecta - Initial contribution

@@ -16,6 +16,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAlarmHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAutomationHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAuxiliaryHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
@@ -83,6 +84,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetScenarioBasicHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Creating NEW BASIC SCENARIO Handler");
             return new OpenWebNetScenarioBasicHandler(thing);
+        } else if (OpenWebNetAlarmHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("creating NEW ALARM Handler");
+            return new OpenWebNetAlarmHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;

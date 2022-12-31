@@ -19,7 +19,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
 /**
  * Class to implement the BlueGiga command <b>indicateConfirm</b>.
  * <p>
- * This command can be used to send a acknowledge a received indication from a remote device.
+ * This command can be used to send an acknowledge a received indication from a remote device.
  * This function allows the application to manually confirm the indicated values instead of
  * the smart stack Bluetooth automatically doing it. The benefit of this is extra reliability
  * since the application can for example store the received value on the flash memory before

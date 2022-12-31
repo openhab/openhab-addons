@@ -9,7 +9,7 @@ All channels are added dynamically depending on the type of printer and its capa
 
 ## Discovery
 
-This binding uses mDNS for discovering HP Printers on the local network. 
+This binding uses mDNS for discovering HP Printers on the local network.
 
 ## Thing Configuration
 
@@ -75,23 +75,23 @@ The configuration parameters are:
 
 Notes:
 
-* All channels are dynamically added at runtime.
-* The word color in channel names follows American spelling ("color").
-* The `colorLevel`, `colorMarkingUsed` and `colorPagesRemaining` channels are used on printers that have only a single color cartridge instead of separate Ccyan, magenta and yellow cartridges.
-* The `scanner` group is for the scanning engine which consists of scan, copy and other operations; the `scan` group is for scanner operations only.
-* If no `status` group channels are selected, then those relevant data endpoints on the *Embedded Web Server* are not polled for status information.
+- All channels are dynamically added at runtime.
+- The word color in channel names follows American spelling ("color").
+- The `colorLevel`, `colorMarkingUsed` and `colorPagesRemaining` channels are used on printers that have only a single color cartridge instead of separate Ccyan, magenta and yellow cartridges.
+- The `scanner` group is for the scanning engine which consists of scan, copy and other operations; the `scan` group is for scanner operations only.
+- If no `status` group channels are selected, then those relevant data endpoints on the _Embedded Web Server_ are not polled for status information.
 
 ## Full Textual Example
 
 ### Thing File
 
-```
+```java
 Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1", usageInterval="30", statusInterval="4" ]
 ```
 
 ### Item File
 
-```
+```java
 String PrinterStatus "Status" { channel="hpprinter:printer:djprinter:status#status" }
 
 Number:Dimensionless PrinterBlackLevel "Black Level" { channel="hpprinter:printer:djprinter:ink#blackLevel" }
@@ -108,31 +108,31 @@ Number PrinterTotalMonochromePages "Total Monochrome Pages" { channel="hpprinter
 
 Black Ink displayed as a whole percentage - `60 %`
 
-```
+```perl
 Text item=hpprinter_printer_djprinter_ink_blackLevel label="Black [%.0f %unit%]"
 ```
 
 Black Marker displayed in millilitres - `21 ml`  
-*Default*
+_Default_
 
-```
+```perl
 Text item=hpprinter_printer_djprinter_usage_blackMarker label="Black Marker [%.0f %unit%]"
 ```
 
 Black Marker displayed in litres - `0.021 l`
 
-```
+```perl
 Text item=hpprinter_printer_djprinter_usage_blackMarker label="Black Marker [%.3f l]"
 ```
 
 Black Marker displayed in microlitres - `21000 µl`
 
-```
+```perl
 Text item=hpprinter_printer_djprinter_usage_blackMarker label="Black Marker [%.0f µl]"
 ```
 
 Scanner Document Feeder loaded with text status display - `ON` or `OFF`
 
-```
+```perl
 Text item=hpprinter_printer_djprinter_status_scannerAdfLoaded label="ADF Loaded [%s]"
 ```

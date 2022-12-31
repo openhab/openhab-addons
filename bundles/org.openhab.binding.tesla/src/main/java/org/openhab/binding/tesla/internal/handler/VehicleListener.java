@@ -17,7 +17,7 @@ import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
 
 /**
  * The {@link VehicleListener} interface can be implemented by classes that want to be informed about
- * existing vehicles of a given account. They need to register on an {@link TeslaAccountHandler}.
+ * existing vehicles of a given account. They need to register on a {@link TeslaAccountHandler}.
  *
  * @author Kai Kreuzer - Initial contribution
  */

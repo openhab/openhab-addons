@@ -9,15 +9,15 @@ It is also capable to perform bandwidth speed tests.
 
 The binding has the following configuration options:
 
--   **allowSystemPings:** Use the external ICMP ping program of the operating system instead of the Java ping. Useful if the devices cannot be reached by Java ping. Default is true.
--   **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
--   **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
--   **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
--   **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as fallback latency. If disabled, the time to execute the ping command is always used as latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
+- **allowSystemPings:** Use the external ICMP ping program of the operating system instead of the Java ping. Useful if the devices cannot be reached by Java ping. Default is true.
+- **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
+- **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
+- **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
+- **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as fallback latency. If disabled, the time to execute the ping command is always used as latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
-```
+```text
 binding.network:allowSystemPings=true
 binding.network:allowDHCPlisten=false
 binding.network:arpPingToolPath=arping
@@ -26,9 +26,9 @@ binding.network:cacheDeviceStateTimeInMS=2000
 
 ## Supported Things
 
--   **pingdevice:** Detects device presence by using ICMP pings, arp pings and dhcp packet sniffing.
--   **servicedevice:** Detects device presence by scanning for a specific open tcp port.
--   **speedtest:** Monitors available bandwidth for upload and download.
+- **pingdevice:** Detects device presence by using ICMP pings, arp pings and dhcp packet sniffing.
+- **servicedevice:** Detects device presence by scanning for a specific open tcp port.
+- **speedtest:** Monitors available bandwidth for upload and download.
 
 ## Discovery
 
@@ -39,7 +39,7 @@ Please note: things discovered by the network binding will be provided with a ti
 
 ## Thing Configuration
 
-```
+```java
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000 ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
@@ -48,24 +48,24 @@ network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploa
 
 Use the following options for a **network:pingdevice**:
 
--   **hostname:** IP address or hostname of the device.
--   **macAddress:** MAC address used for waking the device by the Wake-on-LAN action.
--   **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
--   **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
--   **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
+- **hostname:** IP address or hostname of the device.
+- **macAddress:** MAC address used for waking the device by the Wake-on-LAN action.
+- **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
+- **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
+- **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
 
 Use the following additional options for a **network:servicedevice**:
 
--   **port:** Must not be 0. The destination port needs to be a TCP service.
+- **port:** Must not be 0. The destination port needs to be a TCP service.
 
 Use the following options for a **network:speedtest**:
 
--   **refreshInterval:** Interval between each test execution, in minutes. Default: `20`.
--   **uploadSize:** Size of the file to be uploaded in bytes. Default: `1000000`.
--   **url:** Url of the speed test server.
--   **fileName:** Name of the file to download from test server.
--   **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
--   **maxTimeout:** Number of timeout events that can happend (resetted at success) before setting the thing offline. Default: `3`.
+- **refreshInterval:** Interval between each test execution, in minutes. Default: `20`.
+- **uploadSize:** Size of the file to be uploaded in bytes. Default: `1000000`.
+- **url:** Url of the speed test server.
+- **fileName:** Name of the file to download from test server.
+- **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
+- **maxTimeout:** Number of timeout events that can happend (resetted at success) before setting the thing offline. Default: `3`.
 
 ## Presence detection - Configure target device
 
@@ -89,15 +89,15 @@ Use DHCP listen for an almost immediate presence detection for phones and tablet
 Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353).
 Therefore first a Bonjour message is sent, before the ARP presence detection is performed.
 The binding automatically figures out if the target device is an iOS device.
-To check if the binding has correctly recognised a device, have a look at the *uses_ios_wakeup* property of the THING.
+To check if the binding has correctly recognised a device, have a look at the _uses_ios_wakeup_ property of the THING.
 
 ### Use open TCP ports
 
 Many devices provide services on TCP ports (web-frontends, streaming servers, etc.), which can be used to confirm their presence in the network.
 Most operating systems have options to list open ports.
-On a Linux-based system, *nmap* may be used to discover all open TCP ports on the device with the specified IP address:
+On a Linux-based system, _nmap_ may be used to discover all open TCP ports on the device with the specified IP address:
 
-```
+```shell
 $ sudo nmap -Pn -sT -p- 192.168.0.42
 
 Starting Nmap 6.47 ( http://nmap.org ) at 2016-07-31 20:00 CEST
@@ -128,10 +128,10 @@ Because external tools are used for some of the presence detection mechanism or 
 For arp pings to work, a separate tool called "arping" is used.
 Linux has three different tools:
 
-*   arp-scan (not yet supported by this binding)
-*   arping of the ip-utils (Ubuntu/Debian: `apt-get install iputils-arping`)
-*   arping by Thomas Habets (Ubuntu/Debian: `apt-get install arping`)
-*   arp-ping by Eli Fulkerson (Windows: https://www.elifulkerson.com/projects/arp-ping.php)
+- arp-scan (not yet supported by this binding)
+- arping of the ip-utils (Ubuntu/Debian: `apt-get install iputils-arping`)
+- arping by Thomas Habets (Ubuntu/Debian: `apt-get install arping`)
+- arp-ping by Eli Fulkerson (Windows: <https://www.elifulkerson.com/projects/arp-ping.php>)
 
 arping by Thomas Habets runs on Windows and macOS as well.
 
@@ -144,7 +144,7 @@ Just test the executable on the command line; if `sudo` is required, grant eleva
 
 Some operating systems such as Linux restrict applications to only use ports >= 1024 without elevated privileges.
 If the binding is not able to use port 67 (DHCP) because of such a restriction, or because the same system is used as a DHCP server, port 6767 will be used instead.
-Check the property *dhcp_state* on the THING for such a hint. In this case, establish port forwarding:
+Check the property _dhcp_state_ on the THING for such a hint. In this case, establish port forwarding:
 
 ```shell
 sysctl -w net.ipv4.ip_forward=1
@@ -159,7 +159,7 @@ iptables -A PREROUTING -t mangle -p udp ! -s 127.0.0.1 --dport 67 -j TEE --gatew
 iptables -A OUTPUT -t nat -p udp -s 127.0.0.1/32 --dport 67 -j DNAT --to 127.0.0.1:6767
 ```
 
-Above iptables solutions to check *dhcp_state* are not working when openHAB is started in Docker. Use another workaround
+Above iptables solutions to check _dhcp_state_ are not working when openHAB is started in Docker. Use another workaround
 
 ```shell
 iptables -I PREROUTING -t nat -p udp --src 0.0.0.0 --dport 67 -j DNAT --to 0.0.0.0:6767
@@ -185,14 +185,14 @@ Things support the following channels:
 
 demo.things:
 
-```xtend
+```java
 Thing network:pingdevice:devicename [ hostname="192.168.0.42", macAddress="6f:70:65:6e:48:41" ]
 Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
 demo.items:
 
-```xtend
+```java
 Switch MyDevice { channel="network:pingdevice:devicename:online" }
 Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
 
@@ -207,13 +207,14 @@ DateTime Speedtest_LUD "Timestamp [%1$tH:%1$tM]" <time> {channel="network:speedt
 
 demo.sitemap:
 
-```xtend
+```perl
 sitemap demo label="Main Menu"
 {
-	Frame {
-		Text item=MyDevice label="Device [%s]"
-		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
-	}
+    Frame {
+        Text item=MyDevice label="Device [%s]"
+        Text item=MyDeviceResponseTime label="Device Response Time [%s]"
+    }
+    
     Frame label="SpeedTest" {
         Text item=Speedtest_Start
         Switch item=Speedtest_Running
@@ -244,7 +245,7 @@ sitemap demo label="Main Menu"
 A Wake-on-LAN action is supported by this binding for the `pingdevice` and `servicedevice` thing types.
 In classic rules this action is accessible as shown in the example below:
 
-```
+```java
 val actions = getActions("network", "network:pingdevice:devicename")
 if (actions === null) {
     logInfo("actions", "Actions not found, check thing ID")

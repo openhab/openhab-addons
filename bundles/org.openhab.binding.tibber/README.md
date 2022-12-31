@@ -212,7 +212,7 @@ Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
 ### demo.items:
-.
+
 ```
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}

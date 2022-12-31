@@ -4,12 +4,12 @@ The binding integrates the [innogy SmartHome](https://innogy.com/smarthome) syst
 It uses the official API 1.1 as provided by innogy as cloud service.
 As all status updates and commands have to go through the API, a permanent internet connection is required.
 
-*Notice!*
+_Notice!_
 
-*This binding is deprecated!*
+_This binding is deprecated!_
 
-*LIVISI (formally innogy) has implemented a local API on their SHC from Software Version 1.2.XX.XXX.
-Please migrate to the "LIVISI SmartHome Binding" which is using the new local API and requires neither the LIVISI-cloud-servers nor an internet connection.* 
+_LIVISI (formally innogy) has implemented a local API on their SHC from Software Version 1.2.XX.XXX.
+Please migrate to the "LIVISI SmartHome Binding" which is using the new local API and requires neither the LIVISI-cloud-servers nor an internet connection._
 
 ## Supported things
 
@@ -123,10 +123,11 @@ Be sure it is connected to the Internet.
 Authorization is done as oauth2 workflow with the innogy API.
 
 To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in the UI, if you edit it):
-https://auth.services-smarthome.de/AUTH
-* [innogy SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
-* [SmartHome Austria authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
-* [Start SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
+`https://auth.services-smarthome.de/AUTH`
+
+- [innogy SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
+- [SmartHome Austria authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
+- [Start SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
 
 You will be redirected to openhab.org and the auth-code will be displayed.
 Copy and paste it into your SHC configuration and you are done.
@@ -149,23 +150,23 @@ Now you can add all devices from your Inbox as things.
 As an alternative to using automatic discovery, innogy things can be configured using .things files.
 The innogy SmartHome Controller (SHC) can be configured using the following syntax:
 
-```
+```java
 Bridge innogysmarthome:bridge:<bridge-id> []
 ```
 
 Then the required authcode is retrieved and set **automatically**:
 
-```
+```java
 Bridge innogysmarthome:bridge:<bridge-id> [ authcode="<authcode>" ]
 ```
 
-** *Security warning!**
+** _Security warning!_*
 As the refresh-token is THE one and only credential one needs to access the innogy webservice with all device data, you have to make sure it is never given to another person.
 Thus it is recommended to remove the line from the openhab.log and/or make sure, the logfile is definitely never accessible by others!
 
 All other innogy devices can be added using the following syntax:
 
-```
+```java
 Thing WDS <thing-id> "<thing-name>" @ "<room-name>" [ id="<the-device-id>" ]
 ```
 
@@ -173,7 +174,7 @@ The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the Inbox,
 
 However, a full example .things configuration look like this:
 
-```
+```java
 Bridge innogysmarthome:bridge:mybride "innogy SmartHome Controller" {
     Thing ISD2 myDimmer "Dimmer Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing ISS2 myLightSwitch "Light Livingroom" @ "Livingroom" [ id="<device-id>" ]
@@ -191,7 +192,7 @@ Bridge innogysmarthome:bridge:mybride "innogy SmartHome Controller" {
 
 You can then configure your items in your *.items config files as usual, for example:
 
-```
+```java
 Contact myWindowContact        "Kitchen"                <window>      {channel="innogysmarthome:WDS:mybridge:myWindowContact:contact"}
 Switch myWindowContactBattery  "Battery low"            <battery>     {channel="innogysmarthome:WDS:mybridge:myWindowContact:battery_low"}
 Number myHeatingTemp           "Bath [%.1f °C]"         <temperature> {channel="innogysmarthome:RST:mybridge:myHeating:temperature"}
@@ -205,7 +206,7 @@ Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="
 
 The site configuration works a usual. One special example
 
-```
+```perl
 sitemap default label="Home" {
     Frame {
         Text item=myHeatingTemp label="Temperature"
@@ -221,13 +222,13 @@ sitemap default label="Home" {
 Pushbuttons provide trigger channels, that can only be used in rules.
 Here is an example rule:
 
-```
+```java
 rule "Button triggered rule"
 when
-	Channel 'innogysmarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
+ Channel 'innogysmarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
 then
     // do something...
-	logInfo("testlogger", "Button 1 pressed")
+ logInfo("testlogger", "Button 1 pressed")
 end
 ```
 
@@ -239,13 +240,13 @@ If the bridge stays offline with the following status shown in the UI, the reaso
 
 To solve this on a Linux system, follow this steps:
 
-1. Download the certificates (.cer-files) of https://home.innogy-smarthome.de and https://innogy.com including the "DigiCert Global Root G2" to your computer.
+1. Download the certificates (.cer-files) of <https://home.innogy-smarthome.de> and <https://innogy.com> including the "DigiCert Global Root G2" to your computer.
 As this depends on the used browser and operating system, please use a web search engine to find out how to achieve this for your situation.
-2. On your Linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
+1. On your Linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
 The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
-3. Copy the .cer-files from step 1 into this directory.
-4. Import each certificate with the command: `sudo keytool –importcert –alias “innogysmarthome” –keystore cacerts –file innogy.cer`
+1. Copy the .cer-files from step 1 into this directory.
+1. Import each certificate with the command: `sudo keytool –importcert –alias “innogysmarthome” –keystore cacerts –file innogy.cer`
 (alias can be freely chosen but must be unique; replace innogy.cer with the filename of the downloaded certificate)
-5. Restart the JVM and openHAB.
+1. Restart the JVM and openHAB.
 
 The default password of the certificate store is "changeit".

@@ -5,8 +5,8 @@ Many personal weather stations or similar devices are only capable of submitting
 This binding enables acting as a receiver of updates from devices that post measurements to https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
 If the hostname is configurable - as on weather stations based on the Fine Offset Electronics WH2600-IP - this is simple, otherwise you have to set up dns such that it resolves the above hostname to your server, without preventing the server from resolving the proper ip if you want to forward the request.
 
-The server thus listens at http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php and the device needs to be pointed at this address.
-If you can't configure the device itself to submit to an alternate hostname you would need to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide as dns to the device does DHCP.
+The server thus listens at `http(s)://<your-openHAB-server>:<openHAB-port>/weatherstation/updateweatherstation.php` and the device needs to be pointed at this address.
+If you can't configure the device itself to submit to an alternate hostname you would need to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide it as the DHCP dns-server to the device.
 Make sure not to use this dns server instance for any other DHCP clients.
 
 The request is in itself simple to parse, so by redirecting it to your openHAB server you can intercept the values and use them to control items in your home.
@@ -19,6 +19,7 @@ It can also be used to submit the same measurements to multiple weather services
 ## Supported Things
 
 Any device that sends weather measurement updates to the wunderground.com update URLs is supported.
+Multiple devices submitting to the same wunderground account ID can be aggregated.
 It is easiest to use with devices that have a configurable target address, but can be made to work with any internet-connected device, that gets its dns server via DHCP or where the DNS server can be set.
 
 ## Discovery
@@ -42,7 +43,9 @@ If you don't plan on submitting measurements to wunderground.com, it can be any 
 Each measurement type the wunderground.com update service accepts has a channel.
 The channels must be named exactly as the request parameter they receive.
 I.e. the wind speed channel must be named `windspeedmph` as that is the request parameter name defined by Wunderground in their API.
-The channel name set up in the binding should be considered an id with no semantic content other than pointing to the wounderground API.
+Illegal channel id characters are converted to -.
+For example, AqPM2.5 has a channel named `AqPM2-5`.
+The channel name set up in the binding should be considered an id with no semantic content other than pointing to the wunderground API.
 Additionally there is a receipt timestamp and a trigger channel.
 
 ### Request parameters are mapped to one of the following channel-types:
@@ -161,7 +164,7 @@ Thing wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID "Foo" [stat
 }
 ```
 
-The pattern for a given channel is `Type <channel type id> : <request paramter> []` from the channel types table.
+The pattern for a given channel is `Type <channel type id> : <request parameter> []` from the channel types table.
 Casing of the request parameter is significant.
 None of the current channels take config.
 
@@ -177,7 +180,7 @@ The binding tries to post received values as the item types described in the cha
 ### Rule examples
 
 You can use the trigger channel to create a rule to calculate additional values.
-Create an new manual Item with a meaningful id, fx. WundergroundUpdateReceiverBinging_HeatIndex with a Number type.
+Create a new manual Item with a meaningful id, fx. WundergroundUpdateReceiverBinging_HeatIndex with a Number type.
 Create a rule that triggers when the trigger channel is updated and the following DSL:
 
 ```

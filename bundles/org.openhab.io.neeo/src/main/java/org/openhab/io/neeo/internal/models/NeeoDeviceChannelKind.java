@@ -26,7 +26,7 @@ import org.openhab.core.thing.type.ChannelKind;
 public enum NeeoDeviceChannelKind {
     /** Represents an item */
     ITEM("item"),
-    /** Represents an trigger item */
+    /** Represents a trigger item */
     TRIGGER("trigger");
 
     /** The text value of the enum */

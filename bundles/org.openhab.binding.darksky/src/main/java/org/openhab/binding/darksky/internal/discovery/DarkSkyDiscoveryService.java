@@ -53,7 +53,7 @@ public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
     private final DarkSkyAPIHandler bridgeHandler;
 
     /**
-     * Creates an DarkSkyLocationDiscoveryService.
+     * Creates a DarkSkyLocationDiscoveryService.
      */
     public DarkSkyDiscoveryService(DarkSkyAPIHandler bridgeHandler, LocationProvider locationProvider,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {

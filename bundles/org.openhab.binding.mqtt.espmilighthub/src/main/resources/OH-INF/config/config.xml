@@ -13,7 +13,7 @@
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>Dimmed on Power Fail</label>
-			<description>If lights loose power when soft off, the lights will default back to the minimum brightness.</description>
+			<description>If lights lose power when soft off, the lights will default back to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -37,23 +37,25 @@
 			<label>White Hue</label>
 			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
-			<default>35</default>
+			<default>-1</default>
 		</parameter>
 
 		<parameter name="whiteSat" type="integer" required="true" min="-1" max="100">
 			<label>White Saturation</label>
 			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS.
 			</description>
-			<default>32</default>
+			<default>-1</default>
 		</parameter>
 
-		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
-			<label>White Threshold</label>
-			<description>Saturation values at or below this value on a RGBW color control will trigger the white mode. -1 will
-				disable
-				this feature.
+		<parameter name="duvThreshold" type="decimal" required="true" min="0" max="1" step="0.001">
+			<label>Duv Threshold</label>
+			<description><![CDATA[
+			    Duv values at or below this value on a RGBWW color control will trigger white mode at the appropriate color temperature.
+				1 will effectively disable this feature.
+				See <a href="https://www.waveformlighting.com/tech/calculate-duv-from-cie-1931-xy-coordinates/">this link</a> for more information on how this is calculated.
+				]]>
 			</description>
-			<default>6</default>
+			<default>0.003</default>
 		</parameter>
 
 		<parameter name="favouriteWhite" type="integer" required="true" min="153" max="370">
@@ -76,7 +78,7 @@
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>Dimmed on Power Fail</label>
-			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
+			<description>If lights lose power, the lights will turn on to the minimum brightness.</description>
 			<default>true</default>
 		</parameter>
 	</config-description>
@@ -104,7 +106,7 @@
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
 			<label>Dimmed on Power Fail</label>
-			<description>If lights loose power, the lights will turn on to the minimum brightness.</description>
+			<description>If lights lose power, the lights will turn on to the minimum brightness.</description>
 			<default>false</default>
 		</parameter>
 

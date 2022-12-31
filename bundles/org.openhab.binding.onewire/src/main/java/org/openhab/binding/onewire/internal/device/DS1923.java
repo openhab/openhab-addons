@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DS1923} class defines an DS1923 device
+ * The {@link DS1923} class defines a DS1923 device
  *
  * @author Jan N. Klug - Initial contribution
  * @author Michał Wójcik - Adapted to DS1923

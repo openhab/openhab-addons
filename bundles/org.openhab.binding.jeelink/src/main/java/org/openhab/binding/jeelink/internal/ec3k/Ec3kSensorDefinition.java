@@ -19,7 +19,7 @@ import org.openhab.binding.jeelink.internal.SensorDefinition;
 import org.openhab.core.thing.Thing;
 
 /**
- * Sensor Defintion of a EC3000 Power Monitor.
+ * Sensor Defintion of an EC3000 Power Monitor.
  *
  * @author Volker Bier - Initial contribution
  */

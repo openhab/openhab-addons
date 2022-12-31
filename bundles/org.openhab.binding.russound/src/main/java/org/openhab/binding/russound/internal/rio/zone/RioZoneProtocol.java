@@ -638,7 +638,7 @@ class RioZoneProtocol extends AbstractRioProtocol
     }
 
     /**
-     * Sends a EVENT instruction to the zone
+     * Sends an EVENT instruction to the zone
      *
      * @param event a non-null, non-empty string to send
      * @throws IllegalArgumentException if event is null or empty

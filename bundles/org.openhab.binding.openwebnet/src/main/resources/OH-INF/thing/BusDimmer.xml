@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Dimmer</label>
-		<description>A OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
+		<description>An OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
 
 		<channels>
 			<channel id="brightness" typeId="brightness"/>

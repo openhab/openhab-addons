@@ -135,7 +135,7 @@ public class HeatpumpConnector {
     /**
      * Returns the internal states of the heat pump
      * 
-     * @return a array with all internal data of the heat pump
+     * @return an array with all internal data of the heat pump
      */
     public Integer[] getValues() {
         return heatpumpValues;
@@ -144,7 +144,7 @@ public class HeatpumpConnector {
     /**
      * Returns the internal visibilities of the heat pump
      *
-     * @return a array with all internal visibilities of the heat pump
+     * @return an array with all internal visibilities of the heat pump
      */
     public Integer[] getVisibilities() {
         return heatpumpVisibilities;

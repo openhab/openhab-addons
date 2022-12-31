@@ -310,7 +310,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light brightness state based on a OWN Lighting message
+     * Updates light brightness state based on an OWN Lighting message
      *
      * @param msg the Lighting message received
      */
@@ -341,7 +341,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light on/off state based on a OWN Lighting event message received
+     * Updates light on/off state based on an OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */

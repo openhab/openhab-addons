@@ -41,7 +41,6 @@ public class URLConnectionFactory {
 
     public HttpURLConnection createBaseRequest(String url, HttpMethod httpMethod,
             AccessTokenResponse accessTokenResponse) throws IOException {
-
         HttpURLConnection urlConnection = createRequest(url);
         urlConnection.setRequestMethod(httpMethod.asString());
         urlConnection.setRequestProperty(HttpHeader.ACCEPT.asString(), CONTENT_TYPE);

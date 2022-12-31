@@ -102,7 +102,7 @@ public class GreeDeviceFinder {
                         continue;
                     }
 
-                    // Decrypt message - a a GreeException is thrown when something went wrong
+                    // Decrypt message - a GreeException is thrown when something went wrong
                     String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
                             .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);

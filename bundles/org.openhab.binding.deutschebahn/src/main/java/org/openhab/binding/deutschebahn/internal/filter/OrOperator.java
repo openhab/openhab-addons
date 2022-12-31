@@ -15,7 +15,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing an disjunction.
+ * A token representing a disjunction.
  * 
  * @author Sönke Küper - Initial contribution.
  */

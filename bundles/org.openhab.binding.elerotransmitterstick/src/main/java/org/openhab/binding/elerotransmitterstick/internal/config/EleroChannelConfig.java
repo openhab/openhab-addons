@@ -15,7 +15,7 @@ package org.openhab.binding.elerotransmitterstick.internal.config;
 import org.openhab.binding.elerotransmitterstick.internal.handler.EleroChannelHandler;
 
 /**
- * The {@link EleroChannelConfig} holds configuration data of a {@link EleroChannelHandler}
+ * The {@link EleroChannelConfig} holds configuration data of an {@link EleroChannelHandler}
  *
  * @author Volker Bier - Initial contribution
  */

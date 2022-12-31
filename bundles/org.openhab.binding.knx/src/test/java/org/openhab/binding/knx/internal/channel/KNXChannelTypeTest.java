@@ -27,18 +27,18 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class KNXChannelTypeTest {
+class KNXChannelTypeTest {
 
     private KNXChannelType ct = new MyKNXChannelType("");
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         ct = new MyKNXChannelType("");
     }
 
     @SuppressWarnings("null")
     @Test
-    public void testParseWithDptMultipleWithRead() {
+    void testParseWithDptMultipleWithRead() {
         ChannelConfiguration res = ct.parse("5.001:<1/3/22+0/3/22+<0/8/15");
 
         assertEquals("5.001", res.getDPT());
@@ -50,7 +50,7 @@ public class KNXChannelTypeTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testParseWithDptMultipleWithoutRead() {
+    void testParseWithDptMultipleWithoutRead() {
         ChannelConfiguration res = ct.parse("5.001:1/3/22+0/3/22+0/8/15");
 
         assertEquals("5.001", res.getDPT());
@@ -62,7 +62,7 @@ public class KNXChannelTypeTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testParseWithoutDptSingleWithoutRead() {
+    void testParseWithoutDptSingleWithoutRead() {
         ChannelConfiguration res = ct.parse("1/3/22");
 
         assertNull(res.getDPT());
@@ -74,7 +74,7 @@ public class KNXChannelTypeTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testParseWithoutDptSingleWitRead() {
+    void testParseWithoutDptSingleWitRead() {
         ChannelConfiguration res = ct.parse("<1/3/22");
 
         assertNull(res.getDPT());
@@ -86,7 +86,7 @@ public class KNXChannelTypeTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testParseTwoLevel() {
+    void testParseTwoLevel() {
         ChannelConfiguration res = ct.parse("5.001:<3/1024+<4/1025");
         assertEquals("3/1024", res.getMainGA().getGA());
         assertEquals(2, res.getListenGAs().size());
@@ -95,7 +95,7 @@ public class KNXChannelTypeTest {
 
     @SuppressWarnings("null")
     @Test
-    public void testParseFreeLevel() {
+    void testParseFreeLevel() {
         ChannelConfiguration res = ct.parse("5.001:<4610+<4611");
         assertEquals("4610", res.getMainGA().getGA());
         assertEquals(2, res.getListenGAs().size());

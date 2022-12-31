@@ -8,12 +8,12 @@ Mixing the two concepts can also be done, the choice is yours.
 
 ## Supported Bridges
 
-* `OpenSprinkler HTTP Bridge` is required to communicate with an OpenSprinkler device through the network and should be added first.
+- `OpenSprinkler HTTP Bridge` is required to communicate with an OpenSprinkler device through the network and should be added first.
 
 ## Supported Things
 
-* `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g. to turn it on or off, or the time remaining.
-* `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g. if rain was detected.
+- `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g. to turn it on or off, or the time remaining.
+- `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g. if rain was detected.
 
 Recommend that you first add a single `device` thing and then if you need the extra controls, add as many of the `station` things as you wish.
 
@@ -24,18 +24,18 @@ Due to this method used, it is very slow at finding devices and can saturate net
 
 ## Bridge ('http') Configuration
 
--   hostname: Hostname or IP address of the OpenSprinkler HTTP API.
--   port: Port the OpenSprinkler device is listening on. Usually 80.
--   password: Admin password of the API. Factory default is: opendoor
--   refresh: Number of seconds in between refreshing the Thing state with the API.
--   basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
--   basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
+- hostname: Hostname or IP address of the OpenSprinkler HTTP API.
+- port: Port the OpenSprinkler device is listening on. Usually 80.
+- password: Admin password of the API. Factory default is: opendoor
+- refresh: Number of seconds in between refreshing the Thing state with the API.
+- basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
+- basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
 ### Station Thing Configuration
 
 The `station` thing must be used with a `http` bridge and has the following configuration properties:
 
--   stationIndex: The index of the station to communicate with, starting with 0 for the first station
+- stationIndex: The index of the station to communicate with, starting with 0 for the first station
 
 ## Channels
 
@@ -47,7 +47,7 @@ The following channels are supported by the `station` thing.
 | remainingWaterTime | Number:Time | R  | The time the station remains to be open.                 |
 | nextDuration       | Number:Time | RW | The amount of time that will be used to keep the station |
 |                    |             |    | open when next manually switched on. If not set, this    |
-|                    |             |    | value will default to 18 hours which is the maximum time | 
+|                    |             |    | value will default to 18 hours which is the maximum time |
 |                    |             |    | supported.                                               |
 | queued             | Switch      | RW | Indicates that the station is queued to be turned on.    |
 |                    |             |    | The channel cannot be turned on, only turning it off is  |
@@ -82,7 +82,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 
 demo.things:
 
-```
+```java
 Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoor"] {
     Thing station 01 [stationIndex=0]
     Thing station 02 [stationIndex=1]
@@ -96,7 +96,7 @@ Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoo
 
 demo.items:
 
-```
+```java
 Group stations
 Switch Station01 (stations) { channel="opensprinkler:station:http:01:stationState" }
 Number:Time Station01RaminingTime { channel="opensprinkler:station:http:01:remainingWaterTime" }
@@ -113,7 +113,7 @@ Number:ElectricCurrent CurrentDraw {channel="opensprinkler:device:http:device:cu
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

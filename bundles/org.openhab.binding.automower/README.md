@@ -11,7 +11,6 @@ This binding allows you to integrate, view and control Automower lawn mowers in 
 
 All Husqvarna Automower models with "Automower Connect" should be supported. It was tested only with a Husqvarna Automower 430X and 450X.
 
-
 ## Discovery
 
 Once the bridge is created and configured, OpenHab will automatically discover all Automowers registered on your account.
@@ -125,7 +124,6 @@ Channel `last-position` is always identical with channel `position01` and thus p
 | position50 | Location | R | GPS Position 50 |
 | last-position | Location | R | Last GPS Position (identical with positions#position01) |
 
-
 ## Actions
 
 The following actions are available for `automower`things:
@@ -139,44 +137,44 @@ The following actions are available for `automower`things:
 | park                   | duration (int) | Parks the automower for the given duration (minutes), overriding the schedule                  |
 | resumeSchedule         | -              | Resumes the schedule for the automower                                                         |
 
-
 ## Full Example
 
 ### automower.thing
 
-	Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", userName="<your_username>", password="<your_password>" ] {
-			Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>", pollingInterval=3600] {
-		}
-	}
-
+```java
+Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", userName="<your_username>", password="<your_password>" ] {
+    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>", pollingInterval=3600] {
+    }
+}
+```
 
 ### automower.items
 
-	String Automower_Mode               "Mode [%s]"                   { channel="automower:automower:mybridge:myAutomower:mode" }
-	String Automower_Activity           "Activity [%s]"         	     { channel="automower:automower:mybridge:myAutomower:activity" }
-	String Automower_State              "State [%s]"            	     { channel="automower:automower:mybridge:myAutomower:state" }
-	DateTime Automower_Last_Update      "Last Update"    	     { channel="automower:automower:mybridge:myAutomower:last-update" }
-	Number Automower_Battery            "Battery [%d %%]"                { channel="automower:automower:mybridge:myAutomower:battery" }
-	Number Automower_Error_Code         "Error Code [%d]"             { channel="automower:automower:mybridge:myAutomower:error-code" }
-	DateTime Automower_Error_Time       "Error Time"             { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
-	String Automower_Override_Action    "Override Action [%s]"        { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
-	DateTime Automower_Next_Start_Time  "Next Start Time"        { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
-	String Automower_Calendar_Tasks     "Planned Tasks [%s]"          { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
+```java
+String Automower_Mode               "Mode [%s]"                   { channel="automower:automower:mybridge:myAutomower:mode" }
+String Automower_Activity           "Activity [%s]"               { channel="automower:automower:mybridge:myAutomower:activity" }
+String Automower_State              "State [%s]"                  { channel="automower:automower:mybridge:myAutomower:state" }
+DateTime Automower_Last_Update      "Last Update"          { channel="automower:automower:mybridge:myAutomower:last-update" }
+Number Automower_Battery            "Battery [%d %%]"                { channel="automower:automower:mybridge:myAutomower:battery" }
+Number Automower_Error_Code         "Error Code [%d]"             { channel="automower:automower:mybridge:myAutomower:error-code" }
+DateTime Automower_Error_Time       "Error Time"             { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
+String Automower_Override_Action    "Override Action [%s]"        { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
+DateTime Automower_Next_Start_Time  "Next Start Time"        { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
+String Automower_Calendar_Tasks     "Planned Tasks [%s]"          { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
 
-	Number Automower_Command_Start               "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
-	Switch Automower_Command_Resume              "Resume the schedule"          { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
-	Switch Automower_Command_Pause               "Pause the automower"          { channel="automower:automower:mybridge:myAutomower:pause" }
-	Number Automower_Command_Park                "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
-	Switch Automower_Command_Park_Next_Schedule  "Park until next schedule"     { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
-	Switch Automower_Command_Park_Notice         "Park until further notice"    { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
+Number Automower_Command_Start               "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
+Switch Automower_Command_Resume              "Resume the schedule"          { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
+Switch Automower_Command_Pause               "Pause the automower"          { channel="automower:automower:mybridge:myAutomower:pause" }
+Number Automower_Command_Park                "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
+Switch Automower_Command_Park_Next_Schedule  "Park until next schedule"     { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
+Switch Automower_Command_Park_Notice         "Park until further notice"    { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
 
-    Location Automower_Last_Position    "Last Position" { channel="automower:automower:mybridge:myAutomower:last-position" }
-   
+Location Automower_Last_Position    "Last Position" { channel="automower:automower:mybridge:myAutomower:last-position" }
+```
 
 ### automower.sitemap
 
-
-```
+```perl
 sitemap demo label="Automower"
 {
     Frame {
@@ -198,7 +196,7 @@ sitemap demo label="Automower"
 
 Example rule that triggers an automower action
 
-```
+```java
 rule "AutomowerParkUntilFurtherNotice"
 when
     Item Some_Item changed to ON

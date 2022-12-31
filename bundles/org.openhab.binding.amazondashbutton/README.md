@@ -8,7 +8,7 @@ The Binding code is inspired by [hortinstein/node-dash-button](https://github.co
 **Warning:**
 The Dash Button will try to contact the Amazon servers every time the button is pressed.
 This might not be in line with your privacy preferences but can be prevented.
-Please refer to the ["Preventing Communication with Amazon Servers"](#no-phonehome) section for details.
+Please refer to the ["Preventing Communication with Amazon Servers"](#preventing-communication-with-amazon-servers) section for details.
 
 **Response Time:**
 Please be aware, that due to the operation method of this binding, the response time for a button press can be rather high (up to five seconds).
@@ -61,7 +61,7 @@ You need to restart openHAB for the capabilities change to take effect.
 On a Windows system there are two options to go with.
 
 1. The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
-2. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
+1. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
 
 ### Installing libpcap on Other Operating Systems
 
@@ -76,10 +76,9 @@ A few known operating systems are:
 ## Setup Dash Button
 
 Amazon itself doesn't support Dash Buttons anymore.
-Instructions how to use them without having to rely on Amazon's servers can be found at https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/ - at least for some firmware versions.
+Instructions how to use them without having to rely on Amazon's servers can be found at [https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/](https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/) - at least for some firmware versions.
 Take care to block internet access for the button or it will be bricked.
 
-{: #no-phonehome}
 ## Preventing Communication with Amazon Servers
 
 Every time a Dash Button is pressed a request will be sent to the Amazon servers.
@@ -116,11 +115,11 @@ You can ignore these devices in your Inbox.
 
 ### Amazon Dash Button
 
--   `macAddress` - The MAC address of the Amazon Dash Button.
+- `macAddress` - The MAC address of the Amazon Dash Button.
 
--   `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
+- `pcapNetworkInterfaceName` - The network interface which receives the packets of the Amazon Dash Button.
 
--   `packetInterval` - Often a single button press is recognized multiple times.
+- `packetInterval` - Often a single button press is recognized multiple times.
     You can specify how long any further detected button pressed should be ignored after one click was processed.
     The parameter is optional and 5000ms by default.
 

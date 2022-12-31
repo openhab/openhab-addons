@@ -50,7 +50,7 @@ public class SensorValues extends BaseSensorValues implements ZoneIdentifier {
     }
 
     /**
-     * Creates a new {@link SensorValues} through the {@link JsonObject} which will be returned by an zone call.
+     * Creates a new {@link SensorValues} through the {@link JsonObject} which will be returned by a zone call.
      * Because of zone calls does not include a zoneID or zoneName in the json response, the zoneID and zoneName have to
      * be handed over the constructor.
      *

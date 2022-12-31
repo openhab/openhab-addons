@@ -86,7 +86,7 @@ public class InfluxDBStateConvertUtils {
 
     /**
      * Converts a value to a {@link State} which is suitable for the given {@link Item}. This is
-     * needed for querying a {@link InfluxDBHistoricItem}.
+     * needed for querying an {@link InfluxDBHistoricItem}.
      *
      * @param value to be converted to a {@link State}
      * @param itemName name of the {@link Item} to get the {@link State} for

@@ -116,6 +116,7 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_DHWSETPOINT_CHANNEL = "dhwSetpoint";
     public static final String APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL = "maxBoilerTemperature";
     public static final String APPLIANCE_DHWCOMFORTMODE_CHANNEL = "dhwComfortMode";
+    public static final String APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL = "returnWaterTemperature";
 
     // List of all Appliance Types
     public static final String APPLIANCE_TYPE_THERMOSTAT = "thermostat";

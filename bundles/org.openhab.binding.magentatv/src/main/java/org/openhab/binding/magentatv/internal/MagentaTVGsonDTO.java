@@ -128,7 +128,7 @@ public class MagentaTVGsonDTO {
     }
 
     /**
-     * Deutsche Telekom uses a OAuth-based authentication to access the EPG portal.
+     * Deutsche Telekom uses an OAuth-based authentication to access the EPG portal.
      * The binding automates the login incl. OAuth authentication. This class helps mapping the response to a Java
      * object (using Gson)
      *
