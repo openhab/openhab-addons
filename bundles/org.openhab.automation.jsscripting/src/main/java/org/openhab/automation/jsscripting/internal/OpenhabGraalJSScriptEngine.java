@@ -77,9 +77,22 @@ public class OpenhabGraalJSScriptEngine
             GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
                     "@jsscripting-globals.js").cached(true).build();
         } catch (IOException e) {
-            LOGGER.error("Failed to load global script", e);
+            throw new RuntimeException("Failed to load @jsscripting-globals.js", e);
         }
     }
+
+    private static Source OPENHAB_JS_SOURCE;
+
+    static {
+        try {
+            OPENHAB_JS_SOURCE = Source
+                    .newBuilder("js", getFileAsReader("node_modules/@openhab-globals.js"), "@openhab-globals.js")
+                    .cached(true).build();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load @openhab-globals.js", e);
+        }
+    }
+    private static String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Final CommonJS search path for our library */
@@ -111,15 +124,18 @@ public class OpenhabGraalJSScriptEngine
     private @Nullable Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
-    private final String injectionCode;
+    private final boolean injectionEnabled;
+    private final boolean internalLibraryEnabled;
 
     /**
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
      * lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(@Nullable String injectionCode, JSScriptServiceUtil jsScriptServiceUtil) {
+    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean internalLibraryEnabled,
+            JSScriptServiceUtil jsScriptServiceUtil) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.injectionCode = (injectionCode != null ? injectionCode : "");
+        this.injectionEnabled = injectionEnabled;
+        this.internalLibraryEnabled = internalLibraryEnabled;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         LOGGER.debug("Initializing GraalJS script engine...");
@@ -245,9 +261,17 @@ public class OpenhabGraalJSScriptEngine
         initialized = true;
 
         try {
-            LOGGER.debug("Evaluating global script...");
+            LOGGER.debug("Evaluating cached global script...");
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
-            eval(injectionCode);
+            if (this.injectionEnabled) {
+                if (this.internalLibraryEnabled) {
+                    LOGGER.debug("Evaluating cached openhab-js injection...");
+                    delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
+                } else {
+                    LOGGER.debug("Evaluating openhab-js injection from the file system...");
+                    eval(OPENHAB_JS_INJECTION_CODE);
+                }
+            }
             LOGGER.debug("Successfully initialized GraalJS script engine.");
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
@@ -296,11 +320,11 @@ public class OpenhabGraalJSScriptEngine
      * @param fileName filename relative to the resources folder
      * @return file as {@link InputStreamReader}
      */
-    private static Reader getFileAsReader(String fileName) {
+    private static Reader getFileAsReader(String fileName) throws IOException {
         InputStream ioStream = OpenhabGraalJSScriptEngine.class.getClassLoader().getResourceAsStream(fileName);
 
         if (ioStream == null) {
-            throw new IllegalArgumentException(fileName + " not found");
+            throw new IOException(fileName + " not found");
         }
 
         return new InputStreamReader(ioStream);
