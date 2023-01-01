@@ -38,6 +38,7 @@ discovery.chromecast:background=false
 ```
 
 ## Thing Configuration
+
 Auto-discovery is enabled by default, but if needed Chromecast devices can also be manually added.
 In case of manually adding a device the configuration parameter `ipAddress` has to be set.
 For an audio group also the port is necessary, that is available under advanced configuration.
