@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
@@ -195,7 +196,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
                 .collect(Collectors.joining("/"));
 
-        bridgeHandler.sendObject(endpoint, object).thenAccept(v -> {
+        bridgeHandler.sendObject(endpoint, object, HttpMethod.PUT).thenAccept(v -> {
             if (acceptProcessing != null) {
                 acceptProcessing.run();
             }
@@ -207,6 +208,32 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
             }
         }).exceptionally(e -> {
             logger.warn("Sending command {} to channel {} failed: {} - {}", originalCommand, channelUID, e.getClass(),
+                    e.getMessage());
+            return null;
+        });
+    }
+
+    public void doNetwork(@Nullable Object object, String commandUrl, HttpMethod httpMethod,
+            @Nullable Consumer<String> acceptProcessing) {
+        DeconzBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
+                .collect(Collectors.joining("/"));
+
+        bridgeHandler.sendObject(endpoint, object, httpMethod).thenAccept(v -> {
+            if (v.getResponseCode() != java.net.HttpURLConnection.HTTP_OK) {
+                logger.warn("Sending {} via {} to {} failed: {} - {}", object, httpMethod, commandUrl,
+                        v.getResponseCode(), v.getBody());
+            } else {
+                logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+                if (acceptProcessing != null) {
+                    acceptProcessing.accept(v.getBody());
+                }
+            }
+        }).exceptionally(e -> {
+            logger.warn("Sending {} via {} to {} failed: {} - {}", object, httpMethod, commandUrl, e.getClass(),
                     e.getMessage());
             return null;
         });

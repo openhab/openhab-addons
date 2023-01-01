@@ -211,6 +211,24 @@ Both will be added during runtime if supported by the switch.
 | GESTURE_ROTATE_CLOCKWISE         | 7     |
 | GESTURE_ROTATE_COUNTER_CLOCKWISE | 8     |
 
+## Thing Actions
+
+Thing actions can be used to manage the network and its content.
+
+The `deconz` thing supports a thing action to allow new devices to join the network:
+
+| Action name            | Input Value          | Return Value | Description                                                                                                    |
+|------------------------|----------------------|--------------|----------------------------------------------------------------------------------------------------------------|
+| `permitJoin(duration)` | `duration` (Integer) | -            | allows new devices to join for `duration` seconds. Allowed values are 1-240, default is 120 if no value given. |
+
+The `lightgroup` thing supports thing actions for managing scenes:
+
+| Action name         | Input Value     | Return Value | Description                                                                               |
+|---------------------|-----------------|--------------|-------------------------------------------------------------------------------------------|
+| `createScene(name)` | `name` (String) | `newSceneId` | Creates a new scene with the name `name` and returns the new scene's id (if successfull). |
+| `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                      |
+| `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                               |
+
 ## Full Example
 
 ### Things file
@@ -258,6 +276,14 @@ when
 then
     ...
 end
+```
+
+### Thing Actions
+
+```js
+deconzActions = actions.get("deconz", "deconz:lightgroup:00212E040ED9:5");
+retVal = deconzActions.createScene("TestScene");
+deconzActions.storeScene(retVal["newSceneId"]);
 ```
 
 ### Troubleshooting
