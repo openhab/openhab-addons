@@ -229,13 +229,14 @@ public class OpenhabGraalJSScriptEngine
         ScriptExtensionModuleProvider scriptExtensionModuleProvider = new ScriptExtensionModuleProvider(
                 scriptExtensionAccessor, lock);
 
+        // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
                 .locatorFor(delegate.getPolyglotContext(), engineIdentifier).locateModule(moduleName)
                 .map(m -> (Object) m).orElseGet(() -> originalRequireFn.apply(new Object[] { moduleName }));
-
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
-        // Injections into the JS runtime
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
+
+        // Injections into the JS runtime
         jsRuntimeFeatures.getFeatures().forEach((key, obj) -> {
             LOGGER.debug("Injecting {} into the JS runtime...", key);
             delegate.put(key, obj);
