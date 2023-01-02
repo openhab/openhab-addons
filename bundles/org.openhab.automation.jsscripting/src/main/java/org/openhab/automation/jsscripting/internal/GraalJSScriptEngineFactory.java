@@ -45,7 +45,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 @NonNullByDefault
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_INTERNAL_LIBRARY_ENABLED = "internalLibraryEnabled";
+    private static final String CFG_USE_INCLUDED_LIBRARY = "useIncludedLibrary";
 
     private static final GraalJSEngineFactory factory = new GraalJSEngineFactory();
 
@@ -61,7 +61,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private boolean injectionEnabled = true;
-    private boolean internalLibraryEnabled = true;
+    private boolean useIncludedLibrary = true;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
     private final JSDependencyTracker jsDependencyTracker;
@@ -90,7 +90,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
             return null;
         }
         return new DebuggingGraalScriptEngine<>(
-                new OpenhabGraalJSScriptEngine(injectionEnabled, internalLibraryEnabled, jsScriptServiceUtil));
+                new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary, jsScriptServiceUtil));
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     protected void modified(Map<String, ?> config) {
         Object injectionEnabled = config.get(CFG_INJECTION_ENABLED);
         this.injectionEnabled = injectionEnabled == null || (boolean) injectionEnabled;
-        Object internalLibraryEnabled = config.get(CFG_INTERNAL_LIBRARY_ENABLED);
-        this.internalLibraryEnabled = internalLibraryEnabled == null || (boolean) internalLibraryEnabled;
+        Object useIncludedLibrary = config.get(CFG_USE_INCLUDED_LIBRARY);
+        this.useIncludedLibrary = useIncludedLibrary == null || (boolean) useIncludedLibrary;
     }
 }

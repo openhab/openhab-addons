@@ -17,7 +17,7 @@
 			</options>
 			<default>true</default>
 		</parameter>
-		<parameter name="internalLibraryEnabled" type="boolean" required="true">
+		<parameter name="useIncludedLibrary" type="boolean" required="true">
 			<label>Use Included openHAB JavaScript Library</label>
 			<description><![CDATA[
 			Use the included openHAB JavaScript library for optimal performance.<br>

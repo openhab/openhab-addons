@@ -125,17 +125,17 @@ public class OpenhabGraalJSScriptEngine
 
     private boolean initialized = false;
     private final boolean injectionEnabled;
-    private final boolean internalLibraryEnabled;
+    private final boolean useIncludedLibrary;
 
     /**
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
      * lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean internalLibraryEnabled,
+    public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean useIncludedLibrary,
             JSScriptServiceUtil jsScriptServiceUtil) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.injectionEnabled = injectionEnabled;
-        this.internalLibraryEnabled = internalLibraryEnabled;
+        this.useIncludedLibrary = useIncludedLibrary;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
         LOGGER.debug("Initializing GraalJS script engine...");
@@ -264,7 +264,7 @@ public class OpenhabGraalJSScriptEngine
             LOGGER.debug("Evaluating cached global script...");
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
             if (this.injectionEnabled) {
-                if (this.internalLibraryEnabled) {
+                if (this.useIncludedLibrary) {
                     LOGGER.debug("Evaluating cached openhab-js injection...");
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
                 } else {
