@@ -17,10 +17,10 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.API_TIM
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.californium.elements.util.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
@@ -92,10 +92,10 @@ public class BsbLanApiCaller {
     }
 
     private String createApiBaseUrl() {
-        final String host = bridgeConfig.host == null ? "" : bridgeConfig.host.trim();
-        final String username = bridgeConfig.username == null ? "" : bridgeConfig.username.trim();
-        final String password = bridgeConfig.password == null ? "" : bridgeConfig.password.trim();
-        final String passkey = bridgeConfig.passkey == null ? "" : bridgeConfig.passkey.trim();
+        final String host = bridgeConfig.host.trim();
+        final String username = bridgeConfig.username.trim();
+        final String password = bridgeConfig.password.trim();
+        final String passkey = bridgeConfig.passkey.trim();
 
         StringBuilder url = new StringBuilder();
         url.append("http://");
@@ -131,7 +131,7 @@ public class BsbLanApiCaller {
                 String content = BsbLanApiContentConverter.toJson(request);
                 logger.trace("api request content: '{}'", content);
                 if (!content.isBlank()) {
-                    contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+                    contentStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
                     contentType = "application/json";
                 }
             }
