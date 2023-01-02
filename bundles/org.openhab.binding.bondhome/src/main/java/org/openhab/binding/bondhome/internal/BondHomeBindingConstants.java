@@ -58,6 +58,7 @@ public class BondHomeBindingConstants {
     public static final String CHANNEL_GROUP_FAN = "fan";
     public static final String CHANNEL_FAN_POWER = CHANNEL_GROUP_FAN + "#power";
     public static final String CHANNEL_FAN_SPEED = CHANNEL_GROUP_FAN + "#speed";
+    public static final String CHANNEL_RAW_FAN_SPEED = CHANNEL_GROUP_FAN + "#rawSpeed";
     public static final String CHANNEL_FAN_BREEZE_STATE = CHANNEL_GROUP_FAN + "#breezeState";
     public static final String CHANNEL_FAN_BREEZE_MEAN = CHANNEL_GROUP_FAN + "#breezeMean";
     public static final String CHANNEL_FAN_BREEZE_VAR = CHANNEL_GROUP_FAN + "#breezeVariability";

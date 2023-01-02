@@ -205,6 +205,27 @@ public class BondDeviceHandler extends BaseThingHandler {
                 }
                 break;
 
+            case CHANNEL_RAW_FAN_SPEED:
+                logger.trace("Fan raw speed command");
+                if (command instanceof DecimalType) {
+                    value = ((DecimalType) command).intValue();
+                    BondDeviceProperties devProperties = this.deviceProperties;
+                    if (devProperties != null) {
+                        if (value == 0) {
+                            action = BondDeviceAction.TURN_OFF;
+                            value = null;
+                        } else {
+                            action = BondDeviceAction.SET_SPEED;
+                            value = Math.min(value, devProperties.maxSpeed);
+                        }
+                        logger.trace("Fan raw speed command with speed set as {}", value);
+                        api.executeDeviceAction(deviceId, action, value);
+                    }
+                } else {
+                    logger.info("Unsupported command on raw fan speed channel");
+                }
+                break;
+
             case CHANNEL_FAN_BREEZE_STATE:
                 logger.trace("Fan enable/disable breeze command");
                 api.executeDeviceAction(deviceId,
@@ -561,10 +582,12 @@ public class BondDeviceHandler extends BaseThingHandler {
             }
         }
         // Remove power channels if we have a dimmer channel for them;
-        // the dimmer channel already covers the power case
+        // the dimmer channel already covers the power case.
+        // Add the raw channel for advanced users.
         if (availableChannelIds.contains(CHANNEL_FAN_SPEED)) {
             availableChannelIds.remove(CHANNEL_POWER);
             availableChannelIds.remove(CHANNEL_FAN_POWER);
+            availableChannelIds.add(CHANNEL_RAW_FAN_SPEED);
         }
         if (availableChannelIds.contains(CHANNEL_LIGHT_BRIGHTNESS)) {
             availableChannelIds.remove(CHANNEL_LIGHT_POWER);
@@ -619,6 +642,7 @@ public class BondDeviceHandler extends BaseThingHandler {
             fanOn = updateState.fpfanPower != 0;
             updateState(CHANNEL_FAN_POWER, fanOn ? OnOffType.OFF : OnOffType.ON);
             updateState(CHANNEL_FAN_SPEED, new PercentType(updateState.fpfanSpeed));
+            updateState(CHANNEL_RAW_FAN_SPEED, new DecimalType(updateState.fpfanSpeed));
         } else {
             fanOn = updateState.power != 0;
             int value = 1;
@@ -631,6 +655,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
             }
             updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
+            updateState(CHANNEL_RAW_FAN_SPEED, fanOn ? new DecimalType(updateState.speed) : DecimalType.ZERO);
         }
         updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
         updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));
