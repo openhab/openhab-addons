@@ -91,8 +91,10 @@ public class MyRenaultHttpSession {
         final String url = this.constants.getGigyaRootUrl() + "/accounts.login";
         ContentResponse response = httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            logger.debug("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
-                    response.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonObject sessionInfoJson = responseJson.getAsJsonObject("sessionInfo");
@@ -124,8 +126,10 @@ public class MyRenaultHttpSession {
         final String url = this.constants.getGigyaRootUrl() + "/accounts.getAccountInfo";
         ContentResponse response = httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            logger.debug("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
-                    response.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonObject dataJson = responseJson.getAsJsonObject("data");
@@ -159,8 +163,10 @@ public class MyRenaultHttpSession {
         final String url = this.constants.getGigyaRootUrl() + "/accounts.getJWT";
         ContentResponse response = this.httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            logger.debug("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
-                    response.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonElement element = responseJson.get("id_token");
@@ -309,8 +315,8 @@ public class MyRenaultHttpSession {
 
     private void logKamereonCall(Request request, ContentResponse response) {
         if (HttpStatus.OK_200 == response.getStatus()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Kamereon Request: {} Response:  [{}] {}\n{}", request.getURI().toString(),
+            if (logger.isTraceEnabled()) {
+                logger.trace("Kamereon Request: {} Response:  [{}] {}\n{}", request.getURI().toString(),
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
