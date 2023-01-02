@@ -160,7 +160,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         SecurityApi securityApi = getRestManager(SecurityApi.class);
                         if (securityApi != null) {
                             WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                                    configuration.webHookUrl, configuration.webHookPostfix);
+                                    configuration.webHookUrl);
                             servlet.startListening();
                             this.webHookServlet = servlet;
                         }
