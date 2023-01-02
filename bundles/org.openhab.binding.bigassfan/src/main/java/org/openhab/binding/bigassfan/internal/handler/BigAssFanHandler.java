@@ -1054,7 +1054,6 @@ public class BigAssFanHandler extends BaseThingHandler {
             try {
                 localFanSocket.bind(new InetSocketAddress(ifAddress, 0));
                 localFanSocket.connect(new InetSocketAddress(ipAddress, BAF_PORT), SOCKET_CONNECT_TIMEOUT);
-                fanSocket = localFanSocket;
             } catch (SecurityException | IllegalArgumentException | IOException e) {
                 logger.debug("Unexpected exception connecting to {} at {}: {}", thing.getUID(), ipAddress,
                         e.getMessage(), e);
@@ -1156,14 +1155,12 @@ public class BigAssFanHandler extends BaseThingHandler {
         /*
          * Periodically validate the command connection to the device by executing a getversion command.
          */
-        private void scheduleConnectionMonitorJob() {
-            synchronized (this) {
-                if (connectionMonitorJob == null) {
-                    logger.debug("Starting connection monitor job in {} seconds for {} at {}", CONNECTION_MONITOR_DELAY,
-                            thing.getUID(), ipAddress);
-                    connectionMonitorJob = scheduler.scheduleWithFixedDelay(connectionMonitorRunnable,
-                            CONNECTION_MONITOR_DELAY, CONNECTION_MONITOR_FREQ, TimeUnit.SECONDS);
-                }
+        private synchronized void scheduleConnectionMonitorJob() {
+            if (connectionMonitorJob == null) {
+                logger.debug("Starting connection monitor job in {} seconds for {} at {}", CONNECTION_MONITOR_DELAY,
+                        thing.getUID(), ipAddress);
+                connectionMonitorJob = scheduler.scheduleWithFixedDelay(connectionMonitorRunnable,
+                        CONNECTION_MONITOR_DELAY, CONNECTION_MONITOR_FREQ, TimeUnit.SECONDS);
             }
         }
 
