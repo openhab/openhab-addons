@@ -33,7 +33,7 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
     public DataPointLongValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
 
-        if (knxDataType.equals("13.002")) {
+        if ("13.002".equals(knxDataType)) {
             this.setUnit("m³/h");
             this.factor = 0.0001f;
             this.outputFormat = "%.1f";
