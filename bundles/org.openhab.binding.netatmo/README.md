@@ -47,6 +47,7 @@ The Account bridge has the following configuration elements:
 | clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                               |
 | clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
 | webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
+| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                               |
 | reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
 | refreshToken      | String | Yes*     | The refresh token provided by Netatmo API after the granting process. Can be saved in case of file based configuration |
 
@@ -100,14 +101,14 @@ Netatmo servers can send push notifications to the Netatmo Binding by using a ca
 The webhook URL is setup at Netatmo Account level using "Webhook Address" parameter.
 You will define here public way to access your openHAB server:
 
-```text
+```
 http(s)://xx.yy.zz.ww:443
 ```
 
 Your Netatmo App will be configured automatically by the bridge to the endpoint:
 
-```text
-http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_>
+```
+http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_><webHookPostfix>
 ```
 
 Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
