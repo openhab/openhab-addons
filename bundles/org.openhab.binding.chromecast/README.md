@@ -3,8 +3,8 @@
 The binding integrates Google Chromecast streaming devices.
 It not only acts as a typical binding, but also registers each Chromecast device as an audio sink that can be used for playback.
 
-When a Chromecast is used as an audio sink, the Chromecast connects to OpenHAB to get the audio streams.
-The binding sends the Chromecast URLs for getting the audio streams based on the Primary Address (Network Settings configuration) and OpenHAB HTTP port.
+When a Chromecast is used as an audio sink, the Chromecast connects to openHAB to get the audio streams.
+The binding sends the Chromecast URLs for getting the audio streams based on the Primary Address (Network Settings configuration) and openHAB HTTP port.
 These URL defaults can be overridden with the Callback URL configuration parameter.
 
 This can be configured on the binding level:
@@ -46,10 +46,9 @@ With manual thing configuration the parameter `port` for audio group must be det
 
 | Property    | Default | Required | Advanced | Type    | Description                                          |
 |-------------|---------|----------|----------|---------|------------------------------------------------------|
-| ipAddress   | -       | Yes      | Ne       | String  | The hostname or IP address of the Chromecast device. |
+| ipAddress   | -       | Yes      | No       | String  | The hostname or IP address of the Chromecast device. |
 | port        | 8009    | No       | Yes      | Integer | The port where the Chromecast is listening           |
-| refreshRate | 10      | No       | Yes      | Integer | Specifies the refresh (poll) interval in seconds.    |
-
+| refreshRate | 10      | No       | Yes      | Integer | The refresh (poll) interval in seconds.              |
 
 ## Channels
 
@@ -100,7 +99,7 @@ demo.things:
 ```java
 Thing chromecast:audio:lounge_chromecast "Lounge Chromecast Audio" [ipAddress="192.168.xxx.xxx", port=8009]
 Thing chromecast:chromecast:kitchen_chromecast "Kitchen Home Hub" [ipAddress="192.168.xxx.xxx", port=8009]
-Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168.0.23", port=42139]
+Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168..xxx.xxx", port=42139]
 ```
 
 demo.items:
@@ -118,14 +117,14 @@ String kitchen_chromecast_image     { channel="chromecast:audio:kitchen_chromeca
 
 demo.rules:
 
-```javascript
+```java
 rule "Turn on kitchen speakers when Chromecast starts playing music"
 when
     Item kitchen_chromecast_appid changed
 then
     logInfo("RULE.AUDIO", "Chromecast app id changed!")
 
-    if (kitchen_chromecast_appid.kitchen_chromecast_appName == "Pandora" || kitchen_chromecast_appName.state == "Google Play Music") {
+    if (kitchen_chromecast_appid.kitchen_chromecast_appName.state == "Pandora" || kitchen_chromecast_appName.state == "Google Play Music") {
         kitchen_speakersystem_power.sendCommand(ON)
     }
 end
