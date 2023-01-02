@@ -87,7 +87,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
     protected final Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<>());
 
-    public BigAssFanHandler(Thing thing, String ipv4Address) {
+    public BigAssFanHandler(Thing thing, @Nullable String ipv4Address) {
         super(thing);
         this.thing = thing;
 
@@ -329,7 +329,6 @@ public class BigAssFanHandler extends BaseThingHandler {
     private void adjustMinSpeed(PercentType command, String channelId, String commandFragment) {
         int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
-        @Nullable
         State fanSate = fanStateMap.get(channelId);
         if (fanSate != null) {
             currentMin = ((PercentType) fanSate).intValue();
@@ -577,7 +576,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
         };
 
-        public FanListener(String ipv4Address) {
+        public FanListener(@Nullable String ipv4Address) {
             conn = new ConnectionManager(ipv4Address);
         }
 
@@ -1021,7 +1020,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             checkConnection();
         };
 
-        public ConnectionManager(String ipv4Address) {
+        public ConnectionManager(@Nullable String ipv4Address) {
             deviceIsConnected = false;
             try {
                 ifAddress = InetAddress.getByName(ipv4Address);

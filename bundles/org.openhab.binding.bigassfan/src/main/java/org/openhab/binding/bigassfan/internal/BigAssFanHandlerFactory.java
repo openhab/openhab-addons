@@ -57,10 +57,6 @@ public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (ipAddress == null) {
-                logger.warn("No network interface could be found.");
-                return null;
-            }
             return new BigAssFanHandler(thing, ipAddress);
         }
         return null;
