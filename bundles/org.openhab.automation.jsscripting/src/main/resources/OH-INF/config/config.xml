@@ -18,14 +18,14 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="internalLibraryEnabled" type="boolean" required="true">
-			<label>Use Internal Library</label>
+			<label>Use Included openHAB JavaScript Library</label>
 			<description><![CDATA[
-			Use the addon-included and cached openHAB JavaScript library for optimal performance.<br>
-			Disable this option to allow loading the library from the disk instead, but be aware that this increases script loading times especially on less powerful systems.
+			Use the included openHAB JavaScript library for optimal performance.<br>
+			Disable this option to allow loading the library from the local user configuration directory "automation/js/node_modules". Using a user provided version of the library may increase script loading times, especially on less powerful systems.
 			]]></description>
 			<options>
-				<option value="true">Use Internal Library</option>
-				<option value="false">Do Not Use Internal Library</option>
+				<option value="true">Use Included Library</option>
+				<option value="false">Do Not Use Included Library</option>
 			</options>
 			<default>true</default>
 		</parameter>
