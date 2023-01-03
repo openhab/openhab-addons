@@ -17,10 +17,10 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.API_TIM
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.californium.elements.util.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiContentDTO;
