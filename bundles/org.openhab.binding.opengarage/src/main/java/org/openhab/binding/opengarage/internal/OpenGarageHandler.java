@@ -52,18 +52,12 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenGarageHandler.class);
 
-    private long refreshInterval;
-    private long transitionTimeSecs;
-
     private @NonNullByDefault({}) OpenGarageWebTargets webTargets;
     private @Nullable VariableDelayPoller poller;
     private Instant lastTransition;
     private String lastTransitionText;
 
-    public @NonNullByDefault({}) String doorOpeningState;
-    public @NonNullByDefault({}) String doorOpenState;
-    public @NonNullByDefault({}) String doorClosedState;
-    public @NonNullByDefault({}) String doorClosingState;
+    private @NonNullByDefault({}) OpenGarageConfiguration config;
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
@@ -76,7 +70,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         try {
             logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
-            var maybeInvert = getInverter(channelUID.getId());
+            Function<Boolean, Boolean> maybeInvert = getInverter(channelUID.getId());
             switch (channelUID.getId()) {
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
@@ -87,7 +81,8 @@ public class OpenGarageHandler extends BaseThingHandler {
                         var doorOpen = command.equals(OnOffType.ON) || command.equals(UpDownType.UP);
                         changeStatus(maybeInvert.apply(doorOpen) ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
                         this.lastTransition = Instant.now();
-                        this.lastTransitionText = doorOpen ? this.doorOpeningState : this.doorClosingState;
+                        this.lastTransitionText = doorOpen ? this.config.door_opening_state
+                                : this.config.door_closing_state;
                         this.poller.reschedule(0, true);
                     }
                     break;
@@ -100,21 +95,14 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        var config = getConfigAs(OpenGarageConfiguration.class);
+        this.config = getConfigAs(OpenGarageConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
         if (config.hostname == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
             webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password);
-            this.refreshInterval = config.refresh;
-            this.transitionTimeSecs = config.door_transition_time_seconds;
 
-            this.doorClosedState = config.door_closed_state;
-            this.doorClosingState = config.door_closing_state;
-            this.doorOpeningState = config.door_opening_state;
-            this.doorOpenState = config.door_open_state;
-
-            this.poller = new VariableDelayPoller(scheduler, this::poll, refreshInterval);
+            this.poller = new VariableDelayPoller(scheduler, this::poll, config.refresh);
         }
     }
 
@@ -127,7 +115,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     }
 
     private long poll() {
-        var pollAgainIn = this.refreshInterval;
+        var pollAgainIn = this.config.refresh;
         try {
             logger.debug("Polling for state");
             pollAgainIn = pollStatus();
@@ -144,12 +132,12 @@ public class OpenGarageHandler extends BaseThingHandler {
     private long pollStatus() throws IOException {
         ControllerVariables controllerVariables = webTargets.getControllerVariables();
         var lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
-        var inTransition = lastTransitionAgoSecs < this.transitionTimeSecs;
+        var inTransition = lastTransitionAgoSecs < this.config.door_transition_time_seconds;
         if (controllerVariables != null) {
             updateStatus(ThingStatus.ONLINE);
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
                     new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
-            var maybeInvert = getInverter(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
+            Function<Boolean, Boolean> maybeInvert = getInverter(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
 
             if ((controllerVariables.door != 0) && (controllerVariables.door != 1)) {
                 logger.warn("Received unknown door value: {}", controllerVariables.door);
@@ -163,7 +151,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                 if (inTransition) {
                     transitionText = this.lastTransitionText;
                 } else {
-                    transitionText = doorOpen ? this.doorOpenState : this.doorClosedState;
+                    transitionText = doorOpen ? this.config.door_open_state : this.config.door_closed_state;
                 }
                 if (!inTransition) {
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, onOff); // deprecated channel
@@ -193,9 +181,9 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
 
         if (inTransition) {
-            return Math.min(this.refreshInterval, this.transitionTimeSecs);
+            return Math.min(this.config.refresh, this.config.door_transition_time_seconds);
         } else {
-            return this.refreshInterval;
+            return this.config.refresh;
         }
     }
 
