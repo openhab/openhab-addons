@@ -289,7 +289,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return false;
         }
 
-        boolean updated = false;
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
         sm.isValid = emeter.isValid = true;
@@ -317,7 +316,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.bActPower != null) {
             sm.power = emeter.power = em.bActPower;
         }
-        if (em.bAprtPower != null) {
+
+        if (em.aAprtPower != null) {
             emeter.totalReturned = em.bAprtPower;
         }
         if (em.bVoltage != null) {
