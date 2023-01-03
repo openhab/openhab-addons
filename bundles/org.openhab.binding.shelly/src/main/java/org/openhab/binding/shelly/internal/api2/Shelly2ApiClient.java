@@ -57,6 +57,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
@@ -180,6 +181,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch1, channelUpdate);
         updated |= updateRelayStatus(status, result.switch2, channelUpdate);
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
+        updated |= updateEmStatus(status, result.em0, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
@@ -263,12 +265,89 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         // Update internal structures
         status.relays.set(rs.id, rstatus);
-        status.meters.set(rs.id, sm);
-        status.emeters.set(rs.id, emeter);
         relayStatus.relays.set(rs.id, sr);
-        relayStatus.meters.set(rs.id, sm);
-
+        updateMeter(status, rs.id, sm, emeter, channelUpdate);
         return channelUpdate ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rs.id) : false;
+    }
+
+    private void updateMeter(ShellySettingsStatus status, int id, ShellySettingsMeter sm, ShellySettingsEMeter emeter,
+            boolean channelUpdate) throws ShellyApiException {
+        status.meters.set(id, sm);
+        status.emeters.set(id, emeter);
+        relayStatus.meters.set(id, sm);
+    }
+
+    private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusEm em,
+            boolean channelUpdate) throws ShellyApiException {
+        if (em == null) {
+            return false;
+        }
+
+        boolean updated = false;
+        ShellySettingsMeter sm = new ShellySettingsMeter();
+        ShellySettingsEMeter emeter = status.emeters.get(0);
+        sm.isValid = emeter.isValid = true;
+        if (em.aActPower != null) {
+            sm.power = emeter.power = em.aActPower;
+        }
+        if (em.aAprtPower != null) {
+            emeter.totalReturned = em.aAprtPower;
+        }
+        if (em.aVoltage != null) {
+            emeter.voltage = em.aVoltage;
+        }
+        if (em.aCurrent != null) {
+            emeter.current = em.aCurrent;
+        }
+        if (em.aPF != null) {
+            emeter.pf = em.aPF;
+        }
+        // Update internal structures
+        updateMeter(status, 0, sm, emeter, channelUpdate);
+
+        sm = new ShellySettingsMeter();
+        emeter = status.emeters.get(1);
+        sm.isValid = emeter.isValid = true;
+        if (em.bActPower != null) {
+            sm.power = emeter.power = em.bActPower;
+        }
+        if (em.aAprtPower != null) {
+            emeter.totalReturned = em.bAprtPower;
+        }
+        if (em.bVoltage != null) {
+            emeter.voltage = em.bVoltage;
+        }
+        if (em.bCurrent != null) {
+            emeter.current = em.bCurrent;
+        }
+        if (em.bPF != null) {
+            emeter.pf = em.bPF;
+        }
+        // Update internal structures
+        updateMeter(status, 1, sm, emeter, channelUpdate);
+
+        sm = new ShellySettingsMeter();
+        emeter = status.emeters.get(2);
+        sm.isValid = emeter.isValid = true;
+        if (em.cActPower != null) {
+            sm.power = emeter.power = em.cActPower;
+        }
+        if (em.cAprtPower != null) {
+            emeter.totalReturned = em.cAprtPower;
+        }
+        if (em.cVoltage != null) {
+            emeter.voltage = em.cVoltage;
+        }
+        if (em.cCurrent != null) {
+            emeter.current = em.cCurrent;
+        }
+        if (em.cPF != null) {
+            emeter.pf = em.cPF;
+        }
+        // Update internal structures
+        updateMeter(status, 2, sm, emeter, channelUpdate);
+
+        return channelUpdate ? ShellyComponents.updateMeters(getThing(), status) : false;
     }
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRoller> fillRollerSettings(ShellyDeviceProfile profile,

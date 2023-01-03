@@ -77,6 +77,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPRO2PM_RELAY, //
             THING_TYPE_SHELLYPRO2PM_ROLLER, //
             THING_TYPE_SHELLYPRO3, //
+            THING_TYPE_SHELLYPRO3EM, //
             THING_TYPE_SHELLYPRO4PM, //
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //

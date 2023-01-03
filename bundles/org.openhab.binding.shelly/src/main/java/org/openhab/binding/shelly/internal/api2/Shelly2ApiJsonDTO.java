@@ -283,6 +283,18 @@ public class Shelly2ApiJsonDTO {
             public Double currentLimit;
         }
 
+        public static class Shelly2DevConfigEm {
+            public Integer id;
+            public String name;
+            @SerializedName("blink_mode_selector")
+            public String blinkModeSelector;
+            @SerializedName("phase_selector")
+            public String phase_selector;
+            @SerializedName("monitor_phase_sequence")
+            public Boolean monitorPhaseSequence;
+
+        }
+
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
@@ -376,6 +388,9 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigSwitch switch2;
             @SerializedName("switch:3")
             public Shelly2DevConfigSwitch switch3;
+
+            @SerializedName("em:0")
+            public Shelly2DevConfigEm em0;
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
@@ -486,6 +501,51 @@ public class Shelly2ApiJsonDTO {
                 public Shelly2DeviceStatusCharger external;
             }
 
+            public static class Shelly2DeviceStatusEm {
+                public Integer id;
+
+                @SerializedName("a_current")
+                public Double aCurrent;
+                @SerializedName("a_voltage")
+                public Double aVoltage;
+                @SerializedName("a_act_power")
+                public Double aActPower;
+                @SerializedName("a_aprt_power")
+                public Double aAprtPower;
+                @SerializedName("a_pf")
+                public Double aPF;
+
+                @SerializedName("b_current")
+                public Double bCurrent;
+                @SerializedName("b_voltage")
+                public Double bVoltage;
+                @SerializedName("b_act_power")
+                public Double bActPower;
+                @SerializedName("b_aprt_power")
+                public Double bAprtPower;
+                @SerializedName("b_pf")
+                public Double bPF;
+
+                @SerializedName("c_current")
+                public Double cCurrent;
+                @SerializedName("c_voltage")
+                public Double cVoltage;
+                @SerializedName("c_act_power")
+                public Double cActPower;
+                @SerializedName("c_aprt_power")
+                public Double cAprtPower;
+                @SerializedName("c_pf")
+                public Double cPF;
+
+                @SerializedName("n_current")
+                public Double nCurrent;
+            }
+
+            public static class Shelly2DeviceStatusEmData {
+                public Integer id;
+                public String[] errors;
+            }
+
             public Shelly2DeviceStatusBle ble;
             public Shelly2DeviceStatusCloud cloud;
             public Shelly2DeviceStatusMqqt mqtt;
@@ -511,6 +571,11 @@ public class Shelly2ApiJsonDTO {
             public Shelly2RelayStatus switch2;
             @SerializedName("switch:3")
             public Shelly2RelayStatus switch3;
+
+            @SerializedName("em:0")
+            Shelly2DeviceStatusEm em0;
+            @SerializedName("emdata:0")
+            Shelly2DeviceStatusEmData emdata0;
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;

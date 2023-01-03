@@ -205,21 +205,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
         fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
 
+        profile.numMeters = 0;
         if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
-            profile.status.meters = new ArrayList<>();
-            profile.status.emeters = new ArrayList<>();
             relayStatus.relays = new ArrayList<>();
-            relayStatus.meters = new ArrayList<>();
             profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
             for (int i = 0; i < profile.numRelays; i++) {
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-            for (int i = 0; i < profile.numMeters; i++) {
-                profile.status.meters.add(new ShellySettingsMeter());
-                profile.status.emeters.add(new ShellySettingsEMeter());
-                relayStatus.meters.add(new ShellySettingsMeter());
             }
         }
 
@@ -233,6 +226,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 input.eventCount = 0;
                 profile.status.inputs.add(input);
                 relayStatus.inputs.add(input);
+            }
+        }
+
+        if (dc.em0 != null) {
+            profile.numMeters = 3;
+        }
+
+        if (profile.numMeters > 0) {
+            profile.status.meters = new ArrayList<>();
+            profile.status.emeters = new ArrayList<>();
+            relayStatus.meters = new ArrayList<>();
+
+            for (int i = 0; i < profile.numMeters; i++) {
+                profile.status.meters.add(new ShellySettingsMeter());
+                profile.status.emeters.add(new ShellySettingsEMeter());
+                relayStatus.meters.add(new ShellySettingsMeter());
             }
         }
 
