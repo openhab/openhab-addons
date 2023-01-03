@@ -227,7 +227,7 @@ The period is computed depending on the device type and configuration:
 - else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
-Once the timer expires the device switches to OFFFLINE and the bindings starts to re-initialize the device periodically.
+Once the timer expires the device switches to OFFLINE and the bindings starts to re-initialize the device periodically.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 
