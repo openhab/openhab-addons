@@ -6,6 +6,7 @@ Thermostats using a Z-Wave module are not supported but can be used via the open
 The binding retrieves and periodically updates all basic system information from the thermostat.
 The main thermostat functions such as thermostat mode, fan mode, temperature set point and hold mode can be controlled.
 System run-time information and humidity readings are polled less frequently and can be disabled completely if not desired.
+As of openHAB 4.0.0, the heating and cooling program schedules on the thermostat can also be configured.
 
 ## Supported Things
 
@@ -17,10 +18,6 @@ Multiple Things can be added if more than one thermostat is to be controlled.
 
 Auto-discovery is supported if the thermostat can be located on the local network using SSDP.
 Otherwise the thing must be manually added.
-
-## Binding Configuration
-
-The binding has no configuration options, all configuration is done at Thing level.
 
 ## Thing Configuration
 
@@ -34,9 +31,23 @@ The thing has a few configuration parameters:
 | isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                                                                                  |
 | disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                                                                                    |
 | setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint until the next scheduled setpoint time period. In "absolute" mode the thermostat will ignore its program and maintain the given setpoint indefinitely. Optional, the default is "temporary". |
-| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Use if the thermostat is not setup to connect to the manufacturer's cloud server. Sync occurs at binding startup and every hour thereafter. Optional, the default is false.                              |
+| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Sync occurs at binding startup and every hour thereafter. Optional, the default is **true**.                                                                                                             |
 
-Some notes:
+### Schedule Configuration
+
+The heating and cooling program schedules that persist on the thermostat can be configured by the binding.
+Click the Show Advanced checkbox on the Thing configuration page to display the schedule.
+For both the heating and cooling programs, the 7-day repeating schedule has 4 setpoint periods per day (Morning, Day, Evening, Night).
+In order for the heating or cooling program to be valid, all time and setpoint fields must be populated.
+The time is expressed in 24-hour (HH:mm) format and the time value for each successive period within a day must be greater than the previous period.
+Once the schedule is populated and the configuration saved, the new schedule will be sent to the thermostat during binding initialization, overwriting its existing schedule.
+
+If one or more time or setpoint fields are left blank in a given schedule and the configuration saved, the Thing will display a configuration error until the entries are corrected.
+A heating or cooling schedule with all fields left blank will be ignored by the binding. In that case, the existing schedule on the thermostat will remain untouched.
+
+If the thermostat schedule is to be managed by openHAB, the thermostat should be de-provisioned from the MyRadioThermostat/EnergyHub cloud service to prevent the openHAB schedule from being overridden.
+
+### Some notes
 
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
