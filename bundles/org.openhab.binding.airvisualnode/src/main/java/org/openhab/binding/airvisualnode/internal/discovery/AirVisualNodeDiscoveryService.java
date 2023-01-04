@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -39,16 +41,18 @@ import jcifs.smb.SmbFile;
  *
  * @author Victor Antonovich - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class)
 public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AirVisualNodeDiscoveryService.class);
+    private static final int REFRESH_MINUTES = 5;
 
     public static final String AVISUAL_WORKGROUP_NAME = "MSHOME";
 
     private static final Pattern AVISUAL_NAME_PATTERN = Pattern.compile("^AVISUAL-([^/]+)$");
 
-    private ScheduledFuture<?> backgroundDiscoveryFuture;
+    private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     public AirVisualNodeDiscoveryService() {
         super(Collections.singleton(AirVisualNodeBindingConstants.THING_TYPE_AVNODE), 600, true);
@@ -63,19 +67,20 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting background discovery");
-        backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, 5, TimeUnit.MINUTES);
+        ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
+        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
+            backgroundDiscoveryFuture = scheduler.scheduleWithFixedDelay(this::scan, 0, REFRESH_MINUTES,
+                    TimeUnit.MINUTES);
+        }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping background discovery");
-        cancelBackgroundDiscoveryFuture();
-        super.stopBackgroundDiscovery();
-    }
 
-    private void cancelBackgroundDiscoveryFuture() {
-        if (backgroundDiscoveryFuture != null && !backgroundDiscoveryFuture.isDone()) {
-            backgroundDiscoveryFuture.cancel(true);
+        ScheduledFuture<?> localDiscoveryFuture = backgroundDiscoveryFuture;
+        if (localDiscoveryFuture != null) {
+            localDiscoveryFuture.cancel(true);
             backgroundDiscoveryFuture = null;
         }
     }
@@ -87,7 +92,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
             String workgroupUrl = "smb://" + AVISUAL_WORKGROUP_NAME + "/";
             workgroupMembers = new SmbFile(workgroupUrl).listFiles();
         } catch (IOException e) {
-            // Can't get workgroup member list
+            logger.debug("IOException while trying to get workgroup member list", e);
             return;
         }
 
@@ -105,6 +110,10 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
             // Extract the Node serial number from device name
             String nodeSerialNumber = m.group(1);
 
+            if (nodeSerialNumber != null) {
+                logger.debug("Extracting the Node serial number failed");
+                return;
+            }
             // The Node Thing UID is serial number converted to lower case
             ThingUID thingUID = new ThingUID(AirVisualNodeBindingConstants.THING_TYPE_AVNODE,
                     nodeSerialNumber.toLowerCase());
@@ -119,14 +128,19 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
                 // Create discovery result
                 String nodeAddress = nodeNbtAddress.getInetAddress().getHostAddress();
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
-                        .withRepresentationProperty(AirVisualNodeConfig.ADDRESS)
-                        .withLabel("AirVisual Node (" + nodeSerialNumber + ")").build();
-                thingDiscovered(result);
+                if (nodeAddress != null) {
+                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                            .withProperty(AirVisualNodeConfig.ADDRESS, nodeAddress)
+                            .withRepresentationProperty(AirVisualNodeConfig.ADDRESS)
+                            .withLabel("AirVisual Node (" + nodeSerialNumber + ")").build();
+                    thingDiscovered(result);
+                } else {
+                    logger.debug("Getting the node address from the host failed");
+                }
             } catch (UnknownHostException e) {
                 logger.debug("The Node address resolving failed ", e);
             }
+
         }
     }
 }

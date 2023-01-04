@@ -230,9 +230,6 @@ public enum BluetoothUnit {
         public static final Unit<ArealDensity> KILOGRAM_PER_SQUARE_METER = addUnit(
                 new ProductUnit<ArealDensity>(SIUnits.KILOGRAM.divide(SIUnits.SQUARE_METRE)));
 
-        public static final Unit<RadiationExposure> COULOMB_PER_KILOGRAM = addUnit(
-                new ProductUnit<RadiationExposure>(Units.COULOMB.divide(SIUnits.KILOGRAM)));
-
         public static final Unit<RadiationDoseAbsorptionRate> GRAY_PER_SECOND = addUnit(
                 new ProductUnit<RadiationDoseAbsorptionRate>(Units.GRAY.divide(Units.SECOND)));
 

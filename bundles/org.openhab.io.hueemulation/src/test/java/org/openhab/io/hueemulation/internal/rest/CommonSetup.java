@@ -122,7 +122,7 @@ public class CommonSetup {
         } else {
             cs = new ConfigStoreWithoutMetadata(networkAddressService, configAdmin, scheduler);
         }
-        cs.activate(Collections.singletonMap("uuid", "demouuid"));
+        cs.activate(Collections.singletonMap("uuid", "a668dc9b-7172-49c3-832f-acb07dda2a20"));
         cs.switchFilter = Collections.singleton("Switchable");
         cs.whiteFilter = Collections.singleton("Switchable");
         cs.colorFilter = Collections.singleton("ColorLighting");

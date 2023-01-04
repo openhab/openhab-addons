@@ -130,9 +130,11 @@ public class BPUPListener implements Runnable {
                 sock.receive(inPacket);
                 BPUPUpdate response = transformUpdatePacket(inPacket);
                 if (response != null) {
-                    if (!response.bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
+                    @Nullable
+                    String bondId = response.bondId;
+                    if (bondId == null || !bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
                         logger.warn("Response isn't from expected Bridge!  Expected: {}  Got: {}",
-                                bridgeHandler.getBridgeId(), response.bondId);
+                                bridgeHandler.getBridgeId(), bondId);
                     } else {
                         bridgeHandler.setBridgeOnline(inPacket.getAddress().getHostAddress());
                         numberOfKeepAliveTimeouts = 0;

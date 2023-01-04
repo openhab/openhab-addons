@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.model;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Calendar;
+import java.util.Comparator;
 
 import javax.measure.quantity.Time;
 
@@ -80,5 +81,14 @@ public class Range {
                 : DateTimeUtils.truncateToMidnight(cal).getTimeInMillis();
         long matchEnd = end != null ? end.getTimeInMillis() : DateTimeUtils.endOfDayDate(cal).getTimeInMillis();
         return cal.getTimeInMillis() >= matchStart && cal.getTimeInMillis() < matchEnd;
+    }
+
+    private static Comparator<Calendar> nullSafeCalendarComparator = Comparator.nullsFirst(Calendar::compareTo);
+
+    private static Comparator<Range> rangeComparator = Comparator.comparing(Range::getStart, nullSafeCalendarComparator)
+            .thenComparing(Range::getEnd, nullSafeCalendarComparator);
+
+    public int compareTo(Range that) {
+        return rangeComparator.compare(this, that);
     }
 }

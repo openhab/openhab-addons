@@ -17,6 +17,7 @@
   <name>openHAB Add-ons :: Integration Tests</name>
 
   <modules>
+    <module>org.openhab.automation.jsscriptingnashorn.tests</module>
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>

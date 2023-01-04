@@ -39,6 +39,7 @@ public class DeviceManagerWrapper {
         this.deviceManager = deviceManager;
     }
 
+    @SuppressWarnings("null")
     public synchronized Collection<BluetoothAdapter> scanForBluetoothAdapters() {
         if (deviceManager != null) {
             return deviceManager.scanForBluetoothAdapters();

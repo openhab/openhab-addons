@@ -1,4 +1,3 @@
-
 # KNX Binding
 
 The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations.
@@ -102,6 +101,15 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
 
+##### Channel Type "color"
+
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| hsb              | Group address for color                | 232.600     |
+| switch           | Group address for the binary switch    |   1.001     |
+| position         | Group address of the absolute position |   5.001     |
+| increaseDecrease | Group address for relative movement    |   3.007     |
+
 ##### Channel Type "rollershutter"
 
 | Parameter | Description                             | Default DPT |
@@ -157,6 +165,15 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 | position         | Group address of the absolute position                                                                                                        | 5.001       |
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
+
+##### Channel Type "color-control"
+
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| hsb              | Group address for color                | 232.600     |
+| switch           | Group address for the binary switch    |   1.001     |
+| position         | Group address of the absolute position |   5.001     |
+| increaseDecrease | Group address for relative movement    |   3.007     |
 
 ##### Channel Type "rollershutter-control"
 
@@ -223,9 +240,7 @@ It is created by the ETS tool and cannot be changed via the ETS user interface.
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 
-- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
-`tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
-`tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`. `tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...). `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
 
 ### KNX Data Secure
 
@@ -296,6 +311,7 @@ Bridge knx:ip:bridge [
         readInterval=3600
     ] {
         Type switch        : demoSwitch        "Light"       [ ga="3/0/4+<3/0/5" ]
+        Type color         : demoColorLight    "Color"       [ hsb="6/0/10+<6/0/11", switch="6/0/12+<6/0/13", position="6/0/14+<6/0/15", increaseDecrease="6/0/16+<6/0/17" ]
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
         Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
@@ -323,6 +339,7 @@ knx.items:
 
 ```java
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Color         demoColorLight     "Color [%s]"               <light>          { channel="knx:device:bridge:generic:demoColorLight" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
 Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
 Contact       demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
@@ -336,13 +353,14 @@ knx.sitemap:
 ```perl
 sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
-    Switch item=demoSwitch
-    Switch item=demoRollershutter
-    Text   item=demoContact
-    Text   item=demoTemperature
-    Slider item=demoDimmer
-    Text   item=demoString
-    Text   item=demoDatetime
+    Switch      item=demoSwitch
+    Slider      item=demoDimmer
+    Colorpicker item=demoColorLight
+    Default     item=demoRollershutter
+    Text        item=demoContact
+    Text        item=demoTemperature
+    Text        item=demoString
+    Text        item=demoDatetime
   }
 }
 
@@ -363,6 +381,7 @@ Bridge knx:serial:bridge [
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
+        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14", 
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
         Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]

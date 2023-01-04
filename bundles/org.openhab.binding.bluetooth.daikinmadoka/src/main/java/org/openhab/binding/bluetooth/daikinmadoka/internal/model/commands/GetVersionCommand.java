@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 
 /**
  * This command returns the firmware version
@@ -39,10 +40,16 @@ public class GetVersionCommand extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        // In this method, we intentionally do not check for null values in mv45 and mv46. In case of null pointer
-        // access, it will be catched by the global exception and be reported as a Parsing Reponse exception.
-        byte[] mv45 = mm.getValues().get(0x45).getRawValue();
-        byte[] mv46 = mm.getValues().get(0x46).getRawValue();
+        MadokaValue mValue45 = mm.getValues().get(0x45);
+        MadokaValue mValue46 = mm.getValues().get(0x46);
+        if (mValue45 == null || mValue46 == null) {
+            String message = "version value is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
+
+        byte[] mv45 = mValue45.getRawValue();
+        byte[] mv46 = mValue46.getRawValue();
 
         if (mv45 == null || mv45.length != 3 || mv46 == null || mv46.length != 2) {
             setState(State.FAILED);
@@ -60,7 +67,12 @@ public class GetVersionCommand extends BRC1HCommand {
         this.communicationControllerVersion = commControllerMajor + "." + commControllerMinor;
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     @Override

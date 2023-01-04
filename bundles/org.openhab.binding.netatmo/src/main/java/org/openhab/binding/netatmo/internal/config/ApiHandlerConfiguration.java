@@ -29,6 +29,7 @@ public class ApiHandlerConfiguration {
     public String clientSecret = "";
     public String refreshToken = "";
     public String webHookUrl = "";
+    public String webHookPostfix = "";
     public int reconnectInterval = 300;
 
     public ConfigurationLevel check() {
