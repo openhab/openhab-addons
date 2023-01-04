@@ -24,12 +24,11 @@ You will created a Bridge with your apiKey.
 
 ## Bridge Configuration
 
-The bridge configuration only holds the api key : 
+The bridge configuration only holds the api key :
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
 | apiKey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
-
 
 ## Thing Configuration
 
@@ -51,7 +50,7 @@ For the location parameter, the following syntax is allowed (comma separated lat
 If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
 This `stationId` can be found by using the following link:
-https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your apiKey and NAME by the station you are looking for.
+`https://api.waqi.info/search/?token=TOKEN&keyword=NAME`, replacing TOKEN by your apiKey and NAME by the station you are looking for.
 
 ### Thing properties
 
@@ -60,7 +59,6 @@ Once created, at first execution, the station's properties will be filled with i
 - Nearest measuring station location
 - Measuring station ID
 - Latitude/longitude of measuring station
-
 
 ## Channels
 
@@ -98,8 +96,7 @@ you will be provided with the following informations
 | index           | Number               | AQI Index of the single pollutant            |
 | alert-level     | Number               | Alert level associate to the index           |
 
-
-(*) The alert level is described by a color : 
+(*) The alert level is described by a color :
 
 | Code | Color  | Description                    |
 |------|--------|--------------------------------|
@@ -110,15 +107,13 @@ you will be provided with the following informations
 | 4    | Purple | Very Unhealthy                 |
 | 5    | Maroon | Hazardous                      |
 
-
 ## Full Example
-
 
 airquality.things:
 
 ```java
 Bridge airquality:api:main "Bridge" [apiKey="xxxyyyzzz"] {
-    station MyHouse "Krakow"[location="50.06465,19.94498", refresh=60]
+    station home "Krakow"[location="50.06465,19.94498", refresh=60]
 }
 ```
 
@@ -127,19 +122,19 @@ airquality.items:
 ```java
 Group AirQuality <flow>
 
-Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:station:local:aqi#index" }
-Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:station:local:pm25#value" }
-Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:station:local:pm10#value" }
-Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:station:local:o3#value" }
-Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:no2#value" }
-Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:station:local:co#value" }
-Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:so2#value" }
+Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:station:main:home:aqi#index" }
+Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:station:main:home:pm25#value" }
+Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:station:main:home:pm10#value" }
+Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:station:main:home:o3#value" }
+Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:station:main:home:no2#value" }
+Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:station:main:home:co#value" }
+Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:station:main:home:so2#value" }
 
-DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:station:local:aqi#timestamp" }
+DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:station:main:home:aqi#timestamp" }
 
-Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:station:local:weather#temperature" }
-Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:station:local:weather#pressure" }
-Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:station:localweather#humidity" }
+Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:station:main:home:weather#temperature" }
+Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:station:main:home:weather#pressure" }
+Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:station:main:home:weather#humidity" }
 ```
 
 airquality.sitemap:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
-import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WemoDiscoveryParticipant} is responsible for discovering new and
- * removed Wemo devices. It uses the central {@link UpnpDiscoveryService}.
+ * removed Wemo devices.
  *
  * @author Hans-Jörg Merk - Initial contribution
  * @author Kai Kreuzer - some refactoring for performance and simplification
@@ -84,6 +83,12 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                     if (device.getDetails().getModelDetails().getModelName() != null) {
                         if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("socket")) {
                             logger.debug("Discovered a WeMo Socket thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("outdoorplug")) {
+                            logger.debug("Discovered a WeMo Outdoor Plug thing with UDN '{}'",
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
                         }

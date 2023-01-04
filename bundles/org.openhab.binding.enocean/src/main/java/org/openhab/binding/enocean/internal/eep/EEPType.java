@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,6 +137,7 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
+import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_01;
 import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_50;
 import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
@@ -469,6 +470,8 @@ public enum EEPType {
     SwitchWithEnergyMeasurment_12(RORG.VLD, 0x01, 0x12, true, D2_01_12.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB),
 
+    Rollershutter_D2_NODON(RORG.VLD, 0x05, 0x00, true, "NODON", NODONID, D2_05_00_NodON.class, THING_TYPE_ROLLERSHUTTER,
+            CHANNEL_ROLLERSHUTTER, CHANNEL_REPEATERMODE),
     Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER),
 
     WindowSashHandleSensor_50(RORG.VLD, 0x06, 0x50, false, "Siegenia", 0x005D, D2_06_50.class,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ public class HttpChannelConfig {
     public @Nullable String stateTransformation;
     public @Nullable String commandTransformation;
     public String stateContent = "";
+    public boolean escapedUrl = false;
 
     public HttpChannelMode mode = HttpChannelMode.READWRITE;
 

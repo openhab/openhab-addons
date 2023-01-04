@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -34,6 +36,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -74,7 +77,7 @@ import tuwien.auto.calimero.dptxlator.TranslatorTypes;
  * This class provides type mapping between all openHAB core types and KNX data point types.
  *
  * Each 'MainType' delivered from calimero, has a default mapping
- * for all it's children to a openHAB Typeclass.
+ * for all it's children to an openHAB Typeclass.
  * All these 'MainType' mapping's are put into 'dptMainTypeMap'.
  *
  * Default 'MainType' mapping's we can override by a specific mapping.
@@ -83,17 +86,19 @@ import tuwien.auto.calimero.dptxlator.TranslatorTypes;
  * If for a 'MainType' there is currently no specific mapping registered,
  * you can find a commented example line, with it's correct 'DPTXlator' class.
  *
- * @author Kai Kreuzer
- * @author Volker Daube
- * @author Jan N. Klug
+ * @author Kai Kreuzer - initial contribution
+ * @author Volker Daube - improvements
+ * @author Jan N. Klug - improvements
  * @author Helmut Lehmeyer - Java8, generic DPT Mapper
  */
+@NonNullByDefault
 @Component
 public class KNXCoreTypeMapper implements KNXTypeMapper {
 
     private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
 
     private static final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
+    private static final String TIME_FORMAT = new String("HH:mm:ss");
     private static final String DATE_FORMAT = new String("yyyy-MM-dd");
 
     /**
@@ -231,7 +236,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 7.011: DPT_Length_mm values: 0...65535 mm
          * 7.012: DPT_UElCurrentmA values: 0...65535 mA
          * 7.013: DPT_Brightness values: 0...65535 lx
-         * Calimero does not map: (map/use to 7.000 until then)
          * 7.600: DPT_Colour_Temperature values: 0...65535 K, 2000K 3000K 5000K 8000K
          */
         dptMainTypeMap.put(7, DecimalType.class);
@@ -250,6 +254,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 8.007: DPT_DeltaTimeHrs
          * 8.010: DPT_Percent_V16
          * 8.011: DPT_Rotation_Angle
+         * 8.012: DPT_Length_m
          */
         dptMainTypeMap.put(8, DecimalType.class);
 
@@ -275,6 +280,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 9.026: DPT_Rain_Amount values: -671088.64...670760.96 l/m²
          * 9.027: DPT_Value_Temp_F values: -459.6...670760.96 °F
          * 9.028: DPT_Value_Wsp_kmh values: 0...670760.96 km/h
+         * 9.029: DPT_Value_Absolute_Humidity: 0...670760 g/m³
+         * 9.030: DPT_Concentration_μgm3: 0...670760 µg/m³
          */
         dptMainTypeMap.put(9, DecimalType.class);
         /** Exceptions Datapoint Types "2-Octet Float Value", Main number 9 */
@@ -300,6 +307,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * MainType: 12
          * 12.000: General unsigned long
          * 12.001: DPT_Value_4_Ucount values: 0...4294967295 counter pulses
+         * 12.100: DPT_LongTimePeriod_Sec values: 0...4294967295 s
+         * 12.101: DPT_LongTimePeriod_Min values: 0...4294967295 min
+         * 12.102: DPT_LongTimePeriod_Hrs values: 0...4294967295 h
+         * 12.1200: DPT_VolumeLiquid_Litre values: 0..4294967295 l
+         * 12.1201: DPT_Volume_m3 values: 0..4294967295 m3
          */
         dptMainTypeMap.put(12, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Unsigned Value", Main number 12 */
@@ -316,7 +328,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 13.013: DPT_ActiveEnergy_kWh values: -2147483648...2147483647 kWh
          * 13.014: DPT_ApparantEnergy_kVAh values: -2147483648...2147483647 kVAh
          * 13.015: DPT_ReactiveEnergy_kVARh values: -2147483648...2147483647 kVAR
+         * 13.016: DPT_ActiveEnergy_MWh4 values: -2147483648...2147483647 MWh
          * 13.100: DPT_LongDeltaTimeSec values: -2147483648...2147483647 s
+         * 13.1200: DPT_DeltaVolumeLiquid_Litre values: -2147483648...2147483647 l
+         * 13.1201: DPT_DeltaVolume_m3 values: -2147483648...2147483647 m³
          */
         dptMainTypeMap.put(13, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 13 */
@@ -404,6 +419,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 14.077: Volume flux, values: m³/s
          * 14.078: Weight, values: N
          * 14.079: Work, values: J
+         * 14.080: apparent power: VA
          */
         dptMainTypeMap.put(14, DecimalType.class);
         /** Exceptions Datapoint Types "4-Octet Float Value", Main number 14 */
@@ -571,8 +587,158 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         defaultDptMap.put(HSBType.class, DPTXlatorRGB.DPT_RGB.getID());
     }
 
+    /*
+     * This function computes the target unit for type conversion from OH quantity type to DPT types.
+     * Calimero library provides units which can be used for most of the DPTs. There are some deviations
+     * from the OH unit scheme which are handled.
+     */
+    private String quantityTypeToDPTValue(QuantityType<?> qt, int mainNumber, int subNumber, String dpUnit)
+            throws KNXException {
+        String targetOhUnit = dpUnit;
+        double scaleFactor = 1.0;
+        switch (mainNumber) {
+            case 7:
+                switch (subNumber) {
+                    case 3:
+                    case 4:
+                        targetOhUnit = "ms";
+                        break;
+                }
+                break;
+            case 9:
+                switch (subNumber) {
+                    // special case: temperature deltas specified in different units
+                    // ignore the offset, but run a conversion to handle prefixes like mK
+                    // scaleFactor is needed to properly handle °F
+                    case 2: {
+                        final String unit = qt.getUnit().toString();
+                        // find out if the unit is based on °C or K, getSystemUnit() does not help here as it always
+                        // gives "K"
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                    case 3: {
+                        final String unit = qt.getUnit().toString();
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C/h";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F/h";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K/h";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                    case 23: {
+                        final String unit = qt.getUnit().toString();
+                        if (unit.contains("°C")) {
+                            targetOhUnit = "°C/%";
+                        } else if (unit.contains("°F")) {
+                            targetOhUnit = "°F/%";
+                            scaleFactor = 5.0 / 9.0;
+                        } else if (unit.contains("K")) {
+                            targetOhUnit = "K/%";
+                        } else {
+                            targetOhUnit = "";
+                        }
+                        break;
+                    }
+                }
+                break;
+            case 12:
+                switch (subNumber) {
+                    case 1200:
+                        // Calimero uses "litre"
+                        targetOhUnit = "l";
+                        break;
+                }
+                break;
+            case 13:
+                switch (subNumber) {
+                    case 12:
+                    case 15:
+                        // Calimero uses VARh, OH uses varh
+                        targetOhUnit = targetOhUnit.replace("VARh", "varh");
+                        break;
+                    case 14:
+                        // OH does not accept kVAh, only VAh
+                        targetOhUnit = targetOhUnit.replace("kVAh", "VAh");
+                        scaleFactor = 1.0 / 1000.0;
+                        break;
+                }
+                break;
+
+            case 14:
+                targetOhUnit = targetOhUnit.replace("Ω\u207B¹", "S");
+                // Calimero uses a special unicode character to specify units like m*s^-2
+                // this needs to be rewritten to m/s²
+                final int posMinus = targetOhUnit.indexOf("\u207B");
+                if (posMinus > 0) {
+                    targetOhUnit = targetOhUnit.substring(0, posMinus - 1) + "/" + targetOhUnit.charAt(posMinus - 1)
+                            + targetOhUnit.substring(posMinus + 1);
+                }
+                switch (subNumber) {
+                    case 8:
+                        // OH does not support unut Js, need to expand
+                        targetOhUnit = "J*s";
+                        break;
+                    case 21:
+                        targetOhUnit = "C*m";
+                        break;
+                    case 24:
+                        targetOhUnit = "C";
+                        break;
+                    case 29:
+                    case 47:
+                        targetOhUnit = "A*m²";
+                        break;
+                    case 40:
+                        if (qt.getUnit().toString().contains("J")) {
+                            targetOhUnit = "J";
+                        } else {
+                            targetOhUnit = "lm*s";
+                        }
+                        break;
+                    case 61:
+                        targetOhUnit = "Ohm*m";
+                        break;
+                    case 75:
+                        targetOhUnit = "N*m";
+                        break;
+                }
+                break;
+            case 29:
+                switch (subNumber) {
+                    case 12:
+                        // Calimero uses VARh, OH uses varh
+                        targetOhUnit = targetOhUnit.replace("VARh", "varh");
+                        break;
+                }
+                break;
+        }
+        // replace e.g. m3 by m³
+        targetOhUnit = targetOhUnit.replace("3", "³").replace("2", "²");
+
+        final QuantityType<?> result = qt.toUnit(targetOhUnit);
+        if (result == null) {
+            throw new KNXException("incompatible types: " + qt.getUnit().toString() + ", " + targetOhUnit);
+        }
+        return String.valueOf(result.doubleValue() * scaleFactor);
+    }
+
     @Override
-    public String toDPTValue(Type type, String dptID) {
+    public @Nullable String toDPTValue(Type type, @Nullable String dptID) {
         DPT dpt;
         int mainNumber = getMainNumber(dptID);
         if (mainNumber == -1) {
@@ -659,6 +825,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return type.toString();
             } else if (type instanceof DateTimeType) {
                 return formatDateTime((DateTimeType) type, dptID);
+            } else if (type instanceof QuantityType) {
+                final QuantityType<?> qt = (QuantityType<?>) type;
+                return quantityTypeToDPTValue(qt, mainNumber, subNumber, dpt.getUnit());
             }
         } catch (Exception e) {
             logger.warn("An exception occurred converting type {} to dpt id {}: error message={}", type, dptID,
@@ -672,7 +841,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
     }
 
     @Override
-    public Type toType(Datapoint datapoint, byte[] data) {
+    public @Nullable Type toType(Datapoint datapoint, byte[] data) {
         try {
             DPTXlator translator = TranslatorTypes.createTranslator(datapoint.getMainNumber(), datapoint.getDPT());
             translator.setData(data);
@@ -830,7 +999,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
             if (typeClass.equals(DateTimeType.class)) {
                 String date = formatDateTime(value, datapoint.getDPT());
-                if ((date == null) || (date.isEmpty())) {
+                if (date.isEmpty()) {
                     logger.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
                     return null;
                 } else {
@@ -867,7 +1036,8 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @return the openHAB type (command or state) class or {@code null} if the datapoint type id is not supported.
      */
     @Override
-    public Class<? extends Type> toTypeClass(String dptId) {
+    public @Nullable Class<? extends Type> toTypeClass(@Nullable String dptId) {
+        @Nullable
         Class<? extends Type> ohClass = dptTypeMap.get(dptId);
         if (ohClass == null) {
             int mainNumber = getMainNumber(dptId);
@@ -886,7 +1056,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param typeClass the openHAB type class
      * @return the datapoint type id
      */
-    public String toDPTid(Class<? extends Type> typeClass) {
+    public @Nullable String toDPTid(Class<? extends Type> typeClass) {
         return defaultDptMap.get(typeClass);
     }
 
@@ -920,7 +1090,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
                     value = stb.toString();
                 }
-                date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                try {
+                    date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+                } catch (ParseException pe) {
+                    date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
+                }
             }
         } catch (ParseException pe) {
             // do nothing but logging
@@ -944,7 +1118,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @throws IllegalArgumentException if none of the datapoint types DPT_DATE or
      *             DPT_TIMEOFDAY has been used.
      */
-    private static String formatDateTime(DateTimeType dateType, String dpt) {
+    private static String formatDateTime(DateTimeType dateType, @Nullable String dpt) {
         if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
             return dateType.format("%tF");
         } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {
@@ -962,7 +1136,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param dptID String with DPT ID
      * @return sub number or -1
      */
-    private int getSubNumber(String dptID) {
+    private int getSubNumber(@Nullable String dptID) {
         int result = -1;
         if (dptID == null) {
             throw new IllegalArgumentException("Parameter dptID cannot be null");
@@ -989,7 +1163,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param dptID String with DPT ID
      * @return main number or -1
      */
-    private int getMainNumber(String dptID) {
+    private int getMainNumber(@Nullable String dptID) {
         int result = -1;
         if (dptID == null) {
             throw new IllegalArgumentException("Parameter dptID cannot be null");

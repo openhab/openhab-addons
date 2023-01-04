@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,17 +96,26 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     public void initialize() {
         HydrawiseControllerConfiguration config = getConfigAs(HydrawiseControllerConfiguration.class);
         controllerId = config.controllerId;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            HydrawiseAccountHandler handler = (HydrawiseAccountHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.addControllerListeners(this);
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.addControllerListeners(this);
+            Bridge bridge = getBridge();
+            if (bridge != null) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Controller Handler disposed.");
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.removeControllerListeners(this);
         }
     }
 
@@ -249,8 +258,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
             // update values with what the cloud tells us even though the controller may be offline
             if (!controller.status.online) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Controller Offline: %s last seen %s", controller.status.summary,
-                                secondsToDateTime(controller.status.lastContact.timestamp)));
+                        "Service reports controller as offline");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -268,15 +276,22 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_SUMMARY,
                 new StringType(controller.status.summary));
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_LAST_CONTACT,
-                secondsToDateTime(controller.status.lastContact.timestamp));
+                controller.status.lastContact != null ? secondsToDateTime(controller.status.lastContact.timestamp)
+                        : UnDefType.NULL);
     }
 
     private void updateZones(List<Zone> zones) {
         AtomicReference<Boolean> anyRunning = new AtomicReference<Boolean>(false);
         AtomicReference<Boolean> anySuspended = new AtomicReference<Boolean>(false);
-        int i = 1;
         for (Zone zone : zones) {
-            String group = "zone" + (i++);
+            // there are 12 relays per expander, expanders will have a zoneNumber like:
+            // 10 for expander 0, relay 10 = zone10
+            // 101 for expander 1, relay 1 = zone13
+            // 212 for expander 2, relay 12 = zone36
+            // division of integers in Java give whole numbers, not remainders FYI
+            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
+
+            String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
             logger.trace("Updateing Zone {} {} ", group, zone.name);
             updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(zone.name));

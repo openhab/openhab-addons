@@ -18,6 +18,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Caddx Bridge Serial Port</label>
 				<description>The serial port name for the communication. Valid values
 					are e.g. COM1 for Windows and /dev/ttyS0 or

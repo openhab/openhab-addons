@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,37 @@
  */
 package org.openhab.binding.network.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SpeedTestConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class SpeedTestConfiguration {
-    public Integer refreshInterval = 20;
-    public Integer initialDelay = 5;
-    public Integer uploadSize = 1000000;
-    public Integer maxTimeout = 3;
-    private String url;
-    private String fileName;
+    public int refreshInterval = 20;
+    public int initialDelay = 5;
+    public int uploadSize = 1000000;
+    public int maxTimeout = 3;
+    private @Nullable String url;
+    private @Nullable String fileName;
 
-    public String getUploadURL() {
-        return url + (url.endsWith("/") ? "" : "/");
+    public @Nullable String getUploadURL() {
+        String localUrl = url;
+        if (localUrl != null) {
+            localUrl += localUrl.endsWith("/") ? "" : "/";
+        }
+        return localUrl;
     }
 
-    public String getDownloadURL() {
-        return getUploadURL() + fileName;
+    public @Nullable String getDownloadURL() {
+        String result = getUploadURL();
+        if (result != null && fileName != null) {
+            result += fileName;
+        }
+        return result;
     }
 }

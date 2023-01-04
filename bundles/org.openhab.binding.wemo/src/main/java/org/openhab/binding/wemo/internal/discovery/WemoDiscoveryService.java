@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,9 @@ public class WemoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting UPnP RootDevice search...");
-        if (upnpService != null) {
-            upnpService.getControlPoint().search(new RootDeviceHeader());
+        UpnpService localService = upnpService;
+        if (localService != null) {
+            localService.getControlPoint().search(new RootDeviceHeader());
         } else {
             logger.debug("upnpService not set");
         }

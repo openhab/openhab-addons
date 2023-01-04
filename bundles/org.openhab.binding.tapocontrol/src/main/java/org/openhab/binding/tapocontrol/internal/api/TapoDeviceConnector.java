@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.net.InetAddress;
@@ -25,6 +26,7 @@ import org.openhab.binding.tapocontrol.internal.device.TapoDevice;
 import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
+import org.openhab.binding.tapocontrol.internal.structures.TapoEnergyData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     private final String uid;
     private final TapoDevice device;
     private TapoDeviceInfo deviceInfo;
+    private TapoEnergyData energyData;
     private Gson gson;
     private long lastQuery = 0L;
     private long lastSent = 0L;
@@ -58,6 +61,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         this.device = device;
         this.gson = new Gson();
         this.deviceInfo = new TapoDeviceInfo();
+        this.energyData = new TapoEnergyData();
         this.uid = device.getThingUID().getAsString();
     }
 
@@ -209,6 +213,20 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     }
 
     /**
+     * Get energy usage from device
+     */
+    public void getEnergyUsage() {
+        logger.trace("({}) DeviceConnetor_getEnergyUsage from '{}'", uid, deviceURL);
+
+        /* create payload */
+        PayloadBuilder plBuilder = new PayloadBuilder();
+        plBuilder.method = DEVICE_CMD_GETENERGY;
+        String payload = plBuilder.getPayload();
+
+        sendSecurePasstrhroug(payload, DEVICE_CMD_GETENERGY);
+    }
+
+    /**
      * SEND SECUREPASSTHROUGH
      * encprypt payload and send to device
      * 
@@ -217,6 +235,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     protected void sendSecurePasstrhroug(String payload, String command) {
         /* encrypt payload */
+        logger.trace("({}) encrypting payload '{}'", uid, payload);
         String encryptedPayload = encryptPayload(payload);
 
         /* create secured payload */
@@ -244,13 +263,14 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
         Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_JSON_DECODE_FAIL);
         if (errorCode != 0) {
-            logger.debug("({}) set deviceInfo not succesfull: {}", uid, jsnResult);
+            logger.debug("({}) set deviceInfo not successful: {}", uid, jsnResult);
             this.device.handleConnectionState();
         }
         this.device.responsePasstrough(responseBody);
     }
 
     /**
+     * 
      * handle JsonResponse (getDeviceInfo)
      * 
      * @param responseBody String with responseBody from device
@@ -258,12 +278,29 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleDeviceResult(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has("device_id")) {
+        if (jsnResult.has(DEVICE_PROPERTY_ID)) {
             this.deviceInfo = new TapoDeviceInfo(jsnResult);
             this.device.setDeviceInfo(deviceInfo);
         } else {
             this.deviceInfo = new TapoDeviceInfo();
             this.device.handleConnectionState();
+        }
+        this.device.responsePasstrough(responseBody);
+    }
+
+    /**
+     * handle JsonResponse (getEnergyData)
+     * 
+     * @param responseBody String with responseBody from device
+     */
+    @Override
+    protected void handleEnergyResult(String responseBody) {
+        JsonObject jsnResult = getJsonFromResponse(responseBody);
+        if (jsnResult.has(ENERGY_PROPERTY_POWER)) {
+            this.energyData = new TapoEnergyData(jsnResult);
+            this.device.setEnergyData(energyData);
+        } else {
+            this.energyData = new TapoEnergyData();
         }
         this.device.responsePasstrough(responseBody);
     }
@@ -304,7 +341,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
                 jsonObject = gson.fromJson(responseBody, JsonObject.class);
                 logger.trace("({}) received result: {}", uid, responseBody);
                 if (jsonObject != null) {
-                    /* return result if set / else request was successfull */
+                    /* return result if set / else request was successful */
                     if (jsonObject.has("result")) {
                         return jsonObject.getAsJsonObject("result");
                     } else {

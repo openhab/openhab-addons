@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -153,7 +154,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
 
     private void determineBridgeStatus() {
         ThingStatus status = ThingStatus.ONLINE;
-        List<Thing> childs = getThing().getThings();
+        List<Thing> childs = getThing().getThings().stream().filter(Thing::isEnabled).collect(Collectors.toList());
         if (!childs.isEmpty()) {
             status = ThingStatus.OFFLINE;
             for (Thing thing : childs) {
@@ -168,7 +169,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
 
     private void updateThings() {
         ThingStatus status = ThingStatus.ONLINE;
-        List<Thing> childs = getThing().getThings();
+        List<Thing> childs = getThing().getThings().stream().filter(Thing::isEnabled).collect(Collectors.toList());
         if (!childs.isEmpty()) {
             status = ThingStatus.OFFLINE;
             for (Thing thing : childs) {

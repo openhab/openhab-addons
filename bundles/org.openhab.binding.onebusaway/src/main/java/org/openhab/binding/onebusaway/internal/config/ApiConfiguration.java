@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * The {@link ApiConfiguration} defines the model for a API bridge configuration.
+ * The {@link ApiConfiguration} defines the model for an API bridge configuration.
  *
  * @author Shawn Wilsher - Initial contribution
  */

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hitachidhw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Hitachi DHW</label>
+		<channels>
+			<channel id="dhw_mode" typeId="dhw_mode"></channel>
+			<channel id="dhw" typeId="dhw"></channel>
+			<channel id="anti_legionella" typeId="anti_legionella"></channel>
+			<channel id="dhw_setting_temp" typeId="dhw_setting_temp"></channel>
+			<channel id="dhw_temp" typeId="dhw_temp"></channel>
+			<channel id="target_boost_mode" typeId="target_boost_mode"></channel>
+			<channel id="boost_mode" typeId="yutaki_boost_mode"></channel>
+			<channel id="alarm_number" typeId="alarm_number"></channel>
+			<channel id="anti_legionella_temp" typeId="anti_legionella_temp"></channel>
+		</channels>
+		<representation-property>url</representation-property>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

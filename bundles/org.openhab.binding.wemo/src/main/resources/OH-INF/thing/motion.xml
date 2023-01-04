@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="motion">
+		<label>WeMo Motion</label>
+		<description>This is a WeMo MotionSensor</description>
+
+		<channels>
+			<channel id="motionDetection" typeId="motionDetection"/>
+			<channel id="lastMotionDetected" typeId="lastMotionDetected"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

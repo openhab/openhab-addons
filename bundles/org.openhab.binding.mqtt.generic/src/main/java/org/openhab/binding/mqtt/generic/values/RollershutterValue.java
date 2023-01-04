@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +24,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
 
 /**
- * Implements an rollershutter value.
+ * Implements a rollershutter value.
  * <p>
  * The stop, up and down strings have multiple purposes.
  * For one if those strings are received via MQTT they are recognised as corresponding commands
@@ -51,8 +50,7 @@ public class RollershutterValue extends Value {
      */
     public RollershutterValue(@Nullable String upString, @Nullable String downString, @Nullable String stopString) {
         super(CoreItemFactory.ROLLERSHUTTER,
-                Stream.of(UpDownType.class, StopMoveType.class, PercentType.class, StringType.class)
-                        .collect(Collectors.toList()));
+                List.of(UpDownType.class, StopMoveType.class, PercentType.class, StringType.class));
         this.upString = upString;
         this.downString = downString;
         this.stopString = stopString == null ? StopMoveType.STOP.name() : stopString;

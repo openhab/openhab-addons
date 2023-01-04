@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,7 +89,7 @@ public class ScheduleTests {
         commonSetup.start(new ResourceConfig().registerInstances(subject));
 
         // Mock random -> always return int=10 or the highest possible int if bounded
-        Random random = mock(Random.class);
+        Random random = mock(Random.class, withSettings().withoutAnnotations());
         doReturn(10).when(random).nextInt();
         doAnswer(a -> {
             Integer bound = a.getArgument(0);

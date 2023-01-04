@@ -116,8 +116,20 @@
 			<options>
 				<option value="OFF">Off</option>
 				<option value="SLEEP">Sleeping / Night mode</option>
+				<option value="STARTING">Grid Monitoring/wake-up</option>
 				<option value="ON">On - producing power</option>
+				<option value="THROTTLED">Production (curtailed)</option>
+				<option value="SHUTTING_DOWN">Shutting down</option>
+				<option value="FAULT">Fault</option>
+				<option value="STANDBY">Standby/Maintenance/Setup</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="status-vendor-type">
+		<item-type>Number</item-type>
+		<label>Vendor-defined Status</label>
+		<description>Vendor-defined device status and error codes.</description>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

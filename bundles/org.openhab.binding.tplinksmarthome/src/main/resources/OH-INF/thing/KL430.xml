@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kl430">
+		<label>KL430</label>
+		<description>TP-Link KL430 Kasa Smart Light Strip, Multicolour</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs2"/>
+			<channel id="power" typeId="power"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:tplinksmarthome:device-bulb"/>
+	</thing-type>
+</thing:thing-descriptions>

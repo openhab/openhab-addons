@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pushover.internal.handler;
 
-import static org.openhab.binding.pushover.internal.PushoverBindingConstants.DEFAULT_SOUND;
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,10 +25,10 @@ import org.openhab.binding.pushover.internal.actions.PushoverActions;
 import org.openhab.binding.pushover.internal.config.PushoverAccountConfiguration;
 import org.openhab.binding.pushover.internal.config.PushoverConfigOptionProvider;
 import org.openhab.binding.pushover.internal.connection.PushoverAPIConnection;
-import org.openhab.binding.pushover.internal.connection.PushoverCommunicationException;
-import org.openhab.binding.pushover.internal.connection.PushoverConfigurationException;
 import org.openhab.binding.pushover.internal.connection.PushoverMessageBuilder;
 import org.openhab.binding.pushover.internal.dto.Sound;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -69,15 +69,15 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
         boolean configValid = true;
         final String apikey = config.apikey;
-        if (apikey == null || apikey.isEmpty()) {
+        if (apikey == null || apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-apikey");
+                    TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY);
             configValid = false;
         }
         final String user = config.user;
-        if (user == null || user.isEmpty()) {
+        if (user == null || user.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-user");
+                    TEXT_OFFLINE_CONF_ERROR_MISSING_USER);
             configValid = false;
         }
 
@@ -101,11 +101,16 @@ public class PushoverAccountHandler extends BaseThingHandler {
      */
     public List<Sound> getSounds() {
         try {
-            return connection != null ? connection.getSounds() : PushoverAccountConfiguration.DEFAULT_SOUNDS;
-        } catch (PushoverCommunicationException e) {
+            if (connection != null) {
+                List<Sound> sounds = connection.getSounds();
+                if (sounds != null) {
+                    return sounds;
+                }
+            }
+        } catch (CommunicationException e) {
             // do nothing, causing exception is already logged
-        } catch (PushoverConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         }
         return PushoverAccountConfiguration.DEFAULT_SOUNDS;
     }
@@ -143,10 +148,10 @@ public class PushoverAccountHandler extends BaseThingHandler {
         if (connection != null) {
             try {
                 return connection.sendMessage(messageBuilder);
-            } catch (PushoverCommunicationException e) {
+            } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
-            } catch (PushoverConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (ConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return false;
         } else {
@@ -158,10 +163,10 @@ public class PushoverAccountHandler extends BaseThingHandler {
         if (connection != null) {
             try {
                 return connection.sendPriorityMessage(messageBuilder);
-            } catch (PushoverCommunicationException e) {
+            } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
-            } catch (PushoverConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (ConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return "";
         } else {
@@ -173,10 +178,10 @@ public class PushoverAccountHandler extends BaseThingHandler {
         if (connection != null) {
             try {
                 return connection.cancelPriorityMessage(receipt);
-            } catch (PushoverCommunicationException e) {
+            } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
-            } catch (PushoverConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (ConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return false;
         } else {
@@ -189,8 +194,8 @@ public class PushoverAccountHandler extends BaseThingHandler {
         try {
             connection.validateUser();
             updateStatus(ThingStatus.ONLINE);
-        } catch (PushoverCommunicationException | PushoverConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (CommunicationException | ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         }
     }
 }

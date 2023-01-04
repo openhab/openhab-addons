@@ -8,8 +8,8 @@ More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Plan
 Discovery occurs in three steps:
 
 1. Discover your NEEO Brain.
-2. Once you have added a NEEO Brain, each Room will be discovered (which will include all Recipes and Scenarios).
-3. Once you have added a NEEO Room, each Device in the Room will be discovered (which will include all Macros for the Device).
+1. Once you have added a NEEO Brain, each Room will be discovered (which will include all Recipes and Scenarios).
+1. Once you have added a NEEO Room, each Device in the Room will be discovered (which will include all Macros for the Device).
 
 The Recipes/Scenarios can then be started or stopped from openHAB or from the remote.
 If a Recipe/Scenario is started on the Brain, the status of the Recipe/Scenario will change in openHAB as well.
@@ -48,13 +48,13 @@ Actions can be triggered by sending ON to the channel
 
 ## Supported Things
 
-* Bridge: NEEO Brain.
+- Bridge: NEEO Brain.
 This bridge represents a physical NEEO Brain and will contain one to many Rooms within it.
 
-* Bridge: NEEO Room.
+- Bridge: NEEO Room.
 Represents a Room on the NEEO Brain.  Only rooms that have atleast one device or one recipe (custom if no devices) will be shown unless the brain configuration option "discoverEmptyRooms" is set to true.
 
-* Thing: NEEO Device.
+- Thing: NEEO Device.
 
 Represents a Device within the NEEO Room.
 
@@ -63,8 +63,8 @@ Represents a Device within the NEEO Room.
 NEEO Brains will be automatically discovered if mDNS/bonjour/zeroconf is installed on the local machine:
 
 1. On Windows - installing iTunes will install bonjour.
-2. On Linux - please install zeroconf (see vendor documentation on how to do that).
-3. On Mac - should already be installed.
+1. On Linux - please install zeroconf (see vendor documentation on how to do that).
+1. On Mac - should already be installed.
 
 When you add the NEEO Brain, the Rooms on the Brain will then be auto discovered and placed in the inbox.
 When you add a Room, all Devices should be auto discovered and placed in the inbox.
@@ -75,47 +75,47 @@ If you discovered the wired first but want to use the wireless (or in the revers
 
 If the Brain is not discovered, here is list of the most common issues:
 
-1.  You can generally trigger discovery by starting up the NEEO APP on your mobile device, press MENU->NEEO Brain->Change Brain.
+1. You can generally trigger discovery by starting up the NEEO APP on your mobile device, press MENU->NEEO Brain->Change Brain.
 This will generally send out the necessary mDNS broadcast messages to discovery the Brain.
-2.  You did not wait long enough.
+1. You did not wait long enough.
 I have noticed that it will take up to 5 minutes for the discovery to find the Brain.
-3.  Local firewall is blocking the mDNS broadcast messages.
+1. Local firewall is blocking the mDNS broadcast messages.
 Modify the firewall to allow mDNS packets - typically port 5353 and/or IP address 224.0.0.251
-4.  The Brain is on a different subnet.
+1. The Brain is on a different subnet.
 Unless you have special routing rules, having the Brain on a different subnet than the openHAB instance will prevent discovery.
 Either add routing rules or move one of them to the same subnet.
-5.  Bug in the mDNS library.
+1. Bug in the mDNS library.
 Occasionally a broadcast will be missed and a simple openHAB restart will fix the issue.
-6.  Brain isn't reachable.
+1. Brain isn't reachable.
 
 Ping the Brain's address from the openHAB machine and see if it responds.
 
 If none of the above work, there are a few more things you can try:
 
-1.  Use your local dns-sd command to see if you find the instance ("dns-sd -B _neeo._tcp").
-2.  Manually configure the Brain and specify its IP address.
-3.  Look in the issues forum on the NEEO SDK GitHub - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36).
+1. Use your local dns-sd command to see if you find the instance ("dns-sd -B _neeo._tcp").
+1. Manually configure the Brain and specify its IP address.
+1. Look in the issues forum on the NEEO SDK GitHub - specifically the [Brain Discovery not working](https://github.com/NEEOInc/neeo-sdk/issues/36).
 
 ## Forward Actions
 
 The NEEO Brain has the option to forward all actions performed on it to a specific address.
 The forward actions will be a JSON string representation:
 
-```
+```json
 { "action": "xxx", "actionparameter": "xxx", "recipe": "xxx", "device": "xxx", "room": "xxx" }
 ```
 
 All parameters are optional (based on what action has been taken) with atleast one of them filled in.
 If the Recipe "Watch TV" is launched, the forward action would be:
 
-```
+```json
 { "action": "launch", "recipe": "Watch TV" }
 ```
 
 The NEEO Brain bridge will register itself as the destination for actions and has a trigger channel defined to accept the results of any forward action.
 An example rule might look like (for a Brain with an ID of d487672e):
 
-```
+```java
 rule "NEEO"
     when
         Channel 'neeo:Brain:d487672e:forwardActions' triggered
@@ -139,7 +139,7 @@ end
 Since the NEEO Brain ONLY allows a single forward actions URL, the NEEO Brain Bridge can be configured to:
 
 1. Whether to register for forward actions or not.
-2. If forward actions has been registered, forward the action on to other URLs for processing.
+1. If forward actions has been registered, forward the action on to other URLs for processing.
 
 This will allow you to use other devices that want to consume the forward actions (in addition to openHAB).
 
@@ -157,8 +157,6 @@ The following are the configurations available to each of the bridges/things:
 | discoverEmptyRooms   | boolean | No       | false   | Whether to discover Rooms with no Devices in them                                                              |
 | checkStatusInterval  | number  | No       | 10      | The interval (in seconds) to check the status of the Brain. Specify <=0 to disable                             |
 
-
-
 ### NEEO Room
 
 | Name                 | Type    | Required | Default | Description                                                                                                    |
@@ -173,7 +171,6 @@ The following are the configurations available to each of the bridges/things:
 |----------------------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------|
 | deviceKey            | string  | Yes      | (None)  | The unique key identifying the Device on the NEEO Brain                                                        |
 
-
 ## Channels
 
 ### NEEO Brain
@@ -183,7 +180,6 @@ The NEEO Brain has the following channels:
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                                |
 |--------------------|------------|--------------|--------------------------------------------------------------------------------------------|
 | forwardActions     | R          | Trigger      | The forward actions channel                                                                |
-
 
 The following properties are available at the time of this writing:
 
@@ -197,15 +193,14 @@ The following properties are available at the time of this writing:
 | Key           | The unique identifier of the Brain                                                                                  |
 | Name          | Internal name of the Brain                                                                                          |
 
-
 ### NEEO Room
 
 The NEEO Room is dynamically generated from the Brain.
 Each Room will dynamically generate the following channel groups:
 
-1) Each Room will have exactly one "room-state" representing the current state of the Room.
-2) Each Room will have zero or more "room-recipe-xxx" (where xxx is the Recipe key) groups representing each Recipe in the Room.
-3) Each Room will have zero or more "room-scenario-xxx" (where xxx is the Scenario key) groups representing each Scenario in the Room.
+1. Each Room will have exactly one "room-state" representing the current state of the Room.
+1. Each Room will have zero or more "room-recipe-xxx" (where xxx is the Recipe key) groups representing each Recipe in the Room.
+1. Each Room will have zero or more "room-scenario-xxx" (where xxx is the Scenario key) groups representing each Scenario in the Room.
 
 #### Room State Group
 
@@ -216,7 +211,7 @@ The following channels will be in the Room state group:
 | currentStep*       | R          | trigger      | Displays the current step being executed                                                   |
 
 Current Step will ONLY be triggered if openHAB started the corresponding recipe (or scenario).  
-If the NEEO Remote or NEEO App starts the recipe or scenario, the currentStep will never be triggered. 
+If the NEEO Remote or NEEO App starts the recipe or scenario, the currentStep will never be triggered.
 
 The current step is ONLY communicated from the Brain to the device that started the Recipe/Scenario.
 If the remote started the Recipe/Scenario, it will show the current step but openHAB will not be notified.
@@ -260,7 +255,7 @@ Each Device will have a single group (Macros) and that group will contain one or
 
 .things
 
-```
+```java
 neeo:brain:home                     [ ipAddress="192.168.1.24" ]
 neeo:room:attic   (neeo:brain:home) [ roomKey="6277847230179180544" ]
 neeo:device:tv    (neeo:room:attic) [ deviceKey="6343464057630097408" ]
@@ -268,7 +263,7 @@ neeo:device:tv    (neeo:room:attic) [ deviceKey="6343464057630097408" ]
 
 .items
 
-```
+```java
 String Attic_RecipeName          "Recipe Name [%s]"     { channel="neeo:room-6277847230179180544:attic:room:recipe#name-6277847545657950208" }
 Switch Attic_RecipeEnabled       "Recipe Enabled"       { channel="neeo:room-6277847230179180544:attic:room:recipe#enabled-6277847545657950208" }
 Switch Attic_RecipeStatus        "Running"              { channel="neeo:room-6277847230179180544:attic:room:recipe#status-6277847545657950208" }
@@ -279,7 +274,7 @@ Switch Attic_TvInput1            "Input1"               { channel="neeo:device:t
 
 .sitemap
 
-```
+```perl
 sitemap demo label="NEEO" {
     Frame label="Attic" {
         Text item=Attic_RecipeName

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.http.internal.http;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -61,20 +62,13 @@ public class HttpResponseListener extends BufferingResponseListener {
         Request request = result.getRequest();
         if (result.isFailed()) {
             logger.warn("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(), request.getMethod(),
-                    request.getContent(), result.getFailure().getMessage());
+                    request.getContent(), result.getFailure().toString());
             future.complete(null);
+        } else if (HttpStatus.isSuccess(response.getStatus())) {
+            String encoding = Objects.requireNonNullElse(getEncoding(), fallbackEncoding);
+            future.complete(new Content(getContent(), encoding, getMediaType()));
         } else {
             switch (response.getStatus()) {
-                case HttpStatus.OK_200:
-                    byte[] content = getContent();
-                    String encoding = getEncoding();
-                    if (content != null) {
-                        future.complete(
-                                new Content(content, encoding == null ? fallbackEncoding : encoding, getMediaType()));
-                    } else {
-                        future.complete(null);
-                    }
-                    break;
                 case HttpStatus.UNAUTHORIZED_401:
                     logger.debug("Requesting '{}' (method='{}', content='{}') failed: Authorization error",
                             request.getURI(), request.getMethod(), request.getContent());

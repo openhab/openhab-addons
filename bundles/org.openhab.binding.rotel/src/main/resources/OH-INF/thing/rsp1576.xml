@@ -7,7 +7,7 @@
 	<!-- Rotel RSP-1576 Connection Thing Type -->
 	<thing-type id="rsp1576">
 		<label>RSP-1576 Surround Processor</label>
-		<description>Connection to the Rotel RSP-1576 surround processor</description>
+		<description>Connection to the Rotel RSP-1576 or RSP-1576MKII surround processor</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -16,6 +16,7 @@
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

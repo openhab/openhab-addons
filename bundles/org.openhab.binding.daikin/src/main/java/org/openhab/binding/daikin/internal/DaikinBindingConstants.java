@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_ENERGY_STRING_FORMAT = "%s-%d";
 
     public static final String CHANNEL_AC_SPECIALMODE = "specialmode";
-    public static final String CHANNEL_AC_SPECIALMODE_POWERFUL = "specialmode-powerful";
+    public static final String CHANNEL_AC_STREAMER = "streamer";
 
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";

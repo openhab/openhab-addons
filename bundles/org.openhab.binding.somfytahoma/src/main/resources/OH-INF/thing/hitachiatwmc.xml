@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hitachiatwmc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Hitachi Air To Water Main Component</label>
+		<channels>
+			<channel id="auto_manu_mode" typeId="auto_manu_mode"></channel>
+			<channel id="unit_control" typeId="unit_control"></channel>
+			<channel id="unit_mode_status" typeId="unit_mode_status"></channel>
+			<channel id="unit_mode_control" typeId="unit_mode_control"></channel>
+			<channel id="block_menu_control" typeId="block_menu_control"></channel>
+			<channel id="space_mode" typeId="space_mode"></channel>
+			<channel id="eco_mode_target_offset" typeId="eco_mode_target_offset"></channel>
+			<channel id="eco_mode_offset" typeId="eco_mode_offset"></channel>
+			<channel id="comm_alarm_bit_status" typeId="comm_alarm_bit_status"></channel>
+			<channel id="operation" typeId="operation"></channel>
+			<channel id="outdoor_temp" typeId="system.outdoor-temperature"></channel>
+			<channel id="water_inlet_temp" typeId="water_inlet_temp"></channel>
+			<channel id="water_outlet_temp" typeId="water_outlet_temp"></channel>
+			<channel id="water_outlet_hp_temp" typeId="water_outlet_hp_temp"></channel>
+			<channel id="liquid_temp_thmi" typeId="liquid_temp_thmi"></channel>
+			<channel id="liquid_temp" typeId="liquid_temp"></channel>
+			<channel id="compressor_running_current" typeId="compressor_running_current"></channel>
+			<channel id="water_temp_setting" typeId="water_temp_setting"></channel>
+			<channel id="yutaki_operating_mode" typeId="yutaki_operating_mode"></channel>
+			<channel id="alarm_number" typeId="alarm_number"></channel>
+		</channels>
+		<representation-property>url</representation-property>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

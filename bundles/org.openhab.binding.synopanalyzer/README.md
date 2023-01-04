@@ -12,13 +12,13 @@ There is exactly one supported thing, which represents a Synop message. It has t
 
 ## Discovery
 
-If a system location is set, the nearest availabble Synop station be automatically discovered for this location.
+If a system location is set, the nearest available Synop station be automatically discovered for this location.
+The search radius will expand at each successive scan.
 
 ## Thing Configuration
 
 Besides the Synop Station Number (as ```synopID``` as a [StationID](https://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes.
 Synop message are typically updated every hour.
-
 
 ## Channels
 
@@ -26,7 +26,7 @@ The weather information that is retrieved is available as these channels:
 
 | Channel Type ID       | Item Type          | Description                                |
 |-----------------------|--------------------|--------------------------------------------|
-| temperature           | Number:Temperature | Current temperature                        |
+| temperature           | Number:Temperature | Current outdoor temperature                |
 | pressure              | Number:Pressure    | Current pressure                           |
 | wind-speed            | Number:Speed       | Current wind speed                         |
 | wind-speed-beaufort   | Number             | Wind speed according to Beaufort scale     |
@@ -38,7 +38,7 @@ The weather information that is retrieved is available as these channels:
 | time-utc              | DateTime           | Observation time of the Synop message      |
 | horizontal-visibility | String             | Horizontal visibility range                |
 
-*   ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
+- ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
 
 ## Example
 
@@ -46,13 +46,13 @@ The weather information that is retrieved is available as these channels:
 
 Here is an example of thing definition :
 
-```
+```java
 synopanalyzer:synopanalyzer:orly [ stationId=7149 ]
 ```
 
 ### Items
 
-```
+```java
 Number Synop_Temperature "Temperature [%.1f °C]" <temperature> { channel = "synopanalyzer:synopanalyzer:trappes:temperature" }
 Number Synop_Pressure "Pressure [%.1f mb]" <pressure> { channel = "synopanalyzer:synopanalyzer:trappes:pressure" }
 Number Synop_Wind_Angle "Wind Angle [%d°]" <wind>     { channel = "synopanalyzer:synopanalyzer:trappes:wind-angle"}

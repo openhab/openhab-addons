@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="gps-channel">
+		<item-type>Location</item-type>
+		<label>GPS Coordinates</label>
+	</channel-type>
+	<channel-type id="heading-channel">
+		<item-type>Number:Angle</item-type>
+		<label>Heading Angle</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="address-channel">
+		<item-type>String</item-type>
+		<label>Address</label>
+	</channel-type>
+	<channel-type id="home-distance-channel">
+		<item-type>Number:Length</item-type>
+		<label>Distance from Home</label>
+		<description>Computed distance between vehicle and home location</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

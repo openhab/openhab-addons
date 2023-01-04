@@ -13,7 +13,7 @@ The binding translates openHAB commands into Insteon messages and sends them on 
 Relevant messages from the Insteon network (like notifications about switches being toggled) are picked up by the modem and converted to openHAB status updates by the binding.
 The binding also supports sending and receiving of legacy X10 messages.
 
-The binding does not support linking new devices on the fly, i.e. all devices must be linked with the modem *before* starting the Insteon binding.
+The binding does not support linking new devices on the fly, i.e. all devices must be linked with the modem _before_ starting the Insteon binding.
 
 The openHAB binding supports minimal configuration of devices, currently only monitoring and sending messages.
 For all other configuration and set up of devices, link the devices manually via the set buttons, or use the free [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) software.
@@ -36,7 +36,7 @@ X10 devices are not auto discovered.
 
 ## Thing Configuration
 
-#### Network Configuration
+### Network Configuration
 
 The Insteon PLM or hub is configured with the following parameters:
 
@@ -49,7 +49,7 @@ The Insteon PLM or hub is configured with the following parameters:
 
 >NOTE: For users upgrading from InsteonPLM, The parameter port_1 is now port.
 
-#### Device Configuration
+### Device Configuration
 
 The Insteon device is configured with the following required parameters:
 
@@ -190,12 +190,11 @@ In order to determine which channels a device supports, you can look at the devi
 | update | Switch | Update |
 | watts | Number:Power | Watts |
 
-
 ## Full Example
 
 Sample things file:
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device 22F8A8 [address="22.F8.A8", productKey="F00.00.15"] {
     Channels:
@@ -226,7 +225,7 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 
 Sample items file:
 
-```
+```java
 Switch switch1 { channel="insteon:device:home:243141:switch" }
 Dimmer dimmer1 { channel="insteon:device:home:238F55:dimmer" }
 Dimmer dimmer2 { channel="insteon:device:home:23B0D9:dimmer" }
@@ -245,7 +244,7 @@ The binding provides commands you can use to help with troubleshooting.
 Enter `openhab:insteon` or `insteon` in the console and you will get a list of available commands.
 The `openhab:` prefix is optional:
 
-```
+```shell
 openhab> openhab:insteon
 Usage: openhab:insteon display_devices - display devices that are online, along with available channels
 Usage: openhab:insteon display_channels - display channels that are linked, along with configuration information
@@ -260,15 +259,13 @@ Usage: openhab:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12
 
 Here is an example of command: `insteon display_local_database`.
 
-When monitoring devices, the output will be displayed where openHAB was started.
-You may need to redirect the output to a log file to see the messages.
 The send message commands do not display any results.
 If you want to see the response from the device, you will need to monitor the device.
 
 ## Insteon Groups and Scenes
 
-How do Insteon devices tell other devices on the network that their state has changed? They send out a broadcast message, labeled with a specific *group* number.
-All devices (called *responders*) that are configured to listen to this message will then go into a pre-defined state.
+How do Insteon devices tell other devices on the network that their state has changed? They send out a broadcast message, labeled with a specific _group_ number.
+All devices (called _responders_) that are configured to listen to this message will then go into a pre-defined state.
 For instance when light switch A is switched to "ON", it will send out a message to group #1, and all responders will react to it, e.g they may go into the "ON" position as well.
 Since more than one device can participate, the sending out of the broadcast message and the subsequent state change of the responders is referred to as "triggering a scene".
 At the device and PLM level, the concept of a "scene" does not exist, so you will find it notably absent in the binding code and this document.
@@ -298,7 +295,7 @@ For some of the more sophisticated devices the complete linking process can no l
 Since Insteon devices can have multiple features (for instance a switchable relay and a contact sensor) under a single Insteon address, an openHAB item is not bound to a device, but to a given feature of a device.
 For example, the following lines would create two Number items referring to the same thermostat device, but to different features of it:
 
-```
+```java
 Number  thermostatCoolPoint "cool point [%.1f °F]" { channel="insteon:device:home:32F422:coolSetPoint" }
 Number  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:home:32F422:heatSetPoint" }
 ```
@@ -307,7 +304,7 @@ Number  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:ho
 
 The following example shows how to configure a simple light switch (2477S) in the .items file:
 
-```
+```java
 Switch officeLight "office light"  { channel="insteon:device:home:AABBCC:switch" }
 ```
 
@@ -315,7 +312,7 @@ Switch officeLight "office light"  { channel="insteon:device:home:AABBCC:switch"
 
 Here is how to configure a simple dimmer (2477D) in the .items file:
 
-```
+```java
 Dimmer kitchenChandelier "kitchen chandelier" { channel="insteon:device:home:AABBCC:dimmer" }
 ```
 
@@ -324,9 +321,9 @@ If a maximum level is configured, openHAB will never set the level of the dimmer
 The parameter dimmermax must be defined for the channel.
 The below example sets a maximum level of 70% for dim 1 and 60% for dim 2:
 
-**Things**
+#### Things
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"]  {
     Channels:
@@ -339,9 +336,9 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 }
 ```
 
-**Items**
+#### Items
 
-```
+```java
 Dimmer d1 "dimmer 1" { channel="insteon:device:home:AABBCC:dimmer"}
 Dimmer d2 "dimmer 2" { channel="insteon:device:home:AABBCD:loadDimmer"}
 ```
@@ -352,7 +349,7 @@ Setting a maximum level does not affect manual turning on or dimming a switch.
 
 Here's how to configure the top and bottom outlet of the in-wall 2 outlet controller:
 
-```
+```java
 Switch fOutTop "Front Outlet Top"    <socket> { channel="insteon:device:home:AABBCC:topOutlet" }
 Switch fOutBot "Front Outlet Bottom" <socket> { channel="insteon:device:home:AABBCC:bottomOutlet" }
 ```
@@ -366,31 +363,31 @@ Link all buttons, one after the other.
 The 4-button mini remote sends out messages on groups 0x01 - 0x04, each corresponding to one button.
 The modem's link database (see [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal)) should look like this:
 
-```
-    0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 01 data: 02 2c 41
-    0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 02 data: 02 2c 41
-    0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 03 data: 02 2c 41
-    0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 04 data: 02 2c 41
+```text
+0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 01 data: 02 2c 41
+0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 02 data: 02 2c 41
+0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 03 data: 02 2c 41
+0000 xx.xx.xx                       xx.xx.xx  RESP  10100010 group: 04 data: 02 2c 41
 ```
 
 **Items**
 This goes into the items file:
 
-```
-    Switch miniRemoteButtonA "mini remote button a" { channel="insteon:device:home:AABBCC:buttonA", autoupdate="false" }
-    Switch miniRemoteButtonB "mini remote button b" { channel="insteon:device:home:AABBCC:buttonB", autoupdate="false" }
-    Switch miniRemoteButtonC "mini remote button c" { channel="insteon:device:home:AABBCC:buttonC", autoupdate="false" }
-    Switch miniRemoteButtonD "mini remote button d" { channel="insteon:device:home:AABBCC:buttonD", autoupdate="false" }
+```java
+Switch miniRemoteButtonA "mini remote button a" { channel="insteon:device:home:AABBCC:buttonA", autoupdate="false" }
+Switch miniRemoteButtonB "mini remote button b" { channel="insteon:device:home:AABBCC:buttonB", autoupdate="false" }
+Switch miniRemoteButtonC "mini remote button c" { channel="insteon:device:home:AABBCC:buttonC", autoupdate="false" }
+Switch miniRemoteButtonD "mini remote button d" { channel="insteon:device:home:AABBCC:buttonD", autoupdate="false" }
 ```
 
 **Sitemap**
 This goes into the sitemap file:
 
-```
-    Switch item=miniRemoteButtonA label="mini remote button a" mappings=[ OFF="Off", ON="On"]
-    Switch item=miniRemoteButtonB label="mini remote button b" mappings=[ OFF="Off", ON="On"]
-    Switch item=miniRemoteButtonC label="mini remote button c" mappings=[ OFF="Off", ON="On"]
-    Switch item=miniRemoteButtonD label="mini remote button d" mappings=[ OFF="Off", ON="On"]
+```perl
+Switch item=miniRemoteButtonA label="mini remote button a" mappings=[ OFF="Off", ON="On"]
+Switch item=miniRemoteButtonB label="mini remote button b" mappings=[ OFF="Off", ON="On"]
+Switch item=miniRemoteButtonC label="mini remote button c" mappings=[ OFF="Off", ON="On"]
+Switch item=miniRemoteButtonD label="mini remote button d" mappings=[ OFF="Off", ON="On"]
 ```
 
 The switches in the GUI just display the mini remote's most recent button presses.
@@ -402,23 +399,21 @@ Link such that the modem is a responder to the motion sensor.
 Create a contact.map file in the transforms directory as described elsewhere in this document.
 Then create entries in the .items file like this:
 
-**Items**
+#### Items
 
-```
-    Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
-    Number  motionSensorBatteryLevel "motion sensor battery level"         { channel="insteon:device:home:AABBCC:batteryLevel" }
-    Number  motionSensorLightLevel   "motion sensor light level"           { channel="insteon:device:home:AABBCC:lightLevel" }
+```java
+Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
+Number  motionSensorBatteryLevel "motion sensor battery level"         { channel="insteon:device:home:AABBCC:batteryLevel" }
+Number  motionSensorLightLevel   "motion sensor light level"           { channel="insteon:device:home:AABBCC:lightLevel" }
 ```
 
 This will give you a contact, the battery level, and the light level.
 The motion sensor II includes three additional channels:
 
-**Items**
-
-```
-    Number  motionSensorBatteryPercent     "motion sensor battery percent"                     { channel="insteon:device:home:AABBCC:batteryPercent" }
-    Contact motionSensorTamperSwitch       "motion sensor tamper switch [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:tamperSwitch"}
-    Number  motionSensorTemperatureLevel   "motion sensor temperature level"                   { channel="insteon:device:home:AABBCC:temperatureLevel" }
+```java
+Number  motionSensorBatteryPercent     "motion sensor battery percent"                     { channel="insteon:device:home:AABBCC:batteryPercent" }
+Contact motionSensorTamperSwitch       "motion sensor tamper switch [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:tamperSwitch"}
+Number  motionSensorTemperatureLevel   "motion sensor temperature level"                   { channel="insteon:device:home:AABBCC:temperatureLevel" }
 ```
 
 The battery, light level and temperature level are updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
@@ -430,9 +425,9 @@ Disabling the querying of the device should provide more accurate battery data s
 This can be configured with the device configuration parameter of the device.
 The key in the JSON object is `heartbeatOnly` and the value is a boolean:
 
-**Things**
+#### Things
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.24", deviceConfig="{'heartbeatOnly': true}"]
 }
@@ -441,8 +436,8 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 
 The temperature can be calculated in Fahrenheit using the following formulas:
 
-* If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
-* If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
+- If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
+- If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
 
 Since the motion sensor II might not be calibrated correctly, the values `20.53` and `24.61` can be adjusted as necessary to produce the correct temperature.
 
@@ -452,18 +447,18 @@ Similar in operation to the motion sensor above.
 Link such that the modem is a responder to the motion sensor.
 Create a contact.map file in the transforms directory like the following:
 
-```
-    OPEN=open
-    CLOSED=closed
-    -=unknown
+```text
+OPEN=open
+CLOSED=closed
+-=unknown
 ```
 
 **Items**
 Then create entries in the .items file like this:
 
-```
-    Contact doorSensor             "Door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact" }
-    Number  doorSensorBatteryLevel "Door sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
+```java
+Contact doorSensor             "Door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact" }
+Number  doorSensorBatteryLevel "Door sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
 ```
 
 This will give you a contact and the battery level.
@@ -476,52 +471,58 @@ Read the instructions very carefully: sync with lock within 5 feet to avoid bad 
 **Items**
 Put something like this into your .items file:
 
-```
-    Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:AABBCC:switch" }
+```java
+Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:AABBCC:switch" }
 ```
 
 and create a file "lock.map" in the transforms directory with these entries:
 
-```
-    ON=Lock
-    OFF=Unlock
-    -=unknown
+```text
+ON=Lock
+OFF=Unlock
+-=unknown
 ```
 
 ### I/O Linc (garage door openers)
 
 The I/O Linc devices are really two devices in one: a relay and a contact.
-Link the modem both ways, as responder and controller using the set buttons as described in the instructions.
+To control the relay, link the modem as a controller using the set buttons as described in the instructions.
+To get the status of the contact, the modem must also be linked as a responder to the I/O Linc.
+The I/O Linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
+This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
+The binding expects the contact to be inverted to work properly.
+Ensure the contact is OFF (status LED is dark/garage door open) when linking the modem as a responder to the I/O Linc in order for it to function properly.
 
 Add this map into your transforms directory as "contact.map":
 
-```
-    OPEN=open
-    CLOSED=closed
-    -=unknown
+```text
+OPEN=open
+CLOSED=closed
+-=unknown
 ```
 
 **Items**
 Along with this into your .items file:
 
-```
-    Switch  garageDoorOpener  "garage door opener"                        <garagedoor>  { channel="insteon:device:home:AABBCC:switch", autoupdate="false" }
-    Contact garageDoorContact "garage door contact [MAP(contact.map):%s]"               { channel="insteon:device:home:AABBCC:contact" }
+```java
+Switch  garageDoorOpener  "garage door opener"                        <garagedoor>  { channel="insteon:device:home:AABBCC:switch", autoupdate="false" }
+Contact garageDoorContact "garage door contact [MAP(contact.map):%s]"               { channel="insteon:device:home:AABBCC:contact" }
 ```
 
 **Sitemap**
 To make it visible in the GUI, put this into your sitemap file:
 
-```
-    Switch item=garageDoorOpener label="garage door opener" mappings=[ ON="OPEN/CLOSE"]
-    Text item=garageDoorContact
+```perl
+Switch item=garageDoorOpener label="garage door opener" mappings=[ ON="OPEN/CLOSE"]
+Text item=garageDoorContact
 ```
 
 For safety reasons, only close the garage door if you have visual contact to make sure there is no obstruction! The use of automated rules for closing garage doors is dangerous.
 
-> NOTE: If the I/O Linc returns the wrong value when the device is polled (For example you open the garage door and the state correctly shows OPEN, but during polling it shows CLOSED), you probably linked the device with the PLM or hub when the door was in the wrong position.
-You need unlink and then link again with the door in the opposite position.
-Please see the Insteon I/O Linc documentation for further details.
+> NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
+Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immediately closed again.
+To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off). 
+That would be with the door open when using the Insteon garage kit.
 
 ### Keypads
 
@@ -545,7 +546,7 @@ Here is an example correspondence table:
 
 When e.g. the "A" button is pressed (that's button #3 internally) a broadcast message will be sent out to all responders configured to listen to Insteon group #3.
 This means you must configure the modem as a responder to group #3 (and #4, #5, #6) messages coming from your keypad.
-For instructions how to do this, check out the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal.
+For instructions how to do this, check out the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal).
 You can even do that with the set buttons (see instructions that come with the keypad).
 
 While capturing the messages that the buttons emit is pretty straight forward, controlling the buttons is  another matter.
@@ -555,25 +556,24 @@ The example configuration below uses groups 0xf3, 0xf4, 0xf5, and 0xf6.
 Then link the buttons such that they respond to those groups, and link the modem as a controller for them (see [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) documentation.
 In your items file you specify these groups with the "group=" parameters such that the binding knows what group number to put on the outgoing message.
 
-
 #### Keypad Switches
 
-**Items**
+##### Items
 
 Here is a simple example, just using the load (main) switch:
 
-```
-    Switch keypadSwitch             "main load"          { channel="insteon:device:home:AABBCC:loadSwitch" }
-    Number keypadSwitchManualChange "main manual change" { channel="insteon:device:home:AABBCC:loadSwitchManualChange" }
-    Switch keypadSwitchFastOnOff    "main fast on/off"   { channel="insteon:device:home:AABBCC:loadSwitchFastOnOff" }
+```java
+Switch keypadSwitch             "main load"          { channel="insteon:device:home:AABBCC:loadSwitch" }
+Number keypadSwitchManualChange "main manual change" { channel="insteon:device:home:AABBCC:loadSwitchManualChange" }
+Switch keypadSwitchFastOnOff    "main fast on/off"   { channel="insteon:device:home:AABBCC:loadSwitchFastOnOff" }
 ```
 
 Most people will not use the fast on/off features or the manual change feature, so you really only need the first line.
 To make the buttons available, add the following:
 
-**Things**
+###### Things
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.15"] {
     Channels:
@@ -588,53 +588,53 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 The value after group must either be a number or string.
 The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
 
-**Items**
+###### Items
 
-```
-    Switch keypadSwitchA "keypad button A" { channel="insteon:device:home:AABBCC:keypadButtonA"}
-    Switch keypadSwitchB "keypad button B" { channel="insteon:device:home:AABBCC:keypadButtonB"}
-    Switch keypadSwitchC "keypad button C" { channel="insteon:device:home:AABBCC:keypadButtonC"}
-    Switch keypadSwitchD "keypad button D" { channel="insteon:device:home:AABBCC:keypadButtonD"}
+```java
+Switch keypadSwitchA "keypad button A" { channel="insteon:device:home:AABBCC:keypadButtonA"}
+Switch keypadSwitchB "keypad button B" { channel="insteon:device:home:AABBCC:keypadButtonB"}
+Switch keypadSwitchC "keypad button C" { channel="insteon:device:home:AABBCC:keypadButtonC"}
+Switch keypadSwitchD "keypad button D" { channel="insteon:device:home:AABBCC:keypadButtonD"}
 ```
 
-**Sitemap**
+##### Sitemap
 
 The following sitemap will bring the items to life in the GUI:
 
-```
-    Frame label="Keypad" {
-          Switch item=keypadSwitch label="main"
-          Switch item=keypadSwitchFastOnOff label="fast on/off"
-          Switch item=keypadSwitchManualChange label="manual change" mappings=[ 0="DOWN", 1="STOP",  2="UP"]
-          Switch item=keypadSwitchA label="button A"
-          Switch item=keypadSwitchB label="button B"
-          Switch item=keypadSwitchC label="button C"
-          Switch item=keypadSwitchD label="button D"
-    }
+```perl
+Frame label="Keypad" {
+      Switch item=keypadSwitch label="main"
+      Switch item=keypadSwitchFastOnOff label="fast on/off"
+      Switch item=keypadSwitchManualChange label="manual change" mappings=[ 0="DOWN", 1="STOP",  2="UP"]
+      Switch item=keypadSwitchA label="button A"
+      Switch item=keypadSwitchB label="button B"
+      Switch item=keypadSwitchC label="button C"
+      Switch item=keypadSwitchD label="button D"
+}
 ```
 
 #### Keypad Dimmers
 
 The keypad dimmers are like keypad switches, except that the main load is dimmable.
 
-**Items**
+##### Items
 
-```
-    Dimmer keypadDimmer           "dimmer"                          { channel="insteon:device:home:AABBCC:loadDimmer" }
-    Switch keypadDimmerButtonA    "keypad dimmer button A [%d %%]"  { channel="insteon:device:home:AABBCC:keypadButtonA" }
+```java
+Dimmer keypadDimmer           "dimmer"                          { channel="insteon:device:home:AABBCC:loadDimmer" }
+Switch keypadDimmerButtonA    "keypad dimmer button A [%d %%]"  { channel="insteon:device:home:AABBCC:keypadButtonA" }
 ```
 
-**Sitemap**
+##### Sitemap
 
-```
-    Slider item=keypadDimmer switchSupport
-    Switch item=keypadDimmerButtonA label="buttonA"
+```perl
+Slider item=keypadDimmer switchSupport
+Switch item=keypadDimmerButtonA label="buttonA"
 ```
 
 ### Thermostats
 
 The thermostat (2441TH) is one of the most complex Insteon devices available.
-It must first be properly linked to the modem using configuration software like [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal.
+It must first be properly linked to the modem using configuration software like [Insteon Terminal](<https://github.com/pfrommerd/insteon-terminal>.
 The Insteon Terminal wiki describes in detail how to link the thermostat, and how to make it publish status update reports.
 
 When all is set and done the modem must be configured as a controller to group 0 (not sure why), and a responder to groups 1-5 such that it picks up when the thermostat switches on/off heating and cooling etc, and it must be a responder to special group 0xEF to get status update reports when measured values (temperature) change.
@@ -642,49 +642,49 @@ Symmetrically, the thermostat must be a responder to group 0, and a controller f
 The linking process is not difficult but needs some persistence.
 Again, refer to the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) documentation.
 
-**Items**
+#### Items
 
 This is an example of what to put into your .items file:
 
-```
-    Number              thermostatCoolPoint   "cool point [%.1f °F]"       { channel="insteon:device:home:AABBCC:coolSetPoint" }
-    Number              thermostatHeatPoint   "heat point [%.1f °F]"       { channel="insteon:device:home:AABBCC:heatSetPoint" }
-    Number              thermostatSystemMode  "system mode [%d]"           { channel="insteon:device:home:AABBCC:systemMode" }
-    Number              thermostatFanMode     "fan mode [%d]"              { channel="insteon:device:home:AABBCC:fanMode" }
-    Number              thermostatIsHeating   "is heating [%d]"            { channel="insteon:device:home:AABBCC:isHeating"}
-    Number              thermostatIsCooling   "is cooling [%d]"            { channel="insteon:device:home:AABBCC:isCooling" }
-    Number:Temperature  thermostatTemperature  "temperature [%.1f %unit%]" { channel="insteon:device:home:AABBCC:temperature" }
-    Number              thermostatHumidity    "humidity [%.0f %%]"         { channel="insteon:device:home:AABBCC:humidity" }
+```java
+Number              thermostatCoolPoint   "cool point [%.1f °F]"       { channel="insteon:device:home:AABBCC:coolSetPoint" }
+Number              thermostatHeatPoint   "heat point [%.1f °F]"       { channel="insteon:device:home:AABBCC:heatSetPoint" }
+Number              thermostatSystemMode  "system mode [%d]"           { channel="insteon:device:home:AABBCC:systemMode" }
+Number              thermostatFanMode     "fan mode [%d]"              { channel="insteon:device:home:AABBCC:fanMode" }
+Number              thermostatIsHeating   "is heating [%d]"            { channel="insteon:device:home:AABBCC:isHeating"}
+Number              thermostatIsCooling   "is cooling [%d]"            { channel="insteon:device:home:AABBCC:isCooling" }
+Number:Temperature  thermostatTemperature  "temperature [%.1f %unit%]" { channel="insteon:device:home:AABBCC:temperature" }
+Number              thermostatHumidity    "humidity [%.0f %%]"         { channel="insteon:device:home:AABBCC:humidity" }
 ```
 
 Add this as well for some more exotic features:
 
-```
-    Number              thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:AABBCC:acDelay" }
-    Number              thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:AABBCC:backlightDuration" }
-    Number              thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:AABBCC:stage1Duration" }
-    Number              thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:AABBCC:humidityHigh" }
-    Number              thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:AABBCC:humidityLow" }
+```java
+Number              thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:AABBCC:acDelay" }
+Number              thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:AABBCC:backlightDuration" }
+Number              thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:AABBCC:stage1Duration" }
+Number              thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:AABBCC:humidityHigh" }
+Number              thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:AABBCC:humidityLow" }
 ```
 
-**Sitemap**
+#### Sitemap
 
 For the thermostat to display in the GUI, add this to the sitemap file:
 
-```
-    Text   item=thermostatTemperature icon="temperature"
-    Text   item=thermostatHumidity
-    Setpoint item=thermostatCoolPoint icon="temperature" minValue=63 maxValue=90 step=1
-    Setpoint item=thermostatHeatPoint icon="temperature" minValue=50 maxValue=80 step=1
-    Switch item=thermostatSystemMode  label="system mode" mappings=[ 0="OFF",  1="HEAT", 2="COOL", 3="AUTO", 4="PROGRAM"]
-    Switch item=thermostatFanMode  label="fan mode" mappings=[ 0="AUTO",  1="ALWAYS ON"]
-    Switch item=thermostatIsHeating  label="is heating" mappings=[ 0="OFF",  1="HEATING"]
-    Switch item=thermostatIsCooling  label="is cooling" mappings=[ 0="OFF",  1="COOLING"]
-    Setpoint item=thermostatACDelay  minValue=2 maxValue=20 step=1
-    Setpoint item=thermostatBacklight  minValue=0 maxValue=100 step=1
-    Setpoint item=thermostatHumidityHigh  minValue=0 maxValue=100 step=1
-    Setpoint item=thermostatHumidityLow   minValue=0 maxValue=100 step=1
-    Setpoint item=thermostatStage1  minValue=1 maxValue=60 step=1
+```perl
+Text   item=thermostatTemperature icon="temperature"
+Text   item=thermostatHumidity
+Setpoint item=thermostatCoolPoint icon="temperature" minValue=63 maxValue=90 step=1
+Setpoint item=thermostatHeatPoint icon="temperature" minValue=50 maxValue=80 step=1
+Switch item=thermostatSystemMode  label="system mode" mappings=[ 0="OFF",  1="HEAT", 2="COOL", 3="AUTO", 4="PROGRAM"]
+Switch item=thermostatFanMode  label="fan mode" mappings=[ 0="AUTO",  1="ALWAYS ON"]
+Switch item=thermostatIsHeating  label="is heating" mappings=[ 0="OFF",  1="HEATING"]
+Switch item=thermostatIsCooling  label="is cooling" mappings=[ 0="OFF",  1="COOLING"]
+Setpoint item=thermostatACDelay  minValue=2 maxValue=20 step=1
+Setpoint item=thermostatBacklight  minValue=0 maxValue=100 step=1
+Setpoint item=thermostatHumidityHigh  minValue=0 maxValue=100 step=1
+Setpoint item=thermostatHumidityLow   minValue=0 maxValue=100 step=1
+Setpoint item=thermostatStage1  minValue=1 maxValue=60 step=1
 ```
 
 ### Power Meters
@@ -693,31 +693,31 @@ The iMeter Solo reports both wattage and kilowatt hours, and is updated during t
 You can also manually update the current values from the device and reset the device.
 See the example below:
 
-**Items**
+#### Items
 
-```
-    Number:Power  iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
-    Number:Energy iMeterKwh     "iMeter [%.04f kWh]"  { channel="insteon:device:home:AABBCC:kWh" }
-    Switch        iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
-    Switch        iMeterReset   "iMeter Reset"        { channel="insteon:device:home:AABBCC:reset" }
+```java
+Number:Power  iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
+Number:Energy iMeterKwh     "iMeter [%.04f kWh]"  { channel="insteon:device:home:AABBCC:kWh" }
+Switch        iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
+Switch        iMeterReset   "iMeter Reset"        { channel="insteon:device:home:AABBCC:reset" }
 ```
 
 ### Fan Controllers
 
 Here is an example configuration for a FanLinc module, which has a dimmable light and a variable speed fan:
 
-**Items**
+#### Items
 
-```
-    Dimmer fanLincDimmer "fanlinc dimmer [%d %%]" { channel="insteon:device:home:AABBCC:lightDimmer" }
-    Number fanLincFan    "fanlinc fan"            { channel="insteon:device:home:AABBCC:fan"}
+```java
+Dimmer fanLincDimmer "fanlinc dimmer [%d %%]" { channel="insteon:device:home:AABBCC:lightDimmer" }
+Number fanLincFan    "fanlinc fan"            { channel="insteon:device:home:AABBCC:fan"}
 ```
 
-**Sitemap**
+#### Sitemap
 
-```
-    Slider item=fanLincDimmer switchSupport
-    Switch item=fanLincFan label="fan speed" mappings=[ 0="OFF",  1="LOW", 2="MEDIUM", 3="HIGH"]
+```perl
+Slider item=fanLincDimmer switchSupport
+Switch item=fanLincFan label="fan speed" mappings=[ 0="OFF",  1="LOW", 2="MEDIUM", 3="HIGH"]
 ```
 
 ### X10 Devices
@@ -728,23 +728,23 @@ While you cannot bind the the X10 devices to the Insteon PLM/HUB, here are some 
 Be aware that most X10 switches/dimmers send no status updates, i.e. openHAB will not learn about switches that are toggled manually.
 Further note that X10 devices are addressed with `houseCode.unitCode`, e.g. `A.2`.
 
-**Items**
+#### Items
 
-```
-    Switch x10Switch  "X10 switch" { channel="insteon:device:home:AABB:switch" }
-    Dimmer x10Dimmer  "X10 dimmer" { channel="insteon:device:home:AABB:dimmer" }
-    Contact x10Motion "X10 motion" { channel="insteon:device:home:AABB:contact" }
+```java
+Switch x10Switch  "X10 switch" { channel="insteon:device:home:AABB:switch" }
+Dimmer x10Dimmer  "X10 dimmer" { channel="insteon:device:home:AABB:dimmer" }
+Contact x10Motion "X10 motion" { channel="insteon:device:home:AABB:contact" }
 ```
 
 ## Direct Sending of Group Broadcasts (Triggering Scenes)
 
 The binding can command the modem to send broadcasts to a given Insteon group.
-Since it is a broadcast message, the corresponding item does *not* take the address of any device, but of the modem itself.
+Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
 The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-**Things**
+### Things
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
@@ -754,10 +754,10 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 
 ```
 
-**Items**
+### Items
 
-```
-    Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
+```java
+Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
 ```
 
 Flipping this switch to "ON" will cause the modem to send a broadcast message with group=2, and all devices that are configured to respond to it should react.
@@ -765,9 +765,9 @@ Flipping this switch to "ON" will cause the modem to send a broadcast message wi
 Channels can also be configured using the device configuration parameter of the device.
 The key in the JSON object is `broadcastGroups` and the value is an array of integers:
 
-**Things**
+### Things (device Config)
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045", deviceConfig="{'broadcastGroups': [2]}"]
 }
@@ -777,12 +777,12 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 ## Channel "related" Property
 
 When an Insteon device changes its state because it is directly operated (for example by flipping a switch manually), it sends out a broadcast message to announce the state change, and the binding (if the PLM modem is properly linked as a responder) should update the corresponding openHAB items.
-Other linked devices however may also change their state in response, but those devices will *not* send out a broadcast message, and so openHAB will not learn about their state change until the next poll.
+Other linked devices however may also change their state in response, but those devices will _not_ send out a broadcast message, and so openHAB will not learn about their state change until the next poll.
 One common scenario is e.g. a switch in a 3-way configuration, with one switch controlling the load, and the other switch being linked as a controller.
 In this scenario, the "related" keyword can be used to have the binding poll a related device whenever a state change occurs for another device.
 A typical example would be two dimmers (A and B) in a 3-way configuration:
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11"] {
     Channels:
@@ -799,7 +799,7 @@ Another scenario is a group broadcast message, the binding doesn't know which de
 In this scenario, the "related" keyword can be used to have the binding poll one or more related device when group message are sent.
 A typical example would be a switch configured to broadcast to a group, and one or more devices configured to respond to the message:
 
-```
+```java
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
   Thing device AABBCC [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
@@ -810,7 +810,7 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 ```
 
 More than one device can be polled by separating them with "+" sign, e.g. "related=aa.bb.cc+xx.yy.zz" would poll both of these devices.
-The implemenation of the *related* keyword is simple: if you add it to a channel, and that channel changes its state, then the *related* device will be polled to see if its state has updated.
+The implemenation of the _related_ keyword is simple: if you add it to a channel, and that channel changes its state, then the _related_ device will be polled to see if its state has updated.
 
 ## Troubleshooting
 
@@ -824,10 +824,10 @@ Under openSUSE this is `/run/lock` and is managed by the **lock** group.
 
 Example commands to grant openHAB access (adjust for your distribution):
 
-````
+```shell
 usermod -a -G dialout openhab
 usermod -a -G lock openhab
-````
+```
 
 Insufficient access to the lock directory will result in openHAB failing to access the device, even if the device itself is writable.
 
@@ -836,7 +836,9 @@ Insufficient access to the lock directory will result in openHAB failing to acce
 Device types are defined in the file `device_types.xml`, which is inside the Insteon bundle and thus not visible to the user.
 You can however load your own device_types.xml by referencing it in the network config parameters:
 
-    additionalDevices="/usr/local/openhab/rt/my_own_devices.xml"
+```text
+additionalDevices="/usr/local/openhab/rt/my_own_devices.xml"
+```
 
 Where the `my_own_devices.xml` file defines a new device like this:
 
@@ -851,7 +853,7 @@ Where the `my_own_devices.xml` file defines a new device like this:
     </xml>
 ```
 
-Finding the Insteon product key can be tricky since Insteon has not updated the product key table (https://www.insteon.com/pdf/insteon_devcats_and_product_keys_20081008.pdf) since 2008.
+Finding the Insteon product key can be tricky since Insteon has not updated the product key table (<https://www.insteon.com/pdf/insteon_devcats_and_product_keys_20081008.pdf>) since 2008.
 If a web search does not turn up the product key, make one up, starting with "F", like: F00.00.99.
 Avoid duplicate keys by finding the highest fake product key in the `device_types.xml` file, and incrementing by one.
 
@@ -859,9 +861,11 @@ Avoid duplicate keys by finding the highest fake product key in the `device_type
 
 If you can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
 
-    additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
+```text
+additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
+```
 
-  In this file you can define your own features (or even overwrite an existing feature.
+In this file you can define your own features (or even overwrite an existing feature.
 In the example below a new feature "MyFeature" is defined, which can then be referenced from the `device_types.xml` file (or from `my_own_devices.xml`):
 
 ```xml
@@ -881,12 +885,12 @@ In the example below a new feature "MyFeature" is defined, which can then be ref
 
 ## Known Limitations and Issues
 
-* Devices cannot be linked to the modem while the binding is running.
+- Devices cannot be linked to the modem while the binding is running.
 If new devices are linked, the binding must be restarted.
-* Setting up Insteon groups and linking devices cannot be done from within openHAB.
+- Setting up Insteon groups and linking devices cannot be done from within openHAB.
 Use the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) for that.
 If using Insteon Terminal (especially as root), ensure any stale lock files (For example, /var/lock/LCK..ttyUSB0) are removed before starting openHAB runtime.
 Failure to do so may result in "found no ports".
-* The Insteon PLM or hub is know to break in about 2-3 years due to poorly sized capacitors.
+- The Insteon PLM or hub is know to break in about 2-3 years due to poorly sized capacitors.
 You can repair it yourself using basic soldering skills, search for "Insteon PLM repair" or "Insteon hub repair".
-* Using the Insteon Hub 2014 in conjunction with other applications (such as the InsteonApp) is not supported. Concretely, openHAB will not learn when a switch is flipped via the Insteon App until the next poll, which could take minutes.
+- Using the Insteon Hub 2014 in conjunction with other applications (such as the InsteonApp) is not supported. Concretely, openHAB will not learn when a switch is flipped via the Insteon App until the next poll, which could take minutes.

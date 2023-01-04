@@ -11,18 +11,7 @@
 		<config-description>
 			<parameter name="refreshToken" type="text" required="false">
 				<label>Refresh Token</label>
-				<description>Refresh token for account authentication. Use "smarthome:tesla" to retrieve it.</description>
-			</parameter>
-			<parameter name="username" type="text" required="false">
-				<advanced>true</advanced>
-				<label>Username</label>
-				<description>Username for the Tesla Remote Service, e.g email address.</description>
-			</parameter>
-			<parameter name="password" type="text" required="false">
-				<advanced>true</advanced>
-				<context>password</context>
-				<label>Password</label>
-				<description>Password for the Tesla Remote Service</description>
+				<description>Refresh token for account authentication. Please see the documentation on how to get hold of it.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

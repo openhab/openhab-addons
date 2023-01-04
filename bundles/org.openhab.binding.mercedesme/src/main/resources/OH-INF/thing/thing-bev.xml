@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="bev">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Mercedes Benz BEV</label>
+		<description>Battery Electric Vehicle</description>
+
+		<channel-groups>
+			<channel-group id="range" typeId="range-ev-values"/>
+			<channel-group id="doors" typeId="door-values"/>
+			<channel-group id="windows" typeId="window-values"/>
+			<channel-group id="lights" typeId="light-values"/>
+			<channel-group id="lock" typeId="lock-values"/>
+			<channel-group id="location" typeId="location-values"/>
+			<channel-group id="image" typeId="image-values"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:mercedesme:bev"/>
+	</thing-type>
+</thing:thing-descriptions>

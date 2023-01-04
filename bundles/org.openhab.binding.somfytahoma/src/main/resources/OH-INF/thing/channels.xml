@@ -30,6 +30,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="moving">
+		<item-type>Switch</item-type>
+		<label>Moving</label>
+		<description>Indicates if the device is currently operating a command.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="luminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminance</label>
@@ -158,7 +165,9 @@
 	<channel-type id="target_heating_level">
 		<item-type>String</item-type>
 		<label>Target Heating Level</label>
-		<description>A channel used for getting/setting the target heating level (on/off, frostprotection, confort, eco)</description>
+		<description>A channel used for getting/setting the target heating level (on/off, frostprotection, confort,
+			eco)
+		</description>
 		<state>
 			<options>
 				<option value="frostprotection">FROSTPROTECTION</option>
@@ -270,11 +279,11 @@
 	<channel-type id="alarm_check">
 		<item-type>String</item-type>
 		<label>Alarm Check Trigger</label>
-		<description>A channel for triggering the smoke sensor's check</description>
+		<description>A channel for triggering the smoke sensor's beep check</description>
 		<command>
 			<options>
-				<option value="SHORT">Short check</option>
-				<option value="LONG">Long check</option>
+				<option value="short">Short check</option>
+				<option value="long">Long check</option>
 			</options>
 		</command>
 	</channel-type>
@@ -422,6 +431,444 @@
 		<label>RSSI</label>
 		<description>Relative received signal strength state</description>
 		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boost_mode_duration">
+		<item-type>Number</item-type>
+		<label>Boost Mode Duration</label>
+		<description>Duration for Boost Mode</description>
+		<state min="0" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="away_mode_duration">
+		<item-type>Number</item-type>
+		<label>Away Mode Duration</label>
+		<description>Duration for Away Mode</description>
+		<state min="0" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="heat_pump_operating_time">
+		<item-type>Number</item-type>
+		<label>Heat Pump Operating Time</label>
+		<description>Time the Heat Pump has been operating in hours</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electric_booster_operating_time">
+		<item-type>Number</item-type>
+		<label>Electric Bosster Operating Time</label>
+		<description>Time the Electric Bosster has been operating in hours</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power_heatpump">
+		<item-type>Number</item-type>
+		<label>Heat Pump Power</label>
+		<description>Indicates current status of heatpump in watts</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power_heatelec">
+		<item-type>Number</item-type>
+		<label>Electrical Heater Active</label>
+		<description>Indicates current status of electrical heater in watts</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="water_heater_mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Describes the water heater mode</description>
+		<state>
+			<options>
+				<option value="manualEcoActive">Manual - Eco</option>
+				<option value="manualEcoInactive">Manual</option>
+				<option value="autoMode">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="showers">
+		<item-type>Number</item-type>
+		<label>Number of showers</label>
+		<description>3 to 5 showers</description>
+		<state min="3" max="5" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="middlewater_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Middle Water Temperature</label>
+		<description>Describes the temperature at the middle sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boost_mode">
+		<item-type>Switch</item-type>
+		<label>Boost</label>
+		<description>Boost Mode (ON or OFF)</description>
+	</channel-type>
+
+	<channel-type id="away_mode">
+		<item-type>Switch</item-type>
+		<label>Away</label>
+		<description>Away Mode (ON or OFF)</description>
+	</channel-type>
+
+	<channel-type id="zone_mode">
+		<item-type>String</item-type>
+		<label>Zone Mode</label>
+		<description>Zone mode control</description>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manu">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="circuit_control">
+		<item-type>String</item-type>
+		<label>Circuit Control</label>
+		<description>Circuit control</description>
+		<state>
+			<options>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="circuit_status">
+		<item-type>String</item-type>
+		<label>Circuit Status</label>
+		<description>Circuit status state</description>
+		<state readOnly="true">
+			<options>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="yutaki_target_mode">
+		<item-type>String</item-type>
+		<label>Yutaki Target Mode</label>
+		<description>Yutaki target mode control</description>
+		<state>
+			<options>
+				<option value="comfort">Comfort</option>
+				<option value="eco">Eco</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="yutaki_mode">
+		<item-type>String</item-type>
+		<label>Yutaki Mode</label>
+		<description>Yutaki mode state</description>
+		<state readOnly="true">
+			<options>
+				<option value="comfort">Comfort</option>
+				<option value="eco">Eco</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="holiday_mode">
+		<item-type>Switch</item-type>
+		<label>Holiday Mode</label>
+		<description>Holiday mode control</description>
+	</channel-type>
+
+	<channel-type id="dhw">
+		<item-type>String</item-type>
+		<label>DHW Control</label>
+		<description>Domestic hot water control</description>
+		<state>
+			<options>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="anti_legionella">
+		<item-type>String</item-type>
+		<label>Anti Legionella</label>
+		<description>Anti legionella control</description>
+		<state>
+			<options>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dhw_setting_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>DHW Temperature Setting</label>
+		<description>DHW temperature setting control</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhw_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>DHW Temperature</label>
+		<description>DHW temperature state</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="target_boost_mode">
+		<item-type>String</item-type>
+		<label>Boost Mode</label>
+		<description>Boost mode control</description>
+		<state>
+			<options>
+				<option value="no request">No Request</option>
+				<option value="enabled">Enabled</option>
+				<option value="disabled">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="yutaki_boost_mode">
+		<item-type>String</item-type>
+		<label>Boost Mode</label>
+		<description>Boost mode state</description>
+		<state readOnly="true">
+			<options>
+				<option value="enabled">Enabled</option>
+				<option value="disabled">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="auto_manu_mode">
+		<item-type>String</item-type>
+		<label>Auto/Manu Mode</label>
+		<description>Auto/Manu mode control</description>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manu">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="unit_control">
+		<item-type>String</item-type>
+		<label>Unit Control</label>
+		<description>Unit control</description>
+		<state>
+			<options>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="unit_mode_status">
+		<item-type>String</item-type>
+		<label>Unit Mode Status</label>
+		<description>Unit mode status state</description>
+		<state readOnly="true">
+			<options>
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="unit_mode_control">
+		<item-type>String</item-type>
+		<label>Unit Mode</label>
+		<description>Unit mode control</description>
+		<state>
+			<options>
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="block_menu_control">
+		<item-type>String</item-type>
+		<label>Block Menu</label>
+		<description>Block menu control</description>
+		<state>
+			<options>
+				<option value="block">Block</option>
+				<option value="no">No</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="space_mode">
+		<item-type>String</item-type>
+		<label>Space Mode</label>
+		<description>Space mode control</description>
+		<state>
+			<options>
+				<option value="comfort">Comfort</option>
+				<option value="eco">Eco</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="eco_mode_target_offset">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco Mode Target Offset</label>
+		<description>Eco mode target offset control</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="eco_mode_offset">
+		<item-type>Number:Temperature</item-type>
+		<label>Eco Mode Offset</label>
+		<description>Eco mode offset state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="comm_alarm_bit_status">
+		<item-type>String</item-type>
+		<label>Communication Alarm Bit Status</label>
+		<description>Communication alarm bit status state</description>
+		<state readOnly="true">
+			<options>
+				<option value="alarm">Alarm</option>
+				<option value="no">No</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operation">
+		<item-type>String</item-type>
+		<label>Operation State</label>
+		<description>Operation state</description>
+		<state readOnly="true">
+			<options>
+				<option value="alarm">Alarm</option>
+				<option value="cool demand-off">Cool demand off</option>
+				<option value="cool thermo-off">Cool thermo off</option>
+				<option value="cool thermo-on">Cool thermo on</option>
+				<option value="dhw-off">DHW off</option>
+				<option value="heat demand-off">Heat demand off</option>
+				<option value="heat thermo-off">Heat thermo off</option>
+				<option value="heat thermo-on">Heat thermo on</option>
+				<option value="off">Off</option>
+				<option value="swp-off">Swp off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="water_inlet_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Inlet Temperature</label>
+		<description>Water inlet temperature state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="water_outlet_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Outlet Temperature</label>
+		<description>Water outlet temperature state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="water_outlet_hp_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Outlet Hp Temperature</label>
+		<description>Water outlet hp temperature state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="liquid_temp_thmi">
+		<item-type>Number:Temperature</item-type>
+		<label>Liquid Temperature THMI</label>
+		<description>Liquid temperature THMI state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="liquid_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Liquid Temperature</label>
+		<description>Liquid temperature state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="anti_legionella_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Anti Legionella Temperature</label>
+		<description>Anti legionella temperature control</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="compressor_running_current">
+		<item-type>Number</item-type>
+		<label>Compressor Running Current</label>
+		<description>Compressor running current state</description>
+		<state pattern="%.1f" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="water_temp_setting">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Temperature Setting</label>
+		<description>Water temperature setting state</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat_setting_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Thermostat Setting</label>
+		<description>Thermostat setting control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="wh_setting_temp_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Water Heating Setting Temperature</label>
+		<description>Water heating setting temperature control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="room_ambient_temp_zone1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone 1 Room Ambient Temperature</label>
+		<description>Room ambient temperature control for the zone 1</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+
+	<channel-type id="yutaki_operating_mode">
+		<item-type>String</item-type>
+		<label>Yutaki Operating Mode</label>
+		<description>Yutaki operating mode state</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="holidays">Holidays</option>
+				<option value="normal">Normal</option>
+				<option value="timer">Timer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm_number">
+		<item-type>Number</item-type>
+		<label>Alarm Number State</label>
+		<description>Hitachi alarm number state</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dhw_mode">
+		<item-type>String</item-type>
+		<label>DHW Mode</label>
+		<description>DHW mode control</description>
+		<state>
+			<options>
+				<option value="standard">Standard</option>
+				<option value="high demand">High Demand</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

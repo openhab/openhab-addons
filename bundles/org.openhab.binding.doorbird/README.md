@@ -80,17 +80,17 @@ The following channels are supported by the binding for the Doorbird A1081 Contr
 
 ## Profiles
 
-Using the system default switch profile *rawbutton-on-off-switch* in a *doorbell* channel item definition will cause ON/OFF 
+Using the system default switch profile _rawbutton-on-off-switch_ in a _doorbell_ channel item definition will cause ON/OFF
 states to be set when the doorbell is pressed and released.
-See *Items* example below.
+See _Items_ example below.
 
 ## Rule Actions
 
 The binding supports the following actions.
 In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
- 
+
 ### void restart()
- 
+
 Restarts the Doorbird device.
 
 ### void sipHangup()
@@ -115,7 +115,7 @@ Get the value of the SIP status parameter LASTERRORTEXT.
 
 Example
 
-```
+```java
 val actions = getActions("doorbird","doorbird:d101:doorbell")
 if(actions === null) {
     logInfo("actions", "Actions not found, check thing ID")
@@ -137,7 +137,7 @@ Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your netw
 
 ### Things
 
-```
+```java
 Thing doorbird:d101:doorbell "Doorbird D101 Doorbell" [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN",imageRefreshRate=60,doorbellOffDelay=3,motionOffDelay=30,montageNumImages=3,montageScaleFactor=35]
 
 Thing doorbird:a1081:controller "Doorbird A1081 Controller" [doorbirdHost="192.168.1.100",userId="dtfubb0004",userPassword="HG7afc5TvN"]
@@ -145,7 +145,7 @@ Thing doorbird:a1081:controller "Doorbird A1081 Controller" [doorbirdHost="192.1
 
 ### Items
 
-```
+```java
 Switch Doorbell_Pressed "Doorbell Pressed [%s]" <switch> ["Switch"] { channel="doorbird:d101:doorbell:doorbell" [profile="rawbutton-on-off-switch"] }
 DateTime Doorbell_PressedTimestamp "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]" <time> { channel="doorbird:d101:doorbell:doorbellTimestamp" }
 Image Doorbell_PressedImage "Doorbell Pressed Image [%s]" { channel="doorbird:d101:doorbell:doorbellImage" }
@@ -167,7 +167,7 @@ Image Doorbell_MotionMontage "Motion History Montage [%s]" { channel="doorbird:d
 
 ### Sitemap
 
-```
+```perl
 Frame {
     Text label="Doorbird" {
         Frame label="Image" {
@@ -209,7 +209,7 @@ Frame {
 
 Using the doorbell trigger channel to detect if the doorbell has been pressed:
 
-```
+```java
 rule "Doorbell Button Pressed"
 when
     Channel "doorbird:d101:doorbell:doorbell" triggered PRESSED
@@ -218,9 +218,9 @@ then
 end
 ```
 
-Alternatively, detecting a doorbell press using an item that references the *rawbutton-on-off-switch* profile:
+Alternatively, detecting a doorbell press using an item that references the _rawbutton-on-off-switch_ profile:
 
-```
+```java
 rule "Doorbell Button Pressed"
 when
     Item Doorbell_Pressed received command ON
@@ -231,7 +231,7 @@ end
 
 Using the doorbell motion channel to detect motion:
 
-```
+```java
 rule "Motion Detected"
 when
     Item Doorbell_Motion received command ON

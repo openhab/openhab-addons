@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,13 +19,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.DeviceInspector;
 import org.openhab.binding.knx.internal.client.DeviceInspector.Result;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -118,7 +118,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     }
 
     @Override
-    public void bridgeStatusChanged(@NonNull ThingStatusInfo bridgeStatusInfo) {
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             attachToClient();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
@@ -152,7 +152,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                     if (!filledDescription && config.getFetch()) {
                         Future<?> descriptionJob = this.descriptionJob;
                         if (descriptionJob == null || descriptionJob.isCancelled()) {
-                            long initialDelay = Math.round(config.getPingInterval().longValue() * random.nextFloat());
+                            long initialDelay = Math.round(config.getPingInterval() * random.nextFloat());
                             this.descriptionJob = getBackgroundScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
                             }, initialDelay, TimeUnit.SECONDS);
@@ -163,8 +163,10 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 }
             }
         } catch (KNXException e) {
-            logger.debug("An error occurred while testing the reachability of a thing '{}'", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            logger.debug("An error occurred while testing the reachability of a thing '{}': {}", getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(e));
         }
     }
 
@@ -175,11 +177,11 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         }
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         try {
-            if (config.getAddress() != null && !config.getAddress().isEmpty()) {
+            if (!config.getAddress().isEmpty()) {
                 updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
-                long pingInterval = config.getPingInterval().longValue();
+                long pingInterval = config.getPingInterval();
                 long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
                 ScheduledFuture<?> pollingJob = this.pollingJob;
@@ -192,20 +194,24 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (KNXFormatException e) {
-            logger.debug("An exception occurred while setting the individual address '{}'", config.getAddress(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            logger.debug("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(e));
         }
         getClient().registerGroupAddressListener(this);
         scheduleReadJobs();
     }
 
     protected void detachFromClient() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        final var pollingJobSynced = pollingJob;
+        if (pollingJobSynced != null) {
+            pollingJobSynced.cancel(true);
             pollingJob = null;
         }
-        if (descriptionJob != null) {
-            descriptionJob.cancel(true);
+        final var descriptionJobSynced = descriptionJob;
+        if (descriptionJobSynced != null) {
+            descriptionJobSynced.cancel(true);
             descriptionJob = null;
         }
         cancelReadFutures();

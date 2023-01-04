@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ public enum OnkyoModel {
 
     // Please also add new supported models to README.md
 
+    HT_RC440("HT-RC440"),
     HT_RC560("HT-RC560"),
     TX_NR414("TX-NR414"),
     TX_NR474("TX-NR474"),
@@ -35,6 +36,7 @@ public enum OnkyoModel {
     TX_NR555("TX-NR555"),
     TX_NR575("TX-NR575"),
     TX_NR575E("TX-NR575E"),
+    TX_NR609("TX-NR609"),
     TX_NR616("TX-NR616"),
     TX_NR626("TX-NR626"),
     TX_NR636("TX-NR636"),
@@ -48,6 +50,7 @@ public enum OnkyoModel {
     TX_NR737("TX-NR737"),
     TX_NR747("TX-NR747"),
     TX_NR757("TX-NR757"),
+    TX_NR807("TX-NR807"),
     TX_NR809("TX-NR809"),
     TX_NR818("TX-NR818"),
     TX_NR828("TX-NR828"),

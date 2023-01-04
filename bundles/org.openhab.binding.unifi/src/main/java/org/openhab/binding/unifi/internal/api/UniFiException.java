@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,24 +12,28 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link UniFiException} represents a binding specific {@link Exception}.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiException extends Exception {
 
     private static final long serialVersionUID = -7422254981644510570L;
 
-    public UniFiException(String message) {
+    public UniFiException(final String message) {
         super(message);
     }
 
-    public UniFiException(String message, Throwable cause) {
+    public UniFiException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public UniFiException(Throwable cause) {
+    public UniFiException(final @Nullable Throwable cause) {
         super(cause);
     }
 }

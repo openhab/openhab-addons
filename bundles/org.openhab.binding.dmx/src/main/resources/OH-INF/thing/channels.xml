@@ -8,7 +8,7 @@
 		<label>Brightness</label>
 		<description>Allows to send a brightness value to the thing. If the thing is associated with more than one DMX
 			channel, the values is used for ALL DMX channels.</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
@@ -22,7 +22,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>ColorTemperature</tag>
 		</tags>
 	</channel-type>
 	<!-- Color Channel -->

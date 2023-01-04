@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
 
@@ -24,6 +25,7 @@ import org.openhab.binding.ahawastecollection.internal.CollectionDate.WasteType;
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
+@Disabled("These tests use the real website which may not always be available")
 public class AhaCollectionScheduleTest {
 
     @Test

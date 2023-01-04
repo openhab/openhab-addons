@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -138,40 +138,44 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
 
                             KM200ServiceObject switchObject = object.serviceTreeMap.get(key).serviceTreeMap
                                     .get(SWITCH_PROGRAM_PATH_NAME);
-                            if (switchObject.serviceTreeMap.isEmpty()) {
-                                continue;
-                            }
-                            /*
-                             * if the device has only one switching program then the "activeSwitchProgram" service is
-                             * not existing. In this case we are using a fix path to this one service.
-                             */
-                            if (!currExists) {
-                                if (switchObject.serviceTreeMap.keySet().size() == 1) {
-                                    currParaRepl = switchObject.serviceTreeMap.entrySet().iterator().next().getKey();
+                            if (switchObject != null) {
+                                if (switchObject.serviceTreeMap.isEmpty()) {
+                                    continue;
                                 }
-                            }
-                            KM200SwitchProgramServiceHandler valPara = (KM200SwitchProgramServiceHandler) switchObject.serviceTreeMap
-                                    .entrySet().iterator().next().getValue().getValueParameter();
-                            if (null != valPara) {
-                                String posName = valPara.getPositiveSwitch();
-                                String negName = valPara.getNegativeSwitch();
-                                if (null == posName || null == negName) {
-                                    logger.warn("Service switches not found!");
-                                    return;
+                                /*
+                                 * if the device has only one switching program then the "activeSwitchProgram" service
+                                 * is
+                                 * not existing. In this case we are using a fix path to this one service.
+                                 */
+                                if (!currExists) {
+                                    if (switchObject.serviceTreeMap.keySet().size() == 1) {
+                                        currParaRepl = switchObject.serviceTreeMap.entrySet().iterator().next()
+                                                .getKey();
+                                    }
                                 }
-                                ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,
-                                        key + "-switchprogram");
-                                Map<String, Object> subProperties = new HashMap<>(4);
-                                subProperties.put("root", KM200Utils.translatesPathToName(
-                                        root + "/" + key + "/" + SWITCH_PROGRAM_PATH_NAME + "/" + currParaRepl));
-                                subProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME,
-                                        KM200Utils.translatesPathToName(currentPathName));
-                                subProperties.put(SWITCH_PROGRAM_POSITIVE, posName);
-                                subProperties.put(SWITCH_PROGRAM_NEGATIVE, negName);
-                                DiscoveryResult subDiscoveryResult = DiscoveryResultBuilder.create(subThingUID)
-                                        .withBridge(bridgeUID).withLabel(key + " switch program")
-                                        .withProperties(subProperties).build();
-                                thingDiscovered(subDiscoveryResult);
+                                KM200SwitchProgramServiceHandler valPara = (KM200SwitchProgramServiceHandler) switchObject.serviceTreeMap
+                                        .entrySet().iterator().next().getValue().getValueParameter();
+                                if (null != valPara) {
+                                    String posName = valPara.getPositiveSwitch();
+                                    String negName = valPara.getNegativeSwitch();
+                                    if (null == posName || null == negName) {
+                                        logger.warn("Service switches not found!");
+                                        return;
+                                    }
+                                    ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,
+                                            key + "-switchprogram");
+                                    Map<String, Object> subProperties = new HashMap<>(4);
+                                    subProperties.put("root", KM200Utils.translatesPathToName(
+                                            root + "/" + key + "/" + SWITCH_PROGRAM_PATH_NAME + "/" + currParaRepl));
+                                    subProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME,
+                                            KM200Utils.translatesPathToName(currentPathName));
+                                    subProperties.put(SWITCH_PROGRAM_POSITIVE, posName);
+                                    subProperties.put(SWITCH_PROGRAM_NEGATIVE, negName);
+                                    DiscoveryResult subDiscoveryResult = DiscoveryResultBuilder.create(subThingUID)
+                                            .withBridge(bridgeUID).withLabel(key + " switch program")
+                                            .withProperties(subProperties).build();
+                                    thingDiscovered(subDiscoveryResult);
+                                }
                             }
                         }
                     }

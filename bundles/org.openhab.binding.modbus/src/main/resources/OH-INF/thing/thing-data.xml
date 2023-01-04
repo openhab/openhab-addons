@@ -9,8 +9,8 @@
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
 		<label>Modbus Data</label>
-		<description>Data thing extracts values from binary data received from Modbus slave. Similarly, it it responsible of
-			tranlating openHAB commands to Modbus write requests</description>
+		<description>Data thing extracts values from binary data received from Modbus slave. Similarly, it is responsible of
+			translating openHAB commands to Modbus write requests</description>
 		<channels>
 			<channel id="number" typeId="number-type"/>
 			<channel id="switch" typeId="switch-type"/>
@@ -82,7 +82,7 @@
 				<label>Write Address</label>
 				<description><![CDATA[Start address of the first holding register or coil in the write. Use empty for read-only things.
 				<br />Use zero based address, e.g. in place of 400001 (first holding register), use the address 0. This address is passed to data frame as is.
-				<br />One can write individual bits of an register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
+				<br />One can write individual bits of a register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
 				]]></description>
 			</parameter>
 			<parameter name="writeType" type="text">

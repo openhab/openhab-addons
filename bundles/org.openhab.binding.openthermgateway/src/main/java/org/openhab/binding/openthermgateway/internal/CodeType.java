@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.openthermgateway.internal;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CodeType} field is not part of OpenTherm specification, but added by OpenTherm Gateway.
@@ -25,6 +27,7 @@ package org.openhab.binding.openthermgateway.internal;
  * @author Arjen Korevaar - Initial contribution
  * @author James Melville - Introduced code filtering functionality
  */
+@NonNullByDefault
 public enum CodeType {
     /**
      * Message received from the thermostat

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 import org.openhab.binding.tplinksmarthome.internal.model.Realtime;
 import org.openhab.binding.tplinksmarthome.internal.model.SetBrightness;
 import org.openhab.binding.tplinksmarthome.internal.model.SetLedOff;
+import org.openhab.binding.tplinksmarthome.internal.model.SetLightState;
 import org.openhab.binding.tplinksmarthome.internal.model.SetRelayState;
 import org.openhab.binding.tplinksmarthome.internal.model.SetSwitchState;
 import org.openhab.binding.tplinksmarthome.internal.model.Sysinfo;
@@ -79,7 +80,7 @@ public class Commands {
      * @param id optional id of the device
      * @return The json string of the command to send to the device
      */
-    public static String getRealtimeWithContext(String id) {
+    public static String getRealtimeWithContext(final String id) {
         return String.format(CONTEXT, id) + REALTIME + "}";
     }
 
@@ -90,8 +91,8 @@ public class Commands {
      * @return The data object containing the energy data from the json string
      */
     @SuppressWarnings("null")
-    public Realtime getRealtimeResponse(String realtimeResponse) {
-        GetRealtime getRealtime = gson.fromJson(realtimeResponse, GetRealtime.class);
+    public Realtime getRealtimeResponse(final String realtimeResponse) {
+        final GetRealtime getRealtime = gson.fromJson(realtimeResponse, GetRealtime.class);
         return getRealtime == null ? new Realtime() : getRealtime.getRealtime();
     }
 
@@ -111,8 +112,8 @@ public class Commands {
      * @return The data object containing the state data from the json string
      */
     @SuppressWarnings("null")
-    public Sysinfo getSysinfoReponse(String getSysinfoReponse) {
-        GetSysinfo getSysinfo = gson.fromJson(getSysinfoReponse, GetSysinfo.class);
+    public Sysinfo getSysinfoReponse(final String getSysinfoReponse) {
+        final GetSysinfo getSysinfo = gson.fromJson(getSysinfoReponse, GetSysinfo.class);
         return getSysinfo == null ? new Sysinfo() : getSysinfo.getSysinfo();
     }
 
@@ -123,8 +124,8 @@ public class Commands {
      * @param childId optional child id if multiple children are supported by a single device
      * @return The json string of the command to send to the device
      */
-    public String setRelayState(OnOffType onOff, @Nullable String childId) {
-        SetRelayState relayState = new SetRelayState();
+    public String setRelayState(final OnOffType onOff, @Nullable final String childId) {
+        final SetRelayState relayState = new SetRelayState();
         relayState.setRelayState(onOff);
         if (childId != null) {
             relayState.setChildId(childId);
@@ -138,7 +139,7 @@ public class Commands {
      * @param relayStateResponse the json string
      * @return The data object containing the state data from the json string
      */
-    public @Nullable SetRelayState setRelayStateResponse(String relayStateResponse) {
+    public @Nullable SetRelayState setRelayStateResponse(final String relayStateResponse) {
         return gsonWithExpose.fromJson(relayStateResponse, SetRelayState.class);
     }
 
@@ -148,8 +149,8 @@ public class Commands {
      * @param onOff the switch state to set
      * @return The json string of the command to send to the device
      */
-    public String setSwitchState(OnOffType onOff) {
-        SetSwitchState switchState = new SetSwitchState();
+    public String setSwitchState(final OnOffType onOff) {
+        final SetSwitchState switchState = new SetSwitchState();
         switchState.setSwitchState(onOff);
         return gsonWithExpose.toJson(switchState);
     }
@@ -160,7 +161,7 @@ public class Commands {
      * @param switchStateResponse the json string
      * @return The data object containing the state data from the json string
      */
-    public @Nullable SetSwitchState setSwitchStateResponse(String switchStateResponse) {
+    public @Nullable SetSwitchState setSwitchStateResponse(final String switchStateResponse) {
         return gsonWithExpose.fromJson(switchStateResponse, SetSwitchState.class);
     }
 
@@ -170,8 +171,8 @@ public class Commands {
      * @param brightness the brightness value to set
      * @return The json string of the command to send to the device
      */
-    public String setDimmerBrightness(int brightness) {
-        SetBrightness setBrightness = new SetBrightness();
+    public String setDimmerBrightness(final int brightness) {
+        final SetBrightness setBrightness = new SetBrightness();
         setBrightness.setBrightness(brightness);
         return gsonWithExpose.toJson(setBrightness);
     }
@@ -182,24 +183,8 @@ public class Commands {
      * @param dimmerBrightnessResponse the json string
      * @return The data object containing the state data from the json string
      */
-    public @Nullable HasErrorResponse setDimmerBrightnessResponse(String dimmerBrightnessResponse) {
+    public @Nullable HasErrorResponse setDimmerBrightnessResponse(final String dimmerBrightnessResponse) {
         return gsonWithExpose.fromJson(dimmerBrightnessResponse, SetBrightness.class);
-    }
-
-    /**
-     * Returns the json for the set_light_state command to switch a bulb on or off.
-     *
-     * @param onOff the switch state to set
-     * @param transitionPeriod the transition period for the action to take place
-     * @return The json string of the command to send to the device
-     */
-    public String setLightState(OnOffType onOff, int transitionPeriod) {
-        TransitionLightState transitionLightState = new TransitionLightState();
-        LightOnOff lightState = new LightOnOff();
-        lightState.setOnOff(onOff);
-        lightState.setTransitionPeriod(transitionPeriod);
-        transitionLightState.setLightState(lightState);
-        return gson.toJson(transitionLightState);
     }
 
     /**
@@ -209,8 +194,8 @@ public class Commands {
      * @param childId optional child id if multiple children are supported by a single device
      * @return The json string of the command to send to the device
      */
-    public String setLedOn(OnOffType onOff, @Nullable String childId) {
-        SetLedOff sLOff = new SetLedOff();
+    public String setLedOn(final OnOffType onOff, @Nullable final String childId) {
+        final SetLedOff sLOff = new SetLedOff();
         sLOff.setLed(onOff);
         if (childId != null) {
             sLOff.setChildId(childId);
@@ -224,8 +209,19 @@ public class Commands {
      * @param setLedOnResponse the json string
      * @return The data object containing the data from the json string
      */
-    public @Nullable SetLedOff setLedOnResponse(String setLedOnResponse) {
+    public @Nullable SetLedOff setLedOnResponse(final String setLedOnResponse) {
         return gsonWithExpose.fromJson(setLedOnResponse, SetLedOff.class);
+    }
+
+    /**
+     * Returns the json for the transition_light_state command to switch a bulb on or off.
+     *
+     * @param onOff the switch state to set
+     * @param transitionPeriod the transition period for the action to take place
+     * @return The json string of the command to send to the device
+     */
+    public String setTransitionLightState(final OnOffType onOff, final int transitionPeriod) {
+        return setTransitionLightState(new LightOnOff(), onOff, transitionPeriod);
     }
 
     /**
@@ -235,14 +231,10 @@ public class Commands {
      * @param transitionPeriod the transition period for the action to take place
      * @return The json string of the command to send to the device
      */
-    public String setBrightness(int brightness, int transitionPeriod) {
-        TransitionLightState transitionLightState = new TransitionLightState();
-        LightStateBrightness lightState = new LightStateBrightness();
-        lightState.setOnOff(brightness == 0 ? OnOffType.OFF : OnOffType.ON);
+    public String setTransitionLightStateBrightness(final int brightness, final int transitionPeriod) {
+        final LightStateBrightness lightState = new LightStateBrightness();
         lightState.setBrightness(brightness);
-        lightState.setTransitionPeriod(transitionPeriod);
-        transitionLightState.setLightState(lightState);
-        return gson.toJson(transitionLightState);
+        return setTransitionLightState(lightState, OnOffType.from(brightness != 0), transitionPeriod);
     }
 
     /**
@@ -252,17 +244,13 @@ public class Commands {
      * @param transitionPeriod the transition period for the action to take place
      * @return The json string of the command to send to the device
      */
-    public String setColor(HSBType hsb, int transitionPeriod) {
-        TransitionLightState transitionLightState = new TransitionLightState();
-        LightStateColor lightState = new LightStateColor();
-        int brightness = hsb.getBrightness().intValue();
-        lightState.setOnOff(brightness == 0 ? OnOffType.OFF : OnOffType.ON);
+    public String setTransitionLightStateColor(final HSBType hsb, final int transitionPeriod) {
+        final LightStateColor lightState = new LightStateColor();
+        final int brightness = hsb.getBrightness().intValue();
         lightState.setBrightness(brightness);
         lightState.setHue(hsb.getHue().intValue());
         lightState.setSaturation(hsb.getSaturation().intValue());
-        lightState.setTransitionPeriod(transitionPeriod);
-        transitionLightState.setLightState(lightState);
-        return gson.toJson(transitionLightState);
+        return setTransitionLightState(lightState, OnOffType.from(brightness != 0), transitionPeriod);
     }
 
     /**
@@ -272,13 +260,18 @@ public class Commands {
      * @param transitionPeriod the transition period for the action to take place
      * @return The json string of the command to send to the device
      */
-    public String setColorTemperature(int colorTemperature, int transitionPeriod) {
-        TransitionLightState transitionLightState = new TransitionLightState();
-        LightStateColorTemperature lightState = new LightStateColorTemperature();
-        lightState.setOnOff(OnOffType.ON);
+    public String setColorTemperature(final int colorTemperature, final int transitionPeriod) {
+        final LightStateColorTemperature lightState = new LightStateColorTemperature();
         lightState.setColorTemperature(colorTemperature);
-        lightState.setTransitionPeriod(transitionPeriod);
-        transitionLightState.setLightState(lightState);
+        return setTransitionLightState(lightState, OnOffType.ON, transitionPeriod);
+    }
+
+    private String setTransitionLightState(final LightOnOff lightOnOff, final OnOffType onOff,
+            final int transitionPeriod) {
+        final TransitionLightState transitionLightState = new TransitionLightState();
+        transitionLightState.setLightState(lightOnOff);
+        lightOnOff.setOnOff(onOff);
+        lightOnOff.setTransitionPeriod(transitionPeriod);
         return gson.toJson(transitionLightState);
     }
 
@@ -288,7 +281,82 @@ public class Commands {
      * @param response the json string
      * @return The data object containing the state data from the json string
      */
-    public @Nullable TransitionLightStateResponse setTransitionLightStateResponse(String response) {
+    public @Nullable TransitionLightStateResponse setTransitionLightStateResponse(final String response) {
         return gson.fromJson(response, TransitionLightStateResponse.class);
+    }
+
+    // ---------------------------------------------------------------
+
+    /**
+     * Returns the json for the set_light_state command to switch a light strip on or off.
+     *
+     * @param onOff the switch state to set
+     * @param transition the transition period for the action to take place
+     * @return The json string of the command to send to the device
+     */
+    public String setLightStripState(final OnOffType onOff, final int transition) {
+        return setLightStripState(new SetLightState.LightOnOff(), onOff, transition);
+    }
+
+    /**
+     * Returns the json for the set_light_State command to set the brightness.
+     *
+     * @param brightness the brightness value
+     * @param transition the transition period for the action to take place
+     * @return The json string of the command to send to the device
+     */
+    public String setLightStripBrightness(final int brightness, final int transition) {
+        final SetLightState.Brightness lightState = new SetLightState.Brightness();
+        lightState.setBrightness(brightness);
+        return setLightStripState(lightState, OnOffType.from(brightness != 0), transition);
+    }
+
+    /**
+     * Returns the json for the set_light_State command to set the color.
+     *
+     * @param hsb the color to set
+     * @param transition the transition period for the action to take place
+     * @return The json string of the command to send to the device
+     */
+    public String setLightStripColor(final HSBType hsb, final int transition) {
+        final SetLightState.Color lightState = new SetLightState.Color();
+        final int brightness = hsb.getBrightness().intValue();
+        lightState.setHue(hsb.getHue().intValue());
+        lightState.setSaturation(hsb.getSaturation().intValue());
+        lightState.setBrightness(brightness);
+        return setLightStripState(lightState, OnOffType.from(brightness != 0), transition);
+    }
+
+    /**
+     * Returns the json for the set_light_State command to set the color temperature.
+     *
+     * @param colorTemperature the color temperature to set
+     * @param transition the transition period for the action to take place
+     * @return The json string of the command to send to the device
+     */
+    public String setLightStripColorTemperature(final int colorTemperature, final int transition) {
+        final SetLightState.ColorTemperature lightState = new SetLightState.ColorTemperature();
+        lightState.setColorTemp(colorTemperature);
+        return setLightStripState(lightState, OnOffType.ON, transition);
+    }
+
+    private String setLightStripState(final SetLightState.LightOnOff lightOnOff, final OnOffType onOff,
+            final int transition) {
+        final SetLightState setLightState = new SetLightState();
+        setLightState.setContext(new SetLightState.Context());
+        setLightState.setLightState(lightOnOff);
+        lightOnOff.setOnOff(onOff);
+        lightOnOff.setTransition(transition);
+        return gsonWithExpose.toJson(setLightState);
+    }
+
+    /**
+     * Returns the json response for the set_light_state command.
+     *
+     * @param response the json string
+     * @return The data object containing the state data from the json string
+     */
+    public @Nullable SetLightState setLightStripStateResponse(final String response) {
+        return gsonWithExpose.fromJson(response, SetLightState.class);
     }
 }

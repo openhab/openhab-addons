@@ -6,40 +6,52 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="io:homekit">
-
 		<parameter-group name="core">
-			<label>Core Configuration</label>
+			<label>Core Configuration.</label>
+			<advanced>false</advanced>
 		</parameter-group>
 		<parameter-group name="thermostat">
 			<label>Thermostat Settings</label>
-			<description>General thermostat settings</description>
+			<description>Advanced thermostat settings.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 		<parameter-group name="network">
 			<label>Network Settings</label>
-			<description>General network settings</description>
+			<description>Advanced network settings.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 		<parameter-group name="thermostatTargetHeatingCooling">
 			<label>Thermostat Target Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
+			<description>String values used by your thermostat to set different target heating/cooling modes.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 		<parameter-group name="thermostatCurrentHeatingCooling">
 			<label>Thermostat Current Heating/Cooling Mapping</label>
-			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
+			<description>String values used by your thermostat to set different current heating/cooling modes.</description>
+			<advanced>true</advanced>
 		</parameter-group>
 		<parameter name="name" type="text" required="false" groupName="core">
 			<label>Bridge name</label>
-			<description>Name of the HomeKit bridge</description>
+			<description>Name of the HomeKit bridge.</description>
 			<default>openHAB</default>
 		</parameter>
 		<parameter name="qrCode" type="text" required="false" groupName="core">
 			<label>HomeKit QR Code</label>
 			<context>qrcode</context>
-			<description>Scan QR code with home app to add openHAB as HomeKit bridge. </description>
+			<description>Scan QR code with home app to add openHAB as HomeKit bridge.</description>
 		</parameter>
-		<parameter name="port" type="integer" required="true" groupName="core">
+		<parameter name="port" type="integer" required="true" groupName="network">
 			<label>Port</label>
 			<description>Defines the port the HomeKit integration listens on.</description>
 			<default>9123</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="instances" type="integer" required="true" groupName="core">
+			<label>Instances</label>
+			<description>Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be
+				assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.</description>
+			<default>1</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true" groupName="core">
 			<label>Pin</label>
@@ -49,53 +61,59 @@
 		<parameter name="setupId" type="text" pattern="[0-9A-Z]{4}" required="false" groupName="core">
 			<label>Setup ID</label>
 			<description>Setup ID used for pairing using QR Code. Alphanumeric code of length 4.</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="networkInterface" type="text" required="false" groupName="network">
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="startDelay" type="integer" required="true" groupName="core" unit="s">
-			<label>Start Delay</label>
-			<description>HomeKit start delay in case of item configuration differences.</description>
-			<default>30</default>
+		<parameter name="useDummyAccessories" type="boolean" required="true" groupName="core">
+			<label>Use Dummy Accessories</label>
+			<description><![CDATA[Create dummy accessories when an item is missing. See <a href="https://www.openhab.org/addons/integrations/homekit/#dummy-accessories">the documentation</a> for more information.
+			]]></description>
+			<default>false</default>
 		</parameter>
 		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
 			<label>Use Fahrenheit Temperature</label>
 			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
 			<default>false</default>
 		</parameter>
-
 		<parameter name="thermostatTargetModeCool" type="text" required="true"
 			groupName="thermostatTargetHeatingCooling">
 			<label>Cool Value</label>
 			<description>Word used to set the target heatingCoolingMode to COOL (if a thermostat is defined).</description>
 			<default>CoolOn</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="thermostatTargetModeHeat" type="text" required="true"
 			groupName="thermostatTargetHeatingCooling">
 			<label>Heat Value</label>
 			<description>Word used to set the target heatingCoolingMode to HEAT (if a thermostat is defined).</description>
 			<default>HeatOn</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="thermostatTargetModeAuto" type="text" required="true"
 			groupName="thermostatTargetHeatingCooling">
 			<label>Auto Value</label>
 			<description>Word used to set the target heatingCoolingMode to AUTO (if a thermostat is defined).</description>
 			<default>Auto</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="thermostatTargetModeOff" type="text" required="true"
 			groupName="thermostatTargetHeatingCooling">
 			<label>Off Value</label>
 			<description>Word used to set the target heatingCoolingMode to OFF (if a thermostat is defined).</description>
 			<default>Off</default>
+			<advanced>true</advanced>
 		</parameter>
-
 		<parameter name="thermostatCurrentModeHeating" type="text" required="true"
 			groupName="thermostatCurrentHeatingCooling">
 			<label>Heating Value</label>
 			<description>Value for setting target heatingCoolingCurrentMode to HEAT (IE: indicating that the heater is currently
 				warming the home).</description>
 			<default>Heating</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="thermostatCurrentModeCooling" type="text" required="true"
 			groupName="thermostatCurrentHeatingCooling">
@@ -103,6 +121,7 @@
 			<description>Value for setting target heatingCoolingCurrentMode to COOL (IE: indicating that the air condition is
 				currently cooling the home).</description>
 			<default>Cooling</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="thermostatCurrentModeOff" type="text" required="true"
 			groupName="thermostatCurrentHeatingCooling">
@@ -110,16 +129,19 @@
 			<description>Value for setting target heatingCoolingCurrentMode to OFF (IE: the hvac is currently idle, because the
 				target temperature has been reached per the mode).</description>
 			<default>Off</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="useOHmDNS" type="boolean" required="false" groupName="network">
 			<label>Use openHAB mDNS service</label>
 			<description>Defines whether mDNS service of openHAB or a separate instance of mDNS should be used.</description>
 			<default>false</default>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="blockUserDeletion" type="boolean" required="false" groupName="network">
+		<parameter name="blockUserDeletion" type="boolean" required="false" groupName="core">
 			<label>Block deletion of the HomeKit user</label>
-			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices</description>
+			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices.</description>
 			<default>false</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

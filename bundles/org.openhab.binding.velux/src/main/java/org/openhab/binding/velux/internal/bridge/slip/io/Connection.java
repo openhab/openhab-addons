@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,14 +147,18 @@ public class Connection implements Closeable {
             } catch (IOException ioe) {
                 logger.info("io() on {}: Exception occurred during I/O: {}.", host, ioe.getMessage());
                 lastIOE = ioe;
-                // Error Retries with Exponential Backoff
-                long waitTime = ((long) Math.pow(2, retryCount)
-                        * bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
-                logger.trace("io() on {}: wait time {} msecs.", host, waitTime);
-                try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException ie) {
-                    logger.trace("io() on {}: wait interrupted.", host);
+                if (bridgeInstance.isDisposing()) {
+                    break;
+                } else {
+                    // Error Retries with Exponential Backoff
+                    long waitTime = ((long) Math.pow(2, retryCount)
+                            * bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
+                    logger.trace("io() on {}: wait time {} msecs.", host, waitTime);
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        logger.trace("io() on {}: wait interrupted.", host);
+                    }
                 }
             }
         } while (retryCount++ < bridgeInstance.veluxBridgeConfiguration().retries);

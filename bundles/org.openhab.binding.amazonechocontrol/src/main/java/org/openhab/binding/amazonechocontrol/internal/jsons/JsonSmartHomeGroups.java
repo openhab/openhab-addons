@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,19 @@ public class JsonSmartHomeGroups {
 
         @Override
         public @Nullable String findId() {
+            SmartHomeGroupIdentifier applianceGroupIdentifier = this.applianceGroupIdentifier;
+            if (applianceGroupIdentifier == null) {
+                return null;
+            }
+            String value = applianceGroupIdentifier.value;
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
+        @Override
+        public @Nullable String findEntityId() {
             SmartHomeGroupIdentifier applianceGroupIdentifier = this.applianceGroupIdentifier;
             if (applianceGroupIdentifier == null) {
                 return null;

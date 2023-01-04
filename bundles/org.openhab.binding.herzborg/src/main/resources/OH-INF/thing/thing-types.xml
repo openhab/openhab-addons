@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="herzborg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="serialBus">
+		<label>Herzborg Serial Bus</label>
+		<description>RS485 bus</description>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
+				<description>Serial port to use, for example /dev/ttyS0 or COM1</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="curtain">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialBus"/>
+		</supported-bridge-type-refs>
+		<label>Herzborg Curtain Motor</label>
+		<description>Curtain motor</description>
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="reverse" typeId="reverse"/>
+			<channel id="handStart" typeId="handStart"/>
+			<channel id="extSwitch" typeId="extSwitch"/>
+			<channel id="hwSwitch" typeId="hwSwitch"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="integer">
+				<label>Address</label>
+				<description>Device address on the bus.</description>
+				<default>65278</default>
+			</parameter>
+			<parameter name="pollInterval" type="integer" unit="s">
+				<label>Poll Interval</label>
+				<description>Poll interval in seconds</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<description>Curtain position control</description>
+		<category>Blinds</category>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Motor mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Stop</option>
+				<option value="1">Open</option>
+				<option value="2">Close</option>
+				<option value="3">Setting</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="reverse" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Reverse Motor</label>
+		<description>Reverse default motor direction</description>
+	</channel-type>
+	<channel-type id="handStart" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Start By Hand</label>
+		<description>Enable or disable start by hand</description>
+	</channel-type>
+	<channel-type id="extSwitch" advanced="true">
+		<item-type>String</item-type>
+		<label>External Switch</label>
+		<description>External switch type</description>
+		<state>
+			<options>
+				<option value="1">2-channel biased</option>
+				<option value="2">2-channel rocker</option>
+				<option value="3">DC246</option>
+				<option value="4">single button</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="hwSwitch" advanced="true">
+		<item-type>String</item-type>
+		<label>HV Switch</label>
+		<description>High-voltage switch type (only for EV motor)</description>
+		<state>
+			<options>
+				<option value="0">2-channel biased</option>
+				<option value="1">hotel mode</option>
+				<option value="2">2-channel rocker</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

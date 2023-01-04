@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -342,12 +342,16 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
             String loginToken = tokenResponse.getContentAsString();
 
-            AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
-            if (accessTokenResponse == null) {
-                throw new MyQAuthenticationException("Could not parse token response");
+            try {
+                AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
+                if (accessTokenResponse == null) {
+                    throw new MyQAuthenticationException("Could not parse token response");
+                }
+                getOAuthService().importAccessTokenResponse(accessTokenResponse);
+                return accessTokenResponse;
+            } catch (JsonSyntaxException e) {
+                throw new MyQCommunicationException("Invalid Token Response " + loginToken);
             }
-            getOAuthService().importAccessTokenResponse(accessTokenResponse);
-            return accessTokenResponse;
         } catch (IOException | ExecutionException | TimeoutException | OAuthException | URISyntaxException e) {
             throw new MyQCommunicationException(e.getMessage());
         }
@@ -552,7 +556,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     }
 
     /**
-     * Final step of the login process to get a oAuth access response token
+     * Final step of the login process to get an oAuth access response token
      *
      * @param redirectLocation
      * @param codeVerifier

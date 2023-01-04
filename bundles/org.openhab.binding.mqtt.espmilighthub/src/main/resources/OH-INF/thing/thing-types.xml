@@ -7,10 +7,9 @@
 	<thing-type id="rgb_cct">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight RGBCCT</label>
-		<description>Led globe with full Colour, and both cool and warm whites.</description>
+		<description>LED globe with full Colour, and both cool and warm whites.</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -26,7 +25,6 @@
 	<thing-type id="fut089">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight FUT089</label>
 		<description>Use this when your remote is the newer 8 group type called FUT089 and your globes are rgb_cct</description>
@@ -45,7 +43,6 @@
 	<thing-type id="fut091">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight FUT091</label>
 		<description>Use this when your remote is the newer fut091 and your globes are cct</description>
@@ -61,10 +58,9 @@
 	<thing-type id="cct">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight CCT</label>
-		<description>Led globe with both cool and warm white controls</description>
+		<description>LED globe with both cool and warm white controls</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -77,7 +73,6 @@
 	<thing-type id="rgbw">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight RGBW</label>
 		<description>RGB Globe with a fixed white</description>
@@ -95,7 +90,6 @@
 	<thing-type id="rgb">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Milight RGB</label>
 		<description>RGB Globe with no white</description>

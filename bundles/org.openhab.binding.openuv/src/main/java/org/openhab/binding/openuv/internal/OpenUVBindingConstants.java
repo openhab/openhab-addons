@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,6 @@ public class OpenUVBindingConstants {
     public static final String SAFE_EXPOSURE = "SafeExposure";
     public static final String ELEVATION = "elevation";
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(LOCATION_REPORT_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE,
+            LOCATION_REPORT_THING_TYPE);
 }

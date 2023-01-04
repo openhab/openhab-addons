@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.danfossairunit.internal.handler;
 
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,14 +23,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.danfossairunit.internal.Channel;
-import org.openhab.binding.danfossairunit.internal.ChannelGroup;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitConfiguration;
 import org.openhab.binding.danfossairunit.internal.DanfossAirUnitWriteAccessor;
 import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
 import org.openhab.binding.danfossairunit.internal.ValueCache;
-import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -101,7 +97,6 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
-        removeDeprecatedChannels();
         try {
             var localCommunicationController = new DanfossAirUnitCommunicationController(
                     InetAddress.getByName(config.host), TCP_PORT);
@@ -112,21 +107,6 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
             return;
-        }
-    }
-
-    private void removeDeprecatedChannels() {
-        ChannelGroupUID mainChannelGroupUid = new ChannelGroupUID(thing.getUID(), ChannelGroup.MAIN.getGroupName());
-        ChannelUID manualFanSpeedChannelUid = new ChannelUID(mainChannelGroupUid,
-                Channel.CHANNEL_MANUAL_FAN_SPEED.getChannelName());
-        if (this.isLinked(manualFanSpeedChannelUid)) {
-            ChannelUID manualFanStepChannelUid = new ChannelUID(mainChannelGroupUid,
-                    Channel.CHANNEL_MANUAL_FAN_STEP.getChannelName());
-            logger.warn("Channel '{}' is deprecated, please use '{}' instead.", manualFanSpeedChannelUid,
-                    manualFanStepChannelUid);
-        } else {
-            logger.debug("Removing deprecated unlinked channel '{}'.", manualFanSpeedChannelUid);
-            updateThing(editThing().withoutChannel(manualFanSpeedChannelUid).build());
         }
     }
 
@@ -184,8 +164,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         try {
             Map<String, String> properties = new HashMap<>(2);
-            properties.put(PROPERTY_UNIT_NAME, localAirUnit.getUnitName());
-            properties.put(PROPERTY_SERIAL, localAirUnit.getUnitSerialNumber());
+            properties.put(Thing.PROPERTY_MODEL_ID, localAirUnit.getUnitName());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, localAirUnit.getUnitSerialNumber());
             updateProperties(properties);
             propertiesInitializedSuccessfully = true;
             updateStatus(ThingStatus.ONLINE);

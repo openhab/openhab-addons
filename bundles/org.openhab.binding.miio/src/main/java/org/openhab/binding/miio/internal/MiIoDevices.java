@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,6 +68,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2009("dreame.vacuum.p2009", "Dreame Robot Vacuum D9 ", THING_TYPE_BASIC),
     DREAME_VACUUM_P2027("dreame.vacuum.p2027", "Dreame Bot W10", THING_TYPE_BASIC),
     DREAME_VACUUM_P2028("dreame.vacuum.p2028", "Dreame Bot Z10 Pro", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2029("dreame.vacuum.p2029", "Dreame Bot L10 Pro", THING_TYPE_BASIC),
     DREAME_VACUUM_P2036("dreame.vacuum.p2036", "Trouver Robot LDS Vacuum-Mop Finder", THING_TYPE_BASIC),
     DREAME_VACUUM_P2041O("dreame.vacuum.p2041o", "Mi Robot Vacuum-Mop 2 Pro+", THING_TYPE_BASIC),
     DREAME_VACUUM_P2156O("dreame.vacuum.p2156o", "MOVA Z500 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
@@ -95,16 +96,36 @@ public enum MiIoDevices {
     HUAYI_LIGHT_ZW131("huayi.light.zw131", "HUIZUO ZIWEI Ceiling Lamp", THING_TYPE_BASIC),
     HUNMI_COOKER_NORMAL3("hunmi.cooker.normal3", "MiJia Rice Cooker", THING_TYPE_UNSUPPORTED),
     IDELAN_AIRCONDITION_V1("idelan.aircondition.v1", "Jinxing Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
+    IJAI_VACUUM_V19("ijai.vacuum.v19", "Xiaomi Robot Vacuum-Mop 2S", THING_TYPE_BASIC),
+    IKEA_LIGHT_LED1545G12("ikea.light.led1545g12", "IKEA E27 white spectrum opal", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1546G12("ikea.light.led1546g12", "IKEA E27 white spectrum clear", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1536G5("ikea.light.led1536g5", "IKEA E14 white spectrum", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1537R6("ikea.light.led1537r6", "IKEA GU10 white spectrum", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1623G12("ikea.light.led1623g12", "IKEA E27 warm white", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1650R5("ikea.light.led1650r5", "IKEA GU10 warm white", THING_TYPE_LUMI),
+    IKEA_LIGHT_LED1649C5("ikea.light.led1649c5", "IKEA E14 warm white", THING_TYPE_LUMI),
     LUMI_CTRL_NEUTRAL1_V1("lumi.ctrl_neutral1.v1", "Aqara Wall Switch(No Neutral, Single Rocker)",
             THING_TYPE_UNSUPPORTED),
     LUMI_CTRL_NEUTRAL2_V1("lumi.ctrl_neutral2.v1", "Aqara Wall Switch (No Neutral, Double Rocker)",
             THING_TYPE_UNSUPPORTED),
     LUMI_CURTAIN_HAGL05("lumi.curtain.hagl05", "Xiaomiyoupin Curtain Controller (Wi-Fi)", THING_TYPE_BASIC),
-    LUMI_GATEWAY_MGL03("lumi.gateway.mgl03", "Mi Air Purifier virtual", THING_TYPE_BASIC),
-    LUMI_GATEWAY_V1("lumi.gateway.v1", "Mi smart Home Gateway Hub v1", THING_TYPE_BASIC),
-    LUMI_GATEWAY_V2("lumi.gateway.v2", "Mi smart Home GatewayHub v2", THING_TYPE_BASIC),
-    LUMI_GATEWAY_V3("lumi.gateway.v3", "Mi smart Home Gateway Hub v3", THING_TYPE_BASIC),
-    LUMI_GATEWAY_MIEU01("lumi.gateway.mieu01", "Mi smart Home Gateway Hub", THING_TYPE_BASIC),
+    LUMI_GATEWAY_MGL03("lumi.gateway.mgl03", "Mi Air Purifier virtual", THING_TYPE_GATEWAY),
+    LUMI_GATEWAY_MIEU01("lumi.gateway.mieu01", "Mi smart Home Gateway Hub", THING_TYPE_GATEWAY),
+    LUMI_GATEWAY_V1("lumi.gateway.v1", "Mi smart Home Gateway Hub v1", THING_TYPE_GATEWAY),
+    LUMI_GATEWAY_V2("lumi.gateway.v2", "Mi smart Home GatewayHub v2", THING_TYPE_GATEWAY),
+    LUMI_GATEWAY_V3("lumi.gateway.v3", "Mi smart Home Gateway Hub v3", THING_TYPE_GATEWAY),
+    LUMI_LIGHT_AQCN02("lumi.light.aqcn02", "Aqara LED Light Bulb (Tunable White)", THING_TYPE_LUMI),
+    LUMI_LOCK_V1("lumi.lock.v1", "Door lock", THING_TYPE_LUMI),
+    LUMI_LOCK_AQ1("lumi.lock.aq1", "Aqara Door Lock", THING_TYPE_LUMI),
+    LUMI_LOCK_ACN02("lumi.lock.acn02", "Aqara Door Lock S2", THING_TYPE_LUMI),
+    LUMI_LOCK_ACN03("lumi.lock.acn03", "Aqara Door lock S2 Pro", THING_TYPE_LUMI),
+    LUMI_PLUG_MMEU01("lumi.plug.mmeu01", "Mi Smart Plug (Zigbee)", THING_TYPE_LUMI),
+    LUMI_SENSOR_MAGNET_V2("lumi.sensor_magnet.v2", "Mi Window and Door Sensor", THING_TYPE_LUMI),
+    LUMI_SENSOR_MOTION_AQ2("lumi.sensor_motion.aq2", "Mi Motion Sensor", THING_TYPE_LUMI),
+    LUMI_SENSOR_MOTION_V2("lumi.sensor_motion.v2", "Mi Motion Sensor", THING_TYPE_LUMI),
+    LUMI_SENSOR_HT_V1("lumi.sensor_ht.v1", "Mi Temperature and Humidity Sensor", THING_TYPE_LUMI),
+    LUMI_SENSOR_WLEAK_AQ1("lumi.sensor_wleak.aq1", "Water Leak Sensor", THING_TYPE_LUMI),
+    LUMI_WEATHER_V1("lumi.weather.v1", "Aqara Temperature and Humidity Sensor", THING_TYPE_LUMI),
     MIDEA_AIRCONDITION_V1("midea.aircondition.v1", "Midea AC-i Youth", THING_TYPE_UNSUPPORTED),
     MIDEA_AIRCONDITION_V2("midea.aircondition.v2", "Midea Air Conditioner v2", THING_TYPE_UNSUPPORTED),
     MIDEA_AIRCONDITION_XA1("midea.aircondition.xa1", "Midea AC-Cool Golden", THING_TYPE_UNSUPPORTED),
@@ -139,7 +160,7 @@ public enum MiIoDevices {
     PHILIPS_LIGHT_MONO1("philips.light.mono1", "Philips Smart Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_MOONLIGHT("philips.light.moonlight", "Philips ZhiRui Bedside Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_OBCEIL("philips.light.obceil", "Zhirui Ceiling Lamp Black 80W", THING_TYPE_BASIC),
-    PHILIPS_LIGHT_OBCEIM("philips.light.obceim", " Zhirui Ceiling Lamp Black 40W", THING_TYPE_BASIC),
+    PHILIPS_LIGHT_OBCEIM("philips.light.obceim", "Zhirui Ceiling Lamp Black 40W", THING_TYPE_BASIC),
     PHILIPS_LIGHT_OBCEIS("philips.light.obceis", "Zhirui Ceiling Lamp Black 28W", THING_TYPE_BASIC),
     PHILIPS_LIGHT_RWREAD("philips.light.rwread", "Mijia Philips Study Desk Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_SCEIL("philips.light.sceil", "Zhirui Ceiling Lamp Starry 80W", THING_TYPE_BASIC),
@@ -165,6 +186,17 @@ public enum MiIoDevices {
     ROBOROCK_VACUUM_A15("roborock.vacuum.a15", "Roborock S7", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_A19("roborock.vacuum.a19", "Roborock S4 Max", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_A23("roborock.vacuum.a23", "Roborock T7S Plus", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A26("roborock.vacuum.a26", "Roborock G10S Pro", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A27("roborock.vacuum.a27", "Roborock S7 MaxV", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A29("roborock.vacuum.a29", "Roborock G10", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A30("roborock.vacuum.a30", "Roborock G10", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A34("roborock.vacuum.a34", "Roborock Q5", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A37("roborock.vacuum.a37", "Roborock T8", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A38("roborock.vacuum.a38", "Roborock Q7 Max", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A40("roborock.vacuum.a40", "Roborock Q7", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A46("roborock.vacuum.a46", "Roborock G10S", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A52("roborock.vacuum.a52", "Roborock T8 Plus", THING_TYPE_VACUUM),
+    ROBOROCK_VACUUM_A62("roborock.vacuum.a62", "Roborock S7 Pro Ultra", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_C1("roborock.vacuum.c1", "Xiaowa C1", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_E2("roborock.vacuum.e2", "Roborock Xiaowa E Series Vacuum v2", THING_TYPE_UNSUPPORTED),
     ROBOROCK_VACUUM_M1S("roborock.vacuum.m1s", "Mi Robot Vacuum 1S", THING_TYPE_VACUUM),
@@ -189,6 +221,7 @@ public enum MiIoDevices {
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROCKROBO_VACUUM_V1("rockrobo.vacuum.v1", "Mi Robot Vacuum", THING_TYPE_VACUUM),
     ROIDMI_VACUUM_V60("roidmi.vacuum.v60", "ROIDMI EVE vacuum", THING_TYPE_BASIC),
+    ROIDMI_VACUUM_V66("roidmi.vacuum.v66", "ROIDMI EVA", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH01("090615.switch.xswitch01", "PTX OneKey Switch (WIFI)", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH02("090615.switch.xswitch02", "PTX Twokey switch(wifi)", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH03("090615.switch.xswitch03", "PTX ThreeKey Switch (WIFI)", THING_TYPE_BASIC),
@@ -355,6 +388,9 @@ public enum MiIoDevices {
     ZHIMI_AIRFRESH_VA4("zhimi.airfresh.va4", "Smartmi Fresh Air System (Heating)", THING_TYPE_BASIC),
     ZHIMI_AIRFRESH_UA1("zhimi.airfresh.ua1", "Mi Fresh Air Ventilator C1-80", THING_TYPE_BASIC),
     ZHIMI_AIRMONITOR_V1("zhimi.airmonitor.v1", "Mi PM2.5 Air Quality Monitor", THING_TYPE_BASIC),
+    ZHIMI_AIRP_CPA4("zhimi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
+    ZHIMI_AIRP_MB4A("zhimi.airp.mb4a", "Mi Air Purifier 3C", THING_TYPE_BASIC),
+    ZHIMI_AIRP_MB5("zhimi.airp.mb5", "Xiaomi Smart Air Purifier 4", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MA1("zhimi.airpurifier.ma1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
@@ -404,7 +440,7 @@ public enum MiIoDevices {
 
     public static MiIoDevices getType(String modelString) {
         for (MiIoDevices mioDev : MiIoDevices.values()) {
-            if (mioDev.getModel().equals(modelString)) {
+            if (mioDev.getModel().equalsIgnoreCase(modelString)) {
                 return mioDev;
             }
         }

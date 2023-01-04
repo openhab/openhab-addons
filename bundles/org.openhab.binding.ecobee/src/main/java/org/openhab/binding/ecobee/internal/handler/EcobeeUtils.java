@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,6 +68,10 @@ public final class EcobeeUtils {
 
     public static State undefOrDecimal(@Nullable Number value) {
         return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.doubleValue());
+    }
+
+    public static State undefOrLong(@Nullable Number value) {
+        return (value == null || isUnknown(value)) ? UnDefType.UNDEF : new DecimalType(value.longValue());
     }
 
     public static State undefOrQuantity(@Nullable Number value, Unit<?> unit) {

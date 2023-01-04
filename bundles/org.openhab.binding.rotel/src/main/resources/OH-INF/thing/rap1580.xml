@@ -7,7 +7,7 @@
 	<!-- Rotel RAP-1580 Connection Thing Type -->
 	<thing-type id="rap1580">
 		<label>RAP-1580 Surround Amplified Processor</label>
-		<description>Connection to the Rotel RAP-1580 surround amplified processor</description>
+		<description>Connection to the Rotel RAP-1580 or RAP-1580MKII surround amplified processor</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -16,6 +16,7 @@
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

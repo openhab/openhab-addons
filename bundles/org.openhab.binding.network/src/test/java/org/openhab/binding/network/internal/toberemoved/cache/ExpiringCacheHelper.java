@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.network.internal.toberemoved.cache;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Helper class to make the package private cacheUpdater field available for tests.
  *
- * @author David Graeff
+ * @author David Graeff - Initial Contribution
  */
+@NonNullByDefault
 public class ExpiringCacheHelper {
     public static long expireTime(@SuppressWarnings("rawtypes") ExpiringCacheAsync cache) {
         return cache.expiresAt;

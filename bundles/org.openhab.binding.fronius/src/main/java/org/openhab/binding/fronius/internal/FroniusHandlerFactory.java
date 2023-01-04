@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,11 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusMeterHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusOhmpilotHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -33,8 +36,10 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Hannes Spenger - Added ohmpilot
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.fronius")
+@NonNullByDefault
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
@@ -44,6 +49,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
             add(THING_TYPE_INVERTER);
             add(THING_TYPE_BRIDGE);
             add(THING_TYPE_METER);
+            add(THING_TYPE_OHMPILOT);
         }
     };
 
@@ -53,7 +59,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
@@ -62,6 +68,8 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
             return new FroniusBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_METER)) {
             return new FroniusMeterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_OHMPILOT)) {
+            return new FroniusOhmpilotHandler(thing);
         }
         return null;
     }

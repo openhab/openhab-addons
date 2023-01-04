@@ -1,0 +1,22 @@
+{
+    "config": {
+        "battery": 100,
+        "on": true,
+        "reachable": true
+    },
+    "ep": 38,
+    "etag": "ca904b42f63d0ccccccccccccccccccccc",
+    "lastannounced": "2021-12-28T23:59:02Z",
+    "lastseen": "2021-12-29T01:18Z",
+    "manufacturername": "Develco Products A/S",
+    "modelid": "AQSZB-110",
+    "name": "AirQuality 4",
+    "state": {
+        "airquality": "good",
+        "airqualityppb": 129,
+        "lastupdated": "2021-12-29T01:18:41.184"
+    },
+    "swversion": "2021-10-28 08:59",
+    "type": "ZHAAirQuality",
+    "uniqueid": "00:00:00:00:00:00:00:00-00-fc03"
+}

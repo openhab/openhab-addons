@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public final class FilterScanner {
     }
 
     /**
-     * State scanning an channel name until the equals-sign.
+     * State scanning a channel name until the equals-sign.
      */
     private final class ChannelNameState implements State {
 
@@ -146,10 +146,10 @@ public final class FilterScanner {
 
         private final int startPosition;
         private final String channelName;
-        private String channelGroup;
+        private final String channelGroup;
 
         /**
-         * Creates an new {@link ExpectQuotesState}.
+         * Creates a new {@link ExpectQuotesState}.
          */
         public ExpectQuotesState(int startPosition, final String channelGroup, String channelName) {
             this.startPosition = startPosition;
@@ -182,7 +182,7 @@ public final class FilterScanner {
         private final StringBuilder filterValue;
 
         /**
-         * Creates an new {@link FilterValueState}.
+         * Creates a new {@link FilterValueState}.
          */
         public FilterValueState(int startPosition, String channelGroup, String channelName) {
             this.startPosition = startPosition;
@@ -216,7 +216,7 @@ public final class FilterScanner {
     private List<FilterToken> result;
 
     /**
-     * Creates an new {@link FilterScanner}.
+     * Creates a new {@link FilterScanner}.
      */
     public FilterScanner() {
         this.result = new ArrayList<>();

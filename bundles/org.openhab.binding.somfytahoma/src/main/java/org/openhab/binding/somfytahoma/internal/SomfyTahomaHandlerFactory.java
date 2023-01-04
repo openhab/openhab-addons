@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,9 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExteriorHeati
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExternalAlarmHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGateHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGatewayHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiATWHZHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiATWMCHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHitachiDHWHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHumiditySensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaInternalAlarmHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaLightSensorHandler;
@@ -41,7 +44,9 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHeatingSystemHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPergolaHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPodHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRainSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSilentRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSirenHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSmokeSensorHandler;
@@ -50,6 +55,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaThermostatHan
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaUnoRollerShutterHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaValveHeatingSystemHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaVenetianBlindHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWaterHeatingSystemHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWaterSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandleHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandler;
@@ -113,6 +119,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaUnoRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SHUTTER)) {
+            return new SomfyTahomaShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND)
                 || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
             return new SomfyTahomaVenetianBlindHandler(thing);
@@ -184,6 +192,16 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaMyfoxAlarmHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
             return new SomfyTahomaThermostatHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_WATERHEATINGSYSTEM)) {
+            return new SomfyTahomaWaterHeatingSystemHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_ATWHZ)) {
+            return new SomfyTahomaHitachiATWHZHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_DHW)) {
+            return new SomfyTahomaHitachiDHWHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HITACHI_ATWMC)) {
+            return new SomfyTahomaHitachiATWMCHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_RAINSENSOR)) {
+            return new SomfyTahomaRainSensorHandler(thing);
         } else {
             return null;
         }

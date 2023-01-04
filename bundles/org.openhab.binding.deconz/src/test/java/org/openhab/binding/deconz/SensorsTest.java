@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  * @author Lukas Agethen - Added Thermostat
+ * @author Philipp Schneider - Added air quality sensor
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -83,6 +84,46 @@ public class SensorsTest {
 
         sensorThingHandler.messageReceived("", sensorMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(OnOffType.ON));
+    }
+
+    @Test
+    public void airQualitySensorUpdateTest() throws IOException {
+        // ARRANGE
+        SensorMessage sensorMessage = DeconzTest.getObjectFromJson("airquality.json", SensorMessage.class, gson);
+        assertNotNull(sensorMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "sensor");
+        ChannelUID channelUID = new ChannelUID(thingUID, "airquality");
+        Thing sensor = ThingBuilder.create(THING_TYPE_AIRQUALITY_SENSOR, thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, "String").build()).build();
+        SensorThingHandler sensorThingHandler = new SensorThingHandler(sensor, gson);
+        sensorThingHandler.setCallback(thingHandlerCallback);
+
+        // ACT
+        sensorThingHandler.messageReceived("", sensorMessage);
+
+        // ASSERT
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(StringType.valueOf("good")));
+    }
+
+    @Test
+    public void airQualityPpbSensorUpdateTest() throws IOException {
+        // ARRANGE
+        SensorMessage sensorMessage = DeconzTest.getObjectFromJson("airquality.json", SensorMessage.class, gson);
+        assertNotNull(sensorMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "sensor");
+        ChannelUID channelUID = new ChannelUID(thingUID, "airqualityppb");
+        Thing sensor = ThingBuilder.create(THING_TYPE_AIRQUALITY_SENSOR, thingUID)
+                .withChannel(ChannelBuilder.create(channelUID, "Number").build()).build();
+        SensorThingHandler sensorThingHandler = new SensorThingHandler(sensor, gson);
+        sensorThingHandler.setCallback(thingHandlerCallback);
+
+        // ACT
+        sensorThingHandler.messageReceived("", sensorMessage);
+
+        // ASSERT
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(new DecimalType(129)));
     }
 
     @Test

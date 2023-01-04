@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,15 +19,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -126,19 +123,11 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      */
     protected ChannelState createChannelState(ChannelConfig channelConfig, ChannelUID channelUID, Value valueState) {
         ChannelState state = new ChannelState(channelConfig, channelUID, valueState, this);
-        String[] transformations;
 
         // Incoming value transformations
-        transformations = channelConfig.transformationPattern.split("∩");
-        Stream.of(transformations).filter(StringUtils::isNotBlank)
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
-                .forEach(t -> state.addTransformation(t));
-
+        state.addTransformation(channelConfig.transformationPattern, transformationServiceProvider);
         // Outgoing value transformations
-        transformations = channelConfig.transformationPatternOut.split("∩");
-        Stream.of(transformations).filter(StringUtils::isNotBlank)
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
-                .forEach(t -> state.addTransformationOut(t));
+        state.addTransformationOut(channelConfig.transformationPatternOut, transformationServiceProvider);
 
         return state;
     }
@@ -165,7 +154,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                     stateDescProvider.setDescription(channel.getUID(), description);
                 }
             } catch (IllegalArgumentException e) {
-                logger.warn("Channel configuration error", e);
+                logger.warn("Configuration error for channel '{}'", channel.getUID(), e);
                 configErrors.add(channel.getUID());
             }
         }
@@ -195,7 +184,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         String availabilityTopic = config.availabilityTopic;
 
         if (availabilityTopic != null) {
-            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable);
+            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable,
+                    config.transformationPattern, transformationServiceProvider);
         } else {
             clearAllAvailabilityTopics();
         }

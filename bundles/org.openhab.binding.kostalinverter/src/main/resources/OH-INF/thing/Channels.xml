@@ -926,7 +926,7 @@
 	<channel-type id="device-local-external-module-control-set">
 		<item-type>String</item-type>
 		<label>External Module Control Set</label>
-		<description>Set External Module Control</description>
+		<description>Set external module control</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>

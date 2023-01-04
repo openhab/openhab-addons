@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel X3 Connection Thing Type -->
+	<thing-type id="x3">
+		<label>X3 Integrated Amplifier</label>
+		<description>Connection to the Rotel Michi X3 integrated amplifier</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
+		</channels>
+
+		<properties>
+			<property name="protocol">ASCII_V2</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:rotel:serialandip"/>
+	</thing-type>
+
+</thing:thing-descriptions>

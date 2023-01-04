@@ -1,0 +1,102 @@
+{
+	"lastPosition": {
+		"type": "Feature",
+		"geometry": {
+			"type": "Point",
+			"coordinates": [
+				22.1111111,
+				11.2222222
+			]
+		},
+		"properties": {
+			"updatedAt": "2020-12-25T15:16:48Z",
+			"heading": 331,
+			"type": "Estimated"
+		}
+	},
+	"preconditionning": {
+		"airConditioning": {
+			"updatedAt": "2020-12-23T16:54:14Z",
+			"status": "Disabled",
+			"programs": [
+				{
+					"enabled": false,
+					"slot": 1,
+					"recurrence": "Daily",
+					"start": "PT6H15M",
+					"occurence": {
+						"day": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri"
+						]
+					}
+				},
+				{
+					"enabled": false,
+					"slot": 2,
+					"recurrence": "Daily",
+					"start": "PT8H",
+					"occurence": {
+						"day": [
+							"Mon",
+							"Tue",
+							"Wed",
+							"Thu",
+							"Fri"
+						]
+					}
+				}
+			]
+		}
+	},
+	"energy": [
+		{
+			"updatedAt": "2020-12-23T16:54:13Z",
+			"type": "Electric",
+			"level": 77,
+			"autonomy": 200,
+			"charging": {
+				"plugged": false,
+				"status": "Disconnected",
+				"remainingTime": "PT0S",
+				"chargingRate": 0,
+				"chargingMode": "No",
+				"nextDelayedTime": "PT5H"
+			}
+		}
+	],
+	"createdAt": "2020-12-25T15:16:48Z",
+	"battery": {
+		"voltage": 87,
+		"current": 0,
+		"createdAt": "2020-12-23T16:54:13Z"
+	},
+	"kinetic": {
+		"createdAt": "2020-12-25T15:16:48Z",
+		"moving": false
+	},
+	"privacy": {
+		"createdAt": "2020-12-25T15:16:43Z",
+		"state": "None"
+	},
+	"service": {
+		"type": "Electric",
+		"updatedAt": "2020-11-06T19:56:10Z"
+	},
+	"_links": {
+		"self": {
+			"href": "dummy_link/status"
+		},
+		"vehicles": {
+			"href": "dummy_link/vehicles"
+		}
+	},
+	"timed.odometer": {
+		"createdAt": null,
+		"mileage": 1539
+	},
+	"updatedAt": "2020-12-25T15:16:48Z"
+}

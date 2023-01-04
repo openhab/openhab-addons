@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.gardena.internal.model.dto.api;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * Represents a Gardena object that is sent via the Gardena API.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class SensorServiceDataItem extends DataItem<SensorService> {
+public class SensorServiceDataItem extends DataItem<@NonNull SensorService> {
 }

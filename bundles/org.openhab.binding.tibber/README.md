@@ -19,19 +19,20 @@ The channels (i.e. measurements) associated with the Binding:
 
 Tibber Default:
 
-| Channel ID         | Description                             | Read-only |
-|--------------------|-----------------------------------------|-----------|
-| Current Total      | Current Total Price (energy + tax)      | True      |
-| Starts At          | Current Price Timestamp                 | True      |
-| Current Level      | Current Price Level                     | True      |
-| Daily Cost         | Daily Cost (last/previous day)          | True      |
-| Daily Consumption  | Daily Consumption (last/previous day)   | True      |
-| Daily From         | Timestamp (daily from)                  | True      |
-| Daily To           | Timestamp (daily to)                    | True      |
-| Hourly Cost        | Hourly Cost (last/previous hour)        | True      |
-| Hourly Consumption | Hourly Consumption (last/previous hour) | True      |
-| Hourly From        | Timestamp (hourly from)                 | True      |
-| Hourly To          | Timestamp (hourly to)                   | True      |
+| Channel ID         | Description                                             | Read-only |
+|--------------------|---------------------------------------------------------|-----------|
+| Current Total      | Current Total Price (energy + tax)                      | True      |
+| Starts At          | Current Price Timestamp                                 | True      |
+| Current Level      | Current Price Level                                     | True      |
+| Daily Cost         | Daily Cost (last/previous day)                          | True      |
+| Daily Consumption  | Daily Consumption (last/previous day)                   | True      |
+| Daily From         | Timestamp (daily from)                                  | True      |
+| Daily To           | Timestamp (daily to)                                    | True      |
+| Hourly Cost        | Hourly Cost (last/previous hour)                        | True      |
+| Hourly Consumption | Hourly Consumption (last/previous hour)                 | True      |
+| Hourly From        | Timestamp (hourly from)                                 | True      |
+| Hourly To          | Timestamp (hourly to)                                   | True      |
+| Tomorrow prices    | JSON array of tomorrow's prices. See below for example. | True      |
 
 Tibber Pulse (optional):
 
@@ -97,6 +98,110 @@ Retrieve personal token and HomeId from description above, and initialize/start 
 
 Tibber API will be auto discovered if provided input is correct.
 
+## Tomorrow prices
+
+Example of tomorrow prices data structure - an array of tuples:
+
+```json
+[
+  {
+    "startsAt": "2022-09-27T00:00:00.000+02:00",
+    "total": 3.8472
+  },
+  {
+    "startsAt": "2022-09-27T01:00:00.000+02:00",
+    "total": 3.0748
+  },
+  {
+    "startsAt": "2022-09-27T02:00:00.000+02:00",
+    "total": 2.2725
+  },
+  {
+    "startsAt": "2022-09-27T03:00:00.000+02:00",
+    "total": 2.026
+  },
+  {
+    "startsAt": "2022-09-27T04:00:00.000+02:00",
+    "total": 2.6891
+  },
+  {
+    "startsAt": "2022-09-27T05:00:00.000+02:00",
+    "total": 3.7821
+  },
+  {
+    "startsAt": "2022-09-27T06:00:00.000+02:00",
+    "total": 3.9424
+  },
+  {
+    "startsAt": "2022-09-27T07:00:00.000+02:00",
+    "total": 4.158
+  },
+  {
+    "startsAt": "2022-09-27T08:00:00.000+02:00",
+    "total": 4.2648
+  },
+  {
+    "startsAt": "2022-09-27T09:00:00.000+02:00",
+    "total": 4.2443
+  },
+  {
+    "startsAt": "2022-09-27T10:00:00.000+02:00",
+    "total": 4.2428
+  },
+  {
+    "startsAt": "2022-09-27T11:00:00.000+02:00",
+    "total": 4.2061
+  },
+  {
+    "startsAt": "2022-09-27T12:00:00.000+02:00",
+    "total": 4.1458
+  },
+  {
+    "startsAt": "2022-09-27T13:00:00.000+02:00",
+    "total": 3.9396
+  },
+  {
+    "startsAt": "2022-09-27T14:00:00.000+02:00",
+    "total": 3.8563
+  },
+  {
+    "startsAt": "2022-09-27T15:00:00.000+02:00",
+    "total": 4.0364
+  },
+  {
+    "startsAt": "2022-09-27T16:00:00.000+02:00",
+    "total": 4.093
+  },
+  {
+    "startsAt": "2022-09-27T17:00:00.000+02:00",
+    "total": 4.1823
+  },
+  {
+    "startsAt": "2022-09-27T18:00:00.000+02:00",
+    "total": 4.2779
+  },
+  {
+    "startsAt": "2022-09-27T19:00:00.000+02:00",
+    "total": 4.3154
+  },
+  {
+    "startsAt": "2022-09-27T20:00:00.000+02:00",
+    "total": 4.3469
+  },
+  {
+    "startsAt": "2022-09-27T21:00:00.000+02:00",
+    "total": 4.2329
+  },
+  {
+    "startsAt": "2022-09-27T22:00:00.000+02:00",
+    "total": 4.1014
+  },
+  {
+    "startsAt": "2022-09-27T23:00:00.000+02:00",
+    "total": 4.0265
+  }
+]
+```
 
 ## Full Example
 
@@ -107,7 +212,7 @@ Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
 ### demo.items:
-.
+
 ```
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}
@@ -139,4 +244,5 @@ Number:Power               TibberAPILivePowerProduction          "Live Power Pro
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
 Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"                  {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
+String                     TibberAPITomorrowPrices               "Price per hour tomorrow JSON array"        {channel="tibber:tibberapi:7cfae492:tomorrow_prices"}
 ```

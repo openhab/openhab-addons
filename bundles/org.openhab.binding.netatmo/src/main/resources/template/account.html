@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Authorize openHAB Bridge at Netatmo Connect</title>
+<link>
+<style>
+html {
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+}
+
+.logo {
+    display: block;
+    margin: auto;
+    width: 100%;
+}
+
+.block {
+    border: 1px solid #bbb;
+    background-color: white;
+    margin: 10px 0;
+    padding: 8px 10px;
+}
+
+.error {
+    background: #FFC0C0;
+    border: 1px solid darkred;
+    color: darkred
+}
+
+.authorized {
+    border: 1px solid #90EE90;
+    background-color: #E0FFE0;
+}
+
+.button {
+    margin-bottom: 10px;
+}
+
+.button a {
+    background: #1ED760;
+    border-radius: 500px;
+    color: white;
+    padding: 10px 20px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    border-width: 0;
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+    <h3>Authorize openHAB Bridge at Netatmo Connect</h3>
+    <p>On this page you can authorize your openHAB Netatmo Bridge configured with the clientId and clientSecret of the Netatmo Application on your Developer account.</p>
+    <p>You have to login to your Netatmo Account and authorize this binding to access your account.</p>
+    <p>To use this binding the following requirements apply:</p>
+    <ul>
+        <li>A Netatmo connect account.
+        <li>Register openHAB as an App on your Netatmo Connect account.
+    </ul>
+    <p>
+        The redirect URI to use with Netatmo for this openHAB Netatmo Bridge is
+        <a href="${redirect_uri}">${redirect_uri}</a>
+    </p>
+    ${error} 
+	<div class="block${account.authorized}" id="${client_id}">
+	  Connect to Netatmo: <i>${account.name}</i>
+	  <p><div class="button"><a href=${account.authorize}>Authorize Thing</a></div></p>
+	</div>
+</body>
+</html>
+
+

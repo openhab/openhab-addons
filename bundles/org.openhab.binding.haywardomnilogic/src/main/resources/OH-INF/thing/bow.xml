@@ -31,7 +31,7 @@
 	</thing-type>
 
 	<channel-type id="waterFlow">
-		<item-type>system.power</item-type>
+		<item-type>Switch</item-type>
 		<label>Flow Sensor</label>
 		<description>Flow Sensor</description>
 		<state readOnly="true"/>

@@ -1,0 +1,379 @@
+[{
+	"vin": "anonymous",
+	"model": "530e",
+	"year": 2021,
+	"brand": "BMW",
+	"headUnit": "MGU",
+	"isLscSupported": true,
+	"driveTrain": "PLUGIN_HYBRID",
+	"puStep": "1121",
+	"iStep": "S15A-21-11-530",
+	"telematicsUnit": "ATM02",
+	"hmiVersion": "id7",
+	"bodyType": "G30",
+	"a4aType": "NOT_SUPPORTED",
+	"exFactoryPUStep": "1121",
+	"exFactoryILevel": "S15A-21-11-530",
+	"capabilities": {
+		"isRemoteServicesBookingRequired": false,
+		"isRemoteServicesActivationRequired": false,
+		"isRemoteHistorySupported": true,
+		"canRemoteHistoryBeDeleted": false,
+		"isChargingHistorySupported": true,
+		"isScanAndChargeSupported": true,
+		"isDCSContractManagementSupported": true,
+		"isBmwChargingSupported": true,
+		"isMiniChargingSupported": false,
+		"isChargeNowForBusinessSupported": true,
+		"isDataPrivacyEnabled": false,
+		"isChargingPlanSupported": true,
+		"isChargingPowerLimitEnable": false,
+		"isChargingTargetSocEnable": false,
+		"isChargingLoudnessEnable": false,
+		"isChargingSettingsEnabled": false,
+		"isChargingHospitalityEnabled": false,
+		"isEvGoChargingSupported": false,
+		"isFindChargingEnabled": true,
+		"isCustomerEsimSupported": false,
+		"isCarSharingSupported": false,
+		"isEasyChargeSupported": false,
+		"lock": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Jetzt Ihr Fahrzeug verriegeln? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"unlock": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": true,
+			"executionMessage": "Jetzt Ihr Fahrzeug entriegeln? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"lights": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Jetzt Scheinwerfer aufleuchten lassen? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"horn": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Hupen ist in vielen Ländern nur in bestimmten Situationen erlaubt. Die Verantwortung für den Einsatz und die Einhaltung der jeweils geltenden Bestimmungen liegt allein bei Ihnen als Nutzer. \n\nJetzt hupen? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"vehicleFinder": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Jetzt Ihr Fahrzeug finden? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"sendPoi": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Jetzt POI senden? Remote-Funktionen können einige Sekunden dauern."
+		},
+		"climateNow": {
+			"isEnabled": true,
+			"isPinAuthenticationRequired": false,
+			"executionMessage": "Jetzt belüften? Remote-Funktionen können einige Sekunden dauern."
+		}
+	},
+	"properties": {
+		"lastUpdatedAt": "2022-01-06T15:59:07Z",
+		"inMotion": false,
+		"areDoorsLocked": false,
+		"originCountryISO": "DE",
+		"areDoorsClosed": true,
+		"areDoorsOpen": false,
+		"areWindowsClosed": true,
+		"doorsAndWindows": {
+			"doors": {
+				"driverFront": "CLOSED",
+				"driverRear": "CLOSED",
+				"passengerFront": "CLOSED",
+				"passengerRear": "CLOSED"
+			},
+			"windows": {
+				"driverFront": "CLOSED",
+				"driverRear": "CLOSED",
+				"passengerFront": "CLOSED",
+				"passengerRear": "CLOSED"
+			},
+			"trunk": "CLOSED",
+			"hood": "CLOSED"
+		},
+		"isServiceRequired": false,
+		"fuelLevel": {
+			"value": 18,
+			"units": "LITERS"
+		},
+		"chargingState": {
+			"chargePercentage": 60,
+			"state": "CHARGING",
+			"type": "NOT_AVAILABLE",
+			"isChargerConnected": true
+		},
+		"combustionRange": {
+			"chargePercentage": 0,
+			"distance": {
+				"value": 251,
+				"units": "KILOMETERS"
+			}
+		},
+		"combinedRange": {
+			"chargePercentage": 0,
+			"distance": {
+				"value": 251,
+				"units": "KILOMETERS"
+			}
+		},
+		"electricRange": {
+			"chargePercentage": 0,
+			"distance": {
+				"value": 27,
+				"units": "KILOMETERS"
+			}
+		},
+		"electricRangeAndStatus": {
+			"chargePercentage": 60,
+			"distance": {
+				"value": 27,
+				"units": "KILOMETERS"
+			}
+		},
+		"checkControlMessages": [],
+		"serviceRequired": [
+			{
+				"type": "OIL",
+				"status": "OK",
+				"dateTime": "2023-12-01T00:00:00.000Z",
+				"distance": {
+					"value": 30000,
+					"units": "KILOMETERS"
+				}
+			},
+			{
+				"type": "VEHICLE_CHECK",
+				"status": "OK",
+				"dateTime": "2025-12-01T00:00:00.000Z",
+				"distance": {
+					"value": 60000,
+					"units": "KILOMETERS"
+				}
+			},
+			{
+				"type": "BRAKE_FLUID",
+				"status": "OK",
+				"dateTime": "2024-12-01T00:00:00.000Z"
+			},
+			{
+				"type": "VEHICLE_TUV",
+				"status": "OK",
+				"dateTime": "2024-12-01T00:00:00.000Z"
+			}
+		],
+		"vehicleLocation": {
+			"coordinates": {
+				"latitude": 1.234,
+				"longitude": 5.678
+			},
+			"address": {
+				"formatted": "anonymous"
+			},
+			"heading": 270
+		},
+		"tires": {
+			"frontLeft": {
+				"status": {
+					"currentPressure": 240.0,
+					"localizedCurrentPressure": "2,4 bar",
+					"localizedTargetPressure": "2,4 bar",
+					"targetPressure": 240.0
+				}
+			},
+			"frontRight": {
+				"status": {
+					"currentPressure": 240.0,
+					"localizedCurrentPressure": "2,4 bar",
+					"localizedTargetPressure": "2,4 bar",
+					"targetPressure": 240.0
+				}
+			},
+			"rearLeft": {
+				"status": {
+					"currentPressure": 270.0,
+					"localizedCurrentPressure": "2,7 bar",
+					"localizedTargetPressure": "2,8 bar",
+					"targetPressure": 280.0
+				}
+			},
+			"rearRight": {
+				"status": {
+					"currentPressure": 270.0,
+					"localizedCurrentPressure": "2,7 bar",
+					"localizedTargetPressure": "2,8 bar",
+					"targetPressure": 280.0
+				}
+			}
+		}
+	},
+	"isMappingPending": false,
+	"isMappingUnconfirmed": false,
+	"status": {
+		"lastUpdatedAt": "2022-01-06T15:59:07Z",
+		"currentMileage": {
+			"mileage": 589,
+			"units": "km",
+			"formattedMileage": "589"
+		},
+		"issues": null,
+		"doorsGeneralState": "Entriegelt",
+		"checkControlMessagesGeneralState": "Keine Probleme",
+		"doorsAndWindows": [
+			{
+				"iconId": 59737,
+				"title": "Verriegelungsstatus",
+				"state": "Entriegelt",
+				"criticalness": "nonCritical"
+			},
+			{
+				"iconId": 59722,
+				"title": "Alle Türen",
+				"state": "Geschlossen",
+				"criticalness": "nonCritical"
+			},
+			{
+				"iconId": 59725,
+				"title": "Alle Fenster",
+				"state": "Geschlossen",
+				"criticalness": "nonCritical"
+			},
+			{
+				"iconId": 59706,
+				"title": "Frontklappe",
+				"state": "Geschlossen",
+				"criticalness": "nonCritical"
+			},
+			{
+				"iconId": 59704,
+				"title": "Gepäckraum",
+				"state": "Geschlossen",
+				"criticalness": "nonCritical"
+			}
+		],
+		"checkControlMessages": [
+			{
+				"criticalness": "nonCritical",
+				"iconId": 60117,
+				"state": "OK",
+				"title": "Reifen",
+				"longDescription": "-"
+			},
+			{
+				"criticalness": "nonCritical",
+				"iconId": 60197,
+				"state": "OK",
+				"title": "Motoröl",
+				"longDescription": "-"
+			}
+		],
+		"requiredServices": [
+			{
+				"id": "Oil",
+				"title": "Motoröl",
+				"iconId": 60197,
+				"longDescription": "Nächster Service nach der angegebenen Fahrstrecke oder zum angegebenen Termin.",
+				"subtitle": "Fällig im Dezember 2023 oder in 30.000 km",
+				"criticalness": "nonCritical"
+			},
+			{
+				"id": "VehicleCheck",
+				"title": "Fahrzeug-Check",
+				"iconId": 60215,
+				"longDescription": "Nächste Sichtprüfung nach der angegebenen Fahrstrecke oder zum angegebenen Termin.",
+				"subtitle": "Fällig im Dezember 2025 oder in 60.000 km",
+				"criticalness": "nonCritical"
+			},
+			{
+				"id": "BrakeFluid",
+				"title": "Bremsflüssigkeit",
+				"iconId": 60223,
+				"longDescription": "Nächster Wechsel spätestens zum angegebenen Termin.",
+				"subtitle": "Fällig im Dezember 2024",
+				"criticalness": "nonCritical"
+			},
+			{
+				"id": "VehicleAdmissionTest",
+				"title": "Fahrzeuginspektion (HU)",
+				"iconId": 60111,
+				"longDescription": "Nächste gesetzliche Fahrzeuguntersuchung zum angegebenen Termin.",
+				"subtitle": "Fällig im Dezember 2024",
+				"criticalness": "nonCritical"
+			}
+		],
+		"fuelIndicators": [
+			{
+				"mainBarValue": 0,
+				"rangeUnits": "km",
+				"rangeValue": "251"
+			},
+			{
+				"mainBarValue": 60,
+				"rangeUnits": "km",
+				"rangeValue": "27",
+				"levelUnits": "%",
+				"levelValue": "60"
+			},
+			{
+				"mainBarValue": 42,
+				"rangeUnits": "km",
+				"rangeValue": "224",
+				"levelUnits": "%",
+				"levelValue": "42"
+			}
+		],
+		"timestampMessage": "Aktualisiert vom Fahrzeug 6.1.2022 04:59 PM",
+		"chargingProfile": {
+			"reductionOfChargeCurrent": {
+				"start": {
+					"hour": 0,
+					"minute": 0
+				},
+				"end": {
+					"hour": 0,
+					"minute": 0
+				}
+			},
+			"chargingMode": "immediateCharging",
+			"chargingPreference": "chargingWindow",
+			"chargingControlType": "weeklyPlanner",
+			"departureTimes": [
+				{
+					"id": 1,
+					"action": "deactivate",
+					"timerWeekDays": []
+				},
+				{
+					"id": 2,
+					"action": "deactivate",
+					"timerWeekDays": []
+				},
+				{
+					"id": 3,
+					"action": "deactivate",
+					"timerWeekDays": []
+				},
+				{
+					"id": 4,
+					"action": "deactivate",
+					"timerWeekDays": []
+				}
+			],
+			"climatisationOn": true,
+			"chargingSettings": {
+				"targetSoc": 100,
+				"isAcCurrentLimitActive": false,
+				"hospitality": "NO_ACTION",
+				"idcc": "NO_ACTION"
+			}
+		}
+	},
+	"valid": false
+}
+]
+

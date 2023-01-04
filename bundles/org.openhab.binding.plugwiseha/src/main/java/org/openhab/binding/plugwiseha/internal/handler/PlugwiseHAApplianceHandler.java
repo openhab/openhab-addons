@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             try {
                 PlugwiseHAController controller = bridgeHandler.getController();
                 if (controller != null) {
-                    this.appliance = getEntity(controller, true);
+                    this.appliance = getEntity(controller);
                     Appliance localAppliance = this.appliance;
                     if (localAppliance != null) {
                         if (localAppliance.isBatteryOperated()) {
@@ -117,10 +117,9 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
     }
 
     @Override
-    protected @Nullable Appliance getEntity(PlugwiseHAController controller, Boolean forceRefresh)
-            throws PlugwiseHAException {
+    protected @Nullable Appliance getEntity(PlugwiseHAController controller) throws PlugwiseHAException {
         PlugwiseHAThingConfig config = getPlugwiseThingConfig();
-        Appliance appliance = controller.getAppliance(config.getId(), forceRefresh);
+        Appliance appliance = controller.getAppliance(config.getId());
 
         return appliance;
     }
@@ -143,11 +142,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_LOCK_CHANNEL:
                 if (command instanceof OnOffType) {
                     try {
-                        if (command == OnOffType.ON) {
-                            controller.switchRelayLockOn(entity);
-                        } else {
-                            controller.switchRelayLockOff(entity);
-                        }
+                        controller.setRelay(entity, (command == OnOffType.ON));
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay lock {} for appliance '{}'", (State) command,
                                 entity.getName());
@@ -174,11 +169,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_POWER_CHANNEL:
                 if (command instanceof OnOffType) {
                     try {
-                        if (command == OnOffType.ON) {
-                            controller.switchRelayOn(entity);
-                        } else {
-                            controller.switchRelayOff(entity);
-                        }
+                        controller.setRelay(entity, command == OnOffType.ON);
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay {} for appliance '{}'", (State) command, entity.getName());
                     }
@@ -229,6 +220,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_TEMPERATURE_CHANNEL:
             case APPLIANCE_VALVEPOSITION_CHANNEL:
             case APPLIANCE_WATERPRESSURE_CHANNEL:
+            case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
                 state = UnDefType.NULL;
                 break;
             case APPLIANCE_BATTERYLEVELLOW_CHANNEL:
@@ -366,6 +358,14 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
                 if (entity.getOTAppFaultCode().isPresent()) {
                     state = new QuantityType<Dimensionless>(entity.getOTAppFaultCode().get().intValue(), Units.PERCENT);
+                }
+                break;
+            case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
+                if (entity.getBoilerTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getReturnWaterTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getReturnWaterTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_DHWTEMPERATURE_CHANNEL:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class TapoLightStrip extends TapoDevice {
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),
                 getDecimalType(deviceInfo.getSignalLevel()));
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME),
-                getQuantityType(deviceInfo.getOnTime(), Units.SECOND));
+                getTimeType(deviceInfo.getOnTime(), Units.SECOND));
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceInfo.isOverheated()));
         // light effect
         publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_BRIGHTNESS),

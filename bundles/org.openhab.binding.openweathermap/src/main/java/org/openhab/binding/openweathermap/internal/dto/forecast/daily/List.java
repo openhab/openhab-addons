@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,11 +72,11 @@ public class List {
         this.temp = temp;
     }
 
-    public @Nullable FeelsLikeTemp getFeelsLikeTemp() {
+    public @Nullable FeelsLikeTemp getFeelsLike() {
         return feelsLikeTemp;
     }
 
-    public void setFeelsLikeTemp(FeelsLikeTemp feelsLikeTemp) {
+    public void setFeelsLike(FeelsLikeTemp feelsLikeTemp) {
         this.feelsLikeTemp = feelsLikeTemp;
     }
 

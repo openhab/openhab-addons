@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -179,6 +179,16 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
+        }
+    }
+
+    protected void sendTempCommand(String cmd, Command command) {
+        if (command instanceof DecimalType || command instanceof QuantityType) {
+            BigDecimal temperature = toTemperature(command);
+            if (temperature != null) {
+                String param = "[" + temperature.toPlainString() + "]";
+                sendCommand(cmd, param);
+            }
         }
     }
 

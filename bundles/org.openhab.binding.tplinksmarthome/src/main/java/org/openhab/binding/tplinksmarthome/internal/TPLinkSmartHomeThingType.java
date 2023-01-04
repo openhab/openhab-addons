@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,10 @@ public enum TPLinkSmartHomeThingType {
     KL130("kl130", DeviceType.BULB, ColorScales.K_2500_9000),
     KL135("kl135", DeviceType.BULB, ColorScales.K_2500_6500),
 
+    // Light String thing Type UIDs.
+    KL400("kl400", DeviceType.LIGHT_STRIP, ColorScales.K_2500_9000),
+    KL430("kl430", DeviceType.LIGHT_STRIP, ColorScales.K_2500_9000),
+
     // Plug Thing Type UIDs
     EP10("ep10", DeviceType.PLUG),
     HS100("hs100", DeviceType.PLUG),
@@ -59,7 +63,7 @@ public enum TPLinkSmartHomeThingType {
     KP105("kp105", DeviceType.PLUG),
     KP115("kp115", DeviceType.PLUG_WITH_ENERGY),
     KP125("kp125", DeviceType.PLUG_WITH_ENERGY),
-    KP405("kp405", DeviceType.DIMMER),
+    KP401("kp401", DeviceType.PLUG),
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),
@@ -69,6 +73,7 @@ public enum TPLinkSmartHomeThingType {
     ES20M("es20m", DeviceType.DIMMER),
     HS220("hs220", DeviceType.DIMMER),
     KS230("ks230", DeviceType.DIMMER),
+    KP405("kp405", DeviceType.DIMMER),
 
     // Power Strip Thing Type UIDs.
     EP40("ep40", DeviceType.STRIP, 2),
@@ -175,6 +180,10 @@ public enum TPLinkSmartHomeThingType {
          * Dimmer device.
          */
         DIMMER,
+        /**
+         * Light Strip device.
+         */
+        LIGHT_STRIP,
         /**
          * Plug device.
          */

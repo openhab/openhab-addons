@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mcd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing and Bridge Types -->
+	<bridge-type id="mcdBridge">
+		<label>MCD Bridge</label>
+		<description>C&amp;S Managing Care Digital (MCD) account that is used to send data.</description>
+		<config-description>
+			<parameter name="userEmail" type="text" required="true">
+				<context>email</context>
+				<label>Email</label>
+				<description>Email of your MCD account.</description>
+			</parameter>
+			<parameter name="userPassword" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for your MCD account.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="mcdSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="mcdBridge"/>
+		</supported-bridge-type-refs>
+		<label>MCD Sensor</label>
+		<description>Sends data for one mcdSensor to MCD, the C&amp;S cloud application.</description>
+		<channels>
+			<channel id="lastValue" typeId="lastValue"/>
+			<channel id="sendEvent" typeId="sendEvent"/>
+		</channels>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Please enter the serial number of the sensor. It must match the serial number of this sensor in MCD.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="lastValue">
+		<item-type>String</item-type>
+		<label>Last Value</label>
+		<description>Shows time and value of the last sensor event (readonly).</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sendEvent">
+		<item-type>String</item-type>
+		<label>Send Event</label>
+		<description>A stateless channel for sending sensor events.</description>
+		<command>
+			<options>
+				<option value="BEDEXIT">Bed Exit</option>
+				<option value="BEDENTRY">Bed Entry</option>
+				<option value="FALL">Fall</option>
+				<option value="CHANGEPOSITION">Change Position</option>
+				<option value="BATTERYSTATE">Battery State</option>
+				<option value="INACTIVITY">Inactivity</option>
+				<option value="ALARM">Alarm</option>
+				<option value="OPEN">Open</option>
+				<option value="CLOSE">Close</option>
+				<option value="ON">On</option>
+				<option value="OFF">Off</option>
+				<option value="ACTIVITY">Activity</option>
+				<option value="CAPACITY">Capacity</option>
+				<option value="GAS">Gas</option>
+				<option value="VITALVALUE">Vital Value</option>
+				<option value="ROOMEXIT">Room Exit</option>
+				<option value="ROOMENTRY">Room Entry</option>
+				<option value="REMOVESENSOR">Remove Sensor</option>
+				<option value="SITDOWN">Sit Down</option>
+				<option value="STANDUP">Stand Up</option>
+				<option value="INACTIVITYROOM">Inactivity Room</option>
+				<option value="SMOKEALARM">Smoke Alarm</option>
+				<option value="HEAT">Heat</option>
+				<option value="COLD">Cold</option>
+				<option value="QUALITYAIR">Quality Air</option>
+				<option value="ALARMAIR">Alarm Air</option>
+				<option value="ROOMTEMPERATURE">Room Temperature</option>
+				<option value="HUMIDITY">Humidity</option>
+				<option value="AIRPRESSURE">Airpressure</option>
+				<option value="CO2">CO2</option>
+				<option value="INDEXUV">UV Index</option>
+				<option value="WEARTIME">Weartime</option>
+				<option value="FIRSTURINE">First Urine</option>
+				<option value="NEWDIAPER">New Diaper</option>
+				<option value="DIAPERREMOVED">Diaper Removal</option>
+				<option value="NOCONNECTION">No Connection</option>
+				<option value="LOWBATTERY">Low Battery</option>
+				<option value="CONTROLLSENSOR">Controll Sensor</option>
+				<option value="LYING">Lying</option>
+				<option value="SPILLED">Spilled</option>
+				<option value="DAMAGED">Damaged</option>
+				<option value="GEOEXIT">Geo Exit</option>
+				<option value="GEOENTRY">Geo Entry</option>
+				<option value="WALKING">Walking</option>
+				<option value="RESTING">Resting</option>
+				<option value="TURNAROUND">Turnaround</option>
+				<option value="HOMEEMERGENCY">Home Emergency</option>
+				<option value="TOILETFLUSH">Toilet Flush</option>
+				<option value="DORSALPOSITION">Dorsal Position</option>
+				<option value="ABDOMINALPOSITION">Abdominal Position</option>
+				<option value="LYINGLEFT">Lying Left</option>
+				<option value="LYINGRIGHT">Lying Right</option>
+				<option value="LYINGHALFLEFT">Lying Half Left</option>
+				<option value="LYINGHALFRIGHT">Lying Half Right</option>
+				<option value="MOVEMENT">Movement</option>
+				<option value="PRESENCE">Presence</option>
+				<option value="NUMBERPERSONS">Number Persons</option>
+				<option value="BRIGHTNESSZONE">Brightness Zone</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>

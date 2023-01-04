@@ -21,7 +21,12 @@ HomeKit integration supports following accessory types:
 - Motorized Door
 - Motorized Window
 - Window Covering/Blinds
+- Slat  
 - Valve
+- Faucet / Shower  
+- Speaker
+- SmartSpeaker  
+- Microphone  
 - Air Quality Sensor
 - Contact Sensor
 - Leak Sensor
@@ -33,10 +38,12 @@ HomeKit integration supports following accessory types:
 - Light Sensor
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
+- Battery
+- Filter Maintenance
 
 ## Quick start
 
-- install homekit binding via UI
+- install homekit addon via UI
   
 - add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
   
@@ -44,7 +51,7 @@ HomeKit integration supports following accessory types:
   
   ![settings_qrcode.png](doc/settings_qrcode.png)
   
-- open home app on your iPhone or iPad
+- open Home app on your iPhone or iPad
 - create new home
   
   ![ios_add_new_home.png](doc/ios_add_new_home.png)
@@ -61,11 +68,11 @@ HomeKit integration supports following accessory types:
   
   ![ios_add_anyway.png](doc/ios_add_anyway.png)
   
-- follow the instruction of the home app wizard
+- follow the instruction of the Home app wizard
   
   ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
   
-Add metadata to more item or fine-tune your configuration using further settings
+Add metadata to more items or fine-tune your configuration using further settings
 
 
 ## Global Configuration
@@ -90,24 +97,29 @@ org.openhab.homekit:networkInterface=192.168.0.6
 org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
+org.openhab.homekit:instances=1
+org.openhab.homekit:useDummyAccessories=false
 ```
+
+Some settings are only visible in UI if the checkbox "Show advanced" is activated.
 
 ### Overview of all settings
 
-| Setting                  | Description                                                                                                                                                                                                                             | Default value |
-|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
-| port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
-| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
-| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                              | false         |
-| pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
-| startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
-| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
-| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | CoolOn        |
-| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
-| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
-| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                             | Off           |
-| name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
+| Setting                  | Description                                                                                                                                                                                                                                                                                                                                                                          | Default value        |
+|:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------|
+| networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the primary IP address configured for openHAB. If unsure, keep it empty                                                                                                                                                                                          | (none)               |
+| port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                                                                                                                                                                  | 9123                 |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.                                                                                                                              | false                |
+| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                                                                    | false                |
+| pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.                                                                                                                                              | 031-45-154           |
+| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                                                                                                                                                                           | false                |
+| thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                                                                                                        | CoolOn               |
+| thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                                                                                                        | HeatOn               |
+| thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                                                                                                                      | Auto                 |
+| thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                                                                                                                                     | Off                  |
+| name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                                                                                                                                                            | openHAB              |
+| instances                | Defines how many bridges to expose. Necessary if you have more than 149 accessories. Accessories must be assigned to additional instances via metadata. Additional bridges will use incrementing port numbers.                                                                                                                                                                       | 1                    |
+| useDummyAccessories      | When an accessory is missing, substitute a dummy in its place instead of removing it. See [Dummy Accessories](#dummy-accessories).                                                                                                                                                                                                                                                   | false                |
 
 ## Item Configuration
 
@@ -121,7 +133,7 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 
-If the first word of the item name match the room name in home app, home app will hide it. 
+If the first word of the item name match the room name in Home app, Home app will hide it.
 E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
 
 ### UI based Configuration
@@ -154,12 +166,6 @@ In order to add metadata to an item:
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
 
-You can link one openHAB item to one or more HomeKit accessory, e.g.
-
-```xtend
-Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
-```
-
 The tag can be:
 
 - full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
@@ -170,8 +176,8 @@ e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, T
 Following are equal configuration:
 
 ```xtend
-Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCovering"}
-Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering"}
+Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 ```
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
@@ -184,19 +190,120 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
-In this case, you can assign HomeKit accessory type to the group and to the group items
-Following example defines 3 HomeKit accessories of type Lighting:
+### Complex Multiple Service Accessories
 
-- "Light 1" and "Light 2" as independent lights
-- "Light Group" that controls "Light 1" and "Light 2" as group
+Alternatively, you may want to have a choice of controlling the items individually, OR as a group, from HomeKit.
+The following examples defines a single HomeKit accessory _with multiple services_ that the Home app will allow you to control together, or drill down and control individually.
+Note that `AccessoryGroup` doesn't expose any services itself, but allows you to group other services together underneath it.
+Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic, and not its accessory type, since it would be ambiguous if that item belongs to a secondary service, or to the primary service it's nested under.
+
+```java
+Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="AccessoryGroup"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
+```
+
+![Group of Lights](doc/group_of_lights.png)
+
+You can also group additional accessories directly under another accessory.
+In this example, HomeKit will show three separate light controls.
+As this is somewhat confusing that Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory, this is not a recommended configuration.
 
 ```xtend
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
-Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
-Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
 ```
 
+![Light Group With Additional Lights](doc/group_of_lights_group_plus_lights.png)
+
+You can also mix and match accessories:
+
+```java
+Group gFan {homekit="Fan"}
+Switch fan1 "Fan" (gFan) {homekit="Fan.Active"}
+Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
+```
+
+![Fan With Light](doc/fan_with_light.png)
+
+Another way to build complex accessories is to associate multiple accessory types with the root group, and then define all of the individual characteristics on group members.
+When using this style, you cannot have multiple instance of the same accessory type.
+
+```java
+Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
+Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
+Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
+Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}
+```
+
+or in MainUI:
+
+![ui_fan_with_light_group_view.png](doc/ui_fan_with_light_group_view.png)
+![ui_fan_with_light_group_code.png](doc/ui_fan_with_light_group_code.png)
+![ui_fan_with_light_group_config.png](doc/ui_fan_with_light_group_config.png)
+
+Finally, you can link one openHAB item to one or more HomeKit accessories, as well:
+
+```java
+Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
+```
+
+You can even form complex sensors this way.
+Just be sure that you fully specify additional characteristics, so that the addon knows which root service to add it to.
+
+```java
+Group eBunkAirthings "Bunk Room Airthings Wave Plus" { homekit="AirQualitySensor,TemperatureSensor,HumiditySensor" }
+
+String Bunk_AirQuality "Bunk Room Air Quality" (eBunkAirthings) { homekit="AirQualitySensor.AirQuality" }
+Number:Dimensionless Bunk_Humidity "Bunk Room Relative Humidity [%d %%]" (eBunkAirthings) { homekit="HumiditySensor.RelativeHumidity" }
+Number:Temperature Bunk_AmbTemp "Bunk Room Temperature [%.1f °F]" (eBunkAirthings) { homekit="TemperatureSensor.CurrentTemperature" }
+Number:Dimensionless Bunk_tVOC "Bunk Room tVOC [%d ppb]" (eBunkAirthings)  { homekit="AirQualitySensor.VOCDensity" [ maxValue=10000 ] }
+```
+
+A sensor with a battery configured in MainUI:
+
+![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
+
+The Home app uses the first accessory in a group as the icon for the group as a whole.
+E.g. an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
+You can also override the primary service by using adding `primary=<type>` to the HomeKit metadata configuration:
+
+```java
+Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary = "Fan"]}
+```
+
+on in MainUI:
+
+![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
+
+Unusual combinations are also possible, e.g. you can combine temperature sensor with blinds and light.
+
+It will be represented by the Home app as follows:
+
+![ios_complex_accessory_detail_screen.png](doc/ios_complex_accessory_detail_screen.png)
+
+Note that for sensors that aren't interactive, the Home app will show the constituent pieces in the room and home summaries, and you'll only be able to see the combined accessory when viewing the accessories associated with a particular bridge in the home settings:
+
+![Triple Air Sensor](doc/triple_air_sensor.png)
+![Triple Air Sensor Broken Out](doc/triple_air_sensor_broken_out.png)
+
+## Dummy Accessories
+
+OpenHAB is a highly dynamic system, and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
+This is a problem for HomeKit because if the bridge makes a connection, but accessories are missing, then the HomeKit database will simply remove that accessory.
+When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or openHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
+In order to work around this, the HomeKit addon can create dummy accessories for any accessory it has previously published to HomeKit.
+To enable this behavior, turn on the `useDummyAccessories` setting.
+OpenHAB will then simply present a non-interactive accessory for any that are missing.
+The openHAB log will also contain information whenever a dummy accessory is created.
+If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
+You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
+Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
+It's recommended that you resolve this state as soon as possible, since HomeKit may decide your entire bridge is being uncooperative, and remove everything itself.
+If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
+In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
+Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the addon settings will have the same effect.
 
 ## Accessory Configuration Details
 
@@ -216,7 +323,7 @@ However, some dimmer devices for example do not expect brightness on "ON" event,
 In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
 
 ```xtend
-Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
 ```
 
 Following modes are supported:
@@ -229,10 +336,42 @@ Following modes are supported:
 Examples:
 
  ```xtend
- Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
- Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
- Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ Dimmer dimmer_light_1   "Dimmer Light 1"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2   "Dimmer Light 2"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
+
+### Color Temperature
+
+Color temperature can be represented various ways in openHAB. Given the base bulb configured like this:
+
+```xtend
+Group gLight "CCT Light" { homekit="Lighting" }
+Switch light_switch (gLight) { homekit="Lighting.OnState" }
+```
+
+The color temperature might be configured in any of these ways:
+
+```xtend
+// Number item presumed in mireds
+Number light_temp (gLight) { homekit="Lighting.ColorTemperature" }
+
+// Number item explicitly in mireds
+Number:Temperature light_temp "Temp [%.0f mired]" { homekit="Lighting.ColorTemperature" }
+
+// Number item explicitly in Kelvin
+Number:Temperature light_temp "Temp [%.0f K]" { homekit="Lighting.ColorTemperature" }
+
+// Dimmer item, with allowed range given in mireds
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue=50, maxValue=400 ]}
+
+// Dimmer item, with allowed range given in Kelvin
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxValue="5000 K" ]}
+
+// Dimmer item, where 0% represents "warm" instead of "cool" (i.e. if it's backed by a channel
+// that's ultimately interpreting the value in Kelvin instead of mireds)
+Dimmer light_temp { homekit="Lighting.ColorTemperature"[ minValue="2700 K", maxValue="5000 K", inverted=true ]}
+```
 
 ### Windows Covering (Blinds) / Window / Door
 
@@ -246,10 +385,10 @@ These characteristics can be mapped to a single openHAB rollershutter item. In s
 As discussed above, one can use full or shorthand definition. Following two definitions are equal:
 
 ```xtend
-Rollershutter 	window 		            "Window"  	                {homekit = "Window"}
-Rollershutter 	door		            "Door"  	                {homekit = "Door"}
-Rollershutter   window_covering         "Window Rollershutter"      {homekit = "WindowCovering"}
-Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter    window                "Window"                    {homekit = "Window"}
+Rollershutter    door                  "Door"                      {homekit = "Door"}
+Rollershutter   window_covering        "Window Rollershutter"      {homekit = "WindowCovering"}
+Rollershutter    window_covering_long  "Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
  ```
 
 openHAB Rollershutter is defined by default as:
@@ -263,13 +402,25 @@ In contrast, HomeKit window covering/door/window have inverted mapping
 - CLOSED if position is 0%
 
 Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
-In case you need to disable this logic you can do it with configuration parameter inverted="false", e.g.
+In case you need to disable this logic you can do it with configuration parameter inverted=false, e.g.
 
 ```xtend
-Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
-Rollershutter window		   "Window"  	         {homekit = "Window" [inverted="false"]}
-Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"]}
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
+Rollershutter window          "Window"               {homekit = "Window" [inverted=false]}
+Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
+ ```
 
+HomeKit home app never sends "STOP" but only the target position. 
+If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollershutter item if you click on the blind icon in the iOS home app while the blind is moving.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
+ ```
+
+Some blinds devices do support "STOP" command but would stop if they receive UP/DOWN while moving om the same direction. In order to support such devices add "stopSameDirection" parameter.
+
+```xtend
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
@@ -277,7 +428,7 @@ If your blind supports tilt, and you want to control tilt via HomeKit you need t
 e.g.
 
 ```xtend
-Group           gBlind    			    "Blind with tilt"       						{homekit = "WindowCovering"}
+Group           gBlind                  "Blind with tilt"                               {homekit = "WindowCovering"}
 Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "WindowCovering"}
 Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
 Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
@@ -287,7 +438,7 @@ Current and Target Position characteristics can be linked to Rollershutter but a
 e.g.
 
 ```xtend
-Group           gBlind   "Blinds"       		         {homekit = "WindowCovering"}
+Group           gBlind   "Blinds"                        {homekit = "WindowCovering"}
 Dimmer          blind_current_position    (gBlind)       {homekit = "CurrentPosition"}
 Number          blind_target_position     (gBlind)       {homekit = "TargetPosition"}
 String          blind_position            (gBlind)       {homekit = "PositionState"}
@@ -306,24 +457,24 @@ In order to define a thermostat you need to create a group with at least these 4
 Example:
 
 ```xtend
-Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
+Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"  (gThermostat)       {homekit = "CurrentTemperature"}
+Number          thermostat_target_temp     "Thermostat Target Temp [%.1f °C]"   (gThermostat)       {homekit = "TargetTemperature"}  
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
 ```
 
 In addition, thermostat can have thresholds for cooling and heating modes.
 Example with thresholds:
 
 ```xtend
-Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
-Number 			thermostat_cool_thrs 	    "Thermostat Cool Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "CoolingThresholdTemperature"}
-Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "HeatingThresholdTemperature"}
+Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"        (gThermostat) {homekit = "CurrentTemperature"}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"          (gThermostat) {homekit = "TargetTemperature"}  
+String          thermostat_current_mode    "Thermostat Current Mode"                  (gThermostat) {homekit = "CurrentHeatingCoolingMode"}          
+String          thermostat_target_mode     "Thermostat Target Mode"                   (gThermostat) {homekit = "TargetHeatingCoolingMode"}           
+Number          thermostat_cool_thrs       "Thermostat Cool Threshold Temp [%.1f °C]" (gThermostat) {homekit = "CoolingThresholdTemperature"}
+Number          thermostat_heat_thrs       "Thermostat Heat Threshold Temp [%.1f °C]" (gThermostat) {homekit = "HeatingThresholdTemperature"}
 ```
 
 #### Min / max temperatures
@@ -331,14 +482,14 @@ Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	
 Current  and target temperatures have default min and max values. Any values below or above max limits will be replaced with min or max limits.
 Default limits are:
 
-- current temperature: min value = 0 C, max value = 100 C
-- target temperature: min value = 10 C, max value = 38 C
+- current temperature: min value = 0 °C, max value = 100 °C
+- target temperature: min value = 10 °C, max value = 38 °C
 
 You can overwrite default values using minValue and maxValue configuration at item level, e.g.
 
 ```xtend
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"     (gThermostat)       {homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"       (gThermostat)       {homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
 ```
 
 If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
@@ -354,7 +505,7 @@ These modes are mapped to string values of openHAB items using either global con
 e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
 
 ```xtend
-String 			thermostat_current_mode  	"Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
+String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
 ```
 
 You can provide mapping for target mode in similar way.
@@ -364,8 +515,8 @@ The custom mapping at item level can be also used to reduce number of modes show
 Example: if your thermostat does not support cooling, then you need to limit mapping  to OFF and HEAT values only:
 
 ```xtend
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 ```
 
 The mapping using main UI looks like following:
@@ -390,18 +541,18 @@ configuration for these two cases looks as follow:
 - valve with timer:
 
 ```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation"]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration"}
-Number 			valve_remaining_duration "Valve remaining duration" (gValve) 		{homekit = "Valve.RemainingDuration"}
+Group           gValve                   "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch          valve_active             "Valve active"             (gValve)       {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration           "Valve duration"           (gValve)       {homekit = "Valve.Duration"}
+Number          valve_remaining_duration "Valve remaining duration" (gValve)       {homekit = "Valve.RemainingDuration"}
 ```
 
 - valve without timer (no item for remaining duration required)
 
 ```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
+Group           gValve             "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true"]}
+Switch          valve_active       "Valve active"               (gValve)     {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration     "Valve duration"             (gValve)     {homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
 ```
 
 ### Sensors
@@ -415,24 +566,24 @@ Following table summarizes the optional characteristics supported by sensors.
 | ActiveStatus                 | Switch, Contact          | Accessory current working status. "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                              |
 | FaultStatus                  | Switch, Contact          | Accessory fault status. "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.      |
 | TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
-| BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
+| BatteryLowStatus             | Switch, Contact, Number  | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level that's above the low threshold. Alternatively, you can give a Number item that's the battery level, and if it's lower than the lowThreshold configuration, it will report low. |
 
 Switch and Contact items support inversion of the state mapping, e.g. by default the openHAB switch state "ON" is mapped to HomeKit contact sensor state "Open", and "OFF" to "Closed". 
-The configuration "inverted='true'" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
+The configuration "inverted=true" inverts this mapping, so that "ON" will be mapped to "Closed" and "OFF" to "Open".  
 
 Examples of sensor definitions.
 Sensors without optional characteristics:
 
 ```xtend
 Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSensor"}
-Number  light_sensor 	     "Light Sensor"                  {homekit="LightSensor"}
-Number  temperature_sensor 	 "Temperature Sensor [%.1f C]"   {homekit="TemperatureSensor"}
+Number  light_sensor         "Light Sensor"                  {homekit="LightSensor"}
+Number  temperature_sensor   "Temperature Sensor [%.1f °C]"  {homekit="TemperatureSensor"}
 Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
-Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted="true"]}
+Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted=true]}
 
 Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
 Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
-Number  humidity_sensor 	 "Humidity Sensor"			     {homekit="HumiditySensor"}
+Number  humidity_sensor      "Humidity Sensor"               {homekit="HumiditySensor"}
 ```
 
 Sensors with optional characteristics:
@@ -441,13 +592,13 @@ Sensors with optional characteristics:
 Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
 Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus" }
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted="true"]}
+Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus" [inverted=true]}
 Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
 Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
 
 Group           gMotionSensor              "Motion Sensor"                                           {homekit="MotionSensor"}
 Switch          motionsensor               "Motion Sensor State"                (gMotionSensor)      {homekit="MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted="true"]}
+Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="BatteryLowStatus" [inverted=true]}
 Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="ActiveStatus"}
 Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="FaultStatus"}
 Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="TamperedStatus"}
@@ -456,269 +607,332 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 or using UI
 
 ![sensor_ui_config.png](doc/sensor_ui_config.png)
-
-
+ 
 ## Supported accessory type
 
-| Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                      |
-|:---------------------|:----------------------------|:-----------------------------|:-------------------------|:-----------------------------------------------------------------|
-| AirQualitySensor     |                             |                              |                          | Air Quality Sensor which can measure different parameters        |
-|                      | AirQuality                  |                              | String                   | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level, e.g. [EXCELLENT="BEST", POOR="BAD"]         |
-|                      |                             | OzoneDensity                 | Number                   | Ozone density in micrograms/m3, max 1000                         |
-|                      |                             | NitrogenDioxideDensity       | Number                   | NO2 density in micrograms/m3, max 1000                           |
-|                      |                             | SulphurDioxideDensity        | Number                   | SO2 density in micrograms/m3, max 1000                           |
-|                      |                             | PM25Density                  | Number                   | PM2.5 micrometer particulate density in micrograms/m3, max 1000  |
-|                      |                             | PM10Density                  | Number                   | PM10 micrometer particulate density in micrograms/m3, max 1000   |
-|                      |                             | VOCDensity                   | Number                   | VOC Density in micrograms/m3, max 1000                           |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| LeakSensor           |                             |                              |                          | Leak Sensor                                                      |
-|                      | LeakDetectedState           |                              | Switch, Contact          | Leak sensor state (ON=Leak Detected, OFF=no leak)                |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| MotionSensor         |                             |                              |                          | Motion Sensor                                                    |
-|                      | MotionDetectedState         |                              | Switch, Contact          | Motion sensor state (ON=motion detected, OFF=no motion)          |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| OccupancySensor      |                             |                              |                          | Occupancy Sensor                                                 |
-|                      | OccupancyDetectedState      |                              | Switch, Contact          | Occupancy sensor state (ON=occupied, OFF=not occupied)           |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| ContactSensor        |                             |                              |                          | Contact Sensor, An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
-|                      | ContactSensorState          |                              | Switch, Contact          | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| SmokeSensor          |                             |                              |                          | Smoke Sensor                                                                                                                                                                                                                                                                                              |
-|                      | SmokeDetectedState          |                              | Switch, Contact          | Smoke sensor state (ON=smoke detected, OFF=no smoke)                                                                                                                                                                                                                                                      |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| LightSensor          |                             |                              |                          | Light sensor                                                     |
-|                      | LightLevel                  |                              | Number                   | Light level in lux                                               |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| HumiditySensor       |                             |                              |                          | Relative Humidity Sensor providing read-only values              |
-|                      | RelativeHumidity            |                              | Number                   | Relative humidity in % between 0 and 100. additional configuration homekitMultiplicator = <number to multiply result with>.                                                                                                                                                                               |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| TemperatureSensor    |                             |                              |                          | Temperature sensor                                               |
-|                      | CurrentTemperature          |                              | Number                   | current temperature. supported configuration: minValue, maxValue, step.                                                                                                                                                                                                                                                                                      |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| CarbonDioxideSensor  |                             |                              |                          | Carbon Dioxide Sensor                                                                                                                                                                                                                                                                                     |
-|                      | CarbonDioxideDetectedState  |                              | Switch, Contact          | carbon dioxide sensor state (ON- abnormal level of carbon dioxide detected, OFF - level is normal)                                                                                                                                                                                                        |
-|                      |                             | CarbonDioxideLevel           | Number                   | Carbon dioxide level in ppm, max 100000                                                                                                                                                                                                                                                                   |
-|                      |                             | CarbonDioxidePeakLevel       | Number                   | highest detected level (ppm) of carbon dioxide detected by a sensor, max 100000                                                                                                                                                                                                                           |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| CarbonMonoxideSensor |                             |                              |                          | Carbon monoxide Sensor                                                                                                                                                                                                                                                                                    |
-|                      | CarbonMonoxideDetectedState |                              | Switch, Contact          | Carbon monoxide sensor state (ON- abnormal level of carbon monoxide detected, OFF - level is normal)                                                                                                                                                                                                      |
-|                      |                             | CarbonMonoxideLevel          | Number                   | Carbon monoxide level in ppm, max 100                                                                                                                                                                                                                                                                     |
-|                      |                             | CarbonMonoxidePeakLevel      | Number                   | highest detected level (ppm) of carbon monoxide detected by a sensor, max 100                                                                                                                                                                                                                             |
-|                      |                             | Name                         | String                   | Name of the sensor                                               |
-|                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
-|                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
-|                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
-|                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| Door                 |                             |                              |                          | Motorized door. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number   | Current position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number   | Target position of motorized door                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter, String           | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
-|                      |                             | Name                         | String                   | Name of the motorized door                                                                                                                                                                                                                                                                             |
-|                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
-|                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
-| Window               |                             |                              |                          | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized window                                                                                                                                                                                                                                                                       |
-|                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
-|                      |                             | Name                         | String                   | Name of the motorized window                                                                                                                                                                                                                                                                             |
-|                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
-|                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
-| WindowCovering       |                             |                              |                          | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
-|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number            | Current position of window covering                                                                                                                                                                                                                                                                       |
-|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number            | Target position of window covering                                                                                                                                                                                                                                                                        |
-|                      | PositionState               |                              | Rollershutter, String             | current only "STOPPED" is supported.                                                                                                                                                                                                                                                                      |
-|                      |                             | Name                         | String                   | Name of the windows covering                                                                                                                                                                                                                                                                              |
-|                      |                             | HoldPosition                 | Switch                   | Window covering should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
-|                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
-|                      |                             | CurrentHorizontalTiltAngle   | Number, Dimmer           | Number Item = current angle of horizontal slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. A value of -90 indicates that the slats are rotated all the way in a direction where the user-facing edge is higher than the window-facing edge. Dimmer Item =  the percentage of openness (0%-100%) |
-|                      |                             | TargetHorizontalTiltAngle    | Number, Dimmer           | Number Item = target angle of horizontal slats (-90 to +90). Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                     |
-|                      |                             | CurrentVerticalTiltAngle     | Number, Dimmer           | Number Item = current angle of vertical slats (-90 to +90) . Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                     |
-|                      |                             | TargetVerticalTiltAngle      | Number, Dimmer           | Number Item = target angle of vertical slats. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                                           |
-| Switchable           |                             |                              |                          | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                             |
-|                      | OnState                     |                              | Switch                   | State of the switch - ON/OFF                                                                                                                                                                                                                                                                              |
-|                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
-| Outlet               |                             |                              |                          | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                             |
-|                      | OnState                     |                              | Switch                   | State of the outlet - ON/OFF                                                                                                                                                                                                                                                                              |
-|                      | InUseStatus                 |                              | Switch                   | Indicates whether the outlet has an appliance e.g., a floor lamp, physically plugged in. This characteristic is set to True even if the plugged-in appliance is off.                                                                                                                                                                                                                                                     |
-|                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
-| Lighting             |                             |                              |                          | A lightbulb, can have further optional parameters for brightness, hue, etc                                                                                                                                                                                                                                |
-|                      | OnState                     |                              | Switch                   | State of the light - ON/OFF                                                                                                                                                                                                                                                                               |
-|                      |                             | Name                         | String                   | Name of the light                                                                                                                                                                                                                                                                                         |
-|                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
-|                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
-|                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | Color temperature represented in reciprocal megaKelvin. The default value range is from 50 to 400. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue                                                                                                                                                 |
-| Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
-|                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
-|                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
-|                      |                             | TargetFanState               | Number                   | target fan state.  values: 0=MANUAL, 1=AUTO                                                                                                                                                                                                                                                               |
-|                      |                             | RotationDirection            | Number, Switch           | rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE                                                                                                                                                                                                                                      |
-|                      |                             | RotationSpeed                | Number, Dimmer           | fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                           |
-|                      |                             | SwingMode                    | Number, Switch           | swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                             |
-|                      |                             | LockControl                  | Number, Switch           | status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                          |
-| Thermostat           |                             |                              |                          | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                         |
-|                      | CurrentTemperature          |                              | Number                   | current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                                       |
-|                      | TargetTemperature           |                              | Number                   | target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                                          |
-|                      | CurrentHeatingCoolingMode   |                              | String                   | Current heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                             |
-|                      | TargetHeatingCoolingMode    |                              | String                   | Target heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                              |
-|                      |                             | Name                         | String                   | Name of the thermostat                                                                                                                                                                                                                                                                                         |
-|                      |                             | CoolingThresholdTemperature  | Number                   | maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                    |
-|                      |                             | HeatingThresholdTemperature  | Number                   | minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]            |
-| HeaterCooler         |                             |                              |                          | Heater or/and cooler device                                                                                                                                                                                                                                      |
-|                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
-|                      | CurrentTemperature          |                              | Number                   | current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                                       |
-|                      | CurrentHeaterCoolerState    |                              | String                   | current heater/cooler mode (INACTIVE, IDLE, HEATING, COOLING). Mapping can be redefined at item level, e.g. [HEATING="HEAT", COOLING="COOL"]                                                                                                                                                            |
-|                      | TargetHeaterCoolerState     |                              | String                   | target heater/cooler mode (AUTO, HEAT, COOL). Mapping can be redefined at item level, e.g. [AUTO="AUTOMATIC"]                                                                                                                                                   |
-|                      |                             | Name                         | String                   | Name of the heater/cooler                                                                                                                                                                                                                                                                                         |
-|                      |                             | RotationSpeed                | Number                   | fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                           |
-|                      |                             | SwingMode                    | Number, Switch           | swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                             |
-|                      |                             | LockControl                  | Number, Switch           | status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                          |
-|                      |                             | CoolingThresholdTemperature  | Number                   | maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                    |
-|                      |                             | HeatingThresholdTemperature  | Number                   | minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]            |
-| Lock                 |                             |                              |                          | A Lock Mechanism. with flag [inverted="true"] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                                                         |
-|                      | LockCurrentState            |                              | Switch, Number           | current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                              |
-|                      | LockTargetState             |                              | Switch                   | target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                               |
-|                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
-| Valve                |                             |                              |                          | Valve. additional configuration: homekitValveType = ["Generic", "Irrigation", "Shower", "Faucet"]                                                                                                                                             |
-|                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
-|                      | InUseStatus                 |                              | Switch                   | indicates whether fluid flowing through the valve. A value of "ON"/"OPEN" indicates that fluid is flowing.                                                                                                                                                                                                 |
-|                      |                             | Duration                     | Number                   | defines how long a valve should be set to ʼIn Useʼ in second. You can define the default duration via configuration homekitDefaultDuration = <default duration in seconds>                                                                                                                                                                        |
-|                      |                             | RemainingDuration            | Number                   | describes the remaining duration on the accessory. the remaining duration increases/decreases from the accessoryʼs usual countdown. i.e. changes from 90 to 80 in a second.                                                                                                                               |
-|                      |                             | Name                         | String                   | Name of the lock                                                                                                                                                                                                                                                                                          |
-|                      |                             | FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                      |
-| SecuritySystem       |                             |                              |                          | Security system.                                                                                                                                                                                                                                                                                          |
-|                      | CurrentSecuritySystemState  |                              | String                   | Current state of the security system. STAY_ARM / AWAY_ARM / NIGHT_ARM / DISARMED / TRIGGERED. Mapping can be redefined at item level, e.g. [AWAY_ARM="AWAY", NIGHT_ARM="NIGHT" ]                                                                                                                                                                                                              |
-|                      | TargetSecuritySystemState   |                              | String                   | Requested state of the security system. STAY_ARM / AWAY_ARM / NIGHT_ARM / DISARM. While the requested state is not DISARM, and the current state is DISARMED, HomeKit will display "Arming...", for example during an exit delay. Mapping can be redefined at item level, e.g. [AWAY_ARM="AWAY", NIGHT_ARM="NIGHT" ]                                                                          |
-|                      |                             | Name                         | String                   | Name of the security system                                                                                                                                                                                                                                                                               |
-|                      |                             | FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                      |
-|                      |                             | TamperedStatus               | Switch, Contact          | accessory tampered status. A status of "ON"/"OPEN" indicates that the accessory has been tampered with. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                                                                                  |
-| GarageDoorOpener     |                             |                              |                          | A garage door opener.                                                                                                                                                                                                                                                                                     |
-|                      | ObstructionStatus           |                              | Switch                   | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
-|                      | CurrentDoorState            |                              | String                   | Current door state. Possible values: OPEN, OPENING, CLOSED, CLOSING, STOPPED                                                                                                                                                                                                                              |
-|                      | TargetDoorState             |                              | Switch, String           | Target door state. ON/"OPEN" = open door, OFF/"CLOSED" = closed door                                                                                                                                                                                                                                      |
-|                      |                             | Name                         | String                   | Name of the garage door                                                                                                                                                                                                                                                                                   |
-|                      |                             | LockCurrentState             | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
-|                      |                             | LockTargetState              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
+| Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items            | Description                                                                                                                                                                                                                                                                                                                                         |
+|:---------------------|:----------------------------|:-----------------------------|:------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AirQualitySensor     |                             |                              |                               | Air Quality Sensor which can measure different parameters                                                                                                                                                                                                                                                                                           |
+|                      | AirQuality                  |                              | String                        | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level, e.g. [EXCELLENT="BEST", POOR="BAD"]                                                                                                                                                                                    |
+|                      |                             | OzoneDensity                 | Number                        | Ozone density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                            |
+|                      |                             | NitrogenDioxideDensity       | Number                        | NO2 density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                              |
+|                      |                             | SulphurDioxideDensity        | Number                        | SO2 density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                                              |
+|                      |                             | PM25Density                  | Number                        | PM2.5 micrometer particulate density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                     |
+|                      |                             | PM10Density                  | Number                        | PM10 micrometer particulate density in micrograms/m3, max 1000                                                                                                                                                                                                                                                                                      |
+|                      |                             | VOCDensity                   | Number                        | VOC Density in micrograms/m3, default max 1000, supported configuration: minValue, maxValue, step.                                                                                                                                                                                                                                                  |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| LeakSensor           |                             |                              |                               | Leak Sensor                                                                                                                                                                                                                                                                                                                                         |
+|                      | LeakDetectedState           |                              | Switch, Contact, Dimmer       | Leak sensor state (ON=Leak Detected, OFF=no leak)                                                                                                                                                                                                                                                                                                   |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| MotionSensor         |                             |                              |                               | Motion Sensor                                                                                                                                                                                                                                                                                                                                       |
+|                      | MotionDetectedState         |                              | Switch, Contact, Dimmer       | Motion sensor state (ON=motion detected, OFF=no motion)                                                                                                                                                                                                                                                                                             |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| OccupancySensor      |                             |                              |                               | Occupancy Sensor                                                                                                                                                                                                                                                                                                                                    |
+|                      | OccupancyDetectedState      |                              | Switch, Contact, Dimmer       | Occupancy sensor state (ON=occupied, OFF=not occupied)                                                                                                                                                                                                                                                                                              |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| ContactSensor        |                             |                              |                               | Contact Sensor, An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                                                          |
+|                      | ContactSensorState          |                              | Switch, Contact, Dimmer       | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                                                          |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| SmokeSensor          |                             |                              |                               | Smoke Sensor                                                                                                                                                                                                                                                                                                                                        |
+|                      | SmokeDetectedState          |                              | Switch, Contact, Dimmer       | Smoke sensor state (ON=smoke detected, OFF=no smoke)                                                                                                                                                                                                                                                                                                |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| LightSensor          |                             |                              |                               | Light sensor                                                                                                                                                                                                                                                                                                                                        |
+|                      | LightLevel                  |                              | Number                        | Light level in lux. supported configuration: minValue, maxValue.                                                                                                                                                                                                                                                                                    |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| HumiditySensor       |                             |                              |                               | Relative Humidity Sensor providing read-only values                                                                                                                                                                                                                                                                                                 |
+|                      | RelativeHumidity            |                              | Number                        | Relative humidity in % between 0 and 100. additional configuration homekitMultiplicator = <number to multiply result with>.                                                                                                                                                                                                                         |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| TemperatureSensor    |                             |                              |                               | Temperature sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      | CurrentTemperature          |                              | Number                        | current temperature. supported configuration: minValue, maxValue, step.                                                                                                                                                                                                                                                                             |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| CarbonDioxideSensor  |                             |                              |                               | Carbon Dioxide Sensor                                                                                                                                                                                                                                                                                                                               |
+|                      | CarbonDioxideDetectedState  |                              | Switch, Contact, Dimmer       | carbon dioxide sensor state (ON- abnormal level of carbon dioxide detected, OFF - level is normal)                                                                                                                                                                                                                                                  |
+|                      |                             | CarbonDioxideLevel           | Number                        | Carbon dioxide level in ppm, max 100000                                                                                                                                                                                                                                                                                                             |
+|                      |                             | CarbonDioxidePeakLevel       | Number                        | highest detected level (ppm) of carbon dioxide detected by a sensor, max 100000                                                                                                                                                                                                                                                                     |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| CarbonMonoxideSensor |                             |                              |                               | Carbon monoxide Sensor                                                                                                                                                                                                                                                                                                                              |
+|                      | CarbonMonoxideDetectedState |                              | Switch, Contact, Dimmer       | Carbon monoxide sensor state (ON- abnormal level of carbon monoxide detected, OFF - level is normal)                                                                                                                                                                                                                                                |
+|                      |                             | CarbonMonoxideLevel          | Number                        | Carbon monoxide level in ppm, max 100                                                                                                                                                                                                                                                                                                               |
+|                      |                             | CarbonMonoxidePeakLevel      | Number                        | highest detected level (ppm) of carbon monoxide detected by a sensor, max 100                                                                                                                                                                                                                                                                       |
+|                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
+| Door                 |                             |                              |                               | Motorized door. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                                                                    |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized door                                                                                                                                                                                                                                                                                                                  |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized door                                                                                                                                                                                                                                                                                                                   |
+|                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                                                                      |
+|                      |                             | Name                         | String                        | Name of the motorized door                                                                                                                                                                                                                                                                                                                          |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
+|                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
+| Window               |                             |                              |                               | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                                                                  |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized window                                                                                                                                                                                                                                                                                                                |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized window                                                                                                                                                                                                                                                                                                                 |
+|                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                                                                      |
+|                      |                             | Name                         | String                        | Name of the motorized window                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
+|                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
+| WindowCovering       |                             |                              |                               | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                                                          |
+|                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of window covering                                                                                                                                                                                                                                                                                                                 |
+|                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of window covering                                                                                                                                                                                                                                                                                                                  |
+|                      | PositionState               |                              | Rollershutter, String         | Currently only "STOPPED" is supported.                                                                                                                                                                                                                                                                                                              |
+|                      |                             | Name                         | String                        | Name of the windows covering                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
+|                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
+|                      |                             | CurrentHorizontalTiltAngle   | Number, Dimmer                | Number Item = current angle of horizontal slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. A value of -90 indicates that the slats are rotated all the way in a direction where the user-facing edge is higher than the window-facing edge. Dimmer Item =  the percentage of openness (0%-100%) |
+|                      |                             | TargetHorizontalTiltAngle    | Number, Dimmer                | Number Item = target angle of horizontal slats (-90 to +90). Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                    |
+|                      |                             | CurrentVerticalTiltAngle     | Number, Dimmer                | Number Item = current angle of vertical slats (-90 to +90) . Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                    |
+|                      |                             | TargetVerticalTiltAngle      | Number, Dimmer                | Number Item = target angle of vertical slats. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                   |
+| Slat                 |                             |                              |                               | Slat which tilts on a vertical or a horizontal axis. Configuration "type:horizontal" or "type:vertical"                                                                                                                                                                                                                                             |
+|                      | CurrentSlatState            |                              | String                        | Current slat state. possible values (FIXED,SWINGING,JAMMED). Custom mapping can be defined at item level, e.g. [JAMMED="JAM", FIXED="FIX"]                                                                                                                                                                                                           |
+|                      |                             | Name                         | String                        | Name of the slat                                                                                                                                                                                                                                                                                                                                    |
+|                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                                                                       |
+|                      |                             | CurrentTiltAngle             | Number, Dimmer                | Number Item = current angle of slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                             |
+|                      |                             | TargetTiltAngle              | Number, Dimmer                | Number Item = target angle of slats (-90 to +90). Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                               |
+| Switchable           |                             |                              |                               | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                                                                       |
+|                      | OnState                     |                              | Switch, Dimmer                | State of the switch - ON/OFF                                                                                                                                                                                                                                                                                                                        |
+|                      |                             | Name                         | String                        | Name of the switch                                                                                                                                                                                                                                                                                                                                  |
+| Outlet               |                             |                              |                               | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                                                                       |
+|                      | OnState                     |                              | Switch, Dimmer                | State of the outlet - ON/OFF                                                                                                                                                                                                                                                                                                                        |
+|                      | InUseStatus                 |                              | Switch, Contact, Dimmer       | Indicates whether the outlet has an appliance e.g., a floor lamp, physically plugged in. This characteristic is set to True even if the plugged-in appliance is off.                                                                                                                                                                                |
+|                      |                             | Name                         | String                        | Name of the switch                                                                                                                                                                                                                                                                                                                                  |
+| Lighting             |                             |                              |                               | A lightbulb, can have further optional parameters for brightness, hue, etc                                                                                                                                                                                                                                                                          |
+|                      | OnState                     |                              | Switch                        | State of the light - ON/OFF                                                                                                                                                                                                                                                                                                                         |
+|                      |                             | Name                         | String                        | Name of the light                                                                                                                                                                                                                                                                                                                                   |
+|                      |                             | Hue                          | Dimmer, Color                 | Hue                                                                                                                                                                                                                                                                                                                                                 |
+|                      |                             | Saturation                   | Dimmer, Color                 | Saturation in % (1-100)                                                                                                                                                                                                                                                                                                                             |
+|                      |                             | Brightness                   | Dimmer, Color                 | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                     |
+|                      |                             | ColorTemperature             | Number, Dimmer                | Color temperature. If the item is a Number with no units, it is represented in mireds. The default value range is from 50 to 400 (2500 K to 20,000 K). If the item is a Dimmer, it will be transformed linearly to mireds. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue, inverted |
+| Fan                  |                             |                              |                               | Fan                                                                                                                                                                                                                                                                                                                                                 |
+|                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
+|                      |                             | CurrentFanState              | Number                        | Current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                                                                       |
+|                      |                             | TargetFanState               | Number, Switch                | Target fan state.  values: 0/OFF=MANUAL, 1/ON=AUTO. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                                  |
+|                      |                             | RotationDirection            | Number, Switch                | Rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                |
+|                      |                             | RotationSpeed                | Number, Dimmer                | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                       |
+|                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED.Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                     |
+| BasicFan             |                             |                              |                               | Fan. A BasicFan is a subset of Fan, but the Home app allows you to customize the icon of the accessory to show a ceiling fan.                                                                                                                                                                                                                       |
+|                      | OnState                     |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
+|                      |                             | RotationDirection            | Number, Switch                | Rotation direction.  values: 0/OFF=CLOCKWISE, 1/ON=COUNTER CLOCKWISE. Flag [inverted=true] swaps the default mapping                                                                                                                                                                                                                                |
+|                      |                             | RotationSpeed                | Number, Dimmer                | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
+| Thermostat           |                             |                              |                               | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                                                                   |
+|                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
+|                      | TargetTemperature           |                              | Number                        | Target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                               |
+|                      | CurrentHeatingCoolingMode   |                              | String                        | Current heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                                                                       |
+|                      | TargetHeatingCoolingMode    |                              | String                        | Target heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                                                                        |
+|                      |                             | Name                         | String                        | Name of the thermostat                                                                                                                                                                                                                                                                                                                              |
+|                      |                             | CoolingThresholdTemperature  | Number                        | Maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
+|                      |                             | HeatingThresholdTemperature  | Number                        | Minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
+|                      |                             | RelativeHumidity             | Number                        | Relative humidity in % between 0 and 100.                                                                                                                                                                                                                                                                                                           |
+| HeaterCooler         |                             |                              |                               | Heater or/and cooler device                                                                                                                                                                                                                                                                                                                         |
+|                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
+|                      | CurrentTemperature          |                              | Number                        | Current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                              |
+|                      | CurrentHeaterCoolerState    |                              | String                        | Current heater/cooler mode (INACTIVE, IDLE, HEATING, COOLING). Mapping can be redefined at item level, e.g. [HEATING="HEAT", COOLING="COOL"]                                                                                                                                                                                                        |
+|                      | TargetHeaterCoolerState     |                              | String                        | Target heater/cooler mode (AUTO, HEAT, COOL). Mapping can be redefined at item level, e.g. [AUTO="AUTOMATIC"]                                                                                                                                                                                                                                       |
+|                      |                             | Name                         | String                        | Name of the heater/cooler                                                                                                                                                                                                                                                                                                                           |
+|                      |                             | RotationSpeed                | Number                        | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                     |
+|                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                                                                       |
+|                      |                             | LockControl                  | Number, Switch                | Status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                                                                    |
+|                      |                             | CoolingThresholdTemperature  | Number                        | Maximum temperature that must be reached before cooling is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
+|                      |                             | HeatingThresholdTemperature  | Number                        | Minimum temperature that must be reached before heating is turned on. min/max/step can configured at item level, e.g. minValue=10.5, maxValue=50, step=2]                                                                                                                                                                                           |
+| Lock                 |                             |                              |                               | A Lock Mechanism. with flag [inverted=true] the default mapping to switch ON/OFF can be inverted.                                                                                                                                                                                                                                                   |
+|                      | LockCurrentState            |                              | Switch, Number                | Current state of lock mechanism (1/ON=SECURED, 0/OFF=UNSECURED, 2=JAMMED, 3=UNKNOWN)                                                                                                                                                                                                                                                                |
+|                      | LockTargetState             |                              | Switch                        | Target state of lock mechanism (ON=SECURED, OFF=UNSECURED)                                                                                                                                                                                                                                                                                          |
+|                      |                             | Name                         | String                        | Name of the lock                                                                                                                                                                                                                                                                                                                                    |
+| Valve                |                             |                              |                               | Valve. additional configuration: homekitValveType = ["Generic", "Irrigation", "Shower", "Faucet"]                                                                                                                                                                                                                                                   |
+|                      | ActiveStatus                |                              | Switch, Dimmer                | Accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                                                              |
+|                      | InUseStatus                 |                              | Switch, Dimmer                | Indicates whether fluid flowing through the valve. A value of "ON"/"OPEN" indicates that fluid is flowing.                                                                                                                                                                                                                                          |
+|                      |                             | Duration                     | Number                        | Defines how long a valve should be set to ʼIn Useʼ in second. You can define the default duration via configuration homekitDefaultDuration = <default duration in seconds>                                                                                                                                                                          |
+|                      |                             | RemainingDuration            | Number                        | Describes the remaining duration on the accessory. the remaining duration increases/decreases from the accessoryʼs usual countdown. i.e. changes from 90 to 80 in a second.                                                                                                                                                                         |
+|                      |                             | Name                         | String                        | Name of the valve                                                                                                                                                                                                                                                                                                                                   |
+|                      |                             | FaultStatus                  | Switch, Contact               | Accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                                                                |
+| Faucet               |                             |                              |                               | Faucet or shower. It should be used in combination with Valve or/and HeaterCooler.                                                                                                                                                                                                                                                                  |
+|                      | Active                      |                              | Switch, Contact, Dimmer       | Accessory current working status. A value of "ON"/"OPEN" indicates faucet/shower is open.                                                                                                                                                                                                                                                           |
+|                      |                             | Name                         | String                        | Name of the Faucet                                                                                                                                                                                                                                                                                                                                  |
+|                      |                             | FaultStatus                  | Switch, Contact               | Accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                                                                |
+| SecuritySystem       |                             |                              |                               | Security system.                                                                                                                                                                                                                                                                                                                                    |
+|                      | CurrentSecuritySystemState  |                              | String                        | Current state of the security system. STAY_ARM / AWAY_ARM / NIGHT_ARM / DISARMED / TRIGGERED. Mapping can be redefined at item level, e.g. [AWAY_ARM="AWAY", NIGHT_ARM="NIGHT" ]                                                                                                                                                                    |
+|                      | TargetSecuritySystemState   |                              | String                        | Requested state of the security system. STAY_ARM / AWAY_ARM / NIGHT_ARM / DISARM. While the requested state is not DISARM, and the current state is DISARMED, HomeKit will display "Arming...", for example during an exit delay. Mapping can be redefined at item level, e.g. [AWAY_ARM="AWAY", NIGHT_ARM="NIGHT" ]                                |
+|                      |                             | Name                         | String                        | Name of the security system                                                                                                                                                                                                                                                                                                                         |
+|                      |                             | FaultStatus                  | Switch, Contact               | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                                                                |
+|                      |                             | TamperedStatus               | Switch, Contact               | accessory tampered status. A status of "ON"/"OPEN" indicates that the accessory has been tampered with. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                                                                                                                            |
+| GarageDoorOpener     |                             |                              |                               | A garage door opener.                                                                                                                                                                                                                                                                                                                               |
+|                      | ObstructionStatus           |                              | Switch                        | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
+|                      | CurrentDoorState            |                              | String                        | Current door state. Possible values: OPEN, OPENING, CLOSED, CLOSING, STOPPED                                                                                                                                                                                                                                                                        |
+|                      | TargetDoorState             |                              | Switch, String                | Target door state. ON/"OPEN" = open door, OFF/"CLOSED" = closed door                                                                                                                                                                                                                                                                                |
+|                      |                             | Name                         | String                        | Name of the garage door                                                                                                                                                                                                                                                                                                                             |
+|                      |                             | LockCurrentState             | Switch                        | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                                                                        |
+|                      |                             | LockTargetState              | Switch                        | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                                                                         |
+| Battery              |                             |                              |                               | Accessory with battery. Battery can be chargeable (configuration chargeable:true) and non-chargeable  (configuration chargeable:false)                                                                                                                                                                                                              |
+|                      | BatteryLevel                |                              | Number                        | Battery level 0% to 100%                                                                                                                                                                                                                                                                                                                            |
+|                      | BatteryLowStatus            |                              | Switch, Contact, Number       | Battery low indicator. ON/OPEN = battery level is low; for number if the value is below the lowThreshold, then it is low. Default is 20.                                                                                                                                                                                                                                                                                              |
+|                      | BatteryChargingState        |                              | Switch, Contact, Dimmer       | Mandatory only for chargeable battery. ON/OPEN =  battery is charging                                                                                                                                                                                                                                                                               |
+|                      |                             | Name                         | String                        | Name of the battery accessory                                                                                                                                                                                                                                                                                                                       |
+| Filter               |                             |                              |                               | Accessory with filter maintenance indicator                                                                                                                                                                                                                                                                                                         |
+|                      | FilterChangeIndication      |                              | Switch, Contact, Dimmer       | Filter change indicator. ON/OPEN = filter change is required.                                                                                                                                                                                                                                                                                       |
+|                      |                             |  FilterLifeLevel             | Number                        | Current filter life level. 0% to 100%                                                                                                                                                                                                                                                                                                               |
+|                      |                             |  FilterResetIndication       | Switch                        | Send "filter reset" action triggered by user in iOS home app to openHAB ("ON" = reset requested by user).                                                                                                                                                                                                                                           |
+|                      |                             | Name                         | String                        | Name of the filter accessory                                                                                                                                                                                                                                                                                                                        |
+| Microphone           |                             |                              |                               | Microphone accessory                                                                                                                                                                                                                                                                                                                                |
+|                      | Mute                        |                              | Switch, Contact, Dimmer       | Mute indication. ON/OPEN = microphone is muted                                                                                                                                                                                                                                                                                                      |
+|                      |                             | Name                         | String                        | Name of the microphone accessory                                                                                                                                                                                                                                                                                                                    |
+|                      |                             | Volume                       | Number                        | Microphone volume from 0% to 100%                                                                                                                                                                                                                                                                                                                   |
+| Speaker              |                             |                              |                               | Speaker accessory                                                                                                                                                                                                                                                                                                                                   |
+|                      | Mute                        |                              | Switch, Contact, Dimmer       | Mute indication. ON/OPEN = speaker is muted                                                                                                                                                                                                                                                                                                         |
+|                      |                             | Name                         | String                        | Name of the speaker accessory                                                                                                                                                                                                                                                                                                                       |
+|                      |                             | Volume                       | Number                        | Speaker volume from 0% to 100%                                                                                                                                                                                                                                                                                                                      |
+|                      |                             | Active                       | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
+| SmartSpeaker         |                             |                              |                               | Smart speaker accessory with Play/Stop/Pause control                                                                                                                                                                                                                                                                                                |
+|                      | CurrentMediaState           |                              | String                        | Current smart speaker state. possible values (STOP,PLAY,PAUSE,UNKNOWN). Custom mapping can be defined at item level, e.g. [STOP="STOPPED", PLAY="PLAYING"]                                                                                                                                                                                          |
+|                      | TargetMediaState            |                              | String                        | Target smart speaker state. possible values (STOP,PLAY,PAUSE). Custom mapping can be defined at item level, e.g. [STOP="STOPPED", PLAY="PLAYING"]                                                                                                                                                                                                   |
+|                      |                             | Mute                         | Switch, Contact               | Mute indication. ON/OPEN = speaker is muted                                                                                                                                                                                                                                                                                                         |
+|                      |                             | Name                         | String                        | Name of the speaker accessory                                                                                                                                                                                                                                                                                                                       |
+|                      |                             | ConfiguredName               | String                        | Name of the speaker accessory configured in iOS home app. User can rename speaker in iOS home app and this characteristic can be used to reflect change in openHAB and sync name changes from openHAB to home app.                                                                                                                                  |
+|                      |                             | Volume                       | Number                        | Speaker volume from 0% to 100%                                                                                                                                                                                                                                                                                                                      |
 
 ### Examples
 
 See the sample below for example items:
 
 ```xtend
-Color           color_light_single         "Color Light Single"                                      {homekit="Lighting"}
-Color           color_light_dimmable       "Legacy Color Light Dimmable"                             {homekit="Lighting, Lighting.Brightness"}
-Color           color_light_hue            "Legacy Color Light Hue"                                  {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
+Color           color_light_single         "Color Light Single"                                        {homekit="Lighting"}
+Color           color_light_dimmable       "Legacy Color Light Dimmable"                               {homekit="Lighting, Lighting.Brightness"}
+Color           color_light_hue            "Legacy Color Light Hue"                                    {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
 
-Rollershutter   window_covering            "Window Rollershutter"                                    {homekit="WindowCovering"}
-Rollershutter   window_covering_long       "Window Rollershutter long"                               {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter   window_covering            "Window Rollershutter"                                      {homekit="WindowCovering"}
+Rollershutter   window_covering_long       "Window Rollershutter long"                                 {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 
-Switch          leaksensor_single          "Leak Sensor single"                                      {homekit="LeakSensor"}
-Switch          lock                       "Lock single"                                             {homekit="Lock"}
-Switch          valve_single               "Valve single"                                            {homekit="Valve" [homekitValveType="Shower"]}
+Switch          leaksensor_single          "Leak Sensor single"                                        {homekit="LeakSensor"}
+Switch          lock                       "Lock single"                                               {homekit="Lock"}
+Switch          valve_single               "Valve single"                                              {homekit="Valve" [homekitValveType="Shower"]}
 
-Number 			temperature_sensor 	        "Temperature Sensor [%.1f C]"  			                 {homekit="TemperatureSensor" [minValue=10.5, maxValue=27] }
-Number          light_sensor 	            "Light Sensor"                                           {homekit="LightSensor"}
+Number          temperature_sensor         "Temperature Sensor [%.1f °C]"                              {homekit="TemperatureSensor" [minValue=10.5, maxValue=27] }
+Number          light_sensor               "Light Sensor"                                              {homekit="LightSensor"}
 
-Group           gValve                     "Valve Group"                                             {homekit="Valve"  [homekitValveType="Irrigation"]}
-Switch          valve_active               "Valve active"                       (gValve)             {homekit="Valve.ActiveStatus, Valve.InUseStatus"}
-Number          valve_duration             "Valve duration"                     (gValve)             {homekit="Valve.Duration"}
-Number          valve_remaining_duration   "Valve remaining duration"           (gValve)             {homekit="Valve.RemainingDuration"}
+Group           gValve                     "Valve Group"                                               {homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch          valve_active               "Valve active"                         (gValve)             {homekit="Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration             "Valve duration"                       (gValve)             {homekit="Valve.Duration"}
+Number          valve_remaining_duration   "Valve remaining duration"             (gValve)             {homekit="Valve.RemainingDuration"}
 
-Group           gThermostat                "Thermostat"                                              {homekit="Thermostat"}
-Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
-String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
+Group           gThermostat                "Thermostat"                                                {homekit="Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"    (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"      (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
+String          thermostat_current_mode    "Thermostat Current Mode"              (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"               (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
 
-Group           gLeakSensor                "Leak Sensor Group"                                       {homekit="LeakSensor"}
-Switch          leaksensor                 "Leak Sensor"                        (gLeakSensor)        {homekit="LeakDetectedState"}
-String          leaksensor_name            "Leak Sensor Name"                   (gLeakSensor)        {homekit="Name"}
-Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus"}
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus"}
-Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
-Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
+Group           gLeakSensor                "Leak Sensor Group"                                         {homekit="LeakSensor"}
+Switch          leaksensor                 "Leak Sensor"                          (gLeakSensor)        {homekit="LeakDetectedState"}
+String          leaksensor_name            "Leak Sensor Name"                     (gLeakSensor)        {homekit="Name"}
+Switch          leaksensor_bat             "Leak Sensor Battery"                  (gLeakSensor)        {homekit="BatteryLowStatus"}
+Switch          leaksensor_active          "Leak Sensor Active"                   (gLeakSensor)        {homekit="ActiveStatus"}
+Switch          leaksensor_fault           "Leak Sensor Fault"                    (gLeakSensor)        {homekit="FaultStatus"}
+Switch          leaksensor_tampered        "Leak Sensor Tampered"                 (gLeakSensor)        {homekit="TamperedStatus"}
 
-Group           gMotionSensor              "Motion Sensor Group"                                     {homekit="MotionSensor"}
-Switch          motionsensor               "Motion Sensor"                      (gMotionSensor)      {homekit="MotionSensor.MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="MotionSensor.BatteryLowStatus"}
-Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="MotionSensor.ActiveStatus"}
-Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="MotionSensor.FaultStatus"}
-Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="MotionSensor.TamperedStatus"}
+Group           gMotionSensor              "Motion Sensor Group"                                       {homekit="MotionSensor"}
+Switch          motionsensor               "Motion Sensor"                        (gMotionSensor)      {homekit="MotionSensor.MotionDetectedState"}
+Switch          motionsensor_bat           "Motion Sensor Battery"                (gMotionSensor)      {homekit="MotionSensor.BatteryLowStatus"}
+Switch          motionsensor_active        "Motion Sensor Active"                 (gMotionSensor)      {homekit="MotionSensor.ActiveStatus"}
+Switch          motionsensor_fault         "Motion Sensor Fault"                  (gMotionSensor)      {homekit="MotionSensor.FaultStatus"}
+Switch          motionsensor_tampered      "Motion Sensor Tampered"               (gMotionSensor)      {homekit="MotionSensor.TamperedStatus"}
 
-Group           gOccupancySensor           "Occupancy Sensor Group"                                  {homekit="OccupancySensor"}
-Switch          occupancysensor            "Occupancy Sensor"                   (gOccupancySensor)   {homekit="OccupancyDetectedState"}
-Switch          occupancysensor_bat        "Occupancy Sensor Battery"           (gOccupancySensor)   {homekit="BatteryLowStatus"}
-Switch          occupancysensor_active     "Occupancy Sensor Active"            (gOccupancySensor)   {homekit="OccupancySensor.ActiveStatus"}
-Switch          occupancysensor_fault      "Occupancy Sensor Fault"             (gOccupancySensor)   {homekit="OccupancySensor.FaultStatus"}
-Switch          occupancysensor_tampered   "Occupancy Sensor Tampered"          (gOccupancySensor)   {homekit="OccupancySensor.TamperedStatus"}
+Group           gOccupancySensor           "Occupancy Sensor Group"                                    {homekit="OccupancySensor"}
+Switch          occupancysensor            "Occupancy Sensor"                     (gOccupancySensor)   {homekit="OccupancyDetectedState"}
+Switch          occupancysensor_bat        "Occupancy Sensor Battery"             (gOccupancySensor)   {homekit="BatteryLowStatus"}
+Switch          occupancysensor_active     "Occupancy Sensor Active"              (gOccupancySensor)   {homekit="OccupancySensor.ActiveStatus"}
+Switch          occupancysensor_fault      "Occupancy Sensor Fault"               (gOccupancySensor)   {homekit="OccupancySensor.FaultStatus"}
+Switch          occupancysensor_tampered   "Occupancy Sensor Tampered"            (gOccupancySensor)   {homekit="OccupancySensor.TamperedStatus"}
 
-Group           gContactSensor             "Contact Sensor Group"                                    {homekit="ContactSensor"}
-Contact         contactsensor              "Contact Sensor"                     (gContactSensor)     {homekit="ContactSensor.ContactSensorState"}
-Switch          contactsensor_bat          "Contact Sensor Battery"             (gContactSensor)     {homekit="ContactSensor.BatteryLowStatus"}
-Switch          contactsensor_active       "Contact Sensor Active"              (gContactSensor)     {homekit="ContactSensor.ActiveStatus"}
-Switch          contactsensor_fault        "Contact Sensor Fault"               (gContactSensor)     {homekit="ContactSensor.FaultStatus"}
-Switch          contactsensor_tampered     "Contact Sensor Tampered"            (gContactSensor)     {homekit="ContactSensor.TamperedStatus"}
+Group           gContactSensor             "Contact Sensor Group"                                      {homekit="ContactSensor"}
+Contact         contactsensor              "Contact Sensor"                       (gContactSensor)     {homekit="ContactSensor.ContactSensorState"}
+Switch          contactsensor_bat          "Contact Sensor Battery"               (gContactSensor)     {homekit="ContactSensor.BatteryLowStatus"}
+Switch          contactsensor_active       "Contact Sensor Active"                (gContactSensor)     {homekit="ContactSensor.ActiveStatus"}
+Switch          contactsensor_fault        "Contact Sensor Fault"                 (gContactSensor)     {homekit="ContactSensor.FaultStatus"}
+Switch          contactsensor_tampered     "Contact Sensor Tampered"              (gContactSensor)     {homekit="ContactSensor.TamperedStatus"}
 
-Group           gAirQualitySensor    	    "Air Quality Sensor"      				                 {homekit="AirQualitySensor"}
-String          airquality                  "Air Quality"						(gAirQualitySensor)  {homekit="AirQuality"}
-Number          ozone                       "Ozone Density"						(gAirQualitySensor)  {homekit="OzoneDensity"}
-Number          voc                         "VOC Density"						(gAirQualitySensor)  {homekit="VOCDensity"}
-Number          nitrogen                    "Nitrogen Density"					(gAirQualitySensor)  {homekit="NitrogenDioxideDensity"}
-Number          sulphur                     "Sulphur Density"					(gAirQualitySensor)  {homekit="SulphurDioxideDensity"}
-Number          pm25                        "PM25 Density"						(gAirQualitySensor)  {homekit="PM25Density"}
-Number          pm10                        "PM10 Density"						(gAirQualitySensor)  {homekit="PM10Density"}
+Group           gAirQualitySensor           "Air Quality Sensor"                                       {homekit="AirQualitySensor"}
+String          airquality                  "Air Quality"                         (gAirQualitySensor)  {homekit="AirQuality"}
+Number          ozone                       "Ozone Density"                       (gAirQualitySensor)  {homekit="OzoneDensity"}
+Number          voc                         "VOC Density"                         (gAirQualitySensor)  {homekit="VOCDensity"}
+Number          nitrogen                    "Nitrogen Density"                    (gAirQualitySensor)  {homekit="NitrogenDioxideDensity"}
+Number          sulphur                     "Sulphur Density"                     (gAirQualitySensor)  {homekit="SulphurDioxideDensity"}
+Number          pm25                        "PM25 Density"                        (gAirQualitySensor)  {homekit="PM25Density"}
+Number          pm10                        "PM10 Density"                        (gAirQualitySensor)  {homekit="PM10Density"}
 
-Group           gSecuritySystem            "Security System Group"                                   {homekit="SecuritySystem"}
-String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
-String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
+Group           gSecuritySystem            "Security System Group"                                     {homekit="SecuritySystem"}
+String          security_current_state     "Security Current State"               (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
+String          security_target_state      "Security Target State"                (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 
-Group  			gCooler    			        "Cooler Group"       				 	                {homekit="HeaterCooler"}
-Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
-Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
-String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
-String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}
-Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
-Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+Group           gCooler                    "Cooler Group"                                              {homekit="HeaterCooler"}
+Switch          cooler_active              "Cooler Active"                        (gCooler)            {homekit="ActiveStatus"}
+Number          cooler_current_temp        "Cooler Current Temp [%.1f °C]"        (gCooler)            {homekit="CurrentTemperature"}
+String          cooler_current_mode        "Cooler Current Mode"                  (gCooler)            {homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
+String          cooler_target_mode         "Cooler Target Mode"                   (gCooler)            {homekit="TargetHeaterCoolerState"}
+Number          cooler_cool_thrs           "Cooler Cool Threshold Temp [%.1f °C]" (gCooler)            {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
+Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C]" (gCooler)            {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+```
+
+## Multiple Instances
+
+HomeKit has a limitation of 150 accessories per bridge.
+The bridge itself counts as an accessory, so in practice it's 149.
+In order to overcome this limitation, you can instruct openHAB to expose multiple bridges to HomeKit, and then manually assign specific accessories to different instances.
+You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
+In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
+
+```
+Switch kitchen_light {homekit="Lighting" [instance=2]}
+```
+
+Note that instances are numbered starting at 1.
+If you reference an instance that doesn't exist, then that accessory won't be exposed on _any_ bridge.
+
+For complex items, only the root group needs to be tagged for the specific instance:
+
+```
+Group           gSecuritySystem            "Security System Group"                                     {homekit="SecuritySystem" [instance=2]}
+String          security_current_state     "Security Current State"               (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
+String          security_target_state      "Security Target State"                (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
 
 ## Additional Notes
@@ -786,3 +1000,46 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
 - if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
+
+### Re-adding the openHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
+
+There are various reasons this may happen.
+Try the following:
+
+* In [openhab-cli](https://www.openhab.org/docs/administration/console.html), run `openhab:homekit clearPairings`.
+Try again.
+* In the HomeKit settings, change the port, setupId, and pin.
+Save the settings, then re-open the settings so as to refresh the QR code.
+Re-add the device.
+* Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
+Restart openHAB.
+Reboot iPhone.
+Try again.
+
+### A stale HomeKit accessory will not go away after deleting the related item.
+
+You probably have `useDummyAccessories` enabled in the openHAB HomeKit settings.
+See the [Dummy Accessories](#dummy-accessories) section in the help, above.
+
+### I added an accessory as the wrong type in Home, and updating the item configuration does not cause the change to reflect in the Home app
+
+HomeKit remembers certain configurations about an accessory, from its name to its fundamental type (i.e. fan, light or
+switch?).
+If you added it incorrectly, simply updating the item type will not cause Home to update the type.
+To resolve:
+
+1) If using text configuration: Comment out the HomeKit metadata for an accessory.
+If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
+
+2) If you have `useDummyAccessories` enabled, open the
+[openhab-cli](https://www.openhab.org/docs/administration/console.html).
+Run `openhab:homekit listDummyAccessories` and
+confirm your item is in the list.
+Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
+
+3) Kill your Home app on your iOS device.
+Re-open it, and confirm that the accessory is gone.
+
+4) Uncomment the HomeKit metadata or re-add it via the UI.
+
+5) You should now see the updated configuration for your accessory.

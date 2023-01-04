@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.CachedMeteringValue;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -198,8 +199,8 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     /**
-     * This method build the digitalSTROM structure as an {@link HashMap} with the zone id as key
-     * and an {@link HashMap} as value. This {@link HashMap} has the group id as key and a {@link List}
+     * This method build the digitalSTROM structure as a {@link HashMap} with the zone id as key
+     * and a {@link HashMap} as value. This {@link HashMap} has the group id as key and a {@link List}
      * with all digitalSTROM {@link Device}s.<br>
      * <br>
      * <b>Note:</b> the zone id 0 is the broadcast address and the group id 0, too.
@@ -386,6 +387,11 @@ public class StructureManagerImpl implements StructureManager {
     public Circuit getCircuitByDSUID(String dSUID) {
         final DSID tmp = dSUIDToDSIDMap.get(dSUID);
         return tmp != null ? getCircuitByDSID(tmp) : null;
+    }
+
+    @Override
+    public Circuit getCircuitByDSUID(DSUID dSUID) {
+        return dSUID != null ? getCircuitByDSUID(dSUID.getValue()) : null;
     }
 
     @Override

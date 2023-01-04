@@ -19,9 +19,11 @@ The binding supports the following types of Thing..
 
 ## Discovery
 
-You have to manually create a single (Bridge) Thing for the NeoHub, and enter the required Configuration Parameters (see Thing Configuration for NeoHub below).
-If the Configuration Parameters are all valid, then the NeoHub Thing will automatically attempt to connect and sign on to the hub.
-If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
+The binding automatically searches for NeoHub devices, and puts them in the Main UI Inbox.
+Alternatively you can manually create a (Bridge) Thing for the NeoHub.
+In either case you need to enter any missing Configuration Parameters (see Thing Configuration for NeoHub below).
+Once the Configuration Parameters are all valid, then the NeoHub Thing will automatically attempt to connect and sign on to the hub.
+If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status.
 
 Once the NeoHub Thing has been created and it has successfully signed on, it will automatically interrogate the HeoHub to discover all the respective Heatmiser device Things that are connected to it.
 If in the future, you add additional Heatmiser devices to your system, the binding will discover them too.
@@ -33,20 +35,38 @@ It signs on to the hub using the supplied connection parameters, and it polls th
 The NeoHub supports two Application Programming Interfaces "API" (an older "legacy" one, and a modern one), and this binding can use either of them to communicate with it.
 Before the binding can communicate with the hub, the following Configuration Parameters must be entered.
 
-| Configuration Parameter | Description                                                                                 |
-|-------------------------|---------------------------------------------------------------------------------------------|
-| hostName                | Host name (IP address) of the NeoHub (example 192.168.1.123)                                |
-| portNumber              | Port number of the NeoHub (Default=4242)                                                    |
-| pollingInterval         | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)           |
-| socketTimeout           | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5) |
-| preferLegacyApi         | Prefer if the binding should use the legacy API; this only works so long as the legacy API is still supported; otherwise the binding will switch to the new API anyway (Default=false) |
+| Configuration Parameter    | Description                                                                                              |
+|----------------------------|----------------------------------------------------------------------------------------------------------|
+| hostName                   | Host name (IP address) of the NeoHub (example 192.168.1.123)                                             |
+| useWebSocket<sup>1)</sup>  | Use secure WebSocket to connect to  the NeoHub (example `true`)                                          |
+| apiToken<sup>1)</sup>      | API Access Token for secure connection to hub. Create the token in the Heatmiser mobile App              |
+| pollingInterval            | Time (seconds) between polling requests to the NeoHub (Min=4, Max=60, Default=60)                        |
+| socketTimeout              | Time (seconds) to allow for TCP socket connections to the hub to succeed (Min=4, Max=20, Default=5)      |
+| preferLegacyApi            | ADVANCED: Prefer to use older API calls; but if not supported, it switches to new calls (Default=false)  |
+| portNumber<sup>2)</sup>    | ADVANCED: Port number for connection to the NeoHub (Default=0 (automatic))                               |
+
+<sup>1)</sup> If `useWebSocket` is false, the binding will connect via an older and less secure TCP connection, in which case `apiToken` is not required.
+However see the chapter "Connection Refused Errors" below.
+Whereas if you prefer to connect via more secure WebSocket connections then an API access token `apiToken` is required.
+You can create an API access token in the Heatmiser mobile App (Settings | System | API Access).
+
+<sup>2)</sup> Normally the port number is chosen automatically (for TCP it is 4242 and for WebSocket it is 4243).
+But you can override this in special cases if you want to use (say) port forwarding.
+
+## Connection Refused Errors
+
+From early 2022 Heatmiser introduced NeoHub firmware that has the ability to enable / disable connecting to it via a TCP port.
+If the TCP port is disabled the OpenHAB binding cannot connect and the binding will report a _"Connection Refused"_ warning in the log.
+In prior firmware versions the TCP port was always enabled.
+But in the new firmware the TCP port is initially enabled on power up but if no communication occurs for 48 hours it is automatically disabled.
+Alternatively the Heatmiser mobile app has a setting (Settings | System | API Access | Legacy API Enable | On) whereby the TCP port can be permanently enabled.
 
 ## Thing Configuration for "NeoStat" and "NeoPlug"
 
 The NeoHub Thing connects to the hub (bridge) to communicate with any Heatmiser devices that are connected to it.
 Each such Heatmiser device is identified by means of a unique device name in the hub.
 The device name is automatically discovered by the NeoHub Thing, and it is also visible (and changeable) via the Heatmiser App.
-    
+
 | Configuration Parameter | Description                                                                          |
 |-------------------------|--------------------------------------------------------------------------------------|
 | deviceNameInHub         | Device name that identifies the Heatmiser device in the NeoHub and the Heatmiser App |
@@ -118,7 +138,7 @@ Note: if a drop out occurs, the Thing will always change its status to `OFFLINE`
 
 ### `demo.things` File
 
-```
+```java
 Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", portNumber=4242, pollingInterval=60, socketTimeout=5, preferLegacyApi=true ] {
     Thing neoplug mydownstairs "Downstairs Plug" @ "Hall" [ deviceNameInHub="Hall Plug" ]
     Thing neostat myupstairs "Upstairs Thermostat" @ "Landing" [ deviceNameInHub="Landing Thermostat" ]
@@ -129,7 +149,7 @@ Bridge neohub:neohub:myhubname "Heatmiser NeoHub" [ hostName="192.168.1.123", po
 
 ### `demo.items` File
 
-```
+```java
 Number:Temperature Upstairs_RoomTemperature "Room Temperature" { channel="neohub:neostat:myhubname:myupstairs:roomTemperature" }
 Number:Temperature Upstairs_TargetTemperature "Target Temperature" { channel="neohub:neostat:myhubname:myupstairs:targetTemperature" }
 Number:Temperature Upstairs_FloorTemperature "Floor Temperature" { channel="neohub:neostat:myhubname:myupstairs:floorTemperature" }
@@ -147,30 +167,29 @@ Number:Temperature Kitchen_Temperature "Kitchen Temperature" { channel="neohub:n
 
 ### `demo.sitemap` File
 
-```
+```perl
 sitemap neohub label="Heatmiser NeoHub"
 {
-	Frame label="Thermostat" {
-		Text      item=Upstairs_RoomTemperature 
-		Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
-		Text      item=Upstairs_ThermostatOutputState
-		Switch    item=Upstairs_OccupancyModePresent
-		Text      item=Upstairs_FloorTemperature 
-	}
+    Frame label="Thermostat" {
+        Text      item=Upstairs_RoomTemperature 
+        Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
+        Text      item=Upstairs_ThermostatOutputState
+        Switch    item=Upstairs_OccupancyModePresent
+        Text      item=Upstairs_FloorTemperature 
+    }
 
-	Frame label="Plug" {
-		Switch item=Downstairs_PlugOutputState 	
-		Switch item=Downstairs_PlugAutoMode
-	}
+    Frame label="Plug" {
+        Switch item=Downstairs_PlugOutputState  
+        Switch item=Downstairs_PlugAutoMode
+    }
 
-	Frame label="Contact" {
-		Contact item=Window_Contact_State
-		Switch item=Window_Contact_Battery_Low
-	}
+    Frame label="Contact" {
+        Contact item=Window_Contact_State
+        Switch item=Window_Contact_Battery_Low
+    }
 
-	Frame label="Sensor" {
-		Text item=Kitchen_Temperature
-	}
+    Frame label="Sensor" {
+        Text item=Kitchen_Temperature
+    }
 }
 ```
-

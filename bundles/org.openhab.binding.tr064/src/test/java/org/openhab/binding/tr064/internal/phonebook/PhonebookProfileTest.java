@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,8 @@ import org.openhab.core.util.UIDUtils;
  * @author Christoph Weitkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.WARN)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 class PhonebookProfileTest {
 
     private static final String INTERNAL_PHONE_NUMBER = "999";
@@ -60,7 +61,6 @@ class PhonebookProfileTest {
     private static final ThingUID THING_UID = new ThingUID(BINDING_ID, THING_TYPE_FRITZBOX.getId(), "test");
     private static final String MY_PHONEBOOK = UIDUtils.encode(THING_UID.getAsString()) + ":MyPhonebook";
 
-    @NonNullByDefault
     public static class ParameterSet {
         public final State state;
         public final State resultingState;
@@ -101,11 +101,10 @@ class PhonebookProfileTest {
         });
     }
 
-    private @Mock ProfileCallback mockCallback;
-    private @Mock ProfileContext mockContext;
-    private @Mock PhonebookProvider mockPhonebookProvider;
+    private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
+    private @Mock @NonNullByDefault({}) ProfileContext mockContext;
+    private @Mock @NonNullByDefault({}) PhonebookProvider mockPhonebookProvider;
 
-    @NonNullByDefault
     private final Phonebook phonebook = new Phonebook() {
         @Override
         public Optional<String> lookupNumber(String number, int matchCount) {

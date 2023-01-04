@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="mileage-channel">
+		<item-type>Number:Length</item-type>
+		<label>Mileage</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-electric-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Range</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="radius-electric-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Radius</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Charge Level</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charged-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Charged Battery Energy</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="uncharged-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Uncharged Battery Energy</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-fuel-channel">
+		<item-type>Number:Length</item-type>
+		<label>Fuel Range</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="radius-fuel-channel">
+		<item-type>Number:Length</item-type>
+		<label>Fuel Radius</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fuel-level-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fuel-remain-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Remaining Fuel</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fuel-open-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Open Fuel Capacity</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-hybrid-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="radius-hybrid-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Radius</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-range-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Range Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

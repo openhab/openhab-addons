@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class TeslaBindingConstants {
     public static final String PATH_VEHICLE_ID = "/{vid}/";
     public static final String PATH_WAKE_UP = "wake_up";
     public static final String PATH_ACCESS_TOKEN = "oauth/token";
-    public static final String URI_EVENT = "https://streaming.vn.teslamotors.com/stream/";
+    public static final String URI_EVENT = "wss://streaming.vn.teslamotors.com/streaming/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com";
     public static final String VALETPIN = "valetpin";
     public static final String VEHICLES = "vehicles";
@@ -60,9 +60,12 @@ public class TeslaBindingConstants {
     public static final String COMMAND_HONK_HORN = "honk_horn";
     public static final String COMMAND_OPEN_CHARGE_PORT = "charge_port_door_open";
     public static final String COMMAND_RESET_VALET_PIN = "reset_valet_pin";
+    public static final String COMMAND_SET_CHARGING_AMPS = "set_charging_amps";
     public static final String COMMAND_SET_CHARGE_LIMIT = "set_charge_limit";
+    public static final String COMMAND_SET_SENTRY_MODE = "set_sentry_mode";
     public static final String COMMAND_SET_TEMP = "set_temps";
     public static final String COMMAND_SET_VALET_MODE = "set_valet_mode";
+    public static final String COMMAND_STEERING_WHEEL_HEATER = "remote_steering_wheel_heater_request";
     public static final String COMMAND_SUN_ROOF = "sun_roof_control";
     public static final String COMMAND_THROTTLE = "commandthrottle";
     public static final String COMMAND_WAKE_UP = "wake_up";
@@ -81,6 +84,7 @@ public class TeslaBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
     public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
     public static final ThingTypeUID THING_TYPE_MODEL3 = new ThingTypeUID(BINDING_ID, "model3");
     public static final ThingTypeUID THING_TYPE_MODELX = new ThingTypeUID(BINDING_ID, "modelx");
@@ -107,8 +111,10 @@ public class TeslaBindingConstants {
 
     // thing configurations
     public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";
+    public static final String CONFIG_ALLOWWAKEUPFORCOMMANDS = "allowWakeupForCommands";
     public static final String CONFIG_ENABLEEVENTS = "enableEvents";
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
-    public static final String CONFIG_USERNAME = "username";
-    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_INACTIVITY = "inactivity";
+    public static final String CONFIG_USEDRIVESTATE = "useDriveState";
+    public static final String CONFIG_USEDADVANCEDSTATES = "useAdvancedStatesForPolling";
 }

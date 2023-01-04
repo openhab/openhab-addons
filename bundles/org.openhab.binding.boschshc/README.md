@@ -3,16 +3,21 @@
 Binding for the Bosch Smart Home.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
-  - [Changelog](#changelog)
   - [Supported Things](#supported-things)
-    - [In-Wall switches & Smart Plugs](#in-wall-switches--smart-plugs)
-    - [TwinGuard smoke detector](#twinguard-smoke-detector)
-    - [Door/Window contact](#doorwindow-contact)
+    - [In-Wall Switch](#in-wall-switch)
+    - [Compact Smart Plug](#compact-smart-plug)
+    - [Twinguard Smoke Detector](#twinguard-smoke-detector)
+    - [Door/Window Contact](#doorwindow-contact)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
+    - [Security Camera 360](#security-camera-360)
+    - [Security Camera Eyes](#security-camera-eyes)
+    - [Intrusion Detection System](#intrusion-detection-system)
+    - [Smart Bulb](#smart-bulb)
+    - [Smoke Detector](#smoke-detector)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -22,19 +27,31 @@ Binding for the Bosch Smart Home.
 
 ## Supported Things
 
-### In-Wall switches & Smart Plugs
+### In-Wall Switch
 
 A simple light control.
 
 **Thing Type ID**: `in-wall-switch`
 
-| Channel Type ID    | Item Type     | Writable | Description                                  |
-| ------------------ | ------------- | :------: | -------------------------------------------- |
-| power-switch       | Switch        | &#9745;  | Current state of the switch.                 |
-| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device. |
-| energy-consumption | Number:Energy | &#9744;  | Energy consumption of the device.            |
+| Channel Type ID    | Item Type     | Writable | Description                                      |
+| ------------------ | ------------- | :------: | ------------------------------------------------ |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                     |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
 
-### TwinGuard smoke detector
+### Compact Smart Plug
+
+A compact smart plug with energy monitoring capabilities.
+
+**Thing Type ID**: `smart-plug-compact`
+
+| Channel Type ID    | Item Type     | Writable | Description                                      |
+| ------------------ | ------------- | :------: | ------------------------------------------------ |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                     |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
+
+### Twinguard Smoke Detector
 
 The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
 
@@ -50,8 +67,11 @@ The Twinguard smoke detector warns you in case of fire and constantly monitors t
 | purity-rating      | String               | &#9744;  | Rating of current measured purity.                                                                |
 | air-description    | String               | &#9744;  | Overall description of the air quality.                                                           |
 | combined-rating    | String               | &#9744;  | Combined rating of the air quality.                                                               |
+| battery-level      | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery        | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
 
-### Door/Window contact
+### Door/Window Contact
 
 Detects open windows and doors.
 
@@ -60,6 +80,8 @@ Detects open windows and doors.
 | Channel Type ID | Item Type | Writable | Description                  |
 | --------------- | --------- | :------: | ---------------------------- |
 | contact         | Contact   | &#9744;  | Contact state of the device. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Motion Detector
 
@@ -70,6 +92,8 @@ Detects every movement through an intelligent combination of passive infra-red t
 | Channel Type ID | Item Type | Writable | Description                    |
 | --------------- | --------- | :------: | ------------------------------ |
 | latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Shutter Control
 
@@ -92,6 +116,8 @@ Radiator thermostat
 | temperature           | Number:Temperature   | &#9744;  | Current measured temperature.                  |
 | valve-tappet-position | Number:Dimensionless | &#9744;  | Current open ratio of valve tappet (0 to 100). |
 | child-lock            | Switch               | &#9745;  | Indicates if child lock is active.             |
+| battery-level         | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery           | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
 ### Climate Control
 
@@ -114,6 +140,69 @@ Display of the current room temperature as well as the relative humidity in the 
 | --------------- | -------------------- | :------: | ------------------------------------- |
 | temperature     | Number:Temperature   | &#9744;  | Current measured temperature.         |
 | humidity        | Number:Dimensionless | &#9744;  | Current measured humidity (0 to 100). |
+| battery-level   | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+
+### Security Camera 360
+
+Indoor security camera with 360° view and motion detection.
+
+**Thing Type ID**: `security-camera-360`
+
+| Channel Type ID       | Item Type            | Writable | Description                                                        |
+| --------------------- | -------------------- | :------: | ------------------------------------------------------------------ |
+| privacy-mode          | Switch               | &#9745;  | If privacy mode is enabled, the camera is disabled and vice versa. |
+| camera-notification   | Switch               | &#9745;  | Enables or disables notifications for the camera.                  |
+
+### Security Camera Eyes
+
+Outdoor security camera with motion detection and light.
+
+**Thing Type ID**: `security-camera-eyes`
+
+| Channel Type ID       | Item Type            | Writable | Description                                                        |
+| --------------------- | -------------------- | :------: | ------------------------------------------------------------------ |
+| privacy-mode          | Switch               | &#9745;  | If privacy mode is enabled, the camera is disabled and vice versa. |
+| camera-notification   | Switch               | &#9745;  | Enables or disables notifications for the camera.                  |
+
+### Intrusion Detection System
+
+Allows to retrieve notifications in case of intrusions. The system can be armed and disarmed and alarms can be muted.
+
+**Thing Type ID**: `intrusion-detection-system`
+
+| Channel Type ID              | Item Type            | Writable | Description                                                    |
+| ---------------------------- | -------------------- | :------: | -------------------------------------------------------------- |
+| system-availability          | Switch               | &#9744;  | Indicates whether the intrusion detection system is available. |
+| arming-state                 | String               | &#9744;  | Read-only channel to retrieve the current arming state. Possible values are `SYSTEM_ARMING`, `SYSTEM_ARMED` and `SYSTEM_DISARMED`. |
+| alarm-state                  | String               | &#9744;  | Read-only channel to retrieve the current alarm state. Possible values are `ALARM_OFF`, `PRE_ALARM`, `ALARM_ON`, `ALARM_MUTED` and `UNKNOWN`. |
+| active-configuration-profile | String               | &#9744;  | The name of the active configuration profile used for the intrusion detection system. |
+| arm-action                   | String               | &#9745;  | Arms the intrusion detection system using the given profile ID (default is "0"). |
+| disarm-action                | Switch               | &#9745;  | Disarms the intrusion detection system when an ON command is received. |
+| mute-action                  | Switch               | &#9745;  | Mutes the alarm when an ON command is received. |
+
+### Smart Bulb
+
+A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
+
+**Thing Type ID**: `smart-bulb`
+
+| Channel Type ID | Item Type | Writable | Description                                                    |
+| ----------------| --------- | :------: | -------------------------------------------------------------- |
+| power-switch    | Switch    | &#9745;  | Switches the light on or off.                                  |
+| brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| color           | Color     | &#9745;  | The color of the emitted light.                                |
+
+### Smoke detector
+
+The smoke detector warns you in case of fire.
+
+**Thing Type ID**: `smoke-detector`
+
+| Channel Type ID    | Item Type            | Writable | Description                                                                                       |
+| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
+| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+
 
 ## Limitations
 
@@ -133,7 +222,7 @@ The system password is set by you during your initial registration steps in the 
 A keystore file with a self-signed certificate is created automatically.
 This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
-*Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
+_Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing_.
 
 ## Getting the device IDs
 
@@ -141,15 +230,15 @@ Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB
 
 The log can also be called using the following command.
 
-```
+```bash
 tail -f /var/log/openhab/openhab.log /var/log/openhab/events.log
 ```
 
-Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via http://openhab:9001.
+Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via <http://openhab:9001>.
 
 Example:
 
-```
+```bash
 2020-08-11 12:42:49.490 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Heizung id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
 2020-08-11 12:42:49.495 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-RoomClimateControl- id=roomClimateControl_hz_1
 2020-08-11 12:42:49.497 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-VentilationService- id=ventilationService
@@ -169,7 +258,7 @@ Example:
 
 You define your Bosch devices by adding them either to a `.things` file in your `$OPENHAB_CONF/things` folder like this:
 
-```
+```java
 Bridge boschshc:shc:1 [ ipAddress="192.168.x.y", password="XXXXXXXXXX" ] {
   Thing in-wall-switch bathroom "Bathroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
   Thing in-wall-switch bedroom "Bedroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
@@ -193,7 +282,7 @@ Or by adding them via UI: Settings -> Things -> "+" -> Bosch Smart Home Binding.
 
 You define the items which should be linked to your Bosch devices via a `.items` file in your `$OPENHAB_CONF/items` folder like this:
 
-```
+```java
 Switch Bosch_Bathroom    "Bath Room"    { channel="boschshc:in-wall-switch:1:bathroom:power-switch" }
 Switch Bosch_Bedroom     "Bed Room"     { channel="boschshc:in-wall-switch:1:bedroom:power-switch" }
 Switch Bosch_Kitchen     "Kitchen"      { channel="boschshc:in-wall-switch:1:kitchen:power-switch" }

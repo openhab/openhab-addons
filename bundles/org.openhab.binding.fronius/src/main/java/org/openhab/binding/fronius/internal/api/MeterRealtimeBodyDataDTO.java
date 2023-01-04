@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,83 +17,89 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link MeterRealtimeBodyData} is responsible for storing
  * the "data" node of the JSON response
+ * 
+ * The main SerializedName values use Smart Meter 63A names
+ * The first SerializedName alternate names use Smart Meter 65A names
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 public class MeterRealtimeBodyDataDTO {
-    @SerializedName("Current_AC_Phase_1")
+    @SerializedName(value = "Current_AC_Phase_1", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_01_F32" })
     private double currentACPhase1;
-    @SerializedName("Current_AC_Phase_2")
+    @SerializedName(value = "Current_AC_Phase_2", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_02_F32" })
     private double currentACPhase2;
-    @SerializedName("Current_AC_Phase_3")
+    @SerializedName(value = "Current_AC_Phase_3", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_03_F32" })
     private double currentACPhase3;
     @SerializedName("Details")
     private MeterRealtimeDetailsDTO details;
-    @SerializedName("Enable")
+    @SerializedName(value = "Enable", alternate = { "COMPONENTS_MODE_ENABLE_U16" })
     private int enable;
-    @SerializedName("EnergyReactive_VArAC_Sum_Consumed")
+    @SerializedName(value = "EnergyReactive_VArAC_Sum_Consumed", alternate = {
+            "SMARTMETER_ENERGYREACTIVE_CONSUMED_SUM_F64" })
     private double energyReactiveVArACSumConsumed;
-    @SerializedName("EnergyReactive_VArAC_Sum_Produced")
+    @SerializedName(value = "EnergyReactive_VArAC_Sum_Produced", alternate = {
+            "SMARTMETER_ENERGYREACTIVE_PRODUCED_SUM_F64" })
     private double energyReactiveVArACSumProduced;
-    @SerializedName("EnergyReal_WAC_Minus_Absolute")
+    @SerializedName(value = "EnergyReal_WAC_Minus_Absolute", alternate = {
+            "SMARTMETER_ENERGYACTIVE_ABSOLUT_MINUS_F64" })
     private double energyRealWACMinusAbsolute;
-    @SerializedName("EnergyReal_WAC_Plus_Absolute")
+    @SerializedName(value = "EnergyReal_WAC_Plus_Absolute", alternate = { "SMARTMETER_ENERGYACTIVE_ABSOLUT_PLUS_F64" })
     private double energyRealWACPlusAbsolute;
-    @SerializedName("EnergyReal_WAC_Sum_Consumed")
+    @SerializedName(value = "EnergyReal_WAC_Sum_Consumed", alternate = { "SMARTMETER_ENERGYACTIVE_CONSUMED_SUM_F64" })
     private double energyRealWACSumConsumed;
-    @SerializedName("EnergyReal_WAC_Sum_Produced")
+    @SerializedName(value = "EnergyReal_WAC_Sum_Produced", alternate = { "SMARTMETER_ENERGYACTIVE_PRODUCED_SUM_F64" })
     private double energyRealWACSumProduced;
-    @SerializedName("Frequency_Phase_Average")
+    @SerializedName(value = "Frequency_Phase_Average", alternate = { "GRID_FREQUENCY_MEAN_F32" })
     private double frequencyPhaseAverage;
-    @SerializedName("Meter_Location_Current")
+    @SerializedName(value = "Meter_Location_Current", alternate = { "SMARTMETER_VALUE_LOCATION_U16" })
     private int meterLocationCurrent;
-    @SerializedName("PowerApparent_S_Phase_1")
+    @SerializedName(value = "PowerApparent_S_Phase_1", alternate = { "SMARTMETER_POWERAPPARENT_01_F64" })
     private double powerApparentSPhase1;
-    @SerializedName("PowerApparent_S_Phase_2")
+    @SerializedName(value = "PowerApparent_S_Phase_2", alternate = { "SMARTMETER_POWERAPPARENT_02_F64" })
     private double powerApparentSPhase2;
-    @SerializedName("PowerApparent_S_Phase_3")
+    @SerializedName(value = "PowerApparent_S_Phase_3", alternate = { "SMARTMETER_POWERAPPARENT_03_F64" })
     private double powerApparentSPhase3;
-    @SerializedName("PowerApparent_S_Sum")
+    @SerializedName(value = "PowerApparent_S_Sum", alternate = { "SMARTMETER_POWERAPPARENT_MEAN_SUM_F64" })
     private double powerApparentSSum;
-    @SerializedName("PowerFactor_Phase_1")
+    @SerializedName(value = "PowerFactor_Phase_1", alternate = { "SMARTMETER_FACTOR_POWER_01_F64" })
     private double powerFactorPhase1;
-    @SerializedName("PowerFactor_Phase_2")
+    @SerializedName(value = "PowerFactor_Phase_2", alternate = { "SMARTMETER_FACTOR_POWER_02_F64" })
     private double powerFactorPhase2;
-    @SerializedName("PowerFactor_Phase_3")
+    @SerializedName(value = "PowerFactor_Phase_3", alternate = { "SMARTMETER_FACTOR_POWER_03_F64" })
     private double powerFactorPhase3;
-    @SerializedName("PowerFactor_Sum")
+    @SerializedName(value = "PowerFactor_Sum", alternate = { "SMARTMETER_FACTOR_POWER_SUM_F64" })
     private double powerFactorSum;
-    @SerializedName("PowerReactive_Q_Phase_1")
+    @SerializedName(value = "PowerReactive_Q_Phase_1", alternate = { "SMARTMETER_POWERREACTIVE_01_F64" })
     private double powerReactiveQPhase1;
-    @SerializedName("PowerReactive_Q_Phase_2")
+    @SerializedName(value = "PowerReactive_Q_Phase_2", alternate = { "SMARTMETER_POWERREACTIVE_02_F64" })
     private double powerReactiveQPhase2;
-    @SerializedName("PowerReactive_Q_Phase_3")
+    @SerializedName(value = "PowerReactive_Q_Phase_3", alternate = { "SMARTMETER_POWERREACTIVE_03_F64" })
     private double powerReactiveQPhase3;
-    @SerializedName("PowerReactive_Q_Sum")
+    @SerializedName(value = "PowerReactive_Q_Sum", alternate = { "SMARTMETER_POWERREACTIVE_MEAN_SUM_F64" })
     private double powerReactiveQSum;
-    @SerializedName("PowerReal_P_Phase_1")
+    @SerializedName(value = "PowerReal_P_Phase_1", alternate = { "SMARTMETER_POWERACTIVE_01_F64" })
     private double powerRealPPhase1;
-    @SerializedName("PowerReal_P_Phase_2")
+    @SerializedName(value = "PowerReal_P_Phase_2", alternate = { "SMARTMETER_POWERACTIVE_02_F64" })
     private double powerRealPPhase2;
-    @SerializedName("PowerReal_P_Phase_3")
+    @SerializedName(value = "PowerReal_P_Phase_3", alternate = { "SMARTMETER_POWERACTIVE_03_F64" })
     private double powerRealPPhase3;
-    @SerializedName("PowerReal_P_Sum")
+    @SerializedName(value = "PowerReal_P_Sum", alternate = { "SMARTMETER_POWERACTIVE_MEAN_SUM_F64" })
     private double powerRealPSum;
     @SerializedName("TimeStamp")
     private int timeStamp;
-    @SerializedName("Visible")
+    @SerializedName(value = "Visible", alternate = { "COMPONENTS_MODE_VISIBLE_U16" })
     private int visible;
-    @SerializedName("Voltage_AC_PhaseToPhase_12")
+    @SerializedName(value = "Voltage_AC_PhaseToPhase_12", alternate = { "ACBRIDGE_VOLTAGE_MEAN_12_F32" })
     private double voltageACPhaseToPhase12;
-    @SerializedName("Voltage_AC_PhaseToPhase_23")
+    @SerializedName(value = "Voltage_AC_PhaseToPhase_23", alternate = { "ACBRIDGE_VOLTAGE_MEAN_23_F32" })
     private double voltageACPhaseToPhase23;
-    @SerializedName("Voltage_AC_PhaseToPhase_31")
+    @SerializedName(value = "Voltage_AC_PhaseToPhase_31", alternate = { "ACBRIDGE_VOLTAGE_MEAN_31_F32" })
     private double voltageACPhaseToPhase31;
-    @SerializedName("Voltage_AC_Phase_1")
+    @SerializedName(value = "Voltage_AC_Phase_1", alternate = { "SMARTMETER_VOLTAGE_01_F64" })
     private double voltageACPhase1;
-    @SerializedName("Voltage_AC_Phase_2")
+    @SerializedName(value = "Voltage_AC_Phase_2", alternate = { "SMARTMETER_VOLTAGE_02_F64" })
     private double voltageACPhase2;
-    @SerializedName("Voltage_AC_Phase_3")
+    @SerializedName(value = "Voltage_AC_Phase_3", alternate = { "SMARTMETER_VOLTAGE_03_F64" })
     private double voltageACPhase3;
 
     public double getCurrentACPhase1() {

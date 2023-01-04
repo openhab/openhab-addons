@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -303,7 +303,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         LightMessage lightMessage = (LightMessage) stateResponse;
 
         if (needsPropertyUpdate) {
-            // if we did not receive an ctmin/ctmax, then we probably don't need it
+            // if we did not receive a ctmin/ctmax, then we probably don't need it
             needsPropertyUpdate = false;
 
             Integer ctmax = lightMessage.ctmax;
@@ -464,7 +464,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-not-reachable");
                     thing.getChannels().stream().map(c -> c.getUID()).forEach(c -> updateState(c, UnDefType.UNDEF));
                 }
             }

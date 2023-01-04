@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,19 +27,13 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
-import org.openhab.binding.mqtt.handler.SystemBrokerHandler;
-import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MqttBrokerHandlerFactory} is responsible for creating things and thing
@@ -54,10 +48,7 @@ import org.slf4j.LoggerFactory;
 public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements MQTTTopicDiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, MqttBindingConstants.BRIDGE_TYPE_BROKER)
-            .collect(Collectors.toSet());
-
-    private final Logger logger = LoggerFactory.getLogger(MqttBrokerHandlerFactory.class);
+            .of(MqttBindingConstants.BRIDGE_TYPE_BROKER).collect(Collectors.toSet());
 
     /**
      * This Map provides a lookup between a Topic string (key) and a Set of MQTTTopicDiscoveryParticipants (value),
@@ -70,13 +61,6 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      */
     protected final Set<AbstractBrokerHandler> handlers = Collections
             .synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
-
-    private MqttService mqttService;
-
-    @Activate
-    public MqttBrokerHandlerFactory(@Reference MqttService mqttService) {
-        this.mqttService = mqttService;
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -98,18 +82,13 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (mqttService == null) {
-            throw new IllegalStateException("MqttService must be bound, before ThingHandlers can be created");
-        }
         if (!(thing instanceof Bridge)) {
             throw new IllegalStateException("A bridge type is expected");
         }
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         final AbstractBrokerHandler handler;
-        if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER)) {
-            handler = new SystemBrokerHandler((Bridge) thing, mqttService);
-        } else if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_BROKER)) {
+        if (thingTypeUID.equals(MqttBindingConstants.BRIDGE_TYPE_BROKER)) {
             handler = new BrokerHandler((Bridge) thing);
         } else {
             throw new IllegalStateException("Not supported " + thingTypeUID.toString());

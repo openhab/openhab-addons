@@ -1,0 +1,14 @@
+{
+	"smartlife.iot.lightStrip": {
+		"set_light_state": {
+			"color_temp": 5100,
+			"hue": 0,
+			"saturation": 0,
+			"on_off": 1,
+			"transition": 10
+		}
+	},
+	"context": {
+		"source": "12345668-1234-1234-1234-123456789012"
+	}
+}

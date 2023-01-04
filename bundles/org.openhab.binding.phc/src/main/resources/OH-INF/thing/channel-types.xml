@@ -90,13 +90,13 @@
 	<channel-type id="jrm-channel">
 		<item-type>Rollershutter</item-type>
 		<label>PHC JRM Channel</label>
-		<description>Channel to an JRM module.</description>
+		<description>Channel to a JRM module.</description>
 	</channel-type>
 
 	<channel-type id="jrmTime-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>JRM-time Channel</label>
-		<description>The Time in seconds for an JRM channel.</description>
+		<description>The Time in seconds for a JRM channel.</description>
 		<state min="1" max="65535"/>
 	</channel-type>
 

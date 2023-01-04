@@ -4,13 +4,16 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="printer">
 		<label>Printer</label>
-		<description>A IPP Printer</description>
+		<description>An IPP Printer</description>
 
 		<channels>
 			<channel id="jobs" typeId="jobs"/>
 			<channel id="waitingJobs" typeId="waitingJobs"/>
 			<channel id="doneJobs" typeId="doneJobs"/>
 		</channels>
+
+		<representation-property>uuid</representation-property>
+
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>Name</label>
@@ -32,19 +35,19 @@
 		<item-type>Number</item-type>
 		<label>Total Jobs</label>
 		<description>Total number of print jobs on the printer</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="waitingJobs">
 		<item-type>Number</item-type>
 		<label>Waiting Jobs</label>
 		<description>Number of waiting print jobs on the printer</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="doneJobs" advanced="true">
 		<item-type>Number</item-type>
 		<label>Done Jobs</label>
 		<description>Number of completed print jobs on the printer</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

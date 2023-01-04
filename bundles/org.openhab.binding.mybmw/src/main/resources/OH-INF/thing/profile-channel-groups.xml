@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="profile-values">
+		<label>Electric Charging Profile</label>
+		<description>Scheduled charging profiles</description>
+		<channels>
+			<channel id="climate" typeId="profile-climate-channel"/>
+			<channel id="mode" typeId="profile-mode-channel"/>
+			<channel id="prefs" typeId="profile-prefs-channel"/>
+			<channel id="control" typeId="profile-control-channel"/>
+			<channel id="target" typeId="profile-target-channel"/>
+			<channel id="limit" typeId="profile-limit-channel"/>
+			<channel id="window-start" typeId="window-start-channel"/>
+			<channel id="window-end" typeId="window-end-channel"/>
+			<channel id="timer1-departure" typeId="timer1-departure-channel"/>
+			<channel id="timer1-day-mon" typeId="timer1-day-mon-channel"/>
+			<channel id="timer1-day-tue" typeId="timer1-day-tue-channel"/>
+			<channel id="timer1-day-wed" typeId="timer1-day-wed-channel"/>
+			<channel id="timer1-day-thu" typeId="timer1-day-thu-channel"/>
+			<channel id="timer1-day-fri" typeId="timer1-day-fri-channel"/>
+			<channel id="timer1-day-sat" typeId="timer1-day-sat-channel"/>
+			<channel id="timer1-day-sun" typeId="timer1-day-sun-channel"/>
+			<channel id="timer1-enabled" typeId="timer1-enabled-channel"/>
+			<channel id="timer2-departure" typeId="timer2-departure-channel"/>
+			<channel id="timer2-day-mon" typeId="timer2-day-mon-channel"/>
+			<channel id="timer2-day-tue" typeId="timer2-day-tue-channel"/>
+			<channel id="timer2-day-wed" typeId="timer2-day-wed-channel"/>
+			<channel id="timer2-day-thu" typeId="timer2-day-thu-channel"/>
+			<channel id="timer2-day-fri" typeId="timer2-day-fri-channel"/>
+			<channel id="timer2-day-sat" typeId="timer2-day-sat-channel"/>
+			<channel id="timer2-day-sun" typeId="timer2-day-sun-channel"/>
+			<channel id="timer2-enabled" typeId="timer2-enabled-channel"/>
+			<channel id="timer3-departure" typeId="timer3-departure-channel"/>
+			<channel id="timer3-day-mon" typeId="timer3-day-mon-channel"/>
+			<channel id="timer3-day-tue" typeId="timer3-day-tue-channel"/>
+			<channel id="timer3-day-wed" typeId="timer3-day-wed-channel"/>
+			<channel id="timer3-day-thu" typeId="timer3-day-thu-channel"/>
+			<channel id="timer3-day-fri" typeId="timer3-day-fri-channel"/>
+			<channel id="timer3-day-sat" typeId="timer3-day-sat-channel"/>
+			<channel id="timer3-day-sun" typeId="timer3-day-sun-channel"/>
+			<channel id="timer3-enabled" typeId="timer3-enabled-channel"/>
+			<channel id="timer4-departure" typeId="timer4-departure-channel"/>
+			<channel id="timer4-day-mon" typeId="timer4-day-mon-channel"/>
+			<channel id="timer4-day-tue" typeId="timer4-day-tue-channel"/>
+			<channel id="timer4-day-wed" typeId="timer4-day-wed-channel"/>
+			<channel id="timer4-day-thu" typeId="timer4-day-thu-channel"/>
+			<channel id="timer4-day-fri" typeId="timer4-day-fri-channel"/>
+			<channel id="timer4-day-sat" typeId="timer4-day-sat-channel"/>
+			<channel id="timer4-day-sun" typeId="timer4-day-sun-channel"/>
+			<channel id="timer4-enabled" typeId="timer4-enabled-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

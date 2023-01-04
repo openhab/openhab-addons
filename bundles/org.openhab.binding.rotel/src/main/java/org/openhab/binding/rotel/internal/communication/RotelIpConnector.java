@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,17 +19,16 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
-import org.openhab.binding.rotel.internal.RotelModel;
+import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for communicating with the Rotel device through a IP connection or a serial over IP connection
+ * Class for communicating with the Rotel device through an IP connection or a serial over IP connection
  *
  * @author Laurent Garnier - Initial contribution
  */
@@ -48,13 +47,12 @@ public class RotelIpConnector extends RotelConnector {
      *
      * @param address the IP address of the projector
      * @param port the TCP port to be used
-     * @param model the projector model in use
-     * @param protocol the protocol to be used
+     * @param protocolHandler the protocol handler
      * @param readerThreadName the name of thread to be created
      */
-    public RotelIpConnector(String address, Integer port, RotelModel model, RotelProtocol protocol,
-            Map<RotelSource, String> sourcesLabels, String readerThreadName) {
-        super(model, protocol, sourcesLabels, false, readerThreadName);
+    public RotelIpConnector(String address, Integer port, RotelAbstractProtocolHandler protocolHandler,
+            String readerThreadName) {
+        super(protocolHandler, false, readerThreadName);
 
         this.address = address;
         this.port = port;
@@ -70,9 +68,7 @@ public class RotelIpConnector extends RotelConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new RotelReaderThread(this, readerThreadName);
-            setReaderThread(thread);
-            thread.start();
+            readerThread.start();
 
             this.clientSocket = clientSocket;
 

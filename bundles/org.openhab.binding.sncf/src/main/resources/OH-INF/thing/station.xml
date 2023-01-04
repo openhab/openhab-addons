@@ -10,13 +10,16 @@
 		</supported-bridge-type-refs>
 
 		<label>Station</label>
+		<description>Represents a station hosting some transportation mode.</description>
 
 		<channel-groups>
 			<channel-group id="arrivals" typeId="passage">
 				<label>Next Arrival</label>
+				<description>Information regarding the next arrival at the station.</description>
 			</channel-group>
 			<channel-group id="departures" typeId="passage">
 				<label>Next Departure</label>
+				<description>Information regarding the next departure from the station.</description>
 			</channel-group>
 		</channel-groups>
 
@@ -24,7 +27,8 @@
 
 		<config-description>
 			<parameter name="stopPointId" type="text" required="true">
-				<label>Station ID</label>
+				<label>Stop Point ID</label>
+				<description>The stop point ID of the station as defined by DIGITALSNCF.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -43,30 +47,35 @@
 	<channel-type id="direction">
 		<item-type>String</item-type>
 		<label>Direction</label>
+		<description>The direction of this route.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="lineName">
 		<item-type>String</item-type>
 		<label>Line</label>
+		<description>Name of the line (network + line number/letter)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="name" advanced="true">
 		<item-type>String</item-type>
 		<label>Name</label>
+		<description>Name of the line.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="network" advanced="true">
 		<item-type>String</item-type>
 		<label>Network</label>
+		<description>Name of the transportation network.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
+		<description>Timestamp of the future event.</description>
 		<category>time</category>
 		<state readOnly="true" pattern="%1$tH:%1$tM:%1$tS"/>
 	</channel-type>

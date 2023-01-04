@@ -11,9 +11,14 @@
 			train things.</description>
 
 		<config-description>
-			<parameter name="accessToken" type="text" required="true">
-				<label>Access Token</label>
-				<description>Access Token from Deutsche Bahn developer portal for accessing the webservice api.</description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client Id</label>
+				<description>Client ID from Application within DB API Marketplace for accessing the timetables webservice api.</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret (API Key)</label>
+				<description>Client Secret (API Key) from Application within DB API Marketplace for accessing the timetables
+					webservice api.</description>
 			</parameter>
 			<parameter name="evaNo" type="text" required="true" pattern="80\d{5,5}">
 				<label>EvaNo of Station</label>
@@ -24,7 +29,7 @@
 				<advanced>true</advanced>
 				<default>departures</default>
 				<label>Train Filter</label>
-				<description>Selects the trains that will be be displayed in this timetable. If not set only departures will be
+				<description>Selects the trains that will be displayed in this timetable. If not set only departures will be
 					provided.</description>
 				<options>
 					<option value="all">All</option>
@@ -45,23 +50,23 @@
 			<bridge-type-ref id="timetable"/>
 		</supported-bridge-type-refs>
 		<label>Train</label>
-		<description>Displays informations about an train within the given timetable at one station.</description>
+		<description>Displays information about a train within the given timetable at one station.</description>
 		<channel-groups>
 			<channel-group typeId="tripAttributes" id="trip">
 				<label>Trip</label>
-				<description>Contains all informations about the trip of the train.
+				<description>Contains all information about the trip of the train.
 				</description>
 			</channel-group>
 			<channel-group typeId="eventAttributes" id="arrival">
 				<label>Arrival</label>
-				<description>Contains all informations about the arrival of the train at the station.
+				<description>Contains all information about the arrival of the train at the station.
 					Channels may be empty, if the
 					trains starts at this station.
 				</description>
 			</channel-group>
 			<channel-group typeId="eventAttributes" id="departure">
 				<label>Departure</label>
-				<description>Contains all informations about the departure of the train at the station.
+				<description>Contains all information about the departure of the train at the station.
 					Channels may be empty, if the
 					trains ends at this station.
 				</description>
@@ -77,7 +82,7 @@
 
 	<channel-group-type id="tripAttributes">
 		<label>Trip Attributes</label>
-		<description>Contains all informations about the trip of the train.</description>
+		<description>Contains all information about the trip of the train.</description>
 		<channels>
 			<channel typeId="category" id="category"/>
 			<channel typeId="number" id="number"/>
@@ -89,7 +94,7 @@
 
 	<channel-group-type id="eventAttributes">
 		<label>Event Attributes</label>
-		<description>Contains all attributes for an event (arrival / departure) of an train at the station.</description>
+		<description>Contains all attributes for an event (arrival / departure) of a train at the station.</description>
 		<channels>
 			<channel typeId="planned-path" id="planned-path"/>
 			<channel typeId="changed-path" id="changed-path"/>
@@ -227,7 +232,7 @@
 		<item-type>String</item-type>
 		<label>Messages</label>
 		<description>Messages for this train. Contains all translated codes from the messages of the selected train stop.
-			Multiple messages will be separated with an single dash.</description>
+			Multiple messages will be separated with a single dash.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -246,7 +251,7 @@
 			For arrival, the path indicates the stations that come before the
 			current station. The first element then is the trip’s
 			start station. For departure, the path indicates the stations
-			that come after the current station. The last ele-ment
+			that come after the current station. The last element
 			in the path then is the trip’s destination station. Note that
 			the current station is never included in the path
 			(neither for arrival nor for departure).</description>
@@ -260,7 +265,7 @@
 			For arrival, the path indicates the stations that come before the
 			current station. The first element then is the trip’s
 			start station. For departure, the path indicates the stations
-			that come after the current station. The last ele-ment
+			that come after the current station. The last element
 			in the path then is the trip’s destination station. Note that
 			the current station is never included in the path
 			(neither for arrival nor for departure).</description>

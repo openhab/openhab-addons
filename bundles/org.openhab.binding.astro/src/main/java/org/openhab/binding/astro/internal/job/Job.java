@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,6 @@ public interface Job extends SchedulerRunnable, Runnable {
      */
     public static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt,
             List<String> events, String channelId, boolean configAlreadyApplied) {
-
         if (events.isEmpty()) {
             return;
         }

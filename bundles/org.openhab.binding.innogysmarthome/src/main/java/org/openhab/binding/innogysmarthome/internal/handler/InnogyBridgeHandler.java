@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -140,6 +140,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         logger.debug("Initializing innogy SmartHome BridgeHandler...");
+        logger.warn(
+                "The innogy SmartHome binding is deprecated and discontinued and will be removed with the next release of OpenHAB! Please migrate to the newer LIVISI SmartHome binding (which uses a local API which requires no backend servers and no internet connection).");
+
         final InnogyBridgeConfiguration bridgeConfiguration = getConfigAs(InnogyBridgeConfiguration.class);
         if (checkConfig(bridgeConfiguration)) {
             this.bridgeConfiguration = bridgeConfiguration;

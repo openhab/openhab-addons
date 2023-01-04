@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -490,6 +490,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             // The update of channels is delegated to each thing handler
             for (Thing thing : getThing().getThings()) {
+                if (!thing.isEnabled()) {
+                    continue;
+                }
                 ThingHandler handler = thing.getHandler();
                 if (handler instanceof FreeboxThingHandler) {
                     ((FreeboxThingHandler) handler).updateNetInfo(hosts);
@@ -512,6 +515,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             // The update of channels is delegated to each thing handler
             for (Thing thing : getThing().getThings()) {
+                if (!thing.isEnabled()) {
+                    continue;
+                }
                 ThingHandler handler = thing.getHandler();
                 if (handler instanceof FreeboxThingHandler) {
                     ((FreeboxThingHandler) handler).updateAirPlayDevice(devices);

@@ -173,7 +173,7 @@
 		<item-type>Number</item-type>
 		<label>Total Usage</label>
 		<description>Used energy in Watt hours</description>
-		<state pattern="%d Wh" readOnly="true"></state>
+		<state pattern="%.2f Wh" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="instantamp" advanced="true">

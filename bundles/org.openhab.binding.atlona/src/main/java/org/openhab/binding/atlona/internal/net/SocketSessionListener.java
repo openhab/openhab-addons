@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.atlona.internal.net;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface defining a listener to a {@link SocketSession} that will receive responses and/or exceptions from the
  * socket
  *
  * @author Tim Roberts - Initial contribution
  */
+@NonNullByDefault
 public interface SocketSessionListener {
     /**
      * Called when a command has completed with the response for the command

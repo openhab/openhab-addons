@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ipp.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,8 @@ public class IppBindingConstants {
 
     public static final String PRINTER_PARAMETER_URL = "url";
     public static final String PRINTER_PARAMETER_NAME = "name";
+    public static final String PRINTER_PARAMETER_UUID = "uuid";
     public static final String PRINTER_PARAMETER_REFRESH_INTERVAL = "refresh";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(PRINTER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PRINTER_THING_TYPE);
 }

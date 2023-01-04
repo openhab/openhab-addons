@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,7 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_DECT500 = "FRITZ_DECT_500";
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
     public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
+    public static final String DEVICE_DECT302 = "FRITZ_DECT_302";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
     public static final String DEVICE_DECT210 = "FRITZ_DECT_210";
@@ -67,6 +68,7 @@ public class AVMFritzBindingConstants {
     public static final ThingTypeUID DECT500_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT500);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
     public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
+    public static final ThingTypeUID DECT302_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT302);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
     public static final ThingTypeUID DECT300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT300);
     public static final ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
@@ -134,6 +136,8 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_NEXTTEMP = "next_temp";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_BATTERY = "battery_level";
+    public static final String CHANNEL_OBSTRUCTION_ALARM = "obstruction_alarm";
+    public static final String CHANNEL_TEMPERATURE_ALARM = "temperature_alarm";
     public static final String CHANNEL_CONTACT_STATE = "contact_state";
     public static final String CHANNEL_PRESS = "press";
     public static final String CHANNEL_LAST_CHANGE = "last_change";
@@ -179,8 +183,8 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Set.of(DECT400_THING_TYPE,
             DECT440_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT301_THING_TYPE,
-            COMETDECT_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT302_THING_TYPE,
+            DECT301_THING_TYPE, COMETDECT_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,

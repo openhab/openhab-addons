@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,6 +104,7 @@ class SlipBridgeAPI implements BridgeAPI {
     private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
     private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
     private final RunReboot slipRunReboot = new SCrunReboot();
+    private final GetProduct slipGetProductStatus = new SCgetProductStatus();
 
     /**
      * Constructor.
@@ -216,5 +217,10 @@ class SlipBridgeAPI implements BridgeAPI {
     @Override
     public @Nullable RunReboot runReboot() {
         return slipRunReboot;
+    }
+
+    @Override
+    public @Nullable GetProduct getProductStatus() {
+        return slipGetProductStatus;
     }
 }

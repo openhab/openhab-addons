@@ -93,12 +93,10 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description></description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description></description>
 			</parameter>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>

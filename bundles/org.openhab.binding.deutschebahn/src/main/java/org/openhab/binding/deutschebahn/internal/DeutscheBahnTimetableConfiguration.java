@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,9 +32,14 @@ import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 public class DeutscheBahnTimetableConfiguration {
 
     /**
-     * Access-Token.
+     * Client-ID for DB-API Application
      */
-    public String accessToken = "";
+    public String clientId = "";
+
+    /**
+     * Client-Secret for DB-API Application
+     */
+    public String clientSecret = "";
 
     /**
      * evaNo of the station to be queried.

@@ -18,6 +18,7 @@
 		</parameter>
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>(Optional) Serial Port to use for connecting directly to an individual Kaleidescape component.</description>
 			<advanced>true</advanced>

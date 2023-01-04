@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public class RadioThermostatConnector {
     public void getAsyncThermostatData(String resource) {
         String urlStr = buildRequestURL(resource);
 
-        httpClient.newRequest(urlStr).method(GET).timeout(20, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+        httpClient.newRequest(urlStr).method(GET).timeout(30, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null && !result.isFailed()) {

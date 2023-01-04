@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,9 +33,9 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsUpdate;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -122,7 +122,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
                 new Thread(() -> { // schedule asynchronous reboot
                     try {
-                        ShellyHttpApi api = new ShellyHttpApi(uid, config, httpClient);
+                        ShellyApiInterface api = th.getApi();
                         ShellySettingsUpdate result = api.firmwareUpdate(updateUrl);
                         String status = getString(result.status);
                         logger.info("{}: {}", th.getThingName(), getMessage("fwupdate.initiated", status));

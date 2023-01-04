@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -48,6 +49,8 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected @Nullable String unitOfMeasurement;
         @SerializedName("device_class")
         protected @Nullable String deviceClass;
+        @SerializedName("state_class")
+        protected @Nullable String stateClass;
         @SerializedName("force_update")
         protected boolean forceUpdate = false;
         @SerializedName("expire_after")
@@ -69,9 +72,14 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
+        String sc = channelConfiguration.stateClass;
 
         if (uom != null && !uom.isBlank()) {
-            value = new NumberValue(null, null, null, uom);
+            value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
+        } else if (sc != null && !sc.isBlank()) {
+            // see state_class at https://developers.home-assistant.io/docs/core/entity/sensor#properties
+            // > If not None, the sensor is assumed to be numerical
+            value = new NumberValue(null, null, null, null);
         } else {
             value = new TextValue();
         }

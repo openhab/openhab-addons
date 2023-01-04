@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonService;
 import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.MowerCommand;
@@ -144,7 +145,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Converts a Gardena property value to a openHAB state.
+     * Converts a Gardena property value to an openHAB state.
      */
     private @Nullable State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         if (isLocalDurationCommand(channelUID)) {
@@ -284,7 +285,9 @@ public class GardenaThingHandler extends BaseThingHandler {
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
-        if (!CONNECTION_STATUS_ONLINE.equals(device.common.attributes.rfLinkState.value)) {
+        CommonService commonServiceAttributes = device.common.attributes;
+        if (commonServiceAttributes == null
+                || !CONNECTION_STATUS_ONLINE.equals(commonServiceAttributes.rfLinkState.value)) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>Xiaomi Mi Gateway</label>
+
+		<channel-groups>
+			<channel-group id="network" typeId="network"/>
+			<channel-group id="actions" typeId="basicactions"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Xiaomi</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:miio:config"/>
+	</bridge-type>
+
+	<channel-group-type id="basicactions">
+		<label>Actions</label>
+		<channels>
+			<channel id="commands" typeId="commands"/>
+			<channel id="rpc" typeId="rpc"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

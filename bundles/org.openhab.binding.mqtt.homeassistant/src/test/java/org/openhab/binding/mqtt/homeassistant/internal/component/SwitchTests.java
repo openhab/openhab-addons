@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.core.library.types.OnOffType;
@@ -26,10 +27,11 @@ import org.openhab.core.library.types.OnOffType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class SwitchTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void testSwitchWithStateAndCommand() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
@@ -90,6 +92,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.ON);
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testSwitchWithCommand() {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
@@ -117,6 +120,7 @@ public class SwitchTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

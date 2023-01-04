@@ -8,7 +8,6 @@ It connects to many other devices through serial ports or wired contacts and exp
 
 The OmniPro/Lumina controller acts as a "bridge" for accessing other connected devices.
 
-
 | Omni type                  | Hardware Type                                    | Things                            |
 |:---------------------------|:-------------------------------------------------|:----------------------------------|
 | Controller                 | Omni (Pro II, IIe, LTe), Lumina                  | `controller` (omni, lumina)       |
@@ -25,8 +24,6 @@ The OmniPro/Lumina controller acts as a "bridge" for accessing other connected d
 | Output                     | Built-in/Hardwire                                | `output`                          |
 | Access Control Reader Lock | Leviton Access Control Reader                    | `lock`                            |
 
-
-
 ## Discovery
 
 ### Controller
@@ -39,12 +36,14 @@ Once a connection can be established to a controller, all connected devices will
 
 ## Thing Configuration
 
+<!-- markdownlint-disable MD038 -->
 An Omni or Lumina controller requires the IP address (`ipAddress`), optional port (`port` defaults to 4369), and 2 encryption keys (`key1`, `key2`).
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
+<!-- markdownlint-enable MD038 -->
 
 In the thing file, this looks like:
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     // Add your things here
 }
@@ -56,77 +55,76 @@ The devices are identified by the device number that the OmniLink bridge assigns
 
 The devices support some of the following channels:
 
-| Channel Type ID             | Item Type            | Description                                                                          | Thing types supporting this channel                 |
-|-----------------------------|----------------------|--------------------------------------------------------------------------------------|-----------------------------------------------------|
-| `activate_keypad_emergency` | Number               | Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. | `area`                                              |
-| `alarm_burglary`            | Switch               | Indicates if a burglary alarm is active.                                             | `area`                                              |
-| `alarm_fire`                | Switch               | Indicates if a fire alarm is active.                                                 | `area`                                              |
-| `alarm_gas`                 | Switch               | Indicates if a gas alarm is active.                                                  | `area`                                              |
-| `alarm_auxiliary`           | Switch               | Indicates if a auxiliary alarm is active.                                            | `area`                                              |
-| `alarm_freeze`              | Switch               | Indicates if a freeze alarm is active.                                               | `area`                                              |
-| `alarm_water`               | Switch               | Indicates if a water alarm is active.                                                | `area`                                              |
-| `alarm_duress`              | Switch               | Indicates if a duress alarm is active.                                               | `area`                                              |
-| `alarm_temperature`         | Switch               | Indicates if a temperature alarm is active.                                          | `area`                                              |
-| `mode`                      | Number               | Represents the area security mode.                                                   | `area`, `lumina_area`                               |
-| `disarm`                    | String               | Send a 4 digit user code to disarm the system.                                       | `area`                                              |
-| `day`                       | String               | Send a 4 digit user code to arm the system to day.                                   | `area`                                              |
-| `night`                     | String               | Send a 4 digit user code to arm the system to night.                                 | `area`                                              |
-| `away`                      | String               | Send a 4 digit user code to arm the system to away.                                  | `area`                                              |
-| `vacation`                  | String               | Send a 4 digit user code to arm the system to vacation.                              | `area`                                              |
-| `day_instant`               | String               | Send a 4 digit user code to arm the system to day instant.                           | `area`                                              |
-| `night_delayed`             | String               | Send a 4 digit user code to arm the system to night delayed.                         | `area`                                              |
-| `home`                      | String               | Send a 4 digit user code to set the system to home.                                  | `lumina_area`                                       |
-| `sleep`                     | String               | Send a 4 digit user code to set the system to sleep.                                 | `lumina_area`                                       |
-| `away`                      | String               | Send a 4 digit user code to set the system to away.                                  | `lumina_area`                                       |
-| `vacation`                  | String               | Send a 4 digit user code to set the system to vacation.                              | `lumina_area`                                       |
-| `party`                     | String               | Send a 4 digit user code to set the system to party.                                 | `lumina_area`                                       |
-| `special`                   | String               | Send a 4 digit user code to set the system to special.                               | `lumina_area`                                       |
-| `source_text_{1,2,3,4,5,6}` | String               | A line of metadata from this audio source.                                           | `audio_source`                                      |
-| `polling`                   | Switch               | Enable or disable polling of this audio source.                                      | `audio_source`                                      |
-| `zone_power`                | Switch               | Power status of this audio zone.                                                     | `audio_zone`                                        |
-| `zone_mute`                 | Switch               | Mute status of this audio zone.                                                      | `audio_zone`                                        |
-| `zone_volume`               | Dimmer               | Volume level of this audio zone.                                                     | `audio_zone`                                        |
-| `zone_source`               | Number               | Source for this audio zone.                                                          | `audio_zone`                                        |
-| `zone_control`              | Player               | Control the audio zone, e.g. start/stop/next/previous.                               | `audio_zone`                                        |
-| `sysdate`                   | DateTime             | Set controller date/time.                                                            | `controller`                                        |
-| `last_log`                  | String               | Last log message on the controller, represented in JSON.                             | `controller`                                        |
-| `enable_disable_beeper`     | Switch               | Enable/Disable the beeper for this/all console(s).                                   | `controller`, `console`                             |
-| `beep`                      | Switch               | Send a beep command to this/all console(s).                                          | `controller`, `console`                             |
-| `press`                     | Switch               | Sends a button event to the controller.                                              | `button`                                            |
-| `low_setpoint`              | Number               | The current low setpoint for this humidity/temperature sensor.                       | `temp_sensor`, `humidity_sensor`                    |
-| `high_setpoint`             | Number               | The current high setpoint for this humidity/temperature sensor.                      | `temp_sensor`, `humidity_sensor`                    |
-| `temperature`               | Number:Temperature   | The current temperature at this thermostat/temperature sensor.                       | `thermostat`, `temp_sensor`                         |
-| `humidity`                  | Number:Dimensionless | The current relative humidity at this thermostat/humidity sensor.                    | `thermostat`, `humidity_sensor`                     |
-| `freeze_alarm`              | Contact              | Closed when freeze alarm is triggered by this thermostat.                            | `thermostat`                                        |
-| `comm_failure`              | Contact              | Closed during a communications failure with this thermostat.                         | `thermostat`                                        |
-| `outdoor_temperature`       | Number:Temperature   | The current outdoor temperature detected by this thermostat.                         | `thermostat`                                        |
-| `heat_setpoint`             | Number:Temperature   | The current low/heating setpoint of this thermostat.                                 | `thermostat`                                        |
-| `cool_setpoint`             | Number:Temperature   | The current high/cooling setpoint of this thermostat.                                | `thermostat`                                        |
-| `humidify_setpoint`         | Number:Dimensionless | The current low/humidify setpoint for this thermostat.                               | `thermostat`                                        |
-| `dehumidify_setpoint`       | Number:Dimensionless | The current high/dehumidify setpoint for this thermostat.                            | `thermostat`                                        |
-| `system_mode`               | Number               | The current system mode of this thermostat.                                          | `thermostat`                                        |
-| `fan_mode`                  | Number               | The current fan mode of this thermostat.                                             | `thermostat`                                        |
-| `hold_status`               | Number               | The current hold status of this thermostat.                                          | `thermostat`                                        |
-| `status`                    | Number               | The current numeric status of this thermostat.                                       | `thermostat`                                        |
-| `level`                     | Dimmer               | Increase/Decrease the level of this unit/dimmable unit/UPB unit.                     | `unit`, `dimmable`, `upb`                           |
-| `switch`                    | Switch               | Turn this unit/dimmable unit/flag/output/room on/off.                                | `unit`, `dimmable`, `upb`, `flag`, `output`, `room` |
-| `on_for_seconds`            | Number               | Turn on this unit for a specified number of seconds.                                 | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `off_for_seconds`           | Number               | Turn off this unit for a specified number of seconds.                                | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `on_for_minutes`            | Number               | Turn on this unit for a specified number of minutes.                                 | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `off_for_minutes`           | Number               | Turn off this unit for a specified number of minutes.                                | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `on_for_hours`              | Number               | Turn on this unit for a specified number of hours.                                   | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `off_for_hours`             | Number               | Turn off this unit for a specified number of hours.                                  | `unit`, `dimmable`, `upb`, `flag`, `output`         |
-| `upb_status`                | String               | Send a UPB status request message for this UPB unit to the controller.               | `upb`                                               |
-| `value`                     | Number               | Numeric value of this flag.                                                          | `flag`                                              |
-| `scene_{a,b,c,d}`           | Switch               | Turn this scene on/off.                                                              | `room`                                              |
-| `state`                     | Number               | The current state of this room.                                                      | `room`                                              |
-| `contact`                   | Contact              | Contact state information of this zone.                                              | `zone`                                              |
-| `current_condition`         | Number               | Current condition of this zone.                                                      | `zone`                                              |
-| `latched_alarm_status`      | Number               | Latched alarm status of this zone.                                                   | `zone`                                              |
-| `arming_status`             | Number               | Arming status of this zone.                                                          | `zone`                                              |
-| `bypass`                    | String               | Send a 4 digit user code to bypass this zone.                                        | `zone`                                              |
-| `restore`                   | String               | Send a 4 digit user code to restore this zone.                                       | `zone`                                              |
-
+| Channel Type ID             | Item Type            | Description                                                                                  | Thing types supporting this channel                 |
+|-----------------------------|----------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| `activate_keypad_emergency` | Number               | Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models.         | `area`                                              |
+| `alarm_burglary`            | Switch               | Indicates if a burglary alarm is active.                                                     | `area`                                              |
+| `alarm_fire`                | Switch               | Indicates if a fire alarm is active.                                                         | `area`                                              |
+| `alarm_gas`                 | Switch               | Indicates if a gas alarm is active.                                                          | `area`                                              |
+| `alarm_auxiliary`           | Switch               | Indicates if an auxiliary alarm is active.                                                   | `area`                                              |
+| `alarm_freeze`              | Switch               | Indicates if a freeze alarm is active.                                                       | `area`                                              |
+| `alarm_water`               | Switch               | Indicates if a water alarm is active.                                                        | `area`                                              |
+| `alarm_duress`              | Switch               | Indicates if a duress alarm is active.                                                       | `area`                                              |
+| `alarm_temperature`         | Switch               | Indicates if a temperature alarm is active.                                                  | `area`                                              |
+| `mode`                      | Number               | Represents the area security mode.                                                           | `area`, `lumina_area`                               |
+| `disarm`                    | String               | Send a 4 digit user code to disarm the system.                                               | `area`                                              |
+| `day`                       | String               | Send a 4 digit user code to arm the system to day.                                           | `area`                                              |
+| `night`                     | String               | Send a 4 digit user code to arm the system to night.                                         | `area`                                              |
+| `away`                      | String               | Send a 4 digit user code to arm the system to away.                                          | `area`                                              |
+| `vacation`                  | String               | Send a 4 digit user code to arm the system to vacation.                                      | `area`                                              |
+| `day_instant`               | String               | Send a 4 digit user code to arm the system to day instant.                                   | `area`                                              |
+| `night_delayed`             | String               | Send a 4 digit user code to arm the system to night delayed.                                 | `area`                                              |
+| `home`                      | String               | Send a 4 digit user code to set the system to home.                                          | `lumina_area`                                       |
+| `sleep`                     | String               | Send a 4 digit user code to set the system to sleep.                                         | `lumina_area`                                       |
+| `away`                      | String               | Send a 4 digit user code to set the system to away.                                          | `lumina_area`                                       |
+| `vacation`                  | String               | Send a 4 digit user code to set the system to vacation.                                      | `lumina_area`                                       |
+| `party`                     | String               | Send a 4 digit user code to set the system to party.                                         | `lumina_area`                                       |
+| `special`                   | String               | Send a 4 digit user code to set the system to special.                                       | `lumina_area`                                       |
+| `source_text_{1,2,3,4,5,6}` | String               | A line of metadata from this audio source.                                                   | `audio_source`                                      |
+| `polling`                   | Switch               | Enable or disable polling of this audio source.                                              | `audio_source`                                      |
+| `zone_power`                | Switch               | Power status of this audio zone.                                                             | `audio_zone`                                        |
+| `zone_mute`                 | Switch               | Mute status of this audio zone.                                                              | `audio_zone`                                        |
+| `zone_volume`               | Dimmer               | Volume level of this audio zone.                                                             | `audio_zone`                                        |
+| `zone_source`               | Number               | Source for this audio zone.                                                                  | `audio_zone`                                        |
+| `zone_control`              | Player               | Control the audio zone, e.g. start/stop/next/previous.                                       | `audio_zone`                                        |
+| `system_date`               | DateTime             | Controller date/time. See [Rule Actions](#rule-actions) for how to set controller date/time. | `controller`                                        |
+| `last_log`                  | String               | Last log message on the controller, represented in JSON.                                     | `controller`                                        |
+| `enable_disable_beeper`     | Switch               | Enable/Disable the beeper for this/all console(s).                                           | `controller`, `console`                             |
+| `beep`                      | Switch               | Send a beep command to this/all console(s).                                                  | `controller`, `console`                             |
+| `press`                     | Switch               | Sends a button event to the controller.                                                      | `button`                                            |
+| `low_setpoint`              | Number               | The current low setpoint for this humidity/temperature sensor.                               | `temp_sensor`, `humidity_sensor`                    |
+| `high_setpoint`             | Number               | The current high setpoint for this humidity/temperature sensor.                              | `temp_sensor`, `humidity_sensor`                    |
+| `temperature`               | Number:Temperature   | The current temperature at this thermostat/temperature sensor.                               | `thermostat`, `temp_sensor`                         |
+| `humidity`                  | Number:Dimensionless | The current relative humidity at this thermostat/humidity sensor.                            | `thermostat`, `humidity_sensor`                     |
+| `freeze_alarm`              | Contact              | Closed when freeze alarm is triggered by this thermostat.                                    | `thermostat`                                        |
+| `comm_failure`              | Contact              | Closed during a communications failure with this thermostat.                                 | `thermostat`                                        |
+| `outdoor_temperature`       | Number:Temperature   | The current outdoor temperature detected by this thermostat.                                 | `thermostat`                                        |
+| `heat_setpoint`             | Number:Temperature   | The current low/heating setpoint of this thermostat.                                         | `thermostat`                                        |
+| `cool_setpoint`             | Number:Temperature   | The current high/cooling setpoint of this thermostat.                                        | `thermostat`                                        |
+| `humidify_setpoint`         | Number:Dimensionless | The current low/humidify setpoint for this thermostat.                                       | `thermostat`                                        |
+| `dehumidify_setpoint`       | Number:Dimensionless | The current high/dehumidify setpoint for this thermostat.                                    | `thermostat`                                        |
+| `system_mode`               | Number               | The current system mode of this thermostat.                                                  | `thermostat`                                        |
+| `fan_mode`                  | Number               | The current fan mode of this thermostat.                                                     | `thermostat`                                        |
+| `hold_status`               | Number               | The current hold status of this thermostat.                                                  | `thermostat`                                        |
+| `status`                    | Number               | The current numeric status of this thermostat.                                               | `thermostat`                                        |
+| `level`                     | Dimmer               | Increase/Decrease the level of this unit/dimmable unit/UPB unit.                             | `unit`, `dimmable`, `upb`                           |
+| `switch`                    | Switch               | Turn this unit/dimmable unit/flag/output/room on/off.                                        | `unit`, `dimmable`, `upb`, `flag`, `output`, `room` |
+| `on_for_seconds`            | Number               | Turn on this unit for a specified number of seconds.                                         | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `off_for_seconds`           | Number               | Turn off this unit for a specified number of seconds.                                        | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `on_for_minutes`            | Number               | Turn on this unit for a specified number of minutes.                                         | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `off_for_minutes`           | Number               | Turn off this unit for a specified number of minutes.                                        | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `on_for_hours`              | Number               | Turn on this unit for a specified number of hours.                                           | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `off_for_hours`             | Number               | Turn off this unit for a specified number of hours.                                          | `unit`, `dimmable`, `upb`, `flag`, `output`         |
+| `upb_status`                | String               | Send a UPB status request message for this UPB unit to the controller.                       | `upb`                                               |
+| `value`                     | Number               | Numeric value of this flag.                                                                  | `flag`                                              |
+| `scene_{a,b,c,d}`           | Switch               | Turn this scene on/off.                                                                      | `room`                                              |
+| `state`                     | Number               | The current state of this room.                                                              | `room`                                              |
+| `contact`                   | Contact              | Contact state information of this zone.                                                      | `zone`                                              |
+| `current_condition`         | Number               | Current condition of this zone.                                                              | `zone`                                              |
+| `latched_alarm_status`      | Number               | Latched alarm status of this zone.                                                           | `zone`                                              |
+| `arming_status`             | Number               | Arming status of this zone.                                                                  | `zone`                                              |
+| `bypass`                    | String               | Send a 4 digit user code to bypass this zone.                                                | `zone`                                              |
+| `restore`                   | String               | Send a 4 digit user code to restore this zone.                                               | `zone`                                              |
 
 ### Trigger Channels
 
@@ -146,12 +144,59 @@ The devices support some of the following trigger channels:
 | `activated_event`             | Event sent when a button is activated.                                               | `button`                            |
 | `switch_press_event`          | Event sent when an ALC, UPB, Radio RA, or Starlite switch is pressed.                | `dimmable`, `upb`                   |
 
+## Rule Actions
+
+This binding includes a rule action, which allows synchronizing the controller time to match the openHAB system time with a user specified zone.
+There is a separate instance for each contoller, which can be retrieved through:
+
+:::: tabs
+
+::: tab JavaScript
+
+``` javascript
+var omnilinkActions = actions.get("omnilink", "omnilink:controller:home");
+```
+
+:::
+
+::: tab DSL
+
+``` php
+val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
+```
+
+:::
+
+::::
+
+where the first parameter always has to be `omnilink` and the second is the full Thing UID of the controller that should be used.
+Once this action instance is retrieved, you can invoke the `synchronizeControllerTime(String zone)` method on it:
+
+:::: tabs
+
+::: tab JavaScript
+
+``` javascript
+omnilinkActions.synchronizeControllerTime("America/Denver");
+```
+
+:::
+
+::: tab DSL
+
+``` php
+omnilinkActions.synchronizeControllerTime("America/Denver")
+```
+
+:::
+
+::::
 
 ## Full Example
 
 ### Example `omnilink.things`
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     Thing area         MainArea         "Main Area"              @   "Home"                    [ number=1 ]
     Thing upb          UpKitTable       "Table Lights"           @   "Upstairs Kitchen"        [ number=4 ]
@@ -177,7 +222,7 @@ Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXX
 
 ### Example `omnilink.items`
 
-```
+```java
 /*
  * Alarms / Areas
  */
@@ -253,12 +298,12 @@ Switch   MainButton   "Toggle button [%s]"   <switch>   {channel="omnilink:butto
 /*
  * Other OmniPro items
  */
-DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="omnilink:controller:home:sysdate"}
+DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="omnilink:controller:home:system_date"}
 ```
 
 ### Example `therm-status.map`
 
-```
+```text
 0=Idle
 1=Heating
 2=Cooling
@@ -266,7 +311,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-tempmode.map`
 
-```
+```text
 0=Off
 1=Heat
 2=Cool
@@ -276,7 +321,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-fanmode.map`
 
-```
+```text
 0=Auto
 1=On
 2=Cycle
@@ -284,7 +329,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-holdmode.map`
 
-```
+```text
 0=Off
 1=Hold
 2=Vacation hold
@@ -292,7 +337,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `area-modes.map`
 
-```
+```text
 0=Off
 1=Day
 2=Night
@@ -307,15 +352,4 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 13=Arming day instant
 14=Arming night delay
 =Unknown
-```
-
-### Example `omnilink.rules`
-
-```
-rule "Update OmniPro Time"
-when
-  Time cron "0 0 0/1 1/1 * ? *"
-then
-  OmniProTime.sendCommand( new DateTimeType() )
-end
 ```

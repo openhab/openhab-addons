@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,8 +99,9 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onDeviceAdded(AVMFritzBaseModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, bridgeHandler.getThingTypeId(device));
-        if (getSupportedThingTypes().contains(thingTypeUID)) {
+        String id = bridgeHandler.getThingTypeId(device);
+        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
+        if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
                     bridgeHandler.getThingName(device));
             onDeviceAddedInternal(thingUID, device);

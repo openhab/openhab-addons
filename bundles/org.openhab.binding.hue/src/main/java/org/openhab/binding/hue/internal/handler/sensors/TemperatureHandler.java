@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.hue.internal.handler.sensors;
 
-import static org.openhab.binding.hue.internal.FullSensor.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.dto.FullSensor.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
-import org.openhab.binding.hue.internal.TemperatureConfigUpdate;
+import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.dto.TemperatureConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -39,7 +38,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class TemperatureHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_TEMPERATURE_SENSOR);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_TEMPERATURE_SENSOR);
 
     public TemperatureHandler(Thing thing) {
         super(thing);
@@ -63,7 +63,7 @@ public class TemperatureHandler extends HueSensorHandler {
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {
-            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LIGHT_LEVEL_THRESHOLD_DARK));
+            config.put(CONFIG_LED_INDICATION, sensor.getConfig().get(CONFIG_LED_INDICATION));
         }
     }
 }

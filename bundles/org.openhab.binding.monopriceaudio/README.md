@@ -7,8 +7,8 @@ Activating the 'Page All Zones' feature can only be done through the +12v trigge
 
 The binding supports two different kinds of connections:
 
-* serial connection,
-* serial over IP connection
+- serial connection,
+- serial over IP connection
 
 For users without a serial port on the server side, you can use a USB to serial adapter.
 
@@ -18,8 +18,8 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the amplifier controller.
-It has the `amplifier` id.
+Monoprice 10761 & 39261 and Dayton Audio DAX66 Amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps, 6 source inputs.
+Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.
 
 ## Discovery
 
@@ -53,13 +53,13 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
-* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
+- On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
+- See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 8080 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
-```
+```text
 8080:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
 ```
 
@@ -88,7 +88,7 @@ The following channels are available:
 
 monoprice.things:
 
-```
+```java
 // serial port connection
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
@@ -99,7 +99,7 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=8080,
 
 monoprice.items:
 
-```
+```java
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
 Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
@@ -121,7 +121,7 @@ Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:my
 
 monoprice.sitemap:
 
-```
+```perl
 sitemap monoprice label="Audio Control" {
     Frame label="All Zones" {
         Switch item=all_allpower label="All Zones On" mappings=[ON=" "]
@@ -130,7 +130,7 @@ sitemap monoprice label="Audio Control" {
         Setpoint item=all_volume minValue=0 maxValue=100 step=1
         Switch item=all_mute
     }
-    
+
     Frame label="Zone 1" {
         Switch item=z1_power
         Selection item=z1_source visibility=[z1_power==ON]
@@ -144,7 +144,7 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_page label="Page Active: [%s]" visibility=[z1_power==ON]
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
-    
+
     // repeat for zones 2-18 (substitute z1)
 }
 ```

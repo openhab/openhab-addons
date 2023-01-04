@@ -174,7 +174,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Light Brightness</label>
 		<description>The brightness level of the fan's light</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 	<channel-type id="light-auto">
 		<item-type>Switch</item-type>

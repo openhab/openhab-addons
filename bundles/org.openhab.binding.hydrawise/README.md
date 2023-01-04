@@ -6,71 +6,69 @@ The Hydrawise binding allows monitoring and control of [Hunter Industries's](htt
 
 ## Supported Things
 
-
 ### Account Bridge Thing
-    
-The Account Bridge Thing type represents the user's account on the Hydrawise cloud service. The bridge can have one or more child [Controllers](#Controller-Thing) linked.
+
+The Account Bridge Thing type represents the user's account on the Hydrawise cloud service. The bridge can have one or more child [Controllers](#controller-thing) linked.
 
 An account must be manually added and configured.
 
 ### Controller Thing
 
-Controller Things are automatically discovered once an [Account Bridge](#Account-Bridge-Thing) has be properly configured.
+Controller Things are automatically discovered once an [Account Bridge](#account-bridge-thing) has be properly configured.
 
 The Controller Thing type is the primary way most users will control and monitor their irrigation system.
 This allows full control over zones, sensors and weather forecasts.  
-Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules. 
+Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
 
-Controller Things require a parent [Account Bridge](#Account-Bridge-Thing)
+Controller Things require a parent [Account Bridge](#account-bridge-thing)
 
 #### Controller Thing Supported Channel Groups
 
 | channel group ID                              |
 |-----------------------------------------------|
-| [Controller](#Cloud-Controller-Channel-Group) |
-| [Zones](#Zone-Channel-Group)                  |
-| [All Zones](#All-Zones-Channel-Group)         |
-| [Sensor](#Sensor-Channel-Group)               |
-| [Forecast](#Sensor-Channel-Group)             |
-     
+| [Controller](#controller-thing-1) |
+| [Zones](#zone-channel-group)                  |
+| [All Zones](#all-zones-channel-group)         |
+| [Sensor](#sensor-channel-group)               |
+| [Forecast](#forecast-channel-group)             |
+
 ### Local Thing
 
-The Local Thing type uses an undocumented API that allows direct HTTP access to a irrigation controller on the user's network.  
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.  
 This provides a subset of features compared to the Cloud Thing type limited to basic zone control.  
-Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state. 
+Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state.
 
 Local control may not be available on later Hydrawise controller firmware versions.
 
-Use Cases    
+Use Cases
 
-* The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
-* This is also useful if you wish to not use the cloud scheduling  at all and use openHAB as the irrigation scheduling system.
+- The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
+- This is also useful if you wish to not use the cloud scheduling  at all and use openHAB as the irrigation scheduling system.
 
 #### Local Thing Supported Channel Groups
 
 | channel group ID                      |
 |---------------------------------------|
-| [Zones](#Zone-Channel-Group)          |
-| [All Zones](#All-Zones-Channel-Group) |
+| [Zones](#zone-channel-group)          |
+| [All Zones](#all-zones-channel-group) |
 
 ## Thing Configuration
 
 ### Account Thing
 
-| Configuration Name | type    | required | Comments                                                                                                                 |
-|--------------------|---------|----------|--------------------------------------------------------------------------------------------------------------------------|
-| userName           | String  | False    | The Hydrawise account user name                                                                                          |
-| password           | String  | False    | The Hydrawise account password                                                                                           |
-| savePassword       | Boolean | False    | By default the password will be not be persisted after the first login attempt unless this is true, defaults to false    |
-| refresh            | Integer | False    | Defaults to a 60 second polling rate, more frequent polling may cause the service to deny requests                       |
-| refreshToken       | Boolean | False    | A oAuth refresh token, this will be automatically configured after the first login and updated as the token is refreshed |
+| Configuration Name | type    | required | Comments                                                                                                                  |
+|--------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------------|
+| userName           | String  | False    | The Hydrawise account user name                                                                                           |
+| password           | String  | False    | The Hydrawise account password                                                                                            |
+| savePassword       | Boolean | False    | By default the password will be not be persisted after the first login attempt unless this is true, defaults to false     |
+| refresh            | Integer | False    | Defaults to a 60 second polling rate, more frequent polling may cause the service to deny requests                        |
+| refreshToken       | Boolean | False    | An oAuth refresh token, this will be automatically configured after the first login and updated as the token is refreshed |
 
 ### Controller Thing
 
 | Configuration Name | type    | required | Comments             |
 |--------------------|---------|----------|----------------------|
 | controllerId       | Integer | True     | ID of the controller |
-
 
 ### Local Thing
 
@@ -131,10 +129,10 @@ A single all zone group are supported per Cloud or Local Thing
 |------------------|------------------------|
 | allzones         | commands for all zones |
 
-
 ### Channels
 
 Channels uses across zones, sensors and forecasts
+
 | channel ID                 | type               | Groups         | description                                   | Read Write |
 |----------------------------|--------------------|----------------|-----------------------------------------------|------------|
 | name                       | String             | zone, sensor   | Descriptive name                              | R          |
@@ -161,10 +159,9 @@ Channels uses across zones, sensors and forecasts
 | precipitation              | Number             | forecast       | Daily precipitation amount                    | R          |
 | probabilityofprecipitation | Number             | forecast       | Daily probability of precipitation percentage | R          |
 
-
 ## Full Example
 
-```
+```java
 Group Sprinkler             "Sprinkler"
 Group SprinklerController   "Controller"    (Sprinkler)
 Group SprinklerZones        "Zones"         (Sprinkler)
@@ -172,7 +169,7 @@ Group SprinklerSensors      "Sensors"       (Sprinkler)
 Group SprinkerForecast      "Forecast"      (Sprinkler)
 
 String SprinkerControllerStatus "Status [%s]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#status"}
-Number SprinkerControllerLastContact "Last Contact [%d]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#lastContact"}
+Number SprinkerControllerLastContact "Last Contact [%d]" (SprinklerController) {channel="hydrawise:controller:myaccount:123456:controller#lastcontact"}
 
 Switch SprinklerSensor1 "Sprinler Sensor" (SprinklerSensors) {channel="hydrawise:controller:myaccount:123456:sensor1#active"}
 
@@ -211,4 +208,3 @@ DateTime SprinklerZone3StartTime "3 Left of Drive Lawn Start Time" (SprinklerZon
 Number SprinklerZone3TimeLeft "3 Left of Drive Lawn Time Left" (SprinklerZone3) {channel="hydrawise:controller:myaccount:123456:zone3#timeleft"}
 String SprinklerZone3Icon "3 Left of Drive Lawn Icon" (SprinklerZone3) {channel="hydrawise:controller:myaccount:123456:zone3#icon"}
 ```
-

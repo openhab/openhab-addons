@@ -1,0 +1,31 @@
+{
+	"clientName": "mybmwapp",
+	"clientSecret": "c0e3393d-70a2-4f6f-9d3c-8530af64d552",
+	"clientId": "31c357a0-7a1d-4590-aa99-33b97244d048",
+	"gcdmBaseUrl": "https://customer.bmwgroup.com",
+	"returnUrl": "com.bmw.connected://oauth",
+	"brand": "bmw",
+	"language": "en",
+	"country": "US",
+	"authorizationEndpoint": "https://customer.bmwgroup.com/oneid/login",
+	"tokenEndpoint": "https://customer.bmwgroup.com/gcdm/oauth/token",
+	"scopes": [
+		"openid",
+		"profile",
+		"email",
+		"offline_access",
+		"smacc",
+		"vehicle_data",
+		"perseus",
+		"dlm",
+		"svds",
+		"cesim",
+		"vsapi",
+		"remote_services",
+		"fupo",
+		"authenticate_user"
+	],
+	"promptValues": [
+		"login"
+	]
+}

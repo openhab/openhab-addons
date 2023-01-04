@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     public synchronized void initialize() {
         PckGatewayConfiguration localConfig = config = getConfigAs(PckGatewayConfiguration.class);
 
-        String errorMessage = "Could not connect to LCN-PCHK/PKE: " + localConfig.getHostname() + ": ";
+        String errorMessage = "Could not connect to LCN-PCHK/VISU: " + localConfig.getHostname() + ": ";
 
         try {
             OutputPortDimMode dimMode;

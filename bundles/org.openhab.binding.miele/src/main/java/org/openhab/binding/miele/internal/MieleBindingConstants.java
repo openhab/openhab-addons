@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,18 +28,22 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "deviceClass";
-    public static final String MODEL_PROPERTY_NAME = "model";
-    public static final String PROTOCOL_ADAPTER_PROPERTY_NAME = "protocolAdapter";
-    public static final String CONNECTION_TYPE_PROPERTY_NAME = "connectionType";
+    public static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
+
+    // Properties
+    public static final String PROPERTY_DEVICE_CLASS = "deviceClass";
+    public static final String PROPERTY_PROTOCOL_ADAPTER = "protocolAdapter";
+    public static final String PROPERTY_CONNECTION_TYPE = "connectionType";
+    public static final String PROPERTY_CONNECTION_BAUD_RATE = "connectionBaudRate";
 
     // JSON-RPC property names
-    public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
     public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
     public static final String STATE_PROPERTY_NAME = "state";
     public static final String PROGRAM_ID_PROPERTY_NAME = "programId";
     public static final String PHASE_PROPERTY_NAME = "phase";
     public static final String RAW_PHASE_PROPERTY_NAME = "rawPhase";
+    public static final String START_TIME_PROPERTY_NAME = "startTime";
+    public static final String FINISH_TIME_PROPERTY_NAME = "finishTime";
 
     // Shared Channel ID's
     public static final String STATE_TEXT_CHANNEL_ID = "state";
@@ -50,6 +54,10 @@ public class MieleBindingConstants {
     public static final String PHASE_CHANNEL_ID = "rawPhase";
     public static final String SUPERCOOL_CHANNEL_ID = "supercool";
     public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
+    public static final String SWITCH_CHANNEL_ID = "switch";
+    public static final String START_CHANNEL_ID = "start";
+    public static final String END_CHANNEL_ID = "end";
+    public static final String FINISH_CHANNEL_ID = "finish";
     public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
 

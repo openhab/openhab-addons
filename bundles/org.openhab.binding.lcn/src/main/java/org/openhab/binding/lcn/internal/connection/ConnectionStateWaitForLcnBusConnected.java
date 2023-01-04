@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
         switch (data) {
             case LcnDefs.LCNCONNSTATE_DISCONNECTED:
                 cancelLegacyTimer();
-                connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
+                connection.getCallback().onOffline("LCN-PCHK/VISU not connected to LCN data wire");
                 break;
             case LcnDefs.LCNCONNSTATE_CONNECTED:
                 cancelLegacyTimer();
@@ -61,7 +61,7 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
             case LcnDefs.INSUFFICIENT_LICENSES:
                 cancelLegacyTimer();
                 handleConnectionFailed(
-                        new LcnException("LCN-PCHK/PKE has not enough licenses to handle this connection"));
+                        new LcnException("LCN-PCHK/VISU has not enough licenses to handle this connection"));
                 break;
         }
     }

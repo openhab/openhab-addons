@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
@@ -318,6 +319,8 @@ public class InnogyClient {
 
     /**
      * Load the device and returns a {@link List} of {@link Device}s..
+     * VariableActuators are returned additionally (independent from the device ids),
+     * because VariableActuators are everytime available and never have a device state.
      *
      * @param deviceIds Ids of the devices to return
      * @return List of Devices
@@ -326,7 +329,7 @@ public class InnogyClient {
             throws IOException, ApiException, AuthenticationException {
         logger.debug("Loading innogy devices...");
         List<Device> devices = executeGetList(API_URL_DEVICE, Device[].class);
-        return devices.stream().filter(d -> deviceIds.contains(d.getId())).collect(Collectors.toList());
+        return devices.stream().filter(d -> isDeviceUsable(d, deviceIds)).collect(Collectors.toList());
     }
 
     /**
@@ -405,5 +408,17 @@ public class InnogyClient {
      */
     public String getConfigVersion() {
         return configVersion;
+    }
+
+    /**
+     * Decides if a (discovered) device is usable (available and supported).
+     * 
+     * @param device device to check
+     * @param activeDeviceIds active device id (devices with an according available device state)
+     * @return true when usable, otherwise false
+     */
+    private static boolean isDeviceUsable(Device device, Collection<String> activeDeviceIds) {
+        return activeDeviceIds.contains(device.getId())
+                || InnogyBindingConstants.DEVICE_VARIABLE_ACTUATOR.equals(device.getType());
     }
 }

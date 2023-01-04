@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ public class HeliosBindingConstants {
     public static final String BINDING_ID = "helios";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID HELIOS_VARIO_IP_2_7_TYPE = new ThingTypeUID(BINDING_ID, "ipvario27");
     public static final ThingTypeUID HELIOS_VARIO_IP_2_21_TYPE = new ThingTypeUID(BINDING_ID, "ipvario221");
 
     // List of all Channel ids

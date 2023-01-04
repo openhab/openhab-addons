@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,4 +31,10 @@ public class PushoverBindingConstants {
 
     public static final String DEFAULT_SOUND = "default";
     public static final String DEFAULT_TITLE = "openHAB";
+
+    public static final String TEXT_OFFLINE_COMMUNICATION_ERROR = "@text/offline.communication-error";
+    public static final String TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY = "@text/offline.conf-error-missing-apikey";
+    public static final String TEXT_OFFLINE_CONF_ERROR_MISSING_USER = "@text/offline.conf-error-missing-user";
+    public static final String TEXT_OFFLINE_CONF_ERROR_UNKNOWN = "@text/offline.conf-error-unknown";
+    public static final String TEXT_ERROR_SKIP_SENDING_MESSAGE = "@text/error.skip-sending-message";
 }

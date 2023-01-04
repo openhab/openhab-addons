@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -725,6 +725,8 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(colorModel);
         assertEquals(254, colorModel.hue);
         assertEquals(100, colorModel.saturation);
+        assertEquals(0, colorModel.unmappedHue);
+        assertEquals(0, colorModel.unmappedSaturation);
         assertEquals(2700, colorModel.temperature);
     }
 

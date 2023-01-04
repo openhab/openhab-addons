@@ -1,6 +1,6 @@
-# Dresden Elektronik deCONZ Binding
+# deCONZ Binding
 
-The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
+The Zigbee binding currently does not support the Dresden Elektronik Raspbee and ConBee Zigbee dongles.
 The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
 deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee devices.
 
@@ -26,8 +26,8 @@ These sensors are supported:
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 | Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
+| Air quality Sensor                | ZHAAirQuality                     | `airqualitysensor`   |
 | Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`       |
-
 
 Additionally lights, window coverings (blinds), door locks and thermostats are supported:
 
@@ -77,7 +77,7 @@ For this process the deCONZ bridge must be unlocked in the deCONZ software so th
 ### Things
 
 All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
-Auto-discovered things do not need to be configured. 
+Auto-discovered things do not need to be configured.
 
 All sensor-things have an additional `lastSeenPolling` parameter.
 Due to limitations in the API of deCONZ, the `lastSeen` channel (available some sensors) is only available when using polling.
@@ -97,7 +97,7 @@ If this fails, the advanced `colormode` parameter can be set to `xy` or `hs`.
 
 If you use the textual configuration, the thing file without an API key will look like this, for example:
 
-```
+```java
 Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
 ```
 
@@ -106,13 +106,13 @@ Please note that the generated key cannot be written automatically to the `.thin
 The generated key can be queried from the configuration using the openHAB console.
 To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
 
-```
+```shell
 things show deconz:deconz:homeserver
 ```
 
 Afterwards the API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
 
-```
+```java
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 ```
 
@@ -150,6 +150,8 @@ The sensor devices support some of the following channels:
 | battery_level   | Number                   | R           | Battery level (in %)                                                                      | any battery-powered sensor                        |
 | battery_low     | Switch                   | R           | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                        |
 | carbonmonoxide  | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
+| airquality      | String                   | R           | Current air quality level                                                                 | airqualitysensor                                  |
+| airqualityppb   | Number:Dimensionless     | R           | Current air quality ppb (parts per billion)                                               | airqualitysensor                                  |
 | color           | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
 | windowopen      | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
 
@@ -163,13 +165,13 @@ Other devices support
 
 | Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                     |
 |-------------------|--------------------------|:-----------:|---------------------------------------|-------------------------------------------------|
-| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
-| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
-| color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
+| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |
+| switch            | Switch                   |     R/W     | State of an ON/OFF device             | `onofflight`                                    |
+| color             | Color                    |     R/W     | Color of a multi-color light          | `colorlight`, `extendedcolorlight`, `lightgroup`|
 | color_temperature | Number                   |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
 | effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
 | effectSpeed       | Number                   |     W       | Effect Speed                          | `colorlight`                                    |
-| lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
+| lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |
 | ontime            | Number:Time              |     W       | Timespan for which the light is turned on | all lights |
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
@@ -179,7 +181,7 @@ Other devices support
 | alert             | String                   |     W       | Turn alerts on. Allowed commands are `none`, `select` (short blinking), `lselect` (long blinking) | `warningdevice`, `lightgroup`, `dimmablelight`, `colorlight`, `extendedcolorlight`, `colortemperaturelight` |
 | all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
 | any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
-| scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |                  
+| scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |
 
 **NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
 Their state represents the last command send to the group, not necessarily the actual state of the group.
@@ -211,13 +213,14 @@ Both will be added during runtime if supported by the switch.
 
 ## Full Example
 
-### Things file ###
+### Things file
 
-```
+```java
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
+    airqualitysensor    livingroom-voc          "Livingroom Voc"            [ id="9" ]
     pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
@@ -229,12 +232,14 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
 }
 ```
 
-### Items file ###
+### Items file
 
-```
+```java
 Switch                  Livingroom_Presence     "Presence Livingroom [%s]"          <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
 Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
 Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
+String                  Livingroom_voc_label    "Air quality Livingroom [%s]"                       { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
+Number:Dimensionless    Livingroom_voc          "Air quality [%d ppb]"                              { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
@@ -246,7 +251,7 @@ Switch                  Entrance_Door           "Doorlock"                      
 
 ### Events
 
-```php
+```java
 rule "example trigger rule"
 when
     Channel "deconz:switch:homeserver:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed

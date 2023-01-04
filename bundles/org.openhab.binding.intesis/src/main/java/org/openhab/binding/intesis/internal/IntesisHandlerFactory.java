@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link IntesisHandlerFactory} is responsible for creating things and thing
@@ -47,7 +45,6 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.intesis", service = ThingHandlerFactory.class)
 public class IntesisHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(IntesisHandlerFactory.class);
     private final HttpClient httpClient;
     private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
 

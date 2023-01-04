@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.androiddebugbridge.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,8 +31,9 @@ public class AndroidDebugBridgeBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ANDROID_DEVICE = new ThingTypeUID(BINDING_ID, "android");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ANDROID_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ANDROID_DEVICE);
     // List of all Channel ids
+    public static final String START_INTENT_CHANNEL = "start-intent";
     public static final String KEY_EVENT_CHANNEL = "key-event";
     public static final String TEXT_CHANNEL = "text";
     public static final String TAP_CHANNEL = "tap";

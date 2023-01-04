@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,7 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.time.format.DateTimeFormatter;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +31,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class DateTimeValue extends Value {
     public DateTimeValue() {
-        super(CoreItemFactory.DATETIME, Stream.of(DateTimeType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.DATETIME, List.of(DateTimeType.class, StringType.class));
     }
 
     @Override

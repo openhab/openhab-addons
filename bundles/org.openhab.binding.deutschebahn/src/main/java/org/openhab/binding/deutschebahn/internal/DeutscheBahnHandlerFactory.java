@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ public class DeutscheBahnHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TIMETABLE_TYPE.equals(thingTypeUID)) {
-            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new);
+            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new, null);
         } else if (TRAIN_TYPE.equals(thingTypeUID)) {
             return new DeutscheBahnTrainHandler(thing);
         }

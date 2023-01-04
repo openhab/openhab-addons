@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,12 +111,12 @@ public class ThingMock implements Thing {
 
     @Override
     public ThingUID getUID() {
-        return new ThingUID("", "");
+        return new ThingUID("luftdateninfo", "test");
     }
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        return new ThingTypeUID("");
+        return new ThingTypeUID("luftdateninfo:any");
     }
 
     @Override

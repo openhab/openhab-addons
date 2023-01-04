@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -106,11 +105,12 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
-                DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue())
+        final @Nullable Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state
                 : getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
@@ -151,7 +151,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
         return CompletableFuture
-                .completedFuture(getSettings().useFahrenheitTemperature ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
                         : TemperatureDisplayUnitEnum.CELSIUS);
     }
 

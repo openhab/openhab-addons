@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,16 @@ class ColorControlModelTest {
             int saturation = ColorControlModel.fromPercent(percentType);
             assertThat(ColorControlModel.toPercent(saturation).intValue(), is(percent));
         }
+    }
+
+    @Test
+    public void testColorControlModelPercentConversionRestrictsToLowerBounds() {
+        assertThat(ColorControlModel.toPercent(-1), is(PercentType.ZERO));
+    }
+
+    @Test
+    public void testColorControlModelPercentConversionRestrictsToUpperBounds() {
+        assertThat(ColorControlModel.toPercent(999), is(PercentType.HUNDRED));
     }
 
     @Test

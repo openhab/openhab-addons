@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,12 @@ package org.openhab.binding.neohub.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NeoHubException} is a custom exception for NeoHub
+ * The {@link NeoHubException} is a custom checked exception for NeoHubs. It is thrown when the NeoHub encounters an
+ * error that is NOT I/O related. i.e. if the binding is able to connect to the NeoHub but the NeoHub returns unexpected
+ * results.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class NeoHubException extends Exception {
@@ -27,5 +29,9 @@ public class NeoHubException extends Exception {
 
     public NeoHubException(String message) {
         super(message);
+    }
+
+    public NeoHubException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

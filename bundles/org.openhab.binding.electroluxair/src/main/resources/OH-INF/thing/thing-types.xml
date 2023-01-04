@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="electroluxair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>Electrolux Delta API</label>
+		<description>This bridge represents the web API connector.</description>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+		</properties>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The username used to login to Electrolux Wellbeing app.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>The password used to login to Electrolux Wellbeing app.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="electroluxpurea9">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>ElectroluxAir Pure A9</label>
+		<description>This thing represents the ElectroluxAir Pure A9.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="pm1" typeId="pm1"/>
+			<channel id="pm2_5" typeId="pm2_5"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="co2" typeId="co2"/>
+			<channel id="filterLife" typeId="filterLife"/>
+			<channel id="doorOpen" typeId="doorOpen"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="workMode" typeId="workMode"/>
+			<channel id="ionizer" typeId="ionizer"/>
+			<channel id="status" typeId="status"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+		</properties>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<description>Information on current status.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tvoc">
+		<item-type>Number:Density</item-type>
+		<label>TVOC</label>
+		<description>Total Volatile Organic Compounds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="pm1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>PM1</label>
+		<description>Particulate Matter 1 (0.001mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm2_5">
+		<item-type>Number:Dimensionless</item-type>
+		<label>PM2.5</label>
+		<description>Particulate Matter 2.5 (0.0025mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Dimensionless</item-type>
+		<label>PM10</label>
+		<description>Particulate Matter 10 (0.01mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>CarbonDioxide</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="filterLife">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Filter Life</label>
+		<description>Filter Life</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="doorOpen">
+		<item-type>Contact</item-type>
+		<label>Door Status</label>
+		<description>Door Status Open/Closed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed Setting</label>
+		<description>Fan Speed Setting</description>
+		<state>
+			<options>
+				<option value="1">Level 1</option>
+				<option value="2">Level 2</option>
+				<option value="3">Level 3</option>
+				<option value="4">Level 4</option>
+				<option value="5">Level 5</option>
+				<option value="6">Level 6</option>
+				<option value="7">Level 7</option>
+				<option value="8">Level 8</option>
+				<option value="9">Level 9</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="workMode">
+		<item-type>String</item-type>
+		<label>Work Mode Setting</label>
+		<description>Work Mode Setting</description>
+		<state>
+			<options>
+				<option value="PowerOff">Power Off</option>
+				<option value="Auto">Automatic</option>
+				<option value="Manual">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ionizer">
+		<item-type>Switch</item-type>
+		<label>Ionizer Status</label>
+		<description>Ionizer Status</description>
+	</channel-type>
+
+
+</thing:thing-descriptions>

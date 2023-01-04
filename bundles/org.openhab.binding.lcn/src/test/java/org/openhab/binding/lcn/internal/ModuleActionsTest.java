@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -199,5 +199,45 @@ public class ModuleActionsTest {
         a.hitKey("D", 3, "MAKE");
 
         verify(handler).sendPck("TS---L00100000");
+    }
+
+    @Test
+    public void testBeepNull() throws LcnException {
+        a.beep(null, null, null);
+
+        verify(handler).sendPck("PIN1");
+        verify(handler, times(1)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepSpecial() throws LcnException {
+        a.beep(null, "S", 5);
+
+        verify(handler).sendPck("PIS5");
+        verify(handler, times(1)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepVolume() throws LcnException {
+        a.beep(50d, "3", 5);
+
+        verify(handler).sendPck("PIV050");
+        verify(handler).sendPck("PI35");
+        verify(handler, times(2)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepInvalidVolume() throws LcnException {
+        a.beep(-1d, "3", 5);
+
+        verify(handler, times(0)).sendPck(anyString());
+    }
+
+    @Test
+    public void testBeepInvalidTonality() throws LcnException {
+        a.beep(null, "X", 5);
+
+        verify(handler).sendPck("PIN5");
+        verify(handler, times(1)).sendPck(anyString());
     }
 }

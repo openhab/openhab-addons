@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -21,6 +21,7 @@
     <module>org.openhab.automation.groovyscripting</module>
     <module>org.openhab.automation.jrubyscripting</module>
     <module>org.openhab.automation.jsscripting</module>
+    <module>org.openhab.automation.jsscriptingnashorn</module>
     <module>org.openhab.automation.jythonscripting</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
@@ -34,7 +35,6 @@
     <!-- transformations -->
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
-    <module>org.openhab.transform.javascript</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
@@ -61,6 +61,7 @@
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.awattar</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
@@ -76,7 +77,7 @@
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
-    <module>org.openhab.binding.bmwconnecteddrive</module>
+    <module>org.openhab.binding.bondhome</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.boschshc</module>
     <module>org.openhab.binding.bosesoundtouch</module>
@@ -94,7 +95,6 @@
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
-    <module>org.openhab.binding.darksky</module>
     <module>org.openhab.binding.dbquery</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
@@ -110,10 +110,15 @@
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
+    <module>org.openhab.binding.easee</module>
+    <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ecowatt</module>
     <module>org.openhab.binding.ekey</module>
+    <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
+    <module>org.openhab.binding.elroconnects</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
@@ -121,10 +126,13 @@
     <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
+    <module>org.openhab.binding.evcc</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
+    <module>org.openhab.binding.fineoffsetweatherstation</module>
+    <module>org.openhab.binding.flicbutton</module>
     <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
@@ -141,7 +149,9 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
+    <module>org.openhab.binding.groupepsa</module>
     <module>org.openhab.binding.groheondus</module>
+    <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.haywardomnilogic</module>
@@ -151,6 +161,7 @@
     <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
+    <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeconnect</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
@@ -175,6 +186,8 @@
     <module>org.openhab.binding.ism8</module>
     <module>org.openhab.binding.jablotron</module>
     <module>org.openhab.binding.jeelink</module>
+    <module>org.openhab.binding.jellyfin</module>
+    <module>org.openhab.binding.juicenet</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.km200</module>
@@ -193,17 +206,22 @@
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
     <module>org.openhab.binding.lirc</module>
+    <module>org.openhab.binding.livisismarthome</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.luftdateninfo</module>
     <module>org.openhab.binding.lutron</module>
+    <module>org.openhab.binding.luxom</module>
     <module>org.openhab.binding.luxtronikheatpump</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
+    <module>org.openhab.binding.mcd</module>
     <module>org.openhab.binding.mcp23017</module>
+    <module>org.openhab.binding.meater</module>
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
+    <module>org.openhab.binding.mercedesme</module>
     <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
@@ -229,6 +247,8 @@
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
+    <module>org.openhab.binding.mybmw</module>
+    <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>
@@ -243,6 +263,7 @@
     <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
+    <module>org.openhab.binding.nobohub</module>
     <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
@@ -278,12 +299,14 @@
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.proteusecometer</module>
+    <module>org.openhab.binding.prowl</module>
     <module>org.openhab.binding.publictransportswitzerland</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
     <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
+    <module>org.openhab.binding.qolsysiq</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
@@ -313,15 +336,19 @@
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
-    <module>org.openhab.binding.smhi</module>
     <module>org.openhab.binding.smartthings</module>
+    <module>org.openhab.binding.smhi</module>
+    <module>org.openhab.binding.smsmodem</module>
     <module>org.openhab.binding.sncf</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
+    <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
+    <module>org.openhab.binding.somneo</module>
+    <module>org.openhab.binding.sonnen</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.sonyprojector</module>
@@ -342,6 +369,7 @@
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
+    <module>org.openhab.binding.tplinkrouter</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
@@ -359,12 +387,15 @@
     <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
+    <module>org.openhab.binding.vesync</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.vizio</module>
     <module>org.openhab.binding.volvooncall</module>
     <module>org.openhab.binding.warmup</module>
     <module>org.openhab.binding.weathercompany</module>
     <module>org.openhab.binding.weatherunderground</module>
+    <module>org.openhab.binding.webexteams</module>
     <module>org.openhab.binding.webthing</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
@@ -372,8 +403,10 @@
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.wolfsmartset</module>
+    <module>org.openhab.binding.wundergroundupdatereceiver</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
+    <module>org.openhab.binding.yamahamusiccast</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>
@@ -388,12 +421,19 @@
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
     <!-- voice -->
+    <module>org.openhab.voice.googlestt</module>
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
+    <module>org.openhab.voice.mimictts</module>
+    <module>org.openhab.voice.actiontemplatehli</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pollytts</module>
+    <module>org.openhab.voice.porcupineks</module>
+    <module>org.openhab.voice.rustpotterks</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.voice.voskstt</module>
+    <module>org.openhab.voice.watsonstt</module>
   </modules>
 
   <properties>
@@ -561,6 +601,7 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <includeTypes>jar</includeTypes>
+              <excludes>**/module-info.class</excludes>
               <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>

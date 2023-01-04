@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livisismarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>LIVISI SmartHome Controller</label>
+		<description>The LIVISI SmartHome Controller (SHC) is the bridge for the LIVISI SmartHome System.</description>
+
+		<channels>
+			<channel id="status" typeId="operationStatus"/>
+			<channel id="cpu" typeId="cpuUsage"/>
+			<channel id="disk" typeId="diskUsage"/>
+			<channel id="memory" typeId="memoryUsage"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Parameters for connecting to LIVISI SmartHome Controller (SHC)</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>Advanced Configuration</label>
+				<description>Advanced parameters, for special tweaking only.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="host" type="text" required="true" groupName="connection">
+				<label>Host</label>
+				<description>The hostname or local IP address of the LIVISI SmartHome Controller (SHC)</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="connection">
+				<label>Password</label>
+				<description>Password for the local API of LIVISI SmartHome</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="webSocketIdleTimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
+				<unitLabel>seconds</unitLabel>
+				<label>WebSocket Idle Timeout in Seconds</label>
+				<description>The WebSocket is the connection to the LIVISI service that listens to status updates. If no data is
+					received over the WebSocket connection for the given time, the WebSocket will reconnect. 0 will disable the idle
+					timeout. Default is 900 seconds (15 minutes).</description>
+				<default>900</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

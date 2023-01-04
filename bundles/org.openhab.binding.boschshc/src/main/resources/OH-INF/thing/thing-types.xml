@@ -12,6 +12,8 @@
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
+	<!-- Things -->
+
 	<thing-type id="in-wall-switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -30,12 +32,30 @@
 
 	</thing-type>
 
+	<thing-type id="smart-plug-compact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Compact Smart Plug</label>
+		<description>A compact smart plug with energy monitoring capabilities.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="twinguard">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>TwinGuard</label>
+		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
 
 		<channels>
@@ -47,6 +67,9 @@
 			<channel id="air-description" typeId="air-description"/>
 			<channel id="purity-rating" typeId="purity-rating"/>
 			<channel id="combined-rating" typeId="combined-rating"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="smoke-check" typeId="smoke-check"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -63,6 +86,8 @@
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -80,6 +105,8 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -114,6 +141,8 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -149,11 +178,191 @@
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
+
+	<thing-type id="security-camera-360">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Security Camera 360</label>
+		<description>Indoor security camera with 360° view and motion detection.</description>
+
+		<channels>
+			<channel id="privacy-mode" typeId="privacy-mode"/>
+			<channel id="camera-notification" typeId="camera-notification"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="security-camera-eyes">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Security Camera Eyes</label>
+		<description>Outdoor security camera with motion detection and light.</description>
+
+		<channels>
+			<channel id="privacy-mode" typeId="privacy-mode"/>
+			<channel id="camera-notification" typeId="camera-notification"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="intrusion-detection-system">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Intrusion Detection System</label>
+		<description>Allows to retrieve and control the state of the intrusion detection alarm system.</description>
+
+		<channels>
+			<channel id="system-availability" typeId="system-availability"/>
+			<channel id="arming-state" typeId="arming-state"/>
+			<channel id="alarm-state" typeId="alarm-state"/>
+			<channel id="active-configuration-profile" typeId="active-configuration-profile"/>
+			<channel id="arm-action" typeId="arm-action"/>
+			<channel id="disarm-action" typeId="disarm-action"/>
+			<channel id="mute-action" typeId="mute-action"/>
+		</channels>
+
+	</thing-type>
+
+	<thing-type id="smart-bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Bulb</label>
+		<description>A smart bulb connected via Zigbee.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="smoke-detector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smoke Detector</label>
+		<description>The smoke detector warns you in case of fire.</description>
+
+		<channels>
+			<channel id="smoke-check" typeId="smoke-check"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
+	<!-- Channels -->
+
+	<channel-type id="system-availability">
+		<item-type>Switch</item-type>
+		<label>System Availability</label>
+		<description>Indicates whether the intrusion detection system is available.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="arming-state">
+		<item-type>String</item-type>
+		<label>Arming State</label>
+		<description>The arming state of the intrusion detection system. Possible values are SYSTEM_ARMING, SYSTEM_ARMED and
+			SYSTEM_DISARMED. This channel is read-only. Use the arm-action and disarm-action channels to arm and disarm the
+			system.</description>
+		<state readOnly="true">
+			<options>
+				<option value="SYSTEM_ARMING">System is currently arming</option>
+				<option value="SYSTEM_ARMED">System is armed</option>
+				<option value="SYSTEM_DISARMED">System is disarmed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm-state">
+		<item-type>String</item-type>
+		<label>Alarm State</label>
+		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
+			ALARM_MUTED and UNKNOWN.</description>
+		<state readOnly="true">
+			<options>
+				<option value="ALARM_OFF">No alarm</option>
+				<option value="PRE_ALARM">Alarm is about to go off</option>
+				<option value="ALARM_ON">Alarm was triggered</option>
+				<option value="ALARM_MUTED">Alarm is muted</option>
+				<option value="UNKNOWN">Alarm status is unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="active-configuration-profile">
+		<item-type>String</item-type>
+		<label>Active Configuration Profile</label>
+		<description>The name of the active configuration profile used for the intrusion detection system.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="arm-action">
+		<item-type>String</item-type>
+		<label>Arm Action</label>
+		<description>Arms the intrusion detection system using the given profile ID.</description>
+	</channel-type>
+
+	<channel-type id="disarm-action">
+		<item-type>Switch</item-type>
+		<label>Disarm Action</label>
+		<description>Disarms the intrusion detection system when an ON command is received.</description>
+	</channel-type>
+
+	<channel-type id="mute-action">
+		<item-type>Switch</item-type>
+		<label>Mute Action</label>
+		<description>Mutes the alarm when an ON command is received.</description>
+	</channel-type>
+
+	<channel-type id="privacy-mode">
+		<item-type>Switch</item-type>
+		<label>Privacy Mode</label>
+		<description>If privacy mode is enabled, the camera is disabled and vice versa.</description>
+		<state>
+			<options>
+				<option value="ENABLED">Privacy mode enabled (camera disabled)</option>
+				<option value="DISABLED">Privacy mode disabled (camera enabled)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="camera-notification">
+		<item-type>Switch</item-type>
+		<label>Camera Notifications</label>
+		<description>Enables or disables notifications for the camera.</description>
+		<state>
+			<options>
+				<option value="ENABLED">Enable notifications</option>
+				<option value="DISABLED">Disable notifications</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
@@ -239,6 +448,20 @@
 				<option value="GOOD">Good Quality</option>
 				<option value="MEDIUM">Medium Quality</option>
 				<option value="BAD">Bad Quality</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smoke-check">
+		<item-type>String</item-type>
+		<label>Smoke Check State</label>
+		<description>State of last smoke detector check.</description>
+		<state readOnly="false">
+			<options>
+				<option value="NONE">None</option>
+				<option value="SMOKE_TEST_REQUESTED">Test requested</option>
+				<option value="SMOKE_TEST_OK">Test successful</option>
+				<option value="SMOKE_TEST_FAILED">Test failed</option>
 			</options>
 		</state>
 	</channel-type>

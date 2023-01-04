@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,4 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class BridgeCreationFailedException extends RuntimeException {
     private static final long serialVersionUID = -6150154333256723312L;
+
+    public BridgeCreationFailedException(String message) {
+        super(message);
+    }
+
+    public BridgeCreationFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

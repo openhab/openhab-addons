@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
-import org.openhab.core.audio.AudioFormat;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Interface which represents the functionality needed from the VoiceRSS TTS
@@ -25,6 +25,7 @@ import org.openhab.core.audio.AudioFormat;
  *
  * @author Jochen Hiller - Initial contribution
  */
+@NonNullByDefault
 public interface VoiceRSSCloudAPI {
 
     /**
@@ -35,13 +36,12 @@ public interface VoiceRSSCloudAPI {
     Set<Locale> getAvailableLocales();
 
     /**
-     * Get all supported audio formats by the TTS service. This includes MP3,
-     * WAV and more audio formats as used in APIs. About supported audio
-     * formats, see {@link AudioFormat}
+     * Get all supported audio codecs by the TTS service. This includes MP3,
+     * WAV and more audio formats as used in APIs.
      *
-     * @return A set of all audio formats supported
+     * @return A set of all audio codecs supported
      */
-    Set<String> getAvailableAudioFormats();
+    Set<String> getAvailableAudioCodecs();
 
     /**
      * Get all supported voices.
@@ -60,7 +60,7 @@ public interface VoiceRSSCloudAPI {
     Set<String> getAvailableVoices(Locale locale);
 
     /**
-     * Get the given text in specified locale and auido format as input stream.
+     * Get the given text in specified locale and audio format as input stream.
      *
      * @param apiKey
      *            the API key to use for the cloud service
@@ -70,6 +70,8 @@ public interface VoiceRSSCloudAPI {
      *            the locale to use
      * @param voice
      *            the voice to use, "default" for the default voice
+     * @param audioCodec
+     *            the audio codec to use
      * @param audioFormat
      *            the audio format to use
      * @return an InputStream to the audio data in specified format
@@ -77,6 +79,6 @@ public interface VoiceRSSCloudAPI {
      *             will be raised if the audio data can not be retrieved from
      *             cloud service
      */
-    InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioFormat)
-            throws IOException;
+    InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) throws IOException;
 }

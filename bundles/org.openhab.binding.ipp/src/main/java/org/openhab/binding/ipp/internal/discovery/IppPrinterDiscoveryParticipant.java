@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.ipp.internal.discovery;
 
+import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
+
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.openhab.binding.ipp.internal.IppBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -36,13 +37,14 @@ import org.slf4j.LoggerFactory;
  * @author Tobias Bräutigam - Initial contribution
  */
 @Component
+@NonNullByDefault
 public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(IppPrinterDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(IppBindingConstants.PRINTER_THING_TYPE);
+        return Set.of(PRINTER_THING_TYPE);
     }
 
     @Override
@@ -51,15 +53,11 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
-        if (service != null) {
-            logger.trace("ServiceInfo: {}", service);
-            if (service.getType() != null) {
-                if (service.getType().equals(getServiceType())) {
-                    String uidName = getUIDName(service);
-                    return new ThingUID(IppBindingConstants.PRINTER_THING_TYPE, uidName);
-                }
-            }
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        logger.trace("ServiceInfo: {}", service);
+        if (getServiceType().equals(service.getType())) {
+            String uidName = getUIDName(service);
+            return new ThingUID(PRINTER_THING_TYPE, uidName);
         }
         return null;
     }
@@ -68,8 +66,7 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
         return service.getName().replaceAll("[^A-Za-z0-9_]", "_");
     }
 
-    private InetAddress getIpAddress(ServiceInfo service) {
-        InetAddress address = null;
+    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
         for (InetAddress addr : service.getInet4Addresses()) {
             return addr;
         }
@@ -77,37 +74,36 @@ public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant 
         for (InetAddress addr : service.getInet6Addresses()) {
             return addr;
         }
-        return address;
+        return null;
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
-        DiscoveryResult result = null;
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         String rp = service.getPropertyString("rp");
         if (rp == null) {
             return null;
         }
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(2);
             // remove the domain from the name
             InetAddress ip = getIpAddress(service);
             if (ip == null) {
                 return null;
             }
             String inetAddress = ip.toString().substring(1); // trim leading slash
-
             String label = service.getName();
-
             int port = service.getPort();
+            String uuid = service.getPropertyString("UUID");
 
-            properties.put(IppBindingConstants.PRINTER_PARAMETER_URL, "http://" + inetAddress + ":" + port + "/" + rp);
-            properties.put(IppBindingConstants.PRINTER_PARAMETER_NAME, label);
+            Map<String, Object> properties = Map.of( //
+                    PRINTER_PARAMETER_URL, "http://" + inetAddress + ":" + port + "/" + rp, //
+                    PRINTER_PARAMETER_NAME, label, //
+                    PRINTER_PARAMETER_UUID, uuid //
+            );
 
-            result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
-            logger.debug("Created a DiscoveryResult {} for ipp printer on host '{}' name '{}'", result,
-                    properties.get(IppBindingConstants.PRINTER_PARAMETER_URL), label);
+            return DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withRepresentationProperty(PRINTER_PARAMETER_UUID).withLabel(label).build();
         }
-        return result;
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -31,10 +32,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
+@NonNullByDefault
 public class VacuumTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "vacuum/rockrobo_vacuum";
 
+    @SuppressWarnings("null")
     @Test
     public void testRoborockValetudo() {
         // @formatter:off
@@ -155,6 +157,7 @@ public class VacuumTests extends AbstractComponentTests {
         assertState(component, Vacuum.JSON_ATTRIBUTES_CH_ID, new StringType(jsonValue));
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testLegacySchema() {
         // @formatter:off
@@ -248,6 +251,7 @@ public class VacuumTests extends AbstractComponentTests {
         assertPublished("vacuum/send_command", "custom_command");
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

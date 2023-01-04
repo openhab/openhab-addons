@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -44,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetEnergyHandler} is responsible for handling commands/messages for a Energy Management OpenWebNet
+ * The {@link OpenWebNetEnergyHandler} is responsible for handling commands/messages for an Energy Management OpenWebNet
  * device. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -146,22 +147,22 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
-        logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
+        super.requestChannelState(channel);
         Where w = deviceWhere;
         if (w != null) {
             try {
                 send(EnergyManagement.requestActivePower(w.value()));
             } catch (OWNException e) {
-                logger.debug("Exception while requesting channel {} state: {}", channel, e.getMessage(), e);
+                logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } else {
-            logger.warn("Could not requestChannelState(): deviceWhere is null");
         }
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        requestChannelState(new ChannelUID("any:any:any:any"));
+        logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER));
     }
 
     @Override
@@ -194,7 +195,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates energy power state based on a EnergyManagement message received from the OWN network
+     * Updates energy power state based on an EnergyManagement message received from the OWN network
      *
      * @param msg the EnergyManagement message received
      * @throws FrameException

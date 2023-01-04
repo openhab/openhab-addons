@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
  * 
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public enum ByteType {
     HIGHBYTE,
     LOWBYTE,

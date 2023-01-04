@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
-import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 
 /**
  * The {@link UniFiDeviceCache} is a specific implementation of {@link UniFiCache} for the purpose of caching
@@ -22,18 +26,20 @@ import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
+@NonNullByDefault
+class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
 
     public UniFiDeviceCache() {
-        super(PREFIX_MAC);
+        super(MAC);
     }
 
     @Override
-    protected String getSuffix(UniFiDevice device, String prefix) {
+    protected @Nullable String getSuffix(final UniFiDevice device, final Prefix prefix) {
         switch (prefix) {
-            case PREFIX_MAC:
+            case MAC:
                 return device.getMac();
+            default:
+                return null;
         }
-        return null;
     }
 }

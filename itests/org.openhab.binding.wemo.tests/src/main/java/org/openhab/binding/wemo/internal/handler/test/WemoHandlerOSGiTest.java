@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,13 +69,13 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesOnOffCommandCorrectly()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.OFF;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.UNKNOWN));
         });
 
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will
@@ -105,13 +105,13 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
 
     @Test
     public void assertThatThingHandlesREFRESHCommandCorrectly()
-            throws MalformedURLException, URISyntaxException, ValidationException {
+            throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = RefreshType.REFRESH;
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.OFFLINE));
         });
 
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,10 +85,12 @@ public class PlugwiseHABindingConstants {
     public static final String LOCATION_PROPERTY_FUNCTIONALITIES = "functionalities";
 
     // List of all Channel IDs
+    public static final String ZONE_COOLING_CHANNEL = "coolingAllowed";
     public static final String ZONE_SETPOINT_CHANNEL = "setpointTemperature";
     public static final String ZONE_TEMPERATURE_CHANNEL = "temperature";
     public static final String ZONE_PRESETSCENE_CHANNEL = "presetScene";
     public static final String ZONE_PREHEAT_CHANNEL = "preHeat";
+    public static final String ZONE_REGULATION_CHANNEL = "regulationControl";
 
     public static final String APPLIANCE_SETPOINT_CHANNEL = "setpointTemperature";
     public static final String APPLIANCE_TEMPERATURE_CHANNEL = "temperature";
@@ -114,6 +116,7 @@ public class PlugwiseHABindingConstants {
     public static final String APPLIANCE_DHWSETPOINT_CHANNEL = "dhwSetpoint";
     public static final String APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL = "maxBoilerTemperature";
     public static final String APPLIANCE_DHWCOMFORTMODE_CHANNEL = "dhwComfortMode";
+    public static final String APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL = "returnWaterTemperature";
 
     // List of all Appliance Types
     public static final String APPLIANCE_TYPE_THERMOSTAT = "thermostat";

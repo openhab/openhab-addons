@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -184,7 +184,7 @@ public class BlueGigaTransactionManager implements BlueGigaSerialEventListener {
     }
 
     /**
-     * Sends an BlueGiga request without waiting for the response.
+     * Sends a BlueGiga request without waiting for the response.
      *
      * @param bleCommand {@link BlueGigaCommand}
      * @return response {@link Future} {@link BlueGigaResponse}

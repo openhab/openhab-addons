@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +28,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
@@ -47,7 +42,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -55,13 +52,13 @@ import org.openhab.core.types.State;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions" })
+@NonNullByDefault
 public abstract class AbstractComponentTests extends AbstractHomeAssistantTests {
-    private final static int SUBSCRIBE_TIMEOUT = 10000;
-    private final static int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
+    private static final int SUBSCRIBE_TIMEOUT = 10000;
+    private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
 
-    private @Mock ThingHandlerCallback callback;
-    private LatchThingHandler thingHandler;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @NonNullByDefault({}) LatchThingHandler thingHandler;
 
     @BeforeEach
     public void setupThingHandler() {
@@ -70,12 +67,18 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         config.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
         config.put(HandlerConfiguration.PROPERTY_TOPICS, getConfigTopics());
 
-        when(callback.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
+        // Plumb thing status updates through
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo((ThingStatusInfo) invocation.getArgument(1));
+            return null;
+        }).when(callbackMock).statusUpdated(any(Thing.class), any(ThingStatusInfo.class));
+
+        when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new LatchThingHandler(haThing, channelTypeProvider, transformationServiceProvider,
                 SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
-        thingHandler.setCallback(callback);
+        thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
 
         thingHandler.initialize();
@@ -124,9 +127,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         } catch (InterruptedException e) {
             assertThat(e.getMessage(), false);
         }
-        var component = thingHandler.getDiscoveredComponent();
-        assertThat(component, CoreMatchers.notNullValue());
-        return component;
+        return Objects.requireNonNull(thingHandler.getDiscoveredComponent());
     }
 
     /**
@@ -141,7 +142,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      */
     protected static void assertChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String stateTopic, String commandTopic, String label, Class<? extends Value> valueClass) {
-        var stateChannel = component.getChannel(channelId);
+        var stateChannel = Objects.requireNonNull(component.getChannel(channelId));
         assertChannel(stateChannel, stateTopic, commandTopic, label, valueClass);
     }
 
@@ -169,6 +170,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param channelId channel
      * @param state expected state
      */
+    @SuppressWarnings("null")
     protected static void assertState(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, State state) {
         assertThat(component.getChannel(channelId).getState().getCache().getChannelState(), is(state));
@@ -181,8 +183,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param payload payload
      */
     protected void assertPublished(String mqttTopic, String payload) {
-        verify(bridgeConnection).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(),
-                anyBoolean());
+        verify(bridgeConnection).publish(eq(mqttTopic), ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)),
+                anyInt(), anyBoolean());
     }
 
     /**
@@ -193,8 +195,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param t payload must be published N times on given topic
      */
     protected void assertPublished(String mqttTopic, String payload, int t) {
-        verify(bridgeConnection, times(t)).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)),
-                anyInt(), anyBoolean());
+        verify(bridgeConnection, times(t)).publish(eq(mqttTopic),
+                ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(), anyBoolean());
     }
 
     /**
@@ -204,8 +206,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param payload payload
      */
     protected void assertNotPublished(String mqttTopic, String payload) {
-        verify(bridgeConnection, never()).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(),
-                anyBoolean());
+        verify(bridgeConnection, never()).publish(eq(mqttTopic),
+                ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(), anyBoolean());
     }
 
     /**
@@ -236,7 +238,19 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         return false;
     }
 
-    @NonNullByDefault
+    /**
+     * Send command to a thing's channel
+     * 
+     * @param component component
+     * @param channelId channel
+     * @param command command to send
+     */
+    protected void sendCommand(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, Command command) {
+        var channel = Objects.requireNonNull(component.getChannel(channelId));
+        thingHandler.handleCommand(channel.getChannelUID(), command);
+    }
+
     protected static class LatchThingHandler extends HomeAssistantThingHandler {
         private @Nullable CountDownLatch latch;
         private @Nullable AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> discoveredComponent;
@@ -247,6 +261,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
             super(thing, channelTypeProvider, transformationServiceProvider, subscribeTimeout, attributeReceiveTimeout);
         }
 
+        @Override
         public void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<@NonNull ?> component) {
             accept(List.of(component));
             discoveredComponent = component;

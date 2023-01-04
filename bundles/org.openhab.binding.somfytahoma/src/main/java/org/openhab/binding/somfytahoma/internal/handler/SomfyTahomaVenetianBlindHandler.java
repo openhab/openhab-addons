@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,11 +77,11 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             case "OFF":
             case "DOWN":
             case "CLOSE":
-                return COMMAND_DOWN;
+                return COMMAND_CLOSE;
             case "ON":
             case "UP":
             case "OPEN":
-                return COMMAND_UP;
+                return COMMAND_OPEN;
             case "MOVE":
             case "MY":
                 return COMMAND_MY;

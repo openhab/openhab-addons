@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -237,7 +237,8 @@ public class TelegramActions implements ThingActions {
         }
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            SendMessage sendMessage = new SendMessage(chatId, message);
+            String escapedMessage = message.replace("_", "\\_");
+            SendMessage sendMessage = new SendMessage(chatId, escapedMessage);
             if (localHandler.getParseMode() != null) {
                 sendMessage.parseMode(localHandler.getParseMode());
             }

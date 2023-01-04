@@ -181,10 +181,6 @@
 		<label>@text/timestampChannelLabel</label>
 		<description>@text/timestampChannelDescription</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -214,7 +210,7 @@
 		<description>@text/rainingDescription</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
 	</channel-type>

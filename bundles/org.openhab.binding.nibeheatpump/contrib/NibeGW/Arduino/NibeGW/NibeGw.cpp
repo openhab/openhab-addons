@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,12 +19,18 @@
 #include "NibeGw.h"
 #include "Arduino.h"
 
-#ifdef HARDWARE_SERIAL
+#if defined(HARDWARE_SERIAL_WITH_PINS)
+NibeGw::NibeGw(HardwareSerial* serial, int RS485DirectionPin, int RS485RxPin, int RS485TxPin)
+#elif defined(HARDWARE_SERIAL)
 NibeGw::NibeGw(HardwareSerial* serial, int RS485DirectionPin)
 #else
 NibeGw::NibeGw(Serial_* serial, int RS485DirectionPin)
 #endif
 {
+  #if defined(HARDWARE_SERIAL_WITH_PINS)
+    this->RS485RxPin = RS485RxPin;
+    this->RS485TxPin = RS485TxPin;
+  #endif  
   verbose = 0;
   ackModbus40 = true;
   ackSms40 = false;
@@ -44,7 +50,13 @@ void NibeGw::connect()
   if (!connectionState)
   {
     state = STATE_WAIT_START;
-    RS485->begin(9600, SERIAL_8N1);
+    
+    #if defined(HARDWARE_SERIAL_WITH_PINS)
+      RS485->begin(9600, SERIAL_8N1, RS485RxPin, RS485TxPin);
+    #else
+      RS485->begin(9600, SERIAL_8N1);
+    #endif
+    
     connectionState = true;
   }
 }
@@ -267,12 +279,6 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
     if (data[0] != 0x5C)
       return -1;
 
-    if (len >= 2)
-    {
-      if (data[1] != 0x00)
-        return -1;
-    }
-
     if (len >= 6)
     {
       int datalen = data[4];
@@ -283,7 +289,7 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
       byte checksum = 0;
 
       // calculate XOR checksum
-      for (int i = 2; i < (datalen + 5); i++)
+      for (int i = 1; i < (datalen + 5); i++)
         checksum ^= data[i];
 
       byte msg_checksum = data[datalen + 5];
@@ -377,4 +383,3 @@ boolean NibeGw::shouldAckNakSend(byte address)
 
   return false;
 }
-

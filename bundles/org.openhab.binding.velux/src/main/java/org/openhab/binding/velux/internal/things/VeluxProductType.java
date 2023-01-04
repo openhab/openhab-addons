@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public enum VeluxProductType {
     SWITCH,
     UNDEFTYPE;
 
-    private static enum ActuatorType {
+    public static enum ActuatorType {
         UNDEFTYPE((short) 0xffff, VeluxBindingConstants.UNKNOWN, VeluxProductType.SWITCH),
         BLIND_1_0((short) 0x0040, "Interior Venetian Blind", VeluxProductType.SLIDER_SHUTTER),
         ROLLERSHUTTER_2_0((short) 0x0080, "Roller Shutter", VeluxProductType.SLIDER_SHUTTER),
@@ -83,7 +83,7 @@ public enum VeluxProductType {
         private String description;
         private VeluxProductType typeClass;
 
-        // Reverse-lookup map for getting a ActuatorType from an TypeId
+        // Reverse-lookup map for getting an ActuatorType from a TypeId
         private static final Map<Integer, ActuatorType> LOOKUPTYPEID2ENUM = Stream.of(ActuatorType.values())
                 .collect(Collectors.toMap(ActuatorType::getNodeType, Function.identity()));
 
@@ -97,15 +97,19 @@ public enum VeluxProductType {
 
         // Class access methods
 
-        int getNodeType() {
+        public int getNodeType() {
             return nodeType;
         }
 
-        String getDescription() {
+        public String getDescription() {
             return description;
         }
 
-        static ActuatorType get(int nodeType) {
+        public VeluxProductType getTypeClass() {
+            return typeClass;
+        }
+
+        public static ActuatorType get(int nodeType) {
             return LOOKUPTYPEID2ENUM.getOrDefault(nodeType, ActuatorType.UNDEFTYPE);
         }
     }

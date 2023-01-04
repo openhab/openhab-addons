@@ -14,6 +14,14 @@
 			<channel id="statecode" typeId="statecode"/>
 			<channel id="mowed" typeId="mowed"/>
 			<channel id="ready" typeId="ready"/>
+			<channel id="lastCutting" typeId="lastCutting"/>
+			<channel id="nextCutting" typeId="nextCutting"/>
+			<channel id="batteryVoltage" typeId="batteryVoltage"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryTemperature" typeId="batteryTemperature"/>
+			<channel id="gardenSize" typeId="gardenSize"/>
+			<channel id="gardenMap" typeId="gardenMap"/>
 		</channels>
 		<config-description>
 			<parameter name="username" type="text" required="true">
@@ -26,9 +34,21 @@
 				<description>Password for the Bosch Indego account.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="60">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
+				<label>Idle Refresh Interval</label>
+				<description>The number of seconds between refreshing device state when idle.</description>
 				<default>180</default>
+			</parameter>
+			<parameter name="stateActiveRefresh" type="integer" min="6">
+				<label>Active Refresh Interval</label>
+				<description>The number of seconds between refreshing device state when active.</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+			<parameter name="cuttingTimeRefresh" type="integer" min="1">
+				<label>Cutting Time Refresh Interval</label>
+				<description>The number of minutes between refreshing last/next cutting time.</description>
+				<advanced>true</advanced>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -48,50 +68,57 @@
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>0 = no error</description>
-		<state readOnly="false"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="statecode" advanced="true">
 		<item-type>Number</item-type>
 		<label>State Code</label>
-		<description>API-code of the Indego state</description>
+		<description>API code of the Indego state</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">Reading status</option>
-				<option value="257">Charging</option>
-				<option value="258">Docked</option>
-				<option value="259">Docked - Software update</option>
-				<option value="260">Docked</option>
-				<option value="261">Docked</option>
-				<option value="262">Docked - Loading map</option>
-				<option value="263">Docked - Saving map</option>
-				<option value="512">Mowing</option>
-				<option value="514">Relocalising</option>
-				<option value="515">Loading map</option>
-				<option value="516">Learning lawn</option>
-				<option value="517">Paused</option>
-				<option value="518">Border cut</option>
-				<option value="519">Idle in lawn</option>
-				<option value="769">Returning to Dock</option>
-				<option value="770">Returning to Dock</option>
-				<option value="771">Returning to Dock - Battery low</option>
-				<option value="772">Returning to Dock - Calendar timeslot ended</option>
-				<option value="773">Returning to Dock - Battery temp range</option>
-				<option value="774">Returning to Dock</option>
-				<option value="775">Returning to Dock - Lawn complete</option>
-				<option value="775">Returning to Dock - Relocalising</option>
+				<option value="0">@text/indego.state.reading-status</option>
+				<option value="257">@text/indego.state.charging</option>
+				<option value="258">@text/indego.state.docked</option>
+				<option value="259">@text/indego.state.docked-software-update</option>
+				<option value="260">@text/indego.state.docked</option>
+				<option value="261">@text/indego.state.docked</option>
+				<option value="262">@text/indego.state.docked-loading-map</option>
+				<option value="263">@text/indego.state.docked-saving-map</option>
+				<option value="266">@text/indego.state.leaving-dock</option>
+				<option value="512">@text/indego.state.mowing</option>
+				<option value="514">@text/indego.state.relocalising</option>
+				<option value="515">@text/indego.state.loading-map</option>
+				<option value="516">@text/indego.state.learning-lawn</option>
+				<option value="517">@text/indego.state.paused</option>
+				<option value="518">@text/indego.state.border-cut</option>
+				<option value="519">@text/indego.state.idle-in-lawn</option>
+				<option value="523">@text/indego.state.spotmow</option>
+				<option value="768">@text/indego.state.returning-to-dock</option>
+				<option value="769">@text/indego.state.returning-to-dock</option>
+				<option value="770">@text/indego.state.returning-to-dock</option>
+				<option value="771">@text/indego.state.returning-to-dock-battery-low</option>
+				<option value="772">@text/indego.state.returning-to-dock-calendar-timeslot-ended</option>
+				<option value="773">@text/indego.state.returning-to-dock-battery-temp-range</option>
+				<option value="774">@text/indego.state.returning-to-dock</option>
+				<option value="775">@text/indego.state.returning-to-dock-lawn-complete</option>
+				<option value="776">@text/indego.state.returning-to-dock-relocalising</option>
+				<option value="1025">@text/indego.state.diagnostic-mode</option>
+				<option value="1026">@text/indego.state.end-of-life</option>
+				<option value="1281">@text/indego.state.software-update</option>
+				<option value="1537">@text/indego.state.energy-save-mode</option>
+				<option value="64513">@text/indego.state.docked</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="textualstate">
 		<item-type>String</item-type>
 		<label>Textual State</label>
-		<description></description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mowed">
 		<item-type>Dimmer</item-type>
 		<label>Cut Grass</label>
-		<description></description>
+		<description>Cut grass in percent</description>
 		<state readOnly="true" pattern="%d %%"></state>
 	</channel-type>
 	<channel-type id="ready">
@@ -104,6 +131,49 @@
 				<option value="1">ready</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="lastCutting">
+		<item-type>DateTime</item-type>
+		<label>Last Cutting</label>
+		<description>Last cutting time</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nextCutting">
+		<item-type>DateTime</item-type>
+		<label>Next Cutting</label>
+		<description>Next scheduled cutting time</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage reported by the device</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Battery temperature reported by the device</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="gardenSize">
+		<item-type>Number:Area</item-type>
+		<label>Garden Size</label>
+		<description>Garden size mapped by the device</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="gardenMap">
+		<item-type>Image</item-type>
+		<label>Garden Map</label>
+		<description>Garden map created by the device</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

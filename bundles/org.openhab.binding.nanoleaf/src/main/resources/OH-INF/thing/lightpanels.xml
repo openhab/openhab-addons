@@ -18,6 +18,8 @@
 			<channel id="rhythmActive" typeId="rhythmActive"/>
 			<channel id="rhythmMode" typeId="rhythmMode"/>
 			<channel id="swipe" typeId="swipe"/>
+			<channel id="layout" typeId="layout"/>
+			<channel id="visualState" typeId="visualState"/>
 		</channels>
 
 		<properties>
@@ -105,6 +107,18 @@
 				<option value="RIGHT">Right</option>
 			</options>
 		</event>
+	</channel-type>
+
+	<channel-type id="layout">
+		<item-type>Image</item-type>
+		<label>@text/channel-type.nanoleaf.layout.label</label>
+		<description>@text/channel-type.nanoleaf.layout.description</description>
+	</channel-type>
+
+	<channel-type id="visualState">
+		<item-type>Image</item-type>
+		<label>@text/channel-type.nanoleaf.state.label</label>
+		<description>@text/channel-type.nanoleaf.state.description</description>
 	</channel-type>
 
 </thing:thing-descriptions>

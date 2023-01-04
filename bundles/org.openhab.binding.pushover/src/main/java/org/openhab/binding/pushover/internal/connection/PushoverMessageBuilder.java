@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pushover.internal.connection;
+
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +27,8 @@ import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.PathContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
@@ -83,19 +87,19 @@ public class PushoverMessageBuilder {
     private boolean html = false;
     private boolean monospace = false;
 
-    private PushoverMessageBuilder(String apikey, String user) throws PushoverConfigurationException {
+    private PushoverMessageBuilder(String apikey, String user) throws ConfigurationException {
         body.addFieldPart(MESSAGE_KEY_TOKEN, new StringContentProvider(apikey), null);
         body.addFieldPart(MESSAGE_KEY_USER, new StringContentProvider(user), null);
     }
 
     public static PushoverMessageBuilder getInstance(@Nullable String apikey, @Nullable String user)
-            throws PushoverConfigurationException {
-        if (apikey == null || apikey.isEmpty()) {
-            throw new PushoverConfigurationException("@text/offline.conf-error-missing-apikey");
+            throws ConfigurationException {
+        if (apikey == null || apikey.isBlank()) {
+            throw new ConfigurationException(TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY);
         }
 
-        if (user == null || user.isEmpty()) {
-            throw new PushoverConfigurationException("@text/offline.conf-error-missing-user");
+        if (user == null || user.isBlank()) {
+            throw new ConfigurationException(TEXT_OFFLINE_CONF_ERROR_MISSING_USER);
         }
 
         return new PushoverMessageBuilder(apikey, user);
@@ -166,7 +170,7 @@ public class PushoverMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() throws PushoverCommunicationException {
+    public ContentProvider build() throws CommunicationException {
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
@@ -279,27 +283,24 @@ public class PushoverMessageBuilder {
         return body;
     }
 
-    private Path createTempFile(byte[] data) throws PushoverCommunicationException {
+    private Path createTempFile(byte[] data) throws CommunicationException {
         try {
             Path tmpFile = Files.createTempFile("pushover-", ".tmp");
             return Files.write(tmpFile, data);
         } catch (IOException e) {
-            logger.debug("IOException occurred while creating temp file - skip sending message: {}",
-                    e.getLocalizedMessage(), e);
-            throw new PushoverCommunicationException(
-                    String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+            logger.debug("IOException occurred while creating temp file - skip sending the message: {}", e.getMessage(),
+                    e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
         }
     }
 
-    private void addFilePart(Path path, @Nullable String contentType) throws PushoverCommunicationException {
+    private void addFilePart(Path path, @Nullable String contentType) throws CommunicationException {
         try {
             body.addFilePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
                     new PathContentProvider(contentType == null ? DEFAULT_CONTENT_TYPE : contentType, path), null);
         } catch (IOException e) {
-            logger.debug("IOException occurred while adding content - skip sending message: {}",
-                    e.getLocalizedMessage(), e);
-            throw new PushoverCommunicationException(
-                    String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+            logger.debug("IOException occurred while adding content - skip sending the message: {}", e.getMessage(), e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
         }
     }
 }

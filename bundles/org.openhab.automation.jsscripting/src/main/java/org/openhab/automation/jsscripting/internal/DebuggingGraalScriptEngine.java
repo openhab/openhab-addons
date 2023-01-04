@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,9 @@ package org.openhab.automation.jsscripting.internal;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import org.graalvm.polyglot.PolyglotException;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +26,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable>
-        extends InvocationInterceptingScriptEngineWithInvocable<T> {
+class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
+        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
 
     private static final Logger STACK_LOGGER = LoggerFactory
             .getLogger("org.openhab.automation.script.javascript.stack");
@@ -38,11 +37,14 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable>
     }
 
     @Override
-    public ScriptException afterThrowsInvocation(ScriptException se) {
-        Throwable cause = se.getCause();
+    public Exception afterThrowsInvocation(Exception e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof IllegalArgumentException) {
+            STACK_LOGGER.error("Failed to execute script:", e);
+        }
         if (cause instanceof PolyglotException) {
             STACK_LOGGER.error("Failed to execute script:", cause);
         }
-        return se;
+        return e;
     }
 }

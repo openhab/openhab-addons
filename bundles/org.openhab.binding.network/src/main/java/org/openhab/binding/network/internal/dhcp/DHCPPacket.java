@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,7 +207,6 @@ class DHCPPacket {
      *
      * @return option type, of <tt>null</tt> if not present.
      */
-    @SuppressWarnings({ "null", "unused" })
     public @Nullable Byte getDHCPMessageType() {
         byte[] opt = options.get(DHO_DHCP_MESSAGE_TYPE);
         if (opt == null) {
@@ -223,7 +222,6 @@ class DHCPPacket {
     /**
      * Returns the requested IP address of a BOOTREQUEST packet.
      */
-    @SuppressWarnings({ "null", "unused" })
     public @Nullable InetAddress getRequestedIPAddress() throws IllegalArgumentException, UnknownHostException {
         byte[] opt = options.get(DHO_DHCP_REQUESTED_ADDRESS);
         if (opt == null) {

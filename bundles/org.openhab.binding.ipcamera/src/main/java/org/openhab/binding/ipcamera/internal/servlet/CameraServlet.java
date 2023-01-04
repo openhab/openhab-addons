@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -175,27 +175,27 @@ public class CameraServlet extends IpCameraServlet {
                     }
                 } while (true);
             case "/ipcamera.mjpeg":
-                if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
-                    if (openStreams.isEmpty()) {
-                        handler.setupFfmpegFormat(FFmpegFormat.MJPEG);
-                    }
-                    output = new StreamOutput(resp);
-                    openStreams.addStream(output);
-                } else if (openStreams.isEmpty()) {
+                if (openStreams.isEmpty()) {
                     logger.debug("First stream requested, opening up stream from camera");
                     handler.openCamerasStream();
-                    output = new StreamOutput(resp, handler.mjpegContentType);
-                    openStreams.addStream(output);
-                } else {
-                    ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
-                    if (tracker == null || !tracker.getChannel().isOpen()) {
-                        logger.debug("Not the first stream requested but the stream from camera was closed");
-                        handler.openCamerasStream();
-                        openStreams.closeAllStreams();
+                    if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                        output = new StreamOutput(resp);
+                    } else {
+                        output = new StreamOutput(resp, handler.mjpegContentType);
                     }
-                    output = new StreamOutput(resp, handler.mjpegContentType);
-                    openStreams.addStream(output);
+                } else {
+                    if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                        output = new StreamOutput(resp);
+                    } else {
+                        ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));
+                        if (tracker == null || !tracker.getChannel().isOpen()) {
+                            logger.debug("Not the first stream requested but the stream from camera was closed");
+                            handler.openCamerasStream();
+                        }
+                        output = new StreamOutput(resp, handler.mjpegContentType);
+                    }
                 }
+                openStreams.addStream(output);
                 do {
                     try {
                         output.sendFrame();

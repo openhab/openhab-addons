@@ -7,7 +7,7 @@
 	<!-- Rotel RC-1572 Connection Thing Type -->
 	<thing-type id="rc1572">
 		<label>RC-1572 Stereo Preamplifier</label>
-		<description>Connection to the Rotel RC-1572 stereo preamplifier</description>
+		<description>Connection to the Rotel RC-1572 or RC-1572MKII stereo preamplifier</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -18,6 +18,9 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>

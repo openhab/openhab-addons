@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,9 +30,18 @@ public class RenaultBindingConstants {
     public static final ThingTypeUID THING_TYPE_CAR = new ThingTypeUID(BINDING_ID, "car");
 
     // List of all Channel ids
+    public static final String CHANNEL_BATTERY_AVAILABLE_ENERGY = "batteryavailableenergy";
     public static final String CHANNEL_BATTERY_LEVEL = "batterylevel";
+    public static final String CHANNEL_CHARGING_MODE = "chargingmode";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingstatus";
+    public static final String CHANNEL_CHARGING_REMAINING_TIME = "chargingremainingtime";
+    public static final String CHANNEL_ESTIMATED_RANGE = "estimatedrange";
+    public static final String CHANNEL_EXTERNAL_TEMPERATURE = "externaltemperature";
     public static final String CHANNEL_HVAC_STATUS = "hvacstatus";
+    public static final String CHANNEL_HVAC_TARGET_TEMPERATURE = "hvactargettemperature";
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_LOCATION = "location";
+    public static final String CHANNEL_LOCATION_UPDATED = "locationupdated";
     public static final String CHANNEL_ODOMETER = "odometer";
+    public static final String CHANNEL_PLUG_STATUS = "plugstatus";
 }

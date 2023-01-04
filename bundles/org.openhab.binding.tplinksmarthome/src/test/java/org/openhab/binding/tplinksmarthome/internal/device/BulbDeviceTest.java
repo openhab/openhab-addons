@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -173,7 +175,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
 
     @Test
     public void testUpdateChannelPower() {
-        assertEquals(new DecimalType(10.8), device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState),
+        assertEquals(new QuantityType<>(10.8, Units.WATT), device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState),
                 "Power values should be set");
     }
 }

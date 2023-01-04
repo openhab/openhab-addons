@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- OpenWebNet Generic Device -->
-	<thing-type id="device">
+	<thing-type id="generic_device">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 			<bridge-type-ref id="zb_gateway"/>

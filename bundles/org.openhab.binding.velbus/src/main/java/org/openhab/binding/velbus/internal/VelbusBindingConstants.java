@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,6 +66,7 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBEL2 = new ThingTypeUID(BINDING_ID, "vmbel2");
     public static final ThingTypeUID THING_TYPE_VMBEL4 = new ThingTypeUID(BINDING_ID, "vmbel4");
     public static final ThingTypeUID THING_TYPE_VMBELO = new ThingTypeUID(BINDING_ID, "vmbelo");
+    public static final ThingTypeUID THING_TYPE_VMBELPIR = new ThingTypeUID(BINDING_ID, "vmbelpir");
     public static final ThingTypeUID THING_TYPE_VMBGP1 = new ThingTypeUID(BINDING_ID, "vmbgp1");
     public static final ThingTypeUID THING_TYPE_VMBGP1_2 = new ThingTypeUID(BINDING_ID, "vmbgp1-2");
     public static final ThingTypeUID THING_TYPE_VMBGP2 = new ThingTypeUID(BINDING_ID, "vmbgp2");
@@ -83,22 +84,25 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBPIRO = new ThingTypeUID(BINDING_ID, "vmbpiro");
     public static final ThingTypeUID THING_TYPE_VMBRFR8S = new ThingTypeUID(BINDING_ID, "vmbrfr8s");
     public static final ThingTypeUID THING_TYPE_VMBVP1 = new ThingTypeUID(BINDING_ID, "vmbvp1");
+    public static final ThingTypeUID THING_TYPE_VMBKP = new ThingTypeUID(BINDING_ID, "vmbkp");
+    public static final ThingTypeUID THING_TYPE_VMBIN = new ThingTypeUID(BINDING_ID, "vmbin");
+    public static final ThingTypeUID THING_TYPE_VMB4PB = new ThingTypeUID(BINDING_ID, "vmb4pb");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(BRIDGE_THING_TYPE, NETWORK_BRIDGE_THING_TYPE)));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM,
-                    THING_TYPE_VMB1LED, THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS,
-                    THING_TYPE_VMB1RYS, THING_TYPE_VMB1TS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2PBN,
-                    THING_TYPE_VMB4AN, THING_TYPE_VMB4DC, THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO,
-                    THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN, THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB,
-                    THING_TYPE_VMB8PBU, THING_TYPE_VMBDME, THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR, THING_TYPE_VMBEL1,
-                    THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELO, THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2,
-                    THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2,
-                    THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD,
-                    THING_TYPE_VMBGPOD_2, THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM,
-                    THING_TYPE_VMBPIRO, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1)));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM, THING_TYPE_VMB1LED,
+                    THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS, THING_TYPE_VMB1RYS, THING_TYPE_VMB1TS,
+                    THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2PBN, THING_TYPE_VMB4AN, THING_TYPE_VMB4DC,
+                    THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO, THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN,
+                    THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMB8PBU, THING_TYPE_VMBDME,
+                    THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR, THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4,
+                    THING_TYPE_VMBELO, THING_TYPE_VMBELPIR, THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2,
+                    THING_TYPE_VMBGP2_2, THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR,
+                    THING_TYPE_VMBGP4PIR_2, THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2,
+                    THING_TYPE_VMBMETEO, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBPIRO,
+                    THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB)));
 
     // Velbus module types
     public static final byte MODULE_TYPE_VMB8PB = 0x01;
@@ -142,12 +146,16 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBEL2 = 0x35;
     public static final byte MODULE_TYPE_VMBEL4 = 0x36;
     public static final byte MODULE_TYPE_VMBELO = 0x37;
+    public static final byte MODULE_TYPE_VMBELPIR = 0x38;
     public static final byte MODULE_TYPE_VMBGP1_2 = 0x3A;
     public static final byte MODULE_TYPE_VMBGP2_2 = 0x3B;
     public static final byte MODULE_TYPE_VMBGP4_2 = 0x3C;
     public static final byte MODULE_TYPE_VMBGPOD_2 = 0x3D;
     public static final byte MODULE_TYPE_VMBGP4PIR_2 = 0x3E;
     public static final byte MODULE_TYPE_VMB1RYS = 0x41;
+    public static final byte MODULE_TYPE_VMBKP = 0x42;
+    public static final byte MODULE_TYPE_VMBIN = 0x43;
+    public static final byte MODULE_TYPE_VMB4PB = 0x44;
 
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
@@ -224,4 +232,31 @@ public class VelbusBindingConstants {
     public static final String CHANNEL = "CH";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
+
+    // Channels ids
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_ENABLED = "bridgeClockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM1_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_ENABLED = "bridgeClockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_HOUR = "bridgeClockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_WAKEUP_MINUTE = "bridgeClockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_HOUR = "bridgeClockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_BRIDGE_CLOCK_ALARM2_BEDTIME_MINUTE = "bridgeClockAlarm#clockAlarm2BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_ENABLED = "clockAlarm#clockAlarm1Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_TYPE = "clockAlarm#clockAlarm1Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_HOUR = "clockAlarm#clockAlarm1WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_WAKEUP_MINUTE = "clockAlarm#clockAlarm1WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_HOUR = "clockAlarm#clockAlarm1BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM1_BEDTIME_MINUTE = "clockAlarm#clockAlarm1BedtimeMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_ENABLED = "clockAlarm#clockAlarm2Enabled";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_TYPE = "clockAlarm#clockAlarm2Type";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_HOUR = "clockAlarm#clockAlarm2WakeupHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_WAKEUP_MINUTE = "clockAlarm#clockAlarm2WakeupMinute";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_HOUR = "clockAlarm#clockAlarm2BedtimeHour";
+    public static final String CHANNEL_MODULE_CLOCK_ALARM2_BEDTIME_MINUTE = "clockAlarm#clockAlarm2BedtimeMinute";
+
+    // Delay
+    public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;
 }

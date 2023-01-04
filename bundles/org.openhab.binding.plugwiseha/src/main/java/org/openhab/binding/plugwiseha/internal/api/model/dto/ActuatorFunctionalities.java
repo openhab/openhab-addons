@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,19 @@ public class ActuatorFunctionalities extends PlugwiseHACollection<ActuatorFuncti
 
     public Optional<Boolean> getRelayLockState() {
         return this.getFunctionalityRelay().flatMap(ActuatorFunctionality::getRelayLockState)
+                .map(Boolean::parseBoolean);
+    }
+
+    public String getRegulationControl() {
+        ActuatorFunctionality functionality = this.getFunctionalityThermostat().orElse(null);
+        if (functionality != null) {
+            return functionality.getRegulationControl();
+        }
+        return null;
+    }
+
+    public Optional<Boolean> getCoolingAllowed() {
+        return this.getFunctionalityThermostat().flatMap(ActuatorFunctionality::getCoolingAllowed)
                 .map(Boolean::parseBoolean);
     }
 

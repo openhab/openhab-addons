@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,27 +26,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ErrorMessage {
-    NO_ERROR(0, "No error"),
-    ERROR1(1, "Fan error"),
-    ERROR3(3, "Lamp failure at power on"),
-    ERROR4(4, "High internal temperature error"),
-    ERROR6(6, "Lamp error"),
-    ERROR7(7, "Open Lamp cover door error"),
-    ERROR8(8, "Cinema filter error"),
-    ERROR9(9, "Electric dual-layered capacitor is disconnected"),
-    ERROR10(10, "Auto iris error"),
-    ERROR11(11, "Subsystem error"),
-    ERROR12(12, "Low air flow error"),
-    ERROR13(13, "Air filter air flow sensor error"),
-    ERROR14(14, "Power supply unit error (ballast)"),
-    ERROR15(15, "Shutter error"),
-    ERROR16(16, "Cooling system error (peltier element)"),
-    ERROR17(17, "Cooling system error (pump)"),
-    ERROR18(18, "Static iris error"),
-    ERROR19(19, "Power supply unit error (disagreement of ballast)"),
-    ERROR20(20, "Exhaust shutter error"),
-    ERROR21(21, "Obstacle detection error"),
-    ERROR22(22, "IF board discernment error");
+    NO_ERROR(0, "00 : No error"),
+    ERROR1(1, "01 : Fan error"),
+    ERROR3(3, "03 : Lamp failure at power on"),
+    ERROR4(4, "04 : High internal temperature error"),
+    ERROR6(6, "06 : Lamp error"),
+    ERROR7(7, "07 : Open Lamp cover door error"),
+    ERROR8(8, "08 : Cinema filter error"),
+    ERROR9(9, "09 : Electric dual-layered capacitor is disconnected"),
+    ERROR10(10, "0A : Auto iris error"),
+    ERROR11(11, "0B : Subsystem error"),
+    ERROR12(12, "0C : Low air flow error"),
+    ERROR13(13, "0D : Air filter air flow sensor error"),
+    ERROR14(14, "0E : Power supply unit error (ballast)"),
+    ERROR15(15, "0F : Shutter error"),
+    ERROR16(16, "10 : Cooling system error (peltier element)"),
+    ERROR17(17, "11 : Cooling system error (pump)"),
+    ERROR18(18, "12 : Static iris error"),
+    ERROR19(19, "13 : Power supply unit error (disagreement of ballast)"),
+    ERROR20(20, "14 : Exhaust shutter error"),
+    ERROR21(21, "15 : Obstacle detection error"),
+    ERROR22(22, "16 : IF board discernment error"),
+    ERROR23(23, "17 : Communication error of \"Stack projection function\""),
+    ERROR24(24, "18 : I2C error");
 
     private final int code;
     private final String message;
@@ -64,7 +66,9 @@ public enum ErrorMessage {
         try {
             return Arrays.stream(values()).filter(e -> e.code == code).findFirst().get().getMessage();
         } catch (NoSuchElementException e) {
-            return "Unknown error code: " + code;
+            // for example, will display 10 as '0A' to match format of error codes in the epson documentation
+            return "Unknown error code (hex): "
+                    + String.format("%2s", Integer.toHexString(code)).replace(' ', '0').toUpperCase();
         }
     }
 }

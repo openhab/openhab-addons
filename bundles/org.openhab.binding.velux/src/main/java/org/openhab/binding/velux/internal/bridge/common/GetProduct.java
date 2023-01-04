@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.bridge.common;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.things.StatusReply;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 
 /**
@@ -47,4 +48,8 @@ public abstract class GetProduct implements BridgeCommunicationProtocol {
      * @return <b>veluxProduct</b> as VeluxProduct.
      */
     public abstract VeluxProduct getProduct();
+
+    public StatusReply getStatusReply() {
+        return StatusReply.COMMAND_COMPLETED_OK;
+    }
 }

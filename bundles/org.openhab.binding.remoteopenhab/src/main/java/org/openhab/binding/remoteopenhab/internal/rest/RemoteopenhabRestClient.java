@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -400,9 +400,8 @@ public class RemoteopenhabRestClient {
             connected = true;
             listeners.forEach(listener -> listener.onConnected());
         }
-
         if (!"message".equals(name)) {
-            logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
+            // Ignore silently all events which are not "message" events. This includes the "alive" events.
             return;
         }
 

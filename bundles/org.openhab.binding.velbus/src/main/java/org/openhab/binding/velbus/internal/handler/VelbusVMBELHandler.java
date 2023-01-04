@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,12 @@ import org.openhab.core.thing.ThingTypeUID;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add VMBELPIR support
  */
 @NonNullByDefault
 public class VelbusVMBELHandler extends VelbusThermostatHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4));
+            Arrays.asList(THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4, THING_TYPE_VMBELPIR));
 
     public VelbusVMBELHandler(Thing thing) {
         super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH9"));

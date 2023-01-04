@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Turns the power on or off</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="motionDetection">
+		<item-type>Switch</item-type>
+		<label>Motion Status</label>
+		<description>Indicates whether motion is detected or not</description>
+		<category>Motion</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastMotionDetected" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Activity (Date/Time)</label>
+		<description>Date/time when last motion was detected</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="lastChangedAt" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Activity (Date/Time)</label>
+		<description>Date/time when the state last changed</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="lastOnFor" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Activity (s)</label>
+		<description>Duration the device has been switched on for</description>
+		<state pattern="%.1f s"/>
+	</channel-type>
+
+	<channel-type id="onToday" advanced="true">
+		<item-type>Number</item-type>
+		<label>Today's Activity (s)</label>
+		<description>How long has the device been switched on today</description>
+		<category>Time</category>
+		<state pattern="%.1f s"/>
+	</channel-type>
+
+	<channel-type id="onTotal" advanced="true">
+		<item-type>Number</item-type>
+		<label>Total Activity (s)</label>
+		<description>How long has the device been switched on totally</description>
+		<category>Time</category>
+		<state pattern="%.1f s"/>
+	</channel-type>
+
+	<channel-type id="timespan" advanced="true">
+		<item-type>Number</item-type>
+		<label>Usage Timespan (s)</label>
+		<description>Time used to measure average usage</description>
+		<category>Time</category>
+		<state pattern="%.1f s"/>
+	</channel-type>
+
+	<channel-type id="averagePower" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Average Power</label>
+		<description>The average power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="currentPower">
+		<item-type>Number:Power</item-type>
+		<label>Current Power</label>
+		<description>The current power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="currentPowerRaw" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Raw</label>
+		<description>The current power consumption with full precision</description>
+		<category>Energy</category>
+		<state pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyToday" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today</label>
+		<description>Todays power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energyTotal" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Total</label>
+		<description>Total power consumption</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="standByLimit" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>StandBy Limit</label>
+		<description>Minimum energy draw to register device as switched on</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="onStandBy" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On Standby</label>
+		<description>Appliance on standby</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light.
+			It is also possible to switch the
+			light on and off.
+		</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="relay">
+		<item-type>Switch</item-type>
+		<label>Relay</label>
+		<description>Switches the integrated relay contact close/open</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="sensor">
+		<item-type>Switch</item-type>
+		<label>Sensor</label>
+		<description>Shows the state of the integrated sensor</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="coffeeMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Shows the operation mode of a WeMo Coffee Maker</description>
+		<state readOnly="true">
+			<options>
+				<option value="Refill">Not Ready: Refill Water and Replace Carafe</option>
+				<option value="PlaceCarafe">Not Ready: Replace Carafe</option>
+				<option value="RefillWater">Not Ready: Refill Water</option>
+				<option value="Ready">Ready</option>
+				<option value="Brewing">Brewing</option>
+				<option value="Brewed">Brewing Finished</option>
+				<option value="CleaningBrewing">Cleaning Coffee Maker</option>
+				<option value="CleaningSoaking">Cleaning Filter</option>
+				<option value="BrewFailCarafeRemoved">Brewing Failed: Carafe Removed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="modeTime">
+		<item-type>Number</item-type>
+		<label>ModeTime</label>
+		<description>Shows the current amount of time, in minutes, that the Coffee Maker has been in the current mode</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="timeRemaining">
+		<item-type>Number</item-type>
+		<label>TimeRemaining</label>
+		<description>Shows the remaining brewing time of a WeMo Coffee Maker</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="waterLevelReached" advanced="true">
+		<item-type>Switch</item-type>
+		<label>WaterLevelReached</label>
+		<description>Indicates if the WeMo Coffee Maker needs to be refilled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="cleanAdvise" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CleanAdvise</label>
+		<description>Indicates if a WeMo Coffee Maker needs to be cleaned</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="filterAdvise" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FilterAdvise</label>
+		<description>Indicates if a WeMo Coffee Maker needs to have the filter changed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="brewed" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Brewed</label>
+		<description>Date/time the coffee maker last completed brewing coffee</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="lastCleaned" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>LastCleaned</label>
+		<description>Date/time the coffee maker last completed cleaning</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="faderCountDownTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fader CountDown Time</label>
+		<description>The fading duration time in minutes</description>
+		<category>Time</category>
+		<state min="1" max="30" step="1.0" pattern="%d min" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="faderEnabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fader OFF/ON</label>
+		<description>Allows to switch the fader ON/OFF</description>
+	</channel-type>
+
+	<channel-type id="timerStart" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer OFF/ON</label>
+		<description>Allows to switch the timer ON/OFF</description>
+	</channel-type>
+
+	<channel-type id="nightMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>NightMode OFF/ON</label>
+		<description>Allows to switch the nightMode ON/OFF</description>
+	</channel-type>
+
+	<channel-type id="startTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>NightMode Start Time</label>
+		<description>Time when the Night Mode starts</description>
+		<category>Time</category>
+		<state pattern="%1$tR" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="endTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>NightMode End Time</label>
+		<description>Time when the Night Mode ends</description>
+		<category>Time</category>
+		<state pattern="%1$tR" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nightModeBrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Night Mode Brightness</label>
+		<description>Allows setting the brightness of Night Mode</description>
+	</channel-type>
+
+	<channel-type id="cookMode">
+		<item-type>String</item-type>
+		<label>Cooking Mode</label>
+		<description>Shows the operation mode of a WeMo CrockPot</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not cooking</option>
+				<option value="WARM">Warming</option>
+				<option value="LOW">Low cooking</option>
+				<option value="HIGH">High cooking</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="warmCookTime">
+		<item-type>Number</item-type>
+		<label>WarmCookTime</label>
+		<description>Shows the timer settings for warm cooking mode</description>
+	</channel-type>
+
+	<channel-type id="lowCookTime">
+		<item-type>Number</item-type>
+		<label>LowCookTime</label>
+		<description>Shows the timer settings for low cooking mode</description>
+	</channel-type>
+
+	<channel-type id="highCookTime">
+		<item-type>Number</item-type>
+		<label>HighCookTime</label>
+		<description>Shows the timer settings for high cooking mode</description>
+	</channel-type>
+
+	<channel-type id="cookedTime">
+		<item-type>Number</item-type>
+		<label>CookedTime</label>
+		<description>Shows the elapsed cooking time</description>
+	</channel-type>
+
+	<channel-type id="purifierMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Holmes Air Purifier</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="LOW">Running at low level</option>
+				<option value="MED">Running at medium level</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="AUTO">Running in auto mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airQiality">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<description>Shows the air quality measured by a WeMo enabled Holmes Air Purifier</description>
+		<state readOnly="true">
+			<options>
+				<option value="POOR"></option>
+				<option value="MODERATE"></option>
+				<option value="GOOD"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ionizer">
+		<item-type>Switch</item-type>
+		<label>Ionizer</label>
+		<description>Switches ionization ON or OFF</description>
+	</channel-type>
+
+	<channel-type id="filterLife">
+		<item-type>Number</item-type>
+		<label>Filter Life</label>
+		<description>Shows the remaining lifetime percentage of the air filter</description>
+	</channel-type>
+
+	<channel-type id="filterExpired">
+		<item-type>Switch</item-type>
+		<label>Filter Time expired</label>
+		<description>Indicates whether the air Filter needs to be replaced</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="filterPresent">
+		<item-type>Switch</item-type>
+		<label>Filter is present</label>
+		<description>Indicates whether the air Filter is present</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humidifierMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Holmes Humidifier</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="MIN">Running at min level</option>
+				<option value="LOW">Running at low level</option>
+				<option value="MED">Running at medium level</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="MAX">Running in max level</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="currentHumidity">
+		<item-type>Number</item-type>
+		<label>Current Humidity</label>
+		<description>Shows the current humidity of a WeMo enabled Holmes Humidifier</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="desiredHumidity">
+		<item-type>Number</item-type>
+		<label>Target Humidity</label>
+		<description>Shows the target humidity of a WeMo enabled Holmes Humidifier</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="45"></option>
+				<option value="50"></option>
+				<option value="55"></option>
+				<option value="60"></option>
+				<option value="100"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="waterLevel">
+		<item-type>String</item-type>
+		<label>Water Level</label>
+		<description>Shows the water level of a WeMo enabled Holmes Humidifier</description>
+		<state readOnly="true">
+			<options>
+				<option value="EMPTY"></option>
+				<option value="LOW"></option>
+				<option value="GOOD"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heaterMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Heater</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="FROSTPROTECT">Running at FrostProtect</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="LOW">Running at low level</option>
+				<option value="ECO">Running in Eco mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="currentTemperature">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Shows the current temperature measured by a WeMo enabled Heater</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Shows the target temperature for a WeMo enabled Heater</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="autoOffTime">
+		<item-type>DateTime</item-type>
+		<label>Auto OFF Time</label>
+		<description>Time when a WeMo enabled Heater should switch off</description>
+		<category>Time</category>
+		<state pattern="%1$tR" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatingRemaining">
+		<item-type>Number</item-type>
+		<label>Remaining heating time</label>
+		<description>Shows the target temperature for a WeMo enabled Heater</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link StreamOutput} Streams mjpeg out to a client
@@ -29,11 +31,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class StreamOutput {
+    public final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpServletResponse response;
     private final String boundary;
     private String contentType;
     private final ServletOutputStream output;
-    private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(6);
+    private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(50);
     private boolean connected = false;
     public boolean isSnapshotBased = false;
 
@@ -76,6 +79,7 @@ public class StreamOutput {
         try {
             fifo.add(frame);
         } catch (IllegalStateException e) {
+            logger.debug("FIFO buffer has run out of space:{}", e.getMessage());
             fifo.remove();
             fifo.add(frame);
         }

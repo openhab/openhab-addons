@@ -1,0 +1,63 @@
+{
+  "chargingSessions": {
+    "chargingListState": "HAS_SESSIONS",
+    "numberOfSessions": "6",
+    "sessions": [
+      {
+        "energyCharged": "~ 13 kWh",
+        "id": "2021-11-10T11:24:34Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "Yesterday 11:24 AM"
+      },
+      {
+        "energyCharged": "~ 11 kWh",
+        "id": "2021-11-08T16:53:02Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "Monday 4:53 PM"
+      },
+      {
+        "energyCharged": "~ 12 kWh",
+        "id": "2021-11-07T13:35:27Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "Sunday 1:35 PM"
+      },
+      {
+        "energyCharged": "~ 13 kWh",
+        "id": "2021-11-05T10:53:57Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "Friday 10:53 AM"
+      },
+      {
+        "energyCharged": "~ 10 kWh",
+        "id": "2021-11-03T10:00:47Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "11/3/2021 10:00 AM"
+      },
+      {
+        "energyCharged": "~ 12 kWh",
+        "id": "2021-11-02T12:31:45Z_e51ab124",
+        "isPublic": false,
+        "sessionStatus": "FINISHED",
+        "subtitle": "some_road 2022 duration 2022 -- EUR",
+        "title": "11/2/2021 12:31 PM"
+      }
+    ],
+    "total": "~ 71 kWh"
+  },
+  "datePicker": {
+    "endDate": "2021-11-11T09:09:49Z",
+    "selectedDate": "2021-11-10T11:24:34Z",
+    "startDate": "2021-08-16T19:31:45Z"
+  },
+  "paginationInfo": {}
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -196,7 +196,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     private static final List<String> SUPPORTED_OUTPUT_CHANNEL_TYPES = new ArrayList<>();
 
     /**
-     * Returns true, if the given channel type id is a output channel.
+     * Returns true, if the given channel type id is an output channel.
      *
      * @param channelTypeID to check
      * @return true, if channel type id is output channel

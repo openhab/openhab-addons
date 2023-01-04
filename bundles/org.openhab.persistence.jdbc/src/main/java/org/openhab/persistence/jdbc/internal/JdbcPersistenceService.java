@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,16 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,11 +33,18 @@ import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.persistence.jdbc.internal.db.JdbcBaseDAO;
+import org.openhab.persistence.jdbc.internal.dto.Column;
+import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcException;
+import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -51,10 +64,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
         property = Constants.SERVICE_PID + "=org.openhab.jdbc")
-@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
-public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
-
-    protected static final String CONFIG_URI = "persistence:jdbc";
+@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceServiceConstants.CONFIG_URI)
+public class JdbcPersistenceService extends JdbcMapper implements ModifiablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
@@ -110,39 +121,52 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     @Override
     public String getId() {
         logger.debug("JDBC::getName: returning name 'jdbc' for queryable persistence service.");
-        return "jdbc";
+        return JdbcPersistenceServiceConstants.SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "JDBC";
+        return JdbcPersistenceServiceConstants.SERVICE_LABEL;
     }
 
     @Override
     public void store(Item item) {
-        store(item, null);
+        internalStore(item, null, item.getState());
     }
 
-    /**
-     * @{inheritDoc
-     */
     @Override
     public void store(Item item, @Nullable String alias) {
+        // alias is not supported
+        internalStore(item, null, item.getState());
+    }
+
+    @Override
+    public void store(Item item, ZonedDateTime date, State state) {
+        internalStore(item, date, state);
+    }
+
+    private void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
-        if (item.getState() instanceof UnDefType) {
+        if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
             return;
         }
         if (!checkDBAccessability()) {
             logger.warn(
-                    "JDBC::store:  No connection to database. Cannot persist item '{}'! Will retry connecting to database when error count:{} equals errReconnectThreshold:{}",
-                    item, errCnt, conf.getErrReconnectThreshold());
+                    "JDBC::store: No connection to database. Cannot persist state '{}' for item '{}'! Will retry connecting to database when error count:{} equals errReconnectThreshold:{}",
+                    state, item, errCnt, conf.getErrReconnectThreshold());
             return;
         }
-        long timerStart = System.currentTimeMillis();
-        storeItemValue(item);
-        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), item.getState(),
-                new java.util.Date(), System.currentTimeMillis() - timerStart);
+        try {
+            long timerStart = System.currentTimeMillis();
+            storeItemValue(item, state, date);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
+                        new Date(), System.currentTimeMillis() - timerStart);
+            }
+        } catch (JdbcException e) {
+            logger.warn("JDBC::store: Unable to store item", e);
+        }
     }
 
     @Override
@@ -191,25 +215,26 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
             }
         }
 
-        String table = sqlTables.get(itemName);
+        String table = itemNameToTableNameMap.get(itemName);
         if (table == null) {
-            logger.warn(
-                    "JDBC::query: unable to find table for query, no data in database for item '{}'. Current number of tables in the database: {}",
-                    itemName, sqlTables.size());
-            // if enabled, table will be created immediately
-            logger.warn("JDBC::query: try to generate the table for item '{}'", itemName);
-            table = getTable(item);
+            logger.debug("JDBC::query: unable to find table for item with name: '{}', no data in database.", itemName);
+            return List.of();
         }
 
-        long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
-
-        logger.debug("JDBC::query: query for {} returned {} rows in {} ms", itemName, items.size(),
-                System.currentTimeMillis() - timerStart);
-
-        // Success
-        errCnt = 0;
-        return items;
+        try {
+            long timerStart = System.currentTimeMillis();
+            List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Query for item '{}' returned {} rows in {} ms", itemName, items.size(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            // Success
+            errCnt = 0;
+            return items;
+        } catch (JdbcSQLException e) {
+            logger.warn("JDBC::query: Unable to query item", e);
+            return List.of();
+        }
     }
 
     public void updateConfig(Map<Object, Object> configuration) {
@@ -217,9 +242,15 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
 
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
-            checkDBSchema();
-            // connection has been established ... initialization completed!
-            initialized = true;
+            namingStrategy = new NamingStrategy(conf);
+            try {
+                checkDBSchema();
+                // connection has been established ... initialization completed!
+                initialized = true;
+            } catch (JdbcSQLException e) {
+                logger.error("Failed to check database schema", e);
+                initialized = false;
+            }
         } else {
             initialized = false;
         }
@@ -230,5 +261,280 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.CHANGE);
+    }
+
+    @Override
+    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::remove: database not connected, remove aborted for item '{}'", filter.getItemName());
+            return false;
+        }
+
+        // Get the item name from the filter
+        // Also get the Item object so we can determine the type
+        String itemName = filter.getItemName();
+        logger.debug("JDBC::remove: item is {}", itemName);
+        if (itemName == null) {
+            throw new IllegalArgumentException("Item name must not be null");
+        }
+
+        String table = itemNameToTableNameMap.get(itemName);
+        if (table == null) {
+            logger.debug("JDBC::remove: unable to find table for item with name: '{}', no data in database.", itemName);
+            return false;
+        }
+
+        try {
+            long timerStart = System.currentTimeMillis();
+            deleteItemValues(filter, table);
+            if (logger.isDebugEnabled()) {
+                logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
+                        System.currentTimeMillis() - timerStart);
+            }
+            return true;
+        } catch (JdbcSQLException e) {
+            logger.debug("JDBC::remove: Unable to remove values for item", e);
+            return false;
+        }
+    }
+
+    /**
+     * Get a list of names of persisted items.
+     */
+    public Collection<String> getItemNames() {
+        return itemNameToTableNameMap.keySet();
+    }
+
+    /**
+     * Get a map of item names to table names.
+     */
+    public Map<String, String> getItemNameToTableNameMap() {
+        return itemNameToTableNameMap;
+    }
+
+    /**
+     * Check schema for integrity issues.
+     *
+     * @param tableName for which columns should be checked
+     * @param itemName that corresponds to table
+     * @return Collection of strings, each describing an identified issue
+     * @throws JdbcSQLException on SQL errors
+     */
+    public Collection<String> getSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
+        List<String> issues = new ArrayList<>();
+
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::getSchemaIssues: database not connected");
+            return issues;
+        }
+
+        Item item;
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            return issues;
+        }
+        JdbcBaseDAO dao = conf.getDBDAO();
+        String timeDataType = dao.sqlTypes.get("tablePrimaryKey");
+        if (timeDataType == null) {
+            return issues;
+        }
+        String valueDataType = dao.getDataType(item);
+        List<Column> columns = getTableColumns(tableName);
+        for (Column column : columns) {
+            String columnName = column.getColumnName();
+            if ("time".equalsIgnoreCase(columnName)) {
+                if (!"time".equals(columnName)) {
+                    issues.add("Column name 'time' expected, but is '" + columnName + "'");
+                }
+                if (!timeDataType.equalsIgnoreCase(column.getColumnType())) {
+                    issues.add("Column type '" + timeDataType + "' expected, but is '"
+                            + column.getColumnType().toUpperCase() + "'");
+                }
+                if (column.getIsNullable()) {
+                    issues.add("Column 'time' expected to be NOT NULL, but is nullable");
+                }
+            } else if ("value".equalsIgnoreCase(columnName)) {
+                if (!"value".equals(columnName)) {
+                    issues.add("Column name 'value' expected, but is '" + columnName + "'");
+                }
+                if (!valueDataType.equalsIgnoreCase(column.getColumnType())) {
+                    issues.add("Column type '" + valueDataType + "' expected, but is '"
+                            + column.getColumnType().toUpperCase() + "'");
+                }
+                if (!column.getIsNullable()) {
+                    issues.add("Column 'value' expected to be nullable, but is NOT NULL");
+                }
+            } else {
+                issues.add("Column '" + columnName + "' not expected");
+            }
+        }
+        return issues;
+    }
+
+    /**
+     * Fix schema issues.
+     *
+     * @param tableName for which columns should be repaired
+     * @param itemName that corresponds to table
+     * @return true if table was altered, otherwise false
+     * @throws JdbcSQLException on SQL errors
+     */
+    public boolean fixSchemaIssues(String tableName, String itemName) throws JdbcSQLException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::fixSchemaIssues: database not connected");
+            return false;
+        }
+
+        Item item;
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            return false;
+        }
+        JdbcBaseDAO dao = conf.getDBDAO();
+        String timeDataType = dao.sqlTypes.get("tablePrimaryKey");
+        if (timeDataType == null) {
+            return false;
+        }
+        String valueDataType = dao.getDataType(item);
+        List<Column> columns = getTableColumns(tableName);
+        boolean isFixed = false;
+        for (Column column : columns) {
+            String columnName = column.getColumnName();
+            if ("time".equalsIgnoreCase(columnName)) {
+                if (!"time".equals(columnName) || !timeDataType.equalsIgnoreCase(column.getColumnType())
+                        || column.getIsNullable()) {
+                    alterTableColumn(tableName, "time", timeDataType, false);
+                    isFixed = true;
+                }
+            } else if ("value".equalsIgnoreCase(columnName)) {
+                if (!"value".equals(columnName) || !valueDataType.equalsIgnoreCase(column.getColumnType())
+                        || !column.getIsNullable()) {
+                    alterTableColumn(tableName, "value", valueDataType, true);
+                    isFixed = true;
+                }
+            }
+        }
+        return isFixed;
+    }
+
+    /**
+     * Get a list of all items with corresponding tables and an {@link ItemTableCheckEntryStatus} indicating
+     * its condition.
+     *
+     * @return list of {@link ItemTableCheckEntry}
+     */
+    public List<ItemTableCheckEntry> getCheckedEntries() throws JdbcSQLException {
+        List<ItemTableCheckEntry> entries = new ArrayList<>();
+
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::getCheckedEntries: database not connected");
+            return entries;
+        }
+
+        var orphanTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toSet());
+        for (Entry<String, String> entry : itemNameToTableNameMap.entrySet()) {
+            String itemName = entry.getKey();
+            String tableName = entry.getValue();
+            entries.add(getCheckedEntry(itemName, tableName, orphanTables.contains(tableName)));
+            orphanTables.remove(tableName);
+        }
+        for (String orphanTable : orphanTables) {
+            entries.add(new ItemTableCheckEntry("", orphanTable, ItemTableCheckEntryStatus.ORPHAN_TABLE));
+        }
+        return entries;
+    }
+
+    private ItemTableCheckEntry getCheckedEntry(String itemName, String tableName, boolean tableExists) {
+        boolean itemExists;
+        try {
+            itemRegistry.getItem(itemName);
+            itemExists = true;
+        } catch (ItemNotFoundException e) {
+            itemExists = false;
+        }
+
+        ItemTableCheckEntryStatus status;
+        if (!tableExists) {
+            if (itemExists) {
+                status = ItemTableCheckEntryStatus.TABLE_MISSING;
+            } else {
+                status = ItemTableCheckEntryStatus.ITEM_AND_TABLE_MISSING;
+            }
+        } else if (itemExists) {
+            status = ItemTableCheckEntryStatus.VALID;
+        } else {
+            status = ItemTableCheckEntryStatus.ITEM_MISSING;
+        }
+        return new ItemTableCheckEntry(itemName, tableName, status);
+    }
+
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped, unless force is set.
+     *
+     * @param itemName Name of item to clean
+     * @param force If true, non-empty tables will be dropped too
+     * @return true if item was cleaned up
+     * @throws JdbcSQLException
+     */
+    public boolean cleanupItem(String itemName, boolean force) throws JdbcSQLException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::cleanupItem: database not connected");
+            return false;
+        }
+
+        String tableName = itemNameToTableNameMap.get(itemName);
+        if (tableName == null) {
+            return false;
+        }
+        ItemTableCheckEntry entry = getCheckedEntry(itemName, tableName, ifTableExists(tableName));
+        return cleanupItem(entry, force);
+    }
+
+    /**
+     * Clean up inconsistent item: Remove from index and drop table.
+     * Tables with any rows are skipped.
+     *
+     * @param entry
+     * @return true if item was cleaned up
+     * @throws JdbcSQLException
+     */
+    public boolean cleanupItem(ItemTableCheckEntry entry) throws JdbcSQLException {
+        return cleanupItem(entry, false);
+    }
+
+    private boolean cleanupItem(ItemTableCheckEntry entry, boolean force) throws JdbcSQLException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::cleanupItem: database not connected");
+            return false;
+        }
+
+        ItemTableCheckEntryStatus status = entry.getStatus();
+        String tableName = entry.getTableName();
+        switch (status) {
+            case ITEM_MISSING:
+                if (!force && getRowCount(tableName) > 0) {
+                    return false;
+                }
+                dropTable(tableName);
+                // Fall through to remove from index.
+            case TABLE_MISSING:
+            case ITEM_AND_TABLE_MISSING:
+                if (!conf.getTableUseRealCaseSensitiveItemNames()) {
+                    ItemsVO itemsVo = new ItemsVO();
+                    itemsVo.setItemName(entry.getItemName());
+                    itemsVo.setItemsManageTable(conf.getItemsManageTable());
+                    deleteItemsEntry(itemsVo);
+                }
+                itemNameToTableNameMap.remove(entry.getItemName());
+                return true;
+            case ORPHAN_TABLE:
+            case VALID:
+            default:
+                // Nothing to clean.
+                return false;
+        }
     }
 }

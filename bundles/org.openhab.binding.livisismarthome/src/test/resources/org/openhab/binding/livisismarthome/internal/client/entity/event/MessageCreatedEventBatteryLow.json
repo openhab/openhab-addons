@@ -1,0 +1,46 @@
+{
+  "sequenceNumber": -1,
+  "type": "MessageCreated",
+  "desc": "/desc/event/MessageCreated",
+  "namespace": "core.RWE",
+  "timestamp": "2019-07-07T18:44:07.6280000Z",
+  "source": "/desc/device/SHC.RWE/1.0",
+  "data": {
+    "id": "c5c3128810524820b6071b00e80dfd23",
+    "type": "DeviceLowBattery",
+    "read": false,
+    "class": "Alert",
+    "timestamp": "2019-07-07T18:44:07.583Z",
+    "devices": ["/device/1b77a62c18c9423f871251704faec45f"],
+    "properties": {
+      "deviceName": "Fernbedienung",
+      "serialNumber": "914140024103",
+      "locationName": "Arbeitszimmer"
+    },
+    "namespace": "core.RWE"
+  }
+}
+
+{
+  "sequenceNumber": -1,
+  "type": "MessageCreated",
+  "desc": "/desc/event/MessageCreated",
+  "namespace": "core.RWE",
+  "timestamp": "2019-07-07T18:41:47.2970000Z",
+  "source": "/desc/device/SHC.RWE/1.0",
+  "data": {
+    "id": "6e5ce2290cd247208f95a5b53736958b",
+    "type": "DeviceLowBattery",
+    "read": false,
+    "class": "Alert",
+    "timestamp": "2019-07-07T18:41:47.232Z",
+    "devices": ["/device/fe51785319854f36a621d0b4f8ea0e25"],
+    "properties": {
+      "deviceName": "Heizkörperthermostat",
+      "serialNumber": "914110165056",
+      "locationName": "Bad"
+    },
+    "namespace": "core.RWE"
+  }
+}
+

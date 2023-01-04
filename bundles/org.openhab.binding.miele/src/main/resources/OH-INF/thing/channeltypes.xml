@@ -53,36 +53,44 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="start" advanced="true">
+	<channel-type id="start">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="duration" advanced="true">
+	<channel-type id="end">
 		<item-type>DateTime</item-type>
+		<label>End Time</label>
+		<description>End time of the program (programmed or running)</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="elapsed">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Elapsed Time</label>
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="finish">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Finish Time</label>
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
 
 	<channel-type id="door">
@@ -96,12 +104,14 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch the appliance on or off</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop the appliance</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="step" advanced="true">
@@ -124,6 +134,10 @@
 		<label>Current Temperature</label>
 		<description>Current temperature of the appliance</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -132,6 +146,10 @@
 		<label>Target Temperature</label>
 		<description>Target temperature to be reached by the appliance</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -188,6 +206,7 @@
 		<item-type>String</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time of the heating zone/plate</description>
+		<category>Time</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -206,9 +225,14 @@
 	</channel-type>
 
 	<channel-type id="powerConsumption">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Power Consumption</label>
 		<description>Power consumption by the currently running program on the appliance</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -216,6 +240,11 @@
 		<item-type>Number:Volume</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption by the currently running program on the appliance</description>
+		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

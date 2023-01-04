@@ -11,6 +11,7 @@
 		<label>Somfy Roller Shutter</label>
 		<channels>
 			<channel id="control" typeId="control"></channel>
+			<channel id="moving" typeId="moving"></channel>
 		</channels>
 		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>

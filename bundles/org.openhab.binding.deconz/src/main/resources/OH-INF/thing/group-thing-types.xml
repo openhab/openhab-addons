@@ -28,10 +28,6 @@
 		<item-type>Switch</item-type>
 		<label>All On</label>
 		<description>"On" if all lights in this group are "On", otherwise "Off".</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -39,20 +35,12 @@
 		<item-type>Switch</item-type>
 		<label>Any On</label>
 		<description>"On" if any light in this group is "On", otherwise "Off".</description>
-		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="scene">
 		<item-type>String</item-type>
 		<label>Recall Scene</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

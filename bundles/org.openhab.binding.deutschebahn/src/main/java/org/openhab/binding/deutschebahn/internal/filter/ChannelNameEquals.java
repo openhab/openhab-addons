@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,10 +31,10 @@ public final class ChannelNameEquals extends FilterToken {
 
     private final String channelName;
     private final Pattern filterValue;
-    private String channelGroup;
+    private final String channelGroup;
 
     /**
-     * Creates an new {@link ChannelNameEquals}.
+     * Creates a new {@link ChannelNameEquals}.
      */
     public ChannelNameEquals(int position, String channelGroup, String channelName, Pattern filterPattern) {
         super(position);
@@ -66,7 +66,7 @@ public final class ChannelNameEquals extends FilterToken {
 
     @Override
     public String toString() {
-        return this.channelGroup + "#" + channelName + "=\"" + this.filterValue.toString() + "\"";
+        return this.channelGroup + "#" + channelName + "=\"" + this.filterValue + "\"";
     }
 
     @Override
@@ -75,7 +75,7 @@ public final class ChannelNameEquals extends FilterToken {
     }
 
     /**
-     * Maps this into an {@link TimetableStopByStringEventAttributeFilter}.
+     * Maps this into a {@link TimetableStopByStringEventAttributeFilter}.
      */
     public TimetableStopByStringEventAttributeFilter mapToPredicate() throws FilterParserException {
         return new TimetableStopByStringEventAttributeFilter(mapAttributeSelection(), filterValue);

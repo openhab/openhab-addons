@@ -7,11 +7,11 @@
 	<description>The Netatmo binding integrates Weather Station with companion modules, Healthy Home Coach, Thermostat Plug
 		and Welcome Camera.</description>
 
+
 	<config-description>
-		<parameter name="backgroundDiscovery" type="boolean" required="false">
-			<label>Background Discovery</label>
-			<description>If set to true, the device and its associated modules are updated in the discovery inbox at each API
-				call run to refresh device data. Default is false.</description>
+		<parameter name="readFriends" type="boolean">
+			<label>Access Guests</label>
+			<description>For Weather Stations: A friend gave you access to their Netatmo Weather Station.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mycroft"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mycroft">
+		<label>Mycroft</label>
+		<description>A Mycroft instance</description>
+
+		<channels>
+			<channel id="listen" typeId="listen-channel"/>
+			<channel id="speak" typeId="speak-channel"/>
+			<channel id="utterance" typeId="utterance-channel"/>
+			<channel id="player" typeId="system.media-control"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="volume_mute" typeId="system.mute"/>
+			<channel id="full_message" typeId="full-message-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<description>This is the host to connect to (ip or hostname)</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="1" max="65535">
+				<label>Port</label>
+				<description>This is the port to connect to.</description>
+				<default>8181</default>
+			</parameter>
+			<parameter name="volume_restoration_level" type="integer" required="false" min="1" max="100">
+				<advanced>true</advanced>
+				<label>Volume Restoration Level</label>
+				<description>When unmuted, force Mycroft to restore volume to this value</description>
+			</parameter>
+
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="listen-channel">
+		<item-type>Switch</item-type>
+		<label>Listen State</label>
+		<description>Switch to ON when Mycroft is listening. Can simulate a wake work detection to trigger the STT.</description>
+	</channel-type>
+
+	<channel-type id="speak-channel">
+		<item-type>String</item-type>
+		<label>TTS</label>
+		<description>The last sentence Mycroft spoke.</description>
+	</channel-type>
+
+	<channel-type id="utterance-channel">
+		<item-type>String</item-type>
+		<label>Utterance</label>
+		<description>The last utterance Mycroft received.</description>
+	</channel-type>
+
+	<channel-type id="full-message-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Full Bus Message</label>
+		<description>The last full message seen on the Mycroft Bus.</description>
+		<config-description>
+			<parameter name="messageTypes" type="text" required="false">
+				<label>Full Message Channel Filter</label>
+				<description>The full message channel will be updated on these message types only (comma separated value)</description>
+				<default>message.type.1,message.type.2</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

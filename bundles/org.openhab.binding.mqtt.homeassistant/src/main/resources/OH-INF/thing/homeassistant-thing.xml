@@ -7,7 +7,6 @@
 	<thing-type id="homeassistant">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>HomeAssistant MQTT Component</label>
 		<description>You need a configured Broker first. This Thing represents a device, that follows the "HomeAssistant MQTT

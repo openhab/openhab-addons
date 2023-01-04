@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,15 +21,18 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCrockpotHandler;
 import org.openhab.binding.wemo.internal.handler.WemoDimmerHandler;
-import org.openhab.binding.wemo.internal.handler.WemoHandler;
 import org.openhab.binding.wemo.internal.handler.WemoHolmesHandler;
+import org.openhab.binding.wemo.internal.handler.WemoInsightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
+import org.openhab.binding.wemo.internal.handler.WemoMotionHandler;
+import org.openhab.binding.wemo.internal.handler.WemoSwitchHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -64,7 +67,8 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = WemoBindingConstants.SUPPORTED_THING_TYPES;
 
-    private UpnpIOService upnpIOService;
+    private final UpnpIOService upnpIOService;
+    private final UpnpService upnpService;
     private @Nullable WemoHttpCallFactory wemoHttpCallFactory;
 
     @Override
@@ -75,8 +79,9 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
-    public WemoHandlerFactory(final @Reference UpnpIOService upnpIOService) {
+    public WemoHandlerFactory(final @Reference UpnpIOService upnpIOService, @Reference UpnpService upnpService) {
         this.upnpIOService = upnpIOService;
+        this.upnpService = upnpService;
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
@@ -103,40 +108,49 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             WemoBridgeHandler handler = new WemoBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler, wemoHttpcaller);
             return handler;
+        } else if (WemoBindingConstants.THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
+            logger.debug("Creating a WemoInsightHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                    thing.getConfiguration().get(UDN));
+            return new WemoInsightHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
+        } else if (WemoBindingConstants.THING_TYPE_SOCKET.equals(thing.getThingTypeUID())
+                || WemoBindingConstants.THING_TYPE_LIGHTSWITCH.equals(thing.getThingTypeUID())) {
+            logger.debug("Creating a WemoSwitchHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                    thing.getConfiguration().get(UDN));
+            return new WemoSwitchHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
+        } else if (WemoBindingConstants.THING_TYPE_MOTION.equals(thing.getThingTypeUID())) {
+            logger.debug("Creating a WemoMotionHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                    thing.getConfiguration().get(UDN));
+            return new WemoMotionHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MAKER)) {
             logger.debug("Creating a WemoMakerHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
-            return new WemoMakerHandler(thing, upnpIOService, wemoHttpcaller);
-        } else if (WemoBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("Creating a WemoHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            return new WemoHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoMakerHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_COFFEE)) {
             logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
-            return new WemoCoffeeHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoCoffeeHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_DIMMER)) {
             logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get("udn"));
-            return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoDimmerHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_CROCKPOT)) {
             logger.debug("Creating a WemoCockpotHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get("udn"));
-            return new WemoCrockpotHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoCrockpotHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_PURIFIER)) {
             logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoHolmesHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HUMIDIFIER)) {
             logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoHolmesHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HEATER)) {
             logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoHolmesHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
-            return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller);
+            return new WemoLightHandler(thing, upnpIOService, upnpService, wemoHttpcaller);
         } else {
             logger.warn("ThingHandler not found for {}", thingTypeUID);
             return null;

@@ -11,10 +11,19 @@
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="batteryavailableenergy" typeId="batteryavailableenergy"/>
+			<channel id="plugstatus" typeId="plugstatus"/>
+			<channel id="chargingstatus" typeId="chargingstatus"/>
+			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
+			<channel id="estimatedrange" typeId="estimatedrange"/>
+			<channel id="odometer" typeId="odometer"/>
 			<channel id="hvacstatus" typeId="hvacstatus"/>
+			<channel id="hvactargettemperature" typeId="hvactargettemperature"/>
+			<channel id="externaltemperature" typeId="externaltemperature"/>
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
-			<channel id="odometer" typeId="odometer"/>
+			<channel id="locationupdated" typeId="locationupdated"/>
 		</channels>
 		<config-description>
 
@@ -69,14 +78,108 @@
 				<description>Interval the car is polled in minutes.</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="updateDelay" type="integer" unit="s" min="5" max="120">
+				<label>Update Delay</label>
+				<description>How long to wait for commands to reach the car and update to server in seconds.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="kamereonApiKey" type="text">
+				<label>Kamereon API Key</label>
+				<description>Access code for MyRenault Services.</description>
+				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
+	<channel-type id="batteryavailableenergy">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy Available</label>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="plugstatus">
+		<item-type>String</item-type>
+		<label>Plug Status</label>
+		<description>Status of charging plug.</description>
+		<state readOnly="true">
+			<options>
+				<option value="UNPLUGGED">Unplugged</option>
+				<option value="PLUGGED">Plugged</option>
+				<option value="PLUG_ERROR">Plug error</option>
+				<option value="PLUG_UNKNOWN">Plug unknown</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="chargingstatus">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_IN_CHARGE">Not charging</option>
+				<option value="WAITING_FOR_A_PLANNED_CHARGE">Waiting for schedule</option>
+				<option value="CHARGE_ENDED">Charge ended</option>
+				<option value="WAITING_FOR_CURRENT_CHARGE">Waiting for charge</option>
+				<option value="ENERGY_FLAP_OPENED">Plug flap opened</option>
+				<option value="CHARGE_IN_PROGRESS">Charge in progress</option>
+				<option value="CHARGE_ERROR">Charge error</option>
+				<option value="UNAVAILABLE">Unavailable</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="chargingmode">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="SCHEDULE_MODE">Schedule mode</option>
+				<option value="ALWAYS_CHARGING">Instant charge</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="chargingremainingtime">
+		<item-type>Number:Time</item-type>
+		<label>Charging Time Remaining</label>
+		<category>Time</category>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="estimatedrange">
+		<item-type>Number:Length</item-type>
+		<label>Estimated Range</label>
+		<description>Estimated range of the car.</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Total distance travelled</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="hvacstatus">
-		<item-type>Switch</item-type>
-		<label>HVAC Status</label>
-		<state readOnly="true"></state>
+		<item-type>String</item-type>
+		<label>HVAC Status (ON | OFF | PENDING)</label>
+		<state readOnly="false">
+			<options>
+				<option value="ON">On</option>
+				<option value="PENDING">Pending</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="hvactargettemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>HVAC Target Temperature</label>
+		<description>HVAC target temperature (19 to 21)</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+	<channel-type id="externaltemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>External Temperature</label>
+		<description>Temperature outside of the car</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
 		<item-type>String</item-type>
@@ -84,11 +187,11 @@
 		<description>Image URL of MyRenault</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="odometer">
-		<item-type>Number:Length</item-type>
-		<label>Odometer</label>
-		<description>Total distance travelled</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
+	<channel-type id="locationupdated">
+		<item-type>DateTime</item-type>
+		<label>Location Update</label>
+		<description>Timestamp of the last location update</description>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

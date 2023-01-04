@@ -92,6 +92,23 @@
 				<label>Nuki ID</label>
 				<description>The decimal string that identifies the Nuki Smart Lock.</description>
 			</parameter>
+			<parameter name="deviceType" type="integer" required="true" readOnly="true">
+				<label>Device Type</label>
+				<default>0</default>
+				<options>
+					<option value="0">Nuki Smart Lock 1.0/2.0</option>
+					<option value="3">Nuki Smart Door</option>
+					<option value="4">Nuki Smart Lock 3.0 (Pro)</option>
+				</options>
+				<description>
+					Numeric device type as specified by bridge HTTP API - 0 = Nuki Smart Lock 1.0/2.0, 3 = Nuki Smart Door,
+					4 = Nuki Smart Lock 3.0 (Pro).
+					Sent with each API request. Its purpose is not documented, seems to only be used for
+					distinguishing between opener and smartlock actions.
+					There does not seem to be any (documented or observable)
+					differences between different smart lock device types.
+				</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -191,12 +208,14 @@
 		<category>Door</category>
 		<state readOnly="true">
 			<options>
-				<option value="0">Unavailable</option>
 				<option value="1">Deactivated</option>
 				<option value="2">Closed</option>
 				<option value="3">Open</option>
-				<option value="4">Unknown</option>
+				<option value="4">Door state unknown</option>
 				<option value="5">Calibrating</option>
+				<option value="16">Uncalibrated</option>
+				<option value="240">Removed</option>
+				<option value="255">Unknown</option>
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

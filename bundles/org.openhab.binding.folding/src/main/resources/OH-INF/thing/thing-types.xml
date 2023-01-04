@@ -22,7 +22,6 @@
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
-				<description></description>
 				<default>36330</default>
 			</parameter>
 			<parameter name="password" type="text">

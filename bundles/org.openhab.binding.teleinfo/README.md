@@ -65,8 +65,8 @@ Once the serial controller added, electricity meters will automatically appear a
 | Thing type           | Parameter    | Meaning                               | Possible values                 |
 |----------------------|--------------|---------------------------------------|---------------------------------|
 | `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX, rfc2217://ip:port |
-| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                |
 |                      | `ticMode`    | TIC mode                              | `STANDARD`, `HISTORICAL` (default) |
+| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number                |
 
 ## Channels
 
@@ -110,57 +110,83 @@ Channel availability depends on the electricity connection (single or three-phas
 
 ### Standard TIC mode
 
-| Channel  | Type                      | Description                                              | Connection  | Mode  |
-|----------|---------------------------|----------------------------------------------------------|--------|-------|
-| ngtf     | `String`                  | Provider schedule name                                   | All    | All   |
-| ltarf    | `String`                  | Current pricing label                                    | All    | All   |
-| east     | `Number:Energy`           | Total active energy withdrawn                            | All    | All   |
-| easf*XX* | `Number:Energy`           | Active energy withdrawn from provider on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,10\}"/>  | All  | All   |
-| easd*XX* | `Number:Energy`           | Active energy withdrawn from distributor on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,04\}"/> | All  | All   |
-| irms*X*  | `Number:ElectricCurrent`  | RMS Current on phase *X*                                 | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| urms*X*  | `Number:Potential`        | RMS Voltage on phase *X*                                 | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| pref     | `Number:Power`            | Reference apparent power                                 | All    | All   |
-| pcoup    | `Number:Power`            | Apparent power rupture capacity                          | All    | All   |
-| sinsts   | `Number:Power`            | Instantaneous withdrawn apparent power                   | Single-phase | All   |
-| smaxsn   | `Number:Power`            | Maximum withdrawn apparent power of the day              | Single-phase | All   |
-| smaxsnMinus1 | `Number:Power`        | Maximum withdrawn apparent power of the previous day     | Single-phase | All   |
-| ccasn    | `Number:Power`            | Active charge point N                                    | All    | All   |
-| ccasnMinus1 | `Number:Power`         | Active charge point N-1                                  | All    | All   |
-| umoy*X*  | `Number:Potential`        | Mean Voltage on phase *X*                              | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| dpm*X*   | `String`                  | Start of mobile peak period <img src="https://render.githubusercontent.com/render/math?math=X\in  \{1,\dots,3\}"/>  | All    | All   |
-| fpm*X*   | `String`                  | End of mobile peak period <img src="https://render.githubusercontent.com/render/math?math=X\in  \{1,\dots,3\}"/> | All    | All   |
-| msg1     | `String`                  | Short message                                            | All    | All   |
-| msg2     | `String`                  | Very short message                                       | All    | All   |
-| ntarf    | `String`                  | Index of current pricing                                 | All    | All   |
-| njourf   | `String`                  | Number of current provider schedule                      | All    | All   |
-| njourfPlus1 | `String`               | Number of next day provider schedule                     | All    | All   |
-| pjourfPlus1 | `String`               | Profile of next day provider schedule                    | All    | All   |
-| ppointe  | `String`                  | Profile of next rush day                                 | All    | All   |
-| date     | `DateTime`                | Date and Time                                            | All    | All   |
-| smaxsnDate | `DateTime`              | Timestamp of SMAXSN value                                | All    | All   |
-| smaxsnMinus1Date | `DateTime`        | Timestamp of SMAXSN-1 value                              | All    | All   |
-| ccasnDate | `DateTime`               | Timestamp of CCASN value                                 | All    | All   |
-| ccasnMinus1Date  | `DateTime`        | Timestamp of CCASN-1 value                               | All    | All   |
-| umoy*X*Date | `DateTime`             | Timestamp of UMOY*X* value                               | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| dpm*X*Date  | `DateTime`             | Date of DPM*X*                                           | All    | All   |
-| fpm*X*Date | `DateTime`              | Date of FPM*X*                                           | All    | All   |
-| relais*X* | `Switch`                 | relais status (<img src="https://render.githubusercontent.com/render/math?math=X\in  {1,\dots,8}"/> )                   | All    | All   |
-| sinsts*X* | `Number:Power`           | Instantaneous withdrawn apparent power on phase *X*    | Three-phase | All   |
-| smaxsn*X*   | `Number:Power`         | Maximum withdrawn apparent power of the day on phase *X* | Three-phase | All   |
-| smaxsn*X*Minus1 | `Number:Power`     | Maximum withdrawn apparent power on the previous day on phase *X* | Three-phase | All   |
-| smaxs*X*nDate | `DateTime`           | Timestamp of SMAXSN*X* value                             | Three-phase | All   |
-| smaxsn*X*Minus1Date | `DateTime`     | Timestamp of SMAXSN*X*-1 value                           | Three-phase | All   |
-| eait     | `Number:Energy`           | Total active energy withdrawn                            | All    | All   |
-| erq*X* | `Number:Energy`             | Active energy withdrawn from provider on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,10\}"/>  | All  | All   |
-| sinsti | `Number:Energy`             | Active energy withdrawn from distributor on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,04\}"/> | All  | All   |
-| smaxin | `Number:Power`              | Maximum injected apparent power of the day               | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| smaxinMinus1 | `Number:Power`        | Maximum injected apparent power of the previous day      | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
-| ccain    | `Number:Power`            | Injected active charge point N                           | All    | Producer |
-| ccainMinus1 | `Number:Power`         | Injected active charge point N-1                         | All    | Producer |
-| smaxinDate | `DateTime`              | Timestamp of SMAXIN value                                | All    | Producer |
-| smaxinMinus1Date | `DateTime`        | Timestamp of SMAXIN-1 value                              | All    | Producer |
-| ccainDate | `DateTime`               | Timestamp of CCAIN value                                 | All    | Producer |
-| ccainMinus1Date  | `DateTime`        | Timestamp of CCAIN-1 value                               | All    | Producer |
+#### Common channels
+
+The following channels are available on all Linky telemeters in standard TIC mode.
+
+| Channel                         | Type                      | Description                                                                 |
+|---------------------------------|---------------------------|-----------------------------------------------------------------------------|
+| commonLSMGroup#ngtf             | `String`                  | Provider schedule name                                                      |
+| commonLSMGroup#ltarf            | `String`                  | Current pricing label                                                       |
+| commonLSMGroup#east             | `Number:Energy`           | Total active energy withdrawn                                               |
+| commonLSMGroup#easf*XX*         | `Number:Energy`           | Active energy withdrawn from provider on index *XX*, *XX* in {01,...,10}    |
+| commonLSMGroup#easd*XX*         | `Number:Energy`           | Active energy withdrawn from distributor on index *XX*, *XX* in {01,...,04} |
+| commonLSMGroup#irms1            | `Number:ElectricCurrent`  | RMS Current on phase 1                                                      |
+| commonLSMGroup#urms1            | `Number:Potential`        | RMS Voltage on phase 1                                                      |
+| commonLSMGroup#pref             | `Number:Power`            | Reference apparent power                                                    | 
+| commonLSMGroup#pcoup            | `Number:Power`            | Apparent power rupture capacity                                             |
+| commonLSMGroup#sinsts           | `Number:Power`            | Instantaneous withdrawn apparent power                                      |
+| commonLSMGroup#smaxsn           | `Number:Power`            | Maximum withdrawn apparent power of the day                                 |
+| commonLSMGroup#smaxsnMinus1     | `Number:Power`            | Maximum withdrawn apparent power of the previous day                        |
+| commonLSMGroup#ccasn            | `Number:Power`            | Active charge point N                                                       |
+| commonLSMGroup#ccasnMinus1      | `Number:Power`            | Active charge point N-1                                                     |
+| commonLSMGroup#umoy1            | `Number:Potential`        | Mean Voltage on phase 1                                                     |
+| commonLSMGroup#dpm*X*           | `String`                  | Start of mobile peak period *X*, *X* in {1,2,3}                             |
+| commonLSMGroup#fpm*X*           | `String`                  | End of mobile peak period *X*, *X* in {1,2,3}                               |
+| commonLSMGroup#msg1             | `String`                  | Short message                                                               |
+| commonLSMGroup#msg2             | `String`                  | Very short message                                                          |
+| commonLSMGroup#ntarf            | `String`                  | Index of current pricing                                                    |
+| commonLSMGroup#njourf           | `String`                  | Number of current provider schedule                                         |
+| commonLSMGroup#njourfPlus1      | `String`                  | Number of next day provider schedule                                        |
+| commonLSMGroup#pjourfPlus1      | `String`                  | Profile of next day provider schedule                                       |
+| commonLSMGroup#ppointe          | `String`                  | Profile of next rush day                                                    |
+| commonLSMGroup#date             | `DateTime`                | Date and Time                                                               |
+| commonLSMGroup#smaxsnDate       | `DateTime`                | Timestamp of SMAXSN value                                                   |
+| commonLSMGroup#smaxsnMinus1Date | `DateTime`                | Timestamp of SMAXSN-1 value                                                 |
+| commonLSMGroup#ccasnDate        | `DateTime`                | Timestamp of CCASN value                                                    |
+| commonLSMGroup#ccasnMinus1Date  | `DateTime`                | Timestamp of CCASN-1 value                                                  |
+| commonLSMGroup#umoy1Date        | `DateTime`                | Timestamp of UMOY1 value                                                    |
+| commonLSMGroup#dpm*X*Date       | `DateTime`                | Date of DPM*X*, *X* in {1,2,3}                                              |
+| commonLSMGroup#fpm*X*Date       | `DateTime`                | Date of FPM*X*, *X* in {1,2,3}                                              |
+| commonLSMGroup#relais*X*        | `Switch`                  | state of relais *X*, *X* in {1,...,8}                                       |
+
+#### Three phase only channels
+
+These channels are available on the following telemeters:
+* lstm_electricitymeter
+* lsmt_prod_electricitymeter
+
+| Channel                                 | Type                      | Description                                                                       |
+|-----------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
+| threePhasedLSMGroup#irms*X*             | `Number:ElectricCurrent`  | RMS Current on phase *X*, *X* in {2,3}                                            |
+| threePhasedLSMGroup#urms*X*             | `Number:Potential`        | RMS Voltage on phase *X*, *X* in {2,3}                                            |
+| threePhasedLSMGroup#umoy*X*             | `Number:Potential`        | Mean Voltage on phase *X*, *X* in {2,3}                                           |
+| threePhasedLSMGroup#sinsts*X*           | `Number:Power`            | Instantaneous withdrawn apparent power on phase *X*, *X* in {1,2,3}               |
+| threePhasedLSMGroup#smaxsn*X*           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase *X*, *X* in {1,2,3}          |
+| commonLSMGroup#umoy*X*Date              | `DateTime`                | Timestamp of UMOY*X* value, *X* in {2,3}                                          |
+| threePhasedLSMGroup#smaxsn*X*Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase *X*, *X* in {1,2,3} |
+| threePhasedLSMGroup#smaxs*X*nDate       | `DateTime`                | Timestamp of SMAXSN*X* value, *X* in {1,2,3}                                      |
+| threePhasedLSMGroup#smaxsn*X*Minus1Date | `DateTime`                | Timestamp of SMAXSN*X*-1 value, *X* in {1,2,3}                                    |
+
+#### Producer only channels
+
+These channels are available on the following telemeters:
+* lsmm_prod_electricitymeter
+* lsmt_prod_electricitymeter
+
+| Channel                           | Type            | Description                                              |
+|-----------------------------------|-----------------|----------------------------------------------------------|
+| producerLSMGroup#eait             | `Number:Energy` | Total active energy injected                             |
+| producerLSMGroup#erq*X*           | `Number:Energy` | Total reactive energy on index *X*, *X* in {1,...,4}     |
+| producerLSMGroup#sinsti           | `Number:Energy` | Instantaneous injected apparent power                    |
+| producerLSMGroup#smaxin           | `Number:Power`  | Maximum injected apparent power of the day               |
+| producerLSMGroup#smaxinMinus1     | `Number:Power`  | Maximum injected apparent power of the previous day      |
+| producerLSMGroup#ccain            | `Number:Power`  | Injected active charge point N                           |
+| producerLSMGroup#ccainMinus1      | `Number:Power`  | Injected active charge point N-1                         |
+| producerLSMGroup#smaxinDate       | `DateTime`      | Timestamp of SMAXIN value                                |
+| producerLSMGroup#smaxinMinus1Date | `DateTime`      | Timestamp of SMAXIN-1 value                              |
+| producerLSMGroup#ccainDate        | `DateTime`      | Timestamp of CCAIN value                                 |
+| producerLSMGroup#ccainMinus1Date  | `DateTime`      | Timestamp of CCAIN-1 value                               |
 
 ## Full Example
 
@@ -190,14 +216,40 @@ Number:Energy TLInfoEDF_HCHP "HCHP" <energy> {channel="teleinfo:cbemm_evolution_
 String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
+### Standard TIC mode
+
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289` :
+
+```
+Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMode="STANDARD" ]{
+    Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289"]
+}
+```
+
+This `items` file links some supported channels to items:
+
+```
+Number:Power TLInfoEDF_SINSTS "SINSTS" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#sinsts"}
+Number:ElectricCurrent TLInfoEDF_PREF "PREF" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#pref"}
+String TLInfoEDF_LTARF "LTARF" <energy> ["Status"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#ltarf"}
+Number:ElectricCurrent TLInfoEDF_SMAXSN "SMAXSN" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#smaxsn"}
+Number:ElectricCurrent TLInfoEDF_IRMS1 "IRMS1" <energy> ["Measurement","Current"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#irms1"}
+Number:Energy TLInfoEDF_EASF01 "EASF01" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#easf01"}
+Number:Energy TLInfoEDF_EASF02 "EASF02" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#easf02"}
+String TLInfoEDF_NGTF "NGTF" <energy> ["Status"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#ngtf"}
+DateTime TLInfoEDF_SMAXSN_DATE "SMAXSN_DATE" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#smaxsnDate"}
+```
+
 ## Tested hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
-| Serial interface | Power Energy Meter model    | Mode(s)                   |
-|----------|--------|------------------------------|
-| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base |
-| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP |
+| Serial interface | Power Energy Meter model    | Mode(s)                   | TIC mode |
+|------------------|-----------------------------|---------------------------|----------|
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base | Historical |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP | Historical |
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Linky | Single-phase HCHP | Standard |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky | Three-phase TEMPO | Standard |
 
 On Linky telemeters, only *historical* TIC mode is currently supported.
 The method for changing the TIC mode of a Linky telemeter is explained [here](https://forum.gce-electronics.com/t/comment-passer-un-cpt-linky-en-mode-standard/8206/7).

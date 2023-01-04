@@ -9,12 +9,19 @@
 		<description>This is a KNX IP interface or router</description>
 
 		<config-description>
+			<parameter-group name="knxsecure">
+				<label>KNX secure</label>
+				<description>Settings for KNX secure. Optional. Requires KNX secure features to be active in KNX installation.</description>
+			</parameter-group>
 			<parameter name="type" type="text" required="true">
 				<label>IP Connection Type</label>
-				<description>The ip connection type for connecting to the KNX bus. Could be either TUNNEL or ROUTER</description>
+				<description>The IP connection type for connecting to the KNX bus. Could be either TUNNEL, ROUTER, SECURETUNNEL, or
+					SECUREROUTER</description>
 				<options>
 					<option value="TUNNEL">Tunnel</option>
 					<option value="ROUTER">Router</option>
+					<option value="SECURETUNNEL">Secure tunnel (experimental, use advanced options to configure)</option>
+					<option value="SECUREROUTER">Secure router (experimental, use advanced options to configure)</option>
 				</options>
 			</parameter>
 			<parameter name="ipAddress" type="text">
@@ -34,7 +41,7 @@
 			</parameter>
 			<parameter name="localSourceAddr" type="text">
 				<label>Local Device Address</label>
-				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this KNX/IP gateway
+				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this openHAB Thing
 					within the KNX bus</description>
 				<default>0.0.0</default>
 			</parameter>
@@ -63,6 +70,31 @@
 				<label>Auto Reconnect Period</label>
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
+			</parameter>
+			<parameter name="routerBackboneKey" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Router backbone key</label>
+				<description>Backbone key for secure router mode. 16 bytes
+					in hex notation. Can also be found
+					in ETS security report.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelUserId" type="text" groupName="knxsecure">
+				<label>Tunnel user id</label>
+				<description>Tunnel user id for secure tunnel mode.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelUserPassword" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Tunnel user password</label>
+				<description>Tunnel user key for secure tunnel mode.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelDeviceAuthentication" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Tunnel device authentication</label>
+				<description>Tunnel device authentication for secure tunnel mode.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onkyo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="TX-NR609">
+		<label>Onkyo TX-NR609 AV Receiver</label>
+		<description>Network enabled Onkyo AV Receiver</description>
+
+		<channel-groups>
+			<channel-group typeId="zone1Controls" id="zone1"/>
+			<channel-group typeId="zone2Controls" id="zone2"/>
+			<channel-group typeId="playerControls" id="player"/>
+			<channel-group typeId="netMenuControls" id="netmenu"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:onkyo:config"/>
+	</thing-type>
+
+</thing:thing-descriptions>

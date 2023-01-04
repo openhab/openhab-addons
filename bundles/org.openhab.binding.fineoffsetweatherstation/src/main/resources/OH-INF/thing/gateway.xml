@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fineoffsetweatherstation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>Gateway Device</label>
+		<description>A WiFi connected gateway device (WN1900, GW1000, GW1100, WH2680, WH2650) to bridge Sensors</description>
+		<category>NetworkAppliance</category>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:fineoffsetweatherstation:gateway"/>
+	</bridge-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="max-wind-speed">
+		<item-type>Number:Speed</item-type>
+		<label>Maximum Wind Speed</label>
+		<category>Wind</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rain">
+		<item-type>Number:Length</item-type>
+		<label>Rain</label>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="moisture">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Moisture</label>
+		<category>Moisture</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="illumination">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illumination</label>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="uv-radiation">
+		<item-type>Number:Intensity</item-type>
+		<label>UV-Irradiation</label>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="uv-index">
+		<item-type>Number:Dimensionless</item-type>
+		<label>UV-Index</label>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rain-rate">
+		<item-type>Number:Speed</item-type>
+		<label>Rain Rate</label>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pm25">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5 Air Quality</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Density</item-type>
+		<label>PM10 Air Quality</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO₂</label>
+		<description>Air Quality Indicator</description>
+		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="water-leak-detection">
+		<item-type>Switch</item-type>
+		<label>Water Leak Detection</label>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-counter">
+		<item-type>Number</item-type>
+		<label>Lightning Counter</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-time">
+		<item-type>DateTime</item-type>
+		<label>Lightning Time</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lightning-distance">
+		<item-type>Number:Length</item-type>
+		<label>Lightning Distance</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

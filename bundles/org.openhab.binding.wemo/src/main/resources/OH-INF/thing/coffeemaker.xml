@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="CoffeeMaker">
+		<label>Mr. Coffee WeMo Enabled Coffeemaker</label>
+		<description>This is a WeMo enabled coffee maker</description>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="coffeeMode" typeId="coffeeMode"/>
+			<channel id="modeTime" typeId="modeTime"/>
+			<channel id="timeRemaining" typeId="timeRemaining"/>
+			<channel id="waterLevelReached" typeId="waterLevelReached"/>
+			<channel id="cleanAdvise" typeId="cleanAdvise"/>
+			<channel id="filterAdvise" typeId="filterAdvise"/>
+			<channel id="brewed" typeId="brewed"/>
+			<channel id="lastCleaned" typeId="lastCleaned"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description>
+			<parameter name="udn" type="text" required="true">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Device</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false" min="15" max="180">
+				<label>Polling Interval</label>
+				<description>Interval polling the WeMo Coffee Maker.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

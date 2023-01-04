@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ public class Main {
     private static ScheduledExecutorService scheduler;
 
     private static IParadoxCommunicator communicator;
+    private static ParadoxPanel panel;
 
     public static void main(String[] args) {
         readArguments(args);
@@ -53,23 +54,20 @@ public class Main {
         try {
             scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
-            logger.info("System properties={}",
-                    System.getProperties().get(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY));
-
             ParadoxBuilderFactory factory = new ParadoxBuilderFactory();
             ICommunicatorBuilder builder = factory.createBuilder(PanelType.EVO192);
             communicator = builder.withIp150Password(ip150Password).withPcPassword(pcPassword).withIpAddress(ipAddress)
                     .withTcpPort(port).withMaxPartitions(4).withMaxZones(20).withScheduler(scheduler)
                     .withEncryption(true).build();
 
-            ParadoxPanel panel = ParadoxPanel.getInstance();
+            panel = new ParadoxPanel();
             panel.setCommunicator(communicator);
             communicator.setListeners(Arrays.asList(panel));
 
             communicator.startLoginSequence();
 
             scheduler.scheduleWithFixedDelay(() -> {
-                refreshMemoryMap(communicator, false);
+                refreshMemoryMap(panel, false);
             }, 7, 5, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error("Exception: ", e);
@@ -77,10 +75,10 @@ public class Main {
         }
     }
 
-    private static void refreshMemoryMap(IParadoxCommunicator communicator, boolean withEpromValues) {
+    private static void refreshMemoryMap(ParadoxPanel panel, boolean withEpromValues) {
         logger.debug("Refreshing memory map");
+        IParadoxCommunicator communicator = panel.getCommunicator();
         communicator.refreshMemoryMap();
-        ParadoxPanel panel = ParadoxPanel.getInstance();
         panel.getPartitions().stream().forEach(partition -> logger.debug("Partition={}", partition));
         panel.getZones().stream().filter(zone -> zone.getId() == 19).forEach(zone -> logger.debug("Zone={}", zone));
         logger.debug("PanelTime={}, ACLevel={}, DCLevel={}, BatteryLevel={}", panel.getPanelTime(), panel.getVdcLevel(),

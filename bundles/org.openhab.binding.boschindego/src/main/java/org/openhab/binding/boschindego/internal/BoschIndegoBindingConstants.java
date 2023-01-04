@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.boschindego.internal;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -36,4 +38,14 @@ public class BoschIndegoBindingConstants {
     public static final String ERRORCODE = "errorcode";
     public static final String STATECODE = "statecode";
     public static final String READY = "ready";
+    public static final String LAST_CUTTING = "lastCutting";
+    public static final String NEXT_CUTTING = "nextCutting";
+    public static final String BATTERY_VOLTAGE = "batteryVoltage";
+    public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String LOW_BATTERY = "lowBattery";
+    public static final String BATTERY_TEMPERATURE = "batteryTemperature";
+    public static final String GARDEN_SIZE = "gardenSize";
+    public static final String GARDEN_MAP = "gardenMap";
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INDEGO);
 }

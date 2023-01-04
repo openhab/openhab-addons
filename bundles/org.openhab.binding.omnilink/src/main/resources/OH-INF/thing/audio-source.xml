@@ -20,9 +20,6 @@
 			<channel id="source_text_6" typeId="audio_source_text"/>
 			<channel id="polling" typeId="audio_source_polling"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">

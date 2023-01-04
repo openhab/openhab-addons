@@ -7,13 +7,16 @@
 	<!-- Rotel RCD-1572 Connection Thing Type -->
 	<thing-type id="rcd1572">
 		<label>RCD-1572 CD Player</label>
-		<description>Connection to the Rotel RCD-1572 CD player</description>
+		<description>Connection to the Rotel RCD-1572 or RCD-1572MKII CD player</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="playControl" typeId="system.media-control"/>
 			<channel id="track" typeId="track"/>
+			<channel id="random" typeId="random"/>
+			<channel id="repeat" typeId="repeat"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandprotocol"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,6 +113,7 @@ public enum SenecSystemStatus {
     SPARE_CAPACITY(89, "SPARE CAPACITY"),
     SELFTEST_ERROR(90, "SELFTEST ERROR"),
     EARTH_FAULT(91, "EARTH FAULT"),
+    BATTERY_DIAGNOSIS(95, "BATTERY DIAGNOSIS"),
     UNKNOWN(-1, "UNKNOWN");
 
     private int code;

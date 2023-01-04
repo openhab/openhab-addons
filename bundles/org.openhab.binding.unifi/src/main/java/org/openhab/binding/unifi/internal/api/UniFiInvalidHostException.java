@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,24 +12,27 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UniFiInvalidHostException} signals there was a problem with the hostname of the controller.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiInvalidHostException extends UniFiException {
 
     private static final long serialVersionUID = -7261308872245069364L;
 
-    public UniFiInvalidHostException(String message) {
+    public UniFiInvalidHostException(final String message) {
         super(message);
     }
 
-    public UniFiInvalidHostException(String message, Throwable cause) {
+    public UniFiInvalidHostException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public UniFiInvalidHostException(Throwable cause) {
+    public UniFiInvalidHostException(final Throwable cause) {
         super(cause);
     }
 }

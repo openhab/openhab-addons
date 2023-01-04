@@ -13,10 +13,19 @@
 		<description>An audio zone configured in the controller.</description>
 		<channels>
 			<channel id="zone_power" typeId="audio_zone_power"/>
-			<channel id="zone_mute" typeId="audio_zone_mute"/>
-			<channel id="zone_volume" typeId="audio_zone_volume"/>
+			<channel id="zone_mute" typeId="system.mute">
+				<label>Audio Zone Mute</label>
+				<description>Mute status of this audio zone.</description>
+			</channel>
+			<channel id="zone_volume" typeId="system.volume">
+				<label>Audio Zone Volume</label>
+				<description>Volume level of this audio zone.</description>
+			</channel>
 			<channel id="zone_source" typeId="audio_zone_source"/>
-			<channel id="zone_control" typeId="audio_zone_control"/>
+			<channel id="zone_control" typeId="system.media-control">
+				<label>Control</label>
+				<description>Control the audio zone, e.g. start/stop/next/previous.</description>
+			</channel>
 		</channels>
 		<properties>
 			<property name="name"/>
@@ -37,21 +46,10 @@
 		<label>Audio Zone Power</label>
 		<description>Power status of this audio zone.</description>
 		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="audio_zone_mute">
-		<item-type>Switch</item-type>
-		<label>Audio Zone Mute</label>
-		<description>Mute status of this audio zone.</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="audio_zone_volume">
-		<item-type>Dimmer</item-type>
-		<label>Audio Zone Volume</label>
-		<description>Volume level of this audio zone.</description>
-		<category>Slider</category>
-		<state min="0" max="100"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="audio_zone_source">
@@ -60,13 +58,6 @@
 		<description>Source for this audio zone.</description>
 		<category>MediaControl</category>
 		<state min="1" max="100"/>
-	</channel-type>
-
-	<channel-type id="audio_zone_control">
-		<item-type>Player</item-type>
-		<label>Control</label>
-		<description>Control the audio zone, e.g. start/stop/next/previous.</description>
-		<category>MediaControl</category>
 	</channel-type>
 
 </thing:thing-descriptions>

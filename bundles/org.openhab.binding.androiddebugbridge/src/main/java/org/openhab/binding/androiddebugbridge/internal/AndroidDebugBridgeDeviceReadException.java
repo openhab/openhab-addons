@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.androiddebugbridge.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.androiddebugbridge.internal.discovery.AndroidDebugBridgeDiscoveryService;
 
 /**
  * The {@link AndroidDebugBridgeDiscoveryService} discover Android ADB Instances in the network.

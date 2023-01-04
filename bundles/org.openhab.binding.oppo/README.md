@@ -8,9 +8,9 @@ Also review the notes below for some important usage caveats.
 
 The binding supports three different kinds of connections:
 
-* direct IP connection (with caveats),
-* serial connection,
-* serial over IP connection
+- direct IP connection (with caveats),
+- serial connection,
+- serial over IP connection
 
 For users without a serial port on the server side, you can use a USB to serial adapter.
 
@@ -46,30 +46,43 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* If using direct IP connection on the BDP series (83/93/95/103/105), verbose mode is not supported.
-* For some reason on these models, the unsolicited status update messages are not generated over the IP socket.
-* If fast updates are required on these models, a direct serial or serial over IP connection to the player is required.
-* The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
-* As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
-* Be aware that this could cause performance impacts to your openHAB system.
-* In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
-* In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
-* Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
-* If the player is switched off when the binding first starts up or if power to the player is ever interrupted, up to 30 seconds may elapse before the binding begins to update when the player is switched on.
-* If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models).
-* For the older models, some of the features in the control API were added after the players were shipped.
-* Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
-* Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
-* Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 567P, 567I, 480P, 480I
+- If using direct IP connection on the BDP series (83/93/95/103/105), verbose mode is not supported.
+- For some reason on these models, the unsolicited status update messages are not generated over the IP socket.
+- If fast updates are required on these models, a direct serial or serial over IP connection to the player is required.
+- The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
+- As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
+- Be aware that this could cause performance impacts to your openHAB system.
+- In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
+- In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
+- Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
+- If the player is switched off when the binding first starts up or if power to the player is ever interrupted, up to 30 seconds may elapse before the binding begins to update when the player is switched on.
+- If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models).
+- For the older models, some of the features in the control API were added after the players were shipped.
+- Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
+- Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
+- Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 567P, 567I, 480P, 480I
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
-* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
-* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Oppo player):
+- On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
+- You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
+- See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf (for ser2net version < 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Oppo player):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
+```
+
+- Here is an example of ser2net.yaml (for ser2net version >= 4) you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Oppo player):
+
+```yaml
+connection: &conOppo
+    accepter: tcp,4444
+    enable: on
+    options:
+      kickolduser: true
+    connector: serialdev,
+              /dev/ttyUSB0,
+              9600n81,local
 ```
 
 ## Channels
@@ -109,7 +122,7 @@ The following channels are available:
 
 oppo.things:
 
-```
+```java
 // direct IP connection
 oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=103, verboseMode=false]
 
@@ -123,7 +136,7 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 
 oppo.items:
 
-```
+```java
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
 Dimmer oppo_volume "Volume [%d %%]" { channel="oppo:player:myoppo:volume" }
 Switch oppo_mute "Mute" { channel="oppo:player:myoppo:mute" }
@@ -154,7 +167,7 @@ String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:rem
 
 secondsformat.js:
 
-```
+```javascript
 (function(totalSeconds) {
     if (isNaN(totalSeconds)) {
         return '-';
@@ -179,7 +192,7 @@ secondsformat.js:
 
 oppo.sitemap:
 
-```
+```perl
 sitemap oppo label="Oppo Blu-ray" {
     Frame label="Player"    {
         Switch item=oppo_power
@@ -279,7 +292,8 @@ M3D 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu
 SEH Display the Picture Adjustment menu  
 DRB Display the Darbee Adjustment menu  
 
-#### Extra buttons on UDP models:  
+#### Extra buttons on UDP models:
+
 HDR Display the HDR selection menu  
 INH Show on-screen detailed information  
 RLH Set resolution to Auto  

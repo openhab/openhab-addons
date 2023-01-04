@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,11 +13,9 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.CoreItemFactory;
@@ -33,11 +31,11 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class LocationValue extends Value {
     public LocationValue() {
-        super(CoreItemFactory.LOCATION, Stream.of(PointType.class, StringType.class).collect(Collectors.toList()));
+        super(CoreItemFactory.LOCATION, List.of(PointType.class, StringType.class));
     }
 
     @Override
-    public @NonNull String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(@Nullable String pattern) {
         String formatPattern = pattern;
         PointType point = ((PointType) state);
 

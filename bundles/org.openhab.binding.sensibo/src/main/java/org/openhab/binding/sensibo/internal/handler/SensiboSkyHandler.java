@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.measure.IncommensurableException;
@@ -366,7 +367,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
         final ChannelTypeUID targetTemperatureChannelType = addChannelType(
                 SensiboBindingConstants.CHANNEL_TYPE_TARGET_TEMPERATURE, TARGET_TEMPERATURE_LABEL,
-                ITEM_TYPE_NUMBER_TEMPERATURE, sensiboSky.getTargetTemperatures(), "%d %unit%", "TargetTemperature");
+                ITEM_TYPE_NUMBER_TEMPERATURE, sensiboSky.getTargetTemperatures(), "%d %unit%",
+                Set.of("Setpoint", "Temperature"));
         newChannels.add(ChannelBuilder
                 .create(new ChannelUID(getThing().getUID(), SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE),
                         ITEM_TYPE_NUMBER_TEMPERATURE)
@@ -376,7 +378,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     private ChannelTypeUID addChannelType(final String channelTypePrefix, final String label, final String itemType,
-            final Collection<?> options, @Nullable final String pattern, @Nullable final String tag) {
+            final Collection<?> options, @Nullable final String pattern, @Nullable final Set<String> tags) {
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(SensiboBindingConstants.BINDING_ID,
                 channelTypePrefix + getThing().getUID().getId());
         final List<StateOption> stateOptions = options.stream()
@@ -390,8 +392,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         }
         final StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                 .withStateDescriptionFragment(stateDescription.build());
-        if (tag != null) {
-            builder.withTag(tag);
+        if (tags != null && !tags.isEmpty()) {
+            builder.withTags(tags);
         }
         final ChannelType channelType = builder.build();
 

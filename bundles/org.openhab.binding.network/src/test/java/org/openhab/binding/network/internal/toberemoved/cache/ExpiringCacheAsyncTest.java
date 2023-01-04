@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync.ExpiringCacheUpdate;
@@ -26,6 +27,7 @@ import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class ExpiringCacheAsyncTest {
     @Test
     public void testConstructorWrongCacheTime() {

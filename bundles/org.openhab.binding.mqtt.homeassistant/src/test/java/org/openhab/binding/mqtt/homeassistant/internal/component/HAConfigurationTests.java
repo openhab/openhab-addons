@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
@@ -35,6 +37,7 @@ import com.google.gson.GsonBuilder;
 /**
  * @author Jochen Klein - Initial contribution
  */
+@NonNullByDefault
 public class HAConfigurationTests {
 
     private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory())
@@ -52,7 +55,7 @@ public class HAConfigurationTests {
             }
             return result.toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -78,7 +81,7 @@ public class HAConfigurationTests {
         if (device != null) {
             assertThat(device.getIdentifiers(), contains("H"));
             assertThat(device.getConnections(), is(notNullValue()));
-            List<@NonNull Connection> connections = device.getConnections();
+            List<Connection> connections = device.getConnections();
             if (connections != null) {
                 assertThat(connections.get(0).getType(), is("I1"));
                 assertThat(connections.get(0).getIdentifier(), is("I2"));
@@ -145,6 +148,7 @@ public class HAConfigurationTests {
         }
     }
 
+    @SuppressWarnings("null")
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
@@ -171,18 +175,18 @@ public class HAConfigurationTests {
         assertThat(config.holdStateTemplate, is("{{ value_json.preset }}"));
         assertThat(config.holdStateTopic, is("zigbee2mqtt/th1"));
         assertThat(config.jsonAttributesTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.maxTemp, is(35f));
-        assertThat(config.minTemp, is(5f));
+        assertThat(config.maxTemp, is(new BigDecimal(35)));
+        assertThat(config.minTemp, is(new BigDecimal(5)));
         assertThat(config.modeCommandTopic, is("zigbee2mqtt/th1/set/system_mode"));
         assertThat(config.modeStateTemplate, is("{{ value_json.system_mode }}"));
         assertThat(config.modeStateTopic, is("zigbee2mqtt/th1"));
         assertThat(config.modes, is(List.of("heat", "auto", "off")));
         assertThat(config.getName(), is("th1"));
-        assertThat(config.tempStep, is(0.5f));
+        assertThat(config.tempStep, is(new BigDecimal("0.5")));
         assertThat(config.temperatureCommandTopic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
         assertThat(config.temperatureStateTemplate, is("{{ value_json.current_heating_setpoint }}"));
         assertThat(config.temperatureStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.temperatureUnit, is("C"));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.CELSIUS));
         assertThat(config.getUniqueId(), is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
 
         assertThat(config.initial, is(21));
@@ -240,11 +244,11 @@ public class HAConfigurationTests {
         assertThat(config.temperatureLowStateTopic, is("T"));
         assertThat(config.powerCommandTopic, is("U"));
         assertThat(config.initial, is(10));
-        assertThat(config.maxTemp, is(40f));
-        assertThat(config.minTemp, is(0f));
-        assertThat(config.temperatureUnit, is("F"));
-        assertThat(config.tempStep, is(1f));
-        assertThat(config.precision, is(0.5f));
+        assertThat(config.maxTemp, is(new BigDecimal(40)));
+        assertThat(config.minTemp, is(BigDecimal.ZERO));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
+        assertThat(config.tempStep, is(BigDecimal.ONE));
+        assertThat(config.precision, is(new BigDecimal("0.5")));
         assertThat(config.sendIfOff, is(false));
     }
 }

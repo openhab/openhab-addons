@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -347,7 +347,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (shd.getCapabilities().stream().map(capability -> capability.interfaceName)
                     .anyMatch(SUPPORTED_INTERFACES::contains)) {
                 result.add(shd);
-
             }
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;

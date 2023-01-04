@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
+import org.openhab.binding.tapocontrol.internal.structures.TapoEnergyData;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -51,7 +53,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
     protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
-    protected TapoDeviceConfiguration config;
+    protected TapoDeviceConfiguration config = new TapoDeviceConfiguration();
     protected TapoDeviceInfo deviceInfo;
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -65,7 +67,6 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected TapoDevice(Thing thing) {
         super(thing);
-        this.config = new TapoDeviceConfiguration(thing);
         this.deviceInfo = new TapoDeviceInfo();
         this.uid = getThing().getUID().getAsString();
     }
@@ -82,7 +83,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            this.config.loadSettings();
+            this.config = getConfigAs(TapoDeviceConfiguration.class);
             Bridge bridgeThing = getBridge();
             if (bridgeThing != null) {
                 BridgeHandler bridgeHandler = bridgeThing.getHandler();
@@ -126,7 +127,6 @@ public abstract class TapoDevice extends BaseThingHandler {
 
         // background initialization (delay it a little bit):
         this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
-        startScheduler();
     }
 
     /**
@@ -178,22 +178,25 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     private void delayedStartUp() {
         connect();
+        startPollingScheduler();
     }
 
     /**
      * Start scheduler
      */
-    protected void startScheduler() {
-        Integer pollingInterval = this.config.pollingInterval;
+    protected void startPollingScheduler() {
+        int pollingInterval = this.config.pollingInterval;
+        TimeUnit timeUnit = TimeUnit.SECONDS;
 
         if (pollingInterval > 0) {
             if (pollingInterval < POLLING_MIN_INTERVAL_S) {
                 pollingInterval = POLLING_MIN_INTERVAL_S;
             }
-            logger.trace("({}) starScheduler: create job with interval : {}", uid, pollingInterval);
-            this.pollingJob = scheduler.scheduleWithFixedDelay(this::schedulerAction, pollingInterval, pollingInterval,
-                    TimeUnit.SECONDS);
+            logger.debug("({}) startScheduler: create job with interval : {} {}", uid, pollingInterval, timeUnit);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(this::pollingSchedulerAction, pollingInterval,
+                    pollingInterval, timeUnit);
         } else {
+            logger.debug("({}) scheduler disabled with config '0'", uid);
             stopScheduler(this.pollingJob);
         }
     }
@@ -213,7 +216,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * Scheduler Action
      */
-    protected void schedulerAction() {
+    protected void pollingSchedulerAction() {
         logger.trace("({}) schedulerAction", uid);
         queryDeviceInfo();
     }
@@ -274,7 +277,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected Boolean isExpectedThing(TapoDeviceInfo deviceInfo) {
         try {
-            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRASENTATION_PROPERTY);
+            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRESENTATION_PROPERTY);
             String foundThingUID = deviceInfo.getRepresentationProperty();
             String foundModel = deviceInfo.getModel();
             if (expectedThingUID == null || expectedThingUID.isBlank()) {
@@ -319,6 +322,10 @@ public abstract class TapoDevice extends BaseThingHandler {
         deviceError.reset();
         if (connector.loggedIn()) {
             connector.queryInfo(ignoreGap);
+            // query energy usage
+            if (SUPPORTED_ENERGY_DATA_UIDS.contains(getThing().getThingTypeUID())) {
+                connector.getEnergyUsage();
+            }
         } else {
             logger.debug("({}) tried to query DeviceInfo but not loggedIn", uid);
             connect();
@@ -340,6 +347,20 @@ public abstract class TapoDevice extends BaseThingHandler {
                     "found type:'" + deviceInfo.getModel() + "' with mac:'" + deviceInfo.getRepresentationProperty()
                             + "'. Check IP-Address");
         }
+    }
+
+    /**
+     * Set Device EnergyData to device
+     * 
+     * @param energyData
+     */
+    public void setEnergyData(TapoEnergyData energyData) {
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_POWER),
+                getPowerType(energyData.getCurrentPower(), Units.WATT));
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_USAGE_TODAY),
+                getEnergyType(energyData.getTodayEnergy(), Units.WATT_HOUR));
+        publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_RUNTIME_TODAY),
+                getTimeType(energyData.getTodayRuntime(), Units.MINUTE));
     }
 
     /**
@@ -474,6 +495,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");
         channel = channel.replace(CHANNEL_GROUP_DEVICE + "#", "");
         channel = channel.replace(CHANNEL_GROUP_EFFECTS + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_ENERGY + "#", "");
         return channel;
     }
 }

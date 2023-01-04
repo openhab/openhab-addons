@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class ChargeState {
     public float ideal_battery_range;
     public float time_to_full_charge;
     public int battery_level;
+    public int charge_amps;
     public int charge_current_request;
     public int charge_current_request_max;
     public int charge_limit_soc;

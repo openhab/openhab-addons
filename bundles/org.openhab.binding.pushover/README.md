@@ -10,6 +10,10 @@ Once you have the token, you need a user key (or group key) and optionally a dev
 There is only one Thing available - the `pushover-account`.
 You are able to create multiple instances of this Thing to broadcast to different users, groups or devices.
 
+openHAB is listed as a _featured application_ on the [Pushover homepage](https://pushover.net/apps).
+It provides a clone function to directly add a _prefilled_ application to your Pushover account and retrieve an API key.
+You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.net/apps/clone/openHAB)
+
 ## Thing Configuration
 
 | Configuration Parameter | Type    | Description                                                                                                                                                                                                                                                                                                   |

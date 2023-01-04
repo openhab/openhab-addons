@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,4 +41,5 @@ public class AmpliPiBindingConstants {
     // list of configuration parameters
     public static final String CFG_PARAM_HOSTNAME = "hostname";
     public static final String CFG_PARAM_ID = "id";
+    public static final String CFG_PARAM_VOLUME_DELTA = "volumeDelta";
 }

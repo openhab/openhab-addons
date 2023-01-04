@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_BUTTON;
+
+import java.util.HashSet;
 
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -35,6 +37,8 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
 
     private static final String LONG_REPEATED_EVENT = "LONG_REPEATED";
     private static final String LONG_RELEASED_EVENT = "LONG_RELEASED";
+
+    private HashSet<String> devicesUsingLongStartEvent = new HashSet<>();
 
     @Override
     public String getName() {
@@ -61,6 +65,7 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();
+        String deviceSerial = channel.getDevice().getAddress();
         HmDatapoint vdp = getVirtualDatapoint(channel);
         int usPos = dp.getName().indexOf("_");
         String pressType = usPos == -1 ? dp.getName() : dp.getName().substring(usPos + 1);
@@ -74,12 +79,19 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                     break;
                 }
                 case "LONG":
-                    if (LONG_REPEATED_EVENT.equals(vdp.getValue())) {
-                        // Suppress long press events during an ongoing long press
+                    if (isLongPressActive) {
+                        // HM-IP devices do long press repetitions via LONG instead of CONT events,
+                        // so clear previous value to force re-triggering of event
+                        vdp.setValue(null);
                         vdp.setValue(LONG_REPEATED_EVENT);
                     } else {
+                        // HM devices start long press via LONG events
                         vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
                     }
+                    break;
+                case "LONG_START":
+                    vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
+                    devicesUsingLongStartEvent.add(deviceSerial);
                     break;
                 case "LONG_RELEASE":
                     // Only send release events if we sent a pressed event before
@@ -99,7 +111,8 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                     logger.warn("Unexpected vaule '{}' for PRESS virtual datapoint", pressType);
             }
         } else {
-            if ("LONG".equals(pressType) && LONG_REPEATED_EVENT.equals(vdp.getValue())) {
+            String usedStartEvent = devicesUsingLongStartEvent.contains(deviceSerial) ? "LONG_START" : "LONG";
+            if (usedStartEvent.equals(pressType) && LONG_REPEATED_EVENT.equals(vdp.getValue())) {
                 // If we're currently processing a repeated long-press event, don't let the initial LONG
                 // event time out the repetitions, the CONT delay handler will take care of it
                 vdp.setValue(LONG_REPEATED_EVENT);

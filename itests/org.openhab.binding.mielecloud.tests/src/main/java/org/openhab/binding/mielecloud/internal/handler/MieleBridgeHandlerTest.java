@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants.*;
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.*;
 
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -126,9 +126,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 
@@ -484,7 +483,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
     @Test
     public void testNoLanguageIsReturnedWhenTheConfigurationParameterIsEmpty() {
         // given:
-        getHandler().handleConfigurationUpdate(Collections.singletonMap(CONFIG_PARAM_LOCALE, ""));
+        getHandler().handleConfigurationUpdate(
+                Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, SERVICE_HANDLE, CONFIG_PARAM_LOCALE, ""));
 
         // when:
         Optional<String> language = getHandler().getLanguage();
@@ -496,7 +496,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
     @Test
     public void testNoLanguageIsReturnedWhenTheConfigurationParameterIsNotAValidTwoLetterLanguageCode() {
         // given:
-        getHandler().handleConfigurationUpdate(Collections.singletonMap(CONFIG_PARAM_LOCALE, "Deutsch"));
+        getHandler().handleConfigurationUpdate(
+                Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, SERVICE_HANDLE, CONFIG_PARAM_LOCALE, "Deutsch"));
 
         // when:
         Optional<String> language = getHandler().getLanguage();
@@ -508,7 +509,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
     @Test
     public void testAValidTwoLetterLanguageCodeIsReturnedWhenTheConfigurationParameterIsSetToTheTwoLetterLanguageCode() {
         // given:
-        getHandler().handleConfigurationUpdate(Collections.singletonMap(CONFIG_PARAM_LOCALE, "DE"));
+        getHandler().handleConfigurationUpdate(
+                Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL, SERVICE_HANDLE, CONFIG_PARAM_LOCALE, "DE"));
 
         // when:
         String language = getHandler().getLanguage().get();

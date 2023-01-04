@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,9 +111,9 @@ public class HeatingModel implements BatteryModel {
             return MODE_OFF;
         } else if (BigDecimal.ONE.equals(getWindowopenactiv())) {
             return MODE_WINDOW_OPEN;
-        } else if (tsoll.compareTo(komfort) == 0) {
+        } else if (komfort != null && komfort.compareTo(tsoll) == 0) {
             return MODE_COMFORT;
-        } else if (tsoll.compareTo(absenk) == 0) {
+        } else if (absenk != null && absenk.compareTo(tsoll) == 0) {
             return MODE_ECO;
         } else if (BigDecimal.ONE.equals(getBoostactive()) || TEMP_FRITZ_MAX.compareTo(tsoll) == 0) {
             return MODE_BOOST;

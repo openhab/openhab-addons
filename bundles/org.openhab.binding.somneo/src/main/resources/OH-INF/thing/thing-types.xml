@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somneo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hf367x">
+		<label>Philips Somneo Light</label>
+		<description>A smart sleep and wake-up light with sensors.</description>
+
+		<channel-groups>
+			<channel-group id="sensor" typeId="sensor"/>
+			<channel-group id="light" typeId="light"/>
+			<channel-group id="sunset" typeId="sunset"/>
+			<channel-group id="relax" typeId="relax"/>
+			<channel-group id="audio" typeId="audio"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device.</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>HTTP Port</label>
+				<description>HTTP Port used for communication. Normally shouldn't be changed.</description>
+				<default>443</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ignoreSSLErrors" type="boolean">
+				<label>Ignore SSL Errors</label>
+				<description>If set to true ignores invalid SSL certificate errors. This is potentially dangerous.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="audio">
+		<label>Audio Player</label>
+		<description>Channels to control the audio player.</description>
+		<category>Player</category>
+		<channels>
+			<channel id="radio" typeId="system.media-control">
+				<label>Radio Remote Control</label>
+				<description>Remote control for controlling the radio and seeking for a frequency.</description>
+			</channel>
+			<channel id="aux" typeId="system.power">
+				<label>AUX Input</label>
+				<description>Turn the AUX input on or off.</description>
+			</channel>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="preset" typeId="preset"/>
+			<channel id="frequency" typeId="frequency"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="light">
+		<label>Light</label>
+		<description>Different light channels.</description>
+		<category>Light</category>
+		<channels>
+			<channel id="main" typeId="system.brightness"/>
+			<channel id="night" typeId="light"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sensor">
+		<label>Sensor Data</label>
+		<description>Data from the various sensors.</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="illuminance" typeId="illuminance"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="noise" typeId="noise"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="relax">
+		<label>Relax Breathe</label>
+		<description>Light-guided breathing helps you relax for sleep.</description>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<label>Relax Breathe Program</label>
+				<description>The switch channel allows to turn the relax breathe program on or off.</description>
+			</channel>
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="breathingRate" typeId="breathingRate"/>
+			<channel id="duration" typeId="relaxDuration"/>
+			<channel id="guidanceType" typeId="guidanceType"/>
+			<channel id="lightIntensity" typeId="system.brightness">
+				<label>Light Intensity</label>
+				<description>The channel allows to set the light intensity.</description>
+			</channel>
+			<channel id="volume" typeId="system.volume"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sunset">
+		<label>Sunset</label>
+		<description>Simulate a sunset with selectable lights and sounds.</description>
+		<category>Sunset</category>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<label>Sunset Program</label>
+				<description>The switch channel allows to turn the sunset program on or off.</description>
+			</channel>
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="lightIntensity" typeId="system.brightness">
+				<label>Light Intensity</label>
+				<description>The channel allows to set the light intensity.</description>
+			</channel>
+			<channel id="duration" typeId="sunsetDuration"/>
+			<channel id="colorSchema" typeId="colorSchema"/>
+			<channel id="ambientNoise" typeId="ambientNoise"/>
+			<channel id="volume" typeId="system.volume"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="ambientNoise">
+		<item-type>String</item-type>
+		<label>Ambient Noise</label>
+		<description>Ambient noise played during the sunset.</description>
+		<category>Noise</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Noise</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="off">No sound</option>
+				<option value="dus-1">Soft Rain</option>
+				<option value="dus-2">Ocean Waves</option>
+				<option value="dus-3">Under Water</option>
+				<option value="dus-4">Summer Lake</option>
+				<option value="fmr-1">FM 1</option>
+				<option value="fmr-2">FM 2</option>
+				<option value="fmr-3">FM 3</option>
+				<option value="fmr-4">FM 4</option>
+				<option value="fmr-5">FM 5</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="breathingRate">
+		<item-type>Number</item-type>
+		<label>Breathing Rate</label>
+		<description>Breathing rate per minute.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="1">4 BR/min</option>
+				<option value="2">5 BR/min</option>
+				<option value="3">6 BR/min</option>
+				<option value="4">7 BR/min</option>
+				<option value="5">8 BR/min</option>
+				<option value="6">9 BR/min</option>
+				<option value="7">10 BR/min</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="colorSchema">
+		<item-type>Number</item-type>
+		<label>Color Schema</label>
+		<description>Choose a personal sunset.</description>
+		<category>Sunset</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Sunny day</option>
+				<option value="1">Island red</option>
+				<option value="2">Nordic white</option>
+				<option value="3">Caribbean red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="frequency">
+		<item-type>String</item-type>
+		<label>Frequency</label>
+		<description>The currently selected radio frequency.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="guidanceType">
+		<item-type>Number</item-type>
+		<label>Breath Guidance Type</label>
+		<description>Select a breath guidance type.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Light</option>
+				<option value="1">Sound</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The current humidity in %.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>The current illuminance in lux.</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Night Light</label>
+		<description>The light switch channel allows to turn the night light on or off.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="noise">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Noise</label>
+		<description>The current noise in dB.</description>
+		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preset">
+		<item-type>String</item-type>
+		<label>FM Preset</label>
+		<description>The Device has 5 presets to store radio frequencies.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="relaxDuration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>The duration of relax breathe program in minutes.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="5">5 Minutes</option>
+				<option value="10">10 Minutes</option>
+				<option value="15">15 Minutes</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="remainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining time from an activated program.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%1$tM:%1$tS min" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sunsetDuration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>The duration of sunset program in minutes.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="5">5 Minutes</option>
+				<option value="10">10 Minutes</option>
+				<option value="15">15 Minutes</option>
+				<option value="20">20 Minutes</option>
+				<option value="30">30 Minutes</option>
+				<option value="45">45 Minutes</option>
+				<option value="60">60 Minutes</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The current temperature in °C.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

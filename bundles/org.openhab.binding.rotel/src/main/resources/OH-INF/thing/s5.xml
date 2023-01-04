@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel S5 Connection Thing Type -->
+	<thing-type id="s5">
+		<label>S5 Stereo Amplifier</label>
+		<description>Connection to the Rotel Michi S5 stereo amplifier</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="brightness"/>
+		</channels>
+
+		<properties>
+			<property name="protocol">ASCII_V2</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:rotel:serialandip"/>
+	</thing-type>
+
+</thing:thing-descriptions>

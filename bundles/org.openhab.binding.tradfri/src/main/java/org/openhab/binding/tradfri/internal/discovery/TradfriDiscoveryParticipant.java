@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,10 +93,10 @@ public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     properties.put(PROPERTY_FIRMWARE_VERSION, fwVersion);
                 }
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withLabel("@text/discovery.gateway.label").withRepresentationProperty(GATEWAY_CONFIG_HOST)
+                        .withLabel("@text/discovery.gateway.label").withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
                         .build();
             } else {
-                logger.warn("Discovered Tradfri gateway doesn't have an IP address: {}", service);
+                logger.debug("Discovered Tradfri gateway doesn't have an IP address: {}", service);
             }
         }
         return null;

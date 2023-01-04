@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtil
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.dto.Query;
-import org.influxdb.querybuilder.Appender;
 import org.influxdb.querybuilder.BuiltQuery;
 import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
@@ -117,10 +116,10 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
     private String fullQualifiedTableName(String retentionPolicy, String tableName, boolean escapeTableName) {
         StringBuilder sb = new StringBuilder();
-        Appender.appendName(retentionPolicy, sb);
+        sb.append('"').append(retentionPolicy).append('"');
         sb.append(".");
         if (escapeTableName) {
-            Appender.appendName(tableName, sb);
+            sb.append('"').append(tableName).append('"');
         } else {
             sb.append(tableName);
         }

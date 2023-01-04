@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,10 +34,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DHCPListenService {
     static @Nullable DHCPPacketListenerServer instance;
-    static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
-    static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
+    private static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
+    private static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
 
-    @SuppressWarnings({ "null", "unused" })
     public static synchronized DHCPPacketListenerServer register(String hostAddress,
             IPRequestReceivedCallback dhcpListener) throws SocketException {
         DHCPPacketListenerServer instance = DHCPListenService.instance;

@@ -1,0 +1,36 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.sensor_motion.v2",
+			"lumi.sensor_motion.aq2"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 5,
+		"channels": [
+			{
+				"property": "log",
+				"friendlyName": "Device Log",
+				"channel": "log",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "/v2/user/getuserdevicedatatab",
+				"customRefreshParameters": {
+					"limit": 10,
+					"timestamp": "$timestamp$",
+					"did": "$deviceId$",
+					"type": "prop",
+					"key": "device_log"
+				},
+				"transformation": "deviceDataTab",
+				"actions": [],
+				"category": "setting",
+				"tags": [
+					"Point"
+				],
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data"
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.Note: Won\u0027t display the current status, nor trigger events. Log only",
+		"experimental": false
+	}
+}

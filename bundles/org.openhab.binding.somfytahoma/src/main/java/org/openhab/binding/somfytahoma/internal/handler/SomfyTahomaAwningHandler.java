@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,10 +66,10 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
         switch (command) {
             case "OFF":
             case "DOWN":
-                return COMMAND_DOWN;
+                return COMMAND_DEPLOY;
             case "ON":
             case "UP":
-                return COMMAND_UP;
+                return COMMAND_UNDEPLOY;
             case "MOVE":
             case "MY":
                 return COMMAND_MY;

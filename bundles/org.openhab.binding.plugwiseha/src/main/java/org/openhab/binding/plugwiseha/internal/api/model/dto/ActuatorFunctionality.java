@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,12 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
     private String setpoint;
     private String resolution;
     private String lock;
+
+    @XStreamAlias("regulation_control")
+    private String regulationControl;
+
+    @XStreamAlias("cooling_allowed")
+    private String coolingAllowed;
 
     @XStreamAlias("preheating_allowed")
     private String preHeat;
@@ -73,6 +79,14 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
 
     public ZonedDateTime getUpdatedDate() {
         return updatedDate;
+    }
+
+    public String getRegulationControl() {
+        return regulationControl;
+    }
+
+    public Optional<String> getCoolingAllowed() {
+        return Optional.ofNullable(coolingAllowed);
     }
 
     public Optional<String> getPreHeatState() {

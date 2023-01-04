@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This implements the discovery service for new DSMR Meters on a active DSMR bridge.
+ * This implements the discovery service for new DSMR Meters on an active DSMR bridge.
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_OVERRULETIME = "overruletime";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_DEMAND = "demand";
+    public static final String CHANNEL_HEATING_MODE = "heatingmode";
+    public static final String CHANNEL_HEATING_DEMAND = "heatingdemand";
 
     public static final String CHANNEL_POWER = "power";
 
@@ -90,4 +92,9 @@ public class NikoHomeControlBindingConstants {
     public static final String CONFIG_OVERRULETIME = "overruleTime";
 
     public static final String CONFIG_ENERGYMETER_ID = "energyMeterId";
+
+    // Thing properties
+    public static final String PROPERTY_DEVICE_TYPE = "deviceType";
+    public static final String PROPERTY_DEVICE_TECHNOLOGY = "deviceTechnology";
+    public static final String PROPERTY_DEVICE_MODEL = "deviceModel";
 }

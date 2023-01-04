@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
-import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
-import static org.openhab.binding.gardena.internal.GardenaBindingConstants.THING_TYPE_ACCOUNT;
+import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,7 +57,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
-            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory);
+            return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory, timeZoneProvider);
         } else {
             return new GardenaThingHandler(thing, timeZoneProvider);
         }

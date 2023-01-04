@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ public class IncompleteAccessoryException extends Exception {
     private static final long serialVersionUID = 8595808359805444177L;
 
     public IncompleteAccessoryException(HomekitCharacteristicType missingType) {
-        super(String.format("Missing accessory type %s", missingType.getTag()));
+        super(String.format("Missing accessory characteristic %s", missingType.getTag()));
     }
 
     public IncompleteAccessoryException(String message) {

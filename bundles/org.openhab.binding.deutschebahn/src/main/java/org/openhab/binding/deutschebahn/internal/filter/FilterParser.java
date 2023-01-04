@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Parses an {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
+ * Parses a {@link FilterToken}-Sequence into a {@link TimetableStopPredicate}.
  * 
  * @author Sönke Küper - Initial contribution.
  */
@@ -31,7 +31,7 @@ public final class FilterParser {
     private abstract static class State implements FilterTokenVisitor<State> {
 
         @Nullable
-        private State previousState;
+        private final State previousState;
 
         public State(@Nullable State previousState) {
             this.previousState = previousState;
@@ -110,7 +110,7 @@ public final class FilterParser {
 
         @Override
         public State handle(BracketCloseToken token) throws FilterParserException {
-            throw new FilterParserException("Unexpected token " + token.toString() + " at " + token.getPosition());
+            throw new FilterParserException("Unexpected token " + token + " at " + token.getPosition());
         }
 
         @Override
@@ -134,7 +134,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an conjunction.
+     * State while parsing a conjunction.
      */
     private static final class AndState extends State {
 
@@ -147,14 +147,14 @@ public final class FilterParser {
 
         @Override
         public State handle(OrOperator operator) throws FilterParserException {
-            throw new FilterParserException("Invalid second argument for '&' operator " + operator.toString() + " at "
-                    + operator.getPosition());
+            throw new FilterParserException(
+                    "Invalid second argument for '&' operator " + operator + " at " + operator.getPosition());
         }
 
         @Override
         public State handle(AndOperator operator) throws FilterParserException {
-            throw new FilterParserException("Invalid second argument for '&' operator " + operator.toString() + " at "
-                    + operator.getPosition());
+            throw new FilterParserException(
+                    "Invalid second argument for '&' operator " + operator + " at " + operator.getPosition());
         }
 
         @Override
@@ -165,7 +165,7 @@ public final class FilterParser {
         @Override
         public State handle(BracketCloseToken token) throws FilterParserException {
             throw new FilterParserException(
-                    "Invalid second argument for '&' operator " + token.toString() + " at " + token.getPosition());
+                    "Invalid second argument for '&' operator " + token + " at " + token.getPosition());
         }
 
         @Override
@@ -180,7 +180,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an disjunction.
+     * State while parsing a disjunction.
      */
     private static final class OrState extends State {
 
@@ -193,14 +193,14 @@ public final class FilterParser {
 
         @Override
         public State handle(OrOperator operator) throws FilterParserException {
-            throw new FilterParserException("Invalid second argument for '|' operator " + operator.toString() + " at "
-                    + operator.getPosition());
+            throw new FilterParserException(
+                    "Invalid second argument for '|' operator " + operator + " at " + operator.getPosition());
         }
 
         @Override
         public State handle(AndOperator operator) throws FilterParserException {
-            throw new FilterParserException("Invalid second argument for '|' operator " + operator.toString() + " at "
-                    + operator.getPosition());
+            throw new FilterParserException(
+                    "Invalid second argument for '|' operator " + operator + " at " + operator.getPosition());
         }
 
         @Override
@@ -211,7 +211,7 @@ public final class FilterParser {
         @Override
         public State handle(BracketCloseToken token) throws FilterParserException {
             throw new FilterParserException(
-                    "Invalid second argument for '|' operator " + token.toString() + " at " + token.getPosition());
+                    "Invalid second argument for '|' operator " + token + " at " + token.getPosition());
         }
 
         @Override
@@ -226,7 +226,7 @@ public final class FilterParser {
     }
 
     /**
-     * State while parsing an Subquery.
+     * State while parsing a Subquery.
      */
     private static final class SubQueryState extends State {
 
@@ -287,7 +287,7 @@ public final class FilterParser {
     }
 
     /**
-     * Parses the given {@link FilterToken} into an {@link TimetableStopPredicate}.
+     * Parses the given {@link FilterToken} into a {@link TimetableStopPredicate}.
      */
     public static TimetableStopPredicate parse(final List<FilterToken> tokens) throws FilterParserException {
         State state = new InitialState();

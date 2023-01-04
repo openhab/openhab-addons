@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class AutomowerBridgeConfiguration {
     private @Nullable String appKey;
-    private @Nullable String userName;
-    private @Nullable String password;
+    private @Nullable String appSecret;
 
     private @Nullable Integer pollingInterval;
 
@@ -47,19 +46,11 @@ public final class AutomowerBridgeConfiguration {
         this.appKey = appKey;
     }
 
-    public @Nullable String getUserName() {
-        return userName;
+    public @Nullable String getAppSecret() {
+        return appSecret;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public @Nullable String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
     }
 }

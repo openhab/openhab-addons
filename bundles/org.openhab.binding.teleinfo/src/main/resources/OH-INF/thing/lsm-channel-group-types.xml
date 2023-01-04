@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="commonLSMGroupType">
+		<label>Common</label>
+		<description>Common channels for Linky telemeter in standard teleinformation mode</description>
+		<category>Energy</category>
+		<channels>
+
+			<channel id="ngtf" typeId="stringType">
+				<label>NGTF</label>
+				<description>Provider schedule name</description>
+			</channel>
+
+			<channel id="ltarf" typeId="stringType">
+				<label>LTARF</label>
+				<description>Current pricing label</description>
+			</channel>
+
+			<channel id="east" typeId="energyType">
+				<label>EAST</label>
+				<description>Total active energy withdrawn</description>
+			</channel>
+
+			<channel id="easf01" typeId="energyType">
+				<label>EASF01</label>
+				<description>Active energy withdrawn from provider on index 01</description>
+			</channel>
+
+			<channel id="easf02" typeId="energyType">
+				<label>EASF02</label>
+				<description>Active energy withdrawn from provider on index 02</description>
+			</channel>
+
+			<channel id="easf03" typeId="energyType">
+				<label>EASF03</label>
+				<description>Active energy withdrawn from provider on index 03</description>
+			</channel>
+
+			<channel id="easf04" typeId="energyType">
+				<label>EASF04</label>
+				<description>Active energy withdrawn from provider on index 04</description>
+			</channel>
+
+			<channel id="easf05" typeId="energyType">
+				<label>EASF05</label>
+				<description>Active energy withdrawn from provider on index 05</description>
+			</channel>
+
+			<channel id="easf06" typeId="energyType">
+				<label>EASF06</label>
+				<description>Active energy withdrawn from provider on index 06</description>
+			</channel>
+
+			<channel id="easf07" typeId="energyType">
+				<label>EASF07</label>
+				<description>Active energy withdrawn from provider on index 07</description>
+			</channel>
+
+			<channel id="easf08" typeId="energyType">
+				<label>EASF08</label>
+				<description>Active energy withdrawn from provider on index 08</description>
+			</channel>
+
+			<channel id="easf09" typeId="energyType">
+				<label>EASF09</label>
+				<description>Active energy withdrawn from provider on index 09</description>
+			</channel>
+
+			<channel id="easf10" typeId="energyType">
+				<label>EASF10</label>
+				<description>Active energy withdrawn from provider on index 10</description>
+			</channel>
+
+			<channel id="easd01" typeId="energyType">
+				<label>EASD01</label>
+				<description>Active energy withdrawn from distributor on index 01</description>
+			</channel>
+
+			<channel id="easd02" typeId="energyType">
+				<label>EASD02</label>
+				<description>Active energy withdrawn from distributor on index 02</description>
+			</channel>
+
+			<channel id="easd03" typeId="energyType">
+				<label>EASD03</label>
+				<description>Active energy withdrawn from distributor on index 03</description>
+			</channel>
+
+			<channel id="easd04" typeId="energyType">
+				<label>EASD04</label>
+				<description>Active energy withdrawn from distributor on index 04</description>
+			</channel>
+
+			<channel id="irms1" typeId="currentType">
+				<label>IRMS1</label>
+				<description>RMS Current on phase 1</description>
+			</channel>
+
+			<channel id="urms1" typeId="potentialType">
+				<label>URMS1</label>
+				<description>RMS Voltage on phase 1</description>
+			</channel>
+
+			<channel id="pref" typeId="powerType">
+				<label>PREF</label>
+				<description>Reference apparent power</description>
+			</channel>
+
+			<channel id="pcoup" typeId="powerType">
+				<label>PCOUP</label>
+				<description>Apparent power rupture capacity</description>
+			</channel>
+
+			<channel id="sinsts" typeId="powerType">
+				<label>SINSTS</label>
+				<description>Instantaneous withdrawn apparent power</description>
+			</channel>
+
+			<channel id="smaxsn" typeId="powerType">
+				<label>SMAXSN</label>
+				<description>Maximum withdrawn apparent power of the day</description>
+			</channel>
+
+			<channel id="smaxsnMinus1" typeId="powerType">
+				<label>SMAXSN-1</label>
+				<description>Maximum withdrawn apparent power of the previous day</description>
+			</channel>
+
+			<channel id="ccasn" typeId="powerType">
+				<label>CCASN</label>
+				<description>Active charge point N</description>
+			</channel>
+
+			<channel id="ccasnMinus1" typeId="powerType">
+				<label>CCASN-1</label>
+				<description>Active charge point N-1</description>
+			</channel>
+
+			<channel id="umoy1" typeId="potentialType">
+				<label>UMOY1</label>
+				<description>Mean Voltage on phase 1</description>
+			</channel>
+
+			<channel id="stge" typeId="stringType">
+				<label>STGE</label>
+				<description>Status registry</description>
+			</channel>
+
+			<channel id="dpm1" typeId="stringType">
+				<label>DPM1</label>
+				<description>Start of mobile peak period 1</description>
+			</channel>
+
+			<channel id="fpm1" typeId="stringType">
+				<label>FPM1</label>
+				<description>End of mobile peak period 1</description>
+			</channel>
+
+			<channel id="dpm2" typeId="stringType">
+				<label>DPM2</label>
+				<description>Start of mobile peak period 2</description>
+			</channel>
+
+			<channel id="fpm2" typeId="stringType">
+				<label>FPM2</label>
+				<description>End of mobile peak period 2</description>
+			</channel>
+
+			<channel id="dpm3" typeId="stringType">
+				<label>DPM3</label>
+				<description>Start of mobile peak period 3</description>
+			</channel>
+
+			<channel id="fpm3" typeId="stringType">
+				<label>FPM3</label>
+				<description>End of mobile peak period 3</description>
+			</channel>
+
+			<channel id="msg1" typeId="stringType">
+				<label>MSG1</label>
+				<description>Short message</description>
+			</channel>
+
+			<channel id="msg2" typeId="stringType">
+				<label>MSG2</label>
+				<description>Very short message</description>
+			</channel>
+
+			<channel id="prm" typeId="stringType">
+				<label>PRM</label>
+				<description>PRM</description>
+			</channel>
+
+
+			<channel id="ntarf" typeId="stringType">
+				<label>NTARF</label>
+				<description>Index of current pricing</description>
+			</channel>
+
+			<channel id="njourf" typeId="stringType">
+				<label>NJOURF</label>
+				<description>Number of current provider schedule</description>
+			</channel>
+
+			<channel id="njourfPlus1" typeId="stringType">
+				<label>NJOURF+1</label>
+				<description>Number of next day provider schedule</description>
+			</channel>
+
+			<channel id="pjourfPlus1" typeId="stringType">
+				<label>PJOURF+1</label>
+				<description>Profile of next day provider schedule</description>
+			</channel>
+
+			<channel id="ppointe" typeId="stringType">
+				<label>PPOINTE</label>
+				<description>Profile of next rush day</description>
+			</channel>
+
+			<channel id="date" typeId="dateTimeType">
+				<label>DATE</label>
+				<description>Date and Time</description>
+			</channel>
+
+			<channel id="smaxsnDate" typeId="dateTimeType">
+				<label>SMAXSN TIMESTAMP</label>
+				<description>Timestamp of SMAXSN value</description>
+			</channel>
+
+			<channel id="smaxsnMinus1Date" typeId="dateTimeType">
+				<label>SMAXSN-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN-1 value</description>
+			</channel>
+
+			<channel id="ccasnDate" typeId="dateTimeType">
+				<label>CCASN TIMESTAMP</label>
+				<description>Timestamp of CCASN value</description>
+			</channel>
+
+			<channel id="ccasnMinus1Date" typeId="dateTimeType">
+				<label>CCASN-1 TIMESTAMP</label>
+				<description>Timestamp of CCASN-1 value</description>
+			</channel>
+
+			<channel id="umoy1Date" typeId="dateTimeType">
+				<label>UMOY1 TIMESTAMP</label>
+				<description>Timestamp of UMOY1 value</description>
+			</channel>
+
+			<channel id="dpm1Date" typeId="dateTimeType">
+				<label>DPM1 TIMESTAMP</label>
+				<description>Date of DPM1</description>
+			</channel>
+
+			<channel id="fpm1Date" typeId="dateTimeType">
+				<label>FPM1 TIMESTAMP</label>
+				<description>Date of FPM1</description>
+			</channel>
+
+			<channel id="dpm2Date" typeId="dateTimeType">
+				<label>DPM2 TIMESTAMP</label>
+				<description>Date of DPM2</description>
+			</channel>
+
+			<channel id="fpm2Date" typeId="dateTimeType">
+				<label>FPM2 TIMESTAMP</label>
+				<description>Date of FPM2</description>
+			</channel>
+
+			<channel id="dpm3Date" typeId="dateTimeType">
+				<label>DPM3 TIMESTAMP</label>
+				<description>Date of DPM3</description>
+			</channel>
+
+			<channel id="fpm3Date" typeId="dateTimeType">
+				<label>FPM3 TIMESTAMP</label>
+				<description>Date of FPM3</description>
+			</channel>
+
+			<channel id="relais1" typeId="switchType">
+				<label>Relais 1</label>
+			</channel>
+			<channel id="relais2" typeId="switchType">
+				<label>Relais 2</label>
+			</channel>
+			<channel id="relais3" typeId="switchType">
+				<label>Relais 3</label>
+			</channel>
+			<channel id="relais4" typeId="switchType">
+				<label>Relais 4</label>
+			</channel>
+			<channel id="relais5" typeId="switchType">
+				<label>Relais 5</label>
+			</channel>
+			<channel id="relais6" typeId="switchType">
+				<label>Relais 6</label>
+			</channel>
+			<channel id="relais7" typeId="switchType">
+				<label>Relais 7</label>
+			</channel>
+			<channel id="relais8" typeId="switchType">
+				<label>Relais 8</label>
+			</channel>
+
+		</channels>
+
+	</channel-group-type>
+
+	<channel-group-type id="producerLSMGroupType">
+		<label>Producer</label>
+		<description>Producer channels for Linky telemeter in standard teleinformation mode</description>
+		<category>Energy</category>
+		<channels>
+			<channel id="eait" typeId="energyType">
+				<label>EAIT</label>
+				<description>Total active energy injected</description>
+			</channel>
+
+			<channel id="erq1" typeId="energyType">
+				<label>ERQ1</label>
+				<description>Total reactive energy Q1</description>
+			</channel>
+
+			<channel id="erq2" typeId="energyType">
+				<label>ERQ2</label>
+				<description>Total reactive energy Q2</description>
+			</channel>
+
+			<channel id="erq3" typeId="energyType">
+				<label>ERQ3</label>
+				<description>Total reactive energy Q3</description>
+			</channel>
+
+			<channel id="erq4" typeId="energyType">
+				<label>ERQ4</label>
+				<description>Total reactive energy Q4</description>
+			</channel>
+
+			<channel id="sinsti" typeId="powerType">
+				<label>SINSTI</label>
+				<description>Instantaneous injected apparent power</description>
+			</channel>
+
+			<channel id="smaxin" typeId="powerType">
+				<label>SMAXIN</label>
+				<description>Maximum injected apparent power of the day</description>
+			</channel>
+
+			<channel id="smaxinMinus1" typeId="powerType">
+				<label>SMAXIN-1</label>
+				<description>Maximum injected apparent power of the previous day</description>
+			</channel>
+
+			<channel id="ccain" typeId="powerType">
+				<label>CCAIN</label>
+				<description>Injected active charge point N</description>
+			</channel>
+
+			<channel id="ccainMinus1" typeId="powerType">
+				<label>CCAIN-1</label>
+				<description>Injected active charge point N-1</description>
+			</channel>
+
+			<channel id="smaxinDate" typeId="dateTimeType">
+				<label>SMAXIN TIMESTAMP</label>
+				<description>Timestamp of SMAXIN value</description>
+			</channel>
+
+			<channel id="smaxinMinus1Date" typeId="dateTimeType">
+				<label>SMAXIN-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXIN-1 value</description>
+			</channel>
+
+			<channel id="ccainDate" typeId="dateTimeType">
+				<label>CCAIN TIMESTAMP</label>
+				<description>Timestamp of CCAIN value</description>
+			</channel>
+
+			<channel id="ccainMinus1Date" typeId="dateTimeType">
+				<label>CCAIN-1 TIMESTAMP</label>
+				<description>Timestamp of CCAIN-1 value</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="threePhasedLSMGroupType">
+		<label>Three-phase</label>
+		<description>Three-phased channels for Linky telemeter in standard teleinformation mode</description>
+		<category>Energy</category>
+		<channels>
+
+			<channel id="irms2" typeId="currentType">
+				<label>IRMS2</label>
+				<description>RMS Current on phase 2</description>
+			</channel>
+
+			<channel id="irms3" typeId="currentType">
+				<label>IRMS3</label>
+				<description>RMS Current on phase 3</description>
+			</channel>
+
+			<channel id="urms2" typeId="potentialType">
+				<label>URMS2</label>
+				<description>RMS Voltage on phase 2</description>
+			</channel>
+
+			<channel id="urms3" typeId="potentialType">
+				<label>URMS3</label>
+				<description>RMS Voltage on phase 3</description>
+			</channel>
+
+			<channel id="sinsts1" typeId="powerType">
+				<label>SINSTS1</label>
+				<description>Instantaneous withdrawn apparent power on phase 1</description>
+			</channel>
+
+			<channel id="sinsts2" typeId="powerType">
+				<label>SINSTS2</label>
+				<description>Instantaneous withdrawn apparent power on phase 2</description>
+			</channel>
+
+			<channel id="sinsts3" typeId="powerType">
+				<label>SINSTS3</label>
+				<description>Instantaneous withdrawn apparent power on phase 3</description>
+			</channel>
+
+			<channel id="smaxsn1" typeId="powerType">
+				<label>SMAXSN1</label>
+				<description>Maximum withdrawn apparent power of the day on phase 1</description>
+			</channel>
+
+			<channel id="smaxsn2" typeId="powerType">
+				<label>SMAXSN2</label>
+				<description>Maximum withdrawn apparent power of the day on phase 2</description>
+			</channel>
+
+			<channel id="smaxsn3" typeId="powerType">
+				<label>SMAXSN3</label>
+				<description>Maximum withdrawn apparent power of the day on phase 3</description>
+			</channel>
+
+			<channel id="smaxsn1Minus1" typeId="powerType">
+				<label>SMAXSN1-1</label>
+				<description>Maximum withdrawn apparent power of the previous day on phase 1</description>
+			</channel>
+
+			<channel id="smaxsn2Minus1" typeId="powerType">
+				<label>SMAXSN2-1</label>
+				<description>Maximum withdrawn apparent power of the previous day on phase 2</description>
+			</channel>
+
+			<channel id="smaxsn3Minus1" typeId="powerType">
+				<label>SMAXSN3-1</label>
+				<description>Maximum withdrawn apparent power of the previous day on phase 3</description>
+			</channel>
+
+			<channel id="umoy2" typeId="potentialType">
+				<label>UMOY2</label>
+				<description>Mean Voltage on phase 2</description>
+			</channel>
+
+			<channel id="umoy3" typeId="potentialType">
+				<label>UMOY3</label>
+				<description>Mean Voltage on phase 3</description>
+			</channel>
+
+			<channel id="smaxsn1Date" typeId="dateTimeType">
+				<label>SMAXSN1 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN1 value</description>
+			</channel>
+
+			<channel id="smaxsn2Date" typeId="dateTimeType">
+				<label>SMAXSN2 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN2 value</description>
+			</channel>
+
+			<channel id="smaxsn3Date" typeId="dateTimeType">
+				<label>SMAXSN3 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN3 value</description>
+			</channel>
+
+			<channel id="smaxsn1Minus1Date" typeId="dateTimeType">
+				<label>SMAXSN1-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN1-1 value</description>
+			</channel>
+
+			<channel id="smaxsn2Minus1Date" typeId="dateTimeType">
+				<label>SMAXSN2-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN2-1 value</description>
+			</channel>
+
+			<channel id="smaxsn3Minus1Date" typeId="dateTimeType">
+				<label>SMAXSN3-1 TIMESTAMP</label>
+				<description>Timestamp of SMAXSN3-1 value</description>
+			</channel>
+
+			<channel id="umoy2Date" typeId="dateTimeType">
+				<label>UMOY2 TIMESTAMP</label>
+				<description>Timestamp of UMOY2 value</description>
+			</channel>
+
+			<channel id="umoy3Date" typeId="dateTimeType">
+				<label>UMOY3 TIMESTAMP</label>
+				<description>Timestamp of UMOY3 value</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

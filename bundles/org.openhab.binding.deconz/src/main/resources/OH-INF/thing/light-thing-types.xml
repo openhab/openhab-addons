@@ -166,19 +166,11 @@
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="effectSpeed">
 		<item-type>Number</item-type>
 		<label>Effect Speed Channel</label>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 		<state min="0" max="10" step="1"/>
 	</channel-type>
 

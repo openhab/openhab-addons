@@ -7,7 +7,7 @@
 	<!-- Rotel A14 Connection Thing Type -->
 	<thing-type id="a14">
 		<label>A14 Integrated Amplifier</label>
-		<description>Connection to the Rotel A14 integrated amplifier</description>
+		<description>Connection to the Rotel A14 or A14MKII integrated amplifier</description>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -18,6 +18,11 @@
 			<channel id="treble" typeId="treble"/>
 			<channel id="frequency" typeId="frequency"/>
 			<channel id="brightness" typeId="brightness"/>
+			<channel id="tcbypass" typeId="tcbypass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="speakera" typeId="speakera"/>
+			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

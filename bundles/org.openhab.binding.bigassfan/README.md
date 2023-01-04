@@ -9,6 +9,11 @@ There is a single thing created for each fan, light, or controller that's connec
 Each thing has channels that allow control of the fan and light, as well as to monitor the status.
 When a fan or light is controlled from the remote control, Wall Controller, or smartphone app, the openHAB items linked to the device's channels will be updated to reflect the status.
 
+### Important Notice
+
+The latest firmware for Haiku devices no longer uses the SenseMe protocol.
+As a result, this binding will not work with fans running firmware version 3.0.0 or later.
+
 ## Supported Things
 
 The binding currently supports the following devices.
@@ -31,7 +36,7 @@ In the event that any of this information is changed on the device, the thing co
 
 ### Manual Thing Creation
 
-Fan and light things can be manually created using the *UI*, or by placing a *.things* file in the *conf/things* directory.
+Fan and light things can be manually created using the _UI_, or by placing a _.things_ file in the _conf/things_ directory.
 See example below.
 
 ## Device Discovery
@@ -41,7 +46,7 @@ Once added as a thing, the user can control the fan and light, similarly to how 
 
 Background discovery polls the network every few minutes for devices.
 Background discovery is **enabled** by default.
-To **disable** background discovery, add the following line to the *conf/services/runtime.cfg* file:
+To **disable** background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
 ```text
 discovery.bigassfan:background=false
@@ -174,7 +179,7 @@ Frame label="Control My Light" {
 
 ### Manual Thing Creation
 
-Place a file named *bigassfan.things* in the *conf/things* directory.
+Place a file named _bigassfan.things_ in the _conf/things_ directory.
 The file should contain lines formatted like this.
 
 ```java

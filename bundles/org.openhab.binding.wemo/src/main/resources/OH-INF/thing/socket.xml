@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="socket">
+		<label>WeMo Switch</label>
+		<description>This is a standard WeMo Switch</description>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

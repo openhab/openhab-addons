@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 
 /**
  * A user can add custom channels to an MQTT Thing.
@@ -56,5 +57,5 @@ public class ChannelConfig {
     public @Nullable String stop;
 
     public int onBrightness = 10;
-    public String colorMode = "";
+    public String colorMode = ColorMode.HSB.toString();
 }

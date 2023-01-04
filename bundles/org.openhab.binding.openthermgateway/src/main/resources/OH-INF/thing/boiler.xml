@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openthermgateway"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="boiler">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="openthermgateway"/>
+		</supported-bridge-type-refs>
+		<label>Boiler</label>
+		<description>Boiler and thermostat</description>
+		<channels>
+			<channel id="roomtemp" typeId="roomtemp"/>
+			<channel id="roomsetpoint" typeId="roomsetpoint"/>
+			<channel id="temperaturetemporary" typeId="temperaturetemporary"/>
+			<channel id="temperatureconstant" typeId="temperatureconstant"/>
+			<channel id="controlsetpoint" typeId="controlsetpoint"/>
+			<channel id="controlsetpointrequested" typeId="controlsetpointrequested"/>
+			<channel id="controlsetpointoverride" typeId="controlsetpointoverride"/>
+			<channel id="controlsetpoint2" typeId="controlsetpoint2"/>
+			<channel id="controlsetpoint2requested" typeId="controlsetpoint2requested"/>
+			<channel id="controlsetpoint2override" typeId="controlsetpoint2override"/>
+			<channel id="dhwtemp" typeId="dhwtemp"/>
+			<channel id="tdhwset" typeId="tdhwset"/>
+			<channel id="overridedhwsetpoint" typeId="overridedhwsetpoint"/>
+			<channel id="flowtemp" typeId="flowtemp"/>
+			<channel id="returntemp" typeId="returntemp"/>
+			<channel id="outsidetemp" typeId="outsidetemp"/>
+			<channel id="waterpressure" typeId="waterpressure"/>
+			<channel id="ch_enable" typeId="ch_enable"/>
+			<channel id="ch_enablerequested" typeId="ch_enablerequested"/>
+			<channel id="ch_enableoverride" typeId="ch_enableoverride"/>
+			<channel id="ch2_enable" typeId="ch2_enable"/>
+			<channel id="ch2_enablerequested" typeId="ch2_enablerequested"/>
+			<channel id="ch2_enableoverride" typeId="ch2_enableoverride"/>
+			<channel id="ch_mode" typeId="ch_mode"/>
+			<channel id="dhw_enable" typeId="dhw_enable"/>
+			<channel id="dhw_mode" typeId="dhw_mode"/>
+			<channel id="flame" typeId="flame"/>
+			<channel id="modulevel" typeId="modulevel"/>
+			<channel id="maxrelmdulevel" typeId="maxrelmdulevel"/>
+			<channel id="fault" typeId="fault"/>
+			<channel id="servicerequest" typeId="servicerequest"/>
+			<channel id="lockout-reset" typeId="lockout-reset"/>
+			<channel id="lowwaterpress" typeId="lowwaterpress"/>
+			<channel id="gasflamefault" typeId="gasflamefault"/>
+			<channel id="airpressfault" typeId="airpressfault"/>
+			<channel id="waterovtemp" typeId="waterovtemp"/>
+			<channel id="oemfaultcode" typeId="oemfaultcode"/>
+			<channel id="diag" typeId="diag"/>
+			<channel id="unsuccessfulburnerstarts" typeId="unsuccessfulburnerstarts"/>
+			<channel id="burnerstarts" typeId="burnerstarts"/>
+			<channel id="chpumpstarts" typeId="chpumpstarts"/>
+			<channel id="dhwpvstarts" typeId="dhwpvstarts"/>
+			<channel id="dhwburnerstarts" typeId="dhwburnerstarts"/>
+			<channel id="burnerhours" typeId="burnerhours"/>
+			<channel id="chpumphours" typeId="chpumphours"/>
+			<channel id="dhwpvhours" typeId="dhwpvhours"/>
+			<channel id="dhwburnerhours" typeId="dhwburnerhours"/>
+			<channel id="tspnumber" typeId="tspnumber"/>
+			<channel id="tspentry" typeId="tspentry"/>
+			<channel id="fhbnumber" typeId="fhbnumber"/>
+			<channel id="fhbentry" typeId="fhbentry"/>
+		</channels>
+	</thing-type>
+
+</thing:thing-descriptions>

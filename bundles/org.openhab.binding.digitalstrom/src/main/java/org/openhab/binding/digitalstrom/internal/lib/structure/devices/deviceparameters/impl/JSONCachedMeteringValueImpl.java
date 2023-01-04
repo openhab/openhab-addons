@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import com.google.gson.JsonObject;
 public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
 
     private DSID dsid;
+    private DSUID dsuid;
     private double value = 0;
     private String date;
     private final MeteringTypeEnum meteringType;
@@ -60,6 +61,9 @@ public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
         if (jObject.get(JSONApiResponseKeysEnum.DSID_LOWER_CASE.getKey()) != null) {
             this.dsid = new DSID(jObject.get(JSONApiResponseKeysEnum.DSID_LOWER_CASE.getKey()).getAsString());
         }
+        if (jObject.get(JSONApiResponseKeysEnum.DSUID.getKey()) != null) {
+            this.dsuid = new DSUID(jObject.get(JSONApiResponseKeysEnum.DSUID.getKey()).getAsString());
+        }
         if (jObject.get(JSONApiResponseKeysEnum.VALUE.getKey()) != null) {
             this.value = jObject.get(JSONApiResponseKeysEnum.VALUE.getKey()).getAsDouble();
         }
@@ -69,6 +73,12 @@ public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
     }
 
     @Override
+    public DSUID getDsuid() {
+        return dsuid;
+    }
+
+    @Override
+    @Deprecated(since = "value removed in API since dss v1.19.2")
     public DSID getDsid() {
         return dsid;
     }
@@ -106,7 +116,7 @@ public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
 
     @Override
     public String toString() {
-        return "dSID: " + this.getDsid() + ", metering-type " + meteringType.toString() + ", metering-unit "
-                + meteringUnit + ", date: " + this.getDate() + ", value: " + this.getValue();
+        return "dSUID: " + this.getDsuid() + ", dSID: " + this.getDsid() + ", metering-type " + meteringType.toString()
+                + ", metering-unit " + meteringUnit + ", date: " + this.getDate() + ", value: " + this.getValue();
     }
 }

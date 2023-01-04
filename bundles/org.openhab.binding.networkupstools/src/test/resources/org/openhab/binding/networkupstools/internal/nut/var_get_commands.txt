@@ -1,3 +1,4 @@
 USERNAME test
 PASSWORD pwd
 GET VAR ups1 ups.status
+

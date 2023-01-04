@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,17 +87,29 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
             flux = flux.filter(restrictions);
         }
 
-        if (criteria.getOrdering() != null) {
-            boolean desc = criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING;
-            flux = flux.sort().withDesc(desc).withColumns(new String[] { COLUMN_TIME_NAME_V2 });
-        }
-
-        if (criteria.getPageSize() != Integer.MAX_VALUE) {
-            flux = flux.limit(criteria.getPageSize()).withPropertyValue("offset",
-                    criteria.getPageNumber() * criteria.getPageSize());
-        }
+        flux = applyOrderingAndPageSize(criteria, flux);
 
         return flux.toString();
+    }
+
+    private Flux applyOrderingAndPageSize(FilterCriteria criteria, Flux flux) {
+        var lastOptimization = criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING
+                && criteria.getPageSize() == 1;
+
+        if (lastOptimization) {
+            flux = flux.last();
+        } else {
+            if (criteria.getOrdering() != null) {
+                boolean desc = criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING;
+                flux = flux.sort().withDesc(desc).withColumns(new String[] { COLUMN_TIME_NAME_V2 });
+            }
+
+            if (criteria.getPageSize() != Integer.MAX_VALUE) {
+                flux = flux.limit(criteria.getPageSize()).withPropertyValue("offset",
+                        criteria.getPageNumber() * criteria.getPageSize());
+            }
+        }
+        return flux;
     }
 
     private String calculateMeasurementName(String itemName) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
             THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
             THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR,
-            THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_COLOR_CONTROL);
+            THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_AIRQUALITY_SENSOR, THING_TYPE_COLOR_CONTROL);
 
     private static final List<String> CONFIG_CHANNELS = List.of(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_ENABLED, CHANNEL_TEMPERATURE);
@@ -195,6 +195,12 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                 break;
             case CHANNEL_CARBONMONOXIDE:
                 updateSwitchChannel(channelUID, newState.carbonmonoxide);
+                break;
+            case CHANNEL_AIRQUALITY:
+                updateStringChannel(channelUID, newState.airquality);
+                break;
+            case CHANNEL_AIRQUALITYPPB:
+                updateDecimalTypeChannel(channelUID, newState.airqualityppb);
                 break;
             case CHANNEL_BUTTON:
                 updateDecimalTypeChannel(channelUID, newState.buttonevent);

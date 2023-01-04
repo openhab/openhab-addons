@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Humidifier">
+		<label>Holmes Humidifier</label>
+		<description>Holmes Smart Humidifier with WeMo</description>
+
+		<channels>
+			<channel id="humidifierMode" typeId="humidifierMode"/>
+			<channel id="desiredHumidity" typeId="desiredHumidity"/>
+			<channel id="currentHumidity" typeId="currentHumidity"/>
+			<channel id="waterLEvel" typeId="waterLEvel"/>
+			<channel id="filterLife" typeId="filterLife"/>
+			<channel id="expiredFilterTime" typeId="expiredFilterTime"/>
+		</channels>
+
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

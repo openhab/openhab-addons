@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:wemo:insight">
+		<parameter name="udn" type="text" required="true">
+			<label>Unique Device Name</label>
+			<description>The UDN identifies the WeMo Insight Switch</description>
+		</parameter>
+		<parameter name="currentPowerSlidingSeconds" type="integer" min="0" unit="s">
+			<label>Current Power sliding window</label>
+			<description>Sliding window in seconds for which moving average power is calculated (0 = disabled)</description>
+			<unitLabel>seconds</unitLabel>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="currentPowerDeltaTrigger" type="integer" min="0" unit="W">
+			<label>Current Power delta trigger</label>
+			<description>Delta triggering immediate channel update (in Watt)</description>
+			<unitLabel>Watt</unitLabel>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

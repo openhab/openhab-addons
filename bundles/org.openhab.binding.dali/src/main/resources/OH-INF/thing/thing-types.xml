@@ -48,6 +48,12 @@
 				<label>Group ID</label>
 				<description>Address of the group in the DALI bus</description>
 			</parameter>
+			<parameter name="readDeviceTargetId" type="integer" required="false" min="0" max="63">
+				<label>Read Device ID</label>
+				<description>
+					If reading values from this group fails, you can choose to read from a single device instead.
+				</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -74,6 +80,55 @@
 			<parameter name="targetIdB" type="integer" required="true" min="0" max="63">
 				<label>B Device ID</label>
 				<description>Address of the device in the DALI bus</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Single DT8 Device Type -->
+	<thing-type id="device-dt8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="daliserver"/>
+		</supported-bridge-type-refs>
+		<label>DALI DT8 Device</label>
+		<description>Controls a single DT8 device/ballast</description>
+		<channels>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
+		</channels>
+
+		<config-description>
+			<parameter name="targetId" type="integer" required="true" min="0" max="63">
+				<label>Device ID</label>
+				<description>Address of the device in the DALI bus</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Group DT8 Device Type -->
+	<thing-type id="group-dt8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="daliserver"/>
+		</supported-bridge-type-refs>
+		<label>DALI DT8 Group</label>
+		<description>Controls a DT8 group of devices/ballasts</description>
+		<channels>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
+		</channels>
+		<config-description>
+			<parameter name="targetId" type="integer" required="true" min="0" max="31">
+				<label>Group ID</label>
+				<description>Address of the group in the DALI bus</description>
+			</parameter>
+			<parameter name="readDeviceTargetId" type="integer" required="false" min="0" max="63">
+				<label>Read Device ID</label>
+				<description>
+					If reading values from this group fails, you can choose to read from a single device instead.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>

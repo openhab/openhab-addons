@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link ScheduledChannelThrottler} implements a throttler that maintains a
- * single execution rates, and does not maintains order of calls (thus have to
+ * single execution rates, and does not maintain order of calls (thus has to
  * start from back rather than try to insert things in middle)
  *
  * @author Karel Goderis - Initial contribution

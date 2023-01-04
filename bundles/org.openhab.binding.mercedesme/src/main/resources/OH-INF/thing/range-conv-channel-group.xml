@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="range-conv-values">
+		<label>Range and Fuel Data</label>
+		<description>Provides Mileage, remaining range and fuel level values</description>
+		<channels>
+			<channel id="mileage" typeId="mileage-channel"/>
+			<channel id="range-fuel" typeId="range-fuel-channel"/>
+			<channel id="radius-fuel" typeId="radius-fuel-channel"/>
+			<channel id="fuel-level" typeId="fuel-level-channel"/>
+			<channel id="fuel-remain" typeId="fuel-remain-channel"/>
+			<channel id="fuel-open" typeId="fuel-open-channel"/>
+			<channel id="last-update" typeId="last-range-update-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

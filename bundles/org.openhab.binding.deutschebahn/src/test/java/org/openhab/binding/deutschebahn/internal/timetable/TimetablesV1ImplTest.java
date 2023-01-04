@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class TimetablesV1ImplTest implements TimetablesV1ImplTestHelper {
     public void testGetDataForHannoverHBF() throws Exception {
         TimetablesV1Api timeTableApi = createApiWithTestdata().getApi();
 
-        Date time = new GregorianCalendar(2021, Calendar.OCTOBER, 14, 11, 00).getTime();
+        Date time = new GregorianCalendar(2021, Calendar.OCTOBER, 14, 11, 0).getTime();
 
         Timetable timeTable = timeTableApi.getPlan(EVA_HANNOVER_HBF, time);
         assertNotNull(timeTable);

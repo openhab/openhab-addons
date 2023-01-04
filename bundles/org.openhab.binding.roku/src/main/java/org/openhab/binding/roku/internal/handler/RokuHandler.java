@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,6 +135,12 @@ public class RokuHandler extends BaseThingHandler {
             String activeAppId = ROKU_HOME_ID;
             try {
                 activeAppId = communicator.getActiveApp().getApp().getId();
+
+                // 562859 is now reported when on the home screen, reset to -1
+                if (ROKU_HOME_ID_562859.equals(activeAppId)) {
+                    activeAppId = ROKU_HOME_ID;
+                }
+
                 updateState(ACTIVE_APP, new StringType(activeAppId));
                 if (TV_APP.equals(activeAppId)) {
                     tvActive = true;

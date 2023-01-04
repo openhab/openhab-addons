@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.knx.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Serial Bridge configuration object.
  *
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
+@NonNullByDefault
 public class SerialBridgeConfiguration extends BridgeConfiguration {
 
-    private String serialPort;
+    private String serialPort = "";
+    private boolean useCemi = false;
 
     public String getSerialPort() {
         return serialPort;
+    }
+
+    public boolean useCemi() {
+        return useCemi;
     }
 }

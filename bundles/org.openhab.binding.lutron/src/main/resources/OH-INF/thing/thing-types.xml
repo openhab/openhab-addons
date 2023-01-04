@@ -1272,7 +1272,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1378,7 +1378,7 @@
 	</channel-type>
 
 	<channel-type id="buttonpress">
-		<item-type>Text</item-type>
+		<item-type>String</item-type>
 		<label>Last Button Press</label>
 		<description>Last button pressed</description>
 		<state readOnly="true"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,29 @@ public enum LifxProduct {
     PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_112(112, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_113(113, "LIFX Mini White to Warm", new Features(TR_1500_9000)),
-    PRODUCT_114(114, "LIFX Mini White to Warm", new Features(TR_1500_9000));
+    PRODUCT_114(114, "LIFX Mini White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_115(115, "LIFX Switch", new Features(BUTTONS, RELAYS)),
+    PRODUCT_116(116, "LIFX Switch", new Features(BUTTONS, RELAYS)),
+    PRODUCT_117(117, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_118(118, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_119(119, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_120(120, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_123(123, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_124(124, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_125(125, "LIFX White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_126(126, "LIFX White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_127(127, "LIFX White", new Features(TR_2700_2700)),
+    PRODUCT_128(128, "LIFX White", new Features(TR_2700_2700)),
+    PRODUCT_129(129, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_130(130, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_131(131, "LIFX White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_132(132, "LIFX White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_133(133, "LIFX White", new Features(TR_2700_2700)),
+    PRODUCT_134(134, "LIFX White", new Features(TR_2700_2700)),
+    PRODUCT_135(135, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_136(136, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_137(137, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX));
 
     /**
      * Enumerates the product features.

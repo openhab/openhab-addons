@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,6 +75,18 @@ class NhcDevice2 {
         String electricalEnergy;
         @Nullable
         String electricalPower;
+        @Nullable
+        String electricalPowerToGrid;
+        @Nullable
+        String electricalPowerFromGrid;
+        @Nullable
+        String electricalPowerProduction;
+        @Nullable
+        String electricalPowerSelfConsumption;
+        @Nullable
+        String electricalPowerConsumption;
+        @Nullable
+        String electricalPowerProductionThresholdExceeded;
         @Nullable
         String reportInstantUsage;
         // fields for access control

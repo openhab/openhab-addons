@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,11 @@ import org.openhab.core.library.types.PercentType;
  */
 @NonNullByDefault
 public class AmpliPiUtils {
+    /**
+     * The supported volume range in decibels for the AmpliPi
+     */
+    public static final int MIN_VOLUME_DB = -79;
+    public static final int MAX_VOLUME_DB = 0;
 
     /**
      * Converts a volume from AmpliPi to an openHAB PercentType

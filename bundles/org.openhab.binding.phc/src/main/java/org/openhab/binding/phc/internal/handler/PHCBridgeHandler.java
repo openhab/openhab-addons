@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -438,7 +438,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             amOutputState[qo.getModuleAddress() & 0x1F] = -1;
         } else if (PHCBindingConstants.CHANNELS_DIM.equals(qo.getModuleType())) {
             // state ist the same for every dim level except zero/off -> inizialize state
-            // with 0x0F after sending an command.
+            // with 0x0F after sending a command.
             dmOutputState[qo.getModuleAddress() & 0x1F] |= (0x0F << (qo.getChannel() * 4));
         }
 

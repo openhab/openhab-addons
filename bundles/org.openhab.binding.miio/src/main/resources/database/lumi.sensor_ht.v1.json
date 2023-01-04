@@ -1,0 +1,49 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.sensor_ht.v1"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 3,
+		"channels": [
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"transformation": "/100",
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f%%"
+				},
+				"refresh": true,
+				"transformation": "/100",
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": true
+	}
+}

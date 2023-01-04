@@ -74,7 +74,7 @@ Depending on your Tellstick model, different bridge-types are available:
 |-------------------------|:------------:|:------------:|:--------------:|:-----------------------------:|
 | Tellstick Basic         |       X      |       X      |                |               X               |
 | Tellstick Duo           |       X      |       X      |                |               X               |
-| Tellstick Net v.1       |              |       X      |                |                               |
+| Tellstick Net v.1       |              |       X      |                |               X               |
 | Tellstick Net v.2       |              |       X      |        X       |                               |
 | Tellstick ZNet Lite v.1 |              |       X      |        X       |               X               |
 | Tellstick ZNet Lite v.2 |              |       X      |        X       |                               |

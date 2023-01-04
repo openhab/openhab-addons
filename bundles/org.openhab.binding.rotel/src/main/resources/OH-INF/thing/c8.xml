@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel C8 Connection Thing Type -->
+	<thing-type id="c8">
+		<label>C8 Distribution Amplifier</label>
+		<description>Connection to the Rotel C8 or C8+ distribution amplifier</description>
+
+		<channel-groups>
+			<channel-group id="allZones" typeId="allZones"/>
+			<channel-group id="zone1" typeId="zone">
+				<label>@text/channel-group.zone1.label</label>
+				<description>@text/channel-group.zone1.description</description>
+			</channel-group>
+			<channel-group id="zone2" typeId="zone">
+				<label>@text/channel-group.zone2.label</label>
+				<description>@text/channel-group.zone2.description</description>
+			</channel-group>
+			<channel-group id="zone3" typeId="zone">
+				<label>@text/channel-group.zone3.label</label>
+				<description>@text/channel-group.zone3.description</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="zone">
+				<label>@text/channel-group.zone4.label</label>
+				<description>@text/channel-group.zone4.description</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="protocol">ASCII_V2</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:rotel:serialandip2"/>
+	</thing-type>
+
+</thing:thing-descriptions>

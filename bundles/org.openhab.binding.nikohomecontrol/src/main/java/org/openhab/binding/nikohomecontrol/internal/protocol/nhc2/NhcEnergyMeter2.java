@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,14 +34,16 @@ public class NhcEnergyMeter2 extends NhcEnergyMeter {
     private ScheduledExecutorService scheduler;
     private volatile @Nullable ScheduledFuture<?> restartTimer;
 
-    private String model;
-    private String technology;
+    private String deviceType;
+    private String deviceTechnology;
+    private String deviceModel;
 
-    protected NhcEnergyMeter2(String id, String name, String model, String technology,
-            NikoHomeControlCommunication nhcComm, ScheduledExecutorService scheduler) {
-        super(id, name, nhcComm);
-        this.model = model;
-        this.technology = technology;
+    protected NhcEnergyMeter2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
+            @Nullable String location, NikoHomeControlCommunication nhcComm, ScheduledExecutorService scheduler) {
+        super(id, name, location, nhcComm);
+        this.deviceType = deviceType;
+        this.deviceTechnology = deviceTechnology;
+        this.deviceModel = deviceModel;
 
         this.scheduler = scheduler;
     }
@@ -75,16 +77,23 @@ public class NhcEnergyMeter2 extends NhcEnergyMeter {
     }
 
     /**
-     * @return model as returned from Niko Home Control
+     * @return type as returned from Niko Home Control
      */
-    public String getModel() {
-        return model;
+    public String getDeviceType() {
+        return deviceType;
     }
 
     /**
      * @return technology as returned from Niko Home Control
      */
-    public String getTechnology() {
-        return technology;
+    public String getDeviceTechnology() {
+        return deviceTechnology;
+    }
+
+    /**
+     * @return model as returned from Niko Home Control
+     */
+    public String getDeviceModel() {
+        return deviceModel;
     }
 }

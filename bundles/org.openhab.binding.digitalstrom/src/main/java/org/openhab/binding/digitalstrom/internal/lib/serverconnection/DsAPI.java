@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -743,7 +743,7 @@ public interface DsAPI {
      * operation mode, see
      * {@link OperationModes}.<br>
      * To set the values a {@link List} with an object array has to be set as controlVlaues parameter. The 1th field has
-     * to be a {@link String} for the {@link OperationModes} name and the 2nd field has to be a {@link Integer} for the
+     * to be a {@link String} for the {@link OperationModes} name and the 2nd field has to be an {@link Integer} for the
      * new value. If the control mode is {@link ControlModes#PID_CONTROL} it is the nominal temperature, otherwise it is
      * the control valve value.
      *

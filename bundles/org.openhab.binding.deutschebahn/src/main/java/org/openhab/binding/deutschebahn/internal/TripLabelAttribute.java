@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,12 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Selection that returns the value of an {@link TripLabel}.
+ * Selection that returns the value of a {@link TripLabel}.
  * 
  * chapter "1.2.7 TripLabel" in Technical Interface Description for external Developers
  *
- * @see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&#tab1
+ * @see @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API
+ *      Marketplace</a>
  * 
  * @author Sönke Küper - Initial contribution.
  * 
@@ -72,7 +73,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
             TripLabel::setO, StringType::new, TripLabelAttribute::singletonList, StringType.class);
 
     /**
-     * Creates an new {@link TripLabelAttribute}.
+     * Creates a new {@link TripLabelAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.
@@ -132,7 +133,7 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
     }
 
     /**
-     * Returns an {@link TripLabelAttribute} for the given channel-name.
+     * Returns a {@link TripLabelAttribute} for the given channel-name.
      */
     @Nullable
     public static TripLabelAttribute<?, ?> getByChannelName(final String channelName) {

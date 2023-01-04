@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -235,7 +235,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns an reduced OBIS Identifier.
+     * Returns a reduced OBIS Identifier.
      *
      * @return reduced OBIS Identifier
      */
@@ -244,7 +244,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Returns an reduced OBIS Identifier with group E set to null (.i.e. not applicable)
+     * Returns a reduced OBIS Identifier with group E set to null (.i.e. not applicable)
      *
      * @return reduced OBIS Identifier
      */

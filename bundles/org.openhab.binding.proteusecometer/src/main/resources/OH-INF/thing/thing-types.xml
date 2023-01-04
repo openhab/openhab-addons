@@ -19,6 +19,7 @@
 		<config-description>
 			<parameter name="usbPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>USB Port</label>
 				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
 			</parameter>

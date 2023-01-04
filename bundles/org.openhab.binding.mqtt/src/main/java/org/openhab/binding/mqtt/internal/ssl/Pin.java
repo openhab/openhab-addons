@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,11 +72,11 @@ public class Pin {
         this.pinData = data;
     }
 
-    public static Pin LearningPin(PinType pinType) {
+    public static Pin learningPin(PinType pinType) {
         return new Pin(pinType, null, true, null);
     }
 
-    public static Pin CheckingPin(PinType pinType, PinMessageDigest method, byte[] pinData) {
+    public static Pin checkingPin(PinType pinType, PinMessageDigest method, byte[] pinData) {
         return new Pin(pinType, method, false, pinData);
     }
 
