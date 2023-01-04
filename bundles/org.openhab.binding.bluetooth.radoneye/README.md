@@ -8,7 +8,7 @@ Following thing types are supported by this extension:
 
 | Thing Type ID       | Description                            |
 | ------------------- | -------------------------------------- |
-| radoneye            | Original RadonEye  (RD200)             |
+| radoneye_rd200      | Original RadonEye  (RD200)             |
 
 ## Discovery
 
@@ -29,7 +29,7 @@ Following channels are supported for `RadonEye` thing:
 
 | Channel ID         | Item Type                | Description                                 |
 | ------------------ | ------------------------ | ------------------------------------------- |
-| radon              | Number:Dimensionless     | The measured radon level                    |
+| radon              | Number:Density           | The measured radon level                    |
 
 
 ## Example
@@ -37,11 +37,11 @@ Following channels are supported for `RadonEye` thing:
 radoneye.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
 ```
-bluetooth:radoneye_wave_plus:adapter1:sensor1  "radoneye Wave Plus Sensor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300 ]
+bluetooth:radoneye_rd200:adapter1:sensor1  "radoneye Wave Plus Sensor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300 ]
 ```
 
 radoneye.items:
 
 ```
-Number:Density          radon    "Radon level [%d %unit%]"   { channel="bluetooth:radoneye:adapter1:sensor1:radon" }
+Number:Density          radon    "Radon level [%d %unit%]"   { channel="bluetooth:radoneye_rd200:adapter1:sensor1:radon" }
 ```
