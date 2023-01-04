@@ -53,7 +53,7 @@ public class BridgeActions implements ThingActions {
 
     private @Nullable DeconzBridgeHandler handler;
 
-    @RuleAction(label = "permit join Zigbee network", description = "Permits new devices to join the Zigbee network for a given duration (default 120s).")
+    @RuleAction(label = "@text/action.permit-join-network.label", description = "@text/action.permit-join-network.description")
     public void permitJoin(@ActionInput(name = "duration") @Nullable Integer duration) {
         DeconzBridgeHandler handler = this.handler;
 

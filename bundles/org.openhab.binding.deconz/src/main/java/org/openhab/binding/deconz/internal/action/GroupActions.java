@@ -68,7 +68,7 @@ public class GroupActions implements ThingActions {
 
     private @Nullable GroupThingHandler handler;
 
-    @RuleAction(label = "create a scene", description = "Creates a new scene and returns the new scene's id")
+    @RuleAction(label = "@text/action.create-scene.label", description = "@text/action.create-scene.description")
     public @ActionOutput(name = NEW_SCENE_ID_OUTPUT, type = "java.lang.Integer") Map<String, Object> createScene(
             @ActionInput(name = "name") @Nullable String name) {
         GroupThingHandler handler = this.handler;
@@ -107,7 +107,7 @@ public class GroupActions implements ThingActions {
         return Map.of();
     }
 
-    @RuleAction(label = "delete a scene", description = "Deletes a scene")
+    @RuleAction(label = "@text/action.delete-scene.label", description = "@text/action.delete-scene.description")
     public void deleteScene(@ActionInput(name = "sceneId") @Nullable Integer sceneId) {
         GroupThingHandler handler = this.handler;
 
@@ -130,7 +130,7 @@ public class GroupActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "store as scene", description = "Stores the current light state as scene")
+    @RuleAction(label = "@text/action.store-as-scene.label", description = "@text/action.store-as-scene.description")
     public void storeScene(@ActionInput(name = "sceneId") @Nullable Integer sceneId) {
         GroupThingHandler handler = this.handler;
 
