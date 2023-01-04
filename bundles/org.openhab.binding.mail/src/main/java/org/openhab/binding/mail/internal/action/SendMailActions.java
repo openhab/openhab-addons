@@ -110,20 +110,30 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text) {
-        return SendMailActions.sendMail(actions, recipient, subject, text, List.of());
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, List.of());
     }
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text, @Nullable String urlString) {
+        return SendMailActions.sendMailWithAttachment(actions, recipient, subject, text, urlString);
+    }
+
+    public static boolean sendMailWithAttachment(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String text, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
             urlList.add(urlString);
         }
-        return SendMailActions.sendMail(actions, recipient, subject, text, urlList);
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, urlList);
     }
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text, @Nullable List<String> urlStringList) {
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, urlStringList);
+    }
+
+    public static boolean sendMailWithAttachments(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String text, @Nullable List<String> urlStringList) {
         return ((SendMailActions) actions).sendMailWithAttachments(recipient, subject, text, urlStringList);
     }
 
@@ -189,20 +199,30 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String html) {
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, List.of());
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, html, List.of());
     }
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String html, @Nullable String urlString) {
+        return SendMailActions.sendHtmlMailWithAttachment(actions, recipient, subject, html, urlString);
+    }
+
+    public static boolean sendHtmlMailWithAttachment(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String html, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
             urlList.add(urlString);
         }
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, urlList);
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, html, urlList);
     }
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String html, @Nullable List<String> urlStringList) {
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, html, urlStringList);
+    }
+
+    public static boolean sendHtmlMailWithAttachments(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String html, @Nullable List<String> urlStringList) {
         return ((SendMailActions) actions).sendHtmlMailWithAttachments(recipient, subject, html, urlStringList);
     }
 
