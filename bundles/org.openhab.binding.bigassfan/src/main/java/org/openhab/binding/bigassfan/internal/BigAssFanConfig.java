@@ -61,7 +61,7 @@ public class BigAssFanConfig {
     }
 
     public boolean isValid() {
-        return !(label.isBlank() || ipAddress.isBlank() || macAddress.isBlank());
+        return !label.isBlank() && !ipAddress.isBlank() && !macAddress.isBlank();
     }
 
     @Override
