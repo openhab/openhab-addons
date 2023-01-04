@@ -156,7 +156,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             db = getDB(name);
         } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' ({})", name, e.getClass().getName());
+            logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
         }
         if (db == null) {
             return;
@@ -258,7 +258,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         try {
             db = getDB(itemName);
         } catch (Exception e) {
-            logger.warn("Failed to open rrd4j database '{}' ({})", itemName, e.getClass().getName());
+            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();
         }
         if (db == null) {

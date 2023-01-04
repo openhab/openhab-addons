@@ -44,7 +44,7 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_GENERIC_DEVICE = "GENERIC Device";
     // bridges
     public static final ThingTypeUID THING_TYPE_ZB_GATEWAY = new ThingTypeUID(BINDING_ID, "zb_gateway");
-    public static final String THING_LABEL_ZB_GATEWAY = "ZigBee USB Gateway";
+    public static final String THING_LABEL_ZB_GATEWAY = "Zigbee USB Gateway";
     public static final ThingTypeUID THING_TYPE_BUS_GATEWAY = new ThingTypeUID(BINDING_ID, "bus_gateway");
     public static final String THING_LABEL_BUS_GATEWAY = "BUS Gateway";
     // other thing types
@@ -81,14 +81,14 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
-    public static final String THING_LABEL_ZB_ON_OFF_SWITCH = "ZigBee Switch";
+    public static final String THING_LABEL_ZB_ON_OFF_SWITCH = "Zigbee Switch";
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS = new ThingTypeUID(BINDING_ID,
             "zb_on_off_switch2u");
-    public static final String THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS = "ZigBee 2-units Switch";
+    public static final String THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS = "Zigbee 2-units Switch";
     public static final ThingTypeUID THING_TYPE_ZB_DIMMER = new ThingTypeUID(BINDING_ID, "zb_dimmer");
-    public static final String THING_LABEL_ZB_DIMMER = "ZigBee Dimmer";
+    public static final String THING_LABEL_ZB_DIMMER = "Zigbee Dimmer";
     public static final ThingTypeUID THING_TYPE_ZB_AUTOMATION = new ThingTypeUID(BINDING_ID, "zb_automation");
-    public static final String THING_LABEL_ZB_AUTOMATION = "ZigBee Automation";
+    public static final String THING_LABEL_ZB_AUTOMATION = "Zigbee Automation";
 
     // #SUPPORTED THINGS SETS
     // ## Generic

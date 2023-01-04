@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.am43.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ControlAction} list possible controls actions that can be sent through
  * {@link org.openhab.binding.bluetooth.am43.internal.command.ControlCommand}
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public enum ControlAction {
     CLOSE(0xee),
     OPEN(0xdd),

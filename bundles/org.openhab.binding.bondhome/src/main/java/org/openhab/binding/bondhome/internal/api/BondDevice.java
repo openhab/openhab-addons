@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bondhome.internal.api;
 
-import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
-
 import java.util.Arrays;
 import java.util.List;
 

@@ -12,23 +12,11 @@
  */
 package org.openhab.binding.bluetooth.airthings.internal;
 
-import java.math.BigInteger;
 import java.util.Set;
-
-import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.core.library.dimension.Density;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
-
-import tech.units.indriya.format.SimpleUnitFormat;
-import tech.units.indriya.function.MultiplyConverter;
-import tech.units.indriya.unit.ProductUnit;
-import tech.units.indriya.unit.TransformedUnit;
 
 /**
  * The {@link AirthingsBindingConstants} class defines common constants, which are
@@ -60,14 +48,4 @@ public class AirthingsBindingConstants {
     public static final String CHANNEL_ID_TVOC = "tvoc";
     public static final String CHANNEL_ID_RADON_ST_AVG = "radon_st_avg";
     public static final String CHANNEL_ID_RADON_LT_AVG = "radon_lt_avg";
-
-    public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(Units.ONE,
-            MultiplyConverter.ofRational(BigInteger.ONE, BigInteger.valueOf(1000000000)));
-    public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new ProductUnit<>(
-            Units.BECQUEREL.divide(SIUnits.CUBIC_METRE));
-
-    static {
-        SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");
-        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUBIC_METRE, "Bq/m³");
-    }
 }

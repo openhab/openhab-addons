@@ -141,7 +141,7 @@ The behavior in detail:
 
 * `Default` (`0`): When the channel is 'read-only' the update-policy defaults to _On-Fetch_ . When the channel is linked to something that can be modified it defaults to _On-Change_ .
 * `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
-* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. ZigBee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
+* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
 ### TA C.M.I. CoE Connection
 

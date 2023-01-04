@@ -1,6 +1,6 @@
 # Xiaomi Wifi devices (Mi IO) Binding
 
-This binding is used to control Xiaomi products implementing the Mi IO protocol. 
+This binding is used to control Xiaomi products implementing the Mi IO protocol.
 This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
 If your Xiaomi wifi device is controlled by the mihome app, most likely it communicates using the Mi IO protocol and can communicate with openHAB using this binding.
 
@@ -30,9 +30,9 @@ Accept only one of the 2 discovery results, the alternate one can further be ign
 ## Tokens
 
 The binding needs a token from the Xiaomi Mi Device in order to be able to control it.
-The binding can retrieve the needed tokens from the Xiaomi cloud. 
-Go to the binding config page and enter your cloud username and password. 
-The server(s) to which your devices are connected need to be entered as well. 
+The binding can retrieve the needed tokens from the Xiaomi cloud.
+Go to the binding config page and enter your cloud username and password.
+The server(s) to which your devices are connected need to be entered as well.
 Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
 Multiple servers can be separated with comma, or leave blank to test all known servers.
 See [binding configuration](#binding-configuration) for more details about the binding config.
@@ -42,12 +42,12 @@ See [binding configuration](#binding-configuration) for more details about the b
 Some devices provide the token upon discovery. This may depends on the firmware version.
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
 
-The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android. 
-It seems that version was released with debug messages turned on by mistake. 
-An APK file with the old version can be easily found using one of the popular web search engines. 
+The easiest way to obtain tokens is to browse through log files of the Mi Home app version 5.4.49 for Android.
+It seems that version was released with debug messages turned on by mistake.
+An APK file with the old version can be easily found using one of the popular web search engines.
 After downgrading use a file browser to navigate to directory SmartHome/logs/plug_DeviceManager, then open the most recent file and search for the token. When finished, use Google Play to get the most recent version back.
 
-For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it: 
+For iPhone, use an un-encrypted iTunes-Backup and unpack it and use a sqlite tool to view the files in it:
 Then search in "RAW, com.xiaomi.home," for "USERID_mihome.sqlite" and look for the 32-digit-token or 96 digit encrypted token.
 
 Note. The Xiaomi devices change the token when inclusion is done. Hence if you get your token after reset and than include it with the Mi Home app, the token will change.
@@ -57,7 +57,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
 The list of the known countries and related severs is [here](#country-servers).
 
-After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud.
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
 
 To enter your cloud details go to the bindings page, click the Xiaomi Mi IO binding and than configure.
@@ -72,7 +72,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
-The configuration for model is automatically retrieved from the device in normal operation. 
+The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
 
 | Parameter       | Type    | Required | Description                                                         |
@@ -86,13 +86,13 @@ However, for devices that are unsupported, you may override the value and try to
 | communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
 | cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
 
-Note: Suggest to use the cloud communication only for devices that require it. 
+Note: Suggest to use the cloud communication only for devices that require it.
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]`
 
 or in case of unknown models include the model information of a similar device that is supported:
 
@@ -100,8 +100,7 @@ or in case of unknown models include the model information of a similar device t
 
 in case of gateway, instead of defining it as a Thing, use Bridge
 
-`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]` 
-
+`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]`
 
 # Advanced: Unsupported devices
 
@@ -114,7 +113,7 @@ There are 2 ways to get unsupported devices working, by overriding the model wit
 ## Substitute model for unsupported devices
 
 Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing. 
+For this, first remove your unsupported thing. Manually add a miio:basic thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
@@ -132,11 +131,11 @@ After validation, please share the logfile and json files on the openHAB forum o
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
-During the start of the binding the exact path used in your system will be printed in the _debug_ log. 
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices.
+During the start of the binding the exact path used in your system will be printed in the _debug_ log.
 Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …` (
-If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
-Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files.
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used.
 For format, please check the current database files in openHAB GitHub.
 
 # FAQ.. what to do in case of problems
@@ -144,7 +143,7 @@ For format, please check the current database files in openHAB GitHub.
 If your device is not getting online:
 
 _Are you using text config?_
-Make sure you define all the fields as per above example. 
+Make sure you define all the fields as per above example.
 Or, better, try to get it going first without text config.
 
 _The token is wrong_
@@ -153,13 +152,13 @@ When you reset, or change wifi or update firmware, and possibly other cases as w
 
 _My token is coming from the cloud... how can it be wrong?_
 Is not very likely but still can happen._
-This can happen e.g. if your device is defined on multiple country servers. 
+This can happen e.g. if your device is defined on multiple country servers.
 The binding may pull the token from the wrong country server.
 First try to get the token from all country servers by leave the county setting empty.
 If that does not solve it, you define only the country that the device is on in the binding config page (where the cloud userid/pwd is entered) this should pull the right token.
 
 _You have the same device added multiple times._
-The communication each time send a sequential number. 
+The communication each time send a sequential number.
 If the device is twice defined, the numbers received by the device are no longer sequential and it will stop responding for some time.
 
 _The connection is not too good, so you have timeouts etc._
@@ -167,7 +166,7 @@ Position your device closer to wifi / check in the mihome app if the wifi streng
 Alternatively as described above, double check for multiple connections for single device.
 
 _Your device is on a different subnet?_
-This is in most cases not working. 
+This is in most cases not working.
 Firmware of the device don't accept commands coming from other subnets.
 Set the communication in the thing configuration to 'cloud'.
 
@@ -175,19 +174,19 @@ _Cloud connectivity is not working_
 The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
 If the problem persists you can try the following:
 
-* Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
-In order to pass validation your (openHAB server) ip need to be validated/confirmed. 
+- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
+In order to pass validation your (openHAB server) ip need to be validated/confirmed.
 Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
-* If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
-* Several users also reported success by resetting their Xiaomi password.
+- If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+- Several users also reported success by resetting their Xiaomi password.
 
-If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
+If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies.
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
 _My Roborock vacuum is not found or not reacting_
-Did you link the vacuum with the Roborock app? 
-This won't work, the Roborock app is using a different communication method. 
-Reset your vacuum and connect it to the Xiaomi MiHome app. 
+Did you link the vacuum with the Roborock app?
+This won't work, the Roborock app is using a different communication method.
+Reset your vacuum and connect it to the Xiaomi MiHome app.
 This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
 # Mi IO Devices
@@ -390,6 +389,7 @@ Currently the miio binding supports more than 340 different models.
 | Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes          |            |
 | Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes          |            |
 | ROIDMI EVE vacuum                  | miio:basic       | [roidmi.vacuum.v60](#roidmi-vacuum-v60) | Yes          |            |
+| ROIDMI EVA                         | miio:basic       | [roidmi.vacuum.v66](#roidmi-vacuum-v66) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
 | PTX Twokey switch(wifi)            | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes          |            |
 | PTX ThreeKey Switch (WIFI)         | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes          |            |
@@ -571,11 +571,11 @@ Currently the miio binding supports more than 340 different models.
 | Mi AI Alarm                        | miio:unsupported | zimi.clock.myk01       | No           |            |
 | Mi Smart Power Strip               | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes          |            |
 
-note: Supported means we received feedback from users this device is working with the binding. 
-For devices with experimental support, we did not yet confirmation that channels are correctly working. 
+note: Supported means we received feedback from users this device is working with the binding.
+For devices with experimental support, we did not yet confirmation that channels are correctly working.
 Please feedback your findings for these devices (e.g. Are all channels working, do they contain the right information, is controlling the devices working etc.)
 
-# Channels
+## Channels
 
 Depending on the device, different channels are available.
 
@@ -591,8 +591,7 @@ All devices have available the following channels (marked as advanced) besides t
 | actions#rpc      | String  | send commands via cloud. see below  |
 
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
-
+e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
 ### Robo Rock vacuum Channels
 
@@ -633,7 +632,6 @@ This allows you to control the colors, if logo is displayed, if and what text is
 To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
-
 
 ### Mi Air Frying Pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
 
@@ -2736,6 +2734,68 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | use_auto_area        | Switch               | Map - Use Auto Area                      |            |
 | path_type            | Number               | Map - Path Type                          | Value mapping `["0"="Normal","1"="Y-Mopping","2"="Repeat-Mopping"]` |
 | sweep_mode           | Number               | Sweep - Sweep Mode                       | Value mapping `["1"="Total","2"="Area","3"="Curpoint","4"="Point","7"="Smart","8"="AmartArea","9"="DepthTotal","10"="AlongWall","0"="Idle"]` |
+
+### ROIDMI EVA (<a name="roidmi-vacuum-v66">roidmi.vacuum.v66</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","filter-reset-filter-life"="Filter Reset Filter Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","custom-find-robot"="Custom Find Robot","custom-stop-find-charge"="Custom Stop Find Charge","custom-continue-sweep"="Custom Continue Sweep","custom-start-dust"="Custom Start Dust","custom-pause"="Custom Pause","custom-pause-find-charge"="Custom Pause Find Charge","custom-continue-find-charge"="Custom Continue Find Charge","custom-update-audio"="Custom Update Audio","custom-set-voice"="Custom Set Voice","map-request-path"="Map Request Path","map-change-area-name"="Map Change Area Name","map-set-auto-area"="Map Set Auto Area","map-local-map"="Map Local Map","map-area-custom"="Map Area Custom","map-area-order"="Map Area Order","map-set-current-map"="Map Set Current Map","map-change-map-name"="Map Change Map Name","map-delete-map-list"="Map Delete Map List","map-save-map"="Map Save Map","sweep-start-sweep"="Sweep Start Sweep","mop-reset-mop-life"="Mop Reset Mop Life","basestation-start-ota"="Basestation Start Ota","basestation-set-ap-name"="Basestation Set Ap Name","basestation-set-back-clean-freq"="Basestation Set Back Clean Freq"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Dormant","2"="Idle","3"="Paused","4"="Sweeping","5"="Go Charging","6"="Charging","7"="Error","8"="Rfctrl","9"="Fullcharge","10"="Shutdown","11"="Findchargerpause","12"="Station Working","13"="Backing Clean"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Low Battery Find Charger","2"="Low Battery And Poweroff","3"="Wheel Trap","4"="Collision Error","5"="Tile Do Task","6"="Lidar Point Error","7"="Front Wall Error","8"="Psd Dirty","9"="Middle Brush Fatal","10"="Side Brush","11"="Fan Speed Error","12"="Lidar Cover","13"="Garbage Box Full","14"="Garbage Box Out","15"="Garbage Box Full Out","16"="Physical Trapped","17"="Pick Up Do Task","18"="No Water Box Do Task","19"="Water Box Empty","20"="Clean Cannot Arrive","21"="Start Form Forbid","22"="Drop","23"="Kit Water Pump","24"="Find Charger Failed","25"="Err 25","26"="Err 26","27"="Err 27","28"="Err 28","29"="Err 29"]` |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed","0"="Sweep"]` |
+| sweep_type           | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Sweep","1"="Mop","2"="Mop And Sweep"]` |
+| on                   | Switch               | Robot Cleaner - Switch Status            |            |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
+| volume               | Number:Dimensionless | Speaker - Volume                         |            |
+| mute                 | Switch               | Speaker - Mute                           |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| brush_left_time      | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level     | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush_left_time1     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level1    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush_left_time2     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level2    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| mop                  | Switch               | Custom - Mop                             |            |
+| work_station_freq    | Number               | Custom - Work Station Freq               |            |
+| timing               | String               | Custom - Timing                          |            |
+| clean_area           | Number               | Custom - Clean Area                      |            |
+| uid                  | String               | Custom - Uid                             |            |
+| auto_boost           | Switch               | Custom - Auto Boost                      |            |
+| forbid_mode          | String               | Custom - Forbid Mode                     |            |
+| water_level          | Number               | Custom - Water Level                     | Value mapping `["1"="First","2"="Second","3"="Three","4"="Fourth","0"="Mop"]` |
+| total_clean_time     | Number:Time          | Custom - Total Clean Time                |            |
+| total_clean_areas    | Number               | Custom - Total Clean Areas               |            |
+| clean_counts         | Number               | Custom - Clean Counts                    |            |
+| clean_time           | Number:Time          | Custom - Clean Time                      |            |
+| double_clean         | Switch               | Custom - Double Clean                    |            |
+| edge_sweep           | Switch               | Custom - Edge Sweep                      |            |
+| led_switch           | Switch               | Custom - Led Switch                      |            |
+| lidar_collision      | Switch               | Custom - Lidar Collision                 |            |
+| current_audio        | String               | Custom - Current Audio                   |            |
+| progress             | String               | Custom - Progress                        |            |
+| station_type         | Number               | Custom - Station Type                    |            |
+| voice_conf           | String               | Custom - Voice Conf                      |            |
+| rug_avoid            | Switch               | Custom - Rug Avoid                       |            |
+| clean_path           | String               | Map - Clean Path                         |            |
+| restricted_zone      | String               | Map - Restricted Zone                    |            |
+| auto_area            | String               | Map - Auto Area                          |            |
+| map_memory           | Switch               | Map - Map Memory                         |            |
+| map_name             | String               | Map - Map Name                           |            |
+| use_auto_area        | Switch               | Map - Use Auto Area                      |            |
+| path_type            | Number               | Map - Path Type                          | Value mapping `["0"="Normal","1"="Y-Mopping","2"="Repeat-Mopping"]` |
+| sweep_mode           | Number               | Sweep - Sweep Mode                       | Value mapping `["1"="Total","2"="Area","3"="Curpoint","4"="Point","7"="Smart","8"="Smart Area","9"="DepthTotal","10"="AlongWall","0"="Idle"]` |
+| mop_life_time        | Number:Time          | Mop - Mop Life Time                      |            |
+| mop_life_level       | Number:Dimensionless | Mop - Mop Life Level                     |            |
+| signal               | Number               | Basestation - Signal                     |            |
+| clear_tank_status    | Switch               | Basestation - Clear Tank Status          |            |
+| sewage_tank_status   | Switch               | Basestation - Sewage Tank Status         |            |
+| work_status          | Number               | Basestation - Work Status                |            |
+| version              | String               | Basestation - Version                    |            |
+| ota_progress         | String               | Basestation - Ota Progress               |            |
+| ap_name              | String               | Basestation - Ap Name                    |            |
+| back_clean_freq      | Number:Time          | Basestation - Back Clean Freq            |            |
 
 ### PTX OneKey Switch (WIFI) (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
@@ -5925,10 +5985,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 
 
-
 ## Example item file Rockrobo vacuum
 
-```
+```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>
 Group  gVacStat "Status Details"           <status> (gVac)
 Group  gVacCons "Consumables Usage"        <line-increase> (gVac)
@@ -5971,7 +6030,6 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
-
 
 ### Mi Air Frying Pan (careli.fryer.maf01) item file lines
 
@@ -8478,6 +8536,71 @@ String map_name "Map - Map Name" (G_vacuum) {channel="miio:basic:vacuum:map_name
 Switch use_auto_area "Map - Use Auto Area" (G_vacuum) {channel="miio:basic:vacuum:use_auto_area"}
 Number path_type "Map - Path Type" (G_vacuum) {channel="miio:basic:vacuum:path_type"}
 Number sweep_mode "Sweep - Sweep Mode" (G_vacuum) {channel="miio:basic:vacuum:sweep_mode"}
+```
+
+### ROIDMI EVA (roidmi.vacuum.v66) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "ROIDMI EVA" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Switch on "Robot Cleaner - Switch Status" (G_vacuum) {channel="miio:basic:vacuum:on"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Dimensionless volume "Speaker - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch mute "Speaker - Mute" (G_vacuum) {channel="miio:basic:vacuum:mute"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Time brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Time brush_left_time2 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time2"}
+Number:Dimensionless brush_life_level2 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level2"}
+Switch mop "Custom - Mop" (G_vacuum) {channel="miio:basic:vacuum:mop"}
+Number work_station_freq "Custom - Work Station Freq" (G_vacuum) {channel="miio:basic:vacuum:work_station_freq"}
+String timing "Custom - Timing" (G_vacuum) {channel="miio:basic:vacuum:timing"}
+Number clean_area "Custom - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+String uid "Custom - Uid" (G_vacuum) {channel="miio:basic:vacuum:uid"}
+Switch auto_boost "Custom - Auto Boost" (G_vacuum) {channel="miio:basic:vacuum:auto_boost"}
+String forbid_mode "Custom - Forbid Mode" (G_vacuum) {channel="miio:basic:vacuum:forbid_mode"}
+Number water_level "Custom - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_level"}
+Number:Time total_clean_time "Custom - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_areas "Custom - Total Clean Areas" (G_vacuum) {channel="miio:basic:vacuum:total_clean_areas"}
+Number clean_counts "Custom - Clean Counts" (G_vacuum) {channel="miio:basic:vacuum:clean_counts"}
+Number:Time clean_time "Custom - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Switch double_clean "Custom - Double Clean" (G_vacuum) {channel="miio:basic:vacuum:double_clean"}
+Switch edge_sweep "Custom - Edge Sweep" (G_vacuum) {channel="miio:basic:vacuum:edge_sweep"}
+Switch led_switch "Custom - Led Switch" (G_vacuum) {channel="miio:basic:vacuum:led_switch"}
+Switch lidar_collision "Custom - Lidar Collision" (G_vacuum) {channel="miio:basic:vacuum:lidar_collision"}
+String current_audio "Custom - Current Audio" (G_vacuum) {channel="miio:basic:vacuum:current_audio"}
+String progress "Custom - Progress" (G_vacuum) {channel="miio:basic:vacuum:progress"}
+Number station_type "Custom - Station Type" (G_vacuum) {channel="miio:basic:vacuum:station_type"}
+String voice_conf "Custom - Voice Conf" (G_vacuum) {channel="miio:basic:vacuum:voice_conf"}
+Switch rug_avoid "Custom - Rug Avoid" (G_vacuum) {channel="miio:basic:vacuum:rug_avoid"}
+String clean_path "Map - Clean Path" (G_vacuum) {channel="miio:basic:vacuum:clean_path"}
+String restricted_zone "Map - Restricted Zone" (G_vacuum) {channel="miio:basic:vacuum:restricted_zone"}
+String auto_area "Map - Auto Area" (G_vacuum) {channel="miio:basic:vacuum:auto_area"}
+Switch map_memory "Map - Map Memory" (G_vacuum) {channel="miio:basic:vacuum:map_memory"}
+String map_name "Map - Map Name" (G_vacuum) {channel="miio:basic:vacuum:map_name"}
+Switch use_auto_area "Map - Use Auto Area" (G_vacuum) {channel="miio:basic:vacuum:use_auto_area"}
+Number path_type "Map - Path Type" (G_vacuum) {channel="miio:basic:vacuum:path_type"}
+Number sweep_mode "Sweep - Sweep Mode" (G_vacuum) {channel="miio:basic:vacuum:sweep_mode"}
+Number:Time mop_life_time "Mop - Mop Life Time" (G_vacuum) {channel="miio:basic:vacuum:mop_life_time"}
+Number:Dimensionless mop_life_level "Mop - Mop Life Level" (G_vacuum) {channel="miio:basic:vacuum:mop_life_level"}
+Number signal "Basestation - Signal" (G_vacuum) {channel="miio:basic:vacuum:signal"}
+Switch clear_tank_status "Basestation - Clear Tank Status" (G_vacuum) {channel="miio:basic:vacuum:clear_tank_status"}
+Switch sewage_tank_status "Basestation - Sewage Tank Status" (G_vacuum) {channel="miio:basic:vacuum:sewage_tank_status"}
+Number work_status "Basestation - Work Status" (G_vacuum) {channel="miio:basic:vacuum:work_status"}
+String version "Basestation - Version" (G_vacuum) {channel="miio:basic:vacuum:version"}
+String ota_progress "Basestation - Ota Progress" (G_vacuum) {channel="miio:basic:vacuum:ota_progress"}
+String ap_name "Basestation - Ap Name" (G_vacuum) {channel="miio:basic:vacuum:ap_name"}
+Number:Time back_clean_freq "Basestation - Back Clean Freq" (G_vacuum) {channel="miio:basic:vacuum:back_clean_freq"}
 ```
 
 ### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
@@ -12188,7 +12311,7 @@ Known country Servers: cn, de, i2, ru, sg, us
 Mapping of countries in mihome app to server:
 
 | Country                  | Country Code | Server |
-|--------------------------|--------------|--------|    
+|--------------------------|--------------|--------|
 | Afghanistan              | AF           | sg     |
 | Albania                  | AL           | de     |
 | Algeria                  | DZ           | sg     |

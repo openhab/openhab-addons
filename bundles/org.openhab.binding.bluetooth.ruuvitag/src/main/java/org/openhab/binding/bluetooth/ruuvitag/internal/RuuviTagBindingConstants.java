@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.ruuvitag.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class RuuviTagBindingConstants {
 
     // List of all Thing Type UIDs

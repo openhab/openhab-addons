@@ -14,18 +14,17 @@ package org.openhab.binding.unifi.internal.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonObject;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link UniFiController} is the main communication point with an external instance of the Ubiquiti Networks
@@ -94,7 +94,7 @@ public class UniFiController {
                 .registerTypeAdapter(UniFiWiredClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWirelessClient.class, clientInstanceCreator).create();
         this.poeGson = new GsonBuilder()
-                .registerTypeAdapter(UnfiPortOverrideJsonElement.class, new UnfiPortOverrideJsonElementDeserializer())
+                .registerTypeAdapter(UnfiPortOverrideJsonObject.class, new UnfiPortOverrideJsonElementDeserializer())
                 .create();
     }
 
@@ -133,7 +133,7 @@ public class UniFiController {
 
     public void logout() throws UniFiException {
         csrfToken = "";
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.GET, gson);
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
         req.setPath(unifios ? "/api/auth/logout" : "/logout");
         executeRequest(req);
     }
@@ -153,7 +153,7 @@ public class UniFiController {
         return cache;
     }
 
-    public @Nullable Map<Integer, UniFiPortTuple> getSwitchPorts(@Nullable final String deviceId) {
+    public @Nullable UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
         return cache.getSwitchPorts(deviceId);
     }
 
@@ -175,10 +175,9 @@ public class UniFiController {
         refresh();
     }
 
-    public boolean poeMode(final UniFiDevice device, final List<UnfiPortOverrideJsonElement> data)
-            throws UniFiException {
+    public boolean poeMode(final UniFiDevice device, final List<JsonObject> data) throws UniFiException {
         // Safety check to make sure no empty data is send to avoid corrupting override data on the device.
-        if (data.isEmpty() || data.stream().anyMatch(p -> p.getJsonObject().entrySet().isEmpty())) {
+        if (data.isEmpty() || data.stream().anyMatch(p -> p.entrySet().isEmpty())) {
             logger.info("Not overriding port for '{}', because port data contains empty json: {}", device.getName(),
                     poeGson.toJson(data));
             return false;
@@ -225,7 +224,7 @@ public class UniFiController {
             throws UniFiException {
         T result;
         try {
-            result = request.execute();
+            result = (T) request.execute();
             csrfToken = request.getCsrfToken();
         } catch (final UniFiExpiredSessionException e) {
             if (fromLogin) {
@@ -234,11 +233,11 @@ public class UniFiController {
                 throw new UniFiCommunicationException(e);
             } else {
                 login();
-                result = executeRequest(request);
+                result = (T) executeRequest(request);
             }
         } catch (final UniFiNotAuthorizedException e) {
             logger.warn("Not Authorized! Please make sure your controller credentials have administrator rights");
-            result = null;
+            result = (T) null;
         }
         return result;
     }

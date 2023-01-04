@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.tesla.internal.protocol;
 
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
+import org.openhab.core.thing.ThingTypeUID;
+
 /**
  * The {@link VehicleConfig} is a data structure to capture
  * vehicle configuration variables sent by the Tesla Vehicle
@@ -41,4 +44,20 @@ public class VehicleConfig {
     public String third_row_seats;
     public String trim_badging;
     public String wheel_type;
+
+    public ThingTypeUID identifyModel() {
+        switch (car_type) {
+            case "models":
+            case "models2":
+                return TeslaBindingConstants.THING_TYPE_MODELS;
+            case "modelx":
+                return TeslaBindingConstants.THING_TYPE_MODELX;
+            case "model3":
+                return TeslaBindingConstants.THING_TYPE_MODEL3;
+            case "modely":
+                return TeslaBindingConstants.THING_TYPE_MODELY;
+            default:
+                return TeslaBindingConstants.THING_TYPE_VEHICLE;
+        }
+    }
 }

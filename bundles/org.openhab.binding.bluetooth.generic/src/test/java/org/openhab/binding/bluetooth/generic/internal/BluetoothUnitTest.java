@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.bluetooth.generic.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author Connor Petty - Initial contribution
  *
  */
+@NonNullByDefault
 class BluetoothUnitTest {
 
     @Test

@@ -155,7 +155,6 @@ public class CommandExecutor implements AvailableSources {
             contentItem.setPresetID(presetID);
 
             currentContentItem = contentItem;
-
         }
         updateOperatingValues();
     }
