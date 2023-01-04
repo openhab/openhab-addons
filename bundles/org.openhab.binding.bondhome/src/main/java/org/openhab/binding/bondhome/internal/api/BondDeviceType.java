@@ -34,8 +34,9 @@ public enum BondDeviceType {
     @SerializedName("FP")
     FIREPLACE(THING_TYPE_BOND_FIREPLACE),
     @SerializedName("GX")
-    GENERIC_DEVICE(THING_TYPE_BOND_GENERIC);
-    // TODO: add Light ("LT") type
+    GENERIC_DEVICE(THING_TYPE_BOND_GENERIC),
+    @SerializedName("LT")
+    LIGHT(THING_TYPE_BOND_LIGHT);
 
     private ThingTypeUID deviceTypeUid;
 
