@@ -79,7 +79,7 @@ public class GroupActions implements ThingActions {
         }
 
         if (name == null) {
-            logger.debug("Skipping scene creation due to missing scene name");
+            logger.warn("Skipping scene creation due to missing scene name");
             return Map.of();
         }
 
@@ -117,7 +117,7 @@ public class GroupActions implements ThingActions {
         }
 
         if (sceneId == null) {
-            logger.debug("Skipping scene deletion due to missing scene id");
+            logger.warn("Skipping scene deletion due to missing scene id");
             return;
         }
 
@@ -140,7 +140,7 @@ public class GroupActions implements ThingActions {
         }
 
         if (sceneId == null) {
-            logger.debug("Skipping scene storage due to missing scene id");
+            logger.warn("Skipping scene storage due to missing scene id");
             return;
         }
 
