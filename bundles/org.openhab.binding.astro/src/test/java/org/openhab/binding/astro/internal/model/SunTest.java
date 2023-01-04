@@ -37,7 +37,7 @@ public class SunTest {
     private Sun sun;
     private AstroChannelConfig config;
 
-    private static ZoneId ZONE = ZoneId.systemDefault();
+    private static final ZoneId ZONE = ZoneId.systemDefault();
 
     @BeforeEach
     public void init() {

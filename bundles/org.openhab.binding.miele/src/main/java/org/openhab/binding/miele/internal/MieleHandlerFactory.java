@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
-import org.openhab.binding.miele.internal.handler.DishWasherHandler;
+import org.openhab.binding.miele.internal.handler.DishwasherHandler;
 import org.openhab.binding.miele.internal.handler.FridgeFreezerHandler;
 import org.openhab.binding.miele.internal.handler.FridgeHandler;
 import org.openhab.binding.miele.internal.handler.HobHandler;
@@ -137,7 +137,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
                 return new TumbleDryerHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_DISHWASHER)) {
-                return new DishWasherHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
+                return new DishwasherHandler(thing, i18nProvider, localeProvider, timeZoneProvider);
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_COFFEEMACHINE)) {
                 return new CoffeeMachineHandler(thing, i18nProvider, localeProvider, timeZoneProvider);

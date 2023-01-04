@@ -743,3 +743,9 @@ stop org.openhab.binding.homematic
 log:set TRACE org.openhab.binding.homematic
 start org.openhab.binding.homematic
 ```
+
+### Running in Docker
+
+First of all you need to map the `XML-RPC` and `BIN-RPC` Callback Ports to the outside world.
+They must not be mapped to a different port number.
+Next make sure that you set the `Callback Network Address` to the IP where the homematic can reach the exposed ports.

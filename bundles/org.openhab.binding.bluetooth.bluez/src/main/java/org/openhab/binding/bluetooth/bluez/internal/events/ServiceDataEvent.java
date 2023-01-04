@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ServiceDataEvent extends BlueZEvent {
 
-    final private Map<String, byte[]> data;
+    private final Map<String, byte[]> data;
 
     public ServiceDataEvent(String dbusPath, Map<String, byte[]> data) {
         super(dbusPath);

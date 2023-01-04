@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2021+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -94,7 +94,7 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
-This tables gives an overview over the `event` object for most common trigger types:
+This table gives an overview over the `event` object for most common trigger types:
 
 | Property Name  | Type                                                                                                                 | Trigger Types                          | Description                                                                                                   | Rules DSL Equivalent   |
 |----------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -1030,7 +1030,8 @@ When a rule is triggered, the script is provided the event instance that trigger
 The specific data depends on the event type.
 The `event` object provides some information about that trigger.
 
-This tables gives an overview over the `event` object:
+This table gives an overview over the `event` object:
+
 | Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
 |-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
 | `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |

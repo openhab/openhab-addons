@@ -33,15 +33,15 @@ public class DataPointValue extends DataPointBase<@Nullable Double> {
     public DataPointValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
         this.factor = 0.0f;
-        if (knxDataType.equals("9.001")) {
+        if ("9.001".equals(knxDataType)) {
             this.setUnit("°C");
             this.factor = 0.01f;
             this.outputFormat = "%.1f";
-        } else if (knxDataType.equals("9.002")) {
+        } else if ("9.002".equals(knxDataType)) {
             this.setUnit("°K");
             this.factor = 0.01f;
             this.outputFormat = "%.1f";
-        } else if (knxDataType.equals("9.006")) {
+        } else if ("9.006".equals(knxDataType)) {
             this.setUnit("Bar");
             this.factor = 0.0000001f;
             this.outputFormat = "%.2f";

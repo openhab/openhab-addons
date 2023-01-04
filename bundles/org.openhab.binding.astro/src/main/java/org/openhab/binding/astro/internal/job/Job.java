@@ -86,7 +86,6 @@ public interface Job extends SchedulerRunnable, Runnable {
      */
     public static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt,
             List<String> events, String channelId, boolean configAlreadyApplied) {
-
         if (events.isEmpty()) {
             return;
         }

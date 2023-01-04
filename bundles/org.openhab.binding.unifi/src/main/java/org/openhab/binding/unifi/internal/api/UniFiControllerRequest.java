@@ -124,14 +124,14 @@ class UniFiControllerRequest<T> {
     }
 
     public @Nullable T execute() throws UniFiException {
-        T result = null;
+        T result = (T) null;
         final String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
             final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
             if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
-                result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
+                result = (T) gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
             }
         }
         return result;

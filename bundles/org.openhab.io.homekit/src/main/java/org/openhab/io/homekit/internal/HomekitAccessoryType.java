@@ -55,6 +55,7 @@ public enum HomekitAccessoryType {
     FAUCET("Faucet"),
     MICROPHONE("Microphone"),
     SLAT("Slat"),
+    ACCESSORY_GROUP("AccessoryGroup"),
     DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
