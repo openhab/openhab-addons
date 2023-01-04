@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package main;
+package org.openhab.binding.paradoxalarm.internal;
 
 import java.util.Arrays;
 import java.util.HashMap;

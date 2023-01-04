@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package tests;
+package org.openhab.binding.paradoxalarm.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
