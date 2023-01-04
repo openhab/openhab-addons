@@ -36,12 +36,13 @@ public class BondHomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_BOND_SHADES = new ThingTypeUID(BINDING_ID, "bondShades");
     public static final ThingTypeUID THING_TYPE_BOND_FIREPLACE = new ThingTypeUID(BINDING_ID, "bondFireplace");
     public static final ThingTypeUID THING_TYPE_BOND_GENERIC = new ThingTypeUID(BINDING_ID, "bondGenericThing");
+    public static final ThingTypeUID THING_TYPE_BOND_LIGHT = new ThingTypeUID(BINDING_ID, "bondLight");
 
     /**
      * The supported thing types.
      */
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BOND_FAN, THING_TYPE_BOND_SHADES,
-            THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC);
+            THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC, THING_TYPE_BOND_LIGHT);
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Set.of(THING_TYPE_BOND_BRIDGE);
 
