@@ -29,6 +29,7 @@ public enum NuvoCommand {
     PAGE_OFF("PAGE0"),
     CFGTIME("CFGTIME"),
     STATUS("STATUS"),
+    STATUS_QUERY("STATUS?"),
     EQ_QUERY("EQ?"),
     DISPINFO("DISPINFO"),
     DISPLINE("DISPLINE"),

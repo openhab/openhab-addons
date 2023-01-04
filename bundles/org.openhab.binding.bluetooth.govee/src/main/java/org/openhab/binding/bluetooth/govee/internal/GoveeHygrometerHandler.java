@@ -151,7 +151,6 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     }
 
     private CompletableFuture<@Nullable ?> createInitSettingsJob() {
-
         logger.debug("Initializing Govee Hygrometer {} settings", address);
 
         QuantityType<Temperature> temCali = config.getTemperatureCalibration();

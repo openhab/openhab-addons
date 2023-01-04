@@ -1,15 +1,15 @@
 # Millheat Binding
 
-This binding integrates the Mill Wi-Fi enabled panel heaters. See https://www.millheat.com/mill-wifi/
+This binding integrates the Mill Wi-Fi enabled panel heaters. See <https://www.millheat.com/mill-wifi/>
 
 ## Supported Things
 
 This binding supports all Wi-Fi enabled heaters as well as the Wi-Fi socket.
 
-* `account` = Mill Heating API - the account bridge
-* `heater` = Panel/standalone heater
-* `room` = A room defined in the mobile app
-* `home` = A home defined in the mobile app
+- `account` = Mill Heating API - the account bridge
+- `heater` = Panel/standalone heater
+- `room` = A room defined in the mobile app
+- `home` = A home defined in the mobile app
 
 ## Discovery
 
@@ -23,25 +23,25 @@ See full example below for how to configure using thing files.
 
 ### Account
 
-* `username` = email address used in app
-* `password` = password used in app
-* `refreshInterval` = number of seconds between refresh calls to the server
+- `username` = email address used in app
+- `password` = password used in app
+- `refreshInterval` = number of seconds between refresh calls to the server
 
 ### Home
 
-* `homeId` = id of home, type number (not string). Use auto discovery to find this value
+- `homeId` = id of home, type number (not string). Use auto discovery to find this value
 
 ### Room
 
-* `roomId` = id of room, type number (not string). Use auto discovery to find this value
+- `roomId` = id of room, type number (not string). Use auto discovery to find this value
 
 ### Heater
 
-* `macAddress` = network mac address of device in UPPERCASE.  
+- `macAddress` = network mac address of device in UPPERCASE.  
   Can be found in the app by viewing devices. Or you can find it during discovery. Used for heaters connected to a room.
-* `heaterId` = id of device/heater, type number (not string)
+- `heaterId` = id of device/heater, type number (not string)
   Use auto discovery to find this value. Used to identify independent heaters or heaters connected to a room.
-* `power` = number of watts this heater is consuming when active.  
+- `power` = number of watts this heater is consuming when active.  
   Used to provide data for the currentPower channel.
 
 Either `macAddres` or `heaterId` must be specified.
@@ -88,7 +88,7 @@ Either `macAddres` or `heaterId` must be specified.
 
 millheat.things:
 
-```
+```java
 Bridge millheat:account:home "Millheat account" [username="email@address.com",password="topsecret"] {
     Thing home monaco "Penthouse Monaco" [ homeId=100000000000000 ] // Note: numeric value
     Thing room office "Office room" [ roomId=200000000000000 ] Note: numeric value
@@ -98,7 +98,7 @@ Bridge millheat:account:home "Millheat account" [username="email@address.com",pa
 
 millheat.items:
 
-```
+```java
 // Items connected to HOME channels
 Number:Temperature Vacation_Target_Temperature "Vacation target temp [%d %unit%]" <temperature>  {channel="millheat:home:home:monaco:vacationModeTargetTemperature"}
 Switch Vacation_Mode "Vacation mode" <vacation>  {channel="millheat:home:home:monaco:vacationMode"}
@@ -131,7 +131,7 @@ Switch Heating_Office_Heater_MasterSwitch "Heater masterswitch [%s]" <switch>  {
 
 In order to activate vacation mode, follow these steps in a rule:
 
-* Set start time (DateTime) on `DateTime` item linked to channel type `vacationModeStart`
-* Set end time (DateTime) on `DateTime` item linked to channel type `vacationModeEnd`
-* Activate vacation mode on `Switch` item linked to channel type `vacationMode`
-* Optional - set advanced vacation mode on `Switch` item linked to channel type `vacationModeAdvanced`
+- Set start time (DateTime) on `DateTime` item linked to channel type `vacationModeStart`
+- Set end time (DateTime) on `DateTime` item linked to channel type `vacationModeEnd`
+- Activate vacation mode on `Switch` item linked to channel type `vacationMode`
+- Optional - set advanced vacation mode on `Switch` item linked to channel type `vacationModeAdvanced`

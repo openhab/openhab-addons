@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
-import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation;
 import org.openhab.binding.icloud.internal.utilities.ICloudTextTranslator;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;

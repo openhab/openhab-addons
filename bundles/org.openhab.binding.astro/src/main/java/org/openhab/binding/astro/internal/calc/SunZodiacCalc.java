@@ -37,7 +37,6 @@ public class SunZodiacCalc {
      * Returns the zodiac for the specified calendar.
      */
     public Optional<SunZodiac> getZodiac(Calendar calendar) {
-
         int year = calendar.get(Calendar.YEAR);
         List<SunZodiac> zodiacs;
 

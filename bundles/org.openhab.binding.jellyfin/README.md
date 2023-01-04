@@ -1,7 +1,7 @@
 # Jellyfin Binding
 
-This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built media solution that puts you in control of your media. 
-Stream to any device from your own server, with no strings attached. 
+This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built media solution that puts you in control of your media.
+Stream to any device from your own server, with no strings attached.
 Your media, your server, your way.
 This binding allows connect to Jellyfin clients that supports remote control, it's build on top of the official Jellyfin kotlin sdk.
 Compatible with Jellyfin servers in version 10.8.x.
@@ -15,7 +15,7 @@ Before open an issue please test you are able to correctly control your device f
 
 ## Discovery
 
-Before you are able to discover clients you should have a bridge to the server so until one is online the discovery will only look for servers on your local network. Once one is online the discovery will detect controllable clients connected to that server. 
+Before you are able to discover clients you should have a bridge to the server so until one is online the discovery will only look for servers on your local network. Once one is online the discovery will detect controllable clients connected to that server.
 
 ## Thing Types
 
@@ -29,7 +29,7 @@ Before you are able to discover clients you should have a bridge to the server s
 To allow the server thing to go online you should provide valid credentials for the user that the biding will use to interact with the server api (userId and token configuration properties).
 Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
-In order to assist you with this process the binding expose a simple login form you can access on \<local openHAB server url\>/jellyfin/\<server thing id\> for example http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf.
+In order to assist you with this process the binding expose a simple login form you can access on \<local openHAB server url\>/jellyfin/\<server thing id\> for example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`.
 
 ## Server Thing Configuration
 
@@ -69,6 +69,7 @@ In order to assist you with this process the binding expose a simple login form 
 | play-next-by-id            | String | Add to playback queue as next by id, works for series, episodes and movies                                      |
 | play-last-by-id            | String | Add to playback queue as last by id, works for series, episodes and movies                                      |
 | browse-by-id               | String | Browse media by id, works for series, episodes and movies                                                       |
+
 ### Terms search:
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.
@@ -84,32 +85,32 @@ Also, you can target a specific series episode by season and episode numbers pre
 
 ### Example Server (Bridge) - jellyfin.bridge.things
 
-```
+```java
 Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
-	clientActiveWithInSeconds=0,
-	hostname="192.168.1.177",
-	port=8096,
-	refreshSeconds=30,
-	ssl="false"
+    clientActiveWithInSeconds=0,
+    hostname="192.168.1.177",
+    port=8096,
+    refreshSeconds=30,
+    ssl="false"
     token=XXXXX # Optional, read bellow
     userId=XXXXX # Optional, read bellow
 ]
 ```
 
- * token and userId could be retrieved using the login form at http://YOUROPENHABIP:PORT/jellyfin/exampleServerId
+- token and userId could be retrieved using the login form at `http://YOUROPENHABIP:PORT/jellyfin/exampleServerId`
 
 ### Example Client - jellyfin.clients.things
 
-```
+```java
 Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Web client" (jellyfin:server:exampleServerId)
 Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android client" (jellyfin:server:exampleServerId)
 ```
 
-* I recommend creating the clients using the discovery. For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
+- I recommend creating the clients using the discovery. For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX).
 
 ### Example Items - jellyfin.items
 
-```
+```java
 String strJellyfinAndroidSendNotification { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:send-notification " }
 Player plJellyfinAndroidMediaControl { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:media-control" }
 String strJellyfinAndroidPlayingItemId { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-id" }

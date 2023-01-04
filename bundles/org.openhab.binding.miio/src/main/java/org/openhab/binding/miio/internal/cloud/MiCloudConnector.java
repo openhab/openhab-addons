@@ -543,7 +543,7 @@ public class MiCloudConnector {
             logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
             if (cookie.getName().contentEquals("serviceToken")) {
                 serviceToken = cookie.getValue();
-                logger.debug("Xiaomi cloud logon succesfull.");
+                logger.debug("Xiaomi cloud logon successful.");
                 logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
             }
         }

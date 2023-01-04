@@ -26,14 +26,14 @@ It can be extended with different channels.
 | `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`. When using text based configuration include at minimum 2 headers to avoid parsing errors.|
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
-*Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
+_Note:_ Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
 
-*Note:* The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
+_Note:_ The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
 This is dangerous and might be misused.
 The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
 Authentication might fail if redirections are involved as headers are stripper prior to redirection.
 
-*Note:* If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
+_Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
 **Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not normally use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
@@ -52,7 +52,7 @@ The `image` channel-type supports `stateExtension`, `stateContent` and `escapedU
 |-------------------------|----------|-------------|-------------|
 | `stateExtension`        | yes      |      -      | Appended to the `baseURL` for requesting states. |
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
-| `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
+| `stateTransformation`   | yes      |      -      | One or more transformation applied to received values before updating channel. |
 | `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
 | `escapedUrl`            | yes      |      -      | This specifies whether the URL is already escaped. |
 | `stateContent`          | yes      |      -      | Content for state requests (if method is `PUT` or `POST`) |
@@ -163,13 +163,13 @@ After the parameter reference the format needs to be appended.
 See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference, for a timestamp `t`).
 When sending an OFF command on 2020-07-06, the URL
 
-```
+```text
 http://www.domain.org/home/lights/23871/?status=%2$s&date=%1$tY-%1$tm-%1$td
 ```
 
 is transformed to
 
-```
+```text
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 ```
 
@@ -177,12 +177,12 @@ http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 
 ### `demo.things`
 
-```
+```java
 Thing http:url:foo "Foo" [
-	baseURL="https://example.com/api/v1/metadata-api/web/metadata",
-	headers="key1=value1", "key2=value2", "key3=value3",
-	refresh=15] {
-		Channels:
-			Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
+    baseURL="https://example.com/api/v1/metadata-api/web/metadata",
+    headers="key1=value1", "key2=value2", "key3=value3",
+    refresh=15] {
+        Channels:
+         Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
 }
 ```

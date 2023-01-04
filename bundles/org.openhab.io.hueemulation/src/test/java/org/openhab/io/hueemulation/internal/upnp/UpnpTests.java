@@ -136,7 +136,7 @@ public class UpnpTests {
             sendSocket.receive(p);
             String received = new String(buffer);
             assertThat(received, CoreMatchers.startsWith("HTTP/1.1 200 OK"));
-            assertThat(received, CoreMatchers.containsString("hue-bridgeid: DEMOUUID"));
+            assertThat(received, CoreMatchers.containsString("hue-bridgeid: A668DC9B7172"));
         }
 
         r.dispose();

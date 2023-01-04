@@ -86,7 +86,7 @@ The bridge could be used for multiple C.M.I. devices.
 * TA C.M.I. CoE Connection - Thing
 
 This thing reflects a connection to a node behind a specific C.M.I..
-This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
+This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
 
 ## Discovery
 
@@ -114,7 +114,7 @@ This thing doesn't need a bridge. Multiple of these things for different C.M.I.'
 
 The _TA C.M.I. CoE Connection_ has to be manually configured.
 
-This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
+This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
 
 | Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
 |-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -141,7 +141,7 @@ The behavior in detail:
 
 * `Default` (`0`): When the channel is 'read-only' the update-policy defaults to _On-Fetch_ . When the channel is linked to something that can be modified it defaults to _On-Change_ .
 * `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
-* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. ZigBee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
+* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
 ### TA C.M.I. CoE Connection
 

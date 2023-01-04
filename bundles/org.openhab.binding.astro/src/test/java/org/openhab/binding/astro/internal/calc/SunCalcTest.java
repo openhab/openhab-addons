@@ -80,8 +80,8 @@ public class SunCalcTest {
         assertNotNull(sun.getMorningNight());
         assertNotNull(sun.getEveningNight());
 
-        // for an old date the phase is always null
-        assertNull(sun.getPhase().getName());
+        // for an old date the phase should also be calculated
+        assertNotNull(sun.getPhase().getName());
     }
 
     @Test
@@ -272,6 +272,34 @@ public class SunCalcTest {
 
         assertEquals(sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK).getEnd(),
                 sun.getAllRanges().get(SunPhaseName.EVENING_NIGHT).getStart());
+    }
+
+    @Test
+    public void testIssue7642CivilDawnEnd() {
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 12, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.CIVIL_DAWN, sun.getPhase().getName());
+    }
+
+    @Test
+    public void testIssue7642SunRiseStart() {
+        // SunCalc.ranges was not sorted, causing unexpected output in corner cases.
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 13, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
+    }
+
+    @Test
+    public void testIssue7642DaylightStart() {
+        TimeZone tZone = TimeZone.getTimeZone("Europe/London");
+        Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 18, tZone);
+
+        Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true);
+        assertEquals(SunPhaseName.DAYLIGHT, sun.getPhase().getName());
     }
 
     /***

@@ -90,7 +90,7 @@ public class HomekitTaggedItem {
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
         if (homekitAccessoryType != DUMMY) {
-            this.id = calculateId(item.getItem());
+            this.id = calculateId(item.getItem().getName());
         } else {
             this.id = 0;
         }
@@ -467,24 +467,25 @@ public class HomekitTaggedItem {
         }
     }
 
-    private int calculateId(Item item) {
+    public static int calculateId(String name) {
         // magic number 629 is the legacy from apache HashCodeBuilder (17*37)
-        int id = 629 + item.getName().hashCode();
+        int id = 629 + name.hashCode();
         if (id < 0) {
             id += Integer.MAX_VALUE;
         }
         if (id < 2) {
             id = 2; // 0 and 1 are reserved
         }
+
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
-            if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.warn(
+            if (!CREATED_ACCESSORY_IDS.get(id).equals(name)) {
+                LoggerFactory.getLogger(HomekitTaggedItem.class).warn(
                         "Could not create HomeKit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
-                        item.getName(), CREATED_ACCESSORY_IDS.get(id));
+                        name, CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }
         } else {
-            CREATED_ACCESSORY_IDS.put(id, item.getName());
+            CREATED_ACCESSORY_IDS.put(id, name);
         }
         return id;
     }

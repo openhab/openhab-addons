@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.bondhome.internal.config;
 
-import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link BondBridgeConfiguration} class contains fields mapping thing
@@ -29,15 +26,19 @@ public class BondBridgeConfiguration {
     /**
      * Configuration for a Bond Bridge
      */
-    public @Nullable String serialNumber;
-    public @Nullable String localToken;
-    public @Nullable String ipAddress;
+    public String serialNumber = "";
+    public String localToken = "";
+    public String ipAddress = "";
 
-    public @Nullable String getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public boolean isValid() {
+        return !(serialNumber.isEmpty() || localToken.isEmpty() || ipAddress.isEmpty());
     }
 }

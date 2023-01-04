@@ -45,7 +45,7 @@ Any home automation system based on the OverKiz API is potentially supported.
 - water heater system (monitor and control)
 - Yutaki heat pump consisting of heat pump, heating control and hot water tank (controls and a lot of states; it is tested with components RAS-4WHNPE, RWM-4.ONE, DHWT-300S-3.0H2E)
 
-Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
+Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working in the cloud mode.
 
 ## Discovery
 
@@ -59,13 +59,47 @@ If you are missing some device, check the debug log during the discovery and cre
 
 ## Thing Configuration
 
-To retrieve thing configuration and url parameter, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
+### bridge
+
+| Parameter      | Parameter ID  | Required/Optional | Description                                                                          |
+|----------------|---------------|-------------------|--------------------------------------------------------------------------------------|
+| Cloud portal   | cloudPortal   | Optional          | Cloud portal to connect to                                                           |
+| Email address  | email         | Required          | Email address for the portal                                                         |
+| Password       | password      | Required          | Password for the portal                                                              |
+| Refresh        | refresh       | Optional          | Refresh time for polling events (in seconds)                                         |
+| Status timeout | statusTimeout | Optional          | Reconciliation timeout after which the status is refreshed (in seconds)              |
+| Retries        | retries       | Optional          | Specifies the number of retries when command execution                               |
+| Retry delay    | retryDelay    | Optional          | Delay in milliseconds between subsequent retries after a command failure             |
+| Developer mode | devMode       | Optional          | Enables the direct control of your devices over the lan using the local API endpoint |
+| Gateway IP     | ip            | Optional          | Local IP address of gateway, relevant only if developer mode is enabled              |
+| Gateway PIN    | pin           | Optional          | Gateway PIN in format ABCD-EFGH-IJKL, relevant only if developer mode is enabled     |
+| Local token    | token         | Optional          | Token for local communication, relevant only if developer mode is enabled            |
+
+For more information about the developer mode please see https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode.
+If the gateway ip or pin are not provided, the binding tries to detect it automatically and saves it into the configuration.
+If the local token is not provided, the binding creates the local token automatically and saves it into the configuration.
+Please note that the action groups (scenarios) control does not work in local mode due to missing support in the gateway firmware.
+The gateway support for the developer mode is limited as well, so far Connexoon gateways do not support the developer mode.
+
+### gateway
+
+| Parameter  | Parameter ID | Required/Optional | Description                               |
+|------------|--------------|-------------------|-------------------------------------------|
+| Gateway id | id           | Required          | ID of your gateway (sometimes called pin) |
+
+### other devices
+
+| Parameter  | Parameter ID | Required/Optional | Description                  |
+|------------|--------------|-------------------|------------------------------|
+| Device URL | url          | Required          | The identifier of the device |
+
+To retrieve the url parameter or gateway id, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
 ## Channels
 
 | Thing                                                                              | Channel                         | Note                                                                                                                                                                                                                              |
-|------------------------------------------------------------------------------------|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bridge                                                                             | N.A                             | bridge does not expose any channel                                                                                                                                                                                                |
 | gateway                                                                            | status                          | status of your gateway                                                                                                                                                                                                            |
 | gateway                                                                            | scenarios                       | used to run the scenarios defined in the cloud portal                                                                                                                                                                             |
@@ -73,7 +107,7 @@ Please see the example below.
 | gate                                                                               | gate_state                      | get state of your gate (open, closed, pedestrian)                                                                                                                                                                                 |
 | gate                                                                               | gate_position                   | get position (0-100%) of your gate (where supported)                                                                                                                                                                              |
 | roller shutter, shutter, screen, ven. blind, garage door, awning, pergola, curtain | control                         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                                                                                                                      |
-| roller shutter                                                                     | moving                          | Indicates if the device is currently operating a command                                                                                                                                                            |
+| roller shutter                                                                     | moving                          | Indicates if the device is currently operating a command                                                                                                                                                                          |
 | window                                                                             | control                         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                                                                                                                         |
 | silent roller shutter                                                              | silent_control                  | similar to control channel but in silent mode                                                                                                                                                                                     |
 | venetian blind, adjustable slats roller shutter, bioclimatic pergola               | orientation                     | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)                                                                                                                   |
@@ -88,8 +122,7 @@ Please see the example below.
 | smoke sensor, occupancy sensor, contact sensor & water sensor                      | sensor_defect                   | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                                                                                                                                               |
 | smoke sensor                                                                       | radio_battery                   | maintenance radio part battery state (low, normal)                                                                                                                                                                                |
 | smoke sensor                                                                       | sensor_battery                  | maintenance sensor part battery state (absence, low, normal)                                                                                                                                                                      |
-| smoke sensor                                                                       | short_check                     | triggering the smoke sensor's short check                                                                                                                                                                                         |
-| smoke sensor                                                                       | long_check                      | triggering the smoke sensor's long check                                                                                                                                                                                          |
+| smoke sensor                                                                       | alarm_check                     | triggers the smoke sensor's beep check (short, long)                                                                                                                                                                              |
 | light sensor                                                                       | luminance                       | light luminance value in luxes                                                                                                                                                                                                    |
 | electricity sensor                                                                 | energy_consumption              | energy consumption value in watts                                                                                                                                                                                                 |
 | humidity sensor                                                                    | humidity                        | current relative humidity                                                                                                                                                                                                         |
@@ -150,7 +183,7 @@ Please see the example below.
 | hitachi (yutaki) air to water heating zone                                         | zone_mode                       | sets the zone mode (Auto, Manual)                                                                                                                                                                                                 |
 | hitachi (yutaki) air to water heating zone                                         | thermostat_setting_zone1        | controls the thermostat setting for the zone 1                                                                                                                                                                                    |
 | hitachi (yutaki) air to water heating zone                                         | wh_setting_temp_zone1           | controls the water heating setting temperature for the zone 1                                                                                                                                                                     |
-| hitachi (yutaki) air to water heating zone                                         | room_ambient_temp_zone1         | controls the room ambient temperature for the zone 1                                                                                                                                                                               |
+| hitachi (yutaki) air to water heating zone                                         | room_ambient_temp_zone1         | controls the room ambient temperature for the zone 1                                                                                                                                                                              |
 | hitachi (yutaki) domestic hot water                                                | anti_legionella                 | controls the anti legionella mode (Run, Stop)                                                                                                                                                                                     |
 | hitachi (yutaki) domestic hot water                                                | anti_legionella_temp            | controls the anti legionella temperature                                                                                                                                                                                          |
 | hitachi (yutaki) domestic hot water                                                | target_boost_mode               | controls the boost mode (No request, Enabled, Disabled)                                                                                                                                                                           |
@@ -193,13 +226,13 @@ When a roller shutter-like thing receives STOP command, there are two possible b
 
 If you want to set the MY position of a roller shutter and you don't care the possible movement, try sending the MOVE command (OH2 does not know MY, so it stands for "move to MY position")
 
-```
+```java
 CONTROL_CHANNEL.sendCommand(MOVE)
 ```
 
 Blinds and adjustable slats roller shutters can control their closure and orientation by sending a comma separated string consisting of closure (0-100) and orientation (0-100) to the "closure_orientaion" channel.
 
-```
+```java
 CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 ```
 
@@ -207,7 +240,7 @@ CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 
 .things file
 
-```
+```java
 Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com", password="MyPassword", refresh=10 , statusTimeout=30] {
     Thing gateway 1214-4519-8041 "Tahoma gateway" [ id="1214-4519-8041" ]
     Thing rollershutter 31da8dac-8e09-455a-bc7a-6ed70f740001 "Bedroom" [ url="io://0204-1234-8041/6825356" ]
@@ -233,7 +266,7 @@ Awnings, garage doors, screens, blinds, and windows things have the same notatio
 
 .items file
 
-```
+```java
 String TahomaVersion "Tahoma version [%s]" { channel="somfytahoma:gateway:237dbae7:1214-4519-8041:version" }
 Rollershutter RollerShutterBedroom "Roller shutter [%d %%]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
 Dimmer RollerShutterBedroomD "Roller shutter dimmer [%.1f]"  {channel="somfytahoma:rollershutter:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:control"}
@@ -285,7 +318,7 @@ Switch HeatingSwitch "Ext heating switch"  { channel="somfytahoma:exteriorheatin
 
 .sitemap file
 
-```
+```perl
 Text item=TahomaVersion
 Switch item=Rollers1UP label="Roller shutters 1st floor" mappings=[ON="UP"]
 Switch item=Rollers1DOWN  label="Roller shutters 1st floor" mappings=[ON="DOWN"]
@@ -326,7 +359,7 @@ This binding is compatible with the official Alexa Smart Home Skill.
 Since Rolleshutter items are unsupported, only Dimmer with control channel can be used.
 Syntax in .item file is as follows:
 
-```
+```java
 Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control"}
 ```
 

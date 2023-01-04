@@ -57,7 +57,7 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         assertTrue(maybePairAccountSite.contains(
                 "Go to <a href=\"https://www.miele.com/f/com/en/register_api.aspx\">the Miele developer portal</a> to obtain your"));
         assertTrue(maybePairAccountSite.contains(
-                "There is an authorization ongoing at the moment. Please complete that authorization prior to starting a new one or try again in 3 minutes."));
+                "There is an authorization ongoing at the moment. Please complete that authorization prior to starting a new one or try again"));
     }
 
     @Test

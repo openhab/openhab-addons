@@ -41,14 +41,14 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
- * @author Daniel Rosengarten - Add VMBELPIR support, removes global alarm configuration from module (moved on bridge),
- *         reduces bus flooding on alarm value update
+ * @author Daniel Rosengarten - Add new module support, removes global alarm configuration from module (moved on
+ *         bridge), reduces bus flooding on alarm value update
  */
 @NonNullByDefault
 public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB2PBN, THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC,
-                    THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S, THING_TYPE_VMBVP1));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB2PBN,
+            THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S,
+            THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB));
     private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<ThingTypeUID, Integer>();
 
     static {
@@ -79,6 +79,9 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBGPOD_2, 0x0284);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBRFR8S, 0x0093);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBVP1, 0x002B);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBKP, 0x00A7);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMBIN, 0x00A7);
+        ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB4PB, 0x00A7);
     }
 
     private static final byte ALARM_CONFIGURATION_MEMORY_SIZE = 0x09;

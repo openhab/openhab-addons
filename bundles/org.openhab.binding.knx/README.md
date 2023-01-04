@@ -1,4 +1,3 @@
-
 # KNX Binding
 
 The openHAB KNX binding allows to connect to [KNX Home Automation](https://www.knx.org/) installations.
@@ -13,7 +12,7 @@ Since the protocol is identical, the KNX binding can also communicate with it tr
 ## Supported Things
 
 The KNX binding supports two types of bridges, and one type of things to access the KNX bus.
-There is an *ip* bridge to connect to KNX IP Gateways, and a *serial* bridge for connection over a serial port to a host-attached gateway.
+There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for connection over a serial port to a host-attached gateway.
 
 ## Binding Configuration
 
@@ -25,7 +24,7 @@ The following two bridge types are supported. Bridges don't have channels on the
 
 ### IP Gateway
 
-The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the *ip* bridge accepts the following configuration parameters:
+The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the _ip_ bridge accepts the following configuration parameters:
 
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
@@ -33,7 +32,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.       | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
-| localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus <br/><br/>Note: Use a free address, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use.                | 0.0.0                                                |
+| localSourceAddr     | No           | The (virtual) individual address for identification of this openHAB Thing within the KNX bus <br/><br/>Note: Use a free address, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use. When using knxd, make sure _not to use_ one of the addresses reserved for tunneling clients.  | 0.0.0                                                |
 | useNAT              | No           | Whether there is network address translation between the server and the gateway                              | false                                                |
 | readingPause        | No           | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50                                                   |
 | responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                                   |
@@ -44,10 +43,9 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                           | -                                                    |
 | tunnelDeviceAuthentication  | No   | KNX secure: Tunnel device authentication for secure tunnel mode                                              | -                                                    |
 
-
 ### Serial Gateway
 
-The *serial* bridge accepts the following configuration parameters:
+The _serial_ bridge accepts the following configuration parameters:
 
 | Name                | Required | Description                                                                                                  | Default value |
 |---------------------|----------|--------------------------------------------------------------------------------------------------------------|---------------|
@@ -60,13 +58,13 @@ The *serial* bridge accepts the following configuration parameters:
 
 ## Things
 
-### *device* Things
+### _device_ Things
 
-*basic* Things are wrappers around arbitrary group addresses on the KNX bus.
-They have no specific function in the KNX binding, except that if the *address* is defined, the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actuator is reachable.
+_basic_ Things are wrappers around arbitrary group addresses on the KNX bus.
+They have no specific function in the KNX binding, except that if the _address_ is defined, the binding will actively poll the Individual Address on the KNX bus to detect that the KNX actuator is reachable.
 Under normal real-world circumstances, either all devices on a bus are reachable, or the entire bus is down.
 If line couplers are installed, physical device addressing might be filtered; in this case please do not specify the addresses for devices on this line.
-When *fetch* is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth.
+When _fetch_ is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth.
 This is however an experimental feature, very prone to the actual on the KNX bus.
 
 | Name         | Required | Description                                                                                                              | Default value                                                               |
@@ -77,7 +75,7 @@ This is however an experimental feature, very prone to the actual on the KNX bus
 | readInterval | N        | Interval (in seconds) to actively request reading of values from the bus (0 if they should only be read once at startup) | 0                                                                           |
 
 Different kinds of channels are defined and can be used to group together Group Addresses.
-All channels of a device share one configuration parameter defined on device level: *readInterval*, an optional parameter which indicates if 'readable' group addresses of that Channel should be read periodically at the given interval, in seconds.
+All channels of a device share one configuration parameter defined on device level: _readInterval_, an optional parameter which indicates if 'readable' group addresses of that Channel should be read periodically at the given interval, in seconds.
 'Readable' group addresses are marked with an `<` in the group address definition of a Channel, see below.
 All readable group addresses are queried by openHAB during startup.
 If readInterval is not specified or set to 0, no further periodic reading will be triggered (default: 0).
@@ -95,7 +93,6 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 |-----------|-------------------------------------|-------------|
 | ga        | Group address for the binary switch | 1.001       |
 
-
 ##### Channel Type "dimmer"
 
 | Parameter        | Description                            | Default DPT |
@@ -103,6 +100,15 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 | switch           | Group address for the binary switch    | 1.001       |
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
+
+##### Channel Type "color"
+
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| hsb              | Group address for color                | 232.600     |
+| switch           | Group address for the binary switch    |   1.001     |
+| position         | Group address of the absolute position |   5.001     |
+| increaseDecrease | Group address for relative movement    |   3.007     |
 
 ##### Channel Type "rollershutter"
 
@@ -124,7 +130,6 @@ Note: After changing the DPT of already existing Channels, openHAB needs to be r
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
 
-
 Note: Using the Units Of Measurement feature of openHAB (Quantitytype) requires that the DPT value is set correctly.
 Automatic type conversion will be applied if required.
 
@@ -140,7 +145,6 @@ Automatic type conversion will be applied if required.
 |-----------|---------------|-------------|
 | ga        | Group address | 19.001      |
 
-
 #### Control Channel Types
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device.
@@ -153,7 +157,6 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 |-----------|-------------------------------------|-------------|
 | ga        | Group address for the binary switch | 1.001       |
 
-
 ##### Channel Type "dimmer-control"
 
 | Parameter        | Description                                                                                                                                   | Default DPT |
@@ -162,6 +165,15 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 | position         | Group address of the absolute position                                                                                                        | 5.001       |
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
+
+##### Channel Type "color-control"
+
+| Parameter        | Description                            | Default DPT |
+|------------------|----------------------------------------|-------------|
+| hsb              | Group address for color                | 232.600     |
+| switch           | Group address for the binary switch    |   1.001     |
+| position         | Group address of the absolute position |   5.001     |
+| increaseDecrease | Group address for relative movement    |   3.007     |
 
 ##### Channel Type "rollershutter-control"
 
@@ -197,7 +209,7 @@ If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, 
 
 #### Group Address Notation
 
-```
+```text
 <config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
 ```
 
@@ -211,7 +223,6 @@ Each configuration parameter has a `mainGA` where commands are written to and op
 
 The `dpt` element is optional. If omitted, the corresponding default value will be used (see the channel descriptions above).
 
-
 ## KNX Secure
 
 > NOTE: Support for KNX Secure is partly implemented for openHAB and should be considered as experimental.
@@ -221,17 +232,15 @@ The `dpt` element is optional. If omitted, the corresponding default value will 
 KNX IP Secure protects the traffic between openHAB and your KNX installation.
 It **requires a KNX Secure Router or a Secure IP Interface** and a KNX installation **with security features enabled in ETS tool**.
 
-For *Secure routing* mode, the so called `backbone key` needs to be configured in openHAB.
+For _Secure routing_ mode, the so called `backbone key` needs to be configured in openHAB.
 It is created by the ETS tool and cannot be changed via the ETS user interface.
 
 - The backbone key can be extracted from Security report (ETS, Reports, Security, look for a 32-digit key) and specified in parameter `routerBackboneKey`.
 
-For *Secure tunneling* with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
+For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 
-- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
-`tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
-`tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`. `tunnelUserId` is a number which is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...). `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface you will see the different tunnels listed) denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself, check for a tab "IP" and a description "Authentication Code".
 
 ### KNX Data Secure
 
@@ -239,7 +248,6 @@ KNX Data Secure protects the content of messages on the KNX bus. In a KNX instal
 Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP Interface, but a KNX installation with newer KNX devices which support Data Secure and with **security features enabled in ETS tool**.
 
 > NOTE: **openHAB currently ignores messages with secure group addresses.**
-
 
 ## Examples
 
@@ -250,7 +258,7 @@ Only add parameters to the Bridge and Thing configuration if you know exactly wh
 
 knx.things:
 
-```xtend
+```java
 Bridge knx:ip:bridge [
     type="ROUTER",
     autoReconnectPeriod=60 //optional, do not set <30 sec.
@@ -267,7 +275,7 @@ Bridge knx:ip:bridge [
 
 knx.things:
 
-```xtend
+```java
 Bridge knx:ip:bridge [
     type="TUNNEL",
     ipAddress="192.168.0.111",
@@ -283,7 +291,7 @@ Bridge knx:ip:bridge [
 
 ### Full Example
 
-```xtend
+```java
 //TUNNEL
 Bridge knx:ip:bridge [
     type="TUNNEL",
@@ -303,6 +311,7 @@ Bridge knx:ip:bridge [
         readInterval=3600
     ] {
         Type switch        : demoSwitch        "Light"       [ ga="3/0/4+<3/0/5" ]
+        Type color         : demoColorLight    "Color"       [ hsb="6/0/10+<6/0/11", switch="6/0/12+<6/0/13", position="6/0/14+<6/0/15", increaseDecrease="6/0/16+<6/0/17" ]
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
         Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
@@ -328,8 +337,9 @@ Bridge knx:ip:bridge [
 
 knx.items:
 
-```xtend
+```java
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Color         demoColorLight     "Color [%s]"               <light>          { channel="knx:device:bridge:generic:demoColorLight" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
 Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
 Contact       demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
@@ -340,16 +350,17 @@ DateTime      demoDatetime       "Alarm [%1$tH:%1$tM]"                       { c
 
 knx.sitemap:
 
-```xtend
+```perl
 sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
-    Switch item=demoSwitch
-    Switch item=demoRollershutter
-    Text   item=demoContact
-    Text   item=demoTemperature
-    Slider item=demoDimmer
-    Text   item=demoString
-    Text   item=demoDatetime
+    Switch      item=demoSwitch
+    Slider      item=demoDimmer
+    Colorpicker item=demoColorLight
+    Default     item=demoRollershutter
+    Text        item=demoContact
+    Text        item=demoTemperature
+    Text        item=demoString
+    Text        item=demoDatetime
   }
 }
 
@@ -359,7 +370,7 @@ sitemap knx label="KNX Demo Sitemap" {
 
 control.things:
 
-```xtend
+```java
 Bridge knx:serial:bridge [
     serialPort="/dev/ttyAMA0",
     readingPause=50,
@@ -370,6 +381,7 @@ Bridge knx:serial:bridge [
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
+        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14", 
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
         Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]
@@ -387,7 +399,7 @@ Bridge hue:bridge:bridge "Philips Hue Bridge" [
 
 knx.items:
 
-```xtend
+```java
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlSwitch" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlDimmer" }
 ```

@@ -112,7 +112,7 @@ public class VeluxGwState {
         private int stateValue;
         private String stateDescription;
 
-        // Reverse-lookup map for getting a VeluxGatewayState from an TypeId
+        // Reverse-lookup map for getting a VeluxGatewayState from a TypeId
         private static final Map<Integer, VeluxGatewaySubState> LOOKUPTYPEID2ENUM = Stream
                 .of(VeluxGatewaySubState.values())
                 .collect(Collectors.toMap(VeluxGatewaySubState::getStateValue, Function.identity()));

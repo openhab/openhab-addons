@@ -130,7 +130,7 @@ public class PduGenerator {
         // ADDRESS TYPE
         this.baos.write(addressType);
         // ADDRESS NUMBERS
-        // if address.length is not even, pad the string an with F at the end
+        // if address.length is not even, pad the string with an F at the end
         String myaddress = address;
         if (myaddress.length() % 2 == 1) {
             myaddress = myaddress + "F";

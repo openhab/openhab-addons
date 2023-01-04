@@ -7,13 +7,23 @@
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
 	<!-- CHANNEL GROUP TYPES -->
-	<!--Device-Statuss Channel Type -->
+	<!--Device-Status Channel Type -->
 	<channel-group-type id="deviceState">
 		<label>Device State</label>
 		<description>Information about the device</description>
 		<channels>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
 			<channel id="onTime" typeId="ontime"/>
+			<channel id="overheated" typeId="overheated"/>
+		</channels>
+	</channel-group-type>
+
+	<!--Device-Status Channel Type (Small) -->
+	<channel-group-type id="deviceStateS">
+		<label>Device State</label>
+		<description>Information about the device</description>
+		<channels>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
 			<channel id="overheated" typeId="overheated"/>
 		</channels>
 	</channel-group-type>

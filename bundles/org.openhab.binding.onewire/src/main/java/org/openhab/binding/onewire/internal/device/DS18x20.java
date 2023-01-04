@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DS18x20} class defines an DS18x20 or DS1822 device
+ * The {@link DS18x20} class defines a DS18x20 or DS1822 device
  *
  * @author Jan N. Klug - Initial contribution
  */

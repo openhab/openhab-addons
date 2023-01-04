@@ -12,6 +12,8 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import java.util.concurrent.locks.Lock;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
 import org.openhab.core.scheduler.Scheduler;
@@ -44,7 +46,7 @@ public class JSScriptServiceUtil {
         return scriptExecution;
     }
 
-    public JSRuntimeFeatures getJSRuntimeFeatures(Object lock) {
+    public JSRuntimeFeatures getJSRuntimeFeatures(Lock lock) {
         return new JSRuntimeFeatures(lock, this);
     }
 }

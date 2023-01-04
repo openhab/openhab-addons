@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Plugwise Binding</name>
-	<description>Monitor and control Plugwise ZigBee devices using the Stick. Supported devices are the Circle, Circle+,
+	<description>Monitor and control Plugwise Zigbee devices using the Stick. Supported devices are the Circle, Circle+,
 		Scan, Sense, Stealth and Switch.</description>
 
 </binding:binding>

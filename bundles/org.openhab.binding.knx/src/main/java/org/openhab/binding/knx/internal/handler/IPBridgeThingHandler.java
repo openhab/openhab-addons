@@ -53,9 +53,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
 
     private @Nullable IPClient client = null;
-    private final NetworkAddressService networkAddressService;
+    private @Nullable final NetworkAddressService networkAddressService;
 
-    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
+    public IPBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService) {
         super(bridge);
         this.networkAddressService = networkAddressService;
     }
@@ -65,9 +65,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // initialisation would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
-        initJob = scheduler.submit(() -> {
-            initializeLater();
-        });
+        initJob = scheduler.submit(this::initializeLater);
     }
 
     public void initializeLater() {
@@ -106,7 +104,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         }
         String localSource = config.getLocalSourceAddr();
         String connectionTypeString = config.getType();
-        int port = config.getPortNumber().intValue();
+        int port = config.getPortNumber();
         String ip = config.getIpAddress();
         InetSocketAddress localEndPoint = null;
         boolean useNAT = false;
@@ -173,14 +171,19 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
+            if (networkAddressService == null) {
+                logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
             localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
-                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
+                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
 
         final var tmpClient = client;
         if (tmpClient != null) {

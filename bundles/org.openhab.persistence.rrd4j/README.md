@@ -260,8 +260,6 @@ Items {
 **IMPORTANT:**
 When creating a custom datasource in the `rrd4j.cfg` file the used [sample interval](#sampleinterval-sample-interval) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
 
----
-
 ## Troubleshooting
 
 From time to time, you may find that if you change the Item type of a persisted data point, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/userdata/persistence/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.

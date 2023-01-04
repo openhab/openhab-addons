@@ -8,7 +8,7 @@ If you face some problems during setup or runtime please have a look into the [T
 
 ## Supported Things
 
-| Type            | ID            | Description                                     | 
+| Type            | ID            | Description                                     |
 |-----------------|---------------|-------------------------------------------------|
 | Bridge          | `account`     | Connect your Mercedes Me account                |
 | Thing           | `combustion`  | Conventional fuel vehicle                       |
@@ -17,7 +17,7 @@ If you face some problems during setup or runtime please have a look into the [T
 
 ## Bridge Configuration
 
-Bridge needs configuration in order to connect properly to your Mercedes Me Account. 
+Bridge needs configuration in order to connect properly to your Mercedes Me Account.
 
 ### Pre-Conditions
 
@@ -31,33 +31,33 @@ Bridge needs configuration in order to connect properly to your Mercedes Me Acco
 Perform the following steps to obtain the configuration data and perform the authorization flow.
 
 1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.
-2. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
+1. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
     - _Project Name:_  unique name e.g. **openHAB Mercedes Me binding** plus **Your bridge ID**
     - _Purpose URL:_  use link towards [this binding description](https://www.openhab.org/addons/bindings/mercedesme/)
     - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
-3. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button 
-4. For all Products perform the same steps
+1. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button
+1. For all Products perform the same steps
     - Select product
     - Choose _Get For Free_
     - Choose _BYOCAR_ (Build Your Own Car)
     - Button _Confirm_
-5. Select the following products
+1. Select the following products
     - Vehicle Status
     - Vehicle Lock Status
     - Pay as you drive insurance
     - Electric Vehicle Status
     - Fuel Status
-6. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
-7. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
-8. Generate the [project credentials](#mb-credentials)
-9. Open in new browser tab your openHAB page. Add a new Thing _Mercedes Me Account_
-10. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB configuration
-11. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab configuration switches
-12. Create Thing!
-13. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
-14. A [simple HTML page is shown including a link towards the Authorization flow](#callback-page) - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
-15. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
-16. Now click onto the link from 14. You'll be asked one time if you [grant access](#mb-access-request) towards the API. Click OK and authorization is done!
+1. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
+1. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
+1. Generate the [project credentials](#mb-credentials)
+1. Open in new browser tab your openHAB page. Add a new Thing _Mercedes Me Account_
+1. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB configuration
+1. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab configuration switches
+1. Create Thing!
+1. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
+1. A [simple HTML page is shown including a link towards the Authorization flow](#callback-page) - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
+1. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
+1. Now click onto the link from 14. You'll be asked one time if you [grant access](#mb-access-request) towards the API. Click OK and authorization is done!
 
 Some supporting screenshots for the setup
 
@@ -81,7 +81,6 @@ Some supporting screenshots for the setup
 
 <img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
 
-
 ### Bridge Configuration Parameters
 
 | Name            | Type    | Description                           | Default     | Required | Advanced |
@@ -100,13 +99,12 @@ Some supporting screenshots for the setup
 The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted.
 Set the advanced options by yourself if you know your IP and Port, otherwise give auto detect a try.
 
-
 ## Thing Configuration
 
 For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
 Check in **beforehand** if your vehicle has some restrictions or even if it's supported at all.
 Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehicle capabilities.
-Visit [Image Settings](https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings) to get more information about 
+Visit [Image Settings](https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings) to get more information about
 For example the EQA doesn't provide `night` images with `background`.
 If your configuration is set this way the API calls are wasted!
 
@@ -305,12 +303,12 @@ Images are stored in `jsondb` so if you requested all images the Mercedes Benz I
 If you're not satisfied e.g. you want a background you need to
 
 1. change the [Advanced Image Configuration Properties](#thing-configuration)
-2. Switch `clear-cache` channel item to `ON` to clear all images
-3. request them via `image-view` 
+1. Switch `clear-cache` channel item to `ON` to clear all images
+1. request them via `image-view`
 
 ### Image View Options
 
-You can access the options either in a rule via `YOUR_IMAGE_VIEW_ITEM.getStateDescription().getOptions()` or in UI in widget configuration as _Action: Command options_ and as _Action Item: YOUR_IMAGE_VIEW_ITEM_ 
+You can access the options either in a rule via `YOUR_IMAGE_VIEW_ITEM.getStateDescription().getOptions()` or in UI in widget configuration as _Action: Command options_ and as _Action Item: YOUR_IMAGE_VIEW_ITEM_
 
 <img src="./doc/ImageView-CommandOptions.png" width="400" height="350"/>
 
@@ -329,26 +327,26 @@ Otherwise you'll receive some error message when clicking the link after opening
 Most common errors:
 
 - redirect URL doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
-- scope failure: the requested scope doesn't match with the subscribed products. 
-    - Check [openHab configuration switches](#openhab-configuration) 
-    - apply changes if necessary and don't forget to save
-    - after these steps refresh the `callbackUrl` in [your browser](#callback-page) to apply these changes
-    - try a new authorization clicking the link 
+- scope failure: the requested scope doesn't match with the subscribed products.
+  - Check [openHab configuration switches](#openhab-configuration)
+  - apply changes if necessary and don't forget to save
+  - after these steps refresh the `callbackUrl` in [your browser](#callback-page) to apply these changes
+  - try a new authorization clicking the link
 
 ### Receive no data
 
 Especially after setting the frist Mercedes Benz Developer Project you'll receive no data.
-It seems that the API isn't _filled_ yet. 
+It seems that the API isn't _filled_ yet.
 
-**Pre-Condition**
+#### Pre-Condition
 
 - The Mercedes Me bridge is online = authorization is fine
-- The Mercedes Me thing is online = API calls are fine 
+- The Mercedes Me thing is online = API calls are fine
 
-**Solution**
+#### Solution
 
 - Reduce `refreshInterval` to 1 minute
-- Go to your vehicle, open doors and windows, turn on lights, drive a bit  ... 
+- Go to your vehicle, open doors and windows, turn on lights, drive a bit  ...
 - wait until values are providing the right states
 
 ### Images
@@ -372,35 +370,34 @@ My personal experience during limited testing
 
 Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
 
- * _StorageHandler.For.OAuthClientService.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
- * _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
+- _StorageHandler.For.OAuthClientService.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
+- _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
 
 With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.
 Also these files are properly stored in your [backup](https://community.openhab.org/t/docs-on-how-to-backup-openhab/100182) e.g. if you perform `openhab-cli backup`
 
-
 ## Full example
 
-The example is based on a battery electric vehicle. 
+The example is based on a battery electric vehicle.
 Exchange configuration parameters in the Things section
 
 Bridge
 
-* 4711 - your desired bridge id
-* YOUR_CLIENT_ID - Client ID of the Mercedes Developer project
-* YOUR_CLIENT_SECRET - Client Secret of the Mercedes Developer project
-* YOUR_API_KEY - Image API Key of the Mercedes Developer project
-* YOUR_OPENHAB_SERVER_IP - IP address of your openHAB server
-* 8090 - a **unique** port number - each bridge in your openHAB installation needs to have different port number!
+- 4711 - your desired bridge id
+- YOUR_CLIENT_ID - Client ID of the Mercedes Developer project
+- YOUR_CLIENT_SECRET - Client Secret of the Mercedes Developer project
+- YOUR_API_KEY - Image API Key of the Mercedes Developer project
+- YOUR_OPENHAB_SERVER_IP - IP address of your openHAB server
+- 8090 - a **unique** port number - each bridge in your openHAB installation needs to have different port number!
 
 Thing
 
-* eqa - your desired vehicle thing id 
-* VEHICLE_VIN - your Vehicle Identification Number
+- eqa - your desired vehicle thing id
+- VEHICLE_VIN - your Vehicle Identification Number
 
 ### Things file
 
-```
+```java
 Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIP="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
          Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", refreshInterval=5, background=false, night=false, cropped=false, roofOpen=false, format="webp"]
 }
@@ -408,7 +405,7 @@ Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_I
 
 ### Items file
 
-```
+```java
 Number:Length           EQA_Mileage                 "Odometer [%d %unit%]"                        {channel="mercedesme:bev:4711:eqa:range#mileage" }                                                                           
 Number:Length           EQA_Range                   "Range [%d %unit%]"                           {channel="mercedesme:bev:4711:eqa:range#range-electric"}
 Number:Length           EQA_RangeRadius             "Range Radius [%d %unit%]"                    {channel="mercedesme:bev:4711:eqa:range#radius-electric"}   
@@ -446,7 +443,7 @@ Number                  EQA_LightSwitch             "Main Light Switch [%s]"    
 
 ### Sitemap
 
-```
+```perl
 sitemap MB label="Mercedes Benz EQA" {
   Frame label="EQA Image" {
     Image  item=EQA_Image  
