@@ -71,24 +71,27 @@ public final class UpdateService {
         if (thermostat == null) {
             return;
         }
+        String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
         Request request = httpClient.POST(configuration.getApiUrl() + "/Thermostat/UpdateThermostat")
                 .param("sessionid", sessionId).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(
-                        gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey))));
+                .content(new StringContentProvider(jsonPayload));
+        logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,
+                jsonPayload);
 
         request.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null) {
-                    logger.trace("onComplete {}", result);
+                    logger.trace("onComplete Http Status {} {}", result.getResponse().getStatus(), result);
                     if (result.isFailed()) {
-                        logger.warn("updateThermostat failed {}", thermostat);
+                        logger.warn("updateThermostat failed for themostat with serial {}", thermostat.serialNumber);
+                        return;
                     }
                     SimpleResponseModel responseModel = Objects
                             .requireNonNull(gson.fromJson(getContentAsString(), SimpleResponseModel.class));
                     if (responseModel.errorCode != 0) {
-                        logger.warn("updateThermostat failed with errorCode {} {}", responseModel.errorCode,
-                                thermostat);
+                        logger.warn("updateThermostat failed with errorCode {} for thermostat with serial {}",
+                                responseModel.errorCode, thermostat.serialNumber);
                     }
                 }
             }
