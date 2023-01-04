@@ -1005,7 +1005,7 @@ Try again.
 * In the HomeKit settings, change the port, setupId, and pin.
 Save the settings, then re-open the settings so as to refresh the QR code.
 Re-add the device.
-* Remove HomeKit state in `/var/lib/openhab/jsondb/homekit.json`, and homekit config in `/var/lib/openhab/config/org/openhab/homekit.config`.
+* Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
 Restart openHAB.
 Reboot iPhone.
 Try again.
