@@ -25,6 +25,8 @@
 			<channel id="wirelessClients" typeId="wirelessClients"/>
 			<channel id="wiredClients" typeId="wiredClients"/>
 			<channel id="guestClients" typeId="guestClients"/>
+			<channel id="guestVoucher" typeId="guestVoucher"/>
+			<channel id="guestVouchersGenerate" typeId="guestVouchersGenerate"/>
 		</channels>
 
 		<representation-property>sid</representation-property>
@@ -163,6 +165,25 @@
 		<label>Guest Clients</label>
 		<description>Number of guest clients connected</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="guestVoucher">
+		<item-type>String</item-type>
+		<label>Guest Voucher</label>
+		<description>Guest voucher for access through the guest portal</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="guestVouchersGenerate">
+		<item-type>String</item-type>
+		<label>Generate Guest Vouchers</label>
+		<description>Generate additional guest vouchers for access through the guest portal</description>
+		<command>
+			<options>
+				<option value="GENERATE">Generate</option>
+			</options>
+		</command>
+		<config-description-ref uri="channel-type:unifi:guestVouchersGenerate"/>
 	</channel-type>
 
 	<channel-type id="wlanEnable">

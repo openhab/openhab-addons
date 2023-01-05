@@ -67,6 +67,36 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="channel-type:unifi:guestVouchersGenerate">
+		<parameter name="voucherCount" type="integer">
+			<label>Number</label>
+			<description>Number of vouchers to create</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="voucherExpiration" type="integer">
+			<label>Expiration Time</label>
+			<description>Minutes a voucher is valid after activation</description>
+			<default>1440</default>
+		</parameter>
+		<parameter name="voucherUsers" type="integer">
+			<label>Users</label>
+			<description>Number of users for voucher, 0 if no limit</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="voucherUpLimit" type="integer">
+			<label>Upload Speed Limit</label>
+			<description>Upload speed limit in kbps, no limit if not set</description>
+		</parameter>
+		<parameter name="voucherDownLimit" type="integer">
+			<label>Download Speed Limit</label>
+			<description>Download speed limit in kbps, no limit if not set</description>
+		</parameter>
+		<parameter name="voucherDataQuota" type="integer">
+			<label>Data Transfer Quota</label>
+			<description>Data transfer quota in MB per user, no limit if not set</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="thing-type:unifi:poePort">
 		<parameter name="portNumber" type="integer" required="true">
 			<label>Port Number</label>
