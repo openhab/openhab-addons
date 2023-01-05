@@ -116,19 +116,18 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     }
 
     private synchronized void startListenerJob() {
-        logger.debug("Starting discovery listener job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
-
         if (this.listenerJob == null) {
+            logger.debug("Starting discovery listener job in {} seconds", BACKGROUND_DISCOVERY_DELAY);
             terminate = false;
             this.listenerJob = scheduledExecutorService.schedule(listenerRunnable, BACKGROUND_DISCOVERY_DELAY,
                     TimeUnit.SECONDS);
         }
     }
 
-    private void cancelListenerJob() {
-        logger.debug("Canceling discovery listener job");
+    private void cancelListenerJob() {      
         ScheduledFuture<?> localListenerJob = this.listenerJob;
         if (localListenerJob != null) {
+            logger.debug("Canceling discovery listener job");
             localListenerJob.cancel(true);
             terminate = true;
             this.listenerJob = null;

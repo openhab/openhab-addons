@@ -26,8 +26,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BigAssFanHandlerFactory} is responsible for creating things and thing
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bigassfan")
 public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(BigAssFanHandlerFactory.class);
     private final NetworkAddressService networkAddressService;
 
     @Activate
@@ -56,8 +53,7 @@ public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            return new BigAssFanHandler(thing, ipAddress);
+            return new BigAssFanHandler(thing, networkAddressService.getPrimaryIpv4HostAddress());
         }
         return null;
     }
