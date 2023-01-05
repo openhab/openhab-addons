@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.liquidcheck.internal.httpclient.LiquidCheckHttpClient;
 import org.openhab.binding.liquidcheck.internal.json.CommData;
 import org.openhab.core.library.types.DecimalType;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link LiquidCheckHandler} is responsible for handling commands, which are
@@ -62,17 +64,18 @@ import com.google.gson.Gson;
 public class LiquidCheckHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LiquidCheckHandler.class);
+    private final HttpClient httpClient;
 
-    private Map<String, String> oldProps;
+    private Map<String, String> oldProps = new HashMap<>();
 
-    private LiquidCheckConfiguration config = getConfigAs(LiquidCheckConfiguration.class);
-    private LiquidCheckHttpClient client = new LiquidCheckHttpClient(config);
+    private LiquidCheckConfiguration config = new LiquidCheckConfiguration();
+    private LiquidCheckHttpClient client = new LiquidCheckHttpClient(config, new HttpClient());
 
     private @Nullable ScheduledFuture<?> polling;
 
-    public LiquidCheckHandler(Thing thing) {
+    public LiquidCheckHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        oldProps = thing.getProperties();
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -91,8 +94,10 @@ public class LiquidCheckHandler extends BaseThingHandler {
                             logger.error("The object commandResponse is null!");
                         }
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.error("This went wrong in handleCommand: {}", e.toString());
+                } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
+                    logger.error("This went wrong in handleCommand: {}", e.getMessage());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
                 updateState(channelUID, OnOffType.OFF);
             }
@@ -102,17 +107,18 @@ public class LiquidCheckHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(LiquidCheckConfiguration.class);
+        oldProps = thing.getProperties();
 
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
         scheduler.execute(() -> {
 
-            LiquidCheckHttpClient httpClient = new LiquidCheckHttpClient(config);
-            boolean thingReachable = httpClient.isConnected();
+            this.client = new LiquidCheckHttpClient(config, httpClient);
+            boolean thingReachable = this.client.isConnected();
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                PollingForData pollingRunnable = new PollingForData(httpClient);
+                PollingForData pollingRunnable = new PollingForData(this.client);
                 polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
                         TimeUnit.SECONDS);
             } else {
@@ -148,9 +154,6 @@ public class LiquidCheckHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * 
-     */
     private class PollingForData implements Runnable {
 
         private final LiquidCheckHttpClient client;
@@ -190,9 +193,10 @@ public class LiquidCheckHandler extends BaseThingHandler {
                 } else {
                     logger.debug("Json is null");
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                logger.error("This went wrong: {}", e.toString());
+            } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }

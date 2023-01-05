@@ -31,27 +31,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liquidcheck.internal.json.CommData;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link LiquidCheckDiscoveryService} class defines common constants, which are
- * used across the whole binding.
+ * The {@link LiquidCheckDiscoveryService} class defines discovery service for the LiquidCheckBinding
  *
  * @author Marcel Goerentz - Initial contribution
  */
@@ -59,13 +65,15 @@ import com.google.gson.Gson;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.liquidcheck")
 public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 60;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 120;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private boolean isHostname = false;
+    private HttpClient httpClient;
 
-    public LiquidCheckDiscoveryService() {
+    @Activate
+    public LiquidCheckDiscoveryService(@Reference HttpClientFactory httpClientFactory) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
+        httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     /**
@@ -74,35 +82,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try {
-            List<InetAddress> addresses = getIPv4Adresses();
-            List<InetAddress> hosts = findActiveHosts(addresses);
-            HttpClient client = new HttpClient();
-            client.start();
-            for (InetAddress host : hosts) {
-                Request request = client.newRequest("http://" + host.getHostAddress() + "/infos.json");
-                request.followRedirects(false);
-                ContentResponse response = request.send();
-                if (response.getStatus() == 200) {
-                    CommData json = new Gson().fromJson(response.getContentAsString(), CommData.class);
-                    if (null != json) {
-                        if (InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50)) {
-                            isHostname = true;
-                        }
-                        buildDiscoveryResult(json);
-                    } else {
-                        logger.debug("Response Object is null!");
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            logger.debug("Socket Exception {}", e.toString());
-        } catch (UnknownHostException e) {
-            logger.debug("UnknownHostException {}", e.toString());
-        } catch (IOException e) {
-            logger.debug("IOException {}", e.toString());
-        } catch (Exception e) {
-            logger.debug("Exception {}", e.toString());
+            httpClient.start();
+        } catch (Exception exception) {
+            logger.debug("Couldn't start client: {}", exception.getMessage());
         }
+        scheduler.execute(liquidCheckDiscoveryRunnable());
     }
 
     /**
@@ -110,6 +94,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected synchronized void stopScan() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Couldn't stop client: ", e.getMessage());
+        }
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
@@ -123,7 +112,43 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                startScan();
+                try {
+                    List<InetAddress> addresses = getIPv4Adresses();
+                    List<InetAddress> hosts = findActiveHosts(addresses);
+                    for (InetAddress host : hosts) {
+                        Request request = httpClient.newRequest("http://" + host.getHostAddress() + "/infos.json")
+                                .method(HttpMethod.GET).followRedirects(false);
+                        try {
+                            ContentResponse response = request.send();
+                            if (response.getStatus() == 200) {
+                                CommData json = null;
+                                try {
+                                    json = new Gson().fromJson(response.getContentAsString(), CommData.class);
+                                } catch (JsonSyntaxException e) {
+                                    logger.debug("Json Syntax Exception!");
+                                }
+                                if (null != json) {
+                                    if (InetAddress.getByName(json.payload.wifi.station.hostname).isReachable(50)) {
+                                        buildDiscoveryResult(json, true);
+                                    } else {
+                                        buildDiscoveryResult(json, false);
+                                    }
+                                } else {
+                                    logger.debug("Response Object is null!");
+                                }
+                            }
+                        } catch (TimeoutException e) {
+                            logger.debug("TimeOut!");
+                        } catch (ExecutionException e) {
+                            logger.debug("ExecutionException!");
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+
+                    }
+                } catch (IOException e) {
+                    logger.debug("Message: {}", e.getMessage());
+                }
             }
         };
         return runnable;
@@ -165,13 +190,15 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
     private List<InetAddress> findActiveHosts(List<InetAddress> addresses) throws UnknownHostException, IOException {
         List<InetAddress> hosts = new ArrayList<>();
         for (InetAddress inetAddress : addresses) {
-            String[] adresStrings = inetAddress.getHostAddress().split("[.]");
-            String subnet = adresStrings[0] + "." + adresStrings[1] + "." + adresStrings[2];
+            String[] adressStrings = inetAddress.getHostAddress().split("[.]");
+            String subnet = adressStrings[0] + "." + adressStrings[1] + "." + adressStrings[2];
             int timeout = 50;
             for (int i = 1; i < 255; i++) {
                 String host = subnet + "." + i;
-                if (InetAddress.getByName(host).isReachable(timeout)) {
-                    hosts.add(InetAddress.getByName(host));
+                if (!inetAddress.getHostAddress().equals(host)) {
+                    if (InetAddress.getByName(host).isReachable(timeout)) {
+                        hosts.add(InetAddress.getByName(host));
+                    }
                 }
             }
         }
@@ -183,10 +210,11 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * 
      * @param response
      */
-    private void buildDiscoveryResult(CommData response) {
+    private void buildDiscoveryResult(CommData response, Boolean isHostname) {
         ThingUID thingUID = new ThingUID(THING_TYPE_LIQUID_CHECK, response.payload.device.uuid);
-        DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID).withProperties(createPropertyMap(response))
-                .withLabel(response.payload.device.name).build();
+        DiscoveryResult dResult = DiscoveryResultBuilder.create(thingUID)
+                .withProperties(createPropertyMap(response, isHostname)).withLabel(response.payload.device.name)
+                .build();
         thingDiscovered(dResult);
     }
 
@@ -196,7 +224,7 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      * @param response
      * @return A map with the properties
      */
-    private Map<String, Object> createPropertyMap(CommData response) {
+    private Map<String, Object> createPropertyMap(CommData response, Boolean isHostname) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.payload.device.firmware);
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, response.payload.device.hardware);

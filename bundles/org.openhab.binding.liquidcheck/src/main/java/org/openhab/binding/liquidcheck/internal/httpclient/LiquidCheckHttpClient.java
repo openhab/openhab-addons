@@ -13,6 +13,7 @@
 package org.openhab.binding.liquidcheck.internal.httpclient;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,19 +46,10 @@ public class LiquidCheckHttpClient {
      * 
      * @param config
      */
-    public LiquidCheckHttpClient(LiquidCheckConfiguration config) {
+    public LiquidCheckHttpClient(LiquidCheckConfiguration config, HttpClient client) {
         this.config = config;
-        client = new HttpClient();
-
-        try {
-            client.setFollowRedirects(false);
-            client.setName("LiquidCheckHttpClient");
-            client.setIdleTimeout(config.connecionTimeout * 1000);
-            client.start();
-        } catch (Exception e) {
-            logger.error("Couldn't start Client! Exception: {}", e.toString());
-            return;
-        }
+        this.client = client;
+        startClient();
     }
 
     /**
@@ -70,8 +62,8 @@ public class LiquidCheckHttpClient {
      */
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/infos.json";
-        Request request = client.newRequest(uri);
-        request.method(HttpMethod.GET);
+        Request request = client.newRequest(uri).method(HttpMethod.GET)
+                .timeout(config.connecionTimeout, TimeUnit.SECONDS).followRedirects(false);
         ContentResponse response = request.send();
         return response.getContentAsString();
     }
@@ -95,6 +87,14 @@ public class LiquidCheckHttpClient {
         return response.getContentAsString();
     }
 
+    public void startClient() {
+        try {
+            client.start();
+        } catch (Exception e) {
+            logger.debug("Couldn't start client: {}", e.getMessage());
+        }
+    }
+
     /**
      * The isConnected method will return the state of the http client
      * 
@@ -103,17 +103,5 @@ public class LiquidCheckHttpClient {
     public boolean isConnected() {
         String state = this.client.getState();
         return "STARTED".equals(state) ? true : false;
-    }
-
-    /**
-     * The close method will close the http client
-     */
-    public void close() {
-        this.isClosed = true;
-        try {
-            this.client.stop();
-        } catch (Exception e) {
-            logger.error("Couldn't close HttpClient! Exception: {}", e.toString());
-        }
     }
 }

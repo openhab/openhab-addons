@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link LiquidCheckSystem} is used for serializing and deserializing of JSONs.
- * It contains the errer counter, the uptime and the pump class.
+ * It contains the error counter, the uptime and the pump class.
  *
  * @author Marcel Goerentz - Initial contribution
  */

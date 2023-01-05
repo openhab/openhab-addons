@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.liquidcheck.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,5 +48,5 @@ public class LiquidCheckBindingConstants {
     public static final String PROPERTY_HOSTNAME = "hostname";
     public static final String PROPERTY_SSID = "ssid";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIQUID_CHECK);
 }
