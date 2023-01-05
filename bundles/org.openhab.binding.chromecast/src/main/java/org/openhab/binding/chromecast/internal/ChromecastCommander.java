@@ -278,8 +278,13 @@ public class ChromecastCommander {
             }
             statusUpdater.updateStatus(ThingStatus.ONLINE);
         } catch (final IOException e) {
-            logger.debug("Failed playing media: {}", e.getMessage());
-            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+            if ("Unable to load media".equals(e.getMessage())) {
+                logger.warn("Unable to load media: {}", url);
+            } else {
+                logger.debug("Failed playing media: {}", e.getMessage());
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR,
+                        "IOException while trying to play media: " + e.getMessage());
+            }
         }
     }
 }
