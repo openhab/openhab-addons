@@ -36,7 +36,7 @@ The thing has a few configuration parameters:
 ### Schedule Configuration
 
 The heating and cooling program schedules that persist on the thermostat can be configured by the binding.
-Click the Show Advanced checkbox on the Thing configuration page to display the schedule.
+Click the 'Show advanced' checkbox on the Thing configuration page to display the schedule.
 For both the heating and cooling programs, the 7-day repeating schedule has 4 setpoint periods per day (Morning, Day, Evening, Night).
 In order for the heating or cooling program to be valid, all time and setpoint fields must be populated.
 The time is expressed in 24-hour (HH:mm) format and the time value for each successive period within a day must be greater than the previous period.

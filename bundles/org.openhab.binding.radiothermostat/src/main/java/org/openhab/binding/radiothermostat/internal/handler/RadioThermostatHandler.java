@@ -157,7 +157,6 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         try {
             heatProgramJson = thermostatSchedule.getHeatProgramJson();
-            logger.debug("heat program: {}", heatProgramJson);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-heating-program");
@@ -166,7 +165,6 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         try {
             coolProgramJson = thermostatSchedule.getCoolProgramJson();
-            logger.debug("cool program: {}", coolProgramJson);
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-cooling-program");
@@ -230,7 +228,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
         if (clockSyncJob == null || clockSyncJob.isCancelled()) {
             clockSyncJob = null;
-            this.clockSyncJob = scheduler.scheduleWithFixedDelay(this::syncThermostatClock, 1, 60, TimeUnit.MINUTES);
+            this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -247,9 +245,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             thermDayOfWeek += 7;
         }
 
-        connector.sendCommand(null, null,
+        final String response = connector.sendCommand(null, null,
                 String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
                 TIME_RESOURCE);
+
+        // if sync call was successful run again in one hour, if un-successful try again in one minute
+        this.clockSyncJob = scheduler.schedule(this::syncThermostatClock, (response.contains("success") ? 60 : 1),
+                TimeUnit.MINUTES);
     }
 
     /**
