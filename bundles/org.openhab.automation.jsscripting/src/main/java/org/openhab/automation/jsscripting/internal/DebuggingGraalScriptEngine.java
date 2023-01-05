@@ -39,6 +39,9 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     @Override
     public Exception afterThrowsInvocation(Exception e) {
         Throwable cause = e.getCause();
+        if (cause instanceof IllegalArgumentException) {
+            STACK_LOGGER.error("Failed to execute script:", e);
+        }
         if (cause instanceof PolyglotException) {
             STACK_LOGGER.error("Failed to execute script:", cause);
         }

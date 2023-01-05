@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BondException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     private boolean wasBridgeSetOffline;
 
     public BondException(String message) {

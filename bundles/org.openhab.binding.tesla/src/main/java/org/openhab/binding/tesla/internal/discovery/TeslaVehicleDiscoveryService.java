@@ -81,31 +81,15 @@ public class TeslaVehicleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void vehicleFound(Vehicle vehicle, VehicleConfig vehicleConfig) {
-        ThingTypeUID type = identifyModel(vehicleConfig);
+        ThingTypeUID type = vehicleConfig == null ? TeslaBindingConstants.THING_TYPE_VEHICLE
+                : vehicleConfig.identifyModel();
         if (type != null) {
+            logger.debug("Found a {} vehicle", type.getId());
             ThingUID thingUID = new ThingUID(type, handler.getThing().getUID(), vehicle.vin);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.display_name)
                     .withBridge(handler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
                     .build();
             thingDiscovered(discoveryResult);
-        }
-    }
-
-    private ThingTypeUID identifyModel(VehicleConfig vehicleConfig) {
-        logger.debug("Found a {} vehicle", vehicleConfig.car_type);
-        switch (vehicleConfig.car_type) {
-            case "models":
-            case "models2":
-                return TeslaBindingConstants.THING_TYPE_MODELS;
-            case "modelx":
-                return TeslaBindingConstants.THING_TYPE_MODELX;
-            case "model3":
-                return TeslaBindingConstants.THING_TYPE_MODEL3;
-            case "modely":
-                return TeslaBindingConstants.THING_TYPE_MODELY;
-            default:
-                logger.debug("Found unknown vehicle type '{}' - ignoring it.", vehicleConfig.car_type);
-                return null;
         }
     }
 }

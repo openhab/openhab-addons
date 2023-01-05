@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InfoParser {
-    private static final Logger logger = LoggerFactory.getLogger(InfoParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfoParser.class);
 
     private InfoParser() {
     }
@@ -92,7 +92,7 @@ public class InfoParser {
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding error in '{}'", value, e);
+            LOGGER.warn("Unsupported encoding error in '{}'", value, e);
             return value;
         }
     }

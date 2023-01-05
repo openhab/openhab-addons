@@ -38,7 +38,8 @@ class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
         switch (prefix) {
             case MAC:
                 return device.getMac();
+            default:
+                return null;
         }
-        return null;
     }
 }

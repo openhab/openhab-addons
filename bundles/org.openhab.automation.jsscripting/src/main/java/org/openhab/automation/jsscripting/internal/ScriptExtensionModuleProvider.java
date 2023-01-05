@@ -27,7 +27,7 @@ import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAutomationManager;
 
 /**
- * Class providing script extensions via CommonJS modules.
+ * Class providing script extensions via CommonJS modules (with module name `@runtime`).
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread

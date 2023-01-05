@@ -18,7 +18,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -121,19 +120,27 @@ public abstract class AM43Command {
     }
 
     public byte[] getRequest() {
-        byte[] value = ArrayUtils.EMPTY_BYTE_ARRAY;
-        value = ArrayUtils.add(value, HEADER_PREFIX);
-        value = ArrayUtils.add(value, header);
-        value = ArrayUtils.add(value, (byte) data.length);
-        value = ArrayUtils.addAll(value, data);
-        value = ArrayUtils.add(value, createChecksum(value));
-        return ArrayUtils.addAll(REQUEST_PREFIX, value);
+        byte[] value = new byte[4 + data.length + REQUEST_PREFIX.length];
+        System.arraycopy(REQUEST_PREFIX, 0, value, 0, REQUEST_PREFIX.length);
+        value[REQUEST_PREFIX.length] = HEADER_PREFIX;
+        value[REQUEST_PREFIX.length + 1] = header;
+        value[REQUEST_PREFIX.length + 2] = (byte) data.length;
+        System.arraycopy(data, 0, value, REQUEST_PREFIX.length + 3, data.length);
+        value[value.length - 1] = createChecksum(value, REQUEST_PREFIX.length, 3 + data.length);
+        return value;
     }
 
-    protected byte createChecksum(byte[] data) {
-        // this is a basic checksum
-        byte crc = data[0];
-        for (int i = 1; i < data.length; i++) {
+    /**
+     * A basic method to calculate the checksum
+     * 
+     * @param data source for the checksum calculation
+     * @param startIndex the zero-based start index to include in the calculation
+     * @param length the length of the range to include in the calculation
+     * @return the CRC-checksum result in {@link byte}
+     */
+    protected byte createChecksum(byte[] data, int startIndex, int length) {
+        byte crc = data[startIndex];
+        for (int i = startIndex + 1; i < startIndex + length; i++) {
             crc ^= data[i];
         }
         return crc;

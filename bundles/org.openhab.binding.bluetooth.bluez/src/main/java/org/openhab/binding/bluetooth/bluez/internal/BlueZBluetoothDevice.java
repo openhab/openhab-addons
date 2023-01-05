@@ -131,14 +131,14 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             try {
                 dev.getAdapter().removeDevice(dev.getRawDevice());
             } catch (DBusException ex) {
-                if (ex.getMessage().contains("Does Not Exist")) {
-                    // this happens when the underlying device has already been removed
-                    // but we don't have a way to check if that is the case beforehand so
-                    // we will just eat the error here.
-                } else {
+                String exceptionMessage = ex.getMessage();
+                if (exceptionMessage == null || exceptionMessage.contains("Does Not Exist")) {
                     logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
                             ex.getMessage());
                 }
+                // this codeblock will only be hit when the underlying device has already
+                // been removed but we don't have a way to check if that is the case beforehand
+                // so we will just eat the error here.
             } catch (RuntimeException ex) {
                 // try to catch any other exceptions
                 logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
@@ -169,7 +169,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     // Have to double check because sometimes, exception but still worked
                     logger.debug("Got a timeout - but sometimes happen. Is Connected ? {}", dev.isConnected());
                     if (Boolean.FALSE.equals(dev.isConnected())) {
-
                         notifyListeners(BluetoothEventType.CONNECTION_STATE,
                                 new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
                         return false;
@@ -182,7 +181,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 } catch (Exception e) {
                     logger.warn("error occured while trying to connect", e);
                 }
-
             } else {
                 logger.debug("Device was already connected");
                 // we might be stuck in another state atm so we need to trigger a connected in this case
@@ -278,9 +276,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             try {
                 c.startNotify();
             } catch (DBusException e) {
-                if (e.getMessage().contains("Already notifying")) {
+                String exceptionMessage = e.getMessage();
+                if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
                     return null;
-                } else if (e.getMessage().contains("In Progress")) {
+                } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
                     // let's retry in half a second
                     throw new RetryException(500, TimeUnit.MILLISECONDS);
                 } else {
@@ -524,9 +523,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             try {
                 c.stopNotify();
             } catch (DBusException e) {
-                if (e.getMessage().contains("Already notifying")) {
+                String exceptionMessage = e.getMessage();
+                if (exceptionMessage != null && exceptionMessage.contains("Already notifying")) {
                     return null;
-                } else if (e.getMessage().contains("In Progress")) {
+                } else if (exceptionMessage != null && exceptionMessage.contains("In Progress")) {
                     // let's retry in half a second
                     throw new RetryException(500, TimeUnit.MILLISECONDS);
                 } else {

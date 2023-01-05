@@ -307,6 +307,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     /**
+     * Sets the CommandExecutor of this handler
+     *
+     */
+    public void setCommandExecutor(@Nullable CommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
+    }
+
+    /**
      * Returns the Session this handler has opened
      *
      * @return the Session this handler has opened
