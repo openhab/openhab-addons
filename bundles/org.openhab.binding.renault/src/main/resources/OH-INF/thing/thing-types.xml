@@ -208,6 +208,7 @@
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>Locked status of the car</description>
+		<category>Lock</category>
 		<state readOnly="true"/>
 	</channel-type>
 
