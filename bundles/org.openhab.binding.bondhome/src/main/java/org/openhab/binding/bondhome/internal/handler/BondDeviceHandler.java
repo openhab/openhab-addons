@@ -206,19 +206,19 @@ public class BondDeviceHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_RAW_FAN_SPEED:
-                logger.trace("Fan raw speed command");
                 if (command instanceof DecimalType) {
                     value = ((DecimalType) command).intValue();
                     BondDeviceProperties devProperties = this.deviceProperties;
                     if (devProperties != null) {
-                        if (value == 0) {
+                        if (value < 1) {
+                            // Interpret any 0 or less value as a request to turn off
                             action = BondDeviceAction.TURN_OFF;
                             value = null;
                         } else {
                             action = BondDeviceAction.SET_SPEED;
                             value = Math.min(value, devProperties.maxSpeed);
                         }
-                        logger.trace("Fan raw speed command with speed set as {}", value);
+                        logger.trace("Fan raw speed command with speed set as {}, action as {}", value, action);
                         api.executeDeviceAction(deviceId, action, value);
                     }
                 } else {
@@ -642,7 +642,6 @@ public class BondDeviceHandler extends BaseThingHandler {
             fanOn = updateState.fpfanPower != 0;
             updateState(CHANNEL_FAN_POWER, fanOn ? OnOffType.OFF : OnOffType.ON);
             updateState(CHANNEL_FAN_SPEED, new PercentType(updateState.fpfanSpeed));
-            updateState(CHANNEL_RAW_FAN_SPEED, new DecimalType(updateState.fpfanSpeed));
         } else {
             fanOn = updateState.power != 0;
             int value = 1;
