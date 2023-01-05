@@ -48,7 +48,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
-| lockstatus             | String             | Lock status of the car                          | Yes       |
+| locked                 | Switch             | Locked status of the car                        | Yes       |
 
 ## Limitations
 
@@ -82,7 +82,7 @@ sitemap renaultcar label="Renault Car" {
         Default icon="pressure" item=RenaultCar_Odometer
         Selection icon="switch" item=RenaultCar_HVACStatus mappings=[ON="ON"]
         Setpoint icon="temperature" item=RenaultCar_HVACTargetTemperature maxValue=21 minValue=19 step=1
-        Default icon="lock" item=RenaultCar_LockStatus
+        Default icon="lock" item=RenaultCar_Locked
         Default item=RenaultCar_LocationUpdate
         Default icon="zoom" item=RenaultCar_Location
     }

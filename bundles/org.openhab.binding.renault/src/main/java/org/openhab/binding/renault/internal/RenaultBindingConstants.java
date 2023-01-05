@@ -43,7 +43,7 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_LOCATION_UPDATED = "locationupdated";
-    public static final String CHANNEL_LOCK_STATUS = "lockstatus";
+    public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_ODOMETER = "odometer";
     public static final String CHANNEL_PLUG_STATUS = "plugstatus";
 }

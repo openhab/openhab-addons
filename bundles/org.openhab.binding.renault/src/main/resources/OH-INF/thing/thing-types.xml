@@ -25,7 +25,7 @@
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
-			<channel id="lockstatus" typeId="lockstatus"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
 		<config-description>
 
@@ -204,17 +204,11 @@
 		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="lockstatus">
-		<item-type>String</item-type>
-		<label>Lock Status</label>
-		<description>Lock status of the car</description>
-		<state readOnly="true">
-			<options>
-				<option value="LOCKED">Locked</option>
-				<option value="UNLOCKED">Unlocked</option>
-				<option value="UNKNOWN">Unknown</option>
-			</options>
-		</state>
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Locked status of the car</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -44,6 +44,7 @@ import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplemented
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -353,9 +354,19 @@ public class RenaultHandler extends BaseThingHandler {
         if (!car.isDisableLockStatus()) {
             try {
                 httpSession.getLockStatus(car);
-                updateState(CHANNEL_LOCK_STATUS, new StringType(car.getLockStatus().name()));
+                switch (car.getLockStatus()) {
+                    case LOCKED:
+                        updateState(CHANNEL_LOCKED, OnOffType.ON);
+                        break;
+                    case UNLOCKED:
+                        updateState(CHANNEL_LOCKED, OnOffType.OFF);
+                        break;
+                    default:
+                        updateState(CHANNEL_LOCKED, UnDefType.UNDEF);
+                        break;
+                }
             } catch (RenaultNotImplementedException e) {
-                updateState(CHANNEL_LOCK_STATUS, UnDefType.UNDEF);
+                updateState(CHANNEL_LOCKED, UnDefType.UNDEF);
                 logger.warn("Disabling unsupported lock status update.");
                 car.setDisableLockStatus(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
