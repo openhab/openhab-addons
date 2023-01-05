@@ -158,20 +158,20 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
-        <category>Switch</category>
-        <tags>
-            <tag>Control</tag>
-            <tag>Switch</tag>
-        </tags>
+		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
 		<description>Plays a given URI</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<!--App Information -->
@@ -179,11 +179,11 @@
 		<item-type>Switch</item-type>
 		<label>Idling</label>
 		<description>Is Chromecast active or idling</description>
-        <category>Switch</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Switch</tag>
-        </tags>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -191,9 +191,9 @@
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>Name of the currently running application</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -201,9 +201,9 @@
 		<item-type>String</item-type>
 		<label>App Id</label>
 		<description>Id of the currently running application</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -211,9 +211,9 @@
 		<item-type>String</item-type>
 		<label>App Status</label>
 		<description>Status reported by the current application</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -222,11 +222,11 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
-        <category>Time</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Duration</tag>
-        </tags>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -234,11 +234,11 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
-        <category>Time</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Duration</tag>
-        </tags>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -247,9 +247,9 @@
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>The type of the currently playing media. One of GENERIC, MOVIE, TV_SHOW, AUDIO_TRACK, PHOTO</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GENERIC"/>
@@ -265,9 +265,9 @@
 		<item-type>String</item-type>
 		<label>Album Artist</label>
 		<description>The name of the album's artist</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -275,9 +275,9 @@
 		<item-type>String</item-type>
 		<label>Album Name</label>
 		<description>The name of the album</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -286,10 +286,10 @@
 		<label>Broadcast Date</label>
 		<description>The broadcast date of the currently playing media</description>
 		<category>Calendar</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Timestamp</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -297,9 +297,9 @@
 		<item-type>String</item-type>
 		<label>Composer</label>
 		<description>The composer of the current track</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -308,10 +308,10 @@
 		<label>Creation Date</label>
 		<description>The creation date of the currently playing media</description>
 		<category>Calendar</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Timestamp</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -319,9 +319,9 @@
 		<item-type>Number</item-type>
 		<label>Disc Number</label>
 		<description>The disc number of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -329,9 +329,9 @@
 		<item-type>Number</item-type>
 		<label>Episode Number</label>
 		<description>The episode number of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -353,9 +353,9 @@
 		<item-type>String</item-type>
 		<label>Location Name</label>
 		<description>The location of where the current media was taken</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -364,10 +364,10 @@
 		<label>Release Date</label>
 		<description>The release date of the currently playing media</description>
 		<category>Calendar</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Timestamp</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -375,9 +375,9 @@
 		<item-type>Number</item-type>
 		<label>Season Number</label>
 		<description>The season number of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -385,9 +385,9 @@
 		<item-type>String</item-type>
 		<label>Series Title</label>
 		<description>The series title of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -395,9 +395,9 @@
 		<item-type>String</item-type>
 		<label>Studio</label>
 		<description>The studio of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -405,9 +405,9 @@
 		<item-type>String</item-type>
 		<label>Subtitle</label>
 		<description>The subtitle of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -415,9 +415,9 @@
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>The track number of the currently playing media</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
