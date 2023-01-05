@@ -124,7 +124,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void cancelListenerJob() {      
+    private void cancelListenerJob() {
         ScheduledFuture<?> localListenerJob = this.listenerJob;
         if (localListenerJob != null) {
             logger.debug("Canceling discovery listener job");
