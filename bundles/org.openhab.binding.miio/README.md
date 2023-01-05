@@ -5011,18 +5011,18 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
 | filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
 | filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
-| alarm                | Switch               | Alarm - Alarm                            |            |
-| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
-| brightness           | Number               | Screen - Brightness                      | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
-| temperature_display_unit | Number               | Device Display Unit - Temperature Display Unit | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
-| motor_speed_rpm      | Number               | Custom Service - Motor Speed Rpm         |            |
-| favorite_speed       | Number               | Custom Service - Favorite Speed          |            |
-| motor_set_speed      | Number               | Custom Service - Motor Set Speed         |            |
-| favorite_level       | Number               | Custom Service - Favorite Level          |            |
-| bottom_door          | Switch               | Custom Service - Bottom Door             |            |
-| reboot_cause         | Number               | Custom Service - Reboot Cause            | Value mapping `["0"="REASON-HW-BOOT","1"="REASON-USER-REBOOT","2"="REASON-UPDATE","3"="REASON-WDT"]` |
-| manual_level         | Number               | Custom Service - Manual Level            | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| country_code         | Number               | Custom Service - Country Code            | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
+| alarm                | Switch               | Alarm                                    |            |
+| physical_controls_locked | Switch               | Physical Control Locked                  |            |
+| brightness           | Number               | Brightness                               | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
+| temperature_display_unit | Number               | Temperature Display Unit                 | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
+| motor_speed_rpm      | Number               | Motor Speed Rpm                          |            |
+| favorite_speed       | Number               | Favorite Speed                           |            |
+| motor_set_speed      | Number               | Motor Set Speed                          |            |
+| favorite_level       | Number               | Favorite Level                           |            |
+| bottom_door          | Switch               | Bottom Door                              |            |
+| reboot_cause         | Number               | Reboot Cause                             | Value mapping `["0"="REASON-HW-BOOT","1"="REASON-USER-REBOOT","2"="REASON-UPDATE","3"="REASON-WDT"]` |
+| manual_level         | Number               | Manual Level                             | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| country_code         | Number               | Country Code                             | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
 | filter_used_debug    | Number:Time          | Filter Time - Filter Used Debug          |            |
 | purify_volume        | Number               | Aqi - Purify Volume                      |            |
 | average_aqi          | Number               | Aqi - Average Aqi                        |            |
@@ -11175,18 +11175,18 @@ Number pm10_density "Environment - PM10 Density" (G_airp) {channel="miio:basic:a
 Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
 Number:Time filter_used_time "Filter - Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
 Number:Time filter_left_time "Filter - Filter Left Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
-Switch alarm "Alarm - Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
-Number brightness "Screen - Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
-Number temperature_display_unit "Device Display Unit - Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
-Number motor_speed_rpm "Custom Service - Motor Speed Rpm" (G_airp) {channel="miio:basic:airp:motor_speed_rpm"}
-Number favorite_speed "Custom Service - Favorite Speed" (G_airp) {channel="miio:basic:airp:favorite_speed"}
-Number motor_set_speed "Custom Service - Motor Set Speed" (G_airp) {channel="miio:basic:airp:motor_set_speed"}
-Number favorite_level "Custom Service - Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
-Switch bottom_door "Custom Service - Bottom Door" (G_airp) {channel="miio:basic:airp:bottom_door"}
-Number reboot_cause "Custom Service - Reboot Cause" (G_airp) {channel="miio:basic:airp:reboot_cause"}
-Number manual_level "Custom Service - Manual Level" (G_airp) {channel="miio:basic:airp:manual_level"}
-Number country_code "Custom Service - Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
+Switch alarm "Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
+Switch physical_controls_locked "Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
+Number brightness "Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
+Number temperature_display_unit "Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
+Number motor_speed_rpm "Motor Speed Rpm" (G_airp) {channel="miio:basic:airp:motor_speed_rpm"}
+Number favorite_speed "Favorite Speed" (G_airp) {channel="miio:basic:airp:favorite_speed"}
+Number motor_set_speed "Motor Set Speed" (G_airp) {channel="miio:basic:airp:motor_set_speed"}
+Number favorite_level "Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
+Switch bottom_door "Bottom Door" (G_airp) {channel="miio:basic:airp:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airp) {channel="miio:basic:airp:reboot_cause"}
+Number manual_level "Manual Level" (G_airp) {channel="miio:basic:airp:manual_level"}
+Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 Number:Time filter_used_debug "Filter Time - Filter Used Debug" (G_airp) {channel="miio:basic:airp:filter_used_debug"}
 Number purify_volume "Aqi - Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
 Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:average_aqi"}

@@ -358,7 +358,7 @@
 				"property": "alarm",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
+				"friendlyName": "Alarm",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -373,7 +373,7 @@
 				"property": "physical-controls-locked",
 				"siid": 8,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"friendlyName": "Physical Control Locked",
 				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
@@ -388,7 +388,7 @@
 				"property": "brightness",
 				"siid": 13,
 				"piid": 2,
-				"friendlyName": "Screen - Brightness",
+				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Number",
 				"stateDescription": {
@@ -420,7 +420,7 @@
 				"property": "temperature-display-unit",
 				"siid": 14,
 				"piid": 1,
-				"friendlyName": "Device Display Unit - Temperature Display Unit",
+				"friendlyName": "Temperature Display Unit",
 				"channel": "temperature_display_unit",
 				"type": "Number",
 				"stateDescription": {
@@ -448,7 +448,7 @@
 				"property": "motor-speed-rpm",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Custom Service - Motor Speed Rpm",
+				"friendlyName": "Motor Speed Rpm",
 				"channel": "motor_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
@@ -465,7 +465,7 @@
 				"property": "favorite-speed",
 				"siid": 9,
 				"piid": 2,
-				"friendlyName": "Custom Service - Favorite Speed",
+				"friendlyName": "Favorite Speed",
 				"channel": "favorite_speed",
 				"type": "Number",
 				"stateDescription": {
@@ -486,7 +486,7 @@
 				"property": "motor-set-speed",
 				"siid": 9,
 				"piid": 4,
-				"friendlyName": "Custom Service - Motor Set Speed",
+				"friendlyName": "Motor Set Speed",
 				"channel": "motor_set_speed",
 				"type": "Number",
 				"stateDescription": {
@@ -503,7 +503,7 @@
 				"property": "favorite-level",
 				"siid": 9,
 				"piid": 5,
-				"friendlyName": "Custom Service - Favorite Level",
+				"friendlyName": "Favorite Level",
 				"channel": "favorite_level",
 				"type": "Number",
 				"stateDescription": {
@@ -524,7 +524,7 @@
 				"property": "bottom-door",
 				"siid": 9,
 				"piid": 6,
-				"friendlyName": "Custom Service - Bottom Door",
+				"friendlyName": "Bottom Door",
 				"channel": "bottom_door",
 				"type": "Switch",
 				"stateDescription": {
@@ -537,7 +537,7 @@
 				"property": "reboot-cause",
 				"siid": 9,
 				"piid": 8,
-				"friendlyName": "Custom Service - Reboot Cause",
+				"friendlyName": "Reboot Cause",
 				"channel": "reboot_cause",
 				"type": "Number",
 				"stateDescription": {
@@ -569,7 +569,7 @@
 				"property": "manual-level",
 				"siid": 9,
 				"piid": 9,
-				"friendlyName": "Custom Service - Manual Level",
+				"friendlyName": "Manual Level",
 				"channel": "manual_level",
 				"type": "Number",
 				"stateDescription": {
@@ -601,7 +601,7 @@
 				"property": "country-code",
 				"siid": 9,
 				"piid": 10,
-				"friendlyName": "Custom Service - Country Code",
+				"friendlyName": "Country Code",
 				"channel": "country_code",
 				"type": "Number",
 				"stateDescription": {
