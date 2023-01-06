@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -160,5 +161,10 @@ public class DummyHomekitAccessory implements HomekitAccessory {
     @Override
     public CompletableFuture<String> getFirmwareRevision() {
         return CompletableFuture.completedFuture("none");
+    }
+
+    @Override
+    public Collection<Service> getServices() {
+        return services;
     }
 }
