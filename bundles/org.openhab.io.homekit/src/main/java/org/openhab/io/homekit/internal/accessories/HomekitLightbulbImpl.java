@@ -26,6 +26,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LightbulbAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.LightbulbService;
 
@@ -37,8 +38,9 @@ import io.github.hapjava.services.impl.LightbulbService;
 class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements LightbulbAccessory {
 
     public HomekitLightbulbImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
