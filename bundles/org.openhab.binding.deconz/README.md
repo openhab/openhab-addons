@@ -229,7 +229,7 @@ The `lightgroup` thing supports thing actions for managing scenes:
 | `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                     |
 | `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                              |
 
-The return value refers to a key of the given name within the returned Map. See [example](#thing-actions).
+The return value refers to a key of the given name within the returned Map. See [example](#thing-actions-example).
 
 ## Full Example
 
@@ -280,7 +280,7 @@ then
 end
 ```
 
-### Thing Actions
+### Thing Actions Example
 
 ```js
 deconzActions = actions.get("deconz", "deconz:lightgroup:00212E040ED9:5");
