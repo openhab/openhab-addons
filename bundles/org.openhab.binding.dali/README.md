@@ -82,5 +82,6 @@ Bridge dali:daliserver:237dbae7 "Daliserver" [ host="localhost", port=55825] {
 ```java
 Dimmer WarmWhiteLivingRoom "Warm White Living Room"  {channel="dali:device:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:dimImmediately"}
 Color ColorLivingRoom "Light Color Living Room"  {channel="dali:device:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:color"}
+Number:Temperature ColorTemperatureLivingRoom "Light Color Temperature Living Room [%d K]"  {channel="dali:device:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:color-temperature-abs"}
 Switch LightsLivingRoom "Lights Living Room On/Off"  {channel="dali:device:237dbae7:31da8dac-8e09-455a-bc7a-6ed70f740001:dimImmediately"}
 ```

@@ -85,19 +85,19 @@ Thing lifx:colorirlight:porch [ host="10.120.130.4", fadetime=0 ]
 
 All devices support some of the following channels:
 
-| Channel Type ID    | Item Type | Description                                                                                                                                                      | Thing Types                                                                  |
-|--------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| abstemperature     | Number    | This channel supports adjusting the color temperature in Kelvin.                                                                                                 | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
-| abstemperaturezone | Number    | This channel supports adjusting the zone color temperature in Kelvin.                                                                                            | colormzlight                                                                 |
-| brightness         | Dimmer    | This channel supports adjusting the brightness value.                                                                                                            | whitelight                                                                   |
-| color              | Color     | This channel supports full color control with hue, saturation and brightness values.                                                                             | colorlight, colorhevlight, colorirlight, colormzlight, tilelight             |
-| colorzone          | Color     | This channel supports full zone color control with hue, saturation and brightness values.                                                                        | colormzlight                                                                 |
-| effect             | String    | This channel represents a type of light effect (e.g. for tile light: off, morph, flame)                                                                          | tilelight                                                                    |
-| hevcycle           | Switch    | This channel supports starting and stopping the HEV clean cycle.                                                                                                 | colorhevlight                                                                |
-| infrared           | Dimmer    | This channel supports adjusting the infrared value. _Note:_ IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                                                 |
-| signalstrength     | Number    | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
-| temperature        | Dimmer    | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
-| temperaturezone    | Dimmer    | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                                                 |
+| Channel Type ID    | Item Type          | Description                                                                                                                                                      | Thing Types                                                                  |
+|--------------------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| abstemperature     | Number:Temperature | This channel supports adjusting the color temperature in Kelvin.                                                                                                 | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
+| abstemperaturezone | Number:Temperature | This channel supports adjusting the zone color temperature in Kelvin.                                                                                            | colormzlight                                                                 |
+| brightness         | Dimmer             | This channel supports adjusting the brightness value.                                                                                                            | whitelight                                                                   |
+| color              | Color              | This channel supports full color control with hue, saturation and brightness values.                                                                             | colorlight, colorhevlight, colorirlight, colormzlight, tilelight             |
+| colorzone          | Color              | This channel supports full zone color control with hue, saturation and brightness values.                                                                        | colormzlight                                                                 |
+| effect             | String             | This channel represents a type of light effect (e.g. for tile light: off, morph, flame)                                                                          | tilelight                                                                    |
+| hevcycle           | Switch             | This channel supports starting and stopping the HEV clean cycle.                                                                                                 | colorhevlight                                                                |
+| infrared           | Dimmer             | This channel supports adjusting the infrared value. _Note:_ IR capable lights only activate their infrared LEDs when the brightness drops below a certain level. | colorirlight                                                                 |
+| signalstrength     | Number             | This channel represents signal strength with values 0, 1, 2, 3 or 4; 0 being worst strength and 4 being best strength.                                           | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
+| temperature        | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                                             | colorlight, colorhevlight, colorirlight, colormzlight, tilelight, whitelight |
+| temperaturezone    | Dimmer             | This channel supports adjusting the zone color temperature from cold (0%) to warm (100%).                                                                        | colormzlight                                                                 |
 
 The _color_ and _brightness_ channels have a "Power On Brightness" configuration option that is used to determine the brightness when a light is switched on.
 When it is left empty, the brightness of a light remains unchanged when a light is switched on or off.
@@ -175,44 +175,44 @@ Thing lifx:whitelight:kitchen [ deviceId="D073D5D4D4D4", fadetime=150 ]
 // Living
 Color Living_Color { channel="lifx:colorlight:living:color" }
 Dimmer Living_Temperature { channel="lifx:colorlight:living:temperature" }
-Number Living_Abs_Temperature { channel="lifx:colorlight:living:abstemperature" }
+Number:Temperature Living_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living:abstemperature" }
 
 // Living2 (alternative approach)
 Color Living2_Color { channel="lifx:colorlight:living2:color" }
 Switch Living2_Switch { channel="lifx:colorlight:living2:color" }
 Dimmer Living2_Dimmer { channel="lifx:colorlight:living2:color" }
 Dimmer Living2_Temperature { channel="lifx:colorlight:living2:temperature" }
-Number Living2_Abs_Temperature { channel="lifx:colorlight:living2:abstemperature" }
+Number:Temperature Living2_Abs_Temperature "Living Room Lights Color Temperature [%d K]" { channel="lifx:colorlight:living2:abstemperature" }
 
 // Desk
 Color Desk_Color { channel="lifx:colorhevlight:desk:color" }
 Dimmer Desk_Temperature { channel="lifx:colorhevlight:desk:temperature" }
-Number Desk_Abs_Temperature { channel="lifx:colorhevlight:desk:abstemperature" }
+Number:Temperature Desk_Abs_Temperature "Desk Lamp Color Temperature [%d K]" { channel="lifx:colorhevlight:desk:abstemperature" }
 Switch Desk_HEV_Cycle { channel="lifx:colorhevlight:desk:hevcycle" }
 
 // Porch
 Color Porch_Color { channel="lifx:colorirlight:porch:color" }
 Dimmer Porch_Infrared { channel="lifx:colorirlight:porch:infrared" }
 Dimmer Porch_Temperature { channel="lifx:colorirlight:porch:temperature" }
-Number Porch_Abs_Temperature { channel="lifx:colorirlight:porch:abstemperature" }
+Number:Temperature Porch_Abs_Temperature "Porch Light Color Temperature [%d K]" { channel="lifx:colorirlight:porch:abstemperature" }
 Number Porch_Signal_Strength { channel="lifx:colorirlight:porch:signalstrength" }
 
 // Ceiling
 Color Ceiling_Color { channel="lifx:colormzlight:ceiling:color" }
 Dimmer Ceiling_Temperature { channel="lifx:colormzlight:ceiling:temperature" }
-Number Ceiling_Abs_Temperature { channel="lifx:colormzlight:ceiling:abstemperature" }
+Number:Temperature Ceiling_Abs_Temperature "Ceiling Light Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperature" }
 Color Ceiling_Color_Zone_0 { channel="lifx:colormzlight:ceiling:colorzone0" }
 Dimmer Ceiling_Temperature_Zone_0 { channel="lifx:colormzlight:ceiling:temperaturezone0" }
-Number Ceiling_Abs_Temperature_Zone_0 { channel="lifx:colormzlight:ceiling:abstemperaturezone0" }
+Number:Temperature Ceiling_Abs_Temperature_Zone_0 "Ceiling Light 0 Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperaturezone0" }
 Color Ceiling_Color_Zone_15 { channel="lifx:colormzlight:ceiling:colorzone15" }
 Dimmer Ceiling_Temperature_Zone_15 { channel="lifx:colormzlight:ceiling:temperaturezone15" }
-Number Ceiling_Abs_Temperature_Zone_15 { channel="lifx:colormzlight:ceiling:abstemperaturezone15" }
+Number:Temperature Ceiling_Abs_Temperature_Zone_15 "Ceiling Light 15 Color Temperature [%d K]" { channel="lifx:colormzlight:ceiling:abstemperaturezone15" }
 
 // Kitchen
 Switch Kitchen_Toggle { channel="lifx:whitelight:kichen:brightness" }
 Dimmer Kitchen_Brightness { channel="lifx:whitelight:kitchen:brightness" }
 Dimmer Kitchen_Temperature { channel="lifx:whitelight:kitchen:temperature" }
-Number Kitchen_Abs_Temperature { channel="lifx:whitelight:kitchen:abstemperature" }
+Number:Temperature Kitchen_Abs_Temperature "Kitchen Light Color Temperature [%d K]" { channel="lifx:whitelight:kitchen:abstemperature" }
 ```
 
 ### demo.sitemap:

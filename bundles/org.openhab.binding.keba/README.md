@@ -74,7 +74,7 @@ Number:ElectricCurrent    KebaI3                                                
 Number:ElectricPotential  KebaU1                                                          {channel="keba:kecontact:1:U1"}
 Number:ElectricPotential  KebaU2                                                          {channel="keba:kecontact:1:U2"}
 Number:ElectricPotential  KebaU3                                                          {channel="keba:kecontact:1:U3"}
-Number:Power              KebaPower             "Energy during current session [%.1f Wh]" {channel="keba:kecontact:1:power"}
+Number:Power              KebaPower             "Energy during current session [%.1f W]"  {channel="keba:kecontact:1:power"}
 Number:Energy             KebaSessionEnergy                                               {channel="keba:kecontact:1:sessionconsumption"}
 Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:1:totalconsumption"}
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:1:input"}

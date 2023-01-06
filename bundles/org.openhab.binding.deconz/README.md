@@ -1,6 +1,6 @@
-# Dresden Elektronik deCONZ Binding
+# deCONZ Binding
 
-The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
+The Zigbee binding currently does not support the Dresden Elektronik Raspbee and ConBee Zigbee dongles.
 The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
 deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee devices.
 

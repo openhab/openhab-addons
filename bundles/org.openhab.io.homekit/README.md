@@ -51,7 +51,7 @@ HomeKit integration supports following accessory types:
   
   ![settings_qrcode.png](doc/settings_qrcode.png)
   
-- open home app on your iPhone or iPad
+- open Home app on your iPhone or iPad
 - create new home
   
   ![ios_add_new_home.png](doc/ios_add_new_home.png)
@@ -68,7 +68,7 @@ HomeKit integration supports following accessory types:
   
   ![ios_add_anyway.png](doc/ios_add_anyway.png)
   
-- follow the instruction of the home app wizard
+- follow the instruction of the Home app wizard
   
   ![ios_add_accessory_wizard.png](doc/ios_add_accessory_wizard.png)
   
@@ -133,7 +133,7 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 
-If the first word of the item name match the room name in home app, home app will hide it. 
+If the first word of the item name match the room name in Home app, Home app will hide it.
 E.g. item with the name "Kitchen Light" will be shown in "Kitchen" room as "Light". This is recommended naming convention for HomeKit items and rooms.
 
 ### UI based Configuration
@@ -166,12 +166,6 @@ In order to add metadata to an item:
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
 
-You can link one openHAB item to one or more HomeKit accessory, e.g.
-
-```xtend
-Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
-```
-
 The tag can be:
 
 - full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
@@ -196,32 +190,117 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
-In this case, you can assign HomeKit accessory type to the group and to the group items
-Following example defines 3 HomeKit accessories of type Lighting:
+### Complex Multiple Service Accessories
 
-- "Light 1" and "Light 2" as independent lights
-- "Light Group" that controls "Light 1" and "Light 2" as group
+Alternatively, you may want to have a choice of controlling the items individually, OR as a group, from HomeKit.
+The following examples defines a single HomeKit accessory _with multiple services_ that the Home app will allow you to control together, or drill down and control individually.
+Note that `AccessoryGroup` doesn't expose any services itself, but allows you to group other services together underneath it.
+Also note that when nesting accessories, you cannot use the shorthand of naming only a characteristic, and not its accessory type, since it would be ambiguous if that item belongs to a secondary service, or to the primary service it's nested under.
+
+```java
+Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="AccessoryGroup"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
+```
+
+![Group of Lights](doc/group_of_lights.png)
+
+You can also group additional accessories directly under another accessory.
+In this example, HomeKit will show three separate light controls.
+As this is somewhat confusing that Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory, this is not a recommended configuration.
 
 ```xtend
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
-Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
-Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting"}
 ```
+
+![Light Group With Additional Lights](doc/group_of_lights_group_plus_lights.png)
+
+You can also mix and match accessories:
+
+```java
+Group gFan {homekit="Fan"}
+Switch fan1 "Fan" (gFan) {homekit="Fan.Active"}
+Switch fan1_light "Fan Light" (gFan) {homekit="Lighting"}
+```
+
+![Fan With Light](doc/fan_with_light.png)
+
+Another way to build complex accessories is to associate multiple accessory types with the root group, and then define all of the individual characteristics on group members.
+When using this style, you cannot have multiple instance of the same accessory type.
+
+```java
+Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
+Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
+Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
+Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}
+```
+
+or in MainUI:
+
+![ui_fan_with_light_group_view.png](doc/ui_fan_with_light_group_view.png)
+![ui_fan_with_light_group_code.png](doc/ui_fan_with_light_group_code.png)
+![ui_fan_with_light_group_config.png](doc/ui_fan_with_light_group_config.png)
+
+Finally, you can link one openHAB item to one or more HomeKit accessories, as well:
+
+```java
+Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
+```
+
+You can even form complex sensors this way.
+Just be sure that you fully specify additional characteristics, so that the addon knows which root service to add it to.
+
+```java
+Group eBunkAirthings "Bunk Room Airthings Wave Plus" { homekit="AirQualitySensor,TemperatureSensor,HumiditySensor" }
+
+String Bunk_AirQuality "Bunk Room Air Quality" (eBunkAirthings) { homekit="AirQualitySensor.AirQuality" }
+Number:Dimensionless Bunk_Humidity "Bunk Room Relative Humidity [%d %%]" (eBunkAirthings) { homekit="HumiditySensor.RelativeHumidity" }
+Number:Temperature Bunk_AmbTemp "Bunk Room Temperature [%.1f °F]" (eBunkAirthings) { homekit="TemperatureSensor.CurrentTemperature" }
+Number:Dimensionless Bunk_tVOC "Bunk Room tVOC [%d ppb]" (eBunkAirthings)  { homekit="AirQualitySensor.VOCDensity" [ maxValue=10000 ] }
+```
+
+A sensor with a battery configured in MainUI:
+
+![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
+
+The Home app uses the first accessory in a group as the icon for the group as a whole.
+E.g. an accessory defined as `homekit="Fan,Light"` will be shown as a fan and an accessory defined as `homekit="Light,Fan"` will be shown as a light in the Home app.
+You can also override the primary service by using adding `primary=<type>` to the HomeKit metadata configuration:
+
+```java
+Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary = "Fan"]}
+```
+
+on in MainUI:
+
+![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
+
+Unusual combinations are also possible, e.g. you can combine temperature sensor with blinds and light.
+
+It will be represented by the Home app as follows:
+
+![ios_complex_accessory_detail_screen.png](doc/ios_complex_accessory_detail_screen.png)
+
+Note that for sensors that aren't interactive, the Home app will show the constituent pieces in the room and home summaries, and you'll only be able to see the combined accessory when viewing the accessories associated with a particular bridge in the home settings:
+
+![Triple Air Sensor](doc/triple_air_sensor.png)
+![Triple Air Sensor Broken Out](doc/triple_air_sensor_broken_out.png)
 
 ## Dummy Accessories
 
 OpenHAB is a highly dynamic system, and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
-This is a problem for Homekit because if the bridge makes a connection, but accessories are missing, then the Homekit database will simply remove that accessory.
-When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or OpenHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
-In order to work around this, the Homekit addon can create dummy accessories for any accessory it has previously published to Homekit.
+This is a problem for HomeKit because if the bridge makes a connection, but accessories are missing, then the HomeKit database will simply remove that accessory.
+When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or openHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
+In order to work around this, the HomeKit addon can create dummy accessories for any accessory it has previously published to HomeKit.
 To enable this behavior, turn on the `useDummyAccessories` setting.
 OpenHAB will then simply present a non-interactive accessory for any that are missing.
-The OpenHAB log will also contain information whenever a dummy accessory is created.
+The openHAB log will also contain information whenever a dummy accessory is created.
 If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
 You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
 Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
-It's recommended that you resolve this state as soon as possible, since Homekit may decide your entire bridge is being uncooperative, and remove everything itself.
+It's recommended that you resolve this state as soon as possible, since HomeKit may decide your entire bridge is being uncooperative, and remove everything itself.
 If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
 In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
 Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the addon settings will have the same effect.
@@ -264,7 +343,7 @@ Examples:
 
 ### Color Temperature
 
-Color temperature can be represented various ways in OpenHAB. Given the base bulb configured like this:
+Color temperature can be represented various ways in openHAB. Given the base bulb configured like this:
 
 ```xtend
 Group gLight "CCT Light" { homekit="Lighting" }
@@ -528,79 +607,6 @@ Switch          motionsensor_tampered      "Motion Sensor Tampered"             
 or using UI
 
 ![sensor_ui_config.png](doc/sensor_ui_config.png)
-
-### Complex accessory
-
-Multiple HomeKit accessories can be combined to one accessory in order to group several functions provided by one or multiple physical devices. 
-
-For example, ceiling fans often include lighting functionality. Such fans can be modeled as:
-
-- two separate HomeKit accessories - fan **and** light. 
-  
-  iOS home app would show them as **two tiles** that can be controlled directly from home screen.
-  
-  ![ios_fan_and_light_home_screen.png](doc/ios_fan_and_light_home_screen.png)
-  
-- one complex accessory - fan **with** light. 
-  
-  iOS home app would show them as **one tile** that opens view with two controls
-  
-  ![ios_fan_with_light_home_screen.png](doc/ios_fan_with_light_home_screen.png)
-  
-  ![ios_fan_with_light_details.png](doc/ios_fan_with_light_details.png)
-
-The provided functionality is in both cases identical.
-
-In order to combine multiple accessories to one HomeKit accessory you need:
-
-- add corresponding openHAB items to one openHAB group
-- configure HomeKit metadata of both HomeKit accessories at that group. 
-
-e.g. configuration for a fan with light would look as follows
-
-```xtend
-Group           FanWithLight        "Fan with Light"                           {homekit = "Fan,Lighting"}
-Switch          FanActiveStatus     "Fan Active Status"     (FanWithLight)     {homekit = "Fan.ActiveStatus"}
-Number          FanRotationSpeed    "Fan Rotation Speed"    (FanWithLight)     {homekit = "Fan.RotationSpeed"}
-Switch          Light               "Light"                 (FanWithLight)     {homekit = "Lighting.OnState"}
-```
-
-or in mainUI
-![ui_fan_with_light_group_view.png](doc/ui_fan_with_light_group_view.png)
-![ui_fan_with_light_group_code.png](doc/ui_fan_with_light_group_code.png)
-![ui_fan_with_light_group_config.png](doc/ui_fan_with_light_group_config.png)
-
-
-iOS home app uses by default the type of the first accessory on the list for the tile on home screen. 
-e.g. an accessory defined as homekit = "Fan,Light" will be shown as a fan and an accessory defined as homekit = "Light,Fan" as a light in iOS home app.  
-
-if you want to change the tile you can either change the order of types in homekit metadata or add "primary=<type>" to HomeKit metadata configuration. 
-e.g. following configuration will force "fan" to be used as tile
-
-```xtend
-Group           FanWithLight        "Fan with Light"                           {homekit = "Light,Fan" [primary = "Fan"]}
-```
-
-![ui_fan_with_light_primary.png](doc/ui_fan_with_light_primary.png)
-
-Similarly, you can create a sensor with battery
-
-![ui_sensor_with_battery.png](doc/ui_sensor_with_battery.png)
-
-However, home app does not support changing of tiles for already added accessory. 
-If you want to change the tile after the accessory was added, you need either to rename the group, if you use textual item configuration, or to delete and to create a new group with a different name, if you use UI for configuration.
-
-You can combine more than two accessories as well as accessories linked to different physical devices. 
-You can also do unusually combinations, e.g. you can combine temperature sensor with blinds and light. 
-It will be represented by home app as follows
-
-![ios_complex_accessory_detail_screen.png](doc/ios_complex_accessory_detail_screen.png)
-
-
-#### Limitations
-
-Currently, it is not possible to combine multiple accessories of the same type, e.g. 2 lights. 
-Support for this is planned for the future release of openHAB HomeKit binding.
  
 ## Supported accessory type
 
@@ -655,7 +661,7 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 |                      |                             | TamperedStatus               | Switch, Contact               | Tampered status                                                                                                                                                                                                                                                                                                                                     |
 |                      |                             | BatteryLowStatus             | Switch, Contact, Number       | Battery status                                                                                                                                                                                                                                                                                                                                      |
 | LightSensor          |                             |                              |                               | Light sensor                                                                                                                                                                                                                                                                                                                                        |
-|                      | LightLevel                  |                              | Number                        | Light level in lux                                                                                                                                                                                                                                                                                                                                  |
+|                      | LightLevel                  |                              | Number                        | Light level in lux. supported configuration: minValue, maxValue.                                                                                                                                                                                                                                                                                    |
 |                      |                             | Name                         | String                        | Name of the sensor                                                                                                                                                                                                                                                                                                                                  |
 |                      |                             | ActiveStatus                 | Switch, Contact               | Working status                                                                                                                                                                                                                                                                                                                                      |
 |                      |                             | FaultStatus                  | Switch, Contact               | Fault status                                                                                                                                                                                                                                                                                                                                        |
@@ -698,28 +704,28 @@ Support for this is planned for the future release of openHAB HomeKit binding.
 |                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized door                                                                                                                                                                                                                                                                                                                   |
 |                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                                                                      |
 |                      |                             | Name                         | String                        | Name of the motorized door                                                                                                                                                                                                                                                                                                                          |
-|                      |                             | HoldPosition                 | Switch                        | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                                                                          |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
 |                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
 | Window               |                             |                              |                               | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                                                                  |
 |                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of motorized window                                                                                                                                                                                                                                                                                                                |
 |                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of motorized window                                                                                                                                                                                                                                                                                                                 |
 |                      | PositionState               |                              | Rollershutter, String         | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                                                                      |
 |                      |                             | Name                         | String                        | Name of the motorized window                                                                                                                                                                                                                                                                                                                        |
-|                      |                             | HoldPosition                 | Switch                        | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                                                                          |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
 |                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
 | WindowCovering       |                             |                              |                               | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                                                          |
 |                      | CurrentPosition             |                              | Rollershutter, Dimmer, Number | Current position of window covering                                                                                                                                                                                                                                                                                                                 |
 |                      | TargetPosition              |                              | Rollershutter, Dimmer, Number | Target position of window covering                                                                                                                                                                                                                                                                                                                  |
 |                      | PositionState               |                              | Rollershutter, String         | Currently only "STOPPED" is supported.                                                                                                                                                                                                                                                                                                              |
 |                      |                             | Name                         | String                        | Name of the windows covering                                                                                                                                                                                                                                                                                                                        |
-|                      |                             | HoldPosition                 | Switch                        | Window covering should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                                                                         |
+|                      |                             | HoldPosition                 | Switch, Rollershutter         | Motorized door should stop at its current position. ON is sent to Switch items. STOP is sent to Rollershutter items. Only supported by 3rd party Home apps (such as Elgato Eve)                                                                                                                                                                     |
 |                      |                             | ObstructionStatus            | Switch, Contact, Dimmer       | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                                                                 |
 |                      |                             | CurrentHorizontalTiltAngle   | Number, Dimmer                | Number Item = current angle of horizontal slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. A value of -90 indicates that the slats are rotated all the way in a direction where the user-facing edge is higher than the window-facing edge. Dimmer Item =  the percentage of openness (0%-100%) |
 |                      |                             | TargetHorizontalTiltAngle    | Number, Dimmer                | Number Item = target angle of horizontal slats (-90 to +90). Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                    |
 |                      |                             | CurrentVerticalTiltAngle     | Number, Dimmer                | Number Item = current angle of vertical slats (-90 to +90) . Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                    |
 |                      |                             | TargetVerticalTiltAngle      | Number, Dimmer                | Number Item = target angle of vertical slats. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                                                                                                                   |
 | Slat                 |                             |                              |                               | Slat which tilts on a vertical or a horizontal axis. Configuration "type:horizontal" or "type:vertical"                                                                                                                                                                                                                                             |
-|                      | CurrentSlatState            |                             | String                        | Current slat state. possible values (FIXED,SWINGING,JAMMED). Custom mapping can be defined at item level, e.g. [JAMMED="JAM", FIXED="FIX"]                                                                                                                                                                                                           |
+|                      | CurrentSlatState            |                              | String                        | Current slat state. possible values (FIXED,SWINGING,JAMMED). Custom mapping can be defined at item level, e.g. [JAMMED="JAM", FIXED="FIX"]                                                                                                                                                                                                           |
 |                      |                             | Name                         | String                        | Name of the slat                                                                                                                                                                                                                                                                                                                                    |
 |                      |                             | SwingMode                    | Number, Switch                | Swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                                                                       |
 |                      |                             | CurrentTiltAngle             | Number, Dimmer                | Number Item = current angle of slats. values -90 to 90. A value of 0 indicates that the slats are rotated to a fully open position. Dimmer Item =  the percentage of openness (0%-100%)                                                                                                                                                             |
@@ -908,9 +914,9 @@ Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C
 
 ## Multiple Instances
 
-Homekit has a limitation of 150 accessories per bridge.
+HomeKit has a limitation of 150 accessories per bridge.
 The bridge itself counts as an accessory, so in practice it's 149.
-In order to overcome this limitation, you can instruct OpenHAB to expose multiple bridges to Homekit, and then manually assign specific accessories to different instances.
+In order to overcome this limitation, you can instruct openHAB to expose multiple bridges to HomeKit, and then manually assign specific accessories to different instances.
 You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
 In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
 
@@ -994,3 +1000,46 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
 - if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
+
+### Re-adding the openHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
+
+There are various reasons this may happen.
+Try the following:
+
+* In [openhab-cli](https://www.openhab.org/docs/administration/console.html), run `openhab:homekit clearPairings`.
+Try again.
+* In the HomeKit settings, change the port, setupId, and pin.
+Save the settings, then re-open the settings so as to refresh the QR code.
+Re-add the device.
+* Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
+Restart openHAB.
+Reboot iPhone.
+Try again.
+
+### A stale HomeKit accessory will not go away after deleting the related item.
+
+You probably have `useDummyAccessories` enabled in the openHAB HomeKit settings.
+See the [Dummy Accessories](#dummy-accessories) section in the help, above.
+
+### I added an accessory as the wrong type in Home, and updating the item configuration does not cause the change to reflect in the Home app
+
+HomeKit remembers certain configurations about an accessory, from its name to its fundamental type (i.e. fan, light or
+switch?).
+If you added it incorrectly, simply updating the item type will not cause Home to update the type.
+To resolve:
+
+1) If using text configuration: Comment out the HomeKit metadata for an accessory.
+If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
+
+2) If you have `useDummyAccessories` enabled, open the
+[openhab-cli](https://www.openhab.org/docs/administration/console.html).
+Run `openhab:homekit listDummyAccessories` and
+confirm your item is in the list.
+Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
+
+3) Kill your Home app on your iOS device.
+Re-open it, and confirm that the accessory is gone.
+
+4) Uncomment the HomeKit metadata or re-add it via the UI.
+
+5) You should now see the updated configuration for your accessory.
