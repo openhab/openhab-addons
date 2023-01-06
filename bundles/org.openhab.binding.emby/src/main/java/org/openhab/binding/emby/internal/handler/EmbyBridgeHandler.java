@@ -189,7 +189,6 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     }
 
     private void checkConfiguration() throws ConfigValidationException {
-        // logger.debug("Checking configuration on thing {}", this.getThing().getUID().getAsString());
         Configuration testConfig = this.getConfig();
         String testApi = (String) testConfig.get(API_KEY);
         String testIpAddress = (String) testConfig.get(HOST_PARAMETER);
@@ -249,6 +248,5 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
     @Override
     public void dispose() {
         connection.close();
-        // connectionCheckerFuture.cancel(true);
     }
 }
