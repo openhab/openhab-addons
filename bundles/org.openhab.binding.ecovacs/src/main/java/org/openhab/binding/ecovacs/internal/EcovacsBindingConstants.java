@@ -39,11 +39,14 @@ public class EcovacsBindingConstants {
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
 
     // List of all channel UIDs
+    public static final String CHANNEL_ID_AUTO_EMPTY = "settings#auto-empty";
     public static final String CHANNEL_ID_BATTERY_LEVEL = "status#battery";
     public static final String CHANNEL_ID_CLEANING_MODE = "status#current-cleaning-mode";
     public static final String CHANNEL_ID_CLEANING_TIME = "status#current-cleaning-time";
     public static final String CHANNEL_ID_CLEANED_AREA = "status#current-cleaned-area";
+    public static final String CHANNEL_ID_CLEANING_PASSES = "settings#cleaning-passes";
     public static final String CHANNEL_ID_CLEANING_SPOT_DEFINITION = "status#current-cleaning-spot-definition";
+    public static final String CHANNEL_ID_CONTINUOUS_CLEANING = "settings#continuous-cleaning";
     public static final String CHANNEL_ID_COMMAND = "actions#command";
     public static final String CHANNEL_ID_DUST_FILTER_LIFETIME = "consumables#dust-filter-lifetime";
     public static final String CHANNEL_ID_ERROR_CODE = "status#error-code";
@@ -60,6 +63,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_TOTAL_CLEANING_TIME = "total-stats#total-cleaning-time";
     public static final String CHANNEL_ID_TOTAL_CLEANED_AREA = "total-stats#total-cleaned-area";
     public static final String CHANNEL_ID_TOTAL_CLEAN_RUNS = "total-stats#total-clean-runs";
+    public static final String CHANNEL_ID_TRUE_DETECT_3D = "settings#true-detect-3d";
     public static final String CHANNEL_ID_VOICE_VOLUME = "settings#voice-volume";
     public static final String CHANNEL_ID_WATER_PLATE_PRESENT = "status#water-system-present";
     public static final String CHANNEL_ID_WATER_AMOUNT = "settings#water-amount";

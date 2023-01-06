@@ -41,9 +41,12 @@ public enum DeviceCapability {
     AUTO_EMPTY_STATION,
     @SerializedName("read_network_info")
     READ_NETWORK_INFO,
+    @SerializedName("true_detect_3d")
+    TRUE_DETECT_3D,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,
     EXTENDED_CLEAN_SPEED_CONTROL,
-    EXTENDED_CLEAN_LOG_RECORD
+    EXTENDED_CLEAN_LOG_RECORD,
+    DEFAULT_CLEAN_COUNT_SETTING
 }

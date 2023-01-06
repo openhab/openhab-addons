@@ -155,6 +155,76 @@
     },
 
     {
+        "modelName": "DEEBOT N8",
+        "deviceClass": "n6cwdb",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "custom_area_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "mapping"
+        ]
+    },
+    {
+        "modelName": "DEEBOT N3 MAX",
+        "deviceClass": "jffnlf",
+        "deviceClassLink": "n6cwdb"
+    },
+    {
+        "modelName": "DEEBOT N7",
+        "deviceClass": "r5zxjr",
+        "deviceClassLink": "n6cwdb"
+    },
+    {
+        "modelName": "DEEBOT N8",
+        "deviceClass": "r5y7re",
+        "deviceClassLink": "n6cwdb"
+    },
+    {
+        "modelName": "DEEBOT N8",
+        "deviceClass": "ty84oi",
+        "deviceClassLink": "n6cwdb"
+    },
+    {
+        "modelName": "DEEBOT N8",
+        "deviceClass": "36xnxf",
+        "deviceClassLink": "n6cwdb"
+    },
+    {
+        "modelName": "DEEBOT N8 Neo",
+        "deviceClass": "z0gd1j",
+        "deviceClassLink": "n6cwdb"
+    },
+
+    {
+        "modelName": "DEEBOT N8+",
+        "deviceClass": "b2jqs4",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "custom_area_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "auto_empty_station",
+            "mapping"
+        ]
+    },
+    {
+        "modelName": "DEEBOT N8+",
+        "deviceClass": "7bryc5",
+        "deviceClassLink": "b2jqs4"
+    },
+
+    {
         "modelName": "DEEBOT OZMO T8",
         "deviceClass": "h18jkh",
         "protoVersion": "json_v2",
@@ -167,6 +237,7 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "true_detect_3d",
             "mapping"
         ]
     },
@@ -226,36 +297,6 @@
         "deviceClassLink": "h18jkh"
     },
     {
-        "modelName": "DEEBOT N3 MAX",
-        "deviceClass": "jffnlf",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N7",
-        "deviceClass": "r5zxjr",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N8",
-        "deviceClass": "n6cwdb",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N8",
-        "deviceClass": "r5y7re",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N8",
-        "deviceClass": "ty84oi",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N8",
-        "deviceClass": "36xnxf",
-        "deviceClassLink": "h18jkh"
-    },
-    {
         "modelName": "DEEBOT N8 PRO",
         "deviceClass": "snxbvc",
         "deviceClassLink": "h18jkh"
@@ -263,16 +304,6 @@
     {
         "modelName": "DEEBOT N8 PRO",
         "deviceClass": "yu362x",
-        "deviceClassLink": "h18jkh"
-    },
-    {
-        "modelName": "DEEBOT N8 PRO+",
-        "deviceClass": "85as7h",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT N8 Neo",
-        "deviceClass": "z0gd1j",
         "deviceClassLink": "h18jkh"
     },
 
@@ -340,17 +371,12 @@
     },
     {
         "modelName": "DEEBOT N8 PRO+",
+        "deviceClass": "85as7h",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT N8 PRO+",
         "deviceClass": "ifbw08",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT N8+",
-        "deviceClass": "7bryc5",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT N8+",
-        "deviceClass": "b2jqs4",
         "deviceClassLink": "fqxoiu"
     },
     {

@@ -78,9 +78,13 @@ it is automatically removed from the given thing.
 | total-stats#total-cleaning-time         | Number:Time          | The total time spent cleaning during the device life time | Yes       | Polling    |          |
 | total-stats#total-cleaned-area          | Number:Area          | The total area cleaned during the device life time        | Yes       | Polling    |          |
 | total-stats#total-clean-runs            | Number               | The total number of clean runs in the device life time    | Yes       | Polling    |          |
-| settings#suction-power                  | String               | The power level used during cleaning                      | No        | Polling    | [9]      |
-| settings#voice-volume                   | Dimmer               | The voice volume level in percent                         | No        | Polling    | [10]     |
-| settings#water-amount                   | String               | The amount of water to be used when mopping               | No        | Polling    | [11]     |
+| settings#auto-empty                     | Switch               | Whether dust bin auto empty to station is enabled         | No        | Polling    | [9]      |
+| settings#cleaning-passes                | Number               | Number of cleaning passes to be used (1 or 2)             | No        | Polling    | [10]     |
+| settings#continuous-cleaning            | Switch               | Whether unfinished cleaning resumes after charging        | No        | Polling    |          |
+| settings#suction-power                  | String               | The power level used during cleaning                      | No        | Polling    | [11]     |
+| settings#true-detect-3d                 | Switch               | Whether True Detect 3D is enabled                         | No        | Polling    | [12]     |
+| settings#voice-volume                   | Dimmer               | The voice volume level in percent                         | No        | Polling    | [13]     |
+| settings#water-amount                   | String               | The amount of water to be used when mopping               | No        | Polling    | [14]     |
 
 Remarks:
 
@@ -92,9 +96,12 @@ Remarks:
 - [6] Only present if device has a mopping system
 - [7] Only present on newer generation devices (Deebot OZMO 950 and newer)
 - [8] Only present if device has a main brush
-- [9] Only present if device can control power level. Possible values vary by device: 'normal' and 'high' are always supported, 'silent' and 'higher' are supported for some models
-- [10] Only present if device has voice reporting
-- [11] Only present if device has a mopping system. Possible values include 'low', 'medium', 'high' and 'veryhigh'
+- [9] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string 'trigger' (to trigger immediate auto empty)
+- [10] Only present on newer generation devices (Deebot N8/T8 or newer)
+- [11] Only present if device can control power level. Possible values vary by device: 'normal' and 'high' are always supported, 'silent' and 'higher' are supported for some models
+- [12] Only present if device supports True Detect 3D
+- [13] Only present if device has voice reporting
+- [14] Only present if device has a mopping system. Possible values include 'low', 'medium', 'high' and 'veryhigh'
 
 ## Command Channel Actions
 

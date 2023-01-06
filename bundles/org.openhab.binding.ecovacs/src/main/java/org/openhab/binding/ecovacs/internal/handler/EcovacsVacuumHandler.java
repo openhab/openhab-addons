@@ -36,24 +36,33 @@ import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
 import org.openhab.binding.ecovacs.internal.api.commands.AbstractNoResponseCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.CustomAreaCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.EmptyDustbinCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetBatteryInfoCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetChargeStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetCleanStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetComponentLifeSpanCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.GetContinuousCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.GetDefaultCleanPassesCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.GetDustbinAutoEmptyCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetErrorCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetMoppingWaterAmountCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetNetworkInfoCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetSuctionPowerCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetTotalStatsCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetTotalStatsCommand.TotalStats;
+import org.openhab.binding.ecovacs.internal.api.commands.GetTrueDetectCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetVolumeCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetWaterSystemPresentCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GoChargingCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PauseCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.ResumeCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SetContinuousCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SetDefaultCleanPassesCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SetDustbinAutoEmptyCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetMoppingWaterAmountCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetSuctionPowerCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SetTrueDetectCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetVolumeCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SpotAreaCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.StartAutoCleaningCommand;
@@ -124,6 +133,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private @Nullable CleanMode lastActiveCleanMode;
     private Optional<String> lastDownloadedCleanMapUrl = Optional.empty();
     private long lastSuccessfulPollTimestamp;
+    private int lastDefaultCleaningPasses = 1;
 
     public EcovacsVacuumHandler(Thing thing, TranslationProvider i18Provider, LocaleProvider localeProvider,
             EcovacsDynamicStateDescriptionProvider stateDescriptionProvider) {
@@ -176,6 +186,25 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     device.sendCommand(new SetMoppingWaterAmountCommand(amount));
                     return;
                 }
+            } else if (channel.equals(CHANNEL_ID_AUTO_EMPTY)) {
+                if (command instanceof OnOffType) {
+                    device.sendCommand(new SetDustbinAutoEmptyCommand(command == OnOffType.ON));
+                    return;
+                } else if (command instanceof StringType && command.toString().equals("trigger")) {
+                    device.sendCommand(new EmptyDustbinCommand());
+                    return;
+                }
+            } else if (channel.equals(CHANNEL_ID_TRUE_DETECT_3D) && command instanceof OnOffType) {
+                device.sendCommand(new SetTrueDetectCommand(command == OnOffType.ON));
+                return;
+            } else if (channel.equals(CHANNEL_ID_CONTINUOUS_CLEANING) && command instanceof OnOffType) {
+                device.sendCommand(new SetContinuousCleaningCommand(command == OnOffType.ON));
+                return;
+            } else if (channel.equals(CHANNEL_ID_CLEANING_PASSES) && command instanceof DecimalType) {
+                int passes = ((DecimalType) command).intValue();
+                device.sendCommand(new SetDefaultCleanPassesCommand(passes));
+                lastDefaultCleaningPasses = passes; // if we get here, the command was executed successfully
+                return;
             }
             logger.debug("{}: Ignoring unsupported device command {} for channel {}", getDeviceSerial(), command,
                     channel);
@@ -404,6 +433,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (!device.hasCapability(DeviceCapability.READ_NETWORK_INFO)) {
             hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_WIFI_RSSI);
         }
+        if (!device.hasCapability(DeviceCapability.AUTO_EMPTY_STATION)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_AUTO_EMPTY);
+        }
+        if (!device.hasCapability(DeviceCapability.TRUE_DETECT_3D)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_TRUE_DETECT_3D);
+        }
+        if (!device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
+            hasChanges |= removeUnsupportedChannel(builder, CHANNEL_ID_CLEANING_PASSES);
+        }
 
         if (hasChanges) {
             updateThing(builder.build());
@@ -544,6 +582,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             updateState(CHANNEL_ID_TOTAL_CLEANING_TIME, new QuantityType<>(totalStats.totalRuntime, Units.SECOND));
             updateState(CHANNEL_ID_TOTAL_CLEAN_RUNS, new DecimalType(totalStats.cleanRuns));
 
+            boolean continuousCleaningEnabled = device.sendCommand(new GetContinuousCleaningCommand());
+            updateState(CHANNEL_ID_CONTINUOUS_CLEANING, continuousCleaningEnabled ? OnOffType.ON : OnOffType.OFF);
+
             List<CleanLogRecord> cleanLogRecords = device.getCleanLogs();
             if (!cleanLogRecords.isEmpty()) {
                 CleanLogRecord record = cleanLogRecords.get(0);
@@ -590,6 +631,19 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 if (netInfo.wifiRssi != 0) {
                     updateState(CHANNEL_ID_WIFI_RSSI, new QuantityType<>(netInfo.wifiRssi, Units.DECIBEL_MILLIWATTS));
                 }
+            }
+
+            if (device.hasCapability(DeviceCapability.AUTO_EMPTY_STATION)) {
+                boolean autoEmptyEnabled = device.sendCommand(new GetDustbinAutoEmptyCommand());
+                updateState(CHANNEL_ID_AUTO_EMPTY, autoEmptyEnabled ? OnOffType.ON : OnOffType.OFF);
+            }
+            if (device.hasCapability(DeviceCapability.TRUE_DETECT_3D)) {
+                boolean trueDetectEnabled = device.sendCommand(new GetTrueDetectCommand());
+                updateState(CHANNEL_ID_TRUE_DETECT_3D, trueDetectEnabled ? OnOffType.ON : OnOffType.OFF);
+            }
+            if (device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
+                lastDefaultCleaningPasses = device.sendCommand(new GetDefaultCleanPassesCommand());
+                updateState(CHANNEL_ID_CLEANING_PASSES, new DecimalType(lastDefaultCleaningPasses));
             }
 
             int sideBrushPercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.SIDE_BRUSH));
@@ -692,7 +746,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (command.startsWith(CMD_SPOT_AREA) && device.hasCapability(DeviceCapability.SPOT_AREA_CLEANING)) {
             String[] splitted = command.split(":");
             if (splitted.length == 2 || splitted.length == 3) {
-                int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : 1;
+                int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : lastDefaultCleaningPasses;
                 List<String> roomIds = new ArrayList<>();
                 for (String id : splitted[1].split(";")) {
                     // We let the user pass in letters as in Ecovacs' app, but the API wants indices
@@ -714,7 +768,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             String[] splitted = command.split(":");
             if (splitted.length == 2 || splitted.length == 3) {
                 String coords = splitted[1];
-                int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : 1;
+                int passes = splitted.length == 3 && "x2".equals(splitted[2]) ? 2 : lastDefaultCleaningPasses;
                 String[] splittedAreaDef = coords.split(";");
                 if (splittedAreaDef.length == 4) {
                     return new CustomAreaCleaningCommand(String.join(",", splittedAreaDef), passes);

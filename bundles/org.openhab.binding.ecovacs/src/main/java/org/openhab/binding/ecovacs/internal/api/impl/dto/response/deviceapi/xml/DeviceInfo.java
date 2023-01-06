@@ -75,6 +75,15 @@ public class DeviceInfo {
         return 0;
     }
 
+    public static boolean parseEnabledStateInfo(String xml) throws DataParsingException {
+        String value = XPathUtils.getFirstXPathMatch(xml, "//@on").getNodeValue();
+        try {
+            return Integer.valueOf(value) != 0;
+        } catch (NumberFormatException e) {
+            throw new DataParsingException(e);
+        }
+    }
+
     private static Optional<Integer> nodeValueToInt(String xml, String attrName) throws DataParsingException {
         try {
             return XPathUtils.getFirstXPathMatchOpt(xml, "//ctl/@" + attrName)

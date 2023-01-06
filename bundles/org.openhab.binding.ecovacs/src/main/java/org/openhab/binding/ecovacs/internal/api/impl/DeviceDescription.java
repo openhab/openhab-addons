@@ -56,5 +56,8 @@ public class DeviceDescription {
             capabilities.add(DeviceCapability.EDGE_CLEANING);
             capabilities.add(DeviceCapability.SPOT_CLEANING);
         }
+        if (protoVersion == ProtocolVersion.JSON_V2) {
+            capabilities.add(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING);
+        }
     }
 }
