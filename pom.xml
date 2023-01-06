@@ -425,6 +425,7 @@ Import-Package: \\
               <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
+              <exclude>**/3rdparty/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/pom.xml</exclude>
               <exclude>_*.java</exclude>
