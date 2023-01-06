@@ -93,6 +93,6 @@
 		<item-type>Image</item-type>
 		<label>Album Cover</label>
 		<description>Cover of the current album</description>
-		<state readOnly="tre"/>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
