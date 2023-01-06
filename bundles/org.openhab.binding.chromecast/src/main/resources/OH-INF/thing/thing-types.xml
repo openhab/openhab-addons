@@ -159,19 +159,12 @@
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Switch</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>
 		<description>Plays a given URI</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 	</channel-type>
 
 	<!--App Information -->
@@ -180,10 +173,6 @@
 		<label>Idling</label>
 		<description>Is Chromecast active or idling</description>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Switch</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -191,9 +180,6 @@
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>Name of the currently running application</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -201,9 +187,6 @@
 		<item-type>String</item-type>
 		<label>App Id</label>
 		<description>Id of the currently running application</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -211,9 +194,6 @@
 		<item-type>String</item-type>
 		<label>App Status</label>
 		<description>Status reported by the current application</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -375,9 +355,6 @@
 		<item-type>Number</item-type>
 		<label>Season Number</label>
 		<description>The season number of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -385,9 +362,6 @@
 		<item-type>String</item-type>
 		<label>Series Title</label>
 		<description>The series title of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -395,9 +369,6 @@
 		<item-type>String</item-type>
 		<label>Studio</label>
 		<description>The studio of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -405,9 +376,6 @@
 		<item-type>String</item-type>
 		<label>Subtitle</label>
 		<description>The subtitle of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -415,9 +383,6 @@
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>The track number of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
