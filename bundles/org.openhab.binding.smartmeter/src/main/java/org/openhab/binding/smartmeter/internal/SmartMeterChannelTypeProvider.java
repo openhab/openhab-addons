@@ -64,7 +64,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
 
     @Override
     public void errorOccurred(Throwable e) {
-        // Nothing to do if there is an reading error...
+        // Nothing to do if there is a reading error...
     }
 
     @Override

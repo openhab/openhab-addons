@@ -1,7 +1,10 @@
-## Vito WIFI (https://github.com/openhab/openhab-addons/issues/9480#issuecomment-751335696)
+# Xtend Examples
+
+## Vito WIFI (<https://github.com/openhab/openhab-addons/issues/9480#issuecomment-751335696>)
 
 ### .things
-```
+
+```java
 Thing http:url:vitowifi "VitoWifi" @ "1stfloor" [baseURL="http://192.168.1.61/", commandMethod="POST", delay="1000", refresh="90", timeout="900"]   {
 
     Channels:
@@ -13,21 +16,21 @@ Thing http:url:vitowifi "VitoWifi" @ "1stfloor" [baseURL="http://192.168.1.61/",
 
 ### .items
 
-``` 
+```java
 Number Vito_ID                   "Vito_ID"           <switch>                (gHeating)                                              {channel="http:url:vitowifi:Channel_Vito_ID" ,   expire="5m"  }
 Number Vito_Mode                 "Vito_Mode"         <switch>                (gHeating)                                              {channel="http:url:vitowifi:Channel_Vito_Mode" ,   expire="5m"  }// 0= Off 1= WW 2= WW+heat 0x42 (66)=party
 Number Vito_OnOff                "ONOFF Switch"      <switch>                (gHeating)                                              {channel="http:url:vitowifi:Channel_Vito_OnOff" ,   expire="5m"  }   
 ```
 
-## Feinstaubsensor (https://community.openhab.org/t/http-binding-openhab-3-version/101851/235)
+## Feinstaubsensor (<https://community.openhab.org/t/http-binding-openhab-3-version/101851/235>)
 
-The http request http://feinstaubsensor-14255834/data.json is answering with a JSON string.
+The http request `http://feinstaubsensor-14255834/data.json` is answering with a JSON string.
 So I need some simple JSONPATH transformation and one java script transformation.
 Data is polled every 10 seconds.
 
 ### .things
 
-```
+```java
 Thing http:url:feinstaub "Feinstaub" [ baseURL="http://feinstaubsensor-14255834/data.json", refresh=10] {        
    Channels:            
       Type number : SDS_PM10 [ stateTransformation="JSONPATH:$.sensordatavalues[0].value" ]
@@ -40,7 +43,7 @@ Thing http:url:feinstaub "Feinstaub" [ baseURL="http://feinstaubsensor-14255834/
 
 ### .items
 
-```
+```java
 /* **************************
  * Feinstaub sensor data
  * ************************** */
@@ -55,7 +58,7 @@ Thing http:url:feinstaub "Feinstaub" [ baseURL="http://feinstaubsensor-14255834/
 
 I have a BME2080 sensor connected. The Humidity must be diveded by 100 to show hPa.
 
-```
+```javascript
 (function(x) {
     var json = JSON.parse(x);
     return json.sensordatavalues[3].value/100;

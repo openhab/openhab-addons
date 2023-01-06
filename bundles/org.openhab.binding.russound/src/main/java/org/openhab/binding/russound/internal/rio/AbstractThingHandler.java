@@ -61,7 +61,7 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
     /**
      * Get's the {@link AbstractRioProtocol} handler. May be null if none currently exists
      *
-     * @return a {@link AbstractRioProtocol} handler or null if none exists
+     * @return an {@link AbstractRioProtocol} handler or null if none exists
      */
     protected E getProtocolHandler() {
         return protocolHandler;

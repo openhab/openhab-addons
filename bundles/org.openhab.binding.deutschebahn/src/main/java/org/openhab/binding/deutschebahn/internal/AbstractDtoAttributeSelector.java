@@ -22,7 +22,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.JaxbEntity;
 import org.openhab.core.types.State;
 
 /**
- * Accessor for attribute value of an DTO-Object.
+ * Accessor for attribute value of a DTO-Object.
  * 
  * @author Sönke Küper - Initial contribution.
  *
@@ -41,7 +41,7 @@ public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, 
     private final Function<VALUE_TYPE, List<String>> valueToList;
 
     /**
-     * Creates an new {@link EventAttribute}.
+     * Creates a new {@link EventAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.

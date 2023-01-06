@@ -17,8 +17,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.DeletableStorage;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
@@ -30,11 +33,12 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Traunbauer - Initial contribution
  * @author Kai Kreuzer - Refactored it to use storage instead of file
  */
+@NonNullByDefault
 public class PresetContainer {
 
     private final Logger logger = LoggerFactory.getLogger(PresetContainer.class);
 
-    private HashMap<Integer, ContentItem> mapOfPresets;
+    private final Map<Integer, ContentItem> mapOfPresets = new HashMap<>();
     private Storage<ContentItem> storage;
 
     /**
@@ -42,11 +46,6 @@ public class PresetContainer {
      */
     public PresetContainer(Storage<ContentItem> storage) {
         this.storage = storage;
-        init();
-    }
-
-    private void init() {
-        this.mapOfPresets = new HashMap<>();
         readFromStorage();
     }
 
@@ -60,7 +59,7 @@ public class PresetContainer {
     }
 
     /**
-     * Adds a ContentItem as Preset, with presetID. Note that a eventually existing id in preset will be overwritten by
+     * Adds a ContentItem as Preset, with presetID. Note that an eventually existing id in preset will be overwritten by
      * presetID
      *
      * @param presetID
@@ -133,10 +132,12 @@ public class PresetContainer {
     }
 
     private void readFromStorage() {
-        Collection<ContentItem> items = storage.getValues();
+        Collection<@Nullable ContentItem> items = storage.getValues();
         for (ContentItem item : items) {
             try {
-                put(item.getPresetID(), item);
+                if (item != null) {
+                    put(item.getPresetID(), item);
+                }
             } catch (ContentItemNotPresetableException e) {
                 logger.debug("Item '{}' is not presetable - ignoring it.", item.getItemName());
             }

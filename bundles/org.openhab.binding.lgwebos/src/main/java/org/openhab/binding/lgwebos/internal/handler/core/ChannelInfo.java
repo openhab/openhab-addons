@@ -35,7 +35,7 @@ package org.openhab.binding.lgwebos.internal.handler.core;
 
 /**
  * {@link ChannelInfo} is a value object to describe a channel on WebOSTV.
- * The id value is mandatory when starting an channel. The channelName is a human readable friendly name, which is not
+ * The id value is mandatory when starting a channel. The channelName is a human readable friendly name, which is not
  * further interpreted by the TV.
  *
  * @author Hyun Kook Khang - Connect SDK initial contribution

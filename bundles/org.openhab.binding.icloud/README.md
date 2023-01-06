@@ -29,6 +29,12 @@ The account Thing, more precisely the account Bridge, represents one Apple iClou
 The account can be connected to multiple Apple devices which are represented as Things below the Bridge, see the example below.
 You may create multiple account Things for multiple accounts.
 
+If your Apple account has 2-factor-authentication enabled configuration requires two steps.
+First start by adding the Apple ID and password to your account thing configuration.
+You will receive a notification with a code on one of your Apple devices then.
+Add this code to the code parameter of the thing then and wait.
+The binding should be reinitialized and perform the authentication.
+
 ### Device Thing
 
 A device is identified by the device ID provided by Apple.
@@ -62,28 +68,28 @@ The following channels are available (if supported by the device):
 ### icloud.things
 
 ```php
-Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", refreshTimeInMinutes=5]
+Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", code="123456", refreshTimeInMinutes=5]
 {
     Thing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV"]
 }
 ```
 
 The device ID can be found in the Inbox after it has been discovered.
-The information *@ "World"* is optional.
+The information _@ "World"_ is optional.
 
 ### icloud.items
 
 ```php
 Group    iCloud_Group "iPhone"
 
-String   iPhone_BatteryStatus             "Battery Status [%s]" <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
-Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
-Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"           (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
-Switch   iPhone_Refresh                   "Force iPhone Refresh"             (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
-Location iPhone_Location                  "Coordinates"                      (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
-Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"    (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
+String   iPhone_BatteryStatus             "Battery Status [%s]"     <battery>   (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
+Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery>   (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
+Switch   iPhone_FindMyPhone               "Trigger Find My iPhone"              (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:findMyPhone", autoupdate="false"}
+Switch   iPhone_Refresh                   "Force iPhone Refresh"                (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location", autoupdate="false"}
+Location iPhone_Location                  "Coordinates"                         (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:location"}
+Number   iPhone_LocationAccuracy          "Coordinates Accuracy [%.0f m]"       (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationAccuracy"}
 DateTime iPhone_LocationLastUpdate        "Last Update [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:locationLastUpdate"}
-Switch   iPhone_Home                      "Phone Home"            <presence> (iCloud_Group)
+Switch   iPhone_Home                      "Phone Home"              <presence>  (iCloud_Group)
 ```
 
 ### icloud.sitemap

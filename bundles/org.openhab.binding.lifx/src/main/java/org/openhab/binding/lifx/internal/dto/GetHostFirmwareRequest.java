@@ -23,7 +23,6 @@ public class GetHostFirmwareRequest extends Packet {
     public static final int TYPE = 0x0E;
 
     public GetHostFirmwareRequest() {
-        setTagged(false);
         setAddressable(true);
         setResponseRequired(true);
     }

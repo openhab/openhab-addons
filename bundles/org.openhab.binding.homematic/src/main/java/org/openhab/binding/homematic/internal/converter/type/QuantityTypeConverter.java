@@ -104,6 +104,8 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
                 return new QuantityType<>(number, SIUnits.CELSIUS);
             case "V":
                 return new QuantityType<>(number, Units.VOLT);
+            case "% rH":
+            case "% rF":
             case "%":
                 return new QuantityType<>(number, Units.PERCENT);
             case "mHz":

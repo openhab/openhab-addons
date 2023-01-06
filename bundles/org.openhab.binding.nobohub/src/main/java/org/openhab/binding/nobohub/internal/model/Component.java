@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A Component in the Nobø Hub can be a oven, a floor or a switch.
+ * A Component in the Nobø Hub can be an oven, a floor or a switch.
  *
  * @author Jørgen Austvik - Initial contribution
  * @author Espen Fossen - Initial contribution

@@ -24,12 +24,12 @@ import org.openhab.core.types.Type;
 public interface TypeConverter<T extends State> {
 
     /**
-     * Converts a openHAB type to a Homematic value.
+     * Converts an openHAB type to a Homematic value.
      */
     public Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException;
 
     /**
-     * Converts a Homematic value to a openHAB type.
+     * Converts a Homematic value to an openHAB type.
      */
     public T convertFromBinding(HmDatapoint dp) throws ConverterException;
 }

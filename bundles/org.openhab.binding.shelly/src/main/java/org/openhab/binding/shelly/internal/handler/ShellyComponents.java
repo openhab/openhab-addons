@@ -91,8 +91,13 @@ public class ShellyComponents {
 
     public static boolean updateRelay(ShellyBaseHandler thingHandler, ShellySettingsStatus status, int id) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        ShellySettingsRelay rsettings = profile.settings.relays.get(id);
         ShellySettingsRelay relay = status.relays.get(id);
+        ShellySettingsRelay rsettings;
+        if (profile.settings.relays != null) {
+            rsettings = profile.settings.relays.get(id);
+        } else {
+            throw new IllegalArgumentException("No relay settings");
+        }
 
         boolean updated = false;
         if (relay.isValid == null || relay.isValid) {
@@ -105,25 +110,52 @@ public class ShellyComponents {
 
             updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT, getOnOff(relay.ison));
             updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(relay.hasTimer));
+            if (status.extSwitch != null) {
+                if (status.extSwitch.input0 != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_INPUT1,
+                            getInteger(status.extSwitch.input0.input) == 1 ? OpenClosedType.OPEN
+                                    : OpenClosedType.CLOSED);
+                }
+            }
             if (status.extTemperature != null) {
                 // Shelly 1/1PM support up to 3 external sensors
                 // for whatever reason those are not represented as an array, but 3 elements
                 if (status.extTemperature.sensor1 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP1,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP1,
                             toQuantityType(getDouble(status.extTemperature.sensor1.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor2 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP2,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP2,
                             toQuantityType(getDouble(status.extTemperature.sensor2.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
                 if (status.extTemperature.sensor3 != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENDOR_TEMP3,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP3,
                             toQuantityType(getDouble(status.extTemperature.sensor3.tC), DIGITS_TEMP, SIUnits.CELSIUS));
+                }
+                if (status.extTemperature.sensor4 != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP4,
+                            toQuantityType(getDouble(status.extTemperature.sensor4.tC), DIGITS_TEMP, SIUnits.CELSIUS));
+                }
+                if (status.extTemperature.sensor5 != null) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_TEMP5,
+                            toQuantityType(getDouble(status.extTemperature.sensor5.tC), DIGITS_TEMP, SIUnits.CELSIUS));
                 }
             }
             if ((status.extHumidity != null) && (status.extHumidity.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM,
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
                         toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
+            }
+            if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
+                        toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
+            }
+            if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
+                        getOnOff(status.extDigitalInput.sensor1.state));
+            }
+            if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT, toQuantityType(
+                        getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
             }
 
             // Update Auto-ON/OFF timer
@@ -146,15 +178,26 @@ public class ShellyComponents {
             }
 
             String state = getString(control.state);
-            if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) {
-                if (control.currentPos != null) {
-                    // only valid in stop state
-                    int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
-                            toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
-                            toQuantityType((double) pos, Units.PERCENT));
-                }
+            int pos = -1;
+            switch (state) {
+                case SHELLY_ALWD_ROLLER_TURN_OPEN:
+                    pos = SHELLY_MAX_ROLLER_POS;
+                    break;
+                case SHELLY_ALWD_ROLLER_TURN_CLOSE:
+                    pos = SHELLY_MIN_ROLLER_POS;
+                    break;
+                case SHELLY_ALWD_ROLLER_TURN_STOP:
+                    if (control.currentPos != null) {
+                        // only valid in stop state
+                        pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
+                    }
+                    break;
+            }
+            if (pos != -1) {
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
+                        toQuantityType((double) (SHELLY_MAX_ROLLER_POS - pos), Units.PERCENT));
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
+                        toQuantityType((double) pos, Units.PERCENT));
             }
 
             updated |= thingHandler.updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
@@ -382,36 +425,38 @@ public class ShellyComponents {
                 temp = convertToC(temp, getString(sdata.tmp.units));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                         toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
-            } else if (status.thermostats != null && profile.settings.thermostats != null) {
+            } else if (status.thermostats != null) {
                 // Shelly TRV
-                ShellyThermnostat t = status.thermostats.get(0);
-                ShellyThermnostat ps = profile.settings.thermostats.get(0);
-                int bminutes = getInteger(t.boostMinutes) >= 0 ? getInteger(t.boostMinutes)
-                        : getInteger(ps.boostMinutes);
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL,
-                        getOnOff(getInteger(t.boostMinutes) > 0));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
-                        toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE,
-                        getStringType(getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
-                int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
-                        getOnOff(t.schedule));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
-                        getStringType(profile.getValueProfile(0, pid)));
-                if (t.tmp != null) {
-                    Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
-                    temp = convertToC(t.targetTemp.value, getString(t.targetTemp.unit));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
-                            toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS));
-                }
-                if (t.pos != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
-                            t.pos != -1 ? toQuantityType(t.pos, DIGITS_NONE, Units.PERCENT) : UnDefType.UNDEF);
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
-                            getDouble(t.pos) > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                if (profile.settings.thermostats != null) {
+                    ShellyThermnostat ps = profile.settings.thermostats.get(0);
+                    ShellyThermnostat t = status.thermostats.get(0);
+                    int bminutes = getInteger(t.boostMinutes) >= 0 ? getInteger(t.boostMinutes)
+                            : getInteger(ps.boostMinutes);
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL,
+                            getOnOff(getInteger(t.boostMinutes) > 0));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
+                            toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE, getStringType(
+                            getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                    int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
+                            getOnOff(t.schedule));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE,
+                            getStringType(profile.getValueProfile(0, pid)));
+                    if (t.tmp != null) {
+                        Double temp = convertToC(t.tmp.value, getString(t.tmp.units));
+                        updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                                toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));
+                        temp = convertToC(t.targetTemp.value, getString(t.targetTemp.unit));
+                        updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                                toQuantityType(t.targetTemp.value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    }
+                    if (t.pos != null) {
+                        updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
+                                t.pos != -1 ? toQuantityType(t.pos, DIGITS_NONE, Units.PERCENT) : UnDefType.UNDEF);
+                        updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                                getDouble(t.pos) > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    }
                 }
             }
 

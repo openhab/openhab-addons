@@ -85,7 +85,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
                 updateStatus(ThingStatus.ONLINE);
                 synchronized (this) {
                     if (isRunning) {
-                        TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host,
+                        TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host, port,
                                 scheduler);
                         localSockets.registerListener(this);
                         localSockets.connect();

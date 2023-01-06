@@ -48,7 +48,9 @@ public class LGWebOSTVMouseSocket {
 
     public enum ButtonType {
         HOME,
+        ENTER,
         BACK,
+        EXIT,
         UP,
         DOWN,
         LEFT,
@@ -164,8 +166,14 @@ public class LGWebOSTVMouseSocket {
             case HOME:
                 keyName = "HOME";
                 break;
+            case ENTER:
+                keyName = "ENTER";
+                break;
             case BACK:
                 keyName = "BACK";
+                break;
+            case EXIT:
+                keyName = "EXIT";
                 break;
             case UP:
                 keyName = "UP";

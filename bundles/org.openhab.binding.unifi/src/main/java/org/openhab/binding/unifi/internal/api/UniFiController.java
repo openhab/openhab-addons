@@ -14,22 +14,22 @@ package org.openhab.binding.unifi.internal.api;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverride;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonObject;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiUnknownClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
+import org.openhab.binding.unifi.internal.api.util.UnfiPortOverrideJsonElementDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiClientInstanceCreator;
 import org.openhab.binding.unifi.internal.api.util.UniFiDeviceInstanceCreator;
@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link UniFiController} is the main communication point with an external instance of the Ubiquiti Networks
@@ -92,8 +93,9 @@ public class UniFiController {
                 .registerTypeAdapter(UniFiUnknownClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWiredClient.class, clientInstanceCreator)
                 .registerTypeAdapter(UniFiWirelessClient.class, clientInstanceCreator).create();
-        this.poeGson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .excludeFieldsWithoutExposeAnnotation().create();
+        this.poeGson = new GsonBuilder()
+                .registerTypeAdapter(UnfiPortOverrideJsonObject.class, new UnfiPortOverrideJsonElementDeserializer())
+                .create();
     }
 
     // Public API
@@ -131,7 +133,7 @@ public class UniFiController {
 
     public void logout() throws UniFiException {
         csrfToken = "";
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.GET, gson);
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
         req.setPath(unifios ? "/api/auth/logout" : "/logout");
         executeRequest(req);
     }
@@ -151,7 +153,7 @@ public class UniFiController {
         return cache;
     }
 
-    public @Nullable Map<Integer, UniFiPortTable> getSwitchPorts(@Nullable final String deviceId) {
+    public @Nullable UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
         return cache.getSwitchPorts(deviceId);
     }
 
@@ -173,12 +175,19 @@ public class UniFiController {
         refresh();
     }
 
-    public void poeMode(final UniFiDevice device, final Map<Integer, UnfiPortOverride> data) throws UniFiException {
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
-        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
-        req.setBodyParameter("port_overrides", data.values());
-        executeRequest(req);
-        refresh();
+    public boolean poeMode(final UniFiDevice device, final List<JsonObject> data) throws UniFiException {
+        // Safety check to make sure no empty data is send to avoid corrupting override data on the device.
+        if (data.isEmpty() || data.stream().anyMatch(p -> p.entrySet().isEmpty())) {
+            logger.info("Not overriding port for '{}', because port data contains empty json: {}", device.getName(),
+                    poeGson.toJson(data));
+            return false;
+        } else {
+            final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
+            req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+            req.setBodyParameter("port_overrides", data);
+            executeRequest(req);
+            return true;
+        }
     }
 
     public void poePowerCycle(final UniFiDevice device, final Integer portIdx) throws UniFiException {
@@ -215,7 +224,7 @@ public class UniFiController {
             throws UniFiException {
         T result;
         try {
-            result = request.execute();
+            result = (T) request.execute();
             csrfToken = request.getCsrfToken();
         } catch (final UniFiExpiredSessionException e) {
             if (fromLogin) {
@@ -224,11 +233,11 @@ public class UniFiController {
                 throw new UniFiCommunicationException(e);
             } else {
                 login();
-                result = executeRequest(request);
+                result = (T) executeRequest(request);
             }
         } catch (final UniFiNotAuthorizedException e) {
             logger.warn("Not Authorized! Please make sure your controller credentials have administrator rights");
-            result = null;
+            result = (T) null;
         }
         return result;
     }

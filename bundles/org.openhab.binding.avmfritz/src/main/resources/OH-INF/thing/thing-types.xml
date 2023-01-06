@@ -334,6 +334,8 @@
 
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
+			<channel id="obstruction_alarm" typeId="obstruction_alarm"/>
+			<channel id="temperature_alarm" typeId="temperature_alarm"/>
 		</channels>
 
 		<representation-property>ain</representation-property>

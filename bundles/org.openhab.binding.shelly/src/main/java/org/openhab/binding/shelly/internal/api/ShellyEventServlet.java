@@ -21,89 +21,86 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
+import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyEventServlet} implements a servlet. which is called by the Shelly device to signnal events (button,
- * relay output, sensor data). The binding automatically sets those vent urls on startup (when not disabled in the thing
- * config).
+ * {@link Shelly2RpcServlet} implements the WebSocket callback for Gen2 devices
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@WebServlet(name = "ShellyEventServlet", urlPatterns = { SHELLY1_CALLBACK_URI, SHELLY2_CALLBACK_URI })
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class ShellyEventServlet extends HttpServlet {
-    private static final long serialVersionUID = 549582869577534569L;
+public class ShellyEventServlet extends WebSocketServlet {
+    private static final long serialVersionUID = -1210354558091063207L;
     private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
 
-    private final HttpService httpService;
     private final ShellyHandlerFactory handlerFactory;
+    private final ShellyThingTable thingTable;
 
     @Activate
-    public ShellyEventServlet(@Reference HttpService httpService, @Reference ShellyHandlerFactory handlerFactory,
-            Map<String, Object> config) {
-        this.httpService = httpService;
+    public ShellyEventServlet(@Reference ShellyHandlerFactory handlerFactory, @Reference ShellyThingTable thingTable) {
         this.handlerFactory = handlerFactory;
-        try {
-            httpService.registerServlet(SHELLY_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("ShellyEventServlet started at '{}'", SHELLY_CALLBACK_URI);
-        } catch (NamespaceException | ServletException | IllegalArgumentException e) {
-            logger.warn("Could not start CallbackServlet", e);
-        }
+        this.thingTable = thingTable;
+        logger.debug("Shelly EventServlet started at {} and {}", SHELLY1_CALLBACK_URI, SHELLY2_CALLBACK_URI);
     }
 
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SHELLY_CALLBACK_URI);
-        logger.debug("ShellyEventServlet stopped");
+        logger.debug("ShellyEventServlet: Stopping");
     }
 
+    /**
+     * Servlet handler. Shelly1: http request, Shelly2: WebSocket call
+     */
     @Override
-    protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
+    protected void service(HttpServletRequest request, HttpServletResponse resp)
             throws ServletException, IOException, IllegalArgumentException {
-        String path = "";
-        String deviceName = "";
-        String index = "";
-        String type = "";
+        String path = getString(request.getRequestURI()).toLowerCase();
 
-        if ((request == null) || (resp == null)) {
-            logger.debug("request or resp must not be null!");
+        if (path.equals(SHELLY2_CALLBACK_URI)) { // Shelly2 WebSocket
+            super.service(request, resp);
             return;
         }
 
+        // Shelly1: http events, URL looks like
+        // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/relay/n?xxxxx or
+        // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/roller/n?xxxxx or
+        // <ip address>:<remote port>/shelly/event/shellyht-XXXXXX/sensordata?hum=53,temp=26.50
+        String deviceName = "";
+        String index = "";
+        String type = "";
         try {
-            path = getString(request.getRequestURI()).toLowerCase();
-            String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
-            if (ipAddress == null) {
-                ipAddress = request.getRemoteAddr();
-            }
+            String ipAddress = request.getRemoteAddr();
             Map<String, String[]> parameters = request.getParameterMap();
-            logger.debug("CallbackServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
+            logger.debug("ShellyEventServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
-            if (!path.toLowerCase().startsWith(SHELLY_CALLBACK_URI) || !path.contains("/event/shelly")) {
-                logger.warn("CallbackServlet received unknown request: path = {}", path);
+            if (!path.toLowerCase().startsWith(SHELLY1_CALLBACK_URI) || !path.contains("/event/shelly")) {
+                logger.warn("ShellyEventServlet received unknown request: path = {}", path);
                 return;
             }
 
-            // URL looks like
-            // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/relay/n?xxxxx or
-            // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/roller/n?xxxxx or
-            // <ip address>:<remote port>/shelly/event/shellyht-XXXXXX/sensordata?hum=53,temp=26.50
             deviceName = substringBetween(path, "/event/", "/").toLowerCase();
             if (path.contains("/" + EVENT_TYPE_RELAY + "/") || path.contains("/" + EVENT_TYPE_ROLLER + "/")
                     || path.contains("/" + EVENT_TYPE_LIGHT + "/")) {
@@ -114,8 +111,8 @@ public class ShellyEventServlet extends HttpServlet {
                 type = substringAfterLast(path, "/").toLowerCase();
             }
             logger.trace("{}: Process event of type type={}, index={}", deviceName, type, index);
-            Map<String, String> parms = new TreeMap<>();
 
+            Map<String, String> parms = new TreeMap<>();
             for (Map.Entry<String, String[]> p : parameters.entrySet()) {
                 parms.put(p.getKey(), p.getValue()[0]);
 
@@ -127,6 +124,41 @@ public class ShellyEventServlet extends HttpServlet {
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");
+        }
+    }
+
+    /*
+     * @Override
+     * public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+     * {
+     * response.getWriter().println("HTTP GET method not implemented.");
+     * }
+     */
+    /**
+     * WebSocket: register Shelly2RpcSocket class
+     */
+    @Override
+    public void configure(@Nullable WebSocketServletFactory factory) {
+        if (factory != null) {
+            factory.getPolicy().setIdleTimeout(15000);
+            factory.setCreator(new Shelly2WebSocketCreator(thingTable));
+            factory.register(Shelly2RpcSocket.class);
+        }
+    }
+
+    public static class Shelly2WebSocketCreator implements WebSocketCreator {
+        private final Logger logger = LoggerFactory.getLogger(Shelly2WebSocketCreator.class);
+
+        private final ShellyThingTable thingTable;
+
+        public Shelly2WebSocketCreator(ShellyThingTable thingTable) {
+            this.thingTable = thingTable;
+        }
+
+        @Override
+        public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
+            logger.debug("WebSocket: Create socket from servlet");
+            return new Shelly2RpcSocket(thingTable, true);
         }
     }
 }

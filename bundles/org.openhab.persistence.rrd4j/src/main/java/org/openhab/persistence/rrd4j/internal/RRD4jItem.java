@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 
@@ -26,6 +27,7 @@ import org.openhab.core.types.State;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@NonNullByDefault
 public class RRD4jItem implements HistoricItem {
 
     private final String name;

@@ -48,7 +48,7 @@ public class JSonPathTransformationService implements TransformationService {
      *
      * @param function JsonPath expression
      * @param source String which contains JSON
-     * @throws TransformationException If the JsonPath expression is invalid, a {@link InvalidPathException} is thrown,
+     * @throws TransformationException If the JsonPath expression is invalid, an {@link InvalidPathException} is thrown,
      *             which is encapsulated in a {@link TransformationException}.
      */
     @Override

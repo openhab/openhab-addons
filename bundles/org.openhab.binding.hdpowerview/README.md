@@ -27,7 +27,7 @@ The binding can automatically discover the PowerView hub.
 The discovery process can be started by pressing the refresh button in the Main Configuration UI Inbox.
 However you can also manually create a (bridge) thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
 If the configuration parameters are all valid, the binding will then automatically attempt to connect to the hub.
-If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status. 
+If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status.
 
 Once the hub thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
 
@@ -47,14 +47,14 @@ If in the future, you add additional shades, repeaters, scenes, scene groups or 
 |-------------------------|---------------|
 | host                    | The host name or IP address of the hub on your network. |
 | refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
-| hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
-| hardRefreshBatteryLevel | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
+| hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Refreshing the PowerView Hub Cache](#refreshing-the-powerview-hub-cache). |
+| hardRefreshBatteryLevel | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Refreshing the PowerView Hub Cache](#refreshing-the-powerview-hub-cache). |
 
 ### Thing Configuration for PowerView Shades and Accessories
 
 PowerView shades and repeaters should preferably be configured via the automatic discovery process.
-It is quite difficult to configure manually as the `id` of the shade or repeater is not exposed in the
-PowerView app. However, the configuration parameters are described below.
+However, for manual configuration of shades and repeaters, the console command `openhab:hdpowerview showIds` can be used to identify the IDs of all connected equipment.
+This can be used for the `id` parameters described below.
 
 #### Thing Configuration for PowerView Shades
 
@@ -91,9 +91,9 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel        | Item Type                | Description |
 |----------------|--------------------------|-------------|
-| position       | Rollershutter            | The vertical position of the shade's rail (if any). -- See [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above. -- But see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
-| vane           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| position       | Rollershutter            | The vertical position of the shade's rail (if any). -- See [next chapter](#roller-shutter-updown-position-vs-openclose-state). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above. -- But see [next chapter](#roller-shutter-updown-position-vs-openclose-state). |
+| vane           | Dimmer                   | The degree of opening of the slats or vanes (if any). On some shade types, setting this to a non-zero value might first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position. See [Interdependency between Channel positions](#interdependency-between-channel-positions). |
 | command        | String                   | Send a command to the shade. Valid values are: `CALIBRATE`, `IDENTIFY` |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high) |
@@ -103,6 +103,7 @@ All of these channels appear in the binding, but only those which have a physica
 | repeaterRssi   | Number:Power             | Received Signal Strength Indicator for Repeater |
 
 Notes:
+
 - The channels `position`, `secondary` and `vane` exist if the shade physically supports such channels.
 - The shade's Power Option is set via the PowerView app with possible values 'Battery Wand', 'Rechargeable Battery Wand' or 'Hardwired Power Supply'.
 The channels `lowBattery` and `batteryLevel` exist if you have _not_ selected 'Hardwired Power Supply' in the app.
@@ -129,25 +130,25 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 |-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|----------------------|
 | Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
-| Single action<br>top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%                | ▲                    |
-|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%              | ▼                    |
-| Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%              | ▼                    |
-| Single action<br>left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%                | ▲                    |
-|                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>top-down   | `position`        | ▲                     | Up               | **`CLOSED`**   | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | **`OPEN`**     | 100%              | ▼                    |
+| Single action<br>right-left | `position`        | ▲                     | _**Left**_       | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | _**Right**_      | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>left-right | `position`        | ▲                     | _**Right**_      | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | _**Left**_       | `CLOSED`       | 100%              | ▼                    |
 | Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
-| Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png)   |
-|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)    |
-| Blackout panel ('DuoLite')  | ***`secondary`*** | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+| Dual action<br>(upper rail) | _**`secondary`**_ | ▲                     | Up               | **`CLOSED`**   | 0%<sup>1)</sup>   | ![dual_action arrow_right](doc/right.png) |
+|                             |                   | ▼                     | Down             | **`OPEN`**     | 100%<sup>1)</sup> | ![dual_action arrow_left](doc/left.png)   |
+| Blackout panel ('DuoLite')  | _**`secondary`**_ | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
 
-***<sup>1)</sup> BUG NOTE***: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
+_**<sup>1)</sup> BUG NOTE**_: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
 Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.
 After moving the shade, the percent value would initially display the correct value, but on the next refresh it would 'flip' to the **inverse** of the correct value.
 The details are shown in the following table.
 This bug has been fixed from openHAB v3.2.x (or later) —
-***so if you have rules that depend on the percent value, and you update from an earlier openHAB version to v3.2.x (or later), you will need to modify them!***
+_so if you have rules that depend on the percent value, and you update from an earlier openHAB version to v3.2.x (or later), you will need to modify them!_
 
 | Channel     | UI Control Element | UI Control Command  | Immediate Action<br>on Shade State | Dimmer Percent Display<br>(Initial => Final) |
 |-------------|--------------------|---------------------|------------------------------------|----------------------------------------------|
@@ -195,7 +196,7 @@ To use default hub behavior (weekly updates), set `hardRefreshBatteryLevel` to z
 
 Note: You can also force the hub to refresh itself by sending a `REFRESH` command in a rule to an item that is connected to a channel in the hub as follows:
 
-```
+```java
 rule "Hub Refresh (every 20 minutes)"
 when
     Time cron "0 1/20 0 ? * * *"
@@ -224,7 +225,7 @@ For single shades the refresh takes the item's channel into consideration:
 
 ### `demo.things` File
 
-```
+```java
 Bridge hdpowerview:hub:home "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
     Thing shade s50150 "Living Room Shade" @ "Living Room" [id="50150"]
     Thing repeater r16384 "Bedroom Repeater" @ "Bedroom" [id="16384"]
@@ -235,7 +236,7 @@ Bridge hdpowerview:hub:home "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"
 
 Shade items:
 
-```
+```java
 Rollershutter Living_Room_Shade_Position "Living Room Shade Position [%.0f %%]" {channel="hdpowerview:shade:home:s50150:position"}
 Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position [%.0f %%]" {channel="hdpowerview:shade:home:s50150:secondary"}
 Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:home:s50150:vane"}
@@ -248,7 +249,7 @@ Number Living_Room_Shade_SignalStrength "Living Room Shade Signal Strength" {cha
 
 Repeater items:
 
-```
+```java
 Color Bedroom_Repeater_Color "Bedroom Repeater Color" {channel="hdpowerview:repeater:home:r16384:color"}
 Dimmer Bedroom_Repeater_Brightness "Bedroom Repeater Brightness" {channel="hdpowerview:repeater:home:r16384:brightness"}
 String Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:home:r16384:identify"}
@@ -257,26 +258,26 @@ Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]"
 
 Scene items:
 
-```
+```java
 Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:home:scenes#22663"}
 ```
 
 Scene Group items:
 
-```
+```java
 Switch Children_Rooms_Shades_Up "Good Morning Children" {channel="hdpowerview:hub:home:sceneGroups#27119"}
 ```
 
 Automation items:
 
-```
+```java
 Switch Automation_Children_Up_Sun "Children Up At Sunrise" {channel="hdpowerview:hub:home:automations#1262"}
 Switch Automation_Children_Up_Time "Children Up At 6:30" {channel="hdpowerview:hub:home:automations#49023"}
 ```
 
 ### `demo.sitemap` File
 
-```
+```perl
 Frame label="Living Room" {
     Switch item=Living_Room_Shades_Scene_Open
     Slider item=Living_Room_Shade_Position

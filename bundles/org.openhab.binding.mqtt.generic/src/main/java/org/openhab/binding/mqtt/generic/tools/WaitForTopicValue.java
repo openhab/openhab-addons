@@ -34,7 +34,7 @@ public class WaitForTopicValue {
     private final CompletableFuture<String> composeFuture;
 
     /**
-     * Creates an a instance.
+     * Creates an instance.
      *
      * @param connection A broker connection.
      * @param topic The topic

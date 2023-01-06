@@ -41,7 +41,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class API {
     private static final int REQUEST_TIMEOUT = 10;
-    private static final String REQUEST_URL = "https://hccfightthelandfill.azure-api.net/get_Collection_Dates?address_string=";
+    private static final String REQUEST_URL = "https://api.hcc.govt.nz/FightTheLandFill/get_Collection_Dates?address_string=";
     private static final int HTTP_OK = 200;
 
     private final Logger logger = LoggerFactory.getLogger(API.class);

@@ -4,15 +4,15 @@ This binding can be used to control a Rotel audio device like a surround process
 
 The binding supports different kinds of connections:
 
-* serial connection,
-* serial over IP connection,
-* IP connection (for models providing a network interface).
+- serial connection,
+- serial over IP connection,
+- IP connection (for models providing a network interface).
 
 The binding supports all kinds of Rotel protocols:
 
-* HEX protocol,
-* Old ASCII protocol (named v1 in the binding),
-* Recent ASCII protocol (named v2 in the binding).
+- HEX protocol,
+- Old ASCII protocol (named v1 in the binding),
+- Recent ASCII protocol (named v2 in the binding).
 
 For users without serial connector on server side, of course you can add a serial to USB adapter.
 
@@ -138,14 +138,13 @@ Some have additional parameters listed in the next table:
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is Rotel device specific):
+- On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is Rotel device specific):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:19200 8DATABITS NONE 1STOPBIT
 ```
-
 
 ## Channels
 
@@ -166,6 +165,7 @@ The following channels are available:
 | track          | Current Track                  | Number    | The current CD track number                              |                                    |
 | random         | Random Mode                    | Switch    | The current random mode                                  |                                    |
 | repeat         | Repeat Mode                    | String    | The current repeat mode                                  | TRACK, DISC, OFF                   |
+| radioPreset    | Radio Preset                   | Number    | Select a radio preset                                    | INCREASE, DECREASE, value between 1 and 30 |
 | mainZone#line1 | Front Panel Line 1             | String    | The first line displayed on the device front panel       |                                    |
 | mainZone#line2 | Front Panel Line 2             | String    | The second line displayed on the device front panel      |                                    |
 | frequency, zone1#frequency, zone2#frequency, zone3#frequency, zone4#frequency | Current Frequency              | Number    | The current frequency (in kHz) for digital source input  |                                    |
@@ -198,9 +198,9 @@ Here are the list of channels available for each thing type:
 | rc1590     | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 | rcd1570    | power, playControl, brightness                                                                          |
 | rcd1572    | power, playControl, track, random, repeat, brightness, otherCommand                                     |
-| rcx1500    | power, source, volume, mute, playControl                                                                |
+| rcx1500    | power, source, volume, mute, playControl, radioPreset                                                   |
 | rdd1580    | power, source, playControl, frequency, otherCommand                                                     |
-| rdg1520    | power, source, playControl                                                                              |
+| rdg1520    | power, source, playControl, radioPreset                                                                 |
 | rsp1066    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volumeUpDown, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#otherCommand, zone2#power, zone2#source, zone2#volumeUpDown |
 | rsp1068    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsp1069    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
@@ -219,11 +219,11 @@ Here are the list of channels available for each thing type:
 | rsx1560    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rsx1562    | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#dsp, mainZone#volume, mainZone#mute, mainZone#line1, mainZone#line2, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | rt09       | power, source, playControl, brightness                                                                  |
-| rt11       | power, source, brightness                                                                               |
-| rt1570     | power, source, brightness                                                                               |
+| rt11       | power, source, radioPreset, brightness                                                                  |
+| rt1570     | power, source, radioPreset, brightness                                                                  |
 | s5         | power, brightness                                                                                       |
-| t11        | power, source, brightness                                                                               |
-| t14        | power, source, brightness                                                                               |
+| t11        | power, source, radioPreset, brightness                                                                  |
+| t14        | power, source, radioPreset, brightness                                                                  |
 | x3         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 | x5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 
@@ -277,7 +277,7 @@ Here are the available commands for the otherCommand channel depending on the th
 
 example.things using serial connection:
 
-```
+```java
 Thing rotel:rsp1066:preamp "RSP-1066" [ serialPort="COM1", inputLabelVideo1="VID 1", inputLabelVideo2="VID 2", inputLabelVideo3="VID 3", inputLabelVideo4="VID 4", inputLabelVideo5="VID 5" ]
 
 Thing rotel:rsp1570:preamp "RSP-1570" [ serialPort="COM2" ]
@@ -291,7 +291,7 @@ Thing rotel:a14:amp "A14" [ serialPort="/dev/ttyUSB0" ]
 
 example.things using serial over IP connection:
 
-```
+```java
 Thing rotel:rsp1066:preamp "RSP-1066" [ host="192.168.0.200", port=3000, inputLabelVideo1="VID 1", inputLabelVideo2="VID 2", inputLabelVideo3="VID 3", inputLabelVideo4="VID 4", inputLabelVideo5="VID 5" ]
 
 Thing rotel:rsp1570:preamp "RSP-1570" [ host="192.168.0.201", port=3000, inputLabelCd="CD", inputLabelTuner="TUNER", inputLabelTape="TAPE", inputLabelVideo1="VIDEO 1", inputLabelVideo2="VIDEO 2", inputLabelVideo3="VIDEO 3", inputLabelVideo4="VIDEO 4", inputLabelVideo5="VIDEO 5", inputLabelMulti="MULTI" ]
@@ -303,7 +303,7 @@ Thing rotel:cd14:cd "CD14" [ host="192.168.0.203", port=3000 ]
 
 example.items:
 
-```
+```java
 Switch preamp_power "Power" { channel="rotel:rsp1066:preamp:mainZone#power" }
 String preamp_source "Source Input [%s]" { channel="rotel:rsp1066:preamp:mainZone#source" }
 String preamp_rec "Record Source [%s]" { channel="rotel:rsp1066:preamp:mainZone#recordSource" }
@@ -361,7 +361,7 @@ Dimmer cd_brightness "Display brightness" { channel="rotel:cd14:cd:brightness" }
 
 example.sitemap:
 
-```
+```perl
 Switch item=preamp_power
 Selection item=preamp_source
 Selection item=preamp_rec

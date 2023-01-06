@@ -23,17 +23,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.hue.internal.FullConfig;
-import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.State.ColorMode;
-import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.dto.FullConfig;
+import org.openhab.binding.hue.internal.dto.FullLight;
+import org.openhab.binding.hue.internal.dto.State.ColorMode;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -148,21 +150,45 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel6500Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel6500Kelvin() {
         String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(6500), new HueLightState(), expectedReply);
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel4500Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel4500Kelvin() {
         String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(4500), new HueLightState(), expectedReply);
     }
 
     @Test
-    public void assertCommandForColorTemperatureAbsChannel2000Kelvin() {
+    public void assertDecimalTypeCommandForColorTemperatureAbsChannel2000Kelvin() {
         String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
         assertSendCommandForColorTempAbs(new DecimalType(2000), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel6500Kelvin() {
+        String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(6500, Units.KELVIN), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel4500Kelvin() {
+        String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(4500, Units.KELVIN), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel2000Kelvin() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(2000, Units.KELVIN), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertQuantityTypeCommandForColorTemperatureAbsChannel500Mired() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new QuantityType<>(500, Units.MIRED), new HueLightState(), expectedReply);
     }
 
     @Test
@@ -250,7 +276,7 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void asserCommandForColorChannelIncrease() {
+    public void assertCommandForColorChannelIncrease() {
         HueLightState currentState = new HueLightState().bri(1).on(false);
         String expectedReply = "{\"bri\" : 30, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
@@ -265,7 +291,7 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void asserCommandForColorChannelDecrease() {
+    public void assertCommandForColorChannelDecrease() {
         HueLightState currentState = new HueLightState().bri(200);
         String expectedReply = "{\"bri\" : 170, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.DECREASE, currentState, expectedReply);

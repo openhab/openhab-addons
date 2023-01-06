@@ -124,14 +124,14 @@ class UniFiControllerRequest<T> {
     }
 
     public @Nullable T execute() throws UniFiException {
-        T result = null;
+        T result = (T) null;
         final String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
             final JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
 
             if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
-                result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
+                result = (T) gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
             }
         }
         return result;
@@ -230,6 +230,7 @@ class UniFiControllerRequest<T> {
         if (!bodyParameters.isEmpty()) {
             final String jsonBody = gson.toJson(bodyParameters);
 
+            logger.debug("Body parameters for request '{}': {}", request.getPath(), jsonBody);
             request.content(
                     new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON_UTF_8, jsonBody, StandardCharsets.UTF_8));
         }

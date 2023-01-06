@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.devices.wallthermostat;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.humiditylevel.HumidityLevelService;
 import org.openhab.binding.boschshc.internal.services.humiditylevel.dto.HumidityLevelServiceState;
@@ -28,11 +27,11 @@ import org.openhab.core.thing.Thing;
 
 /**
  * Handler for a wall thermostat device.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public final class WallThermostatHandler extends BoschSHCDeviceHandler {
+public final class WallThermostatHandler extends AbstractBatteryPoweredDeviceHandler {
 
     public WallThermostatHandler(Thing thing) {
         super(thing);
@@ -40,13 +39,15 @@ public final class WallThermostatHandler extends BoschSHCDeviceHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
         this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         this.createService(HumidityLevelService::new, this::updateChannels, List.of(CHANNEL_HUMIDITY));
     }
 
     /**
      * Updates the channels which are linked to the {@link TemperatureLevelService} of the device.
-     * 
+     *
      * @param state Current state of {@link TemperatureLevelService}.
      */
     private void updateChannels(TemperatureLevelServiceState state) {
@@ -55,7 +56,7 @@ public final class WallThermostatHandler extends BoschSHCDeviceHandler {
 
     /**
      * Updates the channels which are linked to the {@link HumidityLevelService} of the device.
-     * 
+     *
      * @param state Current state of {@link HumidityLevelService}.
      */
     private void updateChannels(HumidityLevelServiceState state) {

@@ -22,9 +22,11 @@ Access is established through a Tesla account as a bridge.
 
 The account cannot be automatically discovered, but has to be created manually.
 
-Once an account is configured, it is automatically queried for associated vehicles and an Inbox entry is created for each of them.
+Once an account is configured, it is queried for associated vehicles and an Inbox entry is created for each of them.
 
-Note: Vehicles that are asleep might not be discovered, so you might want to wake it up through the Tesla app first.
+Note: Vehicles that are asleep are discovered and put into the Inbox, but their model cannot be determined.
+As an effect, their channels are missing until the vehicle wakes up and can be fully queried.
+A vehicle can be manually woken up by opening the Tesla app and checking the vehicle status in there.
 
 
 ## Bridge Configuration
@@ -41,11 +43,35 @@ Please note that we in general consider it dangerous to enter your credentials i
 When using one of such apps, simply copy and paste the received refresh token into the account configuration.
 
 
-## Thing Configuration
+## Thing Configuration Parameters
 
 The vehicle Thing requires the vehicle's VIN as a configuration parameter `vin`.
 
-Additionally, the optional boolean parameter `allowWakeup` can be set. This determines whether openHAB is allowed to wake up the vehicle in order to retrieve data from it. This setting is not recommended as it will result in a significant vampire drain (i.e. energy consumption although the vehicle is parking).
+Additionally, the follow optional parameters may be defined.
+
+| Parameter Name         | Label                      | Default Value | Description                                                                  |
+|------------------------|----------------------------|---------------|------------------------------------------------------------------------------|
+| valetpin               | Valet PIN                  | false         | PIN to use when enabling Valet Mode                                          |
+| allowWakeupForCommands | Allow Wake-Up For Commands | false         | Wake up the vehicle to send commands. May cause vehicle to stay awake        |
+
+
+For further flexibility and experimentation, the following advanced parameters may also be set. 
+
+| Parameter Name              | Label                                          | Default Value | Description                                                                                        |
+|-----------------------------|------------------------------------------------|---------------|----------------------------------------------------------------------------------------------------|
+| allowWakeup                 | Allow Wake-Up                                  | false         | Allows waking up the vehicle to retrieve data. See caution below                                   |
+| enableEvents                | Enable Events                                  | false         | Enable the event stream for the vehicle. See note below                                            |
+| inactivity                  | Inactivity Interval                            | 5             | The inactivity period in minutes after which the binding stops for 20 minutes to let the car sleep |
+| useDriveState               | Use Drive State for Inactivity                 | false         | Use the drive state instead of location to determine vehicle inactivity                            |
+| useAdvancedStatesForPolling | Use Console Modes and Occupancy for Inactivity | false         | Use these states to help continue the fast polling of the API                                      |
+
+`allowWakeup` should be used with caution as this determines whether openHAB is allowed to wake up the vehicle in order to retrieve data from it.
+This setting is not recommended as it will result in a significant vampire drain (i.e. energy consumption although the vehicle is parking). 
+
+`enableEvents` captures and processes data in near real-time for key variables by enabling events streamed by the Tesla back-end system.
+
+`inactivity` setting is ignored and will always be five minutes if homelink is available (car is at home)
+
 
 ## Channels
 
@@ -158,7 +184,7 @@ Additionally, these advanced channels are available (not all are available on al
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
-| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Indicates if the steering wheel heater is switched on                                                            |
+| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                      |
 | sunroofstate              | String                   | Sunroof State                 | Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".            |
 | sunroof                   | Dimmer                   | Sunroof                       | Indicates the opening state of the sunroof (0% closed, 100% fully open)                                          |
 | temperature               | Number:Temperature       | Temperature                   | Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced. |
@@ -186,60 +212,186 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 demo.items:
 
 ```
-Switch               TeslaCharge                 {channel="tesla:model3:myaccount:mycar:charge"}
-Location             TeslaLocation               {channel="tesla:model3:myaccount:mycar:location"}
-Dimmer               TeslaChargeLimit            {channel="tesla:model3:myaccount:mycar:chargelimit"}
-String               TeslaChargeRate             {channel="tesla:model3:myaccount:mycar:chargerate"}
-String               TeslaChargingState          {channel="tesla:model3:myaccount:mycar:chargingstate"}
-Number               TeslaTimeToFullCharge       {channel="tesla:model3:myaccount:mycar:timetofullcharge"}
-Number               TeslaChargerPower           {channel="tesla:model3:myaccount:mycar:chargerpower"}
-DateTime             TeslaScheduledChargingStart {channel="tesla:model3:myaccount:mycar:scheduledchargingstart"}
-Dimmer               TeslaSoC                    {channel="tesla:model3:myaccount:mycar:soc"}
-Number:Speed         TeslaSpeed                  {channel="tesla:model3:myaccount:mycar:speed"}
-String               TeslaState                  {channel="tesla:model3:myaccount:mycar:state"}
-Number               TeslaPower                  {channel="tesla:model3:myaccount:mycar:power"}
-Number:Temperature   TeslaInsideTemperature      {channel="tesla:model3:myaccount:mycar:insidetemp"}
-Number:Temperature   TeslaOutsideTemperature     {channel="tesla:model3:myaccount:mycar:outsidetemp"}
-Switch               TeslaAutoconditioning       {channel="tesla:model3:myaccount:mycar:autoconditioning"}
-Number:Temperature   TeslaTemperature            {channel="tesla:model3:myaccount:mycar:temperature"}
-String               TeslaShiftState             {channel="tesla:model3:myaccount:mycar:shiftstate"}
-Number               TeslaBatteryCurrent         {channel="tesla:model3:myaccount:mycar:batterycurrent"}
-Number               TeslaBatteryLevel           {channel="tesla:model3:myaccount:mycar:batterylevel"}
-DateTime             TeslaEventstamp             {channel="tesla:model3:myaccount:mycar:eventstamp"}
-Number:Length        TeslaOdometer               {channel="tesla:model3:myaccount:mycar:odometer"}
-Number               TeslaHeading                {channel="tesla:model3:myaccount:mycar:heading"}
-DateTime             TeslaGPSStamp               {channel="tesla:model3:myaccount:mycar:gpstimestamp"}
+DateTime            TeslaEventstamp             {channel="model3:myaccount:mycar:eventstamp"}
+String              TeslaState                  {channel="model3:myaccount:mycar:state"}
+Number              TeslaSpeed                  {channel="model3:myaccount:mycar:speed"}
+String              TeslaShiftState             {channel="model3:myaccount:mycar:shiftstate"}
+Number              TeslaOdometer               {channel="model3:myaccount:mycar:odometer"}
+Number              TeslaRange                  {channel="model3:myaccount:mycar:range"}
+
+Number              TeslaBatteryLevel           {channel="model3:myaccount:mycar:batterylevel"}
+Number              TeslaPower                  {channel="model3:myaccount:mycar:power"}
+Number              TeslaBatteryCurrent         {channel="model3:myaccount:mycar:batterycurrent"}
+Number              TeslaBatteryRange           {channel="model3:myaccount:mycar:batteryrange"}
+Number              TeslaEstBatteryRange        {channel="model3:myaccount:mycar:estimatedbatteryrange"}
+Number              TeslaIdealBatteryRange      {channel="model3:myaccount:mycar:idealbatteryrange"}
+Number              TeslaUsableBatteryLevel     {channel="model3:myaccount:mycar:usablebatterylevel"}
+Switch              TeslaPreconditioning        {channel="model3:myaccount:mycar:preconditioning"}
+
+Switch              TeslaCharge                 {channel="model3:myaccount:mycar:charge"}
+Switch              TeslaChargeToMax            {channel="model3:myaccount:mycar:chargetomax"}
+
+Dimmer              TeslaChargeLimit            {channel="model3:myaccount:mycar:chargelimit"}
+Number              TeslaChargeRate             {channel="model3:myaccount:mycar:chargerate"}
+String              TeslaChargingState          {channel="model3:myaccount:mycar:chargingstate"}
+Number              TeslaChargerPower           {channel="model3:myaccount:mycar:chargerpower"}
+Number              TeslaTimeToFullCharge       {channel="model3:myaccount:mycar:timetofullcharge"}
+Number              TeslaMaxCharges             {channel="model3:myaccount:mycar:maxcharges"}
+
+Number              TeslaChargerVoltage         {channel="model3:myaccount:mycar:chargervoltage"}
+Number              TeslaChargerPower           {channel="model3:myaccount:mycar:chargerpower"}
+Number              TeslaChargerCurrent         {channel="model3:myaccount:mycar:chargercurrent"}
+
+DateTime            TeslaScheduledChargingStart {channel="model3:myaccount:mycar:scheduledchargingstart"}
+Dimmer              TeslaSoC                    {channel="model3:myaccount:mycar:soc"}
+
+Switch              TeslaDoorLock               {channel="model3:myaccount:mycar:doorlock"}
+Switch              TeslaHorn                   {channel="model3:myaccount:mycar:honkhorn"}
+Switch              TeslaStart                  {channel="model3:myaccount:mycar:remotestart"}
+Switch              TeslaSentry                 {channel="model3:myaccount:mycar:sentrymode"}
+Switch              TeslaLights                 {channel="model3:myaccount:mycar:flashlights"}
+Switch              TeslaValet                  {channel="model3:myaccount:mycar:valetmode"}
+
+Switch              TeslaWakeup                 {channel="model3:myaccount:mycar:wakeup"}
+
+Switch              TeslaBatteryHeater          {channel="model3:myaccount:mycar:batteryheater"}
+Switch              TeslaFrontDefrost           {channel="model3:myaccount:mycar:frontdefroster"}
+Switch              TeslaRearDefrost            {channel="model3:myaccount:mycar:reardefroster"}
+Switch              TeslaLeftSeatHeater         {channel="model3:myaccount:mycar:leftseatheater"}
+Switch              TeslaRightSeatHeater        {channel="model3:myaccount:mycar:rightseatheater"}
+
+Switch              TeslaHomelink               {channel="model3:myaccount:mycar:homelink"}
+Location            TeslaLocation               {channel="model3:myaccount:mycar:location"}
+Number              TeslaHeading                {channel="model3:myaccount:mycar:heading"}
+DateTime            TeslaLocationTime           {channel="model3:myaccount:mycar:gpstimestamp"}
+
+Switch              TeslaAutoconditioning       {channel="model3:myaccount:mycar:autoconditioning"}
+Number:Temperature  TeslaTemperature            {channel="model3:myaccount:mycar:temperature"}
+Number:Temperature  TeslaTemperatureCombined    {channel="model3:myaccount:mycar:combinedtemp"}
+Number:Temperature  TeslaInsideTemperature      {channel="model3:myaccount:mycar:insidetemp"}
+Number:Temperature  TeslaOutsideTemperature     {channel="model3:myaccount:mycar:outsidetemp"}
 ```
 
 demo.sitemap:
 
 ```
-sitemap demo label="Main Menu"
+sitemap main label="Main"
 {
-			Text label="Car" {
-				Text label="Drive" {
-					Text item=TeslaEventstamp label="Last Event Timestamp [%1$td.%1$tm.%1$tY %1$tT]"
-					Text item=TeslaState label="State [%s]"
-					Text item=TeslaSpeed label="Speed [%.1f]"
-					Text item=TeslaShiftState label="Shift State [%s]"
-					Text item=TeslaOdometer label="Odometer [%.1f km]"
-				}
-				Text label="Climate" {
-					Switch item=TeslaAutoconditioning label="Auto Conditioning"  mappings=[ON=ON, OFF=OFF ]
-					Setpoint item=TeslaTemperature step=0.5 minValue=18 maxValue=34 label="Auto Conditioning Temperature [%.1f °C]" icon="temperature"
-					Text item=TeslaInsideTemperature label="Inside Temperature [%.1f]"
-				}
-				Text label="Power" {
-					Text item=TeslaBatteryCurrent label="Current [%.1f]"
-				}
-				Text item=TeslaSoC {
-					Switch item=TeslaCharge label="Charge" mappings=[ON=ON, OFF=OFF ]
-					Slider item=TeslaChargeLimit label="Charge Limit [%.1f]"
-					Text item=TeslaChargingState label="Charging State [%s]"
-					Text item=TeslaChargeRate label="Charge Rate [%s]"
-					Text item=TeslaScheduledChargingStart label="Charging Start [%1$td.%1$tm.%1$tY %1$tT]"
-					Text item=TeslaTimeToFullCharge label="Time To Full Charge [%.1f hours]"
-				}
-			}
+    Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
+    {
+        Frame 
+        {
+            Text item=TeslaEventstamp icon="time"
+            Text item=TeslaState label="State [%s]" icon=""
+            Text item=TeslaHomelink label="Homelink Available[%s]" icon=""
+            Text item=TeslaDistance
+            Text item=TeslaSpeed label="Speed [%.1f]"
+            Text item=TeslaShiftState label="Shift State [%s]" icon=""
+            Text item=nTeslaShiftState 
+            Text item=TeslaOdometer label="Odometer [%.1f miles]"
+            Text item=TeslaRange 
+        }
+        Frame
+        {
+            Switch item=TeslaAutoconditioning label="Enable Heat or AC"
+            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f °F]"
+            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
+            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
+        }
+        Frame
+        {
+            Text item=TeslaBatteryLevel
+            Text item=TeslaUsableBatteryLevel
+            Text item=TeslaPower
+            Text item=TeslaBatteryCurrent label="Current [%.1f]"
+            Text item=TeslaBatteryRange label="Battery Range [%.1f miles]"
+            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f miles]"
+            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f miles]"
+        }
+        Frame
+        {
+            Switch item=TeslaCharge label="Charge"
+            Slider item=TeslaChargeLimit label="Charge Limit [%.1f]"
+            Text item=TeslaChargingState label="Charging State [%s]" icon=""
+            Text item=TeslaTimeToFullCharge label="Time To Full Charge [%.1f hours]"
+            Text item=TeslaPreconditioning label="Preconditioning [%s]" icon=""
+            Text item=TeslaChargeRate label="Charge Rate [%d miles/hr]"
+            Text item=TeslaScheduledChargingStart icon="time"
+            Text item=TeslaChargerVoltage label="Charge Voltage [%.1f V]"
+            Text item=TeslaChargerPower label="Charge Power [%.1f kW]"
+            Text item=TeslaChargerCurrent label="Charge Current [%.1f A]"
+            Text item=TeslaChargeToMax label="Charge To Max [%s]" icon=""
+            Text item=TeslaMaxCharges label="Consec Max Charge[%d]"
+        }
+        Frame
+        {
+            Switch item=TeslaWakeup label="Wakeup the Car"
+        }
+        Frame
+        {
+            Switch item=TeslaDoorLock label="Doorlock"
+            Switch item=TeslaHorn label="Horn" 
+            Switch item=TeslaLights label="Lights"
+            Switch item=TeslaStart label="Remote Start"
+            Switch item=TeslaValet label="Valet Mode"
+            Switch item=TeslaSentry label="Sentry Mode"
+
+            Switch item=TeslaBatteryHeater label="Battery Heater"   
+            Switch item=TeslaFrontDefrost label="Defrost Front"     
+            Switch item=TeslaRearDefrost label="Defrost Rear"                                               
+            Switch item=TeslaLeftSeatHeater label="Seat Heat Left" 
+            Switch item=TeslaRightSeatHeater label="Seat Heat Right" 
+        }
+        Frame
+        {
+            Switch label="State" item=nTeslaState_chart icon=line mappings=[0="Hide", 1="Hour", 2="Day", 3="Week", 4="Month"]
+            Chart  item=nTeslaState  period=h refresh=30000  visibility=[nTeslaState_chart==1]
+            Chart  item=nTeslaState  period=D refresh=30000  visibility=[nTeslaState_chart==2]
+            Chart  item=nTeslaState  period=W refresh=30000  visibility=[nTeslaState_chart==3]
+            Chart  item=nTeslaState  period=M refresh=30000  visibility=[nTeslaState_chart==4]
+        }       
+        Frame
+        {
+            Switch label="Battery" item=TeslaBatteryLevel_chart icon=line mappings=[0="Hide", 1="Hour", 2="Day", 3="Week", 4="Month"]
+            Chart  item=TeslaUsableBatteryLevel period=h refresh=30000  visibility=[TeslaBatteryLevel_chart==1]
+            Chart  item=TeslaUsableBatteryLevel period=D refresh=30000  visibility=[TeslaBatteryLevel_chart==2] 
+            Chart  item=TeslaUsableBatteryLevel period=W refresh=30000  visibility=[TeslaBatteryLevel_chart==3]
+            Chart  item=TeslaUsableBatteryLevel period=M refresh=30000  visibility=[TeslaBatteryLevel_chart==4]
+        }
+        Frame
+        {
+            Mapview item=TeslaLocation height=10 icon=location
+        }
+    }
 }
+```
+
+demo.rule (for graphing online status in sitemap above)
+
+```
+rule "Tesla State Changed"
+    when
+    Item TeslaState changed
+
+    then
+        if (previousState == NULL) return;
+        switch (TeslaState.state) {
+            case "online" : {
+                nTeslaState.postUpdate(1)
+            }
+            case "asleep" : {
+                nTeslaState.postUpdate(0)
+            }
+            case "offline" : {
+                nTeslaState.postUpdate(-0.5)
+            }
+            case "waking" : {
+                nTeslaState.postUpdate(0.5)
+            }
+            case "unknown" : {
+                nTeslaState.postUpdate(-1)
+            }
+
+        }
+end
 ```

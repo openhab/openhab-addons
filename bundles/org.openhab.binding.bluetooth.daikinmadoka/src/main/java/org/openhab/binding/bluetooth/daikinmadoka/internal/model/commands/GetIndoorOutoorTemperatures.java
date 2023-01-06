@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
@@ -47,9 +48,16 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        byte[] bIndoorTemperature = mm.getValues().get(0x40).getRawValue();
-        byte[] bOutdoorTemperature = mm.getValues().get(0x41).getRawValue();
+        MadokaValue indoorValue = mm.getValues().get(0x40);
+        MadokaValue outdoorValue = mm.getValues().get(0x41);
+        if (outdoorValue == null || indoorValue == null) {
+            String message = "indoor or outdoor value is null when handling the response";
+            setState(State.FAILED);
+            throw new MadokaParsingException(message);
+        }
 
+        byte[] bIndoorTemperature = indoorValue.getRawValue();
+        byte[] bOutdoorTemperature = outdoorValue.getRawValue();
         if (bIndoorTemperature == null || bOutdoorTemperature == null) {
             setState(State.FAILED);
             throw new MadokaParsingException("Incorrect indoor or outdoor temperature");
@@ -66,9 +74,7 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
             }
         }
 
-        if (iIndoorTemperature != null) {
-            indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature, SIUnits.CELSIUS);
-        }
+        indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature, SIUnits.CELSIUS);
 
         if (iOutdoorTemperature != null) {
             outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature, SIUnits.CELSIUS);
@@ -78,7 +84,13 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
         logger.debug("Outdoor Temp: {}", outdoorTemperature);
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
+
+        try {
+            executor.execute(() -> listener.receivedResponse(this));
+        } catch (Exception e) {
+            setState(State.FAILED);
+            throw new MadokaParsingException(e);
+        }
     }
 
     public @Nullable QuantityType<Temperature> getIndoorTemperature() {

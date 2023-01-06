@@ -41,7 +41,7 @@ public interface ShellyThingInterface {
 
     public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException;
 
-    public List<StateOption> getStateOptions(ChannelTypeUID uid);
+    public @Nullable List<StateOption> getStateOptions(ChannelTypeUID uid);
 
     public double getChannelDouble(String group, String channel);
 
@@ -51,7 +51,9 @@ public interface ShellyThingInterface {
 
     public void setThingOnline();
 
-    public void setThingOffline(ThingStatusDetail detail, String messageKey);
+    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments);
+
+    public String getThingType();
 
     public ThingStatus getThingStatus();
 
@@ -110,4 +112,8 @@ public interface ShellyThingInterface {
     public void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
     public boolean checkRepresentation(String key);
+
+    public void incProtMessages();
+
+    public void incProtErrors();
 }

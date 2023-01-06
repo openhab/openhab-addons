@@ -27,6 +27,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
@@ -60,12 +61,11 @@ public class SmartyDecrypter implements TelegramParser {
     private static final byte SEPARATOR_82 = (byte) 0x82;
     private static final byte SEPARATOR_30 = 0x30;
     private static final int ADD_LENGTH = 17;
-    private static final String ADD = "3000112233445566778899AABBCCDDEEFF";
-    private static final byte[] ADD_DECODED = HexUtils.hexToBytes(ADD);
     private static final int IV_BUFFER_LENGTH = 40;
     private static final int GCM_TAG_LENGTH = 12;
     private static final int GCM_BITS = GCM_TAG_LENGTH * Byte.SIZE;
     private static final int MESSAGES_BUFFER_SIZE = 4096;
+    private static final String ADDITIONAL_ADD_PREFIX = "30";
 
     private final Logger logger = LoggerFactory.getLogger(SmartyDecrypter.class);
     private final ByteBuffer iv = ByteBuffer.allocate(IV_BUFFER_LENGTH);
@@ -80,6 +80,7 @@ public class SmartyDecrypter implements TelegramParser {
     private int dataLength;
     private boolean lenientMode;
     private final P1TelegramListener telegramListener;
+    private final byte[] addKey;
 
     /**
      * Constructor.
@@ -87,12 +88,15 @@ public class SmartyDecrypter implements TelegramParser {
      * @param parser parser of the Cosem messages
      * @param telegramListener
      * @param decryptionKey The key to decrypt the messages
+     * @param additionalKey Additional optional key to decrypt the message
      */
     public SmartyDecrypter(final TelegramParser parser, final P1TelegramListener telegramListener,
-            final String decryptionKey) {
+            final String decryptionKey, final String additionalKey) {
         this.parser = parser;
         this.telegramListener = telegramListener;
         secretKeySpec = decryptionKey.isEmpty() ? null : new SecretKeySpec(HexUtils.hexToBytes(decryptionKey), "AES");
+        addKey = HexUtils.hexToBytes(additionalKey.isBlank() ? DSMRBindingConstants.ADDITIONAL_KEY_DEFAULT
+                : ((additionalKey.length() == 32 ? (ADDITIONAL_ADD_PREFIX) : "") + additionalKey));
     }
 
     @Override
@@ -209,7 +213,7 @@ public class SmartyDecrypter implements TelegramParser {
                 final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
                 cipher.init(Cipher.DECRYPT_MODE, secretKeySpec,
                         new GCMParameterSpec(GCM_BITS, iv.array(), 0, ivLength));
-                cipher.updateAAD(ADD_DECODED);
+                cipher.updateAAD(addKey);
                 return cipher.doFinal(cipherText.array(), 0, cipherText.position());
             }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException

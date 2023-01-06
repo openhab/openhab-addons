@@ -7,7 +7,7 @@ Currently protocol version 1 and 2c are supported.
 ## Supported Things
 
 Only one thing is supported: `target`.
-It represents a single network device. 
+It represents a single network device.
 Things can be extended with `number`, `string` and `switch` channels.
 
 ## Binding Configuration
@@ -21,28 +21,27 @@ Therefore it is recommended to bind to a port higher than 1024 (e.g. 8162).
 In case the trap sending equipment does not allow to change the destination port (e.g. Mikrotik routers), it is necessary to forward the received packets to the new port.
 This can be done either by software like _snmptrapd_ or by adding a firewall rule to your system, e.g. by executing
 
-```
+```shell
 iptables -t nat -I PREROUTING --src 0/0 --dst 192.168.0.10 -p udp --dport 162 -j REDIRECT --to-ports 8162
 ```
 
-would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162. 
-Check with your operating system manual how to make that change permanent. 
+would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162.
+Check with your operating system manual how to make that change permanent.
 
 Example configuration for using port 8162:
 
-```
+```text
 # Configuration for the SNMP Binding
 #
 # Port used for receiving traps.
 # This setting defaults to 0 (disabled / not receiving traps)
 port=8162
-
 ```
 
 ## Thing Configuration
 
 The `target` thing has one mandatory parameter: `hostname`.
-It can be set as FQDN or IP address. 
+It can be set as FQDN or IP address.
 
 Optional configuration parameters are `community`, `version` and `refresh`.
 
@@ -56,7 +55,6 @@ The default is `v1`.
 
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
 The default is `60` for 60s.
-
 
 Three advanced parameters are available `port`, `timeout`, `retries`
 Usually these do not need to be changed.
@@ -101,12 +99,11 @@ In `READ`, `READ_WRITE` or `TRAP` mode they change to either `ON` or `OFF` on th
 The parameters used for defining the values are `onvalue` and `offvalue`.
 The `datatype` parameter is used to convert the configuration strings to the needed values.
 
-| type     | item   | description                     |
-|----------|--------|---------------------------------|
-| number   | Number | a channel with a numeric value  |
-| string   | String | a channel with a string value   |
-| switch   | Switch | a channel that has two states   |
-
+| type   | item   | description                    |
+| ------ | ------ | ------------------------------ |
+| number | Number | a channel with a numeric value |
+| string | String | a channel with a string value  |
+| switch | Switch | a channel that has two states  |
 
 ### SNMP Exception (Error) Handling
 
@@ -124,7 +121,7 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 
 demo.things:
 
-```
+```java
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
         Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ", unit="B" ]
@@ -138,7 +135,7 @@ Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
 
 demo.items:
 
-```
+```java
 Number inBytes "Router bytes in [%d]" { channel="snmp:target:router:inBytes" }
 Number inGigaBytes "Router gigabytes in [%d GB]" { channel="snmp:target:router:inBytes" }
 Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" }
@@ -150,7 +147,7 @@ Switch receivedValue "Received 00 AA 11 [%s]" { channel="snmp:target:router:valu
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame {

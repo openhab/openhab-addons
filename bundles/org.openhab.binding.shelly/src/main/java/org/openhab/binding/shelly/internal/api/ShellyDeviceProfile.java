@@ -87,7 +87,7 @@ public class ShellyDeviceProfile {
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
     public boolean isDuo = false; // true only if it is a Duo
-    public boolean isRGBW2 = false; // true only if it a a RGBW2
+    public boolean isRGBW2 = false; // true only if it a RGBW2
     public boolean inColor = false; // true if bulb/rgbw2 is in color mode
 
     public boolean isSensor = false; // true for HT & Smoke
@@ -112,15 +112,20 @@ public class ShellyDeviceProfile {
     public ShellyDeviceProfile() {
     }
 
-    public ShellyDeviceProfile initialize(String thingType, String json) throws ShellyApiException {
+    public ShellyDeviceProfile initialize(String thingType, String jsonIn) throws ShellyApiException {
         Gson gson = new Gson();
 
         initialized = false;
 
         initFromThingType(thingType);
+
+        String json = jsonIn;
+        if (json.contains("\"ext_temperature\":{\"0\":[{")) {
+            // Shelly UNI uses ext_temperature array, reformat to avoid GSON exception
+            json = json.replace("ext_temperature", "ext_temperature_array");
+        }
         settingsJson = json;
-        ShellySettingsGlobal gs = fromJson(gson, json, ShellySettingsGlobal.class);
-        settings = gs; // only update when no exception
+        settings = fromJson(gson, json, ShellySettingsGlobal.class);
 
         // General settings
         name = getString(settings.name);
@@ -282,6 +287,7 @@ public class ShellyDeviceProfile {
         return "";
     }
 
+    @SuppressWarnings("null")
     public boolean inButtonMode(int idx) {
         if (idx < 0) {
             logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
@@ -323,17 +329,22 @@ public class ShellyDeviceProfile {
     }
 
     public int getRollerFav(int id) {
-        if ((id >= 0) && getBool(settings.favoritesEnabled) && (settings.favorites != null)
-                && (id < settings.favorites.size())) {
+        if (id >= 0 && getBool(settings.favoritesEnabled) && settings.favorites != null
+                && id < settings.favorites.size()) {
             return settings.favorites.get(id).pos;
         }
         return -1;
     }
 
     public String[] getValveProfileList(int valveId) {
-        if (isTRV && settings.thermostats != null && valveId <= settings.thermostats.size()) {
-            ShellyThermnostat t = settings.thermostats.get(valveId);
-            return t.profileNames;
+        if (isTRV && settings.thermostats != null) {
+            int sz = settings.thermostats.size();
+            if (valveId <= sz) {
+                if (settings.thermostats != null) {
+                    ShellyThermnostat t = settings.thermostats.get(valveId);
+                    return t.profileNames;
+                }
+            }
         }
         return new String[0];
     }
@@ -348,8 +359,11 @@ public class ShellyDeviceProfile {
 
     public static String extractFwVersion(@Nullable String version) {
         if (version != null) {
-            // fix version e.g. 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
-            String vers = version.replace("/v.1.10-", "/v1.10.0-");
+            // fix version e.g.
+            // 20210319-122304/v.1.10-Dimmer1-gfd4cc10 (with v.1. instead of v1.)
+            // 20220809-125346/v1.12-g99f7e0b (.0 in 1.12.0 missing)
+            String vers = version.replace("/v.1.10-", "/v1.10.0-") //
+                    .replace("/v1.12-", "/v1.12.0");
 
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
             Matcher matcher = VERSION_PATTERN.matcher(vers);

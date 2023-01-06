@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="echonetlite"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Echonet Bridge</label>
+		<description>Virtual bridge to ensure that there is only a single binding to the echonet port</description>
+
+		<representation-property>port</representation-property>
+
+		<config-description>
+			<parameter name="multicastAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Discovery/Notification Address</label>
+				<description>Address used to discover nodes and receive notifications</description>
+				<default>224.0.23.0</default>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Echonet Port</label>
+				<description>Port used for echonet messages both outbound and inbound</description>
+				<default>3610</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>EchonetLite Device</label>
+		<description>Device for EchonetLite Binding</description>
+		<representation-property>instanceKey</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<default>3610</default>
+				<label>Port</label>
+				<description>Port of the device (usually 3610)</description>
+			</parameter>
+			<parameter name="groupCode" type="integer" required="true">
+				<label>Group Code</label>
+				<description>Echonet Group Code</description>
+			</parameter>
+			<parameter name="classCode" type="integer" required="true">
+				<label>Class Code</label>
+				<description>Echonet Class Code</description>
+			</parameter>
+			<parameter name="instance" type="integer" required="true">
+				<label>Instance</label>
+				<description>Echonet Instance</description>
+			</parameter>
+			<parameter name="pollIntervalMs" type="integer" required="true">
+				<default>30000</default>
+				<label>Poll Interval (ms)</label>
+				<description>Interval in ms between each poll of the device</description>
+			</parameter>
+			<parameter name="retryTimeoutMs" type="integer" required="true">
+				<default>2000</default>
+				<label>Retry Timeout (ms)</label>
+				<description>Timeout in ms before a message is resent</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

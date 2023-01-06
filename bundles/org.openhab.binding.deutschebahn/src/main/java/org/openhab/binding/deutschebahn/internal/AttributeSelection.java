@@ -20,7 +20,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.types.State;
 
 /**
- * Selection of an attribute within an {@link TimetableStop} that provides a channel {@link State}.
+ * Selection of an attribute within a {@link TimetableStop} that provides a channel {@link State}.
  * 
  * @author Sönke Küper - Initial contribution
  */

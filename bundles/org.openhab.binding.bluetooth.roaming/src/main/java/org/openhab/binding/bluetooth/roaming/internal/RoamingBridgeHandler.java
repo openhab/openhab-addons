@@ -136,10 +136,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
             return false;
         }
         Object discovery = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
-        if (discovery != null && discovery.toString().equalsIgnoreCase("false")) {
-            return false;
-        }
-        return true;
+        return !(discovery != null && discovery.toString().equalsIgnoreCase("false"));
     }
 
     @Override

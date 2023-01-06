@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ErrorLineResponseParser} is responsible for parsing error information (log) entry.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class ErrorLineResponseParser extends AbstractLongResponseParser<ErrorLine> {
 
     @Override
     protected ErrorLine convert(byte[] responseBytes) {
         // 255 marks no error.
         if (responseBytes[1] == (byte) 255) {
-            return null;
+            return ErrorLine.NO_ERROR;
         }
 
         return new ErrorLine(ValueConverter.arrayToByte(responseBytes, 1),

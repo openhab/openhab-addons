@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.PROPERTY_OWNID;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.THING_STATE_REQ_TIMEOUT_SEC;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -48,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThingHandler} is responsible for handling commands for a OpenWebNet device.
+ * The {@link OpenWebNetThingHandler} is responsible for handling commands for an OpenWebNet device.
  * It's the abstract class for all OpenWebNet things. It should be extended by each specific OpenWebNet category of
  * device (WHO).
  *
@@ -265,7 +263,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     logger.debug("--- refreshAllDevices() : refreshing ALL devices... ({})", thing.getUID());
                     refreshDevice(true);
                 } else {
-                    logger.debug("--- refreshAllDevices() : refresh all devices just sent... ({})", thing.getUID());
+                    logger.debug("--- refreshAllDevices() : refresh all devices sent {}msec ago, skipping... ({})",
+                            ALL_DEVICES_REFRESH_INTERVAL_MSEC, thing.getUID());
                 }
                 // sometimes GENERAL (e.g. #*1*0##) refresh requests do not return state for all devices, so let's
                 // schedule another single refresh device, just in case

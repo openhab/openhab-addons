@@ -56,6 +56,10 @@ public class NetworkActions implements ThingActions {
         sendWakeOnLanPacketViaMac();
     }
 
+    public static void sendWakeOnLanPacket(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
+    }
+
     @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via Mac.")
     public void sendWakeOnLanPacketViaMac() {
         NetworkHandler localHandler = handler;
@@ -64,6 +68,10 @@ public class NetworkActions implements ThingActions {
         } else {
             logger.warn("Failed to send Wake-on-LAN packet (handler null)");
         }
+    }
+
+    public static void sendWakeOnLanPacketViaMac(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
     }
 
     @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via IP.")
@@ -76,7 +84,7 @@ public class NetworkActions implements ThingActions {
         }
     }
 
-    public static void sendWakeOnLanPacket(ThingActions actions) {
-        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
+    public static void sendWakeOnLanPacketViaIp(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacketViaIp();
     }
 }

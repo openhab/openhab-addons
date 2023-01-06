@@ -20,7 +20,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
- * Type of an {@link Event} within an {@link TimetableStop}.
+ * Type of an {@link Event} within a {@link TimetableStop}.
  * 
  * @author Sönke Küper - initial contribution
  */

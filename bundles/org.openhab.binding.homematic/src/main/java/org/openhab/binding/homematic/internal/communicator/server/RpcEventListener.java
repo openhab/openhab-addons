@@ -17,7 +17,7 @@ import java.util.List;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 
 /**
- * Methods called by the RpcServer when a event is received.
+ * Methods called by the RpcServer when an event is received.
  *
  * @author Gerhard Riegler - Initial contribution
  */

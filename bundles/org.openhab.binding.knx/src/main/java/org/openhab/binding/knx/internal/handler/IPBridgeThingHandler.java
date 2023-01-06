@@ -23,6 +23,7 @@ import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
+import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -34,7 +35,7 @@ import tuwien.auto.calimero.secure.KnxSecureException;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
- * sent to one of the channels. It implements a KNX/IP Gateway, that either acts a a
+ * sent to one of the channels. It implements a KNX/IP Gateway, that either acts as a
  * conduit for other {@link DeviceThingHandler}s, or for Channels that are
  * directly defined on the bridge
  *
@@ -52,9 +53,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
 
     private @Nullable IPClient client = null;
-    private final NetworkAddressService networkAddressService;
+    private @Nullable final NetworkAddressService networkAddressService;
 
-    public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
+    public IPBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService) {
         super(bridge);
         this.networkAddressService = networkAddressService;
     }
@@ -64,9 +65,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // initialisation would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
-        initJob = scheduler.submit(() -> {
-            initializeLater();
-        });
+        initJob = scheduler.submit(this::initializeLater);
     }
 
     public void initializeLater() {
@@ -87,11 +86,12 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         } catch (KnxSecureException e) {
             logger.debug("{}, {}", thing.getUID(), e.toString());
 
-            String message = e.getLocalizedMessage();
-            if (message == null) {
-                message = e.getClass().getSimpleName();
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                cause = e;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: " + message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    KNXTranslationProvider.I18N.getLocalizedException(cause));
             return;
         }
 
@@ -104,7 +104,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         }
         String localSource = config.getLocalSourceAddr();
         String connectionTypeString = config.getType();
-        int port = config.getPortNumber().intValue();
+        int port = config.getPortNumber();
         String ip = config.getIpAddress();
         InetSocketAddress localEndPoint = null;
         boolean useNAT = false;
@@ -120,7 +120,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure tunnel", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration missing for secure tunnel");
+                        "@text/error.knx-secure-tunnel-config-missing");
                 return;
             }
             boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
@@ -128,7 +128,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!tunnelOk) {
                 logger.warn("Bridge {} incomplete security configuration for secure tunnel", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration for secure tunnel is incomplete");
+                        "@text/error.knx-secure-tunnel-config-incomplete");
                 return;
             }
 
@@ -150,36 +150,40 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Security configuration missing for secure routing");
+                        "@text/error.knx-secure-routing-config-missing");
                 return;
             }
             if (secureRouting.backboneGroupKey.length != 16) {
                 // failed to read shared backbone group key from config
-                logger.warn("Bridge {} missing security configuration for secure routing", thing.getUID());
+                logger.warn("Bridge {} invalid security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "backboneGroupKey required for secure routing; please configure");
+                        "@text/error.knx-secure-routing-backbonegroupkey-invalid");
                 return;
             }
             logger.debug("KNX secure routing needs a few seconds to establish connection");
         } else {
             logger.debug("Bridge {} unknown connection type", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MessageFormat.format(
-                    "Unknown IP connection type {0}. Known types are either 'TUNNEL', 'ROUTER', 'SECURETUNNEL', or 'SECUREROUTER'",
-                    connectionTypeString));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    MessageFormat.format("@text/knx-unknown-ip-connection-type", connectionTypeString));
             return;
         }
 
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
+            if (networkAddressService == null) {
+                logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
             localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
-                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
+                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
 
         final var tmpClient = client;
         if (tmpClient != null) {

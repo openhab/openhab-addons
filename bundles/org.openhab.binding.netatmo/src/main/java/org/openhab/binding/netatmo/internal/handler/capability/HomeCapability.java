@@ -113,7 +113,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
                 result.add(homeStatus);
             }
         } catch (NetatmoException e) {
-            logger.warn("Error gettting Home informations : {}", e.getMessage());
+            logger.warn("Error getting Home informations : {}", e.getMessage());
         }
         return result;
     }

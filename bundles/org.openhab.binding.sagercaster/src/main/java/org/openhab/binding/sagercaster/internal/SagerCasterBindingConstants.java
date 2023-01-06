@@ -60,6 +60,6 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_WIND_ANGLE = "wind-angle";
 
     // Some algorythms constants
-    public final static String FORECAST_PENDING = "0";
-    public final static Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
+    public static final String FORECAST_PENDING = "0";
+    public static final Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
 }

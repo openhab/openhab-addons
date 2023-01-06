@@ -35,4 +35,5 @@ public class OpenWeatherMapAPIConfiguration {
     public @Nullable String apikey;
     public int refreshInterval;
     public @Nullable String language;
+    public String apiVersion = "2.5";
 }

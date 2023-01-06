@@ -32,14 +32,19 @@ public class TibberPriceConsumptionHandler {
     }
 
     public InputStream getInputStream(String homeId) {
-        String Query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
-                + "\\\") {currentSubscription {priceInfo {current {total startsAt level }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
-        return new ByteArrayInputStream(Query.getBytes(StandardCharsets.UTF_8));
+        String query = "{\"query\": \"{viewer {home (id: \\\"" + homeId
+                + "\\\") {currentSubscription {priceInfo {current {total startsAt level } tomorrow { startsAt total }}} daily: consumption(resolution: DAILY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}} hourly: consumption(resolution: HOURLY, last: 1) {nodes {from to cost unitPrice consumption consumptionUnit}}}}}\"}";
+        return new ByteArrayInputStream(query.getBytes(StandardCharsets.UTF_8));
     }
 
     public InputStream getRealtimeInputStream(String homeId) {
         String realtimeenabledquery = "{\"query\": \"{viewer {home (id: \\\"" + homeId
                 + "\\\") {features {realTimeConsumptionEnabled }}}}\"}";
         return new ByteArrayInputStream(realtimeenabledquery.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public InputStream getWebsocketUrl() {
+        String websocketquery = "{\"query\": \"{viewer {websocketSubscriptionUrl }}\"}";
+        return new ByteArrayInputStream(websocketquery.getBytes(StandardCharsets.UTF_8));
     }
 }

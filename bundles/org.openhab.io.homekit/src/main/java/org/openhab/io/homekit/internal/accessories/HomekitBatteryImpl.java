@@ -16,12 +16,14 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.BATTERY_
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.BATTERY_LEVEL;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.BATTERY_LOW_STATUS;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -42,11 +44,14 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
     private final BooleanItemReader lowBatteryReader;
     private BooleanItemReader chargingBatteryReader;
     private final boolean isChargeable;
+    private final BigDecimal lowThreshold;
 
     public HomekitBatteryImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        lowBatteryReader = createBooleanReader(BATTERY_LOW_STATUS);
+        lowThreshold = getAccessoryConfiguration(HomekitCharacteristicType.BATTERY_LOW_STATUS,
+                HomekitTaggedItem.BATTERY_LOW_THRESHOLD, BigDecimal.valueOf(20));
+        lowBatteryReader = createBooleanReader(BATTERY_LOW_STATUS, lowThreshold, true);
         isChargeable = getAccessoryConfigurationAsBoolean(BATTERY_TYPE, false);
         if (isChargeable) {
             chargingBatteryReader = createBooleanReader(BATTERY_CHARGING_STATE);

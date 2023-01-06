@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="printer">
 		<label>Printer</label>
-		<description>A IPP Printer</description>
+		<description>An IPP Printer</description>
 
 		<channels>
 			<channel id="jobs" typeId="jobs"/>

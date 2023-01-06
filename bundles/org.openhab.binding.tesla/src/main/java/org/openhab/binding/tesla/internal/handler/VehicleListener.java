@@ -12,21 +12,25 @@
  */
 package org.openhab.binding.tesla.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
 
 /**
  * The {@link VehicleListener} interface can be implemented by classes that want to be informed about
- * existing vehicles of a given account. They need to register on an {@link TeslaAccountHandler}.
+ * existing vehicles of a given account. They need to register on a {@link TeslaAccountHandler}.
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public interface VehicleListener {
 
     /**
      * This method is called by the {@link TeslaAccountHandler}, if a vehicle is identified.
      *
      * @param vehicle a vehicle that was found within an account.
+     * @param vehicleConfig vehicle configuration that was read from the vehicle or null, if not available.
      */
-    void vehicleFound(Vehicle vehicle, VehicleConfig vehicleConfig);
+    void vehicleFound(Vehicle vehicle, @Nullable VehicleConfig vehicleConfig);
 }

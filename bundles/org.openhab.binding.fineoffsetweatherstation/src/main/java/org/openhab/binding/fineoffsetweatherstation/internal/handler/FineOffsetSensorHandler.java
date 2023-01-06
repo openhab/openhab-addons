@@ -22,6 +22,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Sen
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,8 +31,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * The {@link FineOffsetSensorHandler} keeps track of the signal and battery of the sensor attached to the gateway.

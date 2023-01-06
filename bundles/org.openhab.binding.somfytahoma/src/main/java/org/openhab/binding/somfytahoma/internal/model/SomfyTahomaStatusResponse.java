@@ -23,9 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaStatusResponse {
 
+    private String gatewayId = "";
     private SomfyTahomaStatus connectivity = new SomfyTahomaStatus();
 
     public SomfyTahomaStatus getConnectivity() {
         return connectivity;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
     }
 }

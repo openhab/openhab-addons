@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -93,6 +94,12 @@ public class DummyMetadataRegistry implements MetadataRegistry {
     @Override
     public boolean isInternalNamespace(String namespace) {
         return false;
+    }
+
+    @Override
+    public Collection<String> getAllNamespaces(String itemname) {
+        return stream().map(Metadata::getUID).filter(key -> key.getItemName().equals(itemname))
+                .map(MetadataKey::getNamespace).collect(Collectors.toSet());
     }
 
     @Override

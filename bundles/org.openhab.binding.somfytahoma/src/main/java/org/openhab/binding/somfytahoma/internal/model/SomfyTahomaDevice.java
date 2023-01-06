@@ -27,8 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaDevice {
 
-    private String uiClass = "";
-    private String widget = "";
     private String deviceURL = "";
     private String label = "";
     private String oid = "";
@@ -47,18 +45,6 @@ public class SomfyTahomaDevice {
 
     public String getOid() {
         return oid;
-    }
-
-    public String getUiClass() {
-        return uiClass;
-    }
-
-    public String getWidget() {
-        return widget;
-    }
-
-    public void setWidget(String widget) {
-        this.widget = widget;
     }
 
     public SomfyTahomaDeviceDefinition getDefinition() {

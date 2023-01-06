@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -200,7 +199,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
         for (Protocol protocol : Protocol.values()) {
             try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null,
                     conversionContext)) {
-                List<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
+                Collection<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
                 logger.trace("found {} measured values via protocol {}", result.size(), protocol);
                 if (!result.isEmpty()) {
                     return protocol;

@@ -187,16 +187,16 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (favoriteSelectChannel != null) {
             favoriteSelectChannelUID = favoriteSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + FAVORITE_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", FAVORITE_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
         if (playlistSelectChannel != null) {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + PLAYLIST_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -221,8 +221,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 
@@ -231,8 +231,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
                 getCurrentConnectionInfo();
                 if (!checkForConnectionIds()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No connection Id's set for UPnP device with UDN " + getUDN());
+                    String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                     return;
                 }
 
@@ -276,7 +276,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific UPnP volume channel", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME);
+                String label = String.format("@text/channel.upnpcontrol.vendorvolume.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendorvolume.description", ITEM_TYPE_VOLUME,
+                        CHANNEL_TYPE_VOLUME);
             }
         }
         if (config.mute && !UPNP_MASTER.equals(audioChannel)) {
@@ -284,7 +286,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific  UPnP mute channel", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE);
+                String label = String.format("@text/channel.upnpcontrol.vendormute.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendormute.description", ITEM_TYPE_MUTE,
+                        CHANNEL_TYPE_MUTE);
             }
         }
         if (config.loudness) {
@@ -292,7 +296,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Vendor specific  UPnP loudness channel", ITEM_TYPE_LOUDNESS,
+                String label = String.format("@text/channel.upnpcontrol.vendorloudness.label [ \"%s\" ]", audioChannel);
+                createChannel(name, label, "@text/channel.upnpcontrol.vendorloudness.description", ITEM_TYPE_LOUDNESS,
                         CHANNEL_TYPE_LOUDNESS);
             }
         }

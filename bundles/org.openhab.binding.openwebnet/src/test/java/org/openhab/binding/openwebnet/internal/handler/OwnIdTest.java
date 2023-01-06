@@ -22,6 +22,7 @@ import org.openhab.core.thing.Bridge;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.WhereCEN;
 import org.openwebnet4j.message.WhereEnergyManagement;
@@ -33,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test class for {@link OpenWebNetBridgeHandler#ownID} and ThingID
- * calculation using {@link OpenWebNetBridgeHandler}
- * methods: normalizeWhere(), ownIdFromWhoWhere(), ownIdFromMessage(), thingIdFromWhere()
+ * Test class for {@link OpenWebNetBridgeHandler#ownID} and ThingID calculation
+ * using {@link OpenWebNetBridgeHandler} methods: normalizeWhere(),
+ * ownIdFromWhoWhere(), ownIdFromMessage(), thingIdFromWhere()
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, updates
  * @author Andrea Conte - Energy management
- * @author Giovanni Fabiani - AAuxiliary message support
+ * @author Giovanni Fabiani - Auxiliary message support
  */
 @NonNullByDefault
 public class OwnIdTest {
@@ -48,7 +49,6 @@ public class OwnIdTest {
 
  // @formatter:off
     /**
-     *
      *                                      deviceWhere
      *                                      (DevAddrParam)
      * TYPE                 WHERE           = normalizeWhere()  ownId           ThingID
@@ -66,28 +66,36 @@ public class OwnIdTest {
      * BUS CEN              51              51                  15.51           51
      * BUS CEN+             212             212                 25.212          212
      * BUS DryContact       399             399                 25.399          399
-     * BUS AUX                4               4                    9.4            4
+     * BUS AUX              4               4                   9.4             4
+     * BUS Scenario         05              05                  0.05            05
+     * BUS Alarm Zone       #2 or 2         2                   5.2             2
+     * BUS Alarm silent     0               0                   5.0             0
+     * BUS Alarm system     null            0                   5.0             0
      */
 // @formatter:on
 
     public enum TEST {
         // @formatter:off
-        zb_switch(new WhereZigBee("789309801#9"), Who.fromValue(1), "*1*1*789309801#9##", "789309800h9", "1.789309800h9", "789309800h9"),
-        zb_switch_2u_1(new WhereZigBee("789301201#9"), Who.fromValue(1), "*1*1*789301201#9##", "789301200h9", "1.789301200h9", "789301200h9"),
-        zb_switch_2u_2(new WhereZigBee("789301202#9"), Who.fromValue(1), "*1*1*789301202#9##", "789301200h9", "1.789301200h9", "789301200h9"),
-        bus_switch(new WhereLightAutom("51"), Who.fromValue(1), "*1*1*51##", "51", "1.51", "51"),
-        bus_localbus(new WhereLightAutom("25#4#01"), Who.fromValue(1), "*1*1*25#4#01##", "25h4h01", "1.25h4h01", "25h4h01"),
-        bus_autom(new WhereLightAutom("93"), Who.fromValue(2), "*2*0*93##", "93", "2.93", "93"),
-        bus_thermo_via_cu(new WhereThermo("#1"), Who.fromValue(4),"*#4*#1*0*0020##" ,"1", "4.1", "1"),
-        bus_thermo(new WhereThermo("1"), Who.fromValue(4),"*#4*1*0*0020##" , "1", "4.1", "1"),
-        bus_thermo_act(new WhereThermo("1#2"), Who.fromValue(4),"*#4*1#2*20*0##" ,"1", "4.1", "1"),
-        bus_tempSensor(new WhereThermo("500"), Who.fromValue(4), "*#4*500*15*1*0020*0001##", "500", "4.500", "500"),
-        bus_energy(new WhereEnergyManagement("51"), Who.fromValue(18), "*#18*51*113##", "51", "18.51", "51"),
-        bus_cen(new WhereCEN("51"), Who.fromValue(15), "*15*31*51##", "51", "15.51", "51"),
-        bus_cen_plus(new WhereCEN("212"), Who.fromValue(25), "*25*21#31*212##", "212", "25.212", "212"),
-        bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399"),
-        bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4");
-
+        // msg, who, where, normW, ownId, thingId
+        zb_switch("*1*1*789309801#9##", Who.fromValue(1), new WhereZigBee("789309801#9"), "789309800h9", "1.789309800h9", "789309800h9"),
+        zb_switch_2u_1("*1*1*789301201#9##", Who.fromValue(1), new WhereZigBee("789301201#9"), "789301200h9", "1.789301200h9", "789301200h9"),
+        zb_switch_2u_2("*1*1*789301202#9##", Who.fromValue(1),    new WhereZigBee("789301202#9"), "789301200h9", "1.789301200h9", "789301200h9"),
+        bus_switch("*1*1*51##", Who.fromValue(1), new WhereLightAutom("51"),"51", "1.51", "51"),
+        bus_localbus("*1*1*25#4#01##",  Who.fromValue(1), new WhereLightAutom("25#4#01"), "25h4h01", "1.25h4h01", "25h4h01"),
+        bus_autom("*2*0*93##",Who.fromValue(2),  new WhereLightAutom("93"), "93", "2.93", "93"),
+        bus_thermo_via_cu("*#4*#1*0*0020##",  Who.fromValue(4), new WhereThermo("#1"), "1", "4.1", "1"),
+        bus_thermo("*#4*1*0*0020##", Who.fromValue(4),  new WhereThermo("1"),  "1", "4.1", "1"),
+        bus_thermo_act("*#4*1#2*20*0##",   Who.fromValue(4), new WhereThermo("1#2") ,"1", "4.1", "1"),
+        bus_tempSensor("*#4*500*15*1*0020*0001##",Who.fromValue(4),  new WhereThermo("500"), "500", "4.500", "500"),
+        bus_energy("*#18*51*113##",   Who.fromValue(18), new WhereEnergyManagement("51"),  "51", "18.51", "51"),
+        bus_cen("*15*31*51##", Who.fromValue(15),  new WhereCEN("51"),  "51", "15.51", "51"),
+        bus_cen_plus("*25*21#31*212##", Who.fromValue(25),  new WhereCEN("212"), "212", "25.212", "212"),
+        bus_drycontact("*25*32#1*399##", Who.fromValue(25),   new WhereCEN("399"), "399", "25.399", "399"),
+        bus_aux( "*9*1*4##", Who.fromValue(9),  new WhereAuxiliary("4"),"4","9.4","4"),
+        bus_scenario( "*0*2*05##", Who.fromValue(0), new WhereLightAutom("05"), "05","0.05","05"),
+        bus_alarm_zh("*#5*#2##",  Who.fromValue(5), new WhereAlarm("#2"),  "2", "5.2", "2"),
+        bus_alarm_silent("*5*2*0##",  Who.fromValue(5), new WhereAlarm("0"),  "0", "5.0", "0"),
+        bus_alarm_system( "*5*7*##", Who.fromValue(5),new WhereAlarm("0"), "0", "5.0", "0");
 
         // @formatter:on
 
@@ -98,7 +106,7 @@ public class OwnIdTest {
         public final @Nullable BaseOpenMessage msg;
         public final String norm, ownId, thingId;
 
-        private TEST(Where where, Who who, String msg, String norm, String ownId, String thingId) {
+        private TEST(String msg, Who who, Where where, String norm, String ownId, String thingId) {
             this.where = where;
             this.who = who;
             BaseOpenMessage bmsg = null;
@@ -122,7 +130,7 @@ public class OwnIdTest {
         BaseOpenMessage bmsg;
         for (int i = 0; i < TEST.values().length; i++) {
             TEST test = TEST.values()[i];
-            logger.info("testing where={}", test.where);
+            logger.info("testing {} (who={} where={})", test.msg, test.who, test.where);
             assertEquals(test.norm, brH.normalizeWhere(test.where));
             assertEquals(test.ownId, brH.ownIdFromWhoWhere(test.who, test.where));
             bmsg = test.msg;

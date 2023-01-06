@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This represents the configuration of a openHAB item that is binded to a Velux
+ * This represents the configuration of an openHAB item that is binded to a Velux
  * KLF200 Gateway. It contains the following information:
  *
  * <ul>

@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +31,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.Configuration;
 
 /**
- * An version of {@link SimpleRule} which controls multithreaded execution access to this specific rule. This is useful
+ * A version of {@link SimpleRule} which controls multithreaded execution access to this specific rule. This is useful
  * for rules which wrap GraalJS Contexts, which are not multithreaded.
  *
  * @author Jonathan Gilbert - Initial contribution
@@ -38,7 +39,7 @@ import org.openhab.core.config.core.Configuration;
 @NonNullByDefault
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
-    private final Object lock;
+    private final Lock lock;
     private final SimpleRule delegate;
 
     /**
@@ -47,7 +48,7 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
      * @param lock rule executions will synchronize on this object
      * @param delegate the delegate to forward invocations to
      */
-    ThreadsafeSimpleRuleDelegate(Object lock, SimpleRule delegate) {
+    ThreadsafeSimpleRuleDelegate(Lock lock, SimpleRule delegate) {
         this.lock = lock;
         this.delegate = delegate;
     }
@@ -55,8 +56,11 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
-        synchronized (lock) {
+        lock.lock();
+        try {
             return delegate.execute(module, inputs);
+        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+            lock.unlock();
         }
     }
 

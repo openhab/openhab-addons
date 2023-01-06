@@ -18,7 +18,7 @@ import org.openhab.binding.pioneeravr.internal.protocol.ip.IpAvrConnection;
 import org.openhab.core.thing.Thing;
 
 /**
- * An handler of an AVR connected through an IP connection.
+ * A handler of an AVR connected through an IP connection.
  *
  * @author Antoine Besnard - Initial contribution
  */

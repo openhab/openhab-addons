@@ -47,10 +47,6 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     @XStreamImplicit(itemFieldName = "actuator_functionality", keyFieldName = "type")
     private ActuatorFunctionalities actuatorFunctionalities;
 
-    public Location(String presetScene) {
-        this.preset = presetScene;
-    }
-
     public String getName() {
         return name;
     }
@@ -114,6 +110,10 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
             return this.actuatorFunctionalities.getRegulationControl();
         }
         return null;
+    }
+
+    public void setPreset(String preset) {
+        this.preset = preset;
     }
 
     public int applianceCount() {

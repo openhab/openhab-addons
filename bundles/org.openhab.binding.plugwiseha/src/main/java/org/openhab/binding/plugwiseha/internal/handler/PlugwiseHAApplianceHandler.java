@@ -220,6 +220,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_TEMPERATURE_CHANNEL:
             case APPLIANCE_VALVEPOSITION_CHANNEL:
             case APPLIANCE_WATERPRESSURE_CHANNEL:
+            case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
                 state = UnDefType.NULL;
                 break;
             case APPLIANCE_BATTERYLEVELLOW_CHANNEL:
@@ -357,6 +358,14 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
                 if (entity.getOTAppFaultCode().isPresent()) {
                     state = new QuantityType<Dimensionless>(entity.getOTAppFaultCode().get().intValue(), Units.PERCENT);
+                }
+                break;
+            case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
+                if (entity.getBoilerTemp().isPresent()) {
+                    Unit<Temperature> unit = entity.getReturnWaterTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
+                            ? SIUnits.CELSIUS
+                            : ImperialUnits.FAHRENHEIT;
+                    state = new QuantityType<Temperature>(entity.getReturnWaterTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_DHWTEMPERATURE_CHANNEL:

@@ -124,24 +124,24 @@ public class UpnpServerHandler extends UpnpHandler {
         if (rendererChannel != null) {
             rendererChannelUID = rendererChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + UPNPRENDERER + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", UPNPRENDERER);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel selectionChannel = thing.getChannel(BROWSE);
         if (selectionChannel != null) {
             currentSelectionChannelUID = selectionChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + BROWSE + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", BROWSE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
         if (playlistSelectChannel != null) {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Channel " + PLAYLIST_SELECT + " not defined");
+            String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -165,8 +165,8 @@ public class UpnpServerHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 

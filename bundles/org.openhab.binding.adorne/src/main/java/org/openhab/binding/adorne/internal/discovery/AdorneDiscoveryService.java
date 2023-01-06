@@ -48,7 +48,7 @@ public class AdorneDiscoveryService extends AbstractDiscoveryService implements 
     private @Nullable AdorneHubController adorneHubController;
 
     /**
-     * Creates a AdorneDiscoveryService with disabled auto-discovery.
+     * Creates an AdorneDiscoveryService with disabled auto-discovery.
      */
     public AdorneDiscoveryService() {
         // Passing false as last argument to super constructor turns off background discovery

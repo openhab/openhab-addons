@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
-import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.PartitionCommandRequest;
 import org.openhab.binding.paradoxalarm.internal.communication.RequestType;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
@@ -35,8 +34,8 @@ public class Partition extends Entity implements Commandable {
 
     private PartitionState state = new PartitionState();
 
-    public Partition(int id, String label) {
-        super(id, label);
+    public Partition(ParadoxPanel panel, int id, String label) {
+        super(panel, id, label);
     }
 
     public PartitionState getState() {
@@ -62,7 +61,6 @@ public class Partition extends Entity implements Commandable {
         ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes())
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
         PartitionCommandRequest request = new PartitionCommandRequest(RequestType.PARTITION_COMMAND, packet, null);
-        IParadoxCommunicator communicator = ParadoxPanel.getInstance().getCommunicator();
-        communicator.submitRequest(request);
+        getPanel().getCommunicator().submitRequest(request);
     }
 }

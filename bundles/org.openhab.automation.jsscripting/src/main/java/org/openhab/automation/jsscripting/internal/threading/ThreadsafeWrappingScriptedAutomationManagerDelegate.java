@@ -13,6 +13,8 @@
 
 package org.openhab.automation.jsscripting.internal.threading;
 
+import java.util.concurrent.locks.Lock;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.Rule;
 import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAutomationManager;
@@ -31,15 +33,18 @@ import org.openhab.core.automation.type.TriggerType;
  * instance of this class that they are registered with.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread
+ *         synchronization
  */
 @NonNullByDefault
 public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
 
     private ScriptedAutomationManager delegate;
-    private Object lock = new Object();
+    private final Lock lock;
 
-    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate) {
+    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate, Lock lock) {
         this.delegate = delegate;
+        this.lock = lock;
     }
 
     public void removeModuleType(String UID) {

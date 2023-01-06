@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The model representing an Neeo Scenario (serialize/deserialize json use only).
+ * The model representing a Neeo Scenario (serialize/deserialize json use only).
  *
  * @author Tim Roberts - Initial contribution
  */

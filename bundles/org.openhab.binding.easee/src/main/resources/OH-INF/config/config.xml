@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:easee:site">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>General</label>
+			<description>General settings.</description>
+		</parameter-group>
+
+		<parameter name="username" type="text" required="true" groupName="authentication">
+			<label>Username</label>
+			<description>The username to login at Easee Cloud service. This should be an e-mail address or phone number.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<description>Your password to login at Easee Cloud service.</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="siteId" type="text" required="true" groupName="general">
+			<label>Site ID</label>
+			<description>The ID of the site containing the charger(s) and circuit(s) that should be integrated into openHAB.</description>
+		</parameter>
+		<parameter name="dataPollingInterval" type="integer" required="false" min="20" max="600" unit="s"
+			groupName="connection">
+			<label>Polling Interval</label>
+			<description>Interval in which data is polled from EaseeCloud (in seconds).</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:easee:charger">
+		<parameter name="id" type="text" required="true">
+			<label>ID</label>
+			<description>The ID of the charger that should be integrated into openHAB.</description>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:easee:mastercharger">
+		<parameter name="id" type="text" required="true">
+			<label>ID</label>
+			<description>The ID of the charger that should be integrated into openHAB.</description>
+		</parameter>
+		<parameter name="circuitId" type="text" required="true">
+			<label>Circuit ID</label>
+			<description>The ID of the circuit which is controlled by this charger.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

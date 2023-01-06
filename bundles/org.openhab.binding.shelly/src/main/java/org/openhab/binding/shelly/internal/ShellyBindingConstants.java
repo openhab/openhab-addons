@@ -14,10 +14,7 @@ package org.openhab.binding.shelly.internal;
 
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -35,18 +32,58 @@ public class ShellyBindingConstants {
     public static final String BINDING_ID = "shelly";
     public static final String SYSTEM_ID = "system";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_SHELLY1, THING_TYPE_SHELLY1L, THING_TYPE_SHELLY1PM,
-                    THING_TYPE_SHELLYEM, THING_TYPE_SHELLY3EM, THING_TYPE_SHELLY2_RELAY, THING_TYPE_SHELLY2_ROLLER,
-                    THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY4PRO, THING_TYPE_SHELLYPLUG,
-                    THING_TYPE_SHELLYPLUGS, THING_TYPE_SHELLYPLUGU1, THING_TYPE_SHELLYUNI, THING_TYPE_SHELLYDIMMER,
-                    THING_TYPE_SHELLYDIMMER2, THING_TYPE_SHELLYIX3, THING_TYPE_SHELLYBULB, THING_TYPE_SHELLYDUO,
-                    THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYRGBW2_COLOR,
-                    THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYHT, THING_TYPE_SHELLYTRV, THING_TYPE_SHELLYSENSE,
-                    THING_TYPE_SHELLYEYE, THING_TYPE_SHELLYSMOKE, THING_TYPE_SHELLYGAS, THING_TYPE_SHELLYFLOOD,
-                    THING_TYPE_SHELLYDOORWIN, THING_TYPE_SHELLYDOORWIN2, THING_TYPE_SHELLYBUTTON1,
-                    THING_TYPE_SHELLYBUTTON2, THING_TYPE_SHELLMOTION, THING_TYPE_SHELLMOTION,
-                    THING_TYPE_SHELLYPROTECTED, THING_TYPE_SHELLYUNKNOWN).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SHELLY1, //
+            THING_TYPE_SHELLY1L, //
+            THING_TYPE_SHELLY1PM, //
+            THING_TYPE_SHELLYEM, //
+            THING_TYPE_SHELLY3EM, //
+            THING_TYPE_SHELLY2_RELAY, //
+            THING_TYPE_SHELLY2_ROLLER, //
+            THING_TYPE_SHELLY25_RELAY, //
+            THING_TYPE_SHELLY25_ROLLER, //
+            THING_TYPE_SHELLY4PRO, //
+            THING_TYPE_SHELLYPLUG, //
+            THING_TYPE_SHELLYPLUGS, //
+            THING_TYPE_SHELLYPLUGU1, //
+            THING_TYPE_SHELLYUNI, //
+            THING_TYPE_SHELLYDIMMER, //
+            THING_TYPE_SHELLYDIMMER2, //
+            THING_TYPE_SHELLYIX3, //
+            THING_TYPE_SHELLYBULB, //
+            THING_TYPE_SHELLYDUO, //
+            THING_TYPE_SHELLYVINTAGE, //
+            THING_TYPE_SHELLYDUORGBW, //
+            THING_TYPE_SHELLYRGBW2_COLOR, //
+            THING_TYPE_SHELLYRGBW2_WHITE, //
+            THING_TYPE_SHELLYHT, //
+            THING_TYPE_SHELLYTRV, //
+            THING_TYPE_SHELLYSENSE, //
+            THING_TYPE_SHELLYEYE, //
+            THING_TYPE_SHELLYSMOKE, //
+            THING_TYPE_SHELLYGAS, //
+            THING_TYPE_SHELLYFLOOD, //
+            THING_TYPE_SHELLYDOORWIN, //
+            THING_TYPE_SHELLYDOORWIN2, //
+            THING_TYPE_SHELLYBUTTON1, //
+            THING_TYPE_SHELLYBUTTON2, //
+            THING_TYPE_SHELLMOTION, //
+            THING_TYPE_SHELLYPLUS1, //
+            THING_TYPE_SHELLYPLUS1PM, //
+            THING_TYPE_SHELLYPLUS2PM_RELAY, //
+            THING_TYPE_SHELLYPLUS2PM_ROLLER, //
+            THING_TYPE_SHELLYPRO1, //
+            THING_TYPE_SHELLYPRO1PM, //
+            THING_TYPE_SHELLYPRO2_RELAY, //
+            THING_TYPE_SHELLYPRO2PM_RELAY, //
+            THING_TYPE_SHELLYPRO2PM_ROLLER, //
+            THING_TYPE_SHELLYPRO3, //
+            THING_TYPE_SHELLYPRO4PM, //
+            THING_TYPE_SHELLYPLUSI4, //
+            THING_TYPE_SHELLYPLUSI4DC, //
+            THING_TYPE_SHELLYPLUSHT, //
+            THING_TYPE_SHELLYPLUSPLUGUS, //
+            THING_TYPE_SHELLYPROTECTED, //
+            THING_TYPE_SHELLYUNKNOWN);
 
     // Thing Configuration Properties
     public static final String CONFIG_DEVICEIP = "deviceIp";
@@ -144,10 +181,17 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile";
 
     // External sensors for Shelly1/1PM
-    public static final String CHANNEL_ESENDOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
-    public static final String CHANNEL_ESENDOR_TEMP2 = CHANNEL_SENSOR_TEMP + "2";
-    public static final String CHANNEL_ESENDOR_TEMP3 = CHANNEL_SENSOR_TEMP + "3";
-    public static final String CHANNEL_ESENDOR_HUMIDITY = CHANNEL_SENSOR_HUM;
+    public static final String CHANNEL_ESENSOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
+    public static final String CHANNEL_ESENSOR_TEMP2 = CHANNEL_SENSOR_TEMP + "2";
+    public static final String CHANNEL_ESENSOR_TEMP3 = CHANNEL_SENSOR_TEMP + "3";
+    public static final String CHANNEL_ESENSOR_TEMP4 = CHANNEL_SENSOR_TEMP + "4";
+    public static final String CHANNEL_ESENSOR_TEMP5 = CHANNEL_SENSOR_TEMP + "5";
+    public static final String CHANNEL_ESENSOR_HUMIDITY = CHANNEL_SENSOR_HUM;
+    public static final String CHANNEL_ESENSOR_VOLTAGE = CHANNEL_SENSOR_VOLTAGE;
+    public static final String CHANNEL_ESENSOR_DIGITALINPUT = "digitalInput";;
+    public static final String CHANNEL_ESENSOR_ANALOGINPUT = "analogInput";;
+    public static final String CHANNEL_ESENSOR_INPUT = "input";
+    public static final String CHANNEL_ESENSOR_INPUT1 = CHANNEL_ESENSOR_INPUT + "1";
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_SENSE_KEY = "key";
@@ -218,6 +262,7 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
+    public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.2"; // Gen 2 minimum FW
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
@@ -238,7 +283,8 @@ public class ShellyBindingConstants {
     public static final String EVENT_TYPE_SENSORDATA = "report";
 
     // URI for the EventServlet
-    public static final String SHELLY_CALLBACK_URI = "/shelly/event";
+    public static final String SHELLY1_CALLBACK_URI = "/shelly/event";
+    public static final String SHELLY2_CALLBACK_URI = "/shelly/wsevent";
 
     public static final int DIM_STEPSIZE = 5;
 

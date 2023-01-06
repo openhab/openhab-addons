@@ -140,8 +140,6 @@ public class PulseaudioHandler extends BaseThingHandler {
                 } catch (InterruptedException i) {
                     logger.info("Interrupted during sink audio connection: {}", i.getMessage());
                     return;
-                } finally {
-                    audioSink.scheduleDisconnect();
                 }
             }
         });
@@ -194,8 +192,6 @@ public class PulseaudioHandler extends BaseThingHandler {
                 } catch (InterruptedException i) {
                     logger.info("Interrupted during source audio connection: {}", i.getMessage());
                     return;
-                } finally {
-                    audioSource.scheduleDisconnect();
                 }
             }
         });

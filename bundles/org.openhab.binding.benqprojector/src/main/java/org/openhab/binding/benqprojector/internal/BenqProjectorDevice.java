@@ -92,7 +92,12 @@ public class BenqProjectorDevice {
 
     protected int queryInt(String query) throws BenqProjectorCommandException, BenqProjectorException {
         String response = sendQuery(query);
-        return Integer.parseInt(response);
+        try {
+            return Integer.parseInt(response);
+        } catch (NumberFormatException nfe) {
+            throw new BenqProjectorCommandException(
+                    "Unable to parse response '" + response + "' as Integer for command: " + query);
+        }
     }
 
     protected String queryString(String query) throws BenqProjectorCommandException, BenqProjectorException {

@@ -92,6 +92,7 @@ public class SunSpecConstants {
     public static final String CHANNEL_TRANSFORMER_TEMPERATURE = "transformer-temperature";
     public static final String CHANNEL_OTHER_TEMPERATURE = "other-temperature";
     public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_STATUS_VENDOR = "status-vendor";
 
     // List of channel ids in AC general group for inverter
     public static final String CHANNEL_AC_TOTAL_CURRENT = "ac-total-current";

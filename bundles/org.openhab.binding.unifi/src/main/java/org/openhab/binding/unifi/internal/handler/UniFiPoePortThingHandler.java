@@ -25,9 +25,6 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_P
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_VOLTAGE;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Power;
@@ -38,13 +35,15 @@ import org.openhab.binding.unifi.internal.UniFiPoePortThingConfig;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverride;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -61,8 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class UniFiPoePortThingHandler
-        extends UniFiBaseThingHandler<Map<Integer, UniFiPortTable>, UniFiPoePortThingConfig> {
+public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchPorts, UniFiPoePortThingConfig> {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiPoePortThingHandler.class);
 
@@ -81,26 +79,39 @@ public class UniFiPoePortThingHandler
                     "@text/error.thing.poe.offline.configuration_error");
             return false;
         }
-        final String channelConfigPoeEnableMode = (String) getThing().getChannel(CHANNEL_PORT_POE_ENABLE)
-                .getConfiguration().get(CHANNEL_ENABLE_PARAMETER_MODE);
-        poeEnableMode = channelConfigPoeEnableMode.isBlank() ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
-                : channelConfigPoeEnableMode;
-        return true;
+        return initPoeEnableMode();
+    }
+
+    private boolean initPoeEnableMode() {
+        final Channel channel = getThing().getChannel(CHANNEL_PORT_POE_ENABLE);
+
+        if (channel == null) {
+            return false;
+        } else {
+            final String channelConfigPoeEnableMode = (String) channel.getConfiguration()
+                    .get(CHANNEL_ENABLE_PARAMETER_MODE);
+            poeEnableMode = channelConfigPoeEnableMode.isBlank() ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
+                    : channelConfigPoeEnableMode;
+            return true;
+        }
     }
 
     @Override
-    protected @Nullable Map<Integer, UniFiPortTable> getEntity(final UniFiControllerCache cache) {
+    protected @Nullable UniFiSwitchPorts getEntity(final UniFiControllerCache cache) {
         return cache.getSwitchPorts(config.getMacAddress());
     }
 
     @Override
-    protected State getChannelState(final Map<Integer, UniFiPortTable> ports, final String channelId) {
-        final UniFiPortTable port = getPort(ports);
+    protected State getChannelState(final UniFiSwitchPorts ports, final String channelId) {
+        final UniFiPortTuple portTuple = getPort(ports);
+
+        if (portTuple == null) {
+            return setOfflineOnNoPoEPortData();
+        }
+        final UniFiPortTable port = portTuple.getTable();
 
         if (port == null) {
-            logger.debug("No PoE port for thing '{}' could be found in the data. Refresh ignored.",
-                    getThing().getUID());
-            return UnDefType.NULL;
+            return setOfflineOnNoPoEPortData();
         }
         final State state;
 
@@ -129,30 +140,38 @@ public class UniFiPoePortThingHandler
         return state;
     }
 
-    private @Nullable UniFiPortTable getPort(final Map<Integer, UniFiPortTable> ports) {
-        return ports.get(config.getPortNumber());
+    private State setOfflineOnNoPoEPortData() {
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.thing.poe.offline.nodata_error");
+        }
+        return UnDefType.NULL;
+    }
+
+    private @Nullable UniFiPortTuple getPort(final UniFiSwitchPorts ports) {
+        return ports.getPort(config.getPortNumber());
     }
 
     @Override
-    protected boolean handleCommand(final UniFiController controller, final Map<Integer, UniFiPortTable> ports,
+    protected boolean handleCommand(final UniFiController controller, final UniFiSwitchPorts ports,
             final ChannelUID channelUID, final Command command) throws UniFiException {
         final String channelID = channelUID.getIdWithoutGroup();
 
         switch (channelID) {
             case CHANNEL_PORT_POE_ENABLE:
                 if (command instanceof OnOffType) {
-                    return handleModeCommand(controller, ports, getPort(ports),
+                    return handleModeCommand(controller, ports,
                             OnOffType.ON == command ? poeEnableMode : CHANNEL_ENABLE_PARAMETER_MODE_OFF);
                 }
                 break;
             case CHANNEL_PORT_POE_MODE:
                 if (command instanceof StringType) {
-                    return handleModeCommand(controller, ports, getPort(ports), command.toFullString());
+                    return handleModeCommand(controller, ports, command.toFullString());
                 }
                 break;
             case CHANNEL_PORT_POE_CMD:
                 if (command instanceof StringType) {
-                    return handleCmd(controller, getPort(ports), command.toFullString());
+                    return handleCmd(controller, ports, command.toFullString());
                 }
             default:
                 return false;
@@ -160,44 +179,40 @@ public class UniFiPoePortThingHandler
         return false;
     }
 
-    private boolean handleModeCommand(final UniFiController controller, final Map<Integer, UniFiPortTable> ports,
-            final @Nullable UniFiPortTable portToUpdate, final String poeMode) throws UniFiException {
-        final UniFiDevice device = controller.getCache().getDevice(config.getMacAddress());
+    private boolean handleModeCommand(final UniFiController controller, final UniFiSwitchPorts ports,
+            final String poeMode) throws UniFiException {
+        final @Nullable UniFiDevice device = controller.getCache().getDevice(config.getMacAddress());
 
-        if (device == null || portToUpdate == null) {
-            logger.info("Could not change the PoE port state for thing '{}': device {} or portToUpdate {} null",
-                    getThing().getUID(), device, portToUpdate);
-            return false;
-        } else {
-            final UnfiPortOverride override = new UnfiPortOverride();
-            override.setPortIdx(portToUpdate.getPortIdx());
-            override.setPortconfId(portToUpdate.getPortconfId());
-            override.setPoeMode(poeMode);
-            final Map<Integer, UnfiPortOverride> newMap = new HashMap<>(ports);
-
-            newMap.put(portToUpdate.getPortIdx(), override);
-            controller.poeMode(device, newMap);
-            refresh();
-            return true;
+        if (canUpdate(device, ports) && device != null) {
+            controller.poeMode(device, ports.updatedList(config.getPortNumber(), p -> p.setPoeMode(poeMode)));
+            // No refresh because UniFi device takes some time to update. Therefore a refresh would only show the
+            // old state.
         }
+        return true;
     }
 
-    private boolean handleCmd(final UniFiController controller, @Nullable final UniFiPortTable portToUpdate,
-            final String command) throws UniFiException {
-        final UniFiDevice device = controller.getCache().getDevice(config.getMacAddress());
-        if (device == null || portToUpdate == null) {
-            logger.info("Could not change the PoE port state for thing '{}': device {} or portToUpdate {} null",
-                    getThing().getUID(), device, portToUpdate);
-            return false;
-        } else {
+    private boolean handleCmd(final UniFiController controller, final UniFiSwitchPorts ports, final String command)
+            throws UniFiException {
+        final @Nullable UniFiDevice device = controller.getCache().getDevice(config.getMacAddress());
+
+        if (canUpdate(device, ports) && device != null) {
             if (CHANNEL_PORT_POE_CMD_POWER_CYCLE.equalsIgnoreCase(command.replaceAll("[- ]", ""))) {
-                controller.poePowerCycle(device, portToUpdate.getPortIdx());
-                return true;
+                controller.poePowerCycle(device, config.getPortNumber());
             } else {
                 logger.info("Unknown command '{}' given to PoE port for thing '{}': device {} or portToUpdate {} null",
-                        command, getThing().getUID(), device, portToUpdate);
-                return false;
+                        command, getThing().getUID(), device, ports);
             }
+
         }
+        return true;
+    }
+
+    private boolean canUpdate(final @Nullable UniFiDevice device, final UniFiSwitchPorts ports) {
+        if (device == null || getPort(ports) == null) {
+            logger.info("Could not change the PoE port state for thing '{}': device {} or portToUpdate {} null",
+                    getThing().getUID(), device, config.getPortNumber());
+            return false;
+        }
+        return true;
     }
 }

@@ -70,7 +70,7 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            NeoHubWebSocket socket = new NeoHubWebSocket(config);
+            NeoHubWebSocket socket = new NeoHubWebSocket(config, "test");
             String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
             String responseJson = socket.sendMessage(requestJson);
             assertNotEquals(0, responseJson.length());
@@ -96,7 +96,7 @@ public class NeoHubProtocolTests {
             config.socketTimeout = SOCKET_TIMEOUT;
             config.apiToken = HUB_API_TOKEN;
 
-            NeoHubSocket socket = new NeoHubSocket(config);
+            NeoHubSocket socket = new NeoHubSocket(config, "test");
             String requestJson = NeoHubBindingConstants.CMD_CODE_FIRMWARE;
             String responseJson = socket.sendMessage(requestJson);
             assertNotEquals(0, responseJson.length());

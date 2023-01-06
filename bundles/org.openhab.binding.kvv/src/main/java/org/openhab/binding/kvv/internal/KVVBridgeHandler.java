@@ -61,15 +61,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         this.config = getConfigAs(KVVBridgeConfig.class);
-        if (this.config.apiKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to get bridge configuration");
-            return;
-        }
-
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -91,8 +83,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return cr;
         }
 
-        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stopConfig.stopId + "?key="
-                + config.apiKey + "&maxInfos=" + config.maxTrains;
+        final String url = String.format(KVVBindingConstants.API_FORMAT, stopConfig.stopId, config.maxTrains);
 
         String data;
         try {

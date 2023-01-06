@@ -11,6 +11,15 @@
 			<label>API Key</label>
 			<description>API key to access the OpenWeatherMap API.</description>
 		</parameter>
+		<parameter name="apiVersion" type="text">
+			<label>One Call API Version</label>
+			<description>One Call API version (defaults to 2.5, version 3.0 is available, but needs different subscription).</description>
+			<default>2.5</default>
+			<options>
+				<option value="2.5">2.5</option>
+				<option value="3.0">3.0</option>
+			</options>
+		</parameter>
 		<parameter name="refreshInterval" type="integer" min="1" unit="min">
 			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval (in minutes).</description>

@@ -13,25 +13,21 @@
 package org.openhab.binding.hue.internal.discovery;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
-import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -42,37 +38,29 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link HueBridgeNupnpDiscovery} is responsible for discovering new hue bridges. It uses the 'NUPnP service
+ * The {@link HueBridgeNupnpDiscovery} is responsible for discovering new Hue Bridges. It uses the 'NUPnP service
  * provided by Philips'.
  *
  * @author Awelkiyar Wehabrebi - Initial contribution
  * @author Christoph Knauf - Refactorings
  * @author Andre Fuechsel - make {@link #startScan()} asynchronous
  */
-@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.hue")
+@NonNullByDefault
 public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
-    private static final String MODEL_NAME_PHILIPS_HUE = "<modelName>Philips hue";
-
+    private static final String MODEL_NAME_PHILIPS_HUE = "\"name\":\"Philips Hue\"";
     protected static final String BRIDGE_INDICATOR = "fffe";
-
     private static final String DISCOVERY_URL = "https://discovery.meethue.com/";
-
-    protected static final String LABEL_PATTERN = "Philips hue (IP)";
-
-    private static final String DESC_URL_PATTERN = "http://HOST/description.xml";
-
+    protected static final String LABEL_PATTERN = "Philips Hue (%s)";
+    private static final String CONFIG_URL_PATTERN = "http://%s/api/0/config";
     private static final int REQUEST_TIMEOUT = 5000;
-
     private static final int DISCOVERY_TIMEOUT = 10;
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeNupnpDiscovery.class);
 
     public HueBridgeNupnpDiscovery() {
-        super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
+        super(HueBridgeHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
     }
 
     @Override
@@ -87,12 +75,14 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
         for (BridgeJsonParameters bridge : getBridgeList()) {
             if (isReachableAndValidHueBridge(bridge)) {
                 String host = bridge.getInternalIpAddress();
-                String serialNumber = bridge.getId().substring(0, 6) + bridge.getId().substring(10);
-                serialNumber = serialNumber.toLowerCase();
+                String serialNumber = bridge.getId().toLowerCase();
                 ThingUID uid = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                        .withProperties(buildProperties(host, serialNumber))
-                        .withLabel(LABEL_PATTERN.replace("IP", host)).withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid) //
+                        .withProperties(Map.of( //
+                                HOST, host, //
+                                Thing.PROPERTY_SERIAL_NUMBER, serialNumber)) //
+                        .withLabel(String.format(LABEL_PATTERN, host)) //
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
                         .build();
                 thingDiscovered(result);
             }
@@ -100,24 +90,10 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
     }
 
     /**
-     * Builds the bridge properties.
-     *
-     * @param host the ip of the bridge
-     * @param serialNumber the id of the bridge
-     * @return the bridge properties
-     */
-    private Map<String, Object> buildProperties(String host, String serialNumber) {
-        Map<String, Object> properties = new HashMap<>(2);
-        properties.put(HOST, host);
-        properties.put(PROPERTY_SERIAL_NUMBER, serialNumber);
-        return properties;
-    }
-
-    /**
      * Checks if the Bridge is a reachable Hue Bridge with a valid id.
      *
      * @param bridge the {@link BridgeJsonParameters}s
-     * @return true if Bridge is a reachable Hue Bridge with a id containing
+     * @return true if Hue Bridge is a reachable Hue Bridge with an id containing
      *         BRIDGE_INDICATOR longer then 10
      */
     private boolean isReachableAndValidHueBridge(BridgeJsonParameters bridge) {
@@ -136,14 +112,14 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             logger.debug("Bridge not discovered: id {} is shorter then 10.", id);
             return false;
         }
-        if (!id.substring(6, 10).equals(BRIDGE_INDICATOR)) {
+        if (!BRIDGE_INDICATOR.equals(id.substring(6, 10))) {
             logger.debug(
                     "Bridge not discovered: id {} does not contain bridge indicator {} or its at the wrong position.",
                     id, BRIDGE_INDICATOR);
             return false;
         }
         try {
-            description = doGetRequest(DESC_URL_PATTERN.replace("HOST", host));
+            description = doGetRequest(String.format(CONFIG_URL_PATTERN, host));
         } catch (IOException e) {
             logger.debug("Bridge not discovered: Failure accessing description file for ip: {}", host);
             return false;
@@ -170,10 +146,10 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
             return Objects.requireNonNull(bridgeParameters);
         } catch (IOException e) {
             logger.debug("Philips Hue NUPnP service not reachable. Can't discover bridges");
-        } catch (JsonParseException je) {
+        } catch (JsonParseException e) {
             logger.debug("Invalid json respone from Hue NUPnP service. Can't discover bridges");
         }
-        return new ArrayList<>();
+        return List.of();
     }
 
     /**

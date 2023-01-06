@@ -84,7 +84,7 @@
 			<description>The value to set when setting PoE on.</description>
 			<options>
 				<option value="auto">Auto</option>
-				<option value="24v">24V</option>
+				<option value="pasv24">24V</option>
 				<option value="passthrough">Passthrough</option>
 			</options>
 			<default>auto</default>

@@ -51,12 +51,6 @@ public class StateHostFirmwareResponse extends Packet {
         this.version = version;
     }
 
-    public StateHostFirmwareResponse() {
-        setTagged(false);
-        setAddressable(true);
-        setResponseRequired(true);
-    }
-
     @Override
     public int packetType() {
         return TYPE;

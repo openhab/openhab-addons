@@ -12,7 +12,7 @@
 		</supported-bridge-type-refs>
 
 		<label>AM43 Blind Drive Motor</label>
-		<description>A AM43 Blind Drive Motor</description>
+		<description>An AM43 Blind Drive Motor</description>
 		<category>Blinds</category>
 
 		<channels>

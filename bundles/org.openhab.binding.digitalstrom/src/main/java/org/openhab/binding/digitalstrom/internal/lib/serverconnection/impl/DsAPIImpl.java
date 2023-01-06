@@ -936,7 +936,7 @@ public class DsAPIImpl implements DsAPI {
                         } else {
                             builder.buildRequestString();
                             throw new IllegalArgumentException(
-                                    "The first field of the object array have to be a String and the second have to be a Integer.");
+                                    "The first field of the object array have to be a String and the second have to be an Integer.");
                         }
                     }
                     String response = transport.execute(builder.buildRequestString());

@@ -17,6 +17,7 @@ import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
 import static org.openhab.binding.mqtt.espmilighthub.internal.EspMilightHubBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -56,6 +58,46 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EspMilightHubHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
+    // these are all constants used in color conversion calcuations.
+    // strings are necessary to prevent floating point loss of precision
+    private static final BigDecimal BIG_DECIMAL_THOUSAND = new BigDecimal(1000);
+    private static final BigDecimal BIG_DECIMAL_MILLION = new BigDecimal(1000000);
+
+    private static final BigDecimal[][] KANG_X_COEFFICIENTS = {
+            { new BigDecimal("-3.0258469"), new BigDecimal("2.1070379"), new BigDecimal("0.2226347"),
+                    new BigDecimal("0.24039") },
+            { new BigDecimal("-0.2661239"), new BigDecimal("-0.234589"), new BigDecimal("0.8776956"),
+                    new BigDecimal("0.179910") } };
+
+    private static final BigDecimal[][] KANG_Y_COEFFICIENTS = {
+            { new BigDecimal("3.0817580"), new BigDecimal("-5.8733867"), new BigDecimal("3.75112997"),
+                    new BigDecimal("-0.37001483") },
+            { new BigDecimal("-0.9549476"), new BigDecimal("-1.37418593"), new BigDecimal("2.09137015"),
+                    new BigDecimal("-0.16748867") },
+            { new BigDecimal("-1.1063814"), new BigDecimal("-1.34811020"), new BigDecimal("2.18555832"),
+                    new BigDecimal("-0.20219683") } };
+
+    private static final BigDecimal BIG_DECIMAL_03320 = new BigDecimal("0.3320");
+    private static final BigDecimal BIG_DECIMAL_01858 = new BigDecimal("0.1858");
+    private static final BigDecimal[] MCCAMY_COEFFICIENTS = { new BigDecimal(437), new BigDecimal(3601),
+            new BigDecimal(6862), new BigDecimal(5517) };
+
+    private static final BigDecimal BIG_DECIMAL_2 = new BigDecimal(2);
+    private static final BigDecimal BIG_DECIMAL_3 = new BigDecimal(3);
+    private static final BigDecimal BIG_DECIMAL_4 = new BigDecimal(4);
+    private static final BigDecimal BIG_DECIMAL_6 = new BigDecimal(6);
+    private static final BigDecimal BIG_DECIMAL_12 = new BigDecimal(12);
+
+    private static final BigDecimal BIG_DECIMAL_0292 = new BigDecimal("0.292");
+    private static final BigDecimal BIG_DECIMAL_024 = new BigDecimal("0.24");
+
+    private static final BigDecimal[] CORM_COEFFICIENTS = { new BigDecimal("-0.00616793"), new BigDecimal("0.0893944"),
+            new BigDecimal("-0.5179722"), new BigDecimal("1.5317403"), new BigDecimal("-2.4243787"),
+            new BigDecimal("1.925865"), new BigDecimal("-0.471106") };
+
+    private static final BigDecimal BIG_DECIMAL_153 = new BigDecimal(153);
+    private static final BigDecimal BIG_DECIMAL_217 = new BigDecimal(217);
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private @Nullable MqttBrokerConnection connection;
     private ThingRegistry thingRegistry;
@@ -106,16 +148,15 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
 
     private void processIncomingState(String messageJSON) {
         // Need to handle State and Level at the same time to process level=0 as off//
-        BigDecimal tempBulbLevel = BigDecimal.ZERO;
+        PercentType tempBulbLevel = PercentType.ZERO;
         String bulbState = Helper.resolveJSON(messageJSON, "\"state\":\"", 3);
         String bulbLevel = Helper.resolveJSON(messageJSON, "\"level\":", 3);
         if (!bulbLevel.isEmpty()) {
             if ("0".equals(bulbLevel) || "OFF".equals(bulbState)) {
                 changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
-                tempBulbLevel = BigDecimal.ZERO;
             } else {
-                tempBulbLevel = new BigDecimal(bulbLevel);
-                changeChannel(CHANNEL_LEVEL, new PercentType(tempBulbLevel));
+                tempBulbLevel = new PercentType(Integer.valueOf(bulbLevel));
+                changeChannel(CHANNEL_LEVEL, tempBulbLevel);
             }
         } else if ("ON".equals(bulbState) || "OFF".equals(bulbState)) { // NOTE: Level is missing when this runs
             changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
@@ -123,15 +164,17 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         bulbMode = Helper.resolveJSON(messageJSON, "\"bulb_mode\":\"", 5);
         switch (bulbMode) {
             case "white":
-                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
+                if (hasRGB()) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("white"));
-                    changeChannel(CHANNEL_COLOUR, new HSBType("0,0," + tempBulbLevel));
                     changeChannel(CHANNEL_DISCO_MODE, new StringType("None"));
                 }
-                String bulbCTemp = Helper.resolveJSON(messageJSON, "\"color_temp\":", 3);
-                if (!bulbCTemp.isEmpty()) {
-                    int ibulbCTemp = (int) Math.round(((Float.valueOf(bulbCTemp) / 2.17) - 171) * -1);
-                    changeChannel(CHANNEL_COLOURTEMP, new PercentType(ibulbCTemp));
+                String bulbCTempS = Helper.resolveJSON(messageJSON, "\"color_temp\":", 3);
+                if (!bulbCTempS.isEmpty()) {
+                    var bulbCTemp = Integer.valueOf(bulbCTempS);
+                    changeChannel(CHANNEL_COLOURTEMP, scaleMireds(bulbCTemp));
+                    if (hasRGB()) {
+                        changeChannel(CHANNEL_COLOUR, calculateHSBFromColorTemp(bulbCTemp, tempBulbLevel));
+                    }
                 }
                 break;
             case "color":
@@ -145,11 +188,20 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                     if (bulbSaturation.isEmpty()) {
                         bulbSaturation = "100";
                     }
-                    changeChannel(CHANNEL_COLOUR, new HSBType(bulbHue + "," + bulbSaturation + "," + tempBulbLevel));
+                    // 360 isn't allowed by OpenHAB
+                    if (bulbHue.equals("360")) {
+                        bulbHue = "0";
+                    }
+                    var hsb = new HSBType(new DecimalType(Integer.valueOf(bulbHue)),
+                            new PercentType(Integer.valueOf(bulbSaturation)), tempBulbLevel);
+                    changeChannel(CHANNEL_COLOUR, hsb);
+                    if (hasCCT()) {
+                        changeChannel(CHANNEL_COLOURTEMP, scaleMireds(calculateColorTempFromHSB(hsb)));
+                    }
                 }
                 break;
             case "scene":
-                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
+                if (hasRGB()) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("scene"));
                 }
                 String bulbDiscoMode = Helper.resolveJSON(messageJSON, "\"mode\":", 1);
@@ -158,7 +210,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 }
                 break;
             case "night":
-                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
+                if (hasRGB()) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("night"));
                     if (config.oneTriggersNightMode) {
                         changeChannel(CHANNEL_LEVEL, new PercentType("1"));
@@ -166,6 +218,113 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 }
                 break;
         }
+    }
+
+    private boolean hasCCT() {
+        switch (globeType) {
+            case "rgb_cct":
+            case "cct":
+            case "fut089":
+            case "fut091":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean hasRGB() {
+        switch (globeType) {
+            case "rgb_cct":
+            case "rgb":
+            case "rgbw":
+            case "fut089":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Scales mireds to 0-100%
+     */
+    private static PercentType scaleMireds(int mireds) {
+        // range in mireds is 153-370
+        // 100 - (mireds - 153) / (370 - 153) * 100
+        if (mireds >= 370) {
+            return PercentType.HUNDRED;
+        } else if (mireds <= 153) {
+            return PercentType.ZERO;
+        }
+        return new PercentType(BIG_DECIMAL_100.subtract(new BigDecimal(mireds).subtract(BIG_DECIMAL_153)
+                .divide(BIG_DECIMAL_217, MathContext.DECIMAL128).multiply(BIG_DECIMAL_100)));
+    }
+
+    private static BigDecimal polynomialFit(BigDecimal x, BigDecimal[] coefficients) {
+        var result = BigDecimal.ZERO;
+        var xAccumulator = BigDecimal.ONE;
+        // forms K[4]*x^0 + K[3]*x^1 + K[2]*x^2 + K[1]*x^3 + K[0]*x^4
+        // (or reverse the order of terms for the usual way of writing it in academic papers)
+        for (int i = coefficients.length - 1; i >= 0; i--) {
+            result = result.add(coefficients[i].multiply(xAccumulator));
+            xAccumulator = xAccumulator.multiply(x);
+        }
+        return result;
+    }
+
+    // https://www.jkps.or.kr/journal/download_pdf.php?spage=865&volume=41&number=6 (8) and (9)
+    private static HSBType calculateHSBFromColorTemp(int mireds, PercentType brightness) {
+        var cct = BIG_DECIMAL_MILLION.divide(new BigDecimal(mireds), MathContext.DECIMAL128);
+        var cctInt = cct.intValue();
+
+        BigDecimal[] coefficients;
+        // 1667K to 4000K and 4000K to 25000K; no range checks since our mired range fits within this
+        if (cctInt <= 4000) {
+            coefficients = KANG_X_COEFFICIENTS[1];
+        } else {
+            coefficients = KANG_X_COEFFICIENTS[0];
+        }
+        BigDecimal x = polynomialFit(BIG_DECIMAL_THOUSAND.divide(cct, MathContext.DECIMAL128), coefficients);
+
+        if (cctInt <= 2222) {
+            coefficients = KANG_Y_COEFFICIENTS[2];
+        } else if (cctInt <= 4000) {
+            coefficients = KANG_Y_COEFFICIENTS[1];
+        } else {
+            coefficients = KANG_Y_COEFFICIENTS[0];
+        }
+        BigDecimal y = polynomialFit(x, coefficients);
+        var rawHsb = HSBType.fromXY(x.floatValue() * 100.0f, y.floatValue() * 100.0f);
+        return new HSBType(rawHsb.getHue(), rawHsb.getSaturation(), brightness);
+    }
+
+    // https://www.waveformlighting.com/tech/calculate-color-temperature-cct-from-cie-1931-xy-coordinates/
+    private static int calculateColorTempFromHSB(HSBType hsb) {
+        PercentType[] xy = hsb.toXY();
+        var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
+        var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
+        var n = x.subtract(BIG_DECIMAL_03320).divide(BIG_DECIMAL_01858.subtract(y), MathContext.DECIMAL128);
+        BigDecimal cctK = polynomialFit(n, MCCAMY_COEFFICIENTS);
+        return BIG_DECIMAL_MILLION.divide(cctK, MathContext.DECIMAL128).round(new MathContext(0)).intValue();
+    }
+
+    // https://cormusa.org/wp-content/uploads/2018/04/CORM_2011_Calculation_of_CCT_and_Duv_and_Practical_Conversion_Formulae.pdf
+    // page 19
+    private static BigDecimal calculateDuvFromHSB(HSBType hsb) {
+        PercentType[] xy = hsb.toXY();
+        var x = xy[0].toBigDecimal().divide(BIG_DECIMAL_100);
+        var y = xy[1].toBigDecimal().divide(BIG_DECIMAL_100);
+        var u = BIG_DECIMAL_4.multiply(x).divide(
+                BIG_DECIMAL_2.multiply(x).negate().add(BIG_DECIMAL_12.multiply(y).add(BIG_DECIMAL_3)),
+                MathContext.DECIMAL128);
+        var v = BIG_DECIMAL_6.multiply(y).divide(
+                BIG_DECIMAL_2.multiply(x).negate().add(BIG_DECIMAL_12.multiply(y).add(BIG_DECIMAL_3)),
+                MathContext.DECIMAL128);
+        var Lfp = u.subtract(BIG_DECIMAL_0292).pow(2).add(v.subtract(BIG_DECIMAL_024).pow(2))
+                .sqrt(MathContext.DECIMAL128);
+        var a = new BigDecimal(
+                Math.acos(u.subtract(BIG_DECIMAL_0292).divide(Lfp, MathContext.DECIMAL128).doubleValue()));
+        BigDecimal Lbb = polynomialFit(a, CORM_COEFFICIENTS);
+        return Lfp.subtract(Lbb);
     }
 
     /*
@@ -187,6 +346,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     }
 
     void handleLevelColour(Command command) {
+        int mireds;
+
         if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + "}");
@@ -210,7 +371,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             HSBType hsb = (HSBType) command;
             // This feature allows google home or Echo to trigger white mode when asked to turn color to white.
             if (hsb.getHue().intValue() == config.whiteHue && hsb.getSaturation().intValue() == config.whiteSat) {
-                if ("rgb_cct".equals(globeType) || "fut089".equals(globeType)) {
+                if (hasCCT()) {
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + config.favouriteWhite + "}");
                 } else {// globe must only have 1 type of white
                     sendMQTT("{\"command\":\"set_white\"}");
@@ -219,6 +380,10 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             } else if (PercentType.ZERO.equals(hsb.getBrightness())) {
                 turnOff();
                 return;
+            } else if (config.duvThreshold.compareTo(BigDecimal.ONE) < 0
+                    && calculateDuvFromHSB(hsb).abs().compareTo(config.duvThreshold) <= 0
+                    && (mireds = calculateColorTempFromHSB(hsb)) >= 153 && mireds <= 370) {
+                sendMQTT("{\"state\":\"ON\",\"level\":" + hsb.getBrightness() + ",\"color_temp\":" + mireds + "}");
             } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold) {
                 sendMQTT("{\"command\":\"set_white\"}");// Can't send the command and level in the same message.
                 sendMQTT("{\"level\":" + hsb.getBrightness().intValue() + "}");
@@ -239,7 +404,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + command + "}");
             savedLevel = percentType.toBigDecimal();
-            if ("rgb_cct".equals(globeType) || "fut089".equals(globeType)) {
+            if (hasCCT()) {
                 if (config.dimmedCT > 0 && "white".equals(bulbMode)) {
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + autoColourTemp(savedLevel.intValue()) + "}");
                 }
@@ -254,9 +419,10 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             return;
         }
         switch (channelUID.getId()) {
+            case CHANNEL_COLOUR:
             case CHANNEL_LEVEL:
                 handleLevelColour(command);
-                return;
+                break;
             case CHANNEL_BULB_MODE:
                 bulbMode = command.toString();
                 break;
@@ -270,8 +436,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             case CHANNEL_DISCO_MODE:
                 sendMQTT("{\"mode\":\"" + command + "\"}");
                 break;
-            case CHANNEL_COLOUR:
-                handleLevelColour(command);
         }
     }
 
@@ -322,8 +486,12 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     @Override
     public void processMessage(String topic, byte[] payload) {
         String state = new String(payload, StandardCharsets.UTF_8);
-        logger.trace("Recieved the following new Milight state:{}:{}", topic, state);
-        processIncomingState(state);
+        logger.trace("Received the following new Milight state:{}:{}", topic, state);
+        try {
+            processIncomingState(state);
+        } catch (Exception e) {
+            logger.warn("Failed processing Milight state {} for {}", state, topic, e);
+        }
     }
 
     @Override

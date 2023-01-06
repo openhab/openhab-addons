@@ -15,6 +15,7 @@
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="playControl" typeId="system.media-control"/>
+			<channel id="radioPreset" typeId="radioPreset"/>
 		</channels>
 
 		<properties>

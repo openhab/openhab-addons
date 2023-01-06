@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Discovers Plugwise devices by periodically reading the Circle+ node/MAC table with {@link RoleCallRequestMessage}s.
- * Sleeping end devices are discovered when they announce being awake with a {@link AnnounceAwakeRequestMessage}. To
+ * Sleeping end devices are discovered when they announce being awake with an {@link AnnounceAwakeRequestMessage}. To
  * reduce network traffic {@link InformationRequestMessage}s are only sent to undiscovered devices.
  *
  * @author Wouter Born, Karel Goderis - Initial contribution

@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openhab.binding.astro.internal.model.Eclipse;
@@ -251,9 +257,9 @@ public class SunCalc {
         sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason));
 
         // phase
-        for (Entry<SunPhaseName, Range> rangeEntry : sun.getAllRanges().entrySet()) {
+        for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
             SunPhaseName entryPhase = rangeEntry.getKey();
-            if (rangeEntry.getValue().matches(Calendar.getInstance())) {
+            if (rangeEntry.getValue().matches(calendar)) {
                 if (entryPhase == SunPhaseName.MORNING_NIGHT || entryPhase == SunPhaseName.EVENING_NIGHT) {
                     sun.getPhase().setName(SunPhaseName.NIGHT);
                 } else {
@@ -335,5 +341,25 @@ public class SunCalc {
 
     private double getSunriseJulianDate(double jtransit, double jset) {
         return jtransit - (jset - jtransit);
+    }
+
+    public static Map<SunPhaseName, Range> sortByValue(Map<SunPhaseName, Range> map) {
+        List<Entry<SunPhaseName, Range>> list = new ArrayList<>(map.entrySet());
+
+        Collections.sort(list, new Comparator<Entry<SunPhaseName, Range>>() {
+            @Override
+            public int compare(Entry<SunPhaseName, Range> p1, Entry<SunPhaseName, Range> p2) {
+                Range p1Range = p1.getValue();
+                Range p2Range = p2.getValue();
+                return p1Range.compareTo(p2Range);
+            }
+        });
+
+        Map<SunPhaseName, Range> result = new LinkedHashMap<>();
+        for (Entry<SunPhaseName, Range> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 }

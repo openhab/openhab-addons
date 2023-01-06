@@ -101,7 +101,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
 
         // The results from webservice does not conform to the schema provided. The triplabel-Element (tl) is expected
         // to occour as
-        // last Element within an timetableStop (s) element. But it is the first element when requesting the plan.
+        // last Element within a timetableStop (s) element. But it is the first element when requesting the plan.
         // When requesting the changes it is the last element, so the schema can't just be corrected.
         // If written to developer support, but got no response yet, so schema validation is disabled at the moment.
 

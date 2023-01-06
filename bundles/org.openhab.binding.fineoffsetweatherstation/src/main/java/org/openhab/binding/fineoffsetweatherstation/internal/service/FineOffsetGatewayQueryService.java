@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.service;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,12 +87,26 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
     }
 
     @Override
-    public List<MeasuredValue> getMeasuredValues() {
+    public Collection<MeasuredValue> getMeasuredValues() {
+        Map<String, MeasuredValue> valuePerChannel = new LinkedHashMap<>();
+
         byte[] data = executeCommand(Command.CMD_GW1000_LIVEDATA);
-        if (data == null) {
-            return Collections.emptyList();
+        if (data != null) {
+            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, conversionContext);
+            for (MeasuredValue measuredValue : measuredValues) {
+                valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
+            }
         }
-        return fineOffsetDataParser.getMeasuredValues(data, conversionContext);
+
+        data = executeCommand(Command.CMD_READ_RAIN);
+        if (data != null) {
+            List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, conversionContext);
+            for (MeasuredValue measuredValue : measuredRainValues) {
+                valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
+            }
+        }
+
+        return valuePerChannel.values();
     }
 
     protected byte @Nullable [] executeCommand(Command command) {

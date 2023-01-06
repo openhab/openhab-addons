@@ -71,8 +71,14 @@ class BoschHttpClientTest {
 
     @Test
     void getServiceUrl() {
-        assertEquals("https://127.0.0.1:8444/smarthome/devices/testDevice/services/testService/state",
+        assertEquals("https://127.0.0.1:8444/smarthome/devices/testDevice/services/testService",
                 httpClient.getServiceUrl("testService", "testDevice"));
+    }
+
+    @Test
+    void getServiceStateUrl() {
+        assertEquals("https://127.0.0.1:8444/smarthome/devices/testDevice/services/testService/state",
+                httpClient.getServiceStateUrl("testService", "testDevice"));
     }
 
     @Test

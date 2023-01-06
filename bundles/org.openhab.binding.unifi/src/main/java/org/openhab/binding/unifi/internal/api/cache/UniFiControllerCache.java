@@ -18,15 +18,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
-import org.openhab.binding.unifi.internal.api.dto.UniFiPortTable;
+import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class UniFiControllerCache {
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
     private final UniFiClientCache insightsCache = new UniFiClientCache();
-    private final Map<String, Map<Integer, UniFiPortTable>> devicesToPortTables = new ConcurrentHashMap<>();
+    private final Map<String, UniFiSwitchPorts> devicesToPortTables = new ConcurrentHashMap<>();
 
     public void clear() {
         sitesCache.clear();
@@ -92,10 +92,24 @@ public class UniFiControllerCache {
         devicesCache.putAll(devices);
         if (devices != null) {
             Stream.of(devices).filter(Objects::nonNull).forEach(d -> {
-                Stream.ofNullable(d.getPortTable()).filter(ptl -> ptl.length > 0 && ptl[0].isPortPoe()).forEach(pt -> {
-                    Stream.of(pt).forEach(p -> p.setDevice(d));
-                    devicesToPortTables.put(d.getMac(),
-                            Stream.of(pt).collect(Collectors.toMap(UniFiPortTable::getPortIdx, Function.identity())));
+                Stream.ofNullable(d.getPortTable()).forEach(pt -> {
+                    final UniFiSwitchPorts switchPorts = devicesToPortTables.computeIfAbsent(d.getMac(),
+                            p -> new UniFiSwitchPorts());
+
+                    Stream.of(pt).forEach(p -> {
+                        @SuppressWarnings("null")
+                        final UniFiPortTuple tuple = switchPorts.computeIfAbsent(p.getPortIdx());
+
+                        tuple.setDevice(d);
+                        tuple.setTable(p);
+                    });
+                });
+                Stream.ofNullable(d.getPortOverrides()).forEach(po -> {
+                    final UniFiSwitchPorts tupleTable = devicesToPortTables.get(d.getMac());
+
+                    if (tupleTable != null) {
+                        Stream.of(po).forEach(p -> tupleTable.setOverride(p));
+                    }
                 });
             });
         }
@@ -105,11 +119,12 @@ public class UniFiControllerCache {
         return devicesCache.get(id);
     }
 
-    public Map<Integer, UniFiPortTable> getSwitchPorts(@Nullable final String deviceId) {
-        return deviceId == null ? Map.of() : devicesToPortTables.getOrDefault(deviceId, Map.of());
+    public UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
+        return deviceId == null ? new UniFiSwitchPorts()
+                : devicesToPortTables.getOrDefault(deviceId, new UniFiSwitchPorts());
     }
 
-    public Collection<Map<Integer, UniFiPortTable>> getSwitchPorts() {
+    public Collection<UniFiSwitchPorts> getSwitchPorts() {
         return devicesToPortTables.values();
     }
 

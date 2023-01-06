@@ -6,7 +6,7 @@ His [Java Library](https://github.com/zazaz-de/iot-device-bosch-indego-controlle
 
 ## Thing Configuration
 
-Currently the binding supports  ***indego***  mowers as a thing type with these configuration parameters:
+Currently the binding supports  _**indego**_  mowers as a thing type with these configuration parameters:
 
 | Parameter          | Description                                                       | Default |
 |--------------------|-------------------------------------------------------------------|---------|
@@ -60,6 +60,7 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 | 518   | Border cut                                  |
 | 519   | Idle in lawn                                |
 | 523   | SpotMow                                     |
+| 768   | Returning to dock                           |
 | 769   | Returning to dock                           |
 | 770   | Returning to dock                           |
 | 771   | Returning to dock - Battery low             |
@@ -78,13 +79,13 @@ Currently the binding supports  ***indego***  mowers as a thing type with these 
 
 ### `indego.things` File
 
-```
+```java
 boschindego:indego:lawnmower [username="mail@example.com", password="idontneedtocutthelawnagain", refresh=120]
 ```
 
 ### `indego.items` File
 
-```
+```java
 Number Indego_State { channel="boschindego:indego:lawnmower:state" }
 Number Indego_ErrorCode { channel="boschindego:indego:lawnmower:errorcode" }
 Number Indego_StateCode { channel="boschindego:indego:lawnmower:statecode" }
@@ -103,6 +104,6 @@ Image Indego_GardenMap { channel="boschindego:indego:lawnmower:gardenMap" }
 
 ### `indego.sitemap` File
 
-```
+```perl
 Switch item=Indego_State mappings=[1="Mow", 2="Return",3="Pause"]
 ```

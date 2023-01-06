@@ -40,8 +40,11 @@ public class TapoThingConstants {
     public static final String DEVICE_P115 = "P115";
     public static final String DEVICE_L510 = "L510";
     public static final String DEVICE_L530 = "L530";
+    public static final String DEVICE_L610 = "L610";
+    public static final String DEVICE_L630 = "L630";
     public static final String DEVICE_L900 = "L900";
     public static final String DEVICE_L920 = "L920";
+    public static final String DEVICE_L930 = "L930";
     public static final String DEVICE_UNIVERSAL = "Test_Device";
 
     /*** LIST OF SUPPORTED DEVICE DESCRIPTIONS ***/
@@ -59,17 +62,21 @@ public class TapoThingConstants {
     public static final ThingTypeUID P115_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P115);
     public static final ThingTypeUID L510_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L510);
     public static final ThingTypeUID L530_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L530);
+    public static final ThingTypeUID L610_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L610);
+    public static final ThingTypeUID L630_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L630);
     public static final ThingTypeUID L900_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L900);
     public static final ThingTypeUID L920_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L920);
+    public static final ThingTypeUID L930_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L930);
     public static final ThingTypeUID UNIVERSAL_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_UNIVERSAL);
 
     /*** SET OF SUPPORTED UIDS ***/
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_UIDS = Set.of(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_PLUG_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
             P110_THING_TYPE, P115_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE, L610_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE, L630_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE,
+            L930_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream
                     .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
@@ -119,7 +126,7 @@ public class TapoThingConstants {
     public static final String DEVICE_PROPERTY_USAGE_7 = "time_usage_past7";
     public static final String DEVICE_PROPERTY_USAGE_30 = "time_usage_past30";
     public static final String DEVICE_PROPERTY_USAGE_TODAY = "time_usage_today";
-    public static final String DEVICE_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String DEVICE_REPRESENTATION_PROPERTY = "macAddress";
     // lightning effects
     public static final String DEVICE_PROPERTY_EFFECT = "lighting_effect";
     public static final String PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";

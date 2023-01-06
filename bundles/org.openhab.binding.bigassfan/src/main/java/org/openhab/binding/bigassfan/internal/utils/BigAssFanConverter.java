@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bigassfan.internal.utils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.PercentType;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.library.types.PercentType;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 public class BigAssFanConverter {
     /*
      * Conversion factor for fan range (0-7) to dimmer range (0-100).

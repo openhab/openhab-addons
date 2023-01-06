@@ -7,14 +7,15 @@ Miniserver is represented as a [Thing](https://www.openhab.org/docs/configuratio
 
 The following features are currently supported:
 
-*   [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
-*   Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
-*   Tagging of channels and [items](https://www.openhab.org/docs/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
-*   Management of a Websocket connection to the Miniserver and updating Thing status accordingly
-*   Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
-*   Passing channel commands to the Miniserver's controls
-*   Hash-based and token-based authentication methods
-*   Command encryption and response decryption
+- [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
+
+- Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
+- Tagging of channels and [items](https://www.openhab.org/docs/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
+- Management of a Websocket connection to the Miniserver and updating Thing status accordingly
+- Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
+- Passing channel commands to the Miniserver's controls
+- Hash-based and token-based authentication methods
+- Command encryption and response decryption
 
 ## Things
 
@@ -38,48 +39,52 @@ The entry should have the following syntax:
 
 Where:
 
-*   `<thing-id>` is a unique ID for your Miniserver (you can but do not have to use Miniserver's MAC address here)
-*   `<user>` and `<password>` are the credentials used to log into the Miniserver
-*   `<host>` is a host name or IP of the Miniserver
-*   `<port>` is a port of web services on the Miniserver (please notice that port, as a number, is not surrounded by quotation marks, while the other values described above are)
-*   `...` are optional advanced parameters - please refer to _Advanced parameters_ section at the end of this instruction for a list of available options
+- `<thing-id>` is a unique ID for your Miniserver (you can but do not have to use Miniserver's MAC address here)
+- `<user>` and `<password>` are the credentials used to log into the Miniserver
+- `<host>` is a host name or IP of the Miniserver
+- `<port>` is a port of web services on the Miniserver (please notice that port, as a number, is not surrounded by quotation marks, while the other values described above are)
+- `...` are optional advanced parameters - please refer to _Advanced parameters_ section at the end of this instruction for a list of available options
 
 Example 1 - minimal required configuration:
 
-        `loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="loxone.local", port=80 ]`
+```java
+loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="loxone.local", port=80 ]
+```
 
 Example 2 - additionally keep alive period is set to 2 minutes and Websocket maximum binary message size to 8MB:
 
-        `loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.210", port=80, keepAlivePeriod=120, maxBinMsgSize=8192 ]`
+```java
+loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.210", port=80, keepAlivePeriod=120, maxBinMsgSize=8192 ]
+```
 
 ### Thing Offline Reasons
 
 There can be following reasons why Miniserver status is `OFFLINE`:
 
-*   __Configuration Error__
-    *   _Unknown host_
-        *   Miniserver host/ip address can't be resolved. No connection attempt will be made.
-    *   _User authentication error_
-        *   Invalid user name or password or user not authorized to connect to the Miniserver. Binding will make another attempt to connect after some time.
-    *   _Too many failed login attempts - stopped trying_
-        *   Miniserver locked out user for too many failed login attempts. In this case binding will stop trying to connect to the Miniserver. A new connection will be attempted only when user corrects user name or password in the configuration parameters.
-    *  _Enter password to generate a new token_
-        * Authentication using stored token failed - either token is wrong or it. A password must be reentered in the binding settings to acquire a new token.
-    *   _Internal error_
-        *   Probably a code defect, collect debug data and submit an issue. Binding will try to reconnect, but with unknown chance for success.
-    *   _Other_
-        *   An exception occured and its details will be displayed
-*   __Communication Error__
-    *   _Error communicating with Miniserver_
-        *   I/O error occurred during established communication with the Miniserver, most likely due to network connectivity issues, Miniserver going offline or Loxone Config is uploading a new configuration. A reconnect attempt will be made soon. Please consult detailed message against one of the following:
-            *   _"Text message size &lsqbXX&rsqb exceeds maximum size &lsqbYY&rsqb"_ - adjust text message size in advanced parameters to be above XX value
-            *   _"Binary message size &lsqbXX&rsqb exceeds maximum size &lsqbYY&rsqb"_ - adjust binary message size in advanced parameters to be above XX value
-    *   _User authentication timeout_
-        *   Authentication procedure took too long time and Miniserver closed connection. It should not occur under normal conditions and may indicate performance issue on binding's OS side.
-    *   _Timeout due to no activity_
-        *   Miniserver closed connection because there was no activity from binding. It should not occur under normal conditions, as it is prevented by sending keep-alive messages from the binding to the Miniserver. By default Miniserver's timeout is 5 minutes and period between binding's keep-alive messages is 4 minutes. If you see this error, try changing the keep-alive period in binding's configuration to a smaller value.
-    *   _Other_
-        *   An exception occured and its details will be displayed
+- **Configuration Error**
+  - _Unknown host_
+    - Miniserver host/ip address can't be resolved. No connection attempt will be made.
+  - _User authentication error_
+    - Invalid user name or password or user not authorized to connect to the Miniserver. Binding will make another attempt to connect after some time.
+  - _Too many failed login attempts - stopped trying_
+    - Miniserver locked out user for too many failed login attempts. In this case binding will stop trying to connect to the Miniserver. A new connection will be attempted only when user corrects user name or password in the configuration parameters.
+  - _Enter password to generate a new token_
+    - Authentication using stored token failed - either token is wrong or it. A password must be reentered in the binding settings to acquire a new token.
+  - _Internal error_
+    - Probably a code defect, collect debug data and submit an issue. Binding will try to reconnect, but with unknown chance for success.
+  - _Other_
+    - An exception occured and its details will be displayed
+- **Communication Error**
+  - _Error communicating with Miniserver_
+    - I/O error occurred during established communication with the Miniserver, most likely due to network connectivity issues, Miniserver going offline or Loxone Config is uploading a new configuration. A reconnect attempt will be made soon. Please consult detailed message against one of the following:
+      - _"Text message size &lsqbXX&rsqb exceeds maximum size &lsqbYY&rsqb"_ - adjust text message size in advanced parameters to be above XX value
+      - _"Binary message size &lsqbXX&rsqb exceeds maximum size &lsqbYY&rsqb"_ - adjust binary message size in advanced parameters to be above XX value
+  - _User authentication timeout_
+    - Authentication procedure took too long time and Miniserver closed connection. It should not occur under normal conditions and may indicate performance issue on binding's OS side.
+  - _Timeout due to no activity_
+    - Miniserver closed connection because there was no activity from binding. It should not occur under normal conditions, as it is prevented by sending keep-alive messages from the binding to the Miniserver. By default Miniserver's timeout is 5 minutes and period between binding's keep-alive messages is 4 minutes. If you see this error, try changing the keep-alive period in binding's configuration to a smaller value.
+  - _Other_
+    - An exception occured and its details will be displayed
 
 ### Security
 
@@ -90,9 +95,9 @@ The binding supports the following authentication methods, which are selected au
 | Hash-based  | 8.x                 | HMAC-SHA1 hash on user and password                                            | None       | None                                                  |
 | Token-based | From 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
 
-For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration. 
+For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration.
 
-The acquired token will remain active for several weeks following the last succesful authentication with this token. If the connection is not established used during that period and the token expires, a user password has to be re-entered in the binding settings to acquire a new token.
+The acquired token will remain active for several weeks following the last successful authentication with this token. If the connection is not established used during that period and the token expires, a user password has to be re-entered in the binding settings to acquire a new token.
 
 In case a websocket connection to the Miniserver remains active for the whole duration of the token's life span, the binding will refresh the token one day before token expiration, without the need of providing the password.
 
@@ -125,19 +130,19 @@ Currently supported controls are presented in the table below.
 | EIBDimmer                                                 | EIB Dimmer (undocumented)                                                                                                                                                                                                                                                                                                 | `Dimmer`                                                       | `OnOffType.*`, `PercentType`, `IncreaseDecreaseType.*`                                                                                                                                               |
 | InfoOnlyAnalog                                            | Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)                                                                                                                                                                                                                           | `Number`                                                       | Read-only channel                                                                                                                                                                                    |
 | InfoOnlyDigital                                           | Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)                                                                                                                                                                                                                          | `String`                                                       | Read-only channel                                                                                                                                                                                    |
-| IRoomControllerV2                                         | [Intelligent Room Controller V2](https://www.loxone.com/enen/kb/irc-v2/)                                                                                                                                                                                                                                                  | `Number` - active mode                                         | Read-only channel                                                                                                                                                                                    | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - operating mode                                      | `DecimalType` - operating mode                                                                                                                                                                       | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - prepare state                                       | Read-only channel                                                                                                                                                                                    | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - open window                                         | Read-only channel                                                                                                                                                                                    | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - current temperature                                 | Read-only channel                                                                                                                                                                                    | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - target temperature                                  | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort temperature                                 | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort temperature offset                          | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort tolerance                                   | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - absent minimum temperature offset                   | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - absent maximum temperature offset                   | `DecimalType`                                                                                                                                                                                        | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - frost protect temperature                           | Read-only channel                                                                                                                                                                                    | 
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - heat protect temperature                            | Read-only channel                                                                                                                                                                                    | 
+| IRoomControllerV2                                         | [Intelligent Room Controller V2](https://www.loxone.com/enen/kb/irc-v2/)                                                                                                                                                                                                                                                  | `Number` - active mode                                         | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - operating mode                                      | `DecimalType` - operating mode                                                                                                                                                                       |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - prepare state                                       | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - open window                                         | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - current temperature                                 | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - target temperature                                  | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort temperature                                 | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort temperature offset                          | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - comfort tolerance                                   | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - absent minimum temperature offset                   | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - absent maximum temperature offset                   | `DecimalType`                                                                                                                                                                                        |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - frost protect temperature                           | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - heat protect temperature                            | Read-only channel                                                                                                                                                                                    |
 | Jalousie                                                  | Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated                                                                                                                                                                                                                 | `Rollershutter` - main control element                         | `UpDownType.*`, `StopMoveType.*`, `PercentType`                                                                                                                                                      |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - shading                                             | `OnOffType.ON` - shade                                                                                                                                                                               |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - automatic shading                                   | `OnOffType.*` - automatic shading enabled/disabled                                                                                                                                                   |
@@ -169,24 +174,24 @@ If your control is supported, but binding does not recognize it, please check if
 
 Most controls have a single channel. Such channel ID is defined in the following way:
 
-*   `loxone:miniserver:<serial>:<control-UUID>`
+- `loxone:miniserver:<serial>:<control-UUID>`
 
 Controls, which have more than one channel, define the channel ID of the extra channels in the following way:
 
-*    `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `<channel-index>` is equal to 1, 2, ...
+- `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `<channel-index>` is equal to 1, 2, ...
 
 Channel label is defined in the following way:
 
-*   For controls that belong to a room: `<Room name> / <Control name>`
-*   For controls without a room: `<Control name>`
+- For controls that belong to a room: `<Room name> / <Control name>`
+- For controls without a room: `<Control name>`
 
 Channels have the default tags as follows:
 
-*   **Dimmer**: when it belongs to a category of _Lights_ type, the channel will be tagged with _Lighting_ tag. 
-*   **InfoOnlyAnalog**: when it belongs to a category of _Indoor Temperature_ type, it will be tagger with _CurrentTemperature_ tag.
-*   **Jalousie**: main rollershutter channel will be tagged with _Blinds_ tag. Shade and automatic shade switch channels will be tagged with _Switchable_ tag.
-*   **LightController (V1 and V2)**: main channel with selected scene will be tagged with _Scene_ tag.
-*   **Switch**, **TimedSwitch** and **Pushbutton** controls: when it belongs to a category that is of a _Lights_ type, the channel will be tagged with _Lighting_ tag. Otherwise it will be tagged with _Switchable_ tag.
+- **Dimmer**: when it belongs to a category of _Lights_ type, the channel will be tagged with _Lighting_ tag.
+- **InfoOnlyAnalog**: when it belongs to a category of _Indoor Temperature_ type, it will be tagger with _CurrentTemperature_ tag.
+- **Jalousie**: main rollershutter channel will be tagged with _Blinds_ tag. Shade and automatic shade switch channels will be tagged with _Switchable_ tag.
+- **LightController (V1 and V2)**: main channel with selected scene will be tagged with _Scene_ tag.
+- **Switch**, **TimedSwitch** and **Pushbutton** controls: when it belongs to a category that is of a _Lights_ type, the channel will be tagged with _Lighting_ tag. Otherwise it will be tagged with _Switchable_ tag.
 
 ## Advanced Parameters
 
@@ -195,7 +200,9 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-        keepAlivePeriod=120
+```text
+keepAlivePeriod=120
+```
 
 ### Security
 
@@ -228,47 +235,47 @@ They can be tuned, when abnormal behavior of the binding is observed, which can 
 
 ## Limitations
 
-*   As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
+- As there is no push button item type in openHAB, Loxone's push button is an openHAB's switch, which always generates a short pulse on changing its state to on. If you use simple UI mode and framework generates items for you, switches for push buttons will still be toggle switches. To change it to the push button style, you have to create item manually with `autoupdate=false` parameter. An example of such item definition is given in the _Items_ section above.
 
 ## Automatic Configuration Example
 
 The simplest and quickest way of configuring a Loxone Miniserver with openHAB is to use automatic configuration features:
 
-*   Make sure your Miniserver is up and running and on the same network segment as openHAB server.
-*   Add Loxone binding from the available `Add-ons`.
-*   In `Configuration/System` page, set `Item Linking` to `Simple Mode` (don't forget to save your choice).
-*   Add your Miniserver Thing from the `Inbox`, after automatic discovery is performed by the framework during binding initialization.
-*   Configure your Miniserver by editing Miniserver Thing in `Configuration/Things` page and providing user name and password.
-*   Miniserver Thing should go online. Channels and Items will be automatically created and configured.
-*   On the `Control` page, you can test Miniserver Items and interact with them.
-*   As the user interface, you may use [HABPanel](https://www.openhab.org/docs/configuration/habpanel.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
+- Make sure your Miniserver is up and running and on the same network segment as openHAB server.
+- Add Loxone binding from the available `Add-ons`.
+- In `Configuration/System` page, set `Item Linking` to `Simple Mode` (don't forget to save your choice).
+- Add your Miniserver Thing from the `Inbox`, after automatic discovery is performed by the framework during binding initialization.
+- Configure your Miniserver by editing Miniserver Thing in `Configuration/Things` page and providing user name and password.
+- Miniserver Thing should go online. Channels and Items will be automatically created and configured.
+- On the `Control` page, you can test Miniserver Items and interact with them.
+- As the user interface, you may use [HABPanel](https://www.openhab.org/docs/configuration/habpanel.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
 
 ## Manual Configuration Example
 
 A more advanced setup requires manual creation and editing of openHAB configuration files, according to the instructions provided in [configuration user guide](https://www.openhab.org/docs/configuration/).
 In this example we will manually configure:
 
-*   A Miniserver with serial number 504F2414780F, available at IP 192.168.0.220 and with web services port 80
-*   A Miniserver's user named "kryten" and password "jmc2017"
-*   Items for:
-    *   Temperature of the Miniserver - a Virtual Analog State functional block
-    *   State of a garage door - a Virtual Digital State funtional block (ON=door open, OFF=door closed)
-    *   Kitchen lights switch - a Switch Subcontrol at the AI1 output of a Lighting Controller functional block (with a tag recognizable by Alexa service)
-    *   Pushbutton to switch all lights off - a Virtual Input of Pushbutton type functional block (pushbutton realized by adding `autoupdate="false"` parameter)
-    *   Kitchen blinds - a Jalousie functional block
-    *   Lighting scene - a Lighting Controller functional block
-    *   Output valve selection for garden watering - 8x Radio Button functional block, where only one valve can be open at a time
-    *   A text displaying current alarm's state - a State functional block
+- A Miniserver with serial number 504F2414780F, available at IP 192.168.0.220 and with web services port 80
+- A Miniserver's user named "kryten" and password "jmc2017"
+- Items for:
+  - Temperature of the Miniserver - a Virtual Analog State functional block
+  - State of a garage door - a Virtual Digital State funtional block (ON=door open, OFF=door closed)
+  - Kitchen lights switch - a Switch Subcontrol at the AI1 output of a Lighting Controller functional block (with a tag recognizable by Alexa service)
+  - Pushbutton to switch all lights off - a Virtual Input of Pushbutton type functional block (pushbutton realized by adding `autoupdate="false"` parameter)
+  - Kitchen blinds - a Jalousie functional block
+  - Lighting scene - a Lighting Controller functional block
+  - Output valve selection for garden watering - 8x Radio Button functional block, where only one valve can be open at a time
+  - A text displaying current alarm's state - a State functional block
 
 ### things/loxone.things:
 
-```
+```java
 loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80 ]
 ```
 
 ### items/loxone.items:
 
-```
+```java
 // Type       ID              Label                                  Icon          Tags         Settings
 
 Number        Miniserver_Temp "Miniserver temperature: [%.1f °C]"    <temperature>              {channel="loxone:miniserver:504F2414780F:0F2F2133-017D-3C82-FFFF203EB0C34B9E"}
@@ -290,7 +297,7 @@ String        Alarm_State     "Alarm state [%s]"                     <alarm>    
 
 ### sitemaps/loxone.sitemap:
 
-```
+```perl
 sitemap loxone label="Loxone Example Menu"
 {
     Frame label="Demo Controls" {
@@ -315,7 +322,7 @@ sitemap loxone label="Loxone Example Menu"
 
 ### transform/garagedoor.map:
 
-```java
+```text
 OFF=Closed
 ON=Open
 -=Unknown
