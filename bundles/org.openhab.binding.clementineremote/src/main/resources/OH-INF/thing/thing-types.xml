@@ -49,42 +49,42 @@
 
 	<channel-type id="current-album">
 		<item-type>String</item-type>
-		<label>Current Album</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current Album</label>
 		<description>Album the currently playing title belongs to</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-artist">
 		<item-type>String</item-type>
-		<label>Current Artist</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current Artist</label>
 		<description>Artist of the currently playing title</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-position">
 		<item-type>Number:Time</item-type>
-		<label>Current Position</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current Position</label>
 		<description>Current position within the playing track</description>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current-title">
 		<item-type>String</item-type>
-		<label>Current Title</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current Title</label>
 		<description>Name of the currently playing title</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-track">
 		<item-type>String</item-type>
-		<label>Current Track</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current Track</label>
 		<description>Number of the title within the current album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-state">
 		<item-type>String</item-type>
-		<label>Current State</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current State</label>
 		<description>Current state of clementine player</description>
 		<state readOnly="true"/>
 	</channel-type>
