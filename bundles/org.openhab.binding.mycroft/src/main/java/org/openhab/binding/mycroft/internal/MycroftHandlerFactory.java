@@ -9,8 +9,6 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- *
- * @author Gwendal Roulleau - Initial contribution
  */
 package org.openhab.binding.mycroft.internal;
 
