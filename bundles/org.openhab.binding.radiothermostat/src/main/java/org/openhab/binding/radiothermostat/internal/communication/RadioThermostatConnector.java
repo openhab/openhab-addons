@@ -133,7 +133,7 @@ public class RadioThermostatConnector {
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");
-            logger.debug("Sending post request to '{}', data: {}", resource, postJson);
+            logger.debug("Sending POST request to '{}', data: {}", resource, postJson);
 
             ContentResponse contentResponse = request.send();
             int httpStatus = contentResponse.getStatus();
