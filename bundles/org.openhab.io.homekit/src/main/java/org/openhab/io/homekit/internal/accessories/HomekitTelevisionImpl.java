@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
@@ -59,8 +58,6 @@ public class HomekitTelevisionImpl extends AbstractHomekitAccessoryImpl {
     public void init() throws HomekitException {
         super.init();
 
-        var activeCharacteristic = (ActiveCharacteristic) HomekitCharacteristicFactory
-                .createCharacteristic(getCharacteristic(HomekitCharacteristicType.ACTIVE).get(), getUpdater());
         // these charactereristics are technically mandatory, but we provide defaults if they're not provided
         var activeIdentifierCharacteristic = getCharacteristic(ActiveIdentifierCharacteristic.class)
                 .orElseGet(() -> new ActiveIdentifierCharacteristic(() -> CompletableFuture.completedFuture(1), v -> {
@@ -81,8 +78,9 @@ public class HomekitTelevisionImpl extends AbstractHomekitAccessoryImpl {
                         }, () -> {
                         }));
 
-        var service = new TelevisionService(activeCharacteristic, activeIdentifierCharacteristic,
-                configuredNameCharacteristic, remoteKeyCharacteristic, sleepDiscoveryModeCharacteristic);
+        var service = new TelevisionService(getCharacteristic(ActiveCharacteristic.class).get(),
+                activeIdentifierCharacteristic, configuredNameCharacteristic, remoteKeyCharacteristic,
+                sleepDiscoveryModeCharacteristic);
 
         getCharacteristic(NameCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
         getCharacteristic(BrightnessCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));

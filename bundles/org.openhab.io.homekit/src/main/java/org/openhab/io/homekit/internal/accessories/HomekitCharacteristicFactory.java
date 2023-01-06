@@ -230,8 +230,18 @@ public class HomekitCharacteristicFactory {
         }
     };
 
+    public static @Nullable Characteristic createNullableCharacteristic(HomekitTaggedItem item,
+            HomekitAccessoryUpdater updater) {
+        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
+        logger.trace("Create characteristic {}", item);
+        if (optional.containsKey(type)) {
+            return optional.get(type).apply(item, updater);
+        }
+        return null;
+    }
+
     /**
-     * create optional HomeKit characteristic
+     * create HomeKit characteristic
      *
      * @param item corresponding OH item
      * @param updater update to keep OH item and HomeKit characteristic in sync
@@ -239,11 +249,11 @@ public class HomekitCharacteristicFactory {
      */
     public static Characteristic createCharacteristic(HomekitTaggedItem item, HomekitAccessoryUpdater updater)
             throws HomekitException {
-        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.trace("Create characteristic {}", item);
-        if (optional.containsKey(type)) {
-            return optional.get(type).apply(item, updater);
+        Characteristic characteristic = createNullableCharacteristic(item, updater);
+        if (characteristic != null) {
+            return characteristic;
         }
+        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
         logger.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
                 item.getName(), item.getAccessoryType(), type.getTag());
         throw new HomekitException(

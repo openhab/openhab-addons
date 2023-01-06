@@ -70,6 +70,14 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.services = new ArrayList<>();
         this.settings = settings;
         this.rawCharacteristics = new HashMap<>();
+        // create raw characteristics for mandatory characteristics
+        characteristics.forEach(c -> {
+            var rawCharacteristic = HomekitCharacteristicFactory.createNullableCharacteristic(c, updater);
+            // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
+            if (rawCharacteristic != null) {
+                rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
     }
 
     /**
