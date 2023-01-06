@@ -282,11 +282,29 @@ end
 
 ### Thing Actions Example
 
-```js
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
 deconzActions = actions.get("deconz", "deconz:lightgroup:00212E040ED9:5");
 retVal = deconzActions.createScene("TestScene");
 deconzActions.storeScene(retVal["newSceneId"]);
 ```
+
+:::
+
+::: tab DSL
+
+```java
+val deconzActions = getActions("deconz", "deconz:lightgroup:00212E040ED9:5");
+var retVal = deconzActions.createScene("TestScene");
+deconzActions.storeScene(retVal.get("newSceneId"));
+```
+
+:::
+
+::::
 
 ### Troubleshooting
 
