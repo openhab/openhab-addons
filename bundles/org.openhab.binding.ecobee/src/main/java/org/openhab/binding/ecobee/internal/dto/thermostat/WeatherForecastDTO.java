@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.util.Date;
-
 /**
  * The {@link WeatherForecastDTO} contains the weather forecast information for
  * the thermostat. The first forecast is the most accurate, later forecasts
@@ -31,9 +29,9 @@ public class WeatherForecastDTO {
     public Integer weatherSymbol;
 
     /*
-     * The time stamp of the weather forecast.
+     * The time stamp of the weather forecast in the thermostat's time zone.
      */
-    public Date dateTime;
+    public String dateTime;
 
     /*
      * A text value representing the current weather condition.

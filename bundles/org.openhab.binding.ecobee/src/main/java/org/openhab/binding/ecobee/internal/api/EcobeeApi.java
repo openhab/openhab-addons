@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecobee.internal.dto.AbstractResponseDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionType;
+import org.openhab.binding.ecobee.internal.dto.thermostat.DateDeserializer;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatRequestDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatResponseDTO;
@@ -66,7 +68,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EcobeeApi implements AccessTokenRefreshListener {
 
-    private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer())
             .registerTypeAdapter(RevisionDTO.class, new RevisionDTODeserializer())
             .registerTypeAdapter(RunningDTO.class, new RunningDTODeserializer()).create();
 

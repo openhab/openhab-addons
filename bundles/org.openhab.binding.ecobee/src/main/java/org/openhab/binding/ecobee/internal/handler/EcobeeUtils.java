@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ecobee.internal.handler;
 
+import java.time.DateTimeException;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import javax.measure.Unit;
@@ -85,6 +87,20 @@ public final class EcobeeUtils {
 
     public static State undefOrPoint(@Nullable String value) {
         return value == null ? UnDefType.UNDEF : new PointType(value);
+    }
+
+    public static State undefOrLocalDate(@Nullable String date, TimeZoneProvider timeZoneProvider) {
+        if (date == null) {
+            return UnDefType.UNDEF;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    .withZone(timeZoneProvider.getTimeZone());
+            ZonedDateTime zoned = ZonedDateTime.parse(date, formatter);
+            return new DateTimeType(zoned);
+        } catch (DateTimeException e) {
+            return UnDefType.UNDEF;
+        }
     }
 
     public static State undefOrDate(@Nullable Date date, TimeZoneProvider timeZoneProvider) {

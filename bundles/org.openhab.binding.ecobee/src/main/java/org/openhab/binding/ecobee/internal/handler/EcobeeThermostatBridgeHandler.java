@@ -371,7 +371,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_BRAND, EcobeeUtils.undefOrString(thermostat.brand));
         updateChannel(grp + CH_FEATURES, EcobeeUtils.undefOrString(thermostat.features));
         updateChannel(grp + CH_LAST_MODIFIED, EcobeeUtils.undefOrDate(thermostat.lastModified, timeZoneProvider));
-        updateChannel(grp + CH_THERMOSTAT_TIME, EcobeeUtils.undefOrDate(thermostat.thermostatTime, timeZoneProvider));
+        updateChannel(grp + CH_THERMOSTAT_TIME,
+                EcobeeUtils.undefOrLocalDate(thermostat.thermostatTime, timeZoneProvider));
     }
 
     private void updateEquipmentStatus(ThermostatDTO thermostat) {
@@ -673,7 +674,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                 updateChannel(grp + CH_FORECAST_WEATHER_SYMBOL_TEXT,
                         EcobeeUtils.undefOrString(symbolMap.get(forecast.weatherSymbol)));
                 updateChannel(grp + CH_FORECAST_DATE_TIME,
-                        EcobeeUtils.undefOrDate(forecast.dateTime, timeZoneProvider));
+                        EcobeeUtils.undefOrLocalDate(forecast.dateTime, timeZoneProvider));
                 updateChannel(grp + CH_FORECAST_CONDITION, EcobeeUtils.undefOrString(forecast.condition));
                 updateChannel(grp + CH_FORECAST_TEMPERATURE, EcobeeUtils.undefOrTemperature(forecast.temperature));
                 updateChannel(grp + CH_FORECAST_PRESSURE,

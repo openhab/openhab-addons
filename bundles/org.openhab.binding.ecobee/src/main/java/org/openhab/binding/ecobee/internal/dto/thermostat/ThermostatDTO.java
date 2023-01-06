@@ -69,7 +69,7 @@ public class ThermostatDTO {
     /*
      * The current time in the thermostat's time zone.
      */
-    public Date thermostatTime;
+    public String thermostatTime;
 
     /*
      * The current time in UTC.
