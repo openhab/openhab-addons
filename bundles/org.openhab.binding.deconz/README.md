@@ -219,7 +219,7 @@ The `deconz` thing supports a thing action to allow new devices to join the netw
 
 | Action name            | Input Value          | Return Value | Description                                                                                                    |
 |------------------------|----------------------|--------------|----------------------------------------------------------------------------------------------------------------|
-| `permitJoin(duration)` | `duration` (Integer) | -            | allows new devices to join for `duration` seconds. Allowed values are 1-240, default is 120 if no value given. |
+| `permitJoin(duration)` | `duration` (Integer) | -            | Allows new devices to join for `duration` seconds. Allowed values are 1-240, default is 120 if no value given. |
 
 The `lightgroup` thing supports thing actions for managing scenes:
 
@@ -228,6 +228,8 @@ The `lightgroup` thing supports thing actions for managing scenes:
 | `createScene(name)` | `name` (String) | `newSceneId` | Creates a new scene with the name `name` and returns the new scene's id (if successful). |
 | `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                     |
 | `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                              |
+
+The return value refers to a key of the given name within the returned Map. See [example](#thing-actions).
 
 ## Full Example
 
