@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Configuration object for the device thing handler.
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - refactoring & cleanup
+ * @author Simon Kaufmann - refactoring and cleanup
  */
 @NonNullByDefault
 public class DeviceConfig {
