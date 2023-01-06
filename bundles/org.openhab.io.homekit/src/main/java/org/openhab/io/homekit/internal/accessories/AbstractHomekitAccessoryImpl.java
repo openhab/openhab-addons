@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,11 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
 import io.github.hapjava.services.Service;
@@ -58,6 +61,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final HomekitAccessoryUpdater updater;
     private final HomekitSettings settings;
     private final List<Service> services;
+    private final Map<Class<? extends Characteristic>, Characteristic> rawCharacteristics;
 
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
@@ -66,10 +70,27 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.updater = updater;
         this.services = new ArrayList<>();
         this.settings = settings;
+        this.rawCharacteristics = new HashMap<>();
+    }
+
+    /**
+     * @param parentAccessory The primary service to link to.
+     * @return If this accessory should be nested as a linked service below a primary service,
+     *         rather than as a sibling.
+     */
+    public boolean isLinkable(HomekitAccessory parentAccessory) {
+        return false;
+    }
+
+    /**
+     * @return If this accessory is only valid as a linked service, not as a standalone accessory.
+     */
+    public boolean isLinkedServiceOnly() {
+        return false;
     }
 
     @NonNullByDefault
-    protected Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
+    public Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
         return characteristics.stream().filter(c -> c.getCharacteristicType() == type).findAny();
     }
 
@@ -298,8 +319,34 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @NonNullByDefault
-    protected void addCharacteristic(HomekitTaggedItem characteristic) {
-        characteristics.add(characteristic);
+    protected void addCharacteristic(HomekitTaggedItem item, Characteristic characteristic)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        characteristics.add(item);
+        addCharacteristic(characteristic);
+    }
+
+    /**
+     * @param type
+     * @param characteristic
+     */
+    @NonNullByDefault
+    public void addCharacteristic(Characteristic characteristic)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if (rawCharacteristics.containsKey(characteristic.getClass())) {
+            logger.warn("Accessory {} already has a characteristic of type {}; ignoring additional definition.",
+                    accessory.getName(), characteristic.getClass().getSimpleName());
+            return;
+        }
+        rawCharacteristics.put(characteristic.getClass(), characteristic);
+        var service = getPrimaryService();
+        // find the corresponding add method at service and call it.
+        service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                characteristic);
+    }
+
+    @NonNullByDefault
+    public <T> Optional<T> getCharacteristic(Class<? extends T> klazz) {
+        return Optional.ofNullable((T) rawCharacteristics.get(klazz));
     }
 
     /**

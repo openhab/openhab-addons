@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,7 +106,9 @@ abstract class UniFiCache<T extends @Nullable HasId> {
             logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
                     lazyFormatAsList(values));
             for (final T value : values) {
-                put(value.getId(), value);
+                if (value != null) {
+                    put(value.getId(), value);
+                }
             }
         }
     }

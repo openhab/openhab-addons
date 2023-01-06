@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -226,13 +226,15 @@ public class SOAPValueConverter {
     @SuppressWarnings("unused")
     private State processTamListURL(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
         try {
-            ContentResponse response = httpClient.newRequest(state.toString()).timeout(1000, TimeUnit.MILLISECONDS)
+            ContentResponse response = httpClient.newRequest(state.toString()).timeout(1500, TimeUnit.MILLISECONDS)
                     .send();
             String responseContent = response.getContentAsString();
             int messageCount = responseContent.split("<New>1</New>").length - 1;
 
             return new DecimalType(messageCount);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException e) {
+            throw new PostProcessingException("Failed to get TAM list due to time out from URL " + state.toString(), e);
+        } catch (InterruptedException | ExecutionException e) {
             throw new PostProcessingException("Failed to get TAM list from URL " + state.toString(), e);
         }
     }

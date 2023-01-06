@@ -5,13 +5,13 @@ This binding integrates the [Sony Audio Control API](https://developer.sony.com/
 ## Supported Things
 
 For the moment the devices that are supported by this binding are
- * STR-DN1080
- * HT-CT800
- * SRS-ZR5
- * HT-ST5000
- * HT-Z9F
- * HT-ZF9
- * HT-MT500
+- STR-DN1080
+- HT-CT800
+- SRS-ZR5
+- HT-ST5000
+- HT-Z9F
+- HT-ZF9
+- HT-MT500
 
 When being defined in a \*.things file, the specific thing types
 STR-DN1080, HT-ST5000, HT-ZF9, HT-Z9F, HT-CT800, HT-MT500 and SRS-ZR5 should be used.
@@ -27,7 +27,7 @@ The SonyAudio devices are discovered through UPnP in the local network and all d
 The SonyAudio Thing requires the network address, port and path as a configuration value in order for the binding to know how to access the device.
 Additionally, a refresh interval, used to poll the Sony Audio device, can be specified (in seconds).
 
-```
+```java
 Thing sonyaudio:HT-ST5000:1 [ipAddress="192.168.123.123", port=10000, path="/sony", refresh=60]
 ```
 
@@ -36,7 +36,7 @@ Thing sonyaudio:HT-ST5000:1 [ipAddress="192.168.123.123", port=10000, path="/son
 The devices support the following channels:
 
 | Channel Type ID            | Item Type | Access Mode | Description                                                                           | Thing types                                            |
-|----------------------------|-----------|-------------|---------------------------------------------------------------------------------------|--------------------------------------------------------|
+| -------------------------- | --------- | ----------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | power                      | Switch    | RW          | Main power on/off                                                                     | HT-CT800, SRS-ZR5, HT-ST5000, HT-ZF9, HT-Z9F, HT-MT500 |
 | input                      | String    | RW          | Set or get the input source                                                           | HT-CT800, SRS-ZR5, HT-ST5000, HT-ZF9, HT-Z9F, HT-MT500 |
 | volume                     | Dimmer    | RW          | Set or get the master volume                                                          | HT-CT800, SRS-ZR5, HT-ST5000, HT-ZF9, HT-Z9F, HT-MT500 |
@@ -65,18 +65,17 @@ The devices support the following channels:
 | radio#broadcastSeekStation | String    | W           | Seek for new broadcast station, forward search "fwdSeeking" and backward "bwdSeeking" | STR-1080                                               |
 | nightMode                  | Switch    | RW          | Set or get the Night Mode state                                                       | HT-ZF9                                                 |
 
-
 ## Full Example
 
 demo.things:
 
-```
+```java
 Thing sonyaudio:HT-ST5000:living [ipAddress="192.168.123.123"]
 ```
 
 demo.items:
 
-```
+```java
 Group  SonyAudio <sonyaudio>
 
 Dimmer Sony_Volume       "Volume [%.0f %%]"  <soundvolume>      (SonyAudio) {channel="sonyaudio:HT-ST5000:living:volume"}
@@ -86,7 +85,7 @@ String Sony_Sound_Field  "Sound Field: [%s]" <text>             (SonyAudio) {cha
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu" {
     Frame label="Sony" {
         Text label="Volume" icon="soundvolume" {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -263,7 +263,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
         Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_JSON_DECODE_FAIL);
         if (errorCode != 0) {
-            logger.debug("({}) set deviceInfo not succesfull: {}", uid, jsnResult);
+            logger.debug("({}) set deviceInfo not successful: {}", uid, jsnResult);
             this.device.handleConnectionState();
         }
         this.device.responsePasstrough(responseBody);
@@ -341,7 +341,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
                 jsonObject = gson.fromJson(responseBody, JsonObject.class);
                 logger.trace("({}) received result: {}", uid, responseBody);
                 if (jsonObject != null) {
-                    /* return result if set / else request was successfull */
+                    /* return result if set / else request was successful */
                     if (jsonObject.has("result")) {
                         return jsonObject.getAsJsonObject("result");
                     } else {

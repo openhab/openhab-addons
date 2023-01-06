@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ public class EtherRainHandler extends BaseThingHandler {
         logger.debug("Starting Etherrain Update Job");
         this.updateJob = scheduler.scheduleWithFixedDelay(this::updateBridge, 0, config.refresh, TimeUnit.SECONDS);
 
-        logger.debug("EtherRain sucessfully initialized. Starting status poll at: {}", config.refresh);
+        logger.debug("EtherRain successfully initialized. Starting status poll at: {}", config.refresh);
     }
 
     private void stopUpdateJob() {

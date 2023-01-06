@@ -14,7 +14,7 @@ In this case, you must setup an IP connection thing type in openHAB.
 
 Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444:
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT
 ```
 
@@ -79,9 +79,9 @@ The serial bridge thing requires the following configuration parameters:
 
 Some notes:
 
--   On Linux, you may get an error stating the serial port cannot be opened when the Powermax binding tries to load.
+- On Linux, you may get an error stating the serial port cannot be opened when the Powermax binding tries to load.
 You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
--   Also on Linux you may have issues with the USB if using two serial USB devices e.g. Powermax and RFXcom.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Powermax and RFXcom.
 See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ### X10 device
@@ -131,7 +131,7 @@ The following channels are available:
 The binding provides few specific commands you can use in the console.
 Enter the command `openhab:powermax` to get the usage of each available command.
 
-```
+```shell
 Usage: openhab:powermax <bridgeUID> info_setup - information on setup
 Usage: openhab:powermax <bridgeUID> download_setup - download setup
 ```
@@ -143,24 +143,24 @@ Here is an example of command you can run: `openhab:powermax powermax:serial:hom
 
 ## Notes & Limitations
 
--   For Powerlink mode to work, the enrollment procedure has to be followed.
+- For Powerlink mode to work, the enrollment procedure has to be followed.
 If you don't enroll the Powerlink on the PowerMax the binding will operate in Standard mode, and if enrolled in Powerlink mode.
 On the newer software versions of the PowerMax the Powerlink enrollment is automatic, and the binding should only operate in 'Powerlink' mode (if enrollment is successful).
--   In Powerlink mode, the binding is downloading the panel setup at startup.
+- In Powerlink mode, the binding is downloading the panel setup at startup.
 When openHAB is starting, unfortunately this download is often failing on a Raspberry Pi for an unclear reason (maybe too many things running at the same time).
 A retry mechanism is implemented in the binding to retry until 3 times with a delay of 1 minute between each try.
 My experience is that the download finally succeeds.
 In case it fails after all the retries, you still have the option to later trigger the download either by using the channel `download_setup` or the appropriate console command.
--   Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
--   The binding is not able to arm/disarm a particular partition.
--   The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
--   In order to be able to bypass zones, you must first enable this feature by updating your panel configuration. Look at your installer's manual.
+- Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
+- The binding is not able to arm/disarm a particular partition.
+- The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
+- In order to be able to bypass zones, you must first enable this feature by updating your panel configuration. Look at your installer's manual.
 
 ## Full Example
 
 demo.things:
 
-```
+```java
 Bridge powermax:serial:home "Alarm Home" [ serialPort="/dev/ttyUSB0", allowArming=true, panelType="PowerMaxProPart", autoSyncTime=true ] {
     Thing zone kitchen "Window kitchen" [ zoneNumber=9 ]
     Thing x10 lamp1 "Lamp 1" [ deviceNumber=1 ]
@@ -169,7 +169,7 @@ Bridge powermax:serial:home "Alarm Home" [ serialPort="/dev/ttyUSB0", allowArmin
 
 demo.items:
 
-```
+```java
 Switch SystemArmed "System armed" {channel="powermax:serial:home:system_armed", autoupdate="false"}
 String SystemArmMode "System arm mode" {channel="powermax:serial:home:arm_mode", autoupdate="false"}
 Switch PGM "PGM" {channel="powermax:serial:home:pgm_status", autoupdate="false"}

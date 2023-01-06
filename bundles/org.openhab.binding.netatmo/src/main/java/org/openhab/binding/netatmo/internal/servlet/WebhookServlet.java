@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,21 +50,23 @@ public class WebhookServlet extends NetatmoServlet {
     private final SecurityApi securityApi;
     private final NADeserializer deserializer;
     private final String webHookUrl;
+    private final String webHookPostfix;
 
     private boolean hookSet = false;
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
-            SecurityApi securityApi, String webHookUrl) {
+            SecurityApi securityApi, String webHookUrl, String webHookPostfix) {
         super(handler, httpService, "webhook");
         this.deserializer = deserializer;
         this.securityApi = securityApi;
         this.webHookUrl = webHookUrl;
+        this.webHookPostfix = webHookPostfix;
     }
 
     @Override
     public void startListening() {
         super.startListening();
-        URI uri = UriBuilder.fromUri(webHookUrl).path(path).build();
+        URI uri = UriBuilder.fromUri(webHookUrl).path(path + webHookPostfix).build();
         try {
             logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
             hookSet = securityApi.addwebhook(uri);

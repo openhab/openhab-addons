@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.twinguard;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
+import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class TwinguardHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<TwinguardHandler> {
+public class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHandler> {
 
     @Override
     protected TwinguardHandler createFixture() {

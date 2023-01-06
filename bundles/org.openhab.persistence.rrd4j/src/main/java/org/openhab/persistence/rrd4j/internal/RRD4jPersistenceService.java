@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -152,7 +152,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
         final String name = alias == null ? item.getName() : alias;
 
-        RrdDb db = getDB(name);
+        RrdDb db = null;
+        try {
+            db = getDB(name);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
+        }
         if (db == null) {
             return;
         }
@@ -249,7 +254,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         String itemName = filter.getItemName();
 
-        RrdDb db = getDB(itemName);
+        RrdDb db = null;
+        try {
+            db = getDB(itemName);
+        } catch (Exception e) {
+            logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
+            return List.of();
+        }
         if (db == null) {
             logger.debug("Could not find item '{}' in rrd4j database", itemName);
             return List.of();

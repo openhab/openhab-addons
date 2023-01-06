@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2021+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -15,6 +15,8 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Console](#console)
   - [Timers](#timers)
   - [Paths](#paths)
+  - [Deinitialization Hook](#deinitialization-hook)
+- [`SCRIPT` Transformation](#script-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
@@ -27,20 +29,22 @@ to common openHAB functionality within rules including items, things, actions, l
   - [JSRule](#jsrule)
   - [Rule Builder](#rule-builder)
   - [Event Object](#event-object)
-  - [Initialization hook: scriptLoaded](#initialization-hook-scriptloaded)
-  - [Deinitialization hook: scriptUnloaded](#deinitialization-hook-scriptunloaded)
 - [Advanced Scripting](#advanced-scripting)
+  - [Libraries](#libraries)
   - [@runtime](#runtime)
 
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
-This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.
+This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
+
+By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
+If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
 
 ![openHAB Rule Configuration](doc/settings.png)
 
-<!-- Paste the copied docs from openhab-js under this comment. -->
+<!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
 ### UI Based Rules
 
@@ -82,7 +86,7 @@ actions.NotificationAction.sendNotification("romeo@montague.org", "Balcony door 
 Querying the status of a thing
 
 ```javascript
-const thingStatusInfo = actions.Things.getThingStatusInfo("zwave:serial_zstick:512");
+var thingStatusInfo = actions.Things.getThingStatusInfo("zwave:serial_zstick:512");
 console.log("Thing status",thingStatusInfo.getStatus());
 ```
 
@@ -94,7 +98,7 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
-This tables gives an overview over the `event` object for most common trigger types:
+This table gives an overview over the `event` object for most common trigger types:
 
 | Property Name  | Type                                                                                                                 | Trigger Types                          | Description                                                                                                   | Rules DSL Equivalent   |
 |----------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -124,31 +128,33 @@ console.log(event.itemState.toString() == "test") // OK
 
 ## Scripting Basics
 
-The openHAB JSScripting runtime attempts to provide a familiar environment to Javascript developers.
+The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
 
 ### Require
 
 Scripts may include standard NPM based libraries by using CommonJS `require`.
 The library search will look in the path `automation/js/node_modules` in the user configuration directory.
+See [libraries](#libraries) for more information.
 
 ### Console
 
 The JS Scripting binding supports the standard `console` object for logging.
-Script debug logging is enabled by default at the `INFO` level, but can be configured using the console logging commands.
+Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
 
 ```text
 log:set DEBUG org.openhab.automation.script
+log:set TRACE org.openhab.automation.script
+log:set DEFAULT org.openhab.automation.script
 ```
 
-The default logger name prefix is `org.openhab.automation.script`, this can be changed by assigning a new string to the `loggerName` property of the console.
-
-Please be aware that messages might not appear in the logs if the logger name does not start with `org.openhab`.
-This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring definition for each logger prefix.
-
+The default logger name prefix is `org.openhab.automation.script`, this can be changed by assigning a new string to the `loggerName` property of the console:
 
 ```javascript
-console.loggerName = "org.openhab.custom"
+console.loggerName = 'org.openhab.custom';
 ```
+
+Please be aware that messages do not appear in the logs if the logger name does not start with `org.openhab`.
+This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring a setting for each logger prefix in `$OPENHAB_USERDATA/etc/log4j2.xml` (on openHABian: `/srv/openhab-userdata/etc/log4j2.xml`).
 
 Supported logging functions include:
 
@@ -164,11 +170,13 @@ The string representations of each of these objects are appended together in the
 
 See <https://developer.mozilla.org/en-US/docs/Web/API/console> for more information about console logging.
 
+Note: [openhab-js](https://github.com/openhab/openhab-js/) is logging to `org.openhab.automation.openhab-js`.
+
 ### Timers
 
 JS Scripting provides access to the global `setTimeout`, `setInterval`, `clearTimeout` and `clearInterval` methods specified in the [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API).
 
-When a script is unloaded, all created timers and intervals are automatically cancelled.
+When a script is unloaded, all created timeouts and intervals are automatically cancelled.
 
 #### SetTimeout
 
@@ -243,9 +251,48 @@ For [file based rules](#file-based-rules), scripts will be loaded from `automati
 
 NPM libraries will be loaded from `automation/js/node_modules` in the user configuration directory.
 
+### Deinitialization Hook
+
+It is possible to hook into unloading of a script and register a function that is called when the script is unloaded.
+
+```javascript
+require('@runtime').lifecycleTracker.addDisposeHook(() => functionToCall());
+
+// Example
+require('@runtime').lifecycleTracker.addDisposeHook(() => {
+  console.log("Deinitialization hook runs...")
+});
+```
+
+## `SCRIPT` Transformation
+
+openHAB provides several [data transformation services](https://www.openhab.org/addons/#transform) as well as the `SCRIPT` transformation, that is available from the framework and needs no additional installation.
+It allows transforming values using any of the available scripting languages, which means JavaScript Scripting is supported as well.
+See the [transformation docs](https://openhab.org/docs/configuration/transformations.html#script-transformation) for more general information on the usage of `SCRIPT` transformation.
+
+Use the `SCRIPT` transformation with JavaScript Scripting by:
+
+1. Creating a script in the `$OPENHAB_CONF/transform` folder with the `.script` extension.
+   The script should take one argument `input` and return a value that supports `toString()` or `null`:
+
+   ```javascript
+   (function(data) {
+     // Do some data transformation here
+     return data;
+   })(input);
+   ```
+
+2. Using `SCRIPT(graaljs:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
+3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(graaljs:<scriptname>.script?arg=value):%s`.
+   Parameters are injected into the script and can be referenced like variables.
+
 ## Standard Library
 
 Full documentation for the openHAB JavaScript library can be found at [openhab-js](https://openhab.github.io/openhab-js).
+
+The openHAB JavaScript library provides type definitions for most of its APIs to enable code completion is IDEs like [VS Code](https://code.visualstudio.com).
+To use the type definitions, install the [`openhab` npm package](https://npmjs.com/openhab) (read the [installation guide](https://github.com/openhab/openhab-js#custom-installation) for more information).
+If an API does not provide type definitions and therefore autocompletion won‘t work, the documentation will include a note.
 
 ### Items
 
@@ -263,7 +310,7 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .safeItemName(s) ⇒ `string`
 
 ```javascript
-const item = items.getItem("KitchenLight");
+var item = items.getItem("KitchenLight");
 console.log("Kitchen Light State", item.state);
 ```
 
@@ -298,12 +345,12 @@ Calling `getItem(...)` returns an `Item` object with the following properties:
   - .removeTags(...tagNames)
 
 ```javascript
-const item = items.getItem("KitchenLight");
-//send an ON command
+var item = items.getItem("KitchenLight");
+// Send an ON command
 item.sendCommand("ON");
-//Post an update
+// Post an update
 item.postUpdate("OFF");
-//Get state
+// Get state
 console.log("KitchenLight state", item.state)
 ```
 
@@ -439,7 +486,7 @@ Calling `getThing(...)` returns a `Thing` object with the following properties:
   - .setEnabled(enabled)
 
 ```javascript
-const thing = things.getThing('astro:moon:home');
+var thing = things.getThing('astro:moon:home');
 console.log('Thing label: ' + thing.label);
 // Set Thing location
 thing.setLocation('living room');
@@ -451,6 +498,8 @@ thing.setEnabled(false);
 
 The actions namespace allows interactions with openHAB actions.
 The following are a list of standard actions.
+
+Note that most of the actions currently do **not** provide type definitions and therefore auto-completion does not work.
 
 See [openhab-js : actions](https://openhab.github.io/openhab-js/actions.html) for full API documentation and additional actions.
 
@@ -472,7 +521,7 @@ Additional information can be found on the  [Ephemeris Actions Docs](https://www
 
 ```javascript
 // Example
-let weekend = actions.Ephemeris.isWeekend();
+var weekend = actions.Ephemeris.isWeekend();
 ```
 
 #### Exec Actions
@@ -487,11 +536,11 @@ Execute a command line.
 actions.Exec.executeCommandLine('echo', 'Hello World!');
 
 // Execute command line with timeout.
-let Duration = Java.type('java.time.Duration');
+var Duration = Java.type('java.time.Duration');
 actions.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
 
 // Get response from command line.
-let response = actions.Exec.executeCommandLine('echo', 'Hello World!');
+var response = actions.Exec.executeCommandLine('echo', 'Hello World!');
 
 // Get response from command line with timeout.
 response = actions.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
@@ -514,6 +563,9 @@ The `ScriptExecution` actions provide the `callScript(string scriptName)` method
 
 You can also create timers using the [native JS methods for timer creation](#timers), your choice depends on the versatility you need.
 Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
+
+Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanagable timers running until you restart openHAB.
+A possible solution is to store all timers in an array and cancel all timers in the [Deinitialization Hook](#deinitialization-hook).
 
 ##### `createTimer`
 
@@ -566,11 +618,23 @@ See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/
 
 See [openhab-js : actions.Semantics](https://openhab.github.io/openhab-js/actions.html#.Semantics) for complete documentation.
 
-#### Things Actions
+#### Thing Actions
 
 It is possible to get the actions for a Thing using `actions.Things.getActions(bindingId, thingUid)`, e.g. `actions.Things.getActions('network', 'network:pingdevice:pc')`.
 
 See [openhab-js : actions.Things](https://openhab.github.io/openhab-js/actions.html#.Things) for complete documentation.
+
+#### Transformation Actions
+
+openHAB provides various [data transformation services](https://www.openhab.org/addons/#transform) which can translate between technical and human-readable values.
+Usually, they are used directly on Items, but it is also possible to access them from scripts.
+
+```javascript
+console.log(actions.Transformation.transform('MAP', 'en.map', 'OPEN')); // open
+console.log(actions.Transformation.transform('MAP', 'de.map', 'OPEN')); // offen
+```
+
+See [openhab-js : actions.Transformation](https://openhab.github.io/openhab-js/actions.Transformation.html) for complete documentation.
 
 #### Voice Actions
 
@@ -595,34 +659,48 @@ Replace `<message>` with the notification text.
 
 ### Cache
 
-The cache namespace provides a default cache that can be used to set and retrieve objects that will be persisted between reloads of scripts.
+The cache namespace provides both a private and a shared cache that can be used to set and retrieve objects that will be persisted between subsequent runs of the same or between scripts.
+
+The private cache can only be accessed by the same script and is cleared when the script is unloaded.
+You can use it to e.g. store timers or counters between subsequent runs of that script.
+When a script is unloaded and its cache is cleared, all timers (see [ScriptExecution Actions](#scriptexecution-actions)) stored in its private cache are cancelled.
+
+The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
+The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
+If that key stored a timer, the timer is cancelled.
 
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
-  - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-  - .put(key, value) ⇒ <code>Previous Object | null</code>
-  - .remove(key) ⇒ <code>Previous Object | null</code>
-  - .exists(key) ⇒ <code>boolean</code>
+  - .private
+    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
+    - .put(key, value) ⇒ <code>Previous Object | null</code>
+    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .exists(key) ⇒ <code>boolean</code>
+  - .shared
+    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
+    - .put(key, value) ⇒ <code>Previous Object | null</code>
+    - .remove(key) ⇒ <code>Previous Object | null</code>
+    - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
-**Example** *(Get a previously set value with a default value (times &#x3D; 0))*
+**Example** *(Get a previously set value with a default value (times = 0))*
 
 ```js
-let counter = cache.get("counter", () => ({ "times": 0 }));
-console.log("Count",counter.times++);
+var counter = cache.private.get('counter', () => ({ 'times': 0 }));
+console.log('Count', counter.times++);
 ```
 
 **Example** *(Get a previously set object)*
 
 ```js
-let counter = cache.get("counter");
-if(counter == null){
-  counter = {times: 0};
-  cache.put("counter", counter);
+var counter = cache.private.get('counter');
+if (counter === null) {
+  counter = { times: 0 };
+  cache.private.put('counter', counter);
 }
-console.log("Count",counter.times++);
+console.log('Count', counter.times++);
 ```
 
 ### Log
@@ -631,7 +709,7 @@ By default, the JS Scripting binding supports console logging like `console.log(
 Additionally, scripts may create their own native openHAB logger using the log namespace.
 
 ```javascript
-let logger = log('my_logger');
+var logger = log('my_logger');
 
 //prints "Hello World!"
 logger.debug("Hello {}!", "world");
@@ -690,7 +768,7 @@ When you have a `time.ZonedDateTime`, a new `toToday()` method was added which w
 For example, if the time was 13:45 and today was a DST changeover, the time will still be 13:45 instead of one hour off.
 
 ```javascript
-const alarm = items.getItem('Alarm');
+var alarm = items.getItem('Alarm');
 alarm.postUpdate(time.toZDT(alarm).toToday());
 ```
 
@@ -714,7 +792,7 @@ time.toZDT(items.getItem('StartTime')).isBetweenTimes(time.toZDT(), 'PT1H'); // 
 Tests to see if the delta between the `time.ZonedDateTime` and the passed in `time.ZonedDateTime` is within the passed in `time.Duration`.
 
 ```javascript
-const timestamp = time.toZDT();
+var timestamp = time.toZDT();
 // do some stuff
 if(timestamp.isClose(time.toZDT(), time.Duration.ofMillis(100))) {
   // did "do some stuff" take longer than 100 msecs to run?
@@ -726,7 +804,7 @@ if(timestamp.isClose(time.toZDT(), time.Duration.ofMillis(100))) {
 This method on `time.ZonedDateTime` returns the milliseconds from now to the passed in `time.ZonedDateTime`.
 
 ```javascript
-const timestamp = time.ZonedDateTime.now().plusMinutes(5);
+var timestamp = time.ZonedDateTime.now().plusMinutes(5);
 console.log(timestamp.getMillisFromNow());
 ```
 
@@ -752,7 +830,7 @@ See [openhab-js : rules](https://openhab.github.io/openhab-js/rules.html) for fu
 JSRules provides a simple, declarative syntax for defining rules that will be executed based on a trigger condition
 
 ```javascript
-const email = "juliet@capulet.org"
+var email = "juliet@capulet.org"
 
 rules.JSRule({
   name: "Balcony Lights ON at 5pm",
@@ -842,9 +920,11 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-  console.log(event);
+    console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
+
+Note that the Rule Builder currently does **not** provide type definitions and therefore auto-completion does not work.
 
 See [Examples](#rule-builder-examples) for further patterns.
 
@@ -884,7 +964,7 @@ See [Examples](#rule-builder-examples) for further patterns.
     - `from(state)`
     - `to(state)`
 
-Additionally all the above triggers have the following functions:
+Additionally, all the above triggers have the following functions:
 
 - `.if()` or `.if(fn)` -> a [rule condition](#rule-builder-conditions)
 - `.then()` or `.then(fn)` -> a [rule operation](#rule-builder-operations)
@@ -917,7 +997,7 @@ Additionally all the above triggers have the following functions:
 ```javascript
 // Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
-  console.log("BedroomLight1 state", e.newState)
+    console.log("BedroomLight1 state", e.newState)
 }).build();
 
 // Turn on the kitchen light at SUNSET
@@ -954,7 +1034,8 @@ When a rule is triggered, the script is provided the event instance that trigger
 The specific data depends on the event type.
 The `event` object provides some information about that trigger.
 
-This tables gives an overview over the `event` object:
+This table gives an overview over the `event` object:
+
 | Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
 |-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
 | `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |
@@ -979,30 +1060,55 @@ Time triggers do not provide any event instance, therefore no property is popula
 
 See [openhab-js : EventObject](https://openhab.github.io/openhab-js/rules.html#.EventObject) for full API documentation.
 
-### Initialization hook: scriptLoaded
-
-For file based scripts, this function will be called if found when the script is loaded.
-
-```javascript
-scriptLoaded = function () {
-  console.log("script loaded");
-  loadedDate = Date.now();
-};
-```
-
-### Deinitialization hook: scriptUnloaded
-
-For file based scripts, this function will be called if found when the script is unloaded.
-
-```javascript
-scriptUnloaded = function () {
-  console.log("script unloaded");
-  // clean up rouge timers
-  clearInterval(timer);
-};
-```
-
 ## Advanced Scripting
+
+### Libraries
+
+#### Third Party Libraries
+
+Loading of third party libraries is supported the same way as loading the openHAB JavaScript library:
+
+```javascript
+var myLibrary = require('my-library');
+```
+
+Note: Only CommonJS `require` is supported, ES module loading using `import` is not supported.
+
+Run the `npm` command from the `automation/js` folder to install third party libraries, e.g. from [npm](https://www.npmjs.com/search?q=openhab).
+This will create a `node_modules` folder (if it doesn't already exist) and install the library and it's dependencies there.
+
+There are already some openHAB specific libraries available on [npm](https://www.npmjs.com/search?q=openhab), you may also search the forum for details.
+
+#### Creating Your Own Library
+
+You can also create your own personal JavaScript library for openHAB, but you can not just create a folder in `node_modules` and put your library code in it!
+When it is run, `npm` will remove everything from `node_modules` that has not been properly installed.
+
+Follow these steps to create your own library (it's called a CommonJS module):
+
+1. Create a separate folder for your library outside of `automation/js`, you may also initialize a Git repository.
+2. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
+3. Create the main file of your library (`index.js`) and add some exports:
+
+   ```javascript
+   var someProperty = 'Hello world!';
+   function someFunction () {
+     console.log('Hello from your personal library!');
+   }
+   
+   module.exports = {
+     someProperty,
+     someFunction
+   };
+   ```
+
+4. Tar it up by running `npm pack` from your library's folder.
+5. Install it by running `npm install <name>-<version>.tgz` from the `automation/js` folder.
+6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
+
+It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.
+
+If you want to get some advanced information, you can read [this blog post](https://bugfender.com/blog/how-to-create-an-npm-package/) or just google it.
 
 ### @runtime
 

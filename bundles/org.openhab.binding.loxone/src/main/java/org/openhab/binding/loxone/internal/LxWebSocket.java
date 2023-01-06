@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -631,7 +631,7 @@ public class LxWebSocket {
      * This method sends a request to receive Miniserver configuration.
      */
     private void authenticated() {
-        logger.debug("[{}] Websocket authentication successfull.", debugId);
+        logger.debug("[{}] Websocket authentication successful.", debugId);
         webSocketLock.lock();
         try {
             awaitingConfiguration = true;

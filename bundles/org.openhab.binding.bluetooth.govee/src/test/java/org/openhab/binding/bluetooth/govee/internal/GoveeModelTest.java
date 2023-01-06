@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.govee.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.MockBluetoothAdapter;
 import org.openhab.binding.bluetooth.MockBluetoothDevice;
@@ -40,7 +41,8 @@ class GoveeModelTest {
     }
 
     @Test
-    void testGovee_H5074_84DD() {
+    @DisplayName("testGovee_H5074_84DD")
+    void testGoveeH507484DD() {
         MockBluetoothAdapter adapter = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice = adapter.getDevice(TestUtils.randomAddress());
         mockDevice.setName("Govee_H5074_84DD");
@@ -49,7 +51,8 @@ class GoveeModelTest {
     }
 
     @Test
-    void testGVH5102_77E9() {
+    @DisplayName("testGVH5102_77E9")
+    void testGVH510277E9() {
         MockBluetoothAdapter adapter = new MockBluetoothAdapter();
         MockBluetoothDevice mockDevice = adapter.getDevice(TestUtils.randomAddress());
         mockDevice.setName("GVH5102_77E9");

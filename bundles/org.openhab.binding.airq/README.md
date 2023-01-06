@@ -44,7 +44,7 @@ For the Maximum Error channels just add `_maxerr` to the channel names.
 The rw column is empty if the channel is only readable, w if the channel can be written and rw if it allows both to be read and written.
 
 | channel                   | type                 | rw | description                                                         |
-|---------------------------|----------------------|--------------------------------------------------------------------------|
+|---------------------------|----------------------|----|---------------------------------------------------------------------|
 | status                    | String               |    | Status of the sensors (usually "OK")                                |
 | avgFineDustSize           | Number:Length        |    | Average size of Fine Dust [experimental]                            |
 | fineDustCnt00_3           | Number:Dimensionless |    | Fine Dust >0,3 µm                                                   |

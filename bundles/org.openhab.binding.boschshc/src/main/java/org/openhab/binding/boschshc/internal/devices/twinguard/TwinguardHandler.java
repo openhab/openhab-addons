@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.AirQualityLevelService;
 import org.openhab.binding.boschshc.internal.services.airqualitylevel.dto.AirQualityLevelServiceState;
@@ -35,9 +35,11 @@ import org.openhab.core.thing.Thing;
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic
+ * @author Christian Oeing - Add smoke detector service
+ * @author Gerd Zanker - AbstractSmokeDetectorHandler refactoring for reuse
  */
 @NonNullByDefault
-public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
+public class TwinguardHandler extends AbstractSmokeDetectorHandler {
 
     public TwinguardHandler(Thing thing) {
         super(thing);

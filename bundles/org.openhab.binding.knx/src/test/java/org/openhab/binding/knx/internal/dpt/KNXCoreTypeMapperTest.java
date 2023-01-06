@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -166,9 +166,8 @@ class KNXCoreTypeMapperTest {
 
         assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 s"), "13.100"));
 
-        // DPTs 13.1200 and 13.1201 not available in Calimero 2.5, fix once we update
-        assertNotEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 l"), "13.1200"));
-        assertNotEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 m³"), "13.1201"));
+        assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 l"), "13.1200"));
+        assertEquals("42.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("42 m³"), "13.1201"));
     }
 
     @Test
@@ -258,9 +257,8 @@ class KNXCoreTypeMapperTest {
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 J"), "14.079"));
         assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 VA"), "14.080"));
 
-        // DPTs 14.1200 and 14.1201 not available in Calimero 2.5, fix once we update
-        assertNotEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 m³/h"), "14.1200"));
-        assertNotEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 l/s"), "14.1201"));
+        assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 m³/h"), "14.1200"));
+        assertEquals("1.0", new KNXCoreTypeMapper().toDPTValue(new QuantityType<>("1 l/s"), "14.1201"));
     }
 
     @Test

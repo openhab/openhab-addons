@@ -50,10 +50,6 @@
 			<channel id="current_time" typeId="currentTime"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="manual_fan_step" typeId="manualFanStep"/>
-			<channel id="manual_fan_speed" typeId="manualFanStep">
-				<label>Manual Fan Speed</label>
-				<description>Deprecated, please use Manual Fan Step instead. This channel will be removed in a later version.</description>
-			</channel>
 			<channel id="supply_fan_speed" typeId="supplyFanSpeed"/>
 			<channel id="extract_fan_speed" typeId="extractFanSpeed"/>
 			<channel id="supply_fan_step" typeId="supplyFanStep"/>

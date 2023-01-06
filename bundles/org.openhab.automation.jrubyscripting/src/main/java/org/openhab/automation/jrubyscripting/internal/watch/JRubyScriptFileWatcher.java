@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,9 +66,7 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     protected void processWatchEvent(@Nullable WatchEvent<?> event, WatchEvent.@Nullable Kind<?> kind,
             @Nullable Path path) {
         if (Objects.nonNull(path)) {
-            logger.trace("looking at {}", path);
             if (!isIgnored(path.toString())) {
-                logger.trace("and propagating it");
                 super.processWatchEvent(event, kind, path);
             }
         }

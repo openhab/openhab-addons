@@ -1,7 +1,7 @@
 # Xiaomi Mi Smart Home Binding
 
 This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite.
-It consists of devices communicating over a ZigBee network with a ZigBee - WiFi gateway.
+It consists of devices communicating over a Zigbee network with a Zigbee - WiFi gateway.
 
 The devices are very affordable and you can get them from your favourite Chinese markets like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
 The sensors run on a coin cell battery for over a year.
