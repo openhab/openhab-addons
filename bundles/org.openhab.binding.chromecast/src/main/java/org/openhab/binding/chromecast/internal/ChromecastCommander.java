@@ -238,7 +238,7 @@ public class ChromecastCommander {
             }
             statusUpdater.updateStatus(ThingStatus.ONLINE);
         } catch (final IOException e) {
-            logger.info("Failed starting app: {}. Message: {}", appId, e.getMessage());
+            logger.warn("Failed starting app: {}. Message: {}", appId, e.getMessage());
         }
     }
 
