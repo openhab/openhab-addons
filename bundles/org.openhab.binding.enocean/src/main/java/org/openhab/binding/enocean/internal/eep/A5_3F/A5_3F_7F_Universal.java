@@ -58,7 +58,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
                 setData(HexUtils.hexToBytes(c));
             }
         } catch (IllegalArgumentException e) {
-            logger.debug("Command {} could not transformed", command.toString());
+            logger.error("Command {} could not transformed", command.toString());
             throw e;
         }
     }
