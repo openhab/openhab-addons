@@ -70,7 +70,7 @@ public class GroupActions implements ThingActions {
 
     @RuleAction(label = "@text/action.create-scene.label", description = "@text/action.create-scene.description")
     public @ActionOutput(name = NEW_SCENE_ID_OUTPUT, type = "java.lang.Integer") Map<String, Object> createScene(
-            @ActionInput(name = "name") @Nullable String name) {
+            @ActionInput(name = "name", label = "@text/action.create-scene.name.label", description = "@text/action.create-scene.name.description") @Nullable String name) {
         GroupThingHandler handler = this.handler;
 
         if (handler == null) {
@@ -108,7 +108,8 @@ public class GroupActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.delete-scene.label", description = "@text/action.delete-scene.description")
-    public void deleteScene(@ActionInput(name = "sceneId") @Nullable Integer sceneId) {
+    public void deleteScene(
+            @ActionInput(name = "sceneId", label = "@text/action.delete-scene.sceneId.label", description = "@text/action.delete-scene.sceneId.description") @Nullable Integer sceneId) {
         GroupThingHandler handler = this.handler;
 
         if (handler == null) {
@@ -131,7 +132,8 @@ public class GroupActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.store-as-scene.label", description = "@text/action.store-as-scene.description")
-    public void storeScene(@ActionInput(name = "sceneId") @Nullable Integer sceneId) {
+    public void storeScene(
+            @ActionInput(name = "sceneId", label = "@text/action.store-as-scene.sceneId.label", description = "@text/action.store-as-scene.sceneId.description") @Nullable Integer sceneId) {
         GroupThingHandler handler = this.handler;
 
         if (handler == null) {

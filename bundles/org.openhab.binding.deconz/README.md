@@ -223,11 +223,11 @@ The `deconz` thing supports a thing action to allow new devices to join the netw
 
 The `lightgroup` thing supports thing actions for managing scenes:
 
-| Action name         | Input Value     | Return Value | Description                                                                              |
-|---------------------|-----------------|--------------|------------------------------------------------------------------------------------------|
-| `createScene(name)` | `name` (String) | `newSceneId` | Creates a new scene with the name `name` and returns the new scene's id (if successful). |
-| `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                     |
-| `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                              |
+| Action name         | Input Value          | Return Value | Description                                                                              |
+|---------------------|----------------------|--------------|------------------------------------------------------------------------------------------|
+| `createScene(name)` | `name` (String)      | `newSceneId` | Creates a new scene with the name `name` and returns the new scene's id (if successful). |
+| `deleteScene(id)`   | `sceneId` (Integer)  | -            | Deletes the scene with the given id.                                                     |
+| `storeScene(id)`    | `sceneId` (Integer)  | -            | Store the current group's state as scene with the given id.                              |
 
 The return value refers to a key of the given name within the returned Map. See [example](#thing-actions-example).
 
