@@ -425,13 +425,14 @@ Import-Package: \\
               <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
+              <exclude>**/3rdparty/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/pom.xml</exclude>
               <exclude>_*.java</exclude>
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2022</year>
+              <year>2023</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
