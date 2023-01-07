@@ -21,7 +21,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -30,8 +29,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
@@ -76,7 +77,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     /** holds the local instance of the MapDB database */
 
     private @NonNullByDefault({}) DB db;
-    private @NonNullByDefault({}) Map<String, String> map;
+    private @NonNullByDefault({}) BTreeMap<String, String> map;
 
     private transient Gson mapper = new GsonBuilder().registerTypeHierarchyAdapter(State.class, new StateTypeAdapter())
             .create();
@@ -95,8 +96,10 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
         File dbFile = DB_DIR.resolve(DB_FILE_NAME).toFile();
         try {
-            db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
-            map = db.createTreeMap("itemStore").makeOrGet();
+            db = DBMaker.fileDB(dbFile).transactionEnable().fileMmapEnableIfSupported().fileMmapPreclearDisable()
+                    .closeOnJvmShutdown().make();
+            map = db.treeMap("itemStore").keySerializer(Serializer.STRING).valueSerializer(Serializer.STRING)
+                    .createOrOpen();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
             if (cause instanceof ClassNotFoundException) {
@@ -128,8 +131,11 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
                     return;
                 }
 
-                db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
-                map = db.createTreeMap("itemStore").makeOrGet();
+                db = DBMaker.fileDB(dbFile).transactionEnable().fileMmapEnableIfSupported().fileMmapPreclearDisable()
+                        .closeOnJvmShutdown().make();
+                map = db.treeMap("itemStore").keySerializer(Serializer.STRING).valueSerializer(Serializer.STRING)
+                        .createOrOpen();
+
             } else {
                 logger.warn("Failed to create or open the MapDB: {}", re.getMessage());
                 logger.warn("MapDB persistence service activation has failed.");
