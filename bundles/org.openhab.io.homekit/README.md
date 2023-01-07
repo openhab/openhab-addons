@@ -291,16 +291,16 @@ Note that for sensors that aren't interactive, the Home app will show the consti
 ## Dummy Accessories
 
 OpenHAB is a highly dynamic system, and prone to occasional misconfigurations where items can't be loaded for various reasons, especially if you're using something besides the UI to manage your items.
-This is a problem for Homekit because if the bridge makes a connection, but accessories are missing, then the Homekit database will simply remove that accessory.
-When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or OpenHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
-In order to work around this, the Homekit addon can create dummy accessories for any accessory it has previously published to Homekit.
+This is a problem for HomeKit because if the bridge makes a connection, but accessories are missing, then the HomeKit database will simply remove that accessory.
+When the accessory does come back (i.e. because you corrected a syntax error in an .items file, or openHAB completes booting), all customization of that accessory will be lost - the room assignment, customized  name, custom icon, status/home screen/favorite preferences, etc.
+In order to work around this, the HomeKit addon can create dummy accessories for any accessory it has previously published to HomeKit.
 To enable this behavior, turn on the `useDummyAccessories` setting.
 OpenHAB will then simply present a non-interactive accessory for any that are missing.
-The OpenHAB log will also contain information whenever a dummy accessory is created.
+The openHAB log will also contain information whenever a dummy accessory is created.
 If the item backing the accessory is later re-created, everything will sync back up and nothing will be lost.
 You can also run the console command `openhab:homekit listDummyAccessories` to see which items are missing.
 Apple devices may or may not show "Not Responding" for some or all accessories when there are dummy accessories, since they will no longer be backed by actual items with state.
-It's recommended that you resolve this state as soon as possible, since Homekit may decide your entire bridge is being uncooperative, and remove everything itself.
+It's recommended that you resolve this state as soon as possible, since HomeKit may decide your entire bridge is being uncooperative, and remove everything itself.
 If you actually meant to remove an item, you will need to purge the dummy items from the database so that they'll disappear from the Home app altogether.
 In order to do so, run the console command `openhab:homekit pruneDummyAccessories`.
 Alternatively, disabling, saving, and then re-enabling `useDummyAccessories` in the addon settings will have the same effect.
@@ -343,7 +343,7 @@ Examples:
 
 ### Color Temperature
 
-Color temperature can be represented various ways in OpenHAB. Given the base bulb configured like this:
+Color temperature can be represented various ways in openHAB. Given the base bulb configured like this:
 
 ```xtend
 Group gLight "CCT Light" { homekit="Lighting" }
@@ -914,9 +914,9 @@ Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C
 
 ## Multiple Instances
 
-Homekit has a limitation of 150 accessories per bridge.
+HomeKit has a limitation of 150 accessories per bridge.
 The bridge itself counts as an accessory, so in practice it's 149.
-In order to overcome this limitation, you can instruct OpenHAB to expose multiple bridges to Homekit, and then manually assign specific accessories to different instances.
+In order to overcome this limitation, you can instruct openHAB to expose multiple bridges to HomeKit, and then manually assign specific accessories to different instances.
 You will need to manually add each additional bridge in the Home app, since the QR Code in settings will only be for the primary bridge; however the same PIN is still used.
 In order to assign a particular accessory to a different bridge, set the `instance` metadata parameter:
 
@@ -1000,3 +1000,46 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
 - if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.
+
+### Re-adding the openHAB HomeKit bridge reports that a bridge is already added, even though it has clearly been removed.
+
+There are various reasons this may happen.
+Try the following:
+
+* In [openhab-cli](https://www.openhab.org/docs/administration/console.html), run `openhab:homekit clearPairings`.
+Try again.
+* In the HomeKit settings, change the port, setupId, and pin.
+Save the settings, then re-open the settings so as to refresh the QR code.
+Re-add the device.
+* Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
+Restart openHAB.
+Reboot iPhone.
+Try again.
+
+### A stale HomeKit accessory will not go away after deleting the related item.
+
+You probably have `useDummyAccessories` enabled in the openHAB HomeKit settings.
+See the [Dummy Accessories](#dummy-accessories) section in the help, above.
+
+### I added an accessory as the wrong type in Home, and updating the item configuration does not cause the change to reflect in the Home app
+
+HomeKit remembers certain configurations about an accessory, from its name to its fundamental type (i.e. fan, light or
+switch?).
+If you added it incorrectly, simply updating the item type will not cause Home to update the type.
+To resolve:
+
+1) If using text configuration: Comment out the HomeKit metadata for an accessory.
+If in the GUI, delete the HomeKit metadata for all items associated with the accessory.
+
+2) If you have `useDummyAccessories` enabled, open the
+[openhab-cli](https://www.openhab.org/docs/administration/console.html).
+Run `openhab:homekit listDummyAccessories` and
+confirm your item is in the list.
+Once you've confirmed, clear it with `openhab:homekit clearDummyAccessories`.
+
+3) Kill your Home app on your iOS device.
+Re-open it, and confirm that the accessory is gone.
+
+4) Uncomment the HomeKit metadata or re-add it via the UI.
+
+5) You should now see the updated configuration for your accessory.
