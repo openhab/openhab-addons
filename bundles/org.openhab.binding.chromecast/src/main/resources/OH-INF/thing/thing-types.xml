@@ -216,7 +216,7 @@
 		<description>Length of currently playing media</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<tag>Point</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -227,9 +227,6 @@
 		<item-type>String</item-type>
 		<label>Media Type</label>
 		<description>The type of the currently playing media. One of GENERIC, MOVIE, TV_SHOW, AUDIO_TRACK, PHOTO</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GENERIC"/>
@@ -245,9 +242,6 @@
 		<item-type>String</item-type>
 		<label>Album Artist</label>
 		<description>The name of the album's artist</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -255,9 +249,6 @@
 		<item-type>String</item-type>
 		<label>Album Name</label>
 		<description>The name of the album</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -267,7 +258,7 @@
 		<description>The broadcast date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
+            <tag>Point</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
@@ -277,9 +268,6 @@
 		<item-type>String</item-type>
 		<label>Composer</label>
 		<description>The composer of the current track</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -289,7 +277,7 @@
 		<description>The creation date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
+            <tag>Point</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
@@ -299,9 +287,6 @@
 		<item-type>Number</item-type>
 		<label>Disc Number</label>
 		<description>The disc number of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -309,9 +294,6 @@
 		<item-type>Number</item-type>
 		<label>Episode Number</label>
 		<description>The episode number of the currently playing media</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -333,9 +315,6 @@
 		<item-type>String</item-type>
 		<label>Location Name</label>
 		<description>The location of where the current media was taken</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -345,7 +324,7 @@
 		<description>The release date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
+            <tag>Point</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
