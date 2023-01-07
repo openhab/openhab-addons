@@ -525,6 +525,7 @@ Currently the miio binding supports more than 340 different models.
 | Xiaomi Smart Air Purifier 4 Compact | miio:basic       | [zhimi.airp.cpa4](#zhimi-airp-cpa4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier 3C                 | miio:basic       | [zhimi.airp.mb4a](#zhimi-airp-mb4a) | Yes          |            |
 | Xiaomi Smart Air Purifier 4        | miio:basic       | [zhimi.airp.mb5](#zhimi-airp-mb5) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Purifier 4 Pro    | miio:basic       | [zhimi.airp.vb4](#zhimi-airp-vb4) | Yes          |            |
 | Mi Air Purifier 2 (mini)           | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes          |            |
 | Mi Air Purifier 2                  | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes          |            |
 | Mi Air Purifier 2S                 | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes          |            |
@@ -5051,6 +5052,40 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | manual_level         | Number               | Custom Service - Manual Level            | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
 | country_code         | Number               | Custom Service - Country Code            | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
 | iic_error_count      | Number               | Custom Service - Iic Error Count         |            |
+| filter_used_debug    | Number:Time          | Filter Time - Filter Used Debug          |            |
+| purify_volume        | Number               | Aqi - Purify Volume                      |            |
+| average_aqi          | Number               | Aqi - Average Aqi                        |            |
+| aqi_state            | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI-GOOD-L","1"="AQI-GOOD-H","2"="AQI-MID-L","3"="AQI-MID-H","4"="AQI-BAD-L","5"="AQI-BAD-H"]` |
+
+### Xiaomi Smart Air Purifier 4 Pro (<a name="zhimi-airp-vb4">zhimi.airp.vb4</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Air Purifier Toggle","filter-reset-filter-life"="Filter Reset Filter Life","custom-service-toggle-mode"="Custom Service Toggle Mode","custom-service-toggle-fan-level"="Custom Service Toggle Fan Level"]` |
+| on                   | Switch               | Air Purifier - Switch Status             |            |
+| fault                | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No Faults","1"="Sensor PM Error","2"="Temp Error","3"="Hum Error","4"="No Filter"]` |
+| mode                 | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="Manual"]` |
+| fan_level            | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| anion                | Switch               | Air Purifier - Anion                     |            |
+| relative_humidity    | Number:Dimensionless | Environment - Relative Humidity          |            |
+| pm2_5_density        | Number               | Environment - PM2 5 Density              |            |
+| temperature          | Number:Temperature   | Temperature                              |            |
+| pm10_density         | Number               | Environment - PM10 Density               |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_used_time     | Number:Time          | Filter - Filter Used Time                |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| alarm                | Switch               | Alarm                                    |            |
+| physical_controls_locked | Switch               | Physical Control Locked                  |            |
+| brightness           | Number               | Brightness                               | Value mapping `["0"="Close","1"="Bright","2"="Brightest"]` |
+| temperature_display_unit | Number               | Temperature Display Unit                 | Value mapping `["1"="Celsius","2"="Fahrenheit"]` |
+| motor_speed_rpm      | Number               | Motor Speed Rpm                          |            |
+| favorite_speed       | Number               | Favorite Speed                           |            |
+| motor_set_speed      | Number               | Motor Set Speed                          |            |
+| favorite_level       | Number               | Favorite Level                           |            |
+| bottom_door          | Switch               | Bottom Door                              |            |
+| reboot_cause         | Number               | Reboot Cause                             | Value mapping `["0"="REASON-HW-BOOT","1"="REASON-USER-REBOOT","2"="REASON-UPDATE","3"="REASON-WDT"]` |
+| manual_level         | Number               | Manual Level                             | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| country_code         | Number               | Country Code                             | Value mapping `["2"="EU","1"="US","82"="KR","886"="TW","66"="TH","44"="UK","91"="IN"]` |
 | filter_used_debug    | Number:Time          | Filter Time - Filter Used Debug          |            |
 | purify_volume        | Number               | Aqi - Purify Volume                      |            |
 | average_aqi          | Number               | Aqi - Average Aqi                        |            |
@@ -11243,6 +11278,43 @@ Number reboot_cause "Custom Service - Reboot Cause" (G_airp) {channel="miio:basi
 Number manual_level "Custom Service - Manual Level" (G_airp) {channel="miio:basic:airp:manual_level"}
 Number country_code "Custom Service - Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 Number iic_error_count "Custom Service - Iic Error Count" (G_airp) {channel="miio:basic:airp:iic_error_count"}
+Number:Time filter_used_debug "Filter Time - Filter Used Debug" (G_airp) {channel="miio:basic:airp:filter_used_debug"}
+Number purify_volume "Aqi - Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
+Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:average_aqi"}
+Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"}
+```
+
+### Xiaomi Smart Air Purifier 4 Pro (zhimi.airp.vb4) item file lines
+
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airp "Xiaomi Smart Air Purifier 4 Pro" <status>
+String actions "Actions" (G_airp) {channel="miio:basic:airp:actions"}
+Switch on "Air Purifier - Switch Status" (G_airp) {channel="miio:basic:airp:on"}
+Number fault "Air Purifier - Device Fault" (G_airp) {channel="miio:basic:airp:fault"}
+Number mode "Mode" (G_airp) {channel="miio:basic:airp:mode"}
+Number fan_level "Air Purifier - Fan Level" (G_airp) {channel="miio:basic:airp:fan_level"}
+Switch anion "Air Purifier - Anion" (G_airp) {channel="miio:basic:airp:anion"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airp) {channel="miio:basic:airp:relative_humidity"}
+Number pm2_5_density "Environment - PM2 5 Density" (G_airp) {channel="miio:basic:airp:pm2_5_density"}
+Number:Temperature temperature "Temperature" (G_airp) {channel="miio:basic:airp:temperature"}
+Number pm10_density "Environment - PM10 Density" (G_airp) {channel="miio:basic:airp:pm10_density"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airp) {channel="miio:basic:airp:filter_life_level"}
+Number:Time filter_used_time "Filter - Filter Used Time" (G_airp) {channel="miio:basic:airp:filter_used_time"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_airp) {channel="miio:basic:airp:filter_left_time"}
+Switch alarm "Alarm" (G_airp) {channel="miio:basic:airp:alarm"}
+Switch physical_controls_locked "Physical Control Locked" (G_airp) {channel="miio:basic:airp:physical_controls_locked"}
+Number brightness "Brightness" (G_airp) {channel="miio:basic:airp:brightness"}
+Number temperature_display_unit "Temperature Display Unit" (G_airp) {channel="miio:basic:airp:temperature_display_unit"}
+Number motor_speed_rpm "Motor Speed Rpm" (G_airp) {channel="miio:basic:airp:motor_speed_rpm"}
+Number favorite_speed "Favorite Speed" (G_airp) {channel="miio:basic:airp:favorite_speed"}
+Number motor_set_speed "Motor Set Speed" (G_airp) {channel="miio:basic:airp:motor_set_speed"}
+Number favorite_level "Favorite Level" (G_airp) {channel="miio:basic:airp:favorite_level"}
+Switch bottom_door "Bottom Door" (G_airp) {channel="miio:basic:airp:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airp) {channel="miio:basic:airp:reboot_cause"}
+Number manual_level "Manual Level" (G_airp) {channel="miio:basic:airp:manual_level"}
+Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 Number:Time filter_used_debug "Filter Time - Filter Used Debug" (G_airp) {channel="miio:basic:airp:filter_used_debug"}
 Number purify_volume "Aqi - Purify Volume" (G_airp) {channel="miio:basic:airp:purify_volume"}
 Number average_aqi "Aqi - Average Aqi" (G_airp) {channel="miio:basic:airp:average_aqi"}
