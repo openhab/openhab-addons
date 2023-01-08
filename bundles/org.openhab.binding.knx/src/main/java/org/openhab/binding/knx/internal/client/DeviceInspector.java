@@ -275,14 +275,17 @@ public class DeviceInspector {
         } else {
             logger.debug("The device with address {} does not expose a Device Descriptor type 0", address);
         }
-        Thread.sleep(OPERATION_INTERVAL);
-        data = getClient().readDeviceDescription(address, 2, false, OPERATION_TIMEOUT);
-        if (data != null) {
-            try {
-                final DD2 dd = DeviceDescriptor.DD2.from(data);
-                logger.debug("The device with address {} is has DD2 {}", address, dd.toString());
-            } catch (KNXIllegalArgumentException e) {
-                logger.warn("Can not parse device descriptor 2 of device with address {}: {}", address, e.getMessage());
+        if (logger.isDebugEnabled()) {
+            Thread.sleep(OPERATION_INTERVAL);
+            data = getClient().readDeviceDescription(address, 2, false, OPERATION_TIMEOUT);
+            if (data != null) {
+                try {
+                    final DD2 dd = DeviceDescriptor.DD2.from(data);
+                    logger.debug("The device with address {} is has DD2 {}", address, dd.toString());
+                } catch (KNXIllegalArgumentException e) {
+                    logger.warn("Can not parse device descriptor 2 of device with address {}: {}", address,
+                            e.getMessage());
+                }
             }
         }
         return ret;
