@@ -31,7 +31,9 @@ import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * The {@link SiemenesHvacDiscoveryParticipant} is responsible for discovering new and
@@ -40,8 +42,18 @@ import org.osgi.service.component.annotations.Component;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class)
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.siemensHvac")
 public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipant {
+
+    @Activate
+    public void activate(@Nullable Map<String, Object> configProperties) {
+
+    }
+
+    @Modified
+    public void modified(@Nullable Map<String, Object> configProperties) {
+
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

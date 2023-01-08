@@ -25,6 +25,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * Copied from
+ * https://raw.githubusercontent.com/google/gson/master/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java
+ * and repackaged here with additional content from
+ * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
+ * to avoid using the internal package.
+ */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
 import java.io.EOFException;
@@ -184,6 +192,9 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
+        if (typeFieldName == null || baseType == null) {
+            throw new NullPointerException();
+        }
         this.baseType = baseType;
         this.typeFieldName = typeFieldName;
     }
@@ -212,6 +223,9 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      *             have already been registered on this type adapter.
      */
     public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
+        if (type == null || label == null) {
+            throw new NullPointerException();
+        }
         if (subtypeToLabel.containsKey(type) || labelToSubtype.containsKey(label)) {
             throw new IllegalArgumentException("types and labels must be unique");
         }
