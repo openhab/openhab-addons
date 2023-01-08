@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="siemenshvac" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Thing Type -->
+	<bridge-type id="ozw672">
+		<label>OZW672 IP Gateway</label>
+		<description>This is a OZW672 IP interface</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<label>Network Address</label>
+				<description>Network address of the Siemens Hvac IP gateway</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="portNumber" type="integer">
+				<description>Port number of the Siemens Hvac gateway</description>
+				<required>false</required> 
+				<label>Port</label>
+				<default>3671</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
