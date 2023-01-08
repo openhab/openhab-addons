@@ -11,9 +11,6 @@ It allows control of playback, position and volume and allows display of various
 * current position within track
 * Album cover
 
-
-[→ useful Links][links]
-
 ## Discovery
 
 This thing does (currently) not provide auto-discovery.

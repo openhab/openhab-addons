@@ -11,11 +11,11 @@
 
 		<channels>
 			<channel id="album" typeId="current-album"/>
-			<channel id="artist" typeId="current-artist"/>
+			<channel id="artist" typeId="system.media-artist"/>
 			<channel id="playback-control" typeId="playback-control"/>
 			<channel id="position" typeId="current-position"/>
 			<channel id="state" typeId="current-state"/>
-			<channel id="title" typeId="current-title"/>
+			<channel id="title" typeId="system.media-title"/>
 			<channel id="track" typeId="current-track"/>
 			<channel id="volume-control" typeId="system.volume"/>
 			<channel id="cover" typeId="current-cover"/>
@@ -24,7 +24,7 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
-				<label>Hostname</label>
+				<label>Hostname/IP</label>
 				<description>Hostname or IP address of Clementine player</description>
 			</parameter>
 			<parameter name="authCode" type="integer" required="false">
@@ -54,25 +54,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="current-artist">
-		<item-type>String</item-type>
-		<label>Current Artist</label>
-		<description>Artist of the currently playing title</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="current-position">
 		<item-type>Number:Time</item-type>
 		<label>Current Position</label>
 		<description>Current position within the playing track</description>
 		<state readOnly="true" pattern="%1$tT"/>
-	</channel-type>
-
-	<channel-type id="current-title">
-		<item-type>String</item-type>
-		<label>Current Title</label>
-		<description>Name of the currently playing title</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-track">

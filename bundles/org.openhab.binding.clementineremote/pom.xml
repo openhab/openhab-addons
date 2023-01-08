@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.clementineremote</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: ClementineRemote Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Clementine Remote Binding</name>
 
   <dependencies>
     <dependency>
