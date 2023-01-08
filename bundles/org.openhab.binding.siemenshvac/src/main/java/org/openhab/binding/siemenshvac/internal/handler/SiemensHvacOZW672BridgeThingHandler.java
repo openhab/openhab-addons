@@ -44,7 +44,7 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
 
     @Activate
     public SiemensHvacOZW672BridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
-            @Nullable HttpClientFactory httpClientFactory, @Nullable SiemensHvacMetadataRegistry metaDataRegistry) {
+            @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge, networkAddressService, httpClientFactory, metaDataRegistry);
     }
 

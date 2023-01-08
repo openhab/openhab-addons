@@ -15,6 +15,13 @@ package org.openhab.binding.siemenshvac.internal.Metadata;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacMetadataMenu extends SiemensHvacMetadata {
     private LinkedHashMap<String, SiemensHvacMetadata> childList;
 

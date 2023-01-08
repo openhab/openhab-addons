@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionProvider;
@@ -28,24 +29,29 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 @Component(service = { SiemensHvacConfigDescriptionProvider.class, ConfigDescriptionProvider.class })
 public class SiemensHvacConfigDescriptionProviderImpl implements SiemensHvacConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<>();
 
     @Override
-    public Collection<ConfigDescription> getConfigDescriptions(Locale locale) {
+    public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
         Collection<ConfigDescription> result = new ArrayList<>();
         for (URI configDescriptionURI : configDescriptionsByURI.keySet()) {
-            result.add(configDescriptionsByURI.get(configDescriptionURI));
+            ConfigDescription desc = configDescriptionsByURI.get(configDescriptionURI);
+            if (desc != null) {
+                result.add(desc);
+            }
         }
         return result;
     }
 
     @Override
-    public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
+    public @Nullable ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
         return configDescriptionsByURI.get(uri);
     }
 
+    @Nullable
     @Override
     public ConfigDescription getInternalConfigDescription(URI uri) {
         return configDescriptionsByURI.get(uri);

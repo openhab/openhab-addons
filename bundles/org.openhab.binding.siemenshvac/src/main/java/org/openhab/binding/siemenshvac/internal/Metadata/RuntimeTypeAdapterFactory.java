@@ -25,14 +25,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * Copied from
- * https://raw.githubusercontent.com/google/gson/master/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java
- * and repackaged here with additional content from
- * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
- * to avoid using the internal package.
- */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
 import java.io.EOFException;
@@ -41,6 +33,9 @@ import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -90,7 +85,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <p>
  * Without additional type information, the serialized JSON is ambiguous. Is
  * the bottom shape in this drawing a rectangle or a diamond?
- * 
+ *
  * <pre>
  *    {@code
  *   {
@@ -111,7 +106,7 @@ import com.google.gson.stream.MalformedJsonException;
  * This class addresses this problem by adding type information to the
  * serialized JSON and honoring that type information when the JSON is
  * deserialized:
- * 
+ *
  * <pre>
  *    {@code
  *   {
@@ -138,7 +133,7 @@ import com.google.gson.stream.MalformedJsonException;
  * Create a {@code RuntimeTypeAdapterFactory} by passing the base type and type field
  * name to the {@link #of} factory method. If you don't supply an explicit type
  * field name, {@code "type"} will be used.
- * 
+ *
  * <pre>
  * {
  *     &#64;code
@@ -168,7 +163,7 @@ import com.google.gson.stream.MalformedJsonException;
  * </pre>
  *
  * Like {@code GsonBuilder}, this API supports chaining:
- * 
+ *
  * <pre>
  * {
  *     &#64;code
@@ -177,6 +172,11 @@ import com.google.gson.stream.MalformedJsonException;
  * }
  * </pre>
  */
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;
@@ -184,9 +184,6 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
-        if (typeFieldName == null || baseType == null) {
-            throw new NullPointerException();
-        }
         this.baseType = baseType;
         this.typeFieldName = typeFieldName;
     }
@@ -215,9 +212,6 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      *             have already been registered on this type adapter.
      */
     public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
-        if (type == null || label == null) {
-            throw new NullPointerException();
-        }
         if (subtypeToLabel.containsKey(type) || labelToSubtype.containsKey(label)) {
             throw new IllegalArgumentException("types and labels must be unique");
         }
@@ -238,8 +232,11 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     }
 
     @Override
-    public <R> TypeAdapter<R> create(Gson gson, TypeToken<R> type) {
-        if (type.getRawType() != baseType) {
+    public @Nullable <R> TypeAdapter<R> create(@Nullable Gson gson, @Nullable TypeToken<R> type) {
+        if (type == null || type.getRawType() != baseType) {
+            return null;
+        }
+        if (gson == null) {
             return null;
         }
 
@@ -253,25 +250,33 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
         return new TypeAdapter<R>() {
             @Override
-            public R read(JsonReader in) throws IOException {
+            public @Nullable R read(JsonReader in) throws IOException {
                 JsonElement jsonElement = RuntimeTypeAdapterFactory.parse(in);
-                JsonElement labelJsonElement = jsonElement.getAsJsonObject().remove(typeFieldName);
-                if (labelJsonElement == null) {
-                    throw new JsonParseException("cannot deserialize " + baseType
-                            + " because it does not define a field named " + typeFieldName);
+                if (jsonElement != null) {
+                    JsonElement labelJsonElement = jsonElement.getAsJsonObject().remove(typeFieldName);
+                    if (labelJsonElement == null) {
+                        throw new JsonParseException("cannot deserialize " + baseType
+                                + " because it does not define a field named " + typeFieldName);
+                    }
+                    String label = labelJsonElement.getAsString();
+                    @SuppressWarnings("unchecked") // registration requires that subtype extends T
+                    TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
+                    if (delegate == null) {
+                        throw new JsonParseException("cannot deserialize " + baseType + " subtype named " + label
+                                + "; did you forget to register a subtype?");
+                    }
+                    return delegate.fromJsonTree(jsonElement);
+                } else {
+                    throw new JsonParseException("cannot deserialize " + baseType + " because jsonElement is null");
                 }
-                String label = labelJsonElement.getAsString();
-                @SuppressWarnings("unchecked") // registration requires that subtype extends T
-                TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
-                if (delegate == null) {
-                    throw new JsonParseException("cannot deserialize " + baseType + " subtype named " + label
-                            + "; did you forget to register a subtype?");
-                }
-                return delegate.fromJsonTree(jsonElement);
             }
 
             @Override
-            public void write(JsonWriter out, R value) throws IOException {
+            public void write(JsonWriter out, @Nullable R value) throws IOException {
+                if (value == null) {
+                    return;
+                }
+
                 Class<?> srcType = value.getClass();
                 String label = subtypeToLabel.get(srcType);
                 @SuppressWarnings("unchecked") // registration requires that subtype extends T
@@ -298,7 +303,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     /**
      * Takes a reader in any state and returns the next value as a JsonElement.
      */
-    private static JsonElement parse(JsonReader reader) throws JsonParseException {
+    private static @Nullable JsonElement parse(JsonReader reader) throws JsonParseException {
         boolean isEmpty = true;
         try {
             reader.peek();
@@ -332,7 +337,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     private static final TypeAdapter<JsonElement> JSON_ELEMENT = new TypeAdapter<JsonElement>() {
         @Override
-        public JsonElement read(JsonReader in) throws IOException {
+        public @Nullable JsonElement read(JsonReader in) throws IOException {
             switch (in.peek()) {
                 case STRING:
                     return new JsonPrimitive(in.nextString());
@@ -370,7 +375,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         }
 
         @Override
-        public void write(JsonWriter out, JsonElement value) throws IOException {
+        public void write(JsonWriter out, @Nullable JsonElement value) throws IOException {
             if (value == null || value.isJsonNull()) {
                 out.nullValue();
             } else if (value.isJsonPrimitive()) {

@@ -12,13 +12,22 @@
  */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacMetadata {
     private int Id = -1;
     private int subId = -1;
     private int groupId = -1;
     private int catId = -1;
-    private String shortDesc = null;
-    private String longDesc = null;
+    private String shortDesc = "";
+    private String longDesc = "";
+    @Nullable
     private transient SiemensHvacMetadata parent;
 
     public SiemensHvacMetadata() {
@@ -72,11 +81,11 @@ public class SiemensHvacMetadata {
         this.longDesc = longDesc;
     }
 
-    public SiemensHvacMetadata getParent() {
+    public @Nullable SiemensHvacMetadata getParent() {
         return parent;
     }
 
-    public void setParent(SiemensHvacMetadata parent) {
+    public void setParent(@Nullable SiemensHvacMetadata parent) {
         this.parent = parent;
     }
 }

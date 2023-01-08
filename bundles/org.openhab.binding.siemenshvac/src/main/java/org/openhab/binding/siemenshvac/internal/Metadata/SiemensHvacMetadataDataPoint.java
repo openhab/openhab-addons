@@ -15,28 +15,40 @@ package org.openhab.binding.siemenshvac.internal.Metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     private String dptId = "-1";
-    private String dptType = null;
-    private String dptUnit = null;
-    private String min = null;
-    private String max = null;
-    private String resolution = null;
-    private String fieldWitdh = null;
-    private String decimalDigits = null;
+    private String dptType = "";
+    private @Nullable String dptUnit = null;
+    private @Nullable String min = null;
+    private @Nullable String max = null;
+    private @Nullable String resolution = null;
+    private @Nullable String fieldWitdh = null;
+    private @Nullable String decimalDigits = null;
     private Boolean detailsResolved = false;
+    @SuppressWarnings("unused")
     private Boolean unresolvableDetails = false;
-    private String dialogType = null;
-    private String maxLength = null;
-    private String address = null;
+    private @Nullable String dialogType = null;
+    private @Nullable String maxLength = null;
+    private @Nullable String address = null;
     private int dptSubKey = -1;
     private boolean writeAccess = false;
-    private List<SiemensHvacMetadataPointChild> child = null;
+    private List<SiemensHvacMetadataPointChild> child;
+
+    public SiemensHvacMetadataDataPoint() {
+        child = new ArrayList<SiemensHvacMetadataPointChild>();
+    }
 
     public String getDptType() {
         return dptType;
@@ -46,7 +58,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.dptType = dptType;
     }
 
-    public List<SiemensHvacMetadataPointChild> getChild() {
+    public @Nullable List<SiemensHvacMetadataPointChild> getChild() {
         return child;
     }
 
@@ -70,7 +82,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.dptSubKey = dptSubKey;
     }
 
-    public String getAddress() {
+    public @Nullable String getAddress() {
         return address;
     }
 
@@ -86,7 +98,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.address = address;
     }
 
-    public String getDptUnit() {
+    public @Nullable String getDptUnit() {
         return dptUnit;
     }
 
@@ -94,7 +106,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.dptUnit = dptUnit;
     }
 
-    public String getMaxLength() {
+    public @Nullable String getMaxLength() {
         return maxLength;
     }
 
@@ -102,7 +114,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.maxLength = maxLength;
     }
 
-    public String getDialogType() {
+    public @Nullable String getDialogType() {
         return dialogType;
     }
 
@@ -110,7 +122,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.dialogType = dialogType;
     }
 
-    public String getMin() {
+    public @Nullable String getMin() {
         return min;
     }
 
@@ -118,7 +130,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.min = min;
     }
 
-    public String getMax() {
+    public @Nullable String getMax() {
         return max;
     }
 
@@ -126,7 +138,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.max = max;
     }
 
-    public String getResolution() {
+    public @Nullable String getResolution() {
         return resolution;
     }
 
@@ -134,7 +146,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.resolution = resolution;
     }
 
-    public String getFieldWitdh() {
+    public @Nullable String getFieldWitdh() {
         return fieldWitdh;
     }
 
@@ -142,7 +154,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.fieldWitdh = fieldWitdh;
     }
 
-    public String getDecimalDigits() {
+    public @Nullable String getDecimalDigits() {
         return decimalDigits;
     }
 
@@ -159,22 +171,17 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     }
 
     public void resolveDptDetails(JsonObject result) {
-        if (result == null) {
-            return;
-        }
-
         JsonObject subResultObj = result.getAsJsonObject("Result");
         JsonObject desc = result.getAsJsonObject("Description");
 
         if (subResultObj.has("Success")) {
-            boolean resultVal = subResultObj.get("Success").getAsBoolean();
             JsonObject error = subResultObj.getAsJsonObject("Error");
             String errorMsg = "";
             if (error != null) {
                 errorMsg = error.get("Txt").getAsString();
             }
 
-            if (errorMsg.equals("datatype not supported")) {
+            if (("datatype not supported").equals(errorMsg)) {
                 detailsResolved = true;
                 unresolvableDetails = true;
                 return;
@@ -188,7 +195,6 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
             if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
 
                 JsonArray enums = desc.getAsJsonArray("Enums");
-                child = new ArrayList<SiemensHvacMetadataPointChild>();
 
                 for (Object obj : enums) {
                     JsonObject entry = (JsonObject) obj;
@@ -222,23 +228,14 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
                     ch.setOpt1(button.get("TextOpt1").getAsString());
                     ch.setIsActive(button.get("IsActive").getAsString());
                     child.add(ch);
-
-                    String signifiance = button.get("Significance").getAsString();
                 }
             } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_DATE)) {
-                System.out.println("");
             } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
-                System.out.println("");
             } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER)) {
-                System.out.println("");
             } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_CALENDAR)) {
-                System.out.println("");
             } else {
-                System.out.println("");
             }
             detailsResolved = true;
         }
-
     }
-
 }

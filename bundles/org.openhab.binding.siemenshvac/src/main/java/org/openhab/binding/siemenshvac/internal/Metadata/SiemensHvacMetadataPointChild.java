@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacMetadataPointChild {
 
-    private String text;
-    private String value;
-    private String opt0;
-    private String opt1;
-    private String isActive;
+    private String text = "";
+    private String value = "";
+    private String opt0 = "";
+    private String opt1 = "";
+    private String isActive = "";
 
     public String getText() {
         return this.text;
