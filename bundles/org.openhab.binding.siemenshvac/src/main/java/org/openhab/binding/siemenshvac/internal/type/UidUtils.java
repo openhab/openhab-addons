@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.siemenshvac.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
@@ -28,6 +29,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class UidUtils {
 
     public static String sanetizeId(String st) {
@@ -160,7 +162,6 @@ public class UidUtils {
         }
 
         return buffer.toString();
-
     }
 
     /**

@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.type;
 import java.net.URI;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionProvider;
@@ -24,6 +25,7 @@ import org.openhab.core.config.core.ConfigDescriptionProvider;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public interface SiemensHvacConfigDescriptionProvider extends ConfigDescriptionProvider {
 
     /**
@@ -56,5 +58,6 @@ public interface SiemensHvacConfigDescriptionProvider extends ConfigDescriptionP
      *         <i>null</i> if no ConfigDescription with the given URI was added
      *         before
      */
+    @Nullable
     public ConfigDescription getInternalConfigDescription(URI uri);
 }

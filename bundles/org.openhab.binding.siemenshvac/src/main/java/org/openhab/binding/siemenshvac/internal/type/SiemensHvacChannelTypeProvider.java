@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.siemenshvac.internal.type;
 
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -23,6 +25,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public interface SiemensHvacChannelTypeProvider extends ChannelTypeProvider {
 
     /**
@@ -43,5 +46,6 @@ public interface SiemensHvacChannelTypeProvider extends ChannelTypeProvider {
      *         <i>null</i> if no ChannelType with the given UID was added
      *         before
      */
-    public ChannelType getInternalChannelType(ChannelTypeUID channelTypeUID);
+    @Nullable
+    public ChannelType getInternalChannelType(@Nullable ChannelTypeUID channelTypeUID);
 }

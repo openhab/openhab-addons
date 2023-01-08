@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -30,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 @Component(service = { SiemensHvacChannelTypeProvider.class, ChannelTypeProvider.class })
 public class SiemensHvacChannelTypeProviderImpl implements SiemensHvacChannelTypeProvider {
     private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
@@ -47,10 +49,12 @@ public class SiemensHvacChannelTypeProviderImpl implements SiemensHvacChannelTyp
         Collection<ChannelType> result = new ArrayList<>();
 
         for (ChannelTypeUID uid : channelTypesByUID.keySet()) {
-            result.add(channelTypesByUID.get(uid));
+            ChannelType tp = channelTypesByUID.get(uid);
+            if (tp != null) {
+                result.add(tp);
+            }
         }
         return result;
-
     }
 
     /**
@@ -62,9 +66,9 @@ public class SiemensHvacChannelTypeProviderImpl implements SiemensHvacChannelTyp
         return channelTypesByUID.get(channelTypeUID);
     }
 
+    @Nullable
     @Override
     public ChannelType getInternalChannelType(@Nullable ChannelTypeUID channelTypeUID) {
         return channelTypesByUID.get(channelTypeUID);
     }
-
 }

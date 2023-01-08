@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.discovery.SiemensHvacDeviceDiscoveryService;
+import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -39,17 +40,23 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     // private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
 
     private @Nullable SiemensHvacDeviceDiscoveryService discoveryService;
-    private @Nullable final NetworkAddressService networkAddressService;
-    private @Nullable final HttpClientFactory httpClientFactory;
-    private @Nullable final SiemensHvacMetadataRegistry metaDataRegistry;
+    @SuppressWarnings("unused")
+    private final @Nullable NetworkAddressService networkAddressService;
+    private final @Nullable HttpClientFactory httpClientFactory;
+    private final SiemensHvacMetadataRegistry metaDataRegistry;
+    private @Nullable SiemensHvacConnector connector;
 
     public SiemensHvacBridgeBaseThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
-            @Nullable HttpClientFactory httpClientFactory, @Nullable SiemensHvacMetadataRegistry metaDataRegistry) {
+            @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge);
         this.networkAddressService = networkAddressService;
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
-        this.metaDataRegistry.getSiemensHvacConnector().setSiemensHvacBridgeBaseThingHandler(this);
+
+        connector = this.metaDataRegistry.getSiemensHvacConnector();
+        if (connector != null) {
+            connector.setSiemensHvacBridgeBaseThingHandler(this);
+        }
     }
 
     @Override
@@ -69,11 +76,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void initialize() {
-
-        if (metaDataRegistry != null) {
-            metaDataRegistry.ReadMeta();
-        }
-
+        metaDataRegistry.ReadMeta();
     }
 
     @Override
@@ -109,5 +112,4 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     public @Nullable HttpClientFactory getHttpClientFactory() {
         return this.httpClientFactory;
     }
-
 }

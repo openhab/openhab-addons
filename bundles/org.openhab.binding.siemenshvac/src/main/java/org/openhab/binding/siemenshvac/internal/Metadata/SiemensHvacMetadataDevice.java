@@ -12,13 +12,30 @@
  */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacMetadataDevice {
-    private String name;
-    private String addr;
-    private String type;
-    private String serialNr;
+
+    private String name = "";
+
+    private String addr = "";
+
+    private String type = "unknow";
+
+    private String serialNr = "";
+
+    @Nullable
     private String treeDate;
+
+    @Nullable
     private String treeTime;
+
     private boolean treeGenerated;
     private int treeId;
 
@@ -54,7 +71,7 @@ public class SiemensHvacMetadataDevice {
         this.serialNr = serialNr;
     }
 
-    public String getTreeDate() {
+    public @Nullable String getTreeDate() {
         return treeDate;
     }
 
@@ -62,7 +79,7 @@ public class SiemensHvacMetadataDevice {
         this.treeDate = treeDate;
     }
 
-    public String getTreeTime() {
+    public @Nullable String getTreeTime() {
         return treeTime;
     }
 
@@ -85,5 +102,4 @@ public class SiemensHvacMetadataDevice {
     public void setTreeId(int treeId) {
         this.treeId = treeId;
     }
-
 }

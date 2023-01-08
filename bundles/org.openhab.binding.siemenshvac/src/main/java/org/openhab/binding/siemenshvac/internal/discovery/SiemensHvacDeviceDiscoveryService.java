@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
-import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Arnal - Initial contribution
  */
 // @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.siemenshvac")
+@NonNullByDefault
 public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
@@ -50,7 +51,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     private @Nullable SiemensHvacMetadataRegistry metadataRegistry;
     private @Nullable SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler;
-    private @Nullable SiemensHvacConnector hvacConnector;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .singleton(SiemensHvacBindingConstants.THING_TYPE_OZW672);
 
@@ -61,7 +61,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Reference
-    public void setSiemensHvacMetadataRegistry(SiemensHvacMetadataRegistry metadataRegistry) {
+    public void setSiemensHvacMetadataRegistry(@Nullable SiemensHvacMetadataRegistry metadataRegistry) {
         this.metadataRegistry = metadataRegistry;
     }
 
@@ -81,9 +81,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     private @Nullable ThingUID getThingUID(ThingTypeUID thingTypeUID, String serial) {
         if (siemensHvacBridgeHandler != null) {
             ThingUID localBridgeUID = siemensHvacBridgeHandler.getThing().getUID();
-            if (localBridgeUID != null) {
-                return new ThingUID(thingTypeUID, localBridgeUID, serial);
-            }
+            return new ThingUID(thingTypeUID, localBridgeUID, serial);
         }
         return null;
     }
@@ -92,50 +90,56 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     public void startScan() {
         logger.debug("call startScan()");
 
-        final SiemensHvacBridgeBaseThingHandler handler = siemensHvacBridgeHandler;
-
         if (metadataRegistry != null) {
             metadataRegistry.ReadMeta();
 
             // SiemensHvacMetadataMenu rootMenu = metadataRegistry.getRoot();
             // for (SiemensHvacMetadata child : rootMenu.getChilds().values()) {
-            ArrayList<SiemensHvacMetadataDevice> devices = metadataRegistry.getDevices();
-            for (SiemensHvacMetadataDevice device : devices) {
+            if (metadataRegistry != null) {
+                ArrayList<SiemensHvacMetadataDevice> devices = metadataRegistry.getDevices();
 
-                String name = device.getName();
-                String type = device.getType();
-                String addr = device.getAddr();
-                String serialNr = device.getSerialNr();
-
-                if (name.indexOf("OZW672") >= 0) {
-                    continue;
+                if (devices == null) {
+                    return;
                 }
 
-                logger.debug("Find devices: " + name + "/" + type + "/" + addr + "/" + serialNr);
+                for (SiemensHvacMetadataDevice device : devices) {
 
-                String typeSn = UidUtils.sanetizeId(type);
-                String nameSn = UidUtils.sanetizeId(name);
-                ThingTypeUID thingTypeUID = new ThingTypeUID(SiemensHvacBindingConstants.BINDING_ID, typeSn);
+                    String name = device.getName();
+                    String type = device.getType();
+                    String addr = device.getAddr();
+                    String serialNr = device.getSerialNr();
 
-                ThingUID thingUID = getThingUID(thingTypeUID, serialNr);
-                ThingUID bridgeUID = siemensHvacBridgeHandler.getThing().getUID();
+                    if (name.indexOf("OZW672") >= 0) {
+                        continue;
+                    }
 
-                if (thingUID != null) {
-                    Map<String, Object> properties = new HashMap<>(1);
-                    properties.put("name", name);
-                    properties.put("type", type);
-                    properties.put("addr", addr);
-                    properties.put("serialNr", serialNr);
+                    logger.debug("Find devices: {} / {} / {} / {}", name, type, addr, serialNr);
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withBridge(bridgeUID).withLabel(name).build();
+                    String typeSn = UidUtils.sanetizeId(type);
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(SiemensHvacBindingConstants.BINDING_ID, typeSn);
 
-                    thingDiscovered(discoveryResult);
+                    ThingUID thingUID = getThingUID(thingTypeUID, serialNr);
+
+                    if (siemensHvacBridgeHandler != null) {
+                        ThingUID bridgeUID = siemensHvacBridgeHandler.getThing().getUID();
+
+                        if (thingUID != null) {
+                            Map<String, Object> properties = new HashMap<>(1);
+                            properties.put("name", name);
+                            properties.put("type", type);
+                            properties.put("addr", addr);
+                            properties.put("serialNr", serialNr);
+
+                            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                                    .withProperties(properties).withBridge(bridgeUID).withLabel(name).build();
+
+                            thingDiscovered(discoveryResult);
+                        }
+                    }
+
                 }
-
             }
         }
-
     }
 
     @Override
@@ -149,7 +153,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
             siemensHvacBridgeHandler = (SiemensHvacBridgeBaseThingHandler) handler;
             // bridgeUID = handler.getThing().getUID();
         }
-
     }
 
     @Override
@@ -163,7 +166,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         if (handler != null) {
             handler.registerDiscoveryListener(this);
         }
-
     }
 
     @Override
@@ -176,5 +178,4 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
          * }
          */
     }
-
 }

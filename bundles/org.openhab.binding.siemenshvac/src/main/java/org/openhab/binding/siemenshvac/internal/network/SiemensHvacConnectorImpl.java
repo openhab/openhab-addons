@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.siemenshvac.internal.network;
 
 import java.util.Date;
@@ -36,8 +48,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-@Component(immediate = true)
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
 @NonNullByDefault
+@Component(immediate = true)
 public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
@@ -46,12 +62,13 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private String baseUrl = "";
     private String userName = "";
     private String userPassword = "";
+    @SuppressWarnings("unused")
     private @Nullable Date lastUpdate;
 
     protected final HttpClientFactory httpClientFactory;
 
-    protected @Nullable HttpClient httpClient;
-    protected @Nullable HttpClient httpClientInsecure;
+    protected HttpClient httpClient;
+    protected HttpClient httpClientInsecure;
 
     private static int startedRequest = 0;
     private static int completedRequest = 0;
@@ -66,12 +83,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         this.updateCommand = new Hashtable<String, Type>();
         this.httpClientFactory = httpClientFactory;
 
-        initHttpClient();
-
-    }
-
-    private void initHttpClient() {
-
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClient.setMaxConnectionsPerDestination(15);
         this.httpClientInsecure = new HttpClient(new SslContextFactory.Client(true));
@@ -82,7 +93,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         } catch (Exception e) {
             logger.warn("Failed to start insecure http client: {}", e.getMessage());
         }
-
     }
 
     @Override
@@ -161,8 +171,16 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return response;
     }
 
-    private void _initConfig() {
-        Configuration config = this.hvacBridgeBaseThingHandler.getThing().getConfiguration();
+    private void _initConfig() throws Exception {
+
+        Configuration config = null;
+        if (hvacBridgeBaseThingHandler != null) {
+            config = hvacBridgeBaseThingHandler.getThing().getConfiguration();
+        } else {
+            throw new Exception(
+                    "siemensHvac:Exception unable to get config because hvacBridgeBaseThingHandler is null");
+        }
+
         if (config.containsKey("baseUrl")) {
             baseUrl = (String) config.get("baseUrl");
         }
@@ -174,7 +192,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
-    private void _doAuth() {
+    private void _doAuth() throws Exception {
         logger.debug("siemensHvac:doAuth()");
 
         _initConfig();
@@ -187,76 +205,80 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         try {
             ContentResponse response = executeRequest(request, null);
-            int statusCode = response.getStatus();
+            if (response != null) {
+                int statusCode = response.getStatus();
 
-            if (statusCode == HttpStatus.OK_200) {
-                String result = response.getContentAsString();
+                if (statusCode == HttpStatus.OK_200) {
+                    String result = response.getContentAsString();
 
-                if (result != null) {
-                    JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
+                    if (result != null) {
+                        JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
 
-                    if (resultObj.has("Result")) {
-                        JsonElement resultVal = resultObj.get("Result");
-                        JsonObject resultObj2 = resultVal.getAsJsonObject();
+                        if (resultObj != null && resultObj.has("Result")) {
+                            JsonElement resultVal = resultObj.get("Result");
+                            JsonObject resultObj2 = resultVal.getAsJsonObject();
 
-                        if (resultObj2.has("Success")) {
-                            boolean successVal = resultObj2.get("Success").getAsBoolean();
+                            if (resultObj2.has("Success")) {
+                                boolean successVal = resultObj2.get("Success").getAsBoolean();
 
-                            if (successVal) {
+                                if (successVal) {
 
-                                if (resultObj.has("SessionId")) {
-                                    sessionId = resultObj.get("SessionId").getAsString();
-                                    logger.debug("Have new SessionId : " + sessionId);
+                                    if (resultObj.has("SessionId")) {
+                                        sessionId = resultObj.get("SessionId").getAsString();
+                                        logger.debug("Have new SessionId : {} ", sessionId);
+                                    }
+
                                 }
 
                             }
-
                         }
+
+                        logger.debug("siemensHvac:doAuth:decodeResponse:()");
+
                     }
 
-                    logger.debug("siemensHvac:doAuth:decodeResponse:()");
-
-                }
-
-                if (sessionId == null) {
-                    logger.debug("Session request auth was unsucessfull in _doAuth()");
+                    if (sessionId == null) {
+                        logger.debug("Session request auth was unsucessfull in _doAuth()");
+                    }
                 }
             }
 
             logger.debug("siemensHvac:doAuth:connect()");
 
         } catch (Exception ex) {
-            logger.debug("siemensHvac:doAuth:error()" + ex.getLocalizedMessage());
+            logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
         } finally {
         }
     }
 
-    public @Nullable String DoBasicRequest(@Nullable String uri) {
+    public @Nullable String DoBasicRequest(String uri) throws Exception {
         return DoBasicRequest(uri, null);
     }
 
-    public @Nullable String DoBasicRequestAsync(@Nullable String uri, @Nullable SiemensHvacCallback callback) {
+    public @Nullable String DoBasicRequestAsync(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
         return DoBasicRequest(uri, callback);
     }
 
-    public @Nullable String DoBasicRequest(@Nullable String uri, @Nullable SiemensHvacCallback callback) {
+    public @Nullable String DoBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
         if (sessionId == null) {
             _doAuth();
         }
 
         try {
             String baseUri = baseUrl;
-            if (!uri.endsWith("?")) {
-                uri = uri + "&";
-            }
-            uri = uri + "SessionId=" + sessionId;
-            uri = uri + "&user=" + userName + "&pwd=" + userPassword;
 
-            final Request request = httpClientInsecure.newRequest(baseUri + uri);
+            String mUri = uri;
+            if (!mUri.endsWith("?")) {
+                mUri = mUri + "&";
+            }
+            mUri = mUri + "SessionId=" + sessionId;
+            mUri = mUri + "&user=" + userName + "&pwd=" + userPassword;
+
+            final Request request = httpClientInsecure.newRequest(baseUri + mUri);
             request.method(HttpMethod.GET);
 
             ContentResponse response = executeRequest(request, callback);
-            if (callback == null) {
+            if (callback == null && response != null) {
                 int statusCode = response.getStatus();
 
                 if (statusCode == HttpStatus.OK_200) {
@@ -266,8 +288,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 }
             }
         } catch (Exception ex) {
-            logger.error(
-                    "siemensHvac:DoRequest:Exception by executing Request: " + uri + " ; " + ex.getLocalizedMessage());
+            logger.error("siemensHvac:DoRequest:Exception by executing Request: {} ; {} ", uri,
+                    ex.getLocalizedMessage());
         } finally {
         }
 
@@ -275,7 +297,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public @Nullable JsonObject DoRequest(@Nullable String req, @Nullable SiemensHvacCallback callback) {
+    public @Nullable JsonObject DoRequest(String req, @Nullable SiemensHvacCallback callback) {
         try {
             String response = DoBasicRequest(req, callback);
 
@@ -283,7 +305,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
                 JsonObject resultObj = getGson().fromJson(response, JsonObject.class);
 
-                if (resultObj.has("Result")) {
+                if (resultObj != null && resultObj.has("Result")) {
                     JsonObject subResultObj = resultObj.getAsJsonObject("Result");
 
                     if (subResultObj.has("Success")) {
@@ -298,8 +320,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("siemensHvac:DoRequest:Exception by executing jsonRequest: " + req + " ; "
-                    + e.getLocalizedMessage());
+            logger.error("siemensHvac:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
+                    e.getLocalizedMessage());
         }
 
         return null;
@@ -317,9 +339,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
                 allRequestDone = true;
                 while (idx < 5 && allRequestDone) {
-                    logger.debug("WaitAllPendingRequest:waitAllRequestDone " + idx + " : "
-                            + (startedRequest - completedRequest) + "(" + startedRequest + "/" + completedRequest
-                            + ")");
+                    logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {} ({}/{})", idx,
+                            (startedRequest - completedRequest), startedRequest, completedRequest);
                     if (startedRequest != completedRequest) {
                         allRequestDone = false;
                     }

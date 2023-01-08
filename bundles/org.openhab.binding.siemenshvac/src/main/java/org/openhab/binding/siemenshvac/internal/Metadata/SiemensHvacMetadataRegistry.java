@@ -40,7 +40,7 @@ public interface SiemensHvacMetadataRegistry {
     ArrayList<SiemensHvacMetadataDevice> getDevices();
 
     @Nullable
-    SiemensHvacMetadata getDptMap(String key);
+    SiemensHvacMetadata getDptMap(@Nullable String key);
 
     @Nullable
     SiemensHvacChannelTypeProvider getChannelTypeProvider();

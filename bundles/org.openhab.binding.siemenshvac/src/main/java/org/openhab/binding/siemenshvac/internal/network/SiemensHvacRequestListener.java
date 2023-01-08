@@ -1,5 +1,19 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.siemenshvac.internal.network;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -13,6 +27,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public class SiemensHvacRequestListener extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener {
 
@@ -35,17 +53,24 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
     }
 
     @Override
-    public void onSuccess(Response response) {
+    public void onSuccess(@Nullable Response response) {
         // logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
     }
 
     @Override
-    public void onFailure(Response response, Throwable failure) {
-        logger.debug("response failed: {}  {}", response.getRequest().getURI(), failure.getLocalizedMessage(), failure);
+    public void onFailure(@Nullable Response response, @Nullable Throwable failure) {
+        if (response != null && failure != null) {
+            logger.debug("response failed: {}  {}", response.getRequest().getURI(), failure.getLocalizedMessage(),
+                    failure);
+        }
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
+        if (result == null) {
+            return;
+        }
+
         hvacConnector.onComplete(result.getRequest());
 
         try {
@@ -66,10 +91,10 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                         Gson gson = SiemensHvacConnectorImpl.getGson();
                         resultObj = gson.fromJson(content, JsonObject.class);
                     } catch (Exception ex) {
-                        logger.debug("error:" + ex.toString());
+                        logger.debug("error: {}", ex.toString());
                     }
 
-                    if (resultObj.has("Result")) {
+                    if (resultObj != null && resultObj.has("Result")) {
                         JsonObject subResultObj = resultObj.getAsJsonObject("Result");
 
                         if (subResultObj.has("Success")) {
@@ -85,11 +110,11 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
                                 return;
-                            } else if (errorMsg.equals("datatype not supported")) {
+                            } else if (("datatype not supported").equals(errorMsg)) {
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
                             } else {
-                                logger.debug("error : " + subResultObj);
+                                logger.debug("error : {}", subResultObj);
                                 hvacConnector.onError(result.getRequest());
                             }
                         } else {
@@ -111,5 +136,4 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
             logger.debug("error");
         }
     }
-
 }

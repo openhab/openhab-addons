@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
@@ -28,37 +29,34 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 @Component(service = { SiemensHvacThingTypeProvider.class, ThingTypeProvider.class }, immediate = true)
 public class SiemensHvacThingTypeProviderImpl implements SiemensHvacThingTypeProvider {
 
     private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<>();
 
     public SiemensHvacThingTypeProviderImpl() {
-
     }
 
     @Override
     public void addThingType(ThingType thingType) {
         thingTypesByUID.put(thingType.getUID(), thingType);
-
     }
 
+    @Nullable
     @Override
     public ThingType getInternalThingType(ThingTypeUID thingTypeUID) {
         return thingTypesByUID.get(thingTypeUID);
-
     }
 
     @Override
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
         Map<ThingTypeUID, ThingType> copy = new HashMap<>(thingTypesByUID);
         return copy.values();
-
     }
 
     @Override
-    public ThingType getThingType(ThingTypeUID thingTypeUID, Locale locale) {
+    public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         return thingTypesByUID.get(thingTypeUID);
     }
-
 }
