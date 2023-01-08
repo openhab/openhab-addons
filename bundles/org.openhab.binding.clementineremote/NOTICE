@@ -8,6 +8,16 @@ This program and the accompanying materials are made available under the terms
 of the Eclipse Public License 2.0 which is available at
 https://www.eclipse.org/legal/epl-2.0/.
 
+The included protobuf definition file emerged from the Clementine-Player Android-Remote project
+and is licensed under the Apache License, Version 2.0.
+
+The file src/main/java/de/qspool/clementineremote/backend/pb/ClementineRemote.java is generated from the
+protocol buffers description files using Googles `protoc`.
+
+Usage of protocol buffers within this project is limited to the inclusion of the com.google.protobuf library.
+
+Protoc is *not* part of this project.
+
 == Source Code
 
 https://github.com/openhab/openhab-addons

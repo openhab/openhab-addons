@@ -1,7 +1,7 @@
 # Clementine Remote Binding
 
 <img style="float: right; margin: 0 0 5px 5px" src="doc/screenshot.png" alt="Screenshot" />
-This binding shall bring the benefits of over-the-network control of the [Clementine-Player] to openHAB!
+This binding brings the benefits of over-the-network control of the [Clementine-Player] to openHAB!
 
 It allows control of playback, position and volume and allows display of various title information:
 
@@ -13,8 +13,13 @@ It allows control of playback, position and volume and allows display of various
 
 ## Discovery
 
-This thing does (currently) not provide auto-discovery.
+This thing does not provide auto-discovery.
 You will have to manually configure clementine to allow remote connections.
+
+Detailed instructions how to configure Clementine's remote functions are provided here:
+
+https://github.com/clementine-player/Android-Remote/wiki/How-to-use-the-Android-Remote
+
 And you will have to manually configure the Thing instances to talk to your player:
 
 ## Thing Configuration
@@ -36,17 +41,17 @@ If you set a password in the Clementine configuration, you will have to provide 
 
 The binding provides the following channels:
 
-| Channel          | Type          | Read/Write  | Description                                  |
-|------------------|---------------|-------------|----------------------------------------------|
-| album            | String        | read-only   | Album the currently playing song belongs to  |
-| artist           | String        | read-only   | Artist of the currently playing title        |
-| cover            | Image         | read-only   | Cover of the current album                   |
-| playback-control | String        | read/write  | Common control of playback and position      |
-| position         | Number:Time   | read-only   | Current position within the playing track    |
-| state            | String        | read-only   | Current state of Clementine player           |
-| title            | String        | read-only   | Name of the currently playing track          |
-| track            | String        | read-only   | Number of the title within the current album |
-| volume-control   | system.volume | read/write  | Playback volume                              |
+| Channel          | Type        | Read/Write  | Description                                  |
+|------------------|-------------|-------------|----------------------------------------------|
+| album            | String      | read-only   | Album the currently playing song belongs to  |
+| artist           | String      | read-only   | Artist of the currently playing title        |
+| cover            | Image       | read-only   | Cover of the current album                   |
+| playback-control | String      | read/write  | Common control of playback and position      |
+| position         | Number:Time | read-only   | Current position within the playing track    |
+| state            | String      | read-only   | Current state of Clementine player           |
+| title            | String      | read-only   | Name of the currently playing track          |
+| track            | String      | read-only   | Number of the title within the current album |
+| volume-control   | Dommer      | read/write  | Playback volume                              |
 
 
 
@@ -54,20 +59,21 @@ The binding provides the following channels:
 
 ### Thing
 
-```
+```yaml
 UID: clementineremote:clementine:0590462b5b
 label: Clementine
 thingTypeUID: clementineremote:clementine
 configuration:
   port: 5500
   hostname: 192.168.1.6
+  authCode: 123456
 ```
 
 ### Widget
 
 based on https://community.openhab.org/t/universal-remote-widget/118423
 
-```
+```yaml
 uid: clementine_remote
 tags: []
 props:

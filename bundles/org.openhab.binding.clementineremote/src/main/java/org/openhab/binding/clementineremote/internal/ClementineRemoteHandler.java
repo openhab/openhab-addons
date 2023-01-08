@@ -70,6 +70,9 @@ import de.qspool.clementineremote.backend.pb.ClementineRemote.SongMetadata;
  * The {@link ClementineRemoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
+ * It uses Clementine's own, protocol buffers based communication sheme:
+ * https://github.com/clementine-player/Android-Remote/wiki/Developer-Documentation
+ *
  * @author Stephan Richter - Initial contribution
  */
 @NonNullByDefault
