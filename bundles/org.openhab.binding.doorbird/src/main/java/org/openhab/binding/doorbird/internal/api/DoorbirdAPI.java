@@ -166,7 +166,7 @@ public final class DoorbirdAPI {
         Authorization auth = authorization;
         HttpClient client = httpClient;
         if (client == null) {
-            logger.info("Unable to send audio because httpClient is not set");
+            logger.warn("Unable to send audio because httpClient is not set");
             return;
         }
         if (auth == null) {
@@ -188,6 +188,9 @@ public final class DoorbirdAPI {
                     .send(complete);
             // @formatter:on
 
+            // It is crucial to send data in small chunks to not overload the doorbird
+            // It means that we have to wait the appropriate amount of time between chunk to send
+            // real time data, as if it were live spoken.
             int CHUNK_SIZE = 256;
             int nbByteRead = -1;
             long nextChunkSendTimeStamp = 0;
@@ -197,14 +200,13 @@ public final class DoorbirdAPI {
                 if (nbByteRead > 0) {
                     if (nbByteRead != CHUNK_SIZE) {
                         data = Arrays.copyOf(data, nbByteRead);
-                    }
+                    } // compute exact waiting time needed, by checking previous estimation against current time
                     long timeToWait = Math.max(0, nextChunkSendTimeStamp - System.currentTimeMillis());
                     Thread.sleep(timeToWait);
                     logger.debug("Sending chunk...");
                     content.offer(ByteBuffer.wrap(data));
                 }
                 nextChunkSendTimeStamp = System.currentTimeMillis() + 30;
-
             } while (nbByteRead != -1);
         } catch (InterruptedException | IOException e) {
             logger.info("Unable to communicate with Doorbird", e);

@@ -96,7 +96,7 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private BundleContext bundleContext;
 
-    private @NonNullByDefault({}) ServiceRegistration<AudioSink> audioSinkRegistration;
+    private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
 
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
@@ -429,20 +429,20 @@ public class DoorbellHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "null" })
     private void startAudioSink() {
         final DoorbellHandler thisHandler = this;
         // Register an audio sink in openhab
         logger.trace("Registering an audio sink for this {}", thing.getUID());
-        audioSinkRegistration = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), new DoorbirdAudioSink(thisHandler), new Hashtable<>());
+        audioSinkRegistration = bundleContext.registerService(AudioSink.class, new DoorbirdAudioSink(thisHandler),
+                new Hashtable<>());
     }
 
     private void stopAudioSink() {
         // Unregister the doorbird audio sink
-        if (audioSinkRegistration != null) {
+        ServiceRegistration<AudioSink> audioSinkRegistrationLocal = audioSinkRegistration;
+        if (audioSinkRegistrationLocal != null) {
             logger.trace("Unregistering the audio sync service for the doorbird thing {}", getThing().getUID());
-            audioSinkRegistration.unregister();
+            audioSinkRegistrationLocal.unregister();
         }
     }
 
