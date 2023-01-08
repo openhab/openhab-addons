@@ -93,6 +93,100 @@ public class ShieldTVMessageParser {
             logger.trace("Longer Hostname Reply");
         } else if (msg.startsWith("08f10712")) {
             // Massive dump of currently installed apps
+            // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
+            int i = 18;
+            String st = "";
+            int length;
+            int current;
+            StringBuffer appSBPrepend = new StringBuffer();
+            StringBuffer appSBDN = new StringBuffer();
+
+            // Packet will end with 300118f107 after last entry
+
+            while (i < msg.length() - 10) {
+                StringBuffer appSBName = new StringBuffer();
+                StringBuffer appSBURL = new StringBuffer();
+
+                // There are instances such as plex where multiple apps are sent as part of the same payload
+                // This is identified when 12 is the beginning of the set
+
+                st = "" + charArray[i] + "" + charArray[i + 1];
+
+                if (!st.toString().equals("12")) {
+                    appSBPrepend = new StringBuffer();
+                    appSBDN = new StringBuffer();
+
+                    // App Prepend
+                    // Usually 10 in length but can be longer or shorter so look for 0a twice
+                    do {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        appSBPrepend.append(st);
+                        i += 2;
+                    } while (!st.toString().equals("0a"));
+                    do {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        appSBPrepend.append(st);
+                        i += 2;
+                    } while (!st.toString().equals("0a"));
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                    if (st.toString().equals("0a")) {
+                        appSBPrepend.append(st);
+                        i += 2;
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                    }
+
+                    // app DN
+                    length = Integer.parseInt(st, 16) * 2;
+                    i += 2;
+                    current = i;
+                    for (; i < current + length; i = i + 2) {
+                        st = "" + charArray[i] + "" + charArray[i + 1];
+                        appSBDN.append(st);
+                    }
+                }
+
+                // App Name
+                i += 2; // 12 delimiter
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                i += 2;
+                length = Integer.parseInt(st, 16) * 2;
+                current = i;
+                for (; i < current + length; i = i + 2) {
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                    appSBName.append(st);
+                }
+
+                // There are times where there is padding here for no reason beyond the specified length.
+                // Proceed forward until we get to the 22 delimiter
+
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                while (!st.toString().equals("22")) {
+                    i += 2;
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                }
+
+                // App URL
+                i += 2; // 22 delimiter
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                i += 2;
+                length = Integer.parseInt(st, 16) * 2;
+                current = i;
+                for (; i < current + length; i = i + 2) {
+                    st = "" + charArray[i] + "" + charArray[i + 1];
+                    appSBURL.append(st);
+                }
+                st = "" + charArray[i] + "" + charArray[i + 1];
+                if (!st.toString().equals("12")) {
+                    i += 4;
+                }
+                String appPrepend = appSBPrepend.toString();
+                String appDN = ShieldTVRequest.encodeMessage(appSBDN.toString());
+                String appName = ShieldTVRequest.encodeMessage(appSBName.toString());
+                String appURL = ShieldTVRequest.encodeMessage(appSBURL.toString());
+                logger.trace("AppPrepend: {} AppDN: {}", appPrepend, appDN);
+                logger.trace("AppName: {} AppURL: {}", appName, appURL);
+            }
+
         } else if (msg.startsWith("08f30712")) {
             // This has something to do with successful command response, maybe.
         } else if (msg.equals("080028fae0a6c0d130")) {
