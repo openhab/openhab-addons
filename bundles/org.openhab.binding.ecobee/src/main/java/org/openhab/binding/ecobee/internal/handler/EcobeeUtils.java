@@ -14,7 +14,6 @@ package org.openhab.binding.ecobee.internal.handler;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import javax.measure.Unit;
@@ -89,8 +88,9 @@ public final class EcobeeUtils {
         return value == null ? UnDefType.UNDEF : new PointType(value);
     }
 
-    public static State undefOrDate(@Nullable Instant instant) {
-        return instant == null ? UnDefType.UNDEF : new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.of("UTC")));
+    public static State undefOrDate(@Nullable Instant instant, TimeZoneProvider timeZoneProvider) {
+        return instant == null ? UnDefType.UNDEF
+                : new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone()));
     }
 
     public static State undefOrDate(@Nullable LocalDateTime ldt, TimeZoneProvider timeZoneProvider) {

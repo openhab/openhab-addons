@@ -370,7 +370,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_MODEL_NUMBER, EcobeeUtils.undefOrString(thermostat.modelNumber));
         updateChannel(grp + CH_BRAND, EcobeeUtils.undefOrString(thermostat.brand));
         updateChannel(grp + CH_FEATURES, EcobeeUtils.undefOrString(thermostat.features));
-        updateChannel(grp + CH_LAST_MODIFIED, EcobeeUtils.undefOrDate(thermostat.lastModified));
+        updateChannel(grp + CH_LAST_MODIFIED, EcobeeUtils.undefOrDate(thermostat.lastModified, timeZoneProvider));
         updateChannel(grp + CH_THERMOSTAT_TIME, EcobeeUtils.undefOrDate(thermostat.thermostatTime, timeZoneProvider));
     }
 
@@ -386,11 +386,13 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         final String grp = CHGRP_RUNTIME + "#";
         updateChannel(grp + CH_RUNTIME_REV, EcobeeUtils.undefOrString(runtime.runtimeRev));
         updateChannel(grp + CH_CONNECTED, EcobeeUtils.undefOrOnOff(runtime.connected));
-        updateChannel(grp + CH_FIRST_CONNECTED, EcobeeUtils.undefOrDate(runtime.firstConnected));
-        updateChannel(grp + CH_CONNECT_DATE_TIME, EcobeeUtils.undefOrDate(runtime.connectDateTime));
-        updateChannel(grp + CH_DISCONNECT_DATE_TIME, EcobeeUtils.undefOrDate(runtime.disconnectDateTime));
-        updateChannel(grp + CH_RT_LAST_MODIFIED, EcobeeUtils.undefOrDate(runtime.lastModified));
-        updateChannel(grp + CH_RT_LAST_STATUS_MODIFIED, EcobeeUtils.undefOrDate(runtime.lastStatusModified));
+        updateChannel(grp + CH_FIRST_CONNECTED, EcobeeUtils.undefOrDate(runtime.firstConnected, timeZoneProvider));
+        updateChannel(grp + CH_CONNECT_DATE_TIME, EcobeeUtils.undefOrDate(runtime.connectDateTime, timeZoneProvider));
+        updateChannel(grp + CH_DISCONNECT_DATE_TIME,
+                EcobeeUtils.undefOrDate(runtime.disconnectDateTime, timeZoneProvider));
+        updateChannel(grp + CH_RT_LAST_MODIFIED, EcobeeUtils.undefOrDate(runtime.lastModified, timeZoneProvider));
+        updateChannel(grp + CH_RT_LAST_STATUS_MODIFIED,
+                EcobeeUtils.undefOrDate(runtime.lastStatusModified, timeZoneProvider));
         updateChannel(grp + CH_RUNTIME_DATE, EcobeeUtils.undefOrString(runtime.runtimeDate));
         updateChannel(grp + CH_RUNTIME_INTERVAL, EcobeeUtils.undefOrDecimal(runtime.runtimeInterval));
         updateChannel(grp + CH_ACTUAL_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.actualTemperature));
@@ -661,7 +663,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         }
         final String weatherGrp = CHGRP_WEATHER + "#";
 
-        updateChannel(weatherGrp + CH_WEATHER_TIMESTAMP, EcobeeUtils.undefOrDate(weather.timestamp));
+        updateChannel(weatherGrp + CH_WEATHER_TIMESTAMP, EcobeeUtils.undefOrDate(weather.timestamp, timeZoneProvider));
         updateChannel(weatherGrp + CH_WEATHER_WEATHER_STATION, EcobeeUtils.undefOrString(weather.weatherStation));
 
         for (int index = 0; index < weather.forecasts.size(); index++) {
