@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.ecobee.internal.handler;
 
-import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -89,23 +89,12 @@ public final class EcobeeUtils {
         return value == null ? UnDefType.UNDEF : new PointType(value);
     }
 
-    public static State undefOrLocalDate(@Nullable String date, TimeZoneProvider timeZoneProvider) {
-        if (date == null) {
-            return UnDefType.UNDEF;
-        }
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-                    .withZone(timeZoneProvider.getTimeZone());
-            ZonedDateTime zoned = ZonedDateTime.parse(date, formatter);
-            return new DateTimeType(zoned);
-        } catch (DateTimeException e) {
-            return UnDefType.UNDEF;
-        }
+    public static State undefOrDate(@Nullable Instant instant) {
+        return instant == null ? UnDefType.UNDEF : new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.of("UTC")));
     }
 
-    public static State undefOrDate(@Nullable Date date, TimeZoneProvider timeZoneProvider) {
-        return date == null ? UnDefType.UNDEF
-                : new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), timeZoneProvider.getTimeZone()));
+    public static State undefOrDate(@Nullable LocalDateTime ldt, TimeZoneProvider timeZoneProvider) {
+        return ldt == null ? UnDefType.UNDEF : new DateTimeType(ldt.atZone(timeZoneProvider.getTimeZone()));
     }
 
     private static boolean isUnknown(Number value) {

@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
+import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.ECOBEE_DATETIME_FORMAT;
+
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,23 +28,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link DateDeserializer} is responsible for handling the UTC dates returned from
+ * The {@link LocalDateTimeDeserializer} is responsible for handling the local dates returned from
  * the Ecobee API service.
  *
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class DateDeserializer implements JsonDeserializer<Date> {
+public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
 
     @Override
-    public @Nullable Date deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+    public @Nullable LocalDateTime deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-        String date = element.getAsString();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
-            return formatter.parse(date);
-        } catch (ParseException e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECOBEE_DATETIME_FORMAT);
+            return formatter.parse(element.getAsString(), LocalDateTime::from);
+        } catch (DateTimeParseException e) {
             return null;
         }
     }
