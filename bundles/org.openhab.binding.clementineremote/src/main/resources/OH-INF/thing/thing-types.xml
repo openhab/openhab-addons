@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="clementineremote"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="clementine">
+		<label>Clementine Remote</label>
+		<description>Remote control binding for Clementine Player</description>
+
+		<channels>
+			<channel id="album" typeId="current-album"/>
+			<channel id="artist" typeId="system.media-artist"/>
+			<channel id="playback-control" typeId="playback-control"/>
+			<channel id="position" typeId="current-position"/>
+			<channel id="state" typeId="current-state"/>
+			<channel id="title" typeId="system.media-title"/>
+			<channel id="track" typeId="current-track"/>
+			<channel id="volume-control" typeId="system.volume"/>
+			<channel id="cover" typeId="current-cover"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname/IP</label>
+				<description>Hostname or IP address of Clementine player</description>
+			</parameter>
+			<parameter name="authCode" type="integer" required="false">
+				<context>authCode</context>
+				<label>Auth Code</label>
+				<description>Authentication code to access the Clementine player</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<context>port</context>
+				<label>Port</label>
+				<description>Port to access the Clementine player</description>
+				<default>5500</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="playback-control">
+		<item-type>String</item-type>
+		<label>Playback Control</label>
+		<description>Common control of playback and position</description>
+	</channel-type>
+
+	<channel-type id="current-album">
+		<item-type>String</item-type>
+		<label>Current Album</label>
+		<description>Album the currently playing title belongs to</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-position">
+		<item-type>Number:Time</item-type>
+		<label>Current Position</label>
+		<description>Current position within the playing track</description>
+		<state readOnly="true" pattern="%1$tT"/>
+	</channel-type>
+
+	<channel-type id="current-track">
+		<item-type>String</item-type>
+		<label>Current Track</label>
+		<description>Number of the title within the current album</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-state">
+		<item-type>String</item-type>
+		<label>Current State</label>
+		<description>Current state of clementine player</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-cover">
+		<item-type>Image</item-type>
+		<label>Album Cover</label>
+		<description>Cover of the current album</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
