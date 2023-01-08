@@ -1,7 +1,7 @@
 # Clementine Remote Binding
 
 <img style="float: right; margin: 0 0 5px 5px" src="doc/screenshot.png" alt="Screenshot" />
-This binding brings the benefits of over-the-network control of the [Clementine-Player] to openHAB!
+This binding brings the benefits of over-the-network control of the [Clementine-Player](https://www.clementine-player.org) to openHAB!
 
 It allows control of playback, position and volume and allows display of various title information:
 
@@ -28,8 +28,6 @@ Configuring the connection to Clementine is quite easy:
 
 Normally you only need to set the hostname your Clementine player is running at.
 If you set a password in the Clementine configuration, you will have to provide it to the configuration, too.
-
-### Clementine Thing Configuration
 
 | Name     | Type    | Description                                                       | Default | Required | Advanced |
 |----------|---------|-------------------------------------------------------------------|---------|----------|----------|
