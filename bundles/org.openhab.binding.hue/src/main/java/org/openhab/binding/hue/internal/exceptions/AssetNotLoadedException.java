@@ -15,22 +15,17 @@ package org.openhab.binding.hue.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when the API returns an unknown error.
+ * Thrown when one of the connection or handler classes has not loaded all its assets.
  *
- * @author Q42 - Initial contribution
- * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @SuppressWarnings("serial")
 @NonNullByDefault
-public class ApiException extends Exception {
-    public ApiException() {
+public class AssetNotLoadedException extends Exception {
+    public AssetNotLoadedException() {
     }
 
-    public ApiException(String message) {
+    public AssetNotLoadedException(String message) {
         super(message);
-    }
-
-    public ApiException(String message, Throwable e) {
-        super(message, e);
     }
 }

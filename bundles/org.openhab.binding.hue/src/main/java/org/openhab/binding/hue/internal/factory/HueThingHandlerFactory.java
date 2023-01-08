@@ -14,13 +14,22 @@ package org.openhab.binding.hue.internal.factory;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
+import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
+import org.openhab.binding.hue.internal.handler.DeviceThingHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
@@ -33,6 +42,7 @@ import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -43,12 +53,14 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 
 /**
- * {@link HueThingHandlerFactory} is a factory for {@link HueBridgeHandler}s.
+ * The factory for all varieties of Hue thing handlers.
  *
  * @author Dennis Nobel - Initial contribution of hue binding
  * @author Kai Kreuzer - added supportsThingType method
@@ -56,18 +68,21 @@ import org.osgi.service.component.annotations.Reference;
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
  * @author Laurent Garnier - Added support for groups
+ * @author Andrew Fiddian-Green - Added support for CLIP 2 things
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hue")
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
-                    DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
-                    PresenceHandler.SUPPORTED_THING_TYPES.stream(),
-                    GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
-                    TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
-                    ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(
+            // include CLIP 2 thing types
+            Clip2BridgeHandler.SUPPORTED_THING_TYPES.stream(), DeviceThingHandler.SUPPORTED_THING_TYPES.stream(),
+            // etc. ..
+            HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
+            DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
+            PresenceHandler.SUPPORTED_THING_TYPES.stream(), GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
+            TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
+            ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream()) //
             .flatMap(i -> i).collect(Collectors.toUnmodifiableSet());
 
     private final HttpClient httpClient;
@@ -75,10 +90,13 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServices = new HashMap<>();
+
     @Activate
     public HueThingHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference HueStateDescriptionProvider stateDescriptionProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.i18nProvider = i18nProvider;
@@ -88,6 +106,13 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+        // create CLIP 2 things
+        if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, null);
+        } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        } else
+        // etc. ..
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -152,6 +177,16 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        // create CLIP 2 handlers
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
+            Clip2BridgeHandler handler = new Clip2BridgeHandler((Bridge) thing, httpClient);
+            createDiscoveryService(handler);
+            return handler;
+        } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            return new DeviceThingHandler(thing);
+        } else
+        // etc. ..
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
                     localeProvider);
@@ -175,6 +210,38 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new HueGroupHandler(thing, stateDescriptionProvider);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof Clip2BridgeHandler) {
+            destroyDiscoveryService((Clip2BridgeHandler) thingHandler);
+        }
+    }
+
+    /**
+     * Create, register, and activate a discovery service for CLIP 2 resource things based on the given bridge handler.
+     *
+     * @param handler
+     */
+    private void createDiscoveryService(Clip2BridgeHandler handler) {
+        Clip2ThingDiscoveryService service = new Clip2ThingDiscoveryService(handler);
+        ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                service, new Hashtable<>());
+        discoveryServices.put(handler.getThing().getUID(), serviceRegistration);
+        service.activate();
+    }
+
+    private void destroyDiscoveryService(Clip2BridgeHandler handler) {
+        ServiceRegistration<?> serviceRegistration = discoveryServices.remove(handler.getThing().getUID());
+        if (serviceRegistration != null) {
+            Clip2ThingDiscoveryService service = (Clip2ThingDiscoveryService) bundleContext
+                    .getService(serviceRegistration.getReference());
+            serviceRegistration.unregister();
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 }

@@ -1,0 +1,91 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"configuration": {
+				"what": [
+					{
+						"group": {
+							"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+							"rtype": "room"
+						},
+						"recall": {
+							"rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
+							"rtype": "scene"
+						}
+					},
+					{
+						"group": {
+							"rid": "8b529073-36dd-409b-8006-80df304048ea",
+							"rtype": "room"
+						},
+						"recall": {
+							"rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
+							"rtype": "scene"
+						}
+					}
+				],
+				"when_constrained": {
+					"type": "nighttime"
+				},
+				"where": [
+					{
+						"group": {
+							"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+							"rtype": "room"
+						}
+					},
+					{
+						"group": {
+							"rid": "8b529073-36dd-409b-8006-80df304048ea",
+							"rtype": "room"
+						}
+					}
+				]
+			},
+			"dependees": [
+				{
+					"level": "critical",
+					"target": {
+						"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+						"rtype": "room"
+					},
+					"type": "ResourceDependee"
+				},
+				{
+					"level": "critical",
+					"target": {
+						"rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
+						"rtype": "scene"
+					},
+					"type": "ResourceDependee"
+				},
+				{
+					"level": "critical",
+					"target": {
+						"rid": "8b529073-36dd-409b-8006-80df304048ea",
+						"rtype": "room"
+					},
+					"type": "ResourceDependee"
+				},
+				{
+					"level": "critical",
+					"target": {
+						"rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
+						"rtype": "scene"
+					},
+					"type": "ResourceDependee"
+				}
+			],
+			"enabled": true,
+			"id": "8d0ffbee-e24e-4d3e-b91a-5adc9ef5d49c",
+			"last_error": "",
+			"metadata": {
+				"name": "Coming home"
+			},
+			"script_id": "fd60fcd1-4809-4813-b510-4a18856a595c",
+			"status": "running",
+			"type": "behavior_instance"
+		}
+	]
+}

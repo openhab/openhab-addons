@@ -62,4 +62,44 @@
 		</config-description>
 	</bridge-type>
 
+	<!-- CLIP 2 Bridge -->
+	<bridge-type id="clip2">
+		<label>Hue CLIP 2 Bridge</label>
+		<description>The Hue Bridge represents the Philips Hue Bridge.</description>
+
+		<channels>
+			<channel id="scene" typeId="scene"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Philips</property>
+		</properties>
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Hue Bridge.</description>
+			</parameter>
+			<parameter name="applicationKey" type="text">
+				<context>password</context>
+				<label>Application Key</label>
+				<description>A registered Hue Bridge application key that allows access to the API.</description>
+			</parameter>
+			<parameter name="checkSeconds" type="integer" min="600" step="60" unit="s">
+				<label>Connection Check Interval</label>
+				<description>Seconds between retrying the HTTP 2 and SSE connections. Default is 3600.</description>
+				<default>3600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useSelfSignedCertificate" type="boolean">
+				<label>Use Self-Signed Certificate</label>
+				<description>Use self-signed certificate for HTTPS connection to Hue Bridge.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 </thing:thing-descriptions>

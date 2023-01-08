@@ -1,0 +1,10355 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "d7034d54-cadb-4659-acad-14dbec434e9e",
+			"id_v1": "/scenes/jDfdVi5086X20iu",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e913d4fd-8c9a-412f-a5d4-b54546274eea",
+			"id_v1": "/scenes/JOUxgmiKTnSDC6m",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "4f00d1c0-95fa-492a-880c-1ae4b31ca230",
+			"id_v1": "/scenes/j7ypDwbFC5JnzHp",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "6bb88fc5-482e-404b-ae68-be22b4ef51ae",
+			"id_v1": "/scenes/-HTloBncQ2NHAJF",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "21bf8267-769a-4200-8fda-4ee60e7ef3b9",
+			"id_v1": "/scenes/74Im4NZCaGlpyE3",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "0407d4bf-4d2f-4f94-8c64-46d79570d3dd",
+			"id_v1": "/scenes/tluU-mICAfX2J24",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "4cd4b150-e1ec-4e8e-88ff-cb9de9740083",
+			"id_v1": "/scenes/aHFOxJGniFs8TCj",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "19cd4acb-3513-4cbd-8695-8b92d551b12e",
+			"id_v1": "/scenes/Kupb3CrgpD4KEgV",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "6b654b7c-2b7d-40d3-beca-7b65edfac15f",
+			"id_v1": "/scenes/yroAzw-5XjXQmrU",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "cfea0d97-c01f-4a41-87d3-b3f86268db63",
+			"id_v1": "/scenes/TQ-Tn1gI6EmrvSX",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "3eb89ad5-0bcf-476f-9987-a317cb99bd82",
+			"id_v1": "/scenes/IbZwdrN1P-mJPyb",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "eb7cc717-b62f-4c00-ba14-83e5a6dc4833",
+			"id_v1": "/scenes/vCyrYSG0y3KHSIm",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "172bd373-aa8f-4d4a-bc7d-9837fb8ae0e4",
+			"id_v1": "/scenes/6iNryUqAYA6gng9",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 82.28
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 82.28
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a8c5fc45-1ac1-4890-be80-13ef53d57b26",
+			"id_v1": "/scenes/yFhTtOMZRJE6SR9",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "32e37c7f-3fb7-4b67-bdf4-68482f44549a",
+			"id_v1": "/scenes/qWO6gZubIYJuDWO",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "96b8fde7-2f01-4834-b43b-d04d3e45a432",
+			"id_v1": "/scenes/R77UXvRZ2xl9gBA",
+			"metadata": {
+				"name": "25"
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color": {
+							"xy": {
+								"x": 0.4596,
+								"y": 0.4142
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 20.87
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "74382775-3a5c-4868-aacd-52ae64a1d512",
+			"id_v1": "/scenes/PJEpqBjwEwiN6NT",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color": {
+							"xy": {
+								"x": 0.3936,
+								"y": 0.2956
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b39162e6-0acb-466d-8ba9-6065c9483a8a",
+			"id_v1": "/scenes/cdOTREPUs2i3AFv",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "f3eb78de-d550-4f8f-b34f-5a0d2a50f577",
+			"id_v1": "/scenes/hWUJs6j3h-tN6zW",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 447
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				]
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "85c0c3d3-425d-477a-b306-6421ff0d92d7",
+			"id_v1": "/scenes/WkBbBJGMZylI-Ok",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "ae986691-3c0c-40ee-b673-ff1ef43783ee",
+			"id_v1": "/scenes/Z0e2COOvLoAwMBN",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8cec1e2f-bcc9-45c9-a0aa-bc9c30c68b64",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c42f8220-f232-4400-910c-943547513827",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "14b715c9-8346-4d22-8e60-4c3793adff69",
+			"id_v1": "/scenes/b5FtvnIEJY4cQZG",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b7b7107d-2509-43d7-998c-9a9ebe6604ae",
+			"id_v1": "/scenes/Z67GqJ9R0DeVgQU",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "9e29e989-a885-427e-b0ab-05adb996ef92",
+			"id_v1": "/scenes/wz9SyQETcVV0zTX",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "87a262ec-471d-4366-9b5e-b475fd903db0",
+			"id_v1": "/scenes/GrVKRB2VB5W6hQK",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color": {
+							"xy": {
+								"x": 0.4345,
+								"y": 0.2809
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color": {
+							"xy": {
+								"x": 0.394,
+								"y": 0.2967
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "579e4ba3-6cf6-4a84-9178-46bbbb7acce0",
+			"id_v1": "/scenes/JSOcwioJt7Mz1hA",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "910450f9-ce11-4e3d-a855-e2e1cc9e3c53",
+			"id_v1": "/scenes/snCODeBilKMnyKb",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a651bf69-b709-4aad-9794-9f1de7a3a314",
+			"id_v1": "/scenes/-iVnLc4X7dEMWkt",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "86e00f0d-4072-46e9-bf9c-bb41a7b5c798",
+			"id_v1": "/scenes/3hvPcr7RQgG1TLS",
+			"metadata": {
+				"name": "Blood Moon",
+				"image": {
+					"rid": "324509da-25d2-4d22-abab-e9091c0efb37",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 19.29
+						},
+						"color": {
+							"xy": {
+								"x": 0.5274,
+								"y": 0.2947
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 19.29
+						},
+						"color": {
+							"xy": {
+								"x": 0.1752,
+								"y": 0.0553
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.1596,
+								"y": 0.0684
+							}
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2262,
+								"y": 0.1898
+							}
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2826,
+								"y": 0.1763
+							}
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3946,
+								"y": 0.2347
+							}
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4644,
+								"y": 0.3458
+							}
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 19.69
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 192
+						},
+						"dimming": {
+							"brightness": 19.69
+						}
+					}
+				]
+			},
+			"speed": 0.626984126984127,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b486fbab-4a4b-4cf6-9b26-785e8c37be66",
+			"id_v1": "/scenes/REK9wXlvjo7gaxj",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e9676a8a-f73b-4b29-a0c3-d8a462bc30fe",
+			"id_v1": "/scenes/y9YEAoXXqWFDqf5",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.4639,
+								"y": 0.4512
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.4639,
+								"y": 0.4512
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "ac76f7cb-3003-445c-b493-ca97edba26fd",
+			"id_v1": "/scenes/BgE5AxNzExaobqK",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "4779c247-1aab-49cb-8dc0-8baf199bf1d1",
+			"id_v1": "/scenes/GW8Rpcy64E3rgxk",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color": {
+							"xy": {
+								"x": 0.3099,
+								"y": 0.3224
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color": {
+							"xy": {
+								"x": 0.168,
+								"y": 0.041
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a932d019-d0bc-4725-894d-b957e721a535",
+			"id_v1": "/scenes/9CP1XXAKIt2WeQ-",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "3b18195f-7621-4a7a-b7c0-c2d71b6ff0b4",
+			"id_v1": "/scenes/9ZFMQUAEtlbWFJA",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "d0f9e745-501e-4e6e-98de-8747fadf38a6",
+			"id_v1": "/scenes/JOx7KswVUYOV1yI",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "be462a6f-817d-4cfc-bb4e-5dcd21a3678f",
+			"id_v1": "/scenes/he1cZDGlLN36nIj",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "004b62ef-8254-4f0a-9355-8d4b1cac19a0",
+			"id_v1": "/scenes/5MC4H676nudrqq2",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e8a19005-f1e2-4fdc-86ae-8bd9137da95d",
+			"id_v1": "/scenes/POHXckB3LySitjo",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a8a88bc0-e610-4c67-b0b9-d1376f733431",
+			"id_v1": "/scenes/xrNPkPJ-kyhG0dW",
+			"metadata": {
+				"name": "Orange"
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.5605,
+								"y": 0.4052
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "1032cca9-db78-4635-861a-d7c83ee8b218",
+			"id_v1": "/scenes/btYzWUVLRd5KMaB",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.6006,
+								"y": 0.3758
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b2adc4ca-1c72-4aa6-977a-4b90f70ec6eb",
+			"id_v1": "/scenes/w4VZEH9lsHLNNyr",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 73.23
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "03bdbe65-92ef-4994-9ddd-68b51886682d",
+			"id_v1": "/scenes/dNF9SpYiUwMStYM",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "61c925d0-65f8-4e92-9743-767baf98e3a2",
+			"id_v1": "/scenes/VWlT11NTAPA5oOq",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8cec1e2f-bcc9-45c9-a0aa-bc9c30c68b64",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c42f8220-f232-4400-910c-943547513827",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "1e32f0d3-f266-4cbe-94c8-7712bef5ab80",
+			"id_v1": "/scenes/xHILbiXDomWM6ps",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "08c34a6a-432a-4ff7-864d-bd2f5ae02ef2",
+			"id_v1": "/scenes/jx961tuvlluVnmP",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.3591,
+								"y": 0.2899
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.3591,
+								"y": 0.2899
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a6bf71d2-607d-4061-b41d-870189394080",
+			"id_v1": "/scenes/IJVgF8v377r9q5f",
+			"metadata": {
+				"name": "Pink"
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.3685,
+								"y": 0.2595
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "11a794bf-a906-490c-b372-584e0087b8db",
+			"id_v1": "/scenes/xFPltbGflChILU-",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "0714ce98-784f-455d-bf9c-e35979abc21d",
+			"id_v1": "/scenes/4EKZ7vUBMTMyUS3",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fc923c4c-0614-4563-8c02-ae954b045151",
+			"id_v1": "/scenes/cGQFOjuM-6DkTD6",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 82.28
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "4f88dafa-c907-4767-b447-87a0144ba02a",
+			"id_v1": "/scenes/gytZzE8uY5rBK6J",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 447
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				]
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "58117220-a2e6-48e5-adcc-6ad0b1774d20",
+			"id_v1": "/scenes/0vOv579Z3SALB6G",
+			"metadata": {
+				"name": "Chinatown",
+				"image": {
+					"rid": "63d50cd6-5909-4f7b-8810-137d08f57c54",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 79.53
+						},
+						"color": {
+							"xy": {
+								"x": 0.6152,
+								"y": 0.3137
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 79.53
+						},
+						"color": {
+							"xy": {
+								"x": 0.674,
+								"y": 0.322
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.698,
+								"y": 0.2984
+							}
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.6731,
+								"y": 0.3044
+							}
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.6362,
+								"y": 0.2999
+							}
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5262,
+								"y": 0.333
+							}
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5682,
+								"y": 0.4183
+							}
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 79.92
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 307
+						},
+						"dimming": {
+							"brightness": 79.92
+						}
+					}
+				]
+			},
+			"speed": 0.6111111111111112,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "9b8dc566-ad3d-46f1-9d19-3d06dbcbc659",
+			"id_v1": "/scenes/N-KyYPFXZ9T-F2o",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "afff84f7-0d5c-40dd-b76b-e64a48031f10",
+			"id_v1": "/scenes/kLbiQWOUK7h6hfQ",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "c7f71ff1-c11b-428a-94c6-a162f7bfa5fe",
+			"id_v1": "/scenes/2Vspbhqh8AyilTu",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color": {
+							"xy": {
+								"x": 0.3197,
+								"y": 0.3419
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color": {
+							"xy": {
+								"x": 0.2403,
+								"y": 0.1843
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "c7ad975f-2701-4323-91b0-823275412e30",
+			"id_v1": "/scenes/EPfpdYvsekCDsXe",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color": {
+							"xy": {
+								"x": 0.4633,
+								"y": 0.274
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 83.46
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 83.46
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e16e34e7-09c0-4e20-a478-306c3179faf8",
+			"id_v1": "/scenes/4zBck3smKRsSzhZ",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "61f49072-d00e-44e0-b915-f324f8a8ef34",
+			"id_v1": "/scenes/7KPyxSMxAT-QcFo",
+			"metadata": {
+				"name": "Ibiza",
+				"image": {
+					"rid": "01e1d138-fc77-44e1-8012-c04fbae878e4",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.5667,
+								"y": 0.3887
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.5667,
+								"y": 0.3887
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6023,
+								"y": 0.3259
+							}
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5714,
+								"y": 0.3806
+							}
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5679,
+								"y": 0.3975
+							}
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4787,
+								"y": 0.4495
+							}
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4376,
+								"y": 0.4577
+							}
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 48.82
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 387
+						},
+						"dimming": {
+							"brightness": 48.82
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "cf513e14-69c3-49a2-b6d7-040b76940c0e",
+			"id_v1": "/scenes/zbpm4NDZI63hcsD",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color": {
+							"xy": {
+								"x": 0.3102,
+								"y": 0.323
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b86d73d8-a0f2-4adb-a029-d94f5373b6f1",
+			"id_v1": "/scenes/cpeQJ7-FcxZ8rwE",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dda859a6-f358-48f5-8d34-e13b04bf6e62",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "5e653b57-c047-4dab-b6bf-d18e4ba10c9a",
+			"id_v1": "/scenes/Z6ynZHxC6ygRVUs",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "205c9083-3b30-4c8a-a3b3-36f54dbdafc1",
+			"id_v1": "/scenes/TpNvJj8ThRGzJRD",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "754708c8-6247-4247-99aa-b601dd2ff138",
+			"id_v1": "/scenes/u7dR4dFWm0CZCqp",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "204bdf64-dd8b-4cab-b594-bd77e4d1eed2",
+			"id_v1": "/scenes/bbGnkmVQ6qgnxWZ",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "bd26fd22-a73c-4ba0-b4c7-044046ae8ca4",
+			"id_v1": "/scenes/iwN3rLPBukzpexb",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "34d5fa77-f1a8-459c-849a-b95ba7b49cd1",
+			"id_v1": "/scenes/O6NRPvvjNpyPAWF",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "5c9542f7-dd3b-460a-9b34-67d81bc2e46d",
+			"id_v1": "/scenes/wCyk6fFuzfes3Fi",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "69a618dd-bd34-4077-923e-1264d967019a",
+			"id_v1": "/scenes/334V-MN1o-BcWXA",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8cec1e2f-bcc9-45c9-a0aa-bc9c30c68b64",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c42f8220-f232-4400-910c-943547513827",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "01e37e27-f686-40b2-a242-cb39455f7d49",
+			"id_v1": "/scenes/JNLQpHEmKPKLlj4",
+			"metadata": {
+				"name": "Lilac"
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color": {
+							"xy": {
+								"x": 0.2302,
+								"y": 0.1045
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "11b8029f-4178-42be-bba6-dcde66c9cd6b",
+			"id_v1": "/scenes/NSLR4yoZ-DwGsJN",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "5ea60a5f-b748-4046-a157-daeb72bac061",
+			"id_v1": "/scenes/A4MJ5n4yDvWGnkY",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e7c87048-430d-4ec0-be45-a0b7a065036d",
+			"id_v1": "/scenes/KSyNvHPez7pBdTm",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color": {
+							"xy": {
+								"x": 0.239,
+								"y": 0.1817
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "d6b60214-b89d-4bcf-82ea-7c5359a03cf5",
+			"id_v1": "/scenes/0wV1ZF5X3dzzQ3W",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "cecc6b2e-e985-4af1-8044-1c02255f95d8",
+			"id_v1": "/scenes/qqRoAPIkwVHdgbD",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.6405,
+								"y": 0.3336
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "2080f5c3-2574-49f2-a0d1-670ee646f287",
+			"id_v1": "/scenes/cSdjCkxVKaa7Hd8",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "317c5030-db6d-4aae-8aac-053d297ab68e",
+			"id_v1": "/scenes/55rCprgqZfoXSuf",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						},
+						"color_temperature": {
+							"mirek": 387
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fe60b55d-afd2-459f-8113-49a2f43ba1a6",
+			"id_v1": "/scenes/AZXwPrYdbDJknjY",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "7c5b8fda-abcf-474a-9911-977c86ab772b",
+			"id_v1": "/scenes/pXBO-PaMtBcJOCJ",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "21a1a402-e584-497b-95f5-30e78769581a",
+			"id_v1": "/scenes/P-ckmBqpk8IzfCm",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fd9557b1-bfaf-4898-a7d8-a25a8f592b87",
+			"id_v1": "/scenes/yiErv0x5QBypAkJ",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "2eae1e67-4345-4f65-821a-3958312482e2",
+			"id_v1": "/scenes/8xvkaBO161s54YF",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "f9031126-43d7-4264-bc5f-36c5402cdfdd",
+			"id_v1": "/scenes/9AHQwcdPBrVAVWy",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "56066c28-1980-4141-a091-e7791387db44",
+			"id_v1": "/scenes/ZuOFvCQd9uSjfyN",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "f359519b-1ab6-47bd-8c9c-36386be75f3d",
+			"id_v1": "/scenes/B2wQY7FZPVOKMiE",
+			"metadata": {
+				"name": "Green"
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.4449,
+								"y": 0.4875
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "8e3f3596-e32a-4d4d-8119-1144cee0d6c1",
+			"id_v1": "/scenes/gZRNvqVUEF8zbYX",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a354f0f1-e226-46f2-ab6a-4dd10f00a996",
+			"id_v1": "/scenes/8mCSXK20LTVPSgy",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fe92dabf-e8af-4eff-a99f-7a76ac95e9dc",
+			"id_v1": "/scenes/lgtP2LF1IIttSN9",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "57ff4e48-f4aa-438b-a600-8fefc71afc26",
+			"id_v1": "/scenes/hYrzWTaumQLNoid",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 73.23
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "436fed80-d22c-4769-b39e-1b07435bd7ad",
+			"id_v1": "/scenes/bONyAiQU0IfhT3Y",
+			"metadata": {
+				"name": "Christmas"
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 75.2
+						},
+						"color": {
+							"xy": {
+								"x": 0.408,
+								"y": 0.517
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 75.2
+						},
+						"color": {
+							"xy": {
+								"x": 0.533,
+								"y": 0.2996
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "411771e8-2c7c-45c5-ac45-08777063283a",
+			"id_v1": "/scenes/neQSWRQ0iAFup5n",
+			"metadata": {
+				"name": "Intermediate"
+			},
+			"group": {
+				"rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 66.14
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 66.14
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "7097791d-d4a2-49c5-95e3-82566f2ffd4d",
+			"id_v1": "/scenes/TLJ8kWVcJCrk0oc",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dda859a6-f358-48f5-8d34-e13b04bf6e62",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "32d8107b-e86f-43a0-a4f1-a1c05dde6b31",
+			"id_v1": "/scenes/ruDj597bcMm4IRA",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "f4823577-ef28-4c5e-bef0-50aeabfda29f",
+			"id_v1": "/scenes/AQY4gUUAjMZMHof",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "9bd115a5-90d3-4d5d-b39a-3b885142b8b4",
+			"id_v1": "/scenes/3gg6YPp2p6IkMud",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "56038cc7-ca56-4066-9bad-7388c3ac5f0c",
+			"id_v1": "/scenes/TWhsalV46MFQDSg",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 84.25
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "09aba9d9-8671-443f-910a-fd3709269fb2",
+			"id_v1": "/scenes/iLPtf3PacLIl-Ge",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fda3b02f-8b2e-4a66-a240-279268cd6957",
+			"id_v1": "/scenes/f0W0SP-36ET3HpZ",
+			"metadata": {
+				"name": "Energize",
+				"image": {
+					"rid": "7fd2ccc5-5749-4142-b7a5-66405a676f03",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 156
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b69dbb01-ebca-4125-93f8-30610c2dd967",
+			"id_v1": "/scenes/hliLF0c-Ij-Kmdp",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "c2fc1e3d-db47-41aa-b740-e425728269f2",
+			"id_v1": "/scenes/2mS4Y86rpr2rJXk",
+			"metadata": {
+				"name": "Spring blossom",
+				"image": {
+					"rid": "adfa9c3e-e9aa-4b65-b9d3-c5b2c0576715",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 82.28
+						},
+						"color_temperature": {
+							"mirek": 215
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.3517,
+								"y": 0.3154
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.359,
+								"y": 0.2925
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3744,
+								"y": 0.2692
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4435,
+								"y": 0.2537
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.514,
+								"y": 0.3338
+							}
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 81.1
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 198
+						},
+						"dimming": {
+							"brightness": 81.1
+						}
+					}
+				]
+			},
+			"speed": 0.5595238095238095,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
+			"id_v1": "/scenes/KC78bdx3f0Ny0Zf",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "6d79e623-684c-40fd-94ba-861e554bb5cd",
+			"id_v1": "/scenes/ZauTGpxOJ75STTH",
+			"metadata": {
+				"name": "Read",
+				"image": {
+					"rid": "e101a77f-9984-4f61-aac8-15741983c656",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 346
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "4ef2e4bf-51dd-4765-a543-2800d26f7379",
+			"id_v1": "/scenes/owWGUIpEiEAv1Ke",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						},
+						"color_temperature": {
+							"mirek": 454
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color": {
+							"xy": {
+								"x": 0.561,
+								"y": 0.4042
+							}
+						},
+						"color_temperature": {
+							"mirek": 454
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "53912b9e-b755-4bee-b878-cb94eff5a69b",
+			"id_v1": "/scenes/JrAmKehf0cRqHsv",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dda859a6-f358-48f5-8d34-e13b04bf6e62",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "71bc1833-7ce2-4115-9954-797cec09b0fb",
+			"id_v1": "/scenes/t3ZmyYqFaGt7v-N",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "a6751127-bddb-4b9c-8af7-b3fa94262a09",
+			"id_v1": "/scenes/moIfmXvtnpE8Fzm",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						},
+						"color_temperature": {
+							"mirek": 387
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "110a94f1-42df-4284-8ef4-14c297d48732",
+			"id_v1": "/scenes/FA8hx4n5ucU03YS",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "038d2513-294d-428e-a70f-50f234420624",
+			"id_v1": "/scenes/UdB6F9Jh6QBCNHH",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						},
+						"color_temperature": {
+							"mirek": 387
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 92.91
+						},
+						"color_temperature": {
+							"mirek": 387
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "5abf6055-5f4f-475f-b383-c03c4ff56790",
+			"id_v1": "/scenes/HGozgCaHKeEpBXp",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "1f5edd4d-a6d5-4f18-8aca-6a225490616b",
+			"id_v1": "/scenes/28o7V3m7-YS5YB0",
+			"metadata": {
+				"name": "Green"
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 45.67
+						},
+						"color": {
+							"xy": {
+								"x": 0.3755,
+								"y": 0.4525
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
+			"id_v1": "/scenes/PHqOyGCggxevIWF",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "e580c411-c098-41bd-a23b-96656cf24ee8",
+			"id_v1": "/scenes/OiZRViJI-Bi4D3o",
+			"metadata": {
+				"name": "Dimmed",
+				"image": {
+					"rid": "8c74b9ba-6e89-4083-a2a7-b10a1e566fed",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 30.31
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "fe0f0705-085a-4935-9ade-be88dd1f0586",
+			"id_v1": "/scenes/aFqX1lOd1Bn2hH5",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 73.23
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 73.23
+						},
+						"color_temperature": {
+							"mirek": 322
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "637417cd-24d1-47b5-a15c-4bed74e7bbb4",
+			"id_v1": "/scenes/5g7WYiUHH9A7H6s",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color_temperature": {
+							"mirek": 385
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "b41ed349-abf7-4a91-a4a2-46c39d677db5",
+			"id_v1": "/scenes/2CkNfGJ0hheJgPY",
+			"metadata": {
+				"name": "Savanna sunset",
+				"image": {
+					"rid": "4f2ed241-5aea-4c9d-8028-55d2b111e06f",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.6405,
+								"y": 0.3336
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.6563,
+								"y": 0.3211
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5862,
+								"y": 0.3575
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5502,
+								"y": 0.3655
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4577,
+								"y": 0.4563
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4162,
+								"y": 0.4341
+							}
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 80.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 373
+						},
+						"dimming": {
+							"brightness": 80.71
+						}
+					}
+				]
+			},
+			"speed": 0.6190476190476191,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "00877a17-38d1-44c4-884d-b362e3566c25",
+			"id_v1": "/scenes/OEUmdH71bnd1gHX",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "c8ec2639-cc81-4316-af05-59d705f4babe",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "19d9cd0c-fac9-4bb4-845b-4b62886ec422",
+			"id_v1": "/scenes/2J2lIvm8aqeyVI-",
+			"metadata": {
+				"name": "Relax",
+				"image": {
+					"rid": "a1f7da49-d181-4328-abea-68c9dc4b5416",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 56.69
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "d8a79343-7961-4d7e-863d-954b24a284e5",
+			"id_v1": "/scenes/NA8Xwq6TOkehzAu",
+			"metadata": {
+				"name": "Concentrate",
+				"image": {
+					"rid": "b90c8900-a6b7-422c-a5d3-e170187dbf8c",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 233
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "688b0ee7-cec8-49f0-bb83-650e73cf6321",
+			"id_v1": "/scenes/Nc6wiaKAaT7cHfb",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "8b529073-36dd-409b-8006-80df304048ea",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "3366722b-48b1-4682-a648-607915873c40",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 53.94
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "9515aa26-de9e-4a43-83a4-7a366527ae9d",
+			"id_v1": "/scenes/QFbY2NFjcSSKHI8",
+			"metadata": {
+				"name": "Arctic aurora",
+				"image": {
+					"rid": "1e42b2e8-d02e-40d2-9c8d-b1fd8216c686",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 58.66
+						},
+						"color_temperature": {
+							"mirek": 153
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.2439,
+								"y": 0.3791
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1654,
+								"y": 0.3959
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1829,
+								"y": 0.3021
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.1559,
+								"y": 0.2699
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.2004,
+								"y": 0.2469
+							}
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 30.71
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 154
+						},
+						"dimming": {
+							"brightness": 30.71
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "d2269edc-e7fb-4ac2-913c-264048dafa6e",
+			"id_v1": "/scenes/9IUgR3QglXUaA3y",
+			"metadata": {
+				"name": "Tropical twilight",
+				"image": {
+					"rid": "a6a03e6a-fe6e-45bc-b686-878137f3ba91",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 48.43
+						},
+						"color": {
+							"xy": {
+								"x": 0.292,
+								"y": 0.2251
+							}
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 72.44
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 72.44
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [
+					{
+						"color": {
+							"xy": {
+								"x": 0.5802,
+								"y": 0.3952
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.5632,
+								"y": 0.3841
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.4563,
+								"y": 0.3607
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.3632,
+								"y": 0.2877
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					},
+					{
+						"color": {
+							"xy": {
+								"x": 0.294,
+								"y": 0.223
+							}
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				],
+				"dimming": [
+					{
+						"brightness": 43.7
+					}
+				],
+				"color_temperature": [
+					{
+						"color_temperature": {
+							"mirek": 306
+						},
+						"dimming": {
+							"brightness": 43.7
+						}
+					}
+				]
+			},
+			"speed": 0.6388888888888888,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "cf201e30-0ba7-45af-be5b-1dc48acda55c",
+			"id_v1": "/scenes/MngA-8-skyyxljp",
+			"metadata": {
+				"name": "Bright",
+				"image": {
+					"rid": "732ff1d9-76a7-4630-aad0-c8acc499bb0b",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+				"rtype": "room"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				},
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 100.0
+						},
+						"color_temperature": {
+							"mirek": 367
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "dc6ba1ad-5626-46f9-a4ec-806b038dca6c",
+			"id_v1": "/scenes/dLHe82Taw-sSaCl",
+			"metadata": {
+				"name": "Nightlight",
+				"image": {
+					"rid": "28bbfeff-1a0c-444e-bb4b-0b74b88e0c95",
+					"rtype": "public_image"
+				}
+			},
+			"group": {
+				"rid": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 0.39
+						},
+						"color_temperature": {
+							"mirek": 447
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		},
+		{
+			"id": "3edc81b5-f26d-4e43-a493-b330e9bd8fbc",
+			"id_v1": "/scenes/hu7LG-5hCiCqHns",
+			"metadata": {
+				"name": "Pale blue"
+			},
+			"group": {
+				"rid": "e3372839-3464-4be0-94a2-949433bc065c",
+				"rtype": "zone"
+			},
+			"actions": [
+				{
+					"target": {
+						"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+						"rtype": "light"
+					},
+					"action": {
+						"on": {
+							"on": true
+						},
+						"dimming": {
+							"brightness": 78.35
+						},
+						"color": {
+							"xy": {
+								"x": 0.3132,
+								"y": 0.3289
+							}
+						}
+					}
+				}
+			],
+			"palette": {
+				"color": [],
+				"dimming": [],
+				"color_temperature": []
+			},
+			"speed": 0.5,
+			"auto_dynamic": false,
+			"type": "scene"
+		}
+	]
+}

@@ -107,4 +107,26 @@ public class HueBindingConstants {
 
     // Config status messages
     public static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";
+
+    // thing types for CLIP 2
+    public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "clip2");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+
+    // channels for CLIP 2
+    public static final String CHANNEL_BUTTON_LAST_EVENT = "button_last_event";
+    public static final String CHANNEL_TEMPERATURE_ENABLED = "temperature_enabled";
+    public static final String CHANNEL_MOTION = "motion";
+    public static final String CHANNEL_MOTION_ENABLED = "motion_enabled";
+    public static final String CHANNEL_LIGHT_LEVEL_ENABLED = "light_level_enabled";
+    public static final String CHANNEL_ZIGBEE_STATUS = "zigbee_status";
+    public static final String CHANNEL_ROTARY_STEPS = "rotary_steps";
+
+    // property names for CLIP 2
+    public static final String PROPERTY_RESOURCE_ID = "resourceId";
+    public static final String PROPERTY_RESOURCE_TYPE = "resourceType";
+    public static final String PROPERTY_RESOURCE_NAME = "resourceName";
+    public static final String PROPERTY_RESOURCE_ARCHETYPE = "resourceArchetype";
+    public static final String PROPERTY_PRODUCT_NAME = "productName";
+    public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
+    public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
 }

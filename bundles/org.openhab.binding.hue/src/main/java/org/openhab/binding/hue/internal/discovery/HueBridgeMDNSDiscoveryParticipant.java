@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
-import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.HueBindingConstants.HOST;
 
 import java.util.Dictionary;
 import java.util.Map;
@@ -22,12 +22,14 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.connection.Clip2Bridge;
+import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -40,11 +42,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueBridgeMDNSDiscoveryParticipant} is responsible for discovering new and removed Hue Bridges. It uses the
- * central {@link MDNSDiscoveryService}.
+ * central MDNSDiscoveryService.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Thomas Höfer - Added representation
  * @author Christoph Weitkamp - Change discovery protocol to mDNS
+ * @author Andrew Fiddian-Green - Added support for CLIP 2 bridge discovery
  */
 @Component(configurationPid = "discovery.hue")
 @NonNullByDefault
@@ -126,7 +129,19 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
         if (id != null && !id.isBlank()) {
-            return new ThingUID(THING_TYPE_BRIDGE, id.toLowerCase());
+            id = id.toLowerCase();
+            try {
+                Clip2Bridge.testSupportsClip2(service.getHostAddresses()[0]);
+                // bridge is online and it supports CLIP 2
+                return new ThingUID(HueBindingConstants.THING_TYPE_CLIP2, id);
+            } catch (IllegalStateException e) {
+                // bridge is online but its software version is too low to support CLIP 2
+                return new ThingUID(HueBindingConstants.THING_TYPE_BRIDGE, id);
+            } catch (ApiException e) {
+                // bridge is offline (but this is unlikely since we just discovered it)
+            } catch (IllegalArgumentException e) {
+                // the IP address is invalid (but this can never happen here)
+            }
         }
         return null;
     }

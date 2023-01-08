@@ -21,7 +21,6 @@
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
-    <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
     <module>org.openhab.binding.mielecloud.tests</module>
     <module>org.openhab.binding.modbus.tests</module>

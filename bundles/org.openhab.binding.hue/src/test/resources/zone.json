@@ -1,0 +1,172 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "e3372839-3464-4be0-94a2-949433bc065c",
+			"id_v1": "/groups/6",
+			"children": [
+				{
+					"rid": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "db4fd630-3798-40de-b642-c1ef464bf770",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Bay",
+				"archetype": "kitchen"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "42bbbee8-f76d-431d-a87f-a5ca71bb3613",
+			"id_v1": "/groups/15",
+			"children": [
+				{
+					"rid": "7f077235-0130-4a0a-95f9-107cf83639a3",
+					"rtype": "light"
+				},
+				{
+					"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "7ef7456a-8c4c-4b85-b433-b8c1bb99249b",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Standard Lamps",
+				"archetype": "lounge"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "93d0b50b-1500-4351-a3fa-52d18dd4c8fc",
+			"id_v1": "/groups/4",
+			"children": [
+				{
+					"rid": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+					"rtype": "light"
+				},
+				{
+					"rid": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+					"rtype": "light"
+				},
+				{
+					"rid": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+					"rtype": "light"
+				},
+				{
+					"rid": "3366722b-48b1-4682-a648-607915873c40",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "900f4b11-7ed1-46ae-bcf4-978d0028aac9",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Downlights",
+				"archetype": "dining"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "dda859a6-f358-48f5-8d34-e13b04bf6e62",
+			"id_v1": "/groups/8",
+			"children": [
+				{
+					"rid": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "dd653c2b-9622-45d5-aa57-d0bf9391592b",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Display Cabinet",
+				"archetype": "dining"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "cff8919b-7466-4199-a8c5-a5204cd4fcf1",
+			"id_v1": "/groups/9",
+			"children": [
+				{
+					"rid": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "6e2fee8d-c25f-4468-8ac8-5ed75c6f3cf1",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Andrew",
+				"archetype": "bedroom"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+			"id_v1": "/groups/1",
+			"children": [
+				{
+					"rid": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+					"rtype": "light"
+				},
+				{
+					"rid": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "f8cac182-2608-40e3-81e4-f6ac02eba55a",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Worktops",
+				"archetype": "kitchen"
+			},
+			"type": "zone"
+		},
+		{
+			"id": "57a20e61-7686-48ca-9ad2-6dbf1a2a0364",
+			"id_v1": "/groups/10",
+			"children": [
+				{
+					"rid": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+					"rtype": "light"
+				}
+			],
+			"services": [
+				{
+					"rid": "1bfb7090-e2b3-4417-8834-86e1ebb0a50c",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Elisabeth",
+				"archetype": "bedroom"
+			},
+			"type": "zone"
+		}
+	]
+}

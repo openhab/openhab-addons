@@ -14,4 +14,12 @@
 
   <name>openHAB Add-ons :: Bundles :: hue Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty.http2</groupId>
+      <artifactId>http2-client</artifactId>
+      <version>9.4.46.v20220331</version>
+    </dependency>
+  </dependencies>
+
 </project>

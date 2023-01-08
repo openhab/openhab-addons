@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- CLIP 2 device thing -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="clip2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Device</label>
+		<description>A Hue CLIP2 device with channels depending on its actual capabilities.</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="button_last_event" typeId="button_last_event"/>
+			<channel id="rotary_steps" typeId="rotary_steps"/>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion_enabled" typeId="motion_enabled"/>
+			<channel id="light_level" typeId="light_level"/>
+			<channel id="light_level_enabled" typeId="light_level_enabled"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature_enabled" typeId="temperature_enabled"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="zigbee_status" typeId="zigbee_status"/>
+			<channel id="last_updated" typeId="last_updated"/>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource Id</label>
+				<description>Unique Resource Id of the device in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
