@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +67,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import io.micrometer.core.instrument.util.IOUtils;
 
 @Component(immediate = true)
 @NonNullByDefault
@@ -934,8 +935,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
             String js = SiemensHvacConnectorImpl.getGsonWithAdapter().toJson(root);
 
-            IOUtils.write(js, os);
-            IOUtils.closeQuietly(os);
+            byte[] bt = js.getBytes();
+            os.write(bt);
+            os.flush();
 
         } catch (IOException ioe) {
             logger.error("Couldn't write WithingsAccount to file '{}'.", file.getAbsolutePath());
