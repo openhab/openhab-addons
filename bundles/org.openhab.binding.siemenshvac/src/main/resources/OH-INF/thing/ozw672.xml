@@ -9,16 +9,22 @@
 		<description>This is a OZW672 IP interface</description>
 
 		<config-description>
-			<parameter name="ipAddress" type="text">
-				<label>Network Address</label>
-				<description>Network address of the Siemens Hvac IP gateway</description>
+			<parameter name="baseUrl" type="text">
+				<label>Base URL</label>
+				<description>The URL of the Siemens Hvac IP gateway</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="portNumber" type="integer">
-				<description>Port number of the Siemens Hvac gateway</description>
+			<parameter name="userName" type="text">
+				<description>UserName of the Siemens Hvac gateway</description>
 				<required>false</required> 
-				<label>Port</label>
-				<default>3671</default>
+				<label>userName</label>
+				<default>Administrator</default>
+			</parameter>
+			<parameter name="userPassword" type="text">
+				<description>UserPassword of the Siemens Hvac gateway</description>
+				<required>false</required> 
+				<label>userPassword</label>
+				<default>password</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

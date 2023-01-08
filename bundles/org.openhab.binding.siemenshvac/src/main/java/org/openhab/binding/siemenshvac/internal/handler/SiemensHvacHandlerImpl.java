@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
-import org.openhab.binding.siemenshvac.internal.config.SiemensHvacConfiguration;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelGroupTypeProvider;
@@ -65,7 +64,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    private @Nullable SiemensHvacConfiguration config;
     private @Nullable SiemensHvacThingTypeProvider thingTypeProvider;
     private @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
     private @Nullable SiemensHvacChannelGroupTypeProvider channelGroupTypeProvider;
@@ -122,10 +120,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             }
         });
 
-        config = getConfigAs(SiemensHvacConfiguration.class);
-        var c1 = getThing().getConfiguration();
-        var c2 = getBridge().getConfiguration();
-
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 10, TimeUnit.SECONDS);
     }
 
@@ -152,13 +146,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             ChannelType tp = channelTypeProvider.getInternalChannelType(ch.getChannelTypeUID());
 
+            if (tp == null) {
+                continue;
+            }
             String dptId = ch.getProperties().get("dptId");
+            String Id = ch.getProperties().get("id");
             String groupId = ch.getProperties().get("groupdId");
             String label = ch.getLabel();
             String uid = ch.getUID().getId();
             String type = tp.getItemType();
 
-            ReadDp(dptId, uid, type, false);
+            ReadDp(Id, uid, type, true);
             logger.debug("" + isLink);
         }
     }
@@ -193,9 +191,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             if (type == null) {
                 logger.debug("siemensHvac:ReadDP:null type" + dp);
-            }
-            if (typer == null) {
-                logger.debug("siemensHvac:ReadDP:null typer" + dp);
             }
 
             if (typer.equals("Numeric")) {

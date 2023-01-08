@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.siemenshvac.internal.Metadata;
+
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +37,9 @@ public interface SiemensHvacMetadataRegistry {
     SiemensHvacMetadataMenu getRoot();
 
     @Nullable
+    ArrayList<SiemensHvacMetadataDevice> getDevices();
+
+    @Nullable
     SiemensHvacMetadata getDptMap(String key);
 
     @Nullable
@@ -42,5 +47,4 @@ public interface SiemensHvacMetadataRegistry {
 
     @Nullable
     SiemensHvacConnector getSiemensHvacConnector();
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,6 @@ public class SiemensHvacBindingConstants {
     // List of all Thing Type UIDs
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OZW672 = new ThingTypeUID(BINDING_ID, "ozw672");
-    public static final ThingTypeUID THING_TYPE_RVS41_813_327 = new ThingTypeUID(BINDING_ID, "RVS41_813_327");
 
     // List of all Channel ids
     public static final String CHANNEL_1 = "channel1";
@@ -41,7 +40,7 @@ public class SiemensHvacBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    public static final String PROPERTY_VENDOR_NAME = "eQ-3 AG";
+    public static final String PROPERTY_VENDOR_NAME = "Siemens";
 
     public static final String ITEM_TYPE_SWITCH = "Switch";
     public static final String ITEM_TYPE_ROLLERSHUTTER = "Rollershutter";
@@ -74,5 +73,4 @@ public class SiemensHvacBindingConstants {
     public static final String CATEGORY_CHANNEL_PROPS_TIME = "Time";
 
     public static final String CATEGORY_CHANNEL_CONTROL_HEATING = "Heating";
-
 }

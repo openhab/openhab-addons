@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 /*
  * Copyright (C) 2011 Google Inc.
  *
@@ -29,6 +41,9 @@ import java.io.ObjectStreamException;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -78,7 +93,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <p>
  * Without additional type information, the serialized JSON is ambiguous. Is
  * the bottom shape in this drawing a rectangle or a diamond?
- * 
+ *
  * <pre>
  *    {@code
  *   {
@@ -99,7 +114,7 @@ import com.google.gson.stream.MalformedJsonException;
  * This class addresses this problem by adding type information to the
  * serialized JSON and honoring that type information when the JSON is
  * deserialized:
- * 
+ *
  * <pre>
  *    {@code
  *   {
@@ -126,7 +141,7 @@ import com.google.gson.stream.MalformedJsonException;
  * Create a {@code RuntimeTypeAdapterFactory} by passing the base type and type field
  * name to the {@link #of} factory method. If you don't supply an explicit type
  * field name, {@code "type"} will be used.
- * 
+ *
  * <pre>
  * {
  *     &#64;code
@@ -156,7 +171,7 @@ import com.google.gson.stream.MalformedJsonException;
  * </pre>
  *
  * Like {@code GsonBuilder}, this API supports chaining:
- * 
+ *
  * <pre>
  * {
  *     &#64;code
@@ -165,6 +180,11 @@ import com.google.gson.stream.MalformedJsonException;
  * }
  * </pre>
  */
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;

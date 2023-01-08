@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,6 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
 
         super.initialize();
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     @Override
@@ -82,5 +81,4 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(SiemensHvacDeviceDiscoveryService.class);
     }
-
 }

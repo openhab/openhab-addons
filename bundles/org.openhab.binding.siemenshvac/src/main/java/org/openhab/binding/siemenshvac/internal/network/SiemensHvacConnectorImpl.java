@@ -73,13 +73,13 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private void initHttpClient() {
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient.setMaxConnectionsPerDestination(15);
         this.httpClientInsecure = new HttpClient(new SslContextFactory.Client(true));
         this.httpClientInsecure.setRemoveIdleDestinations(true);
         this.httpClientInsecure.setMaxConnectionsPerDestination(15);
         try {
             this.httpClientInsecure.start();
         } catch (Exception e) {
-            // catching exception is necessary due to the signature of HttpClient.start()
             logger.warn("Failed to start insecure http client: {}", e.getMessage());
         }
 
@@ -115,7 +115,16 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         } finally {
             lockObj.unlock();
         }
-        logger.debug("unregisterCount:" + completedRequest + " " + request.getURI());
+    }
+
+    @Override
+    public void onError(@Nullable Request request) {
+        lockObj.lock();
+        try {
+            completedRequest++;
+        } finally {
+            lockObj.unlock();
+        }
     }
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
@@ -141,7 +150,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     lockObj.unlock();
                 }
 
-                logger.debug("registerCount:" + startedRequest + " " + request.getQuery());
                 request.send(requestListener);
             } else {
                 response = request.send();
@@ -181,13 +189,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             ContentResponse response = executeRequest(request, null);
             int statusCode = response.getStatus();
 
-            logger.debug("siemensHvac:doAuth:Endresponse:()" + statusCode);
-
             if (statusCode == HttpStatus.OK_200) {
                 String result = response.getContentAsString();
 
                 if (result != null) {
-                    logger.debug("siemensHvac:doAuth:decodeResponse:()" + result);
                     JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
 
                     if (resultObj.has("Result")) {
@@ -250,8 +255,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             final Request request = httpClientInsecure.newRequest(baseUri + uri);
             request.method(HttpMethod.GET);
 
-            logger.debug("siemensHvac:DoBasicRequest()" + request);
-
             ContentResponse response = executeRequest(request, callback);
             if (callback == null) {
                 int statusCode = response.getStatus();
@@ -277,7 +280,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             String response = DoBasicRequest(req, callback);
 
             if (response != null) {
-                // logger.debug("siemensHvacDoRequest:responseSt:" + response);
 
                 JsonObject resultObj = getGson().fromJson(response, JsonObject.class);
 
@@ -307,11 +309,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void WaitAllPendingRequest() {
         logger.debug("WaitAllPendingRequest:start");
         try {
-            logger.debug("WaitAllPendingRequest:start Initial Sleep");
             Thread.sleep(1000);
-            logger.debug("WaitAllPendingRequest:end Initial Sleep");
-
-            logger.debug("WaitAllPendingRequest:start Wait Request");
             boolean allRequestDone = false;
 
             while (!allRequestDone) {
@@ -319,8 +317,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
                 allRequestDone = true;
                 while (idx < 5 && allRequestDone) {
-                    logger.debug("WaitAllPendingRequest:waitAllRequestDone " + idx + " " + startedRequest + "/"
-                            + completedRequest);
+                    logger.debug("WaitAllPendingRequest:waitAllRequestDone " + idx + " : "
+                            + (startedRequest - completedRequest) + "(" + startedRequest + "/" + completedRequest
+                            + ")");
                     if (startedRequest != completedRequest) {
                         allRequestDone = false;
                     }
@@ -328,14 +327,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     idx++;
                 }
             }
-
-            logger.debug("WaitAllPendingRequest:end Wait");
-
         } catch (InterruptedException ex) {
             logger.debug("WaitAllPendingRequest:interrupted in WaitAllRequest");
         }
 
-        logger.debug("WaitAllPendingRequest:end Wait");
         logger.debug("WaitAllPendingRequest:end WaitAllPendingRequest");
     }
 
@@ -355,102 +350,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return gson;
     }
 
-    /*
-     *
-     *
-     * public void WriteDp(String name, Type dp) {
-     * siemensHvacGenericBindingProvider provider = hvacBinding.getProvider();
-     * siemensHvacBindingConfig bindingConfig = (siemensHvacBindingConfig) provider.getBindingConfigs().get(name);
-     * registry.VerifyBindingConfig(bindingConfig);
-     * int dpt = bindingConfig.getDptId();
-     * String type = bindingConfig.getDptType();
-     *
-     * String valAct = _readDpInternal(name, dpt, type);
-     * String valActEnum = valAct;
-     * String valActLabel = valAct;
-     *
-     *
-     * if (type.equals("Enumeration")) {
-     * String[] values = valAct.split(":");
-     * valActEnum = values[0];
-     * valActLabel = values[1];
-     * }
-     *
-     *
-     * // Exit there if new value is the same as old value
-     * if (valAct != null && valUpdate.equals(valAct)) {
-     * return;
-     * }
-     * if (valActEnum != null && valUpdateEnum.equals(valActEnum)) {
-     * return;
-     * }
-     *
-     * siemensHvacBindingConfig config = (siemensHvacBindingConfig) provider.getBindingConfigs().get(name);
-     * registry.VerifyBindingConfig(bindingConfig);
-     * String dpType = config.getDptType();
-     *
-     * String request = "api/menutree/write_datapoint.json?Id=" + dpt + "&Value=" + valUpdate + "&Type=" + dpType;
-     *
-     * JSONObject result = DoRequest(request);
-     * logger.debug("siemensHvac:WriteDP(response) = " + result);
-     *
-     * ReadDp(name, dpt, type);
-     * }
-     *
-     *
-     *
-     */
-
     public void AddDpUpdate(String itemName, Type dp) {
         synchronized (updateCommand) {
             updateCommand.put(itemName, dp);
             lastUpdate = new java.util.Date();
         }
     }
-
-    /*
-     * @Override
-     * public void run() {
-     * logger.debug("siemensHvac:sender thread start");
-     *
-     * // as long as no interrupt is requested, continue running
-     * while (!interrupted) {
-     * try {
-     * Thread.sleep(2000);
-     * Date currentDate = new java.util.Date();
-     *
-     * logger.debug("siemensHvac:sender thread alive:" + currentDate);
-     *
-     * if (lastUpdate == null) {
-     * continue;
-     * }
-     *
-     * long ms = currentDate.getTime() - lastUpdate.getTime();
-     * if (ms < 3000) {
-     * continue;
-     * }
-     *
-     * synchronized (updateCommand) {
-     * if (updateCommand.isEmpty()) {
-     * continue;
-     * }
-     *
-     * logger.debug("siemensHvac:sender thread updateCommand");
-     *
-     * for (String key : updateCommand.keySet()) {
-     * Type dp = updateCommand.get(key);
-     * WriteDp(key, dp);
-     *
-     * }
-     *
-     * updateCommand.clear();
-     * }
-     *
-     * } catch (Exception e) {
-     * logger.error("siemensHvac:Error occured will sending update values", e);
-     * }
-     * }
-     *
-     * }
-     */
 }
