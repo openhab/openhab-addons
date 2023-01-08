@@ -14,6 +14,8 @@ public interface SiemensHvacConnector {
 
     public void onComplete(Request request);
 
+    public void onError(Request request);
+
     public void setSiemensHvacBridgeBaseThingHandler(
             @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
 }

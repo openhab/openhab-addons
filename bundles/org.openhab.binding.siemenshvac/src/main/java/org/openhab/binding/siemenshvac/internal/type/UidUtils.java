@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,22 +31,135 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 public class UidUtils {
 
     public static String sanetizeId(String st) {
-        st = st.replace(" ", "_");
-        st = st.replace("é", "e");
-        st = st.replace("è", "e");
-        st = st.replace("ê", "e");
 
-        st = st.replace("î", "i");
-        st = st.replace("ô", "o");
-        st = st.replace("à", "a");
-        st = st.replace("/", "_");
-        st = st.replace(".", "_");
-        st = st.replace("(", "_");
-        st = st.replace(")", "_");
-        st = st.replace("°", "_");
-        st = st.replace("É", "E");
+        StringBuffer buffer = new StringBuffer();
 
-        return st;
+        for (int i = 0; i < st.length(); i++) {
+            char c = st.charAt(i);
+
+            if (c == 'é') {
+                c = 'e';
+            } else if (c == 'è') {
+                c = 'e';
+            } else if (c == 'ê') {
+                c = 'e';
+            } else if (c == 'ë') {
+                c = 'e';
+            } else if (c == 'ě') {
+                c = 'e';
+            } else if (c == 'É') {
+                c = 'E';
+            } else if (c == 'É') {
+                c = 'E';
+            }
+
+            else if (c == 'î') {
+                c = 'i';
+            } else if (c == 'ï') {
+                c = 'i';
+            } else if (c == 'í') {
+                c = 'i';
+            } else if (c == 'í') {
+                c = 'i';
+            }
+
+            else if (c == 'ô') {
+                c = 'o';
+            } else if (c == 'ó') {
+                c = 'o';
+            } else if (c == 'ò') {
+                c = 'o';
+            } else if (c == 'ö') {
+                c = 'o';
+            }
+
+            else if (c == 'ú') {
+                c = 'u';
+            } else if (c == 'ù') {
+                c = 'u';
+            } else if (c == 'û') {
+                c = 'u';
+            } else if (c == 'ü') {
+                c = 'u';
+            } else if (c == 'ů') {
+                c = 'u';
+            } else if (c == 'Ú') {
+                c = 'U';
+            }
+
+            else if (c == 'à') {
+                c = 'a';
+            } else if (c == 'ä') {
+                c = 'a';
+            } else if (c == 'â') {
+                c = 'a';
+            } else if (c == 'á') {
+                c = 'a';
+            }
+
+            else if (c == 'ř') {
+                c = 'r';
+            } else if (c == 'ť') {
+                c = 't';
+            }
+
+            else if (c == 'š') {
+                c = 's';
+            }
+
+            else if (c == 'ý') {
+                c = 'y';
+            } else if (c == 'ÿ') {
+                c = 'y';
+            }
+
+            else if (c == 'ž') {
+                c = 'z';
+            }
+
+            else if (c == 'ç') {
+                c = 'c';
+            } else if (c == 'č') {
+                c = 'c';
+            } else if (c == 'Č') {
+                c = 'C';
+            }
+
+            else if (c == 'Ž') {
+                c = 'Z';
+            }
+
+            else if (c == '_') {
+                c = '_';
+            } else if (c == ' ') {
+                c = '_';
+            } else if (c == '&') {
+                c = '_';
+            } else if (c == '/') {
+                c = '_';
+            } else if (c == '.') {
+                c = '_';
+            } else if (c == '(') {
+                c = '_';
+            } else if (c == ')') {
+                c = '_';
+            }
+
+            else if (c == '°') {
+                c = '_';
+            } else if (c == '\'') {
+                c = '_';
+            }
+
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-') {
+            } else {
+                c = '_';
+            }
+
+            buffer.append(c);
+        }
+
+        return buffer.toString();
     }
 
     /**
@@ -69,7 +182,7 @@ public class UidUtils {
 
         String shortDesc = sanetizeId(dpt.getShortDesc());
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID,
-                String.format("%s_%s_%s", dpt.getDptType(), dpt.getDptId(), shortDesc));
+                String.format("%s_%s_%s", dpt.getDptType(), dpt.getId(), shortDesc));
     }
 
     /**
@@ -92,6 +205,6 @@ public class UidUtils {
      * Generates the ChannelTypeUID for the given datapoint with deviceType and channelNumber.
      */
     public static ChannelGroupTypeUID generateChannelGroupTypeUID(SiemensHvacMetadataMenu menu) {
-        return new ChannelGroupTypeUID(SiemensHvacBindingConstants.BINDING_ID, String.format("%s", menu.getMenuId()));
+        return new ChannelGroupTypeUID(SiemensHvacBindingConstants.BINDING_ID, String.format("%s", menu.getId()));
     }
 }

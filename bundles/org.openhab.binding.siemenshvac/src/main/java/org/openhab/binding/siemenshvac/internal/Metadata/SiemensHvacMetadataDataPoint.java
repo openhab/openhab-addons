@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.siemenshvac.internal.Metadata;
 
 import java.util.ArrayList;
@@ -9,7 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
-    private int dptId = -1;
+    private String dptId = "-1";
     private String dptType = null;
     private String dptUnit = null;
     private String min = null;
@@ -18,6 +30,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     private String fieldWitdh = null;
     private String decimalDigits = null;
     private Boolean detailsResolved = false;
+    private Boolean unresolvableDetails = false;
     private String dialogType = null;
     private String maxLength = null;
     private String address = null;
@@ -41,11 +54,11 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.child = child;
     }
 
-    public int getDptId() {
+    public String getDptId() {
         return dptId;
     }
 
-    public void setDptId(int dptId) {
+    public void setDptId(String dptId) {
         this.dptId = dptId;
     }
 
@@ -150,7 +163,24 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
             return;
         }
 
+        JsonObject subResultObj = result.getAsJsonObject("Result");
         JsonObject desc = result.getAsJsonObject("Description");
+
+        if (subResultObj.has("Success")) {
+            boolean resultVal = subResultObj.get("Success").getAsBoolean();
+            JsonObject error = subResultObj.getAsJsonObject("Error");
+            String errorMsg = "";
+            if (error != null) {
+                errorMsg = error.get("Txt").getAsString();
+            }
+
+            if (errorMsg.equals("datatype not supported")) {
+                detailsResolved = true;
+                unresolvableDetails = true;
+                return;
+            }
+
+        }
 
         if (desc != null) {
             this.dptType = desc.get("Type").getAsString();

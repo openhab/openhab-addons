@@ -1,6 +1,5 @@
 package org.openhab.binding.siemenshvac.internal.network;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -8,7 +7,6 @@ import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +16,7 @@ import com.google.gson.JsonObject;
 public class SiemensHvacRequestListener extends BufferingResponseListener
         implements SuccessListener, FailureListener, ContentListener, CompleteListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacMetadataRegistryImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SiemensHvacRequestListener.class);
     private SiemensHvacConnector hvacConnector;
 
     /**
@@ -37,17 +35,17 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
     }
 
     @Override
-    public void onSuccess(@NonNullByDefault({}) Response response) {
+    public void onSuccess(Response response) {
         // logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
     }
 
     @Override
-    public void onFailure(@NonNullByDefault({}) Response response, @NonNullByDefault({}) Throwable failure) {
+    public void onFailure(Response response, Throwable failure) {
         logger.debug("response failed: {}  {}", response.getRequest().getURI(), failure.getLocalizedMessage(), failure);
     }
 
     @Override
-    public void onComplete(@NonNullByDefault({}) Result result) {
+    public void onComplete(Result result) {
         hvacConnector.onComplete(result.getRequest());
 
         try {
@@ -60,36 +58,52 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
             }
 
             if (content != null) {
-                JsonObject resultObj = null;
-                try {
-                    Gson gson = SiemensHvacConnectorImpl.getGson();
-                    resultObj = gson.fromJson(content, JsonObject.class);
-                } catch (Exception ex) {
-                    logger.debug("error:" + ex.toString());
-                }
-
-                if (resultObj.has("Result")) {
-                    JsonObject subResultObj = resultObj.getAsJsonObject("Result");
-
-                    if (subResultObj.has("Success")) {
-                        boolean resultVal = subResultObj.get("Success").getAsBoolean();
-
-                        if (resultVal) {
-
-                            callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), resultObj);
-                            return;
-                        } else {
-                            logger.debug("error : " + subResultObj);
-                        }
-                    } else {
-                        logger.debug("error");
+                if (content.indexOf("<!DOCTYPE html>") >= 0) {
+                    callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
+                } else {
+                    JsonObject resultObj = null;
+                    try {
+                        Gson gson = SiemensHvacConnectorImpl.getGson();
+                        resultObj = gson.fromJson(content, JsonObject.class);
+                    } catch (Exception ex) {
+                        logger.debug("error:" + ex.toString());
                     }
 
-                } else {
-                    logger.debug("error");
-                }
+                    if (resultObj.has("Result")) {
+                        JsonObject subResultObj = resultObj.getAsJsonObject("Result");
 
-                return;
+                        if (subResultObj.has("Success")) {
+                            boolean resultVal = subResultObj.get("Success").getAsBoolean();
+                            JsonObject error = subResultObj.getAsJsonObject("Error");
+                            String errorMsg = "";
+                            if (error != null) {
+                                errorMsg = error.get("Txt").getAsString();
+                            }
+
+                            if (resultVal) {
+
+                                callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
+                                        resultObj);
+                                return;
+                            } else if (errorMsg.equals("datatype not supported")) {
+                                callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
+                                        resultObj);
+                            } else {
+                                logger.debug("error : " + subResultObj);
+                                hvacConnector.onError(result.getRequest());
+                            }
+                        } else {
+                            logger.debug("error");
+                            hvacConnector.onError(result.getRequest());
+                        }
+
+                    } else {
+                        logger.debug("error");
+                        hvacConnector.onError(result.getRequest());
+                    }
+
+                    return;
+                }
             }
 
             callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
