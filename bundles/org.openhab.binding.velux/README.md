@@ -111,10 +111,10 @@ Notes:
 For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
 
 2. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
-For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
-This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
-The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
-For an example, see the Thing definition for 'Living_Room_Awning' below.
+  For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
+  This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
+  The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
+  For an example, see the Thing definition for 'Living_Room_Awning' below.
 
 ### Thing Configuration for "scene"
 
