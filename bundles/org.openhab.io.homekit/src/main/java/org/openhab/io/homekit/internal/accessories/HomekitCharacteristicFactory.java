@@ -99,6 +99,8 @@ import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ObstructionDetectedCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ProgrammableSwitchEnum;
+import io.github.hapjava.characteristics.impl.common.ProgrammableSwitchEventCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultEnum;
@@ -231,6 +233,7 @@ public class HomekitCharacteristicFactory {
             put(PM10_DENSITY, HomekitCharacteristicFactory::createPM10DensityCharacteristic);
             put(PM25_DENSITY, HomekitCharacteristicFactory::createPM25DensityCharacteristic);
             put(POWER_MODE, HomekitCharacteristicFactory::createPowerModeCharacteristic);
+            put(PROGRAMMABLE_SWITCH_EVENT, HomekitCharacteristicFactory::createProgrammableSwitchEventCharacteristic);
             put(REMAINING_DURATION, HomekitCharacteristicFactory::createRemainingDurationCharacteristic);
             put(REMOTE_KEY, HomekitCharacteristicFactory::createRemoteKeyCharacteristic);
             put(RELATIVE_HUMIDITY, HomekitCharacteristicFactory::createRelativeHumidityCharacteristic);
@@ -391,8 +394,7 @@ public class HomekitCharacteristicFactory {
      * @param <T> type of the result derived from
      * @return key for the value
      */
-    public static <T> T getKeyFromMapping(HomekitTaggedItem item, Map<T, String> mapping, T defaultValue) {
-        final State state = item.getItem().getState();
+    public static <T> T getKeyFromMapping(HomekitTaggedItem item, State state, Map<T, String> mapping, T defaultValue) {
         LOGGER.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
                 state, mapping);
 
@@ -448,7 +450,8 @@ public class HomekitCharacteristicFactory {
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
             Map<T, String> mapping, T defaultValue) {
-        return CompletableFuture.completedFuture(getKeyFromMapping(item, mapping, defaultValue));
+        return CompletableFuture
+                .completedFuture(getKeyFromMapping(item, item.getItem().getState(), mapping, defaultValue));
     }
 
     public static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value, Map<T, String> map) {
@@ -1158,6 +1161,80 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         var map = createMapping(taggedItem, PowerModeEnum.class, true);
         return new PowerModeCharacteristic((value) -> setValueFromEnum(taggedItem, value, map));
+    }
+
+    // this characteristic is unique in a few ways, so we can't use the "normal" helpers:
+    // * you don't return a "current" value, just the value of the most recent event
+    // * NULL/invalid values are very much expected, and should silently _not_ trigger an event
+    // * every update to the item should trigger an event, not just changes
+
+    private static ProgrammableSwitchEventCharacteristic createProgrammableSwitchEventCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        // have to build the map custom, since SINGLE_PRESS starts at 0
+        Map<ProgrammableSwitchEnum, String> map = new EnumMap(ProgrammableSwitchEnum.class);
+        List<ProgrammableSwitchEnum> validValues = new ArrayList<>();
+
+        if (taggedItem.getBaseItem().getAcceptedDataTypes().contains(OnOffType.class)) {
+            map.put(ProgrammableSwitchEnum.SINGLE_PRESS, OnOffType.ON.toString());
+            validValues.add(ProgrammableSwitchEnum.SINGLE_PRESS);
+        } else if (taggedItem.getBaseItem().getAcceptedDataTypes().contains(OpenClosedType.class)) {
+            map.put(ProgrammableSwitchEnum.SINGLE_PRESS, OpenClosedType.OPEN.toString());
+            validValues.add(ProgrammableSwitchEnum.SINGLE_PRESS);
+        } else {
+            map = createMapping(taggedItem, ProgrammableSwitchEnum.class, validValues, false);
+        }
+
+        var helper = new ProgrammableSwitchEventCharacteristicHelper(taggedItem, updater, map);
+
+        return new ProgrammableSwitchEventCharacteristic(validValues.toArray(new ProgrammableSwitchEnum[0]),
+                helper::getValue, helper::subscribe, getUnsubscriber(taggedItem, PROGRAMMABLE_SWITCH_EVENT, updater));
+    }
+
+    private static class ProgrammableSwitchEventCharacteristicHelper {
+        private @Nullable ProgrammableSwitchEnum lastValue = null;
+        private final HomekitTaggedItem taggedItem;
+        private final Map<ProgrammableSwitchEnum, String> map;
+        private final HomekitAccessoryUpdater updater;
+
+        ProgrammableSwitchEventCharacteristicHelper(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater,
+                Map<ProgrammableSwitchEnum, String> map) {
+            this.taggedItem = taggedItem;
+            this.map = map;
+            this.updater = updater;
+        }
+
+        public CompletableFuture<ProgrammableSwitchEnum> getValue() {
+            return CompletableFuture.completedFuture(lastValue);
+        }
+
+        public void subscribe(HomekitCharacteristicChangeCallback cb) {
+            updater.subscribeToUpdates((GenericItem) taggedItem.getItem(), PROGRAMMABLE_SWITCH_EVENT.getTag(),
+                    state -> {
+                        // perform inversion here, so logic below only needs to deal with the
+                        // canonical style
+                        if (state instanceof OnOffType && taggedItem.isInverted()) {
+                            if (state.equals(OnOffType.ON)) {
+                                state = OnOffType.OFF;
+                            } else {
+                                state = OnOffType.ON;
+                            }
+                        } else if (state instanceof OpenClosedType && taggedItem.isInverted()) {
+                            if (state.equals(OpenClosedType.OPEN)) {
+                                state = OpenClosedType.CLOSED;
+                            } else {
+                                state = OpenClosedType.OPEN;
+                            }
+                        }
+                        // if "not pressed", don't send an event
+                        if (state instanceof UnDefType || (state instanceof OnOffType && state.equals(OnOffType.OFF))
+                                || (state instanceof OpenClosedType && state.equals(OpenClosedType.CLOSED))) {
+                            lastValue = null;
+                            return;
+                        }
+                        lastValue = getKeyFromMapping(taggedItem, state, map, ProgrammableSwitchEnum.SINGLE_PRESS);
+                        cb.changed();
+                    });
+        }
     }
 
     private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(HomekitTaggedItem taggedItem,

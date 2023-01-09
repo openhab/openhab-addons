@@ -420,7 +420,8 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), c.get().getItem().getState(), mapping,
+                    defaultValue);
         }
         return defaultValue;
     }
