@@ -67,6 +67,7 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {

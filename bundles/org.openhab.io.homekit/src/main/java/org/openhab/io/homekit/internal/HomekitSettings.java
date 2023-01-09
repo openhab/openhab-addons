@@ -66,6 +66,7 @@ public class HomekitSettings {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

@@ -844,10 +844,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private boolean deviceSupportsSerialPort2() {
-            if (thing.getThingTypeUID().equals(THING_TYPE_GC_100_12)) {
-                return true;
-            }
-            return false;
+            return thing.getThingTypeUID().equals(THING_TYPE_GC_100_12);
         }
 
         /*

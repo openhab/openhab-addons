@@ -908,7 +908,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     boolean hasitems = "1".equals(entry.value);
                     if (f != null) {
                         // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
-                        if (hasitems && isTypePlaylist == false) {
+                        if (hasitems && !isTypePlaylist) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;

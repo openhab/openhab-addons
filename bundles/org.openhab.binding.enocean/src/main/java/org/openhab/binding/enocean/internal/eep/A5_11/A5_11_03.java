@@ -35,6 +35,7 @@ public class A5_11_03 extends _4BSMessage {
         super(packet);
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     protected boolean isErrorState() {
         byte db1 = getDB_1();
 
