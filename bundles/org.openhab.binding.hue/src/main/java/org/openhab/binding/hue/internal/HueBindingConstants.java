@@ -113,13 +113,13 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // channels for CLIP 2
-    public static final String CHANNEL_BUTTON_LAST_EVENT = "button_last_event";
-    public static final String CHANNEL_TEMPERATURE_ENABLED = "temperature_enabled";
+    public static final String CHANNEL_BUTTON_LAST_EVENT = "buttonLastEvent";
+    public static final String CHANNEL_TEMPERATURE_ENABLED = "temperatureEnabled";
     public static final String CHANNEL_MOTION = "motion";
-    public static final String CHANNEL_MOTION_ENABLED = "motion_enabled";
-    public static final String CHANNEL_LIGHT_LEVEL_ENABLED = "light_level_enabled";
-    public static final String CHANNEL_ZIGBEE_STATUS = "zigbee_status";
-    public static final String CHANNEL_ROTARY_STEPS = "rotary_steps";
+    public static final String CHANNEL_MOTION_ENABLED = "motionEnabled";
+    public static final String CHANNEL_LIGHT_LEVEL_ENABLED = "lightLevelEnabled";
+    public static final String CHANNEL_ZIGBEE_STATUS = "zigbeeStatus";
+    public static final String CHANNEL_ROTARY_STEPS = "rotarySteps";
 
     // property names for CLIP 2
     public static final String PROPERTY_RESOURCE_ID = "resourceId";

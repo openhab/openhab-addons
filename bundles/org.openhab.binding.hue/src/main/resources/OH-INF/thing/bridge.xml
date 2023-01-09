@@ -64,15 +64,15 @@
 
 	<!-- CLIP 2 Bridge -->
 	<bridge-type id="clip2">
-		<label>Hue CLIP 2 Bridge</label>
-		<description>The Hue Bridge represents the Philips Hue Bridge.</description>
+		<label>Hue API v2 Bridge</label>
+		<description>The Hue Bridge represents the Philips Hue Bridge supporting API v2.</description>
 
 		<channels>
 			<channel id="scene" typeId="scene"/>
 		</channels>
 
 		<properties>
-			<property name="vendor">Philips</property>
+			<property name="vendor">Signify</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 

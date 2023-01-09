@@ -74,15 +74,14 @@ import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hue")
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(
-            // include CLIP 2 thing types
-            Clip2BridgeHandler.SUPPORTED_THING_TYPES.stream(), DeviceThingHandler.SUPPORTED_THING_TYPES.stream(),
-            // etc. ..
-            HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
-            DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
-            PresenceHandler.SUPPORTED_THING_TYPES.stream(), GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
-            TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
-            ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream()) //
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(Clip2BridgeHandler.SUPPORTED_THING_TYPES.stream(), DeviceThingHandler.SUPPORTED_THING_TYPES.stream(),
+                    HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
+                    DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
+                    PresenceHandler.SUPPORTED_THING_TYPES.stream(),
+                    GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
+                    TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
+                    ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toUnmodifiableSet());
 
     private final HttpClient httpClient;
@@ -106,14 +105,11 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        // create CLIP 2 things
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-        } else
-        // etc. ..
-        if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+        } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID hueLightUID = getLightUID(thingTypeUID, thingUID, configuration, bridgeUID);
@@ -177,7 +173,6 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        // create CLIP 2 handlers
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             Clip2BridgeHandler handler = new Clip2BridgeHandler((Bridge) thing, httpClient);
@@ -185,9 +180,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new DeviceThingHandler(thing);
-        } else
-        // etc. ..
-        if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
                     localeProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

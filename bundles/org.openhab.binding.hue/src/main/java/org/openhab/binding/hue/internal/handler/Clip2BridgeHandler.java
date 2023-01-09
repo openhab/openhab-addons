@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +67,6 @@ import org.slf4j.LoggerFactory;
 public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CLIP2);
-
-    private static final String THING_FMT = "  Thing device %s \"%s\" [resourceId=\"%s\"] // %s";
-    private static final String BRIDGE_FMT = "Bridge %s \"Philips Hue Bridge\" [ipAddress=\"%s\", applicationKey=\"%s\"] {";
 
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
@@ -221,49 +217,33 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @return the application key.
      */
-    public String consoleGetApplicationKey() {
+    public @Nullable String consoleGetApplicationKey() {
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
-        String applicationKey = config.applicationKey;
-        return "  - Application key: " + (Objects.nonNull(applicationKey) ? applicationKey : "undefined");
+        return config.applicationKey;
     }
 
     /**
-     * Return the list of devices for the console app.
+     * Return the ip address for the console app.
      *
-     * @return list of texts.
+     * @return the ip address.
      */
-    public List<String> consoleGetDevices() {
-        try {
-            Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
-            List<String> devices = new ArrayList<>();
-            devices.add(String.format(BRIDGE_FMT, thing.getUID(), config.ipAddress, config.applicationKey));
-            getClip2Bridge().getResources(new ResourceReference().setType(ResourceType.DEVICE)).getResources()
-                    .forEach(device -> devices.add(String.format(THING_FMT, device.getId(), device.getName(),
-                            device.getId(), device.getProductName())));
-            devices.add("}");
-            return devices;
-
-        } catch (ApiException | AssetNotLoadedException e) {
-            // ignore
-        }
-        return List.of("no devices found..");
+    public @Nullable String consoleGetIpAddress() {
+        Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
+        return config.ipAddress;
     }
 
     /**
-     * Return the list of scenes for the console app.
+     * Return a list of resources for the console app.
      *
-     * @return list of texts.
+     * @param type of resources to return.
+     * @return list of resources of the given type.
      */
-    public List<String> consoleGetScenes() {
+    public List<Resource> consoleGetResources(ResourceType type) {
         try {
-            List<String> scenes = new ArrayList<>();
-            getClip2Bridge().getResources(new ResourceReference().setType(ResourceType.SCENE)).getResources()
-                    .forEach(scene -> scenes.add(String.format("  %s '%s'", scene.getId(), scene.getName())));
-            return scenes;
+            return getClip2Bridge().getResources(new ResourceReference().setType(type)).getResources();
         } catch (ApiException | AssetNotLoadedException e) {
-            // ignore
         }
-        return List.of("no scenes found..");
+        return List.of();
     }
 
     @Override
@@ -423,8 +403,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onConnectionOffline() {
         if (assetsLoaded) {
-            logger.debug("onOffline() ThingStatus:UNKNOWN");
-            updateStatus(ThingStatus.UNKNOWN);
+            logger.debug("onOffline() ThingStatus:OFFLINE");
+            updateStatus(ThingStatus.OFFLINE);
             ScheduledFuture<?> task = checkConnectionTask;
             if (Objects.nonNull(task)) {
                 task.cancel(false);

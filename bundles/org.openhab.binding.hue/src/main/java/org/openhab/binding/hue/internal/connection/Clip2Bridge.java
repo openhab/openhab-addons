@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public class Clip2Bridge implements Closeable {
             RESET,
             IDLE,
             GOAWAY,
-            UNAUTHORISED;
+            UNAUTHORIZED;
         }
 
         public void fatalError(Error error);
@@ -125,7 +126,7 @@ public class Clip2Bridge implements Closeable {
      *
      * It handles the following fatal error events by notifying the owner..
      *
-     * <li>onHeaders() HTTP unauthorised codes</li>
+     * <li>onHeaders() HTTP unauthorized codes</li>
      *
      * @author Andrew Fiddian-Green - Initial Contribution
      */
@@ -142,7 +143,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void fatalError(Error error) {
             Exception e;
-            if (Error.UNAUTHORISED.equals(error)) {
+            if (Error.UNAUTHORIZED.equals(error)) {
                 e = new IllegalAccessException("HTTP 2.0 request not authorized");
             } else {
                 e = new ApiException("HTTP 2.0 stream " + error.toString().toLowerCase());
@@ -163,7 +164,7 @@ public class Clip2Bridge implements Closeable {
                 switch (httpStatus) {
                     case HttpStatus.UNAUTHORIZED_401:
                     case HttpStatus.FORBIDDEN_403:
-                        fatalError(Error.UNAUTHORISED);
+                        fatalError(Error.UNAUTHORIZED);
                     default:
                 }
             }
@@ -329,6 +330,7 @@ public class Clip2Bridge implements Closeable {
     private static final int CLIP2_MINIMUM_VERSION = 1948086000;
     private static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
+    private static final int REQUEST_INTERVAL_MILLISECS = 50;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
@@ -390,6 +392,7 @@ public class Clip2Bridge implements Closeable {
 
     private boolean closing = false;
     private boolean online = false;
+    private Instant lastRequestTime = Instant.MIN;
 
     private @Nullable Session http2Session;
     private @Nullable Stream eventStream;
@@ -425,7 +428,7 @@ public class Clip2Bridge implements Closeable {
     private void checkAlive() {
         logger.debug("checkAlive() called");
         try {
-            getResourcesInternal(BRIDGE);
+            getResourcesImpl(BRIDGE);
         } catch (IllegalAccessException | ApiException e) {
             fatalError(this, AdapterErrorHandler.Error.ERROR);
         }
@@ -466,7 +469,7 @@ public class Clip2Bridge implements Closeable {
     private void closeCheckAliveTask() {
         logger.debug("closeCheckAliveTask() called");
         ScheduledFuture<?> task = checkAliveTask;
-        if (Objects.nonNull(task) && !task.isDone() && !task.isCancelled()) {
+        if (Objects.nonNull(task)) {
             task.cancel(true);
         }
         checkAliveTask = null;
@@ -535,9 +538,9 @@ public class Clip2Bridge implements Closeable {
      * comprising a resource type and an id. If the id is a specific resource id then only the one specific resource
      * is returned, whereas if it is null then all resources of the given resource type are returned.
      *
-     * It wraps the getResourcesInternal() method in a try/catch block, and transposes any IllegalAccessException into
-     * an ApiException. Such transposition should never be required in reality since by the time this method is called,
-     * the connection will surely already have been authorised.
+     * It wraps the getResourcesImpl() method in a try/catch block, and transposes any IllegalAccessException into an
+     * ApiException. Such transposition should never be required in reality since by the time this method is called, the
+     * connection will surely already have been authorised.
      *
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
@@ -546,7 +549,7 @@ public class Clip2Bridge implements Closeable {
     public Resources getResources(ResourceReference reference) throws ApiException {
         logger.debug("getResources() called");
         try {
-            return getResourcesInternal(reference);
+            return getResourcesImpl(reference);
         } catch (IllegalAccessException e) {
             throw new ApiException("Unexpected access error", e);
         }
@@ -560,8 +563,9 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if the communication failed, or an unexpected result occurred.
      * @throws IllegalAccessException if the request was refused as not authorised or forbidden.
      */
-    private Resources getResourcesInternal(ResourceReference reference) throws ApiException, IllegalAccessException {
-        logger.debug("getResourcesInner() called");
+    private Resources getResourcesImpl(ResourceReference reference) throws ApiException, IllegalAccessException {
+        throttle();
+        logger.debug("getResourcesImpl() called");
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2.0 session is null or closed");
@@ -726,6 +730,7 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if an error was encountered.
      */
     private void openEventStream() throws ApiException, IllegalAccessException {
+        throttle();
         logger.debug("openEventStream() called");
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
@@ -784,6 +789,7 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if something fails.
      */
     public void putResource(Resource resource) throws ApiException {
+        throttle();
         String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
         String json = jsonParser.toJson(resource);
         logger.trace("PUT {} {} >> {}", url, HttpVersion.HTTP_1_1, json);
@@ -864,10 +870,26 @@ public class Clip2Bridge implements Closeable {
         logger.debug("testConnectionState() called");
         try {
             open(false);
-            getResourcesInternal(BRIDGE);
+            getResourcesImpl(BRIDGE);
         } catch (IllegalAccessException | ApiException e) {
             close(false);
             throw e;
         }
+    }
+
+    /**
+     * Hue Bridges get confused if they receive too many HTTP requests in a short period of time (e.g. on start up), so
+     * this method throttles the requests so that the minimum interval is REQUEST_INTERVAL_MILLISECS.
+     */
+    private synchronized void throttle() {
+        try {
+            long delay = Duration.between(Instant.now(), lastRequestTime).toMillis() + REQUEST_INTERVAL_MILLISECS;
+            if (delay > 0) {
+                Thread.sleep(delay);
+            }
+        } catch (InterruptedException | ArithmeticException e) {
+            // fall through
+        }
+        lastRequestTime = Instant.now();
     }
 }

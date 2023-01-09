@@ -42,15 +42,15 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public class Clip2ThingDiscoveryService extends AbstractDiscoveryService {
 
-    public static final int DISCOVERY_TIMEOUT = 10; // seconds
-    public static final int DISCOVERY_START_DELAY = 30;// seconds
-    public static final int DISCOVERY_REFRESH_PERIOD = 600; // seconds
+    public static final int DISCOVERY_TIMEOUT_SECONDS = 10;
+    public static final int DISCOVERY_START_DELAY_SECONDS = 30;
+    public static final int DISCOVERY_REFRESH_PERIOD_SECONDS = 600;
 
     private final Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService(Clip2BridgeHandler bridgeHandler) {
-        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE), DISCOVERY_TIMEOUT);
+        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE), DISCOVERY_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -72,8 +72,8 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         ScheduledFuture<?> discoveryTask = this.discoveryTask;
         if (discoveryTask == null || discoveryTask.isCancelled()) {
-            this.discoveryTask = scheduler.scheduleWithFixedDelay(this::discoverDevices, DISCOVERY_START_DELAY,
-                    DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
+            this.discoveryTask = scheduler.scheduleWithFixedDelay(this::discoverDevices, DISCOVERY_START_DELAY_SECONDS,
+                    DISCOVERY_REFRESH_PERIOD_SECONDS, TimeUnit.SECONDS);
         }
     }
 

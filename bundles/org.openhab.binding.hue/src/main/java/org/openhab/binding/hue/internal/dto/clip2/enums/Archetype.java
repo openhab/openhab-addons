@@ -20,6 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Enum for product archetypes.
  *
+ * @see <a href="https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_light_get">API v2
+ *      documentation</a>
+ *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault

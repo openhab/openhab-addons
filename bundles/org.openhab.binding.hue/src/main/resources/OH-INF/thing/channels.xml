@@ -183,43 +183,35 @@
 	</channel-type>
 
 	<!-- CLIP 2 Channels -->
-	<channel-type id="button_last_event">
+	<channel-type id="buttonLastEvent">
 		<item-type>Number</item-type>
 		<label>Button Last Event</label>
 		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="button_trigger_event">
-		<kind>trigger</kind>
-		<label>Button Trigger Event</label>
-		<description>Numeric code (e.g. 1003) representing the last push button event.</description>
-		<state readOnly="true"/>
-		<event></event>
-	</channel-type>
-
-	<channel-type id="motion_enabled">
+	<channel-type id="motionEnabled">
 		<item-type>Switch</item-type>
 		<label>Motion Enabled</label>
 		<description>Motion detector enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="light_level_enabled">
+	<channel-type id="lightLevelEnabled">
 		<item-type>Switch</item-type>
 		<label>Light Level Enabled</label>
 		<description>Light level sensor enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="temperature_enabled">
+	<channel-type id="temperatureEnabled">
 		<item-type>Switch</item-type>
 		<label>Temperature Sensor Enabled</label>
 		<description>Temperature sensor enabled.</description>
 		<category>Lock</category>
 	</channel-type>
 
-	<channel-type id="zigbee_status">
+	<channel-type id="zigbeeStatus">
 		<item-type>String</item-type>
 		<label>ZigBee Status</label>
 		<description>ZigBee connection status.</description>
@@ -234,7 +226,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="rotary_steps">
+	<channel-type id="rotarySteps">
 		<item-type>Number</item-type>
 		<label>Rotary Steps</label>
 		<description>The last 'steps' value (e.g. +/-30) of a rotary dial.</description>

@@ -14,11 +14,14 @@ package org.openhab.binding.hue.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
@@ -46,10 +49,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ConsoleCommandExtension.class)
 public class HueCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
+    private static final String FMT_BRIDGE = "Bridge %s \"Philips Hue Bridge\" [ipAddress=\"%s\", applicationKey=\"%s\"] {";
+    private static final String FMT_DEVICE = "  Thing device %s \"%s\" [resourceId=\"%s\"] // %s";
+    private static final String FMT_APPKEY = "  - Application key: %s";
+    private static final String FMT_SCENE = "  %s '%s'";
+
     private static final String USER_NAME = "username";
     private static final String SCENES = "scenes";
     private static final String APPLICATION_KEY = "applicationkey";
     private static final String DEVICES = "devices";
+
     private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
             List.of(USER_NAME, SCENES, APPLICATION_KEY, DEVICES), false);
     private static final StringsCompleter SCENES_COMPLETER = new StringsCompleter(List.of(SCENES), false);
@@ -107,15 +116,39 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                             return;
                     }
                 } else if (clip2BridgeHandler != null) {
+                    String applicationKey = clip2BridgeHandler.consoleGetApplicationKey();
+                    applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "undefined";
+
+                    String ipAddress = clip2BridgeHandler.consoleGetIpAddress();
+                    ipAddress = Objects.nonNull(ipAddress) ? ipAddress : "undefined";
+
                     switch (args[1]) {
                         case APPLICATION_KEY:
-                            console.println(clip2BridgeHandler.consoleGetApplicationKey());
+                            console.println(String.format(FMT_APPKEY, applicationKey));
                             return;
+
                         case SCENES:
-                            clip2BridgeHandler.consoleGetScenes().forEach(console::println);
+                            console.println(String.format(FMT_BRIDGE, thing.getUID(), ipAddress, applicationKey));
+                            List<Resource> scenes = clip2BridgeHandler.consoleGetResources(ResourceType.SCENE);
+                            if (scenes.isEmpty()) {
+                                console.println("no scenes found");
+                            } else {
+                                scenes.forEach(scene -> console
+                                        .println(String.format(FMT_SCENE, scene.getId(), scene.getName())));
+                            }
+                            console.println("}");
                             return;
+
                         case DEVICES:
-                            clip2BridgeHandler.consoleGetDevices().forEach(console::println);
+                            console.println(String.format(FMT_BRIDGE, thing.getUID(), ipAddress, applicationKey));
+                            List<Resource> devices = clip2BridgeHandler.consoleGetResources(ResourceType.DEVICE);
+                            if (devices.isEmpty()) {
+                                console.println("no devices found");
+                            } else {
+                                devices.forEach(device -> console.println(String.format(FMT_DEVICE, device.getId(),
+                                        device.getName(), device.getId(), device.getProductName())));
+                            }
+                            console.println("}");
                             return;
                     }
                 }
@@ -127,9 +160,9 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"),
-                buildCommandUsage("<bridgeUID> " + APPLICATION_KEY, "show the CLIP 2 application key"),
+                buildCommandUsage("<bridgeUID> " + APPLICATION_KEY, "show the API v2 application key"),
                 buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
-                buildCommandUsage("<bridgeUID> " + DEVICES, "list all the CLIP 2 devices with their id"),
+                buildCommandUsage("<bridgeUID> " + DEVICES, "list all the API v2 devices with their id"),
                 buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
     }
 

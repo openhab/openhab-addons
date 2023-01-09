@@ -111,7 +111,7 @@ public class DeviceThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Return a ResourceReference to this handler's resourrce.
+     * Return a ResourceReference to this handler's resource.
      *
      * @return a ResourceReference instance.
      */
