@@ -1012,9 +1012,9 @@ Try again.
 Save the settings, then re-open the settings so as to refresh the QR code.
 Re-add the device.
 * Remove HomeKit state in `${OPENHAB_USERDATA}/jsondb/homekit.json`, and HomeKit config in `${OPENHAB_USERDATA}/config/org/openhab/homekit.config`.
-Restart openHAB.
-Reboot iPhone.
-Try again.
+  Restart openHAB.
+  Reboot iPhone.
+  Try again.
 
 ### A stale HomeKit accessory will not go away after deleting the related item.
 
