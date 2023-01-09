@@ -576,7 +576,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjc");
+                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjcA");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
@@ -674,7 +674,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
-            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "", albumartist = "", trackartist = "",
+                    band = "", composer = "", conductor = "";
             boolean coverart = false;
             String coverid = null;
             String artworkUrl = null;
@@ -745,6 +746,26 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     else if ("genre".equals(entry.key)) {
                         genre = entry.value;
                     }
+                    // Parameter Album Artist
+                    else if ("albumartist".equals(entry.key)) {
+                        albumartist = entry.value;
+                    }
+                    // Parameter Track Artist
+                    else if ("trackartist".equals(entry.key)) {
+                        trackartist = entry.value;
+                    }
+                    // Parameter Band
+                    else if ("band".equals(entry.key)) {
+                        band = entry.value;
+                    }
+                    // Parameter Composer
+                    else if ("composer".equals(entry.key)) {
+                        composer = entry.value;
+                    }
+                    // Parameter Conductor
+                    else if ("conductor".equals(entry.key)) {
+                        conductor = entry.value;
+                    }
                     // Parameter Year
                     else if ("year".equals(entry.key)) {
                         year = entry.value;
@@ -776,6 +797,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             final String finalAlbum = album;
             final String finalGenre = genre;
             final String finalYear = year;
+            final String finalAlbumartist = albumartist;
+            final String finalTrackartist = trackartist;
+            final String finalBand = band;
+            final String finalComposer = composer;
+            final String finalConductor = conductor;
 
             updatePlayer(listener -> {
                 listener.coverArtChangeEvent(mac, finalUrl);
@@ -784,6 +810,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 listener.albumChangeEvent(mac, finalAlbum);
                 listener.genreChangeEvent(mac, finalGenre);
                 listener.yearChangeEvent(mac, finalYear);
+                listener.albumartistChangeEvent(mac, finalAlbumartist);
+                listener.trackartistChangeEvent(mac, finalTrackartist);
+                listener.bandChangeEvent(mac, finalBand);
+                listener.composerChangeEvent(mac, finalComposer);
+                listener.conductorChangeEvent(mac, finalConductor);
             });
         }
 

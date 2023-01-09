@@ -192,6 +192,26 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     }
 
     @Override
+    public void albumartistChangeEvent(String mac, String albumartist) {
+    }
+
+    @Override
+    public void trackartistChangeEvent(String mac, String trackartist) {
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
+    }
+
+    @Override
     public void remoteTitleChangeEvent(String mac, String title) {
     }
 
