@@ -40,6 +40,7 @@ HomeKit integration supports following accessory types:
 - Carbon Monoxide Sensor
 - Battery
 - Filter Maintenance
+- Television
 
 ## Quick start
 

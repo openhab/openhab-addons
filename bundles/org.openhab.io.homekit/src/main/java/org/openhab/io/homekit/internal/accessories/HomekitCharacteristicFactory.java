@@ -241,7 +241,7 @@ public class HomekitCharacteristicFactory {
     }
 
     /**
-     * create HomeKit characteristic
+     * Create HomeKit characteristic
      *
      * @param item corresponding OH item
      * @param updater update to keep OH item and HomeKit characteristic in sync
@@ -266,14 +266,15 @@ public class HomekitCharacteristicFactory {
             map.put(k, k.toString());
         }
         var configuration = item.getConfiguration();
-        if (configuration != null)
+        if (configuration != null) {
             updateMapping(configuration, map);
+        }
         return map;
     }
 
     /**
-     * update mapping with values from item configuration.
-     * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
+     * Update mapping with values from item configuration.
+     * It checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
      * replace the value.
      *
      * @param configuration tagged item configuration
@@ -298,8 +299,8 @@ public class HomekitCharacteristicFactory {
     }
 
     /**
-     * takes item state as value and retrieves the key for that value from mapping.
-     * e.g. used to map StringItem value to HomeKit Enum
+     * Takes item state as value and retrieves the key for that value from mapping.
+     * E.g. used to map StringItem value to HomeKit Enum
      *
      * @param characteristicType characteristicType to identify item
      * @param mapping mapping

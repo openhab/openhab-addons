@@ -224,8 +224,6 @@ public class HomekitTaggedItem {
 
     /**
      * Send IncreaseDecreaseType command to a DimmerItem (or a Group:Dimmer)
-     *
-     * @param command
      */
     public void send(IncreaseDecreaseType command) {
         if (getItem() instanceof GroupItem && getBaseItem() instanceof DimmerItem) {

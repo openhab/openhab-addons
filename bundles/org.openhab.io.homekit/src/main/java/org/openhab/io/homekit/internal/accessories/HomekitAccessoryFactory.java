@@ -406,8 +406,9 @@ public class HomekitAccessoryFactory {
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, HomekitException {
         // Check every metadata key looking for a characteristics we can create
         var config = taggedItem.getConfiguration();
-        if (config == null)
+        if (config == null) {
             return;
+        }
         for (var entry : config.entrySet().stream().sorted((lhs, rhs) -> lhs.getKey().compareTo(rhs.getKey()))
                 .collect(Collectors.toList())) {
             var characteristic = HomekitMetadataCharacteristicFactory.createCharacteristic(entry.getKey(),

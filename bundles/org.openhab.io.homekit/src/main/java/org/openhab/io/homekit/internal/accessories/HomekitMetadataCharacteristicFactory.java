@@ -63,7 +63,7 @@ import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingSta
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
 
 /**
- * Creates a optional characteristics from metadata
+ * Creates an optional characteristics from metadata
  *
  * @author Cody Cutrer - Initial contribution
  */
