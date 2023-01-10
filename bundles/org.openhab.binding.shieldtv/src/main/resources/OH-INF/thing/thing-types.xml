@@ -15,6 +15,8 @@
 			<channel id="pincode" typeId="pincode"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appurl" typeId="appurl"/>
 		</channels>
 
 		<properties>
@@ -56,6 +58,18 @@
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>App Control</description>
+	</channel-type>
+
+	<channel-type id="appname">
+		<item-type>String</item-type>
+		<label>App Name</label>
+		<description>App Name</description>
+	</channel-type>
+
+	<channel-type id="appurl">
+		<item-type>String</item-type>
+		<label>App URL</label>
+		<description>App URL</description>
 	</channel-type>
 
 	<channel-type id="keypress">
