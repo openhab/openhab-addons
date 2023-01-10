@@ -17,7 +17,6 @@ import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.API_TIM
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -131,7 +130,7 @@ public class BsbLanApiCaller {
                 String content = BsbLanApiContentConverter.toJson(request);
                 logger.trace("api request content: '{}'", content);
                 if (!content.isBlank()) {
-                    contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+                    contentStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
                     contentType = "application/json";
                 }
             }

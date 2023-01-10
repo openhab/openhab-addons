@@ -405,8 +405,9 @@ public class HomekitAccessoryFactory {
             MetadataRegistry metadataRegistry, HomekitAccessoryUpdater updater, HomekitSettings settings,
             Set<HomekitTaggedItem> ancestorServices) throws HomekitException {
         final var item = taggedItem.getItem();
-        if (!(item instanceof GroupItem))
+        if (!(item instanceof GroupItem)) {
             return;
+        }
 
         for (var groupMember : ((GroupItem) item).getMembers().stream()
                 .sorted((lhs, rhs) -> lhs.getName().compareTo(rhs.getName())).collect(Collectors.toList())) {
@@ -415,8 +416,9 @@ public class HomekitAccessoryFactory {
                     .collect(Collectors.toList());
 
             logger.trace("accessory types for {} are {}", groupMember.getName(), accessoryTypes);
-            if (accessoryTypes.isEmpty())
+            if (accessoryTypes.isEmpty()) {
                 continue;
+            }
 
             if (accessoryTypes.size() > 1) {
                 logger.warn("Item {} is a HomeKit sub-accessory, but multiple accessory types are not allowed.",

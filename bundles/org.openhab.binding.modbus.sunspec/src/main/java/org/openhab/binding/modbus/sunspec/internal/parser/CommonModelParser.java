@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.parser;
 
-import java.nio.charset.Charset;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConstants;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
@@ -52,10 +50,10 @@ public class CommonModelParser extends AbstractBaseParser implements SunspecPars
         }
 
         // parse manufacturer, model and version
-        block.manufacturer = ModbusBitUtilities.extractStringFromRegisters(raw, 2, 32, Charset.forName("UTF-8"));
-        block.model = ModbusBitUtilities.extractStringFromRegisters(raw, 18, 32, Charset.forName("UTF-8"));
-        block.version = ModbusBitUtilities.extractStringFromRegisters(raw, 42, 16, Charset.forName("UTF-8"));
-        block.serialNumber = ModbusBitUtilities.extractStringFromRegisters(raw, 50, 32, Charset.forName("UTF-8"));
+        block.manufacturer = ModbusBitUtilities.extractStringFromRegisters(raw, 2, 32, StandardCharsets.UTF_8);
+        block.model = ModbusBitUtilities.extractStringFromRegisters(raw, 18, 32, StandardCharsets.UTF_8);
+        block.version = ModbusBitUtilities.extractStringFromRegisters(raw, 42, 16, StandardCharsets.UTF_8);
+        block.serialNumber = ModbusBitUtilities.extractStringFromRegisters(raw, 50, 32, StandardCharsets.UTF_8);
 
         block.deviceAddress = extractUInt16(raw, 66, 1);
 

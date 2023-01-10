@@ -291,7 +291,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
         try {
             boolean changed = false;
-            boolean removed = false;
             for (final String name : pendingUpdates) {
                 String oldValue = knownAccessories.get(name);
                 accessoryRegistry.remove(name);

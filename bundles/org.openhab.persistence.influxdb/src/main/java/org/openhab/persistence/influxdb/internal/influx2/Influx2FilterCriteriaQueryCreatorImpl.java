@@ -73,11 +73,12 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
                 flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
             }
 
-            if (needsToUseItemTagName)
+            if (needsToUseItemTagName) {
                 flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2,
                         TAG_ITEM_NAME });
-            else
+            } else {
                 flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
+            }
         }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {
