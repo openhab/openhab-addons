@@ -569,6 +569,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         logger.trace("Deleting channels based on the available actions");
         // Get the thing to edit
         ThingBuilder thingBuilder = editThing();
+        final BondDevice devInfo = this.deviceInfo;
 
         // Now, look at the whole list of possible channels
         List<Channel> possibleChannels = this.getThing().getChannels();
@@ -583,11 +584,13 @@ public class BondDeviceHandler extends BaseThingHandler {
         }
         // Remove power channels if we have a dimmer channel for them;
         // the dimmer channel already covers the power case.
-        // Add the raw channel for advanced users.
+        // Add the raw channel for advanced users unless we're a ceiling fan.
         if (availableChannelIds.contains(CHANNEL_FAN_SPEED)) {
             availableChannelIds.remove(CHANNEL_POWER);
             availableChannelIds.remove(CHANNEL_FAN_POWER);
-            availableChannelIds.add(CHANNEL_RAW_FAN_SPEED);
+            if (devInfo != null && devInfo.type == BondDeviceType.CEILING_FAN) {
+                availableChannelIds.add(CHANNEL_RAW_FAN_SPEED);
+            }
         }
         if (availableChannelIds.contains(CHANNEL_LIGHT_BRIGHTNESS)) {
             availableChannelIds.remove(CHANNEL_LIGHT_POWER);
