@@ -55,6 +55,7 @@ import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.frames.DataFrame;
 import org.eclipse.jetty.http2.frames.GoAwayFrame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
+import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise.Completable;
@@ -206,6 +207,11 @@ public class Clip2Bridge implements Closeable {
             fatalError(Error.IDLE);
             return true;
         }
+
+        @Override
+        public void onTimeout(@Nullable Stream stream, @Nullable Throwable x) {
+            fatalError(Error.TIMEOUT);
+        }
     }
 
     /**
@@ -314,6 +320,14 @@ public class Clip2Bridge implements Closeable {
         }
 
         @Override
+        public void onPing(@Nullable Session session, @Nullable PingFrame frame) {
+            owner.onPing();
+            if (Objects.nonNull(session) && Objects.nonNull(frame) && !frame.isReply()) {
+                session.ping(new PingFrame(true), Callback.NOOP);
+            }
+        }
+
+        @Override
         public void onReset(@Nullable Session session, @Nullable ResetFrame frame) {
             fatalError(Error.RESET);
         }
@@ -380,21 +394,20 @@ public class Clip2Bridge implements Closeable {
 
     private final HttpClient httpClient;
     private final HTTP2Client http2Client;
-
     private final String hostName;
     private final String baseUrl;
     private final String eventUrl;
     private final String registrationUrl;
     private final String applicationKey;
-
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
 
     private boolean closing = false;
     private boolean online = false;
     private Instant lastRequestTime = Instant.MIN;
-
+    private Instant sessionExpireTime = Instant.MAX;
     private @Nullable Session http2Session;
+
     private @Nullable Stream eventStream;
     private @Nullable ScheduledFuture<?> checkAliveTask;
 
@@ -423,14 +436,16 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Send a request to the Hue bridge to check that the session is still alive.
+     * Send a ping to the Hue bridge to check that the session is still alive.
      */
     private void checkAlive() {
         logger.debug("checkAlive() called");
-        try {
-            getResourcesImpl(BRIDGE);
-        } catch (IllegalAccessException | ApiException e) {
-            fatalError(this, AdapterErrorHandler.Error.ERROR);
+        Session session = http2Session;
+        if (session != null) {
+            session.ping(new PingFrame(false), Callback.NOOP);
+        }
+        if (Instant.now().isAfter(sessionExpireTime)) {
+            fatalError(this, AdapterErrorHandler.Error.TIMEOUT);
         }
     }
 
@@ -523,14 +538,12 @@ public class Clip2Bridge implements Closeable {
         if (isOfflineOrClosing()) {
             return;
         }
-        if (logger.isTraceEnabled()) {
-            logger.debug("fatalError() {} {}", cause.getClass().getSimpleName(), error);
-        }
         if (cause instanceof ContentAdapter) {
-            // GET/PUT request errors aren't fatal enough to require calling close()
-            return;
+            logger.debug("fatalError() {} {}", cause.getClass().getSimpleName(), error);
+        } else {
+            logger.warn("fatalError() {} {}", cause.getClass().getSimpleName(), error);
+            close(true);
         }
-        close(true);
     }
 
     /**
@@ -660,6 +673,14 @@ public class Clip2Bridge implements Closeable {
         }
         resources.forEach(resource -> resource.markAsSparse());
         bridgeHandler.onSseResources(resources);
+    }
+
+    /**
+     * Handle pings from the bridge.
+     */
+    protected void onPing() {
+        logger.debug("onPing() called");
+        sessionExpireTime = Instant.now().plusSeconds(CHECK_ALIVE_SECONDS * 2);
     }
 
     /**

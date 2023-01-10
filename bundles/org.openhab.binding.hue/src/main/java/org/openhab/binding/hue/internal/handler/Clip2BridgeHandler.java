@@ -436,7 +436,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @param resource the given resource.
      */
     private void onResource(Resource resource) {
-        logger.debug("onResource(..) {}", resource);
+        logger.debug("onResource() {}", resource);
         getThing().getThings().forEach(thing -> {
             ThingHandler handler = thing.getHandler();
             if (handler instanceof DeviceThingHandler) {
@@ -452,7 +452,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onSseResources(List<Resource> resources) {
         if (assetsLoaded) {
-            logger.debug("onSseEvent() called with resource count {}", resources.size());
+            logger.debug("onSseResources() called with resource count {}", resources.size());
             resources.forEach(resource -> onResource(resource));
         }
     }
