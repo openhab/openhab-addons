@@ -1,22 +1,5 @@
-/**
- *
- * Copyright (c) 2010-2023 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- */
 
-/**
- * OpenHAB sitemap definition for velux binding:
- *  displays most of the Velux items
- *
- * @author Guenther Schreiner - Initial contribution
- */
-
+```perl
 sitemap velux label="Velux Environment"
 {
     Frame label="Velux Shutter and Window" {
@@ -51,9 +34,4 @@ sitemap velux label="Velux Environment"
     }
     
 }
-
-//
-// vim: syntax=Xtend vim: noai:ts=4:sw=4
-//
-// end-of-sitemap/velux.sitemap
-//
+```
