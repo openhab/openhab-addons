@@ -49,18 +49,18 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String DELAY = "commandDelay";
-    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String DELAY = "commandDelay";
+    public static final String DIMMER_MODE = "dimmerMode";
     public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
-    public final static String INSTANCE = "instance";
-    public final static String INVERTED = "inverted";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String MIN_VALUE = "minValue";
-    public final static String PRIMARY_SERVICE = "primary";
-    public final static String STEP = "step";
-    public final static String UNIT = "unit";
-    public final static String EMULATE_STOP_STATE = "stop";
-    public final static String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
+    public static final String INSTANCE = "instance";
+    public static final String INVERTED = "inverted";
+    public static final String MAX_VALUE = "maxValue";
+    public static final String MIN_VALUE = "minValue";
+    public static final String PRIMARY_SERVICE = "primary";
+    public static final String STEP = "step";
+    public static final String UNIT = "unit";
+    public static final String EMULATE_STOP_STATE = "stop";
+    public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 

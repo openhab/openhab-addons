@@ -294,8 +294,8 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
         final int up;
         final int down;
 
-        final static DirectionConfiguration NORMAL = new DirectionConfiguration(1, 2);
-        final static DirectionConfiguration REVERSED = new DirectionConfiguration(2, 1);
+        static final DirectionConfiguration NORMAL = new DirectionConfiguration(1, 2);
+        static final DirectionConfiguration REVERSED = new DirectionConfiguration(2, 1);
 
         private DirectionConfiguration(int up, int down) {
             this.up = up;
