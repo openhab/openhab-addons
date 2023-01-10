@@ -39,13 +39,16 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | app        | String | RW         | App Control                 |
+| appname    | String | RO         | App Name                    |
+| appurl     | String | RO         | App URL                     |
 
 
 ```java
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
-
+String ShieldTV_APPNAME "APPNAME [%s]" { channel = "shieldtv:shieldtv:livingroom:appname" }
+String ShieldTV_APPURL "APPURL [%s]" { channel = "shieldtv:shieldtv:livingroom:appurl" }
 ```
 
 KEYPRESS will accept the following commands as strings (case sensitive):
@@ -62,6 +65,8 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_REWIND
 - KEY_FORWARD
 - KEY_POWER
+- KEY_POWERON
+- KEY_GOOGLE
 
 The list above causes an instantanious "press and release" of each button.  
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
@@ -91,6 +96,7 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", ]
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
-
+String ShieldTV_APPNAME "APPNAME [%s]" { channel = "shieldtv:shieldtv:livingroom:appname" }
+String ShieldTV_APPURL "APPURL [%s]" { channel = "shieldtv:shieldtv:livingroom:appurl" }
 ```
 

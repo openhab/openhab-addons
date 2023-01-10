@@ -32,6 +32,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -117,6 +119,9 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
 
     private ShieldTVPKI shieldtvPKI = new ShieldTVPKI();
 
+    private Map<String, String> appNameDB = new HashMap<>();
+    private Map<String, String> appURLDB = new HashMap<>();
+
     public ShieldTVHandler(Thing thing) {
         super(thing);
         shieldtvMessageParser = new ShieldTVMessageParser(this);
@@ -134,6 +139,20 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     public void setCurrentApp(String currentApp) {
         this.currentApp = currentApp;
         updateState(CHANNEL_APP, new StringType(currentApp));
+
+        String appName = "";
+        String appURL = "";
+
+        try {
+            appName = appNameDB.get(currentApp);
+            appURL = appURLDB.get(currentApp);
+        } catch (NullPointerException e) {
+            logger.debug("Null Pointer Exception", e);
+            logger.info("Unknown Android App: {}", currentApp);
+        } finally {
+            updateState(CHANNEL_APPNAME, new StringType(appName));
+            updateState(CHANNEL_APPURL, new StringType(appURL));
+        }
     }
 
     public String getCurrentApp() {
@@ -151,6 +170,13 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
     public void setKeys(String privKey, String cert) {
         shieldtvPKI.setKeys(privKey, cert);
         shieldtvPKI.saveKeys();
+    }
+
+    public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB) {
+        this.appNameDB = appNameDB;
+        this.appURLDB = appURLDB;
+        logger.debug("App DB Populated");
+        logger.trace("Handler appNameDB: {} appURLDB: {}", this.appNameDB.toString(), this.appURLDB.toString());
     }
 
     @Override
@@ -540,9 +566,10 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
         if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
             if (isLoggedIn) {
                 updateStatus(ThingStatus.ONLINE);
-                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08")));
-                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805")));
-                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800")));
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Longer
+                                                                                                   // Hostname
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
             }
         }
     }
@@ -758,6 +785,12 @@ public class ShieldTVHandler extends BaseThingHandler implements ShieldTVMessage
                         break;
                     case "KEY_POWER":
                         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e401e")));
+                        break;
+                    case "KEY_POWERON":
+                        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e4010")));
+                        break;
+                    case "KEY_GOOGLE":
+                        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e401f")));
                         break;
                     default:
                         logger.trace("Unknown Keypress: {}", command.toString());

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shieldtv.internal.protocol.shieldtv;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -39,4 +41,6 @@ public interface ShieldTVMessageParserCallbacks {
     public void setKeys(String privKey, String cert);
 
     public boolean getLoggedIn();
+
+    public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB);
 }
