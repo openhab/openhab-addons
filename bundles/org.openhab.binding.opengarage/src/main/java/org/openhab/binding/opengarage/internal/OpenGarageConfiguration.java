@@ -19,13 +19,13 @@ package org.openhab.binding.opengarage.internal;
  */
 public class OpenGarageConfiguration {
     public String hostname;
-    public long port = 80;
+    public int port = 80;
     public String password = "opendoor";
-    public long refresh = 10;
+    public int refresh = 10;
 
     public String doorOpeningState = "OPENING";
     public String doorOpenState = "OPEN";
     public String doorClosedState = "CLOSED";
     public String doorClosingState = "CLOSING";
-    public long doorTransitionTimeSeconds = 17;
+    public int doorTransitionTimeSeconds = 17;
 }

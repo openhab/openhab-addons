@@ -35,7 +35,7 @@
 				<context>password</context>
 				<default>opendoor</default>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
