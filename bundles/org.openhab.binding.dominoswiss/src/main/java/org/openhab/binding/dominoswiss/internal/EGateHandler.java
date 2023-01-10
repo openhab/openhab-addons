@@ -245,7 +245,6 @@ public class EGateHandler extends BaseBridgeHandler {
             synchronized (lock) {
                 try {
                     localEGateSocket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_SEC);
-                    updateStatus(ThingStatus.ONLINE);
                     logger.debug("pollingConfig() successsully connected {}", localEGateSocket.isClosed());
                     localWriter.write("SilenceModeSet;Value=0;" + CR);
                     localWriter.flush();
@@ -255,7 +254,6 @@ public class EGateHandler extends BaseBridgeHandler {
                         localEGateSocket.close();
                         egateSocket = null;
                         logger.debug("EGate closed");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
                     } catch (IOException e1) {
                         logger.debug("EGate Socket not closed {}", e1.toString());
                     }
