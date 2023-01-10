@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,18 +31,16 @@ import org.slf4j.LoggerFactory;
  */
 public class VariableDelayPoller {
     private final Logger logger = LoggerFactory.getLogger(VariableDelayPoller.class);
-    private ScheduledExecutorService scheduler;
-    private Supplier<Long> task;
-    private long defaultPollSeconds;
+    private @NonNullByDefault ScheduledExecutorService scheduler;
+    private @NonNullByDefault Supplier<Long> task;
+    private long defaultPollSeconds = 0;
     private AtomicLong lastThreadId = new AtomicLong(0);
-    private Future<?> currentFuture;
+    private Future<?> currentFuture = CompletableFuture.completedFuture(null);
 
     /**
-     * @param scheduler - Reference to the Java Scheduler instance
-     * @param task - task to invoke. Task should return a number of seconds indicating when the next task should be
-     *            called
-     * @param defaultPollSeconds - how long to set the next poll should task fail to return a value due to an uncaught
-     *            exception
+     * @param scheduler - Reference to the Java scheduler instance.
+     * @param task - task to invoke. Task returns number of seconds in which the task should be invoked again.
+     * @param defaultPollSeconds - number of seconds in which to run the task should the task fail to return a value
      */
     public VariableDelayPoller(ScheduledExecutorService scheduler, Supplier<Long> task, long defaultPollSeconds) {
         this.scheduler = scheduler;
@@ -50,6 +50,11 @@ public class VariableDelayPoller {
         startNextPoll(lastThreadId.get(), 1);
     };
 
+    /**
+     * Stop the poller from running.
+     *
+     * @param abortIfRunning If the task is currently running in another thread, try to abort it.
+     */
     synchronized public void stop(boolean abortIfRunning) {
         lastThreadId.getAndIncrement(); // prevent future tasks from being scheduled
         this.currentFuture.cancel(abortIfRunning);
@@ -60,13 +65,13 @@ public class VariableDelayPoller {
         try {
             nextPollDuration = task.get();
         } catch (Exception e) {
-            logger.error("error occurred while invoking periodic task", e);
+            logger.warn("error occurred while invoking periodic task", e);
         }
         startNextPoll(threadId, nextPollDuration);
     }
 
     /**
-     * Cause the next invocation of the task to run at a different time, canceling the scheduled task in the future.
+     * Reschedule the next invocation of the task, canceling the scheduled task in the future.
      *
      * @param inSeconds How many seconds from now should we schedule the task?
      * @param abortExistingIfRunning If the task happens to be running now, should we abort it?

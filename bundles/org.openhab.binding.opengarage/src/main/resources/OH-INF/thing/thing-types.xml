@@ -40,34 +40,33 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="door_transition_time_seconds" type="integer">
+			<parameter name="doorTransitionTimeSeconds" type="integer" unit="s">
 				<label>Door Transition Time</label>
-				<description>Specifies how long it takes the garage door to fully open / close. Include time it takes for OpenHab to
-					emit beeps. Round up.</description>
+				<description>Specifies number of seconds that it takes for the garage door to fully open / close, including the time
+					it takes for OpenHab to emit beeps. Round up.</description>
 				<default>17</default>
 			</parameter>
-			<parameter name="door_opening_state" type="text">
+			<parameter name="doorOpeningState" type="text">
 				<label>Door Opening State</label>
 				<description>Text state to report when garage is opening</description>
 				<default>OPENING</default>
 			</parameter>
-			<parameter name="door_open_state" type="text">
+			<parameter name="doorOpenState" type="text">
 				<label>Door Open State</label>
-				<description>Text state to report when garage is open (and not transitioning)</description>
+				<description>Text state to report when garage is open (and not in transition)</description>
 				<default>OPEN</default>
 			</parameter>
-			<parameter name="door_closing_state" type="text">
+			<parameter name="doorClosingState" type="text">
 				<label>Door Closing State</label>
 				<description>Text state to report when garage is closing</description>
 				<default>CLOSING</default>
 			</parameter>
-			<parameter name="door_closed_state" type="text">
+			<parameter name="doorClosedState" type="text">
 				<label>Door Closed State</label>
-				<description>Text state to report when garage is closed (and not transitioning)</description>
+				<description>Text state to report when garage is closed (and not in transition)</description>
 				<default>CLOSED</default>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="opengarage-distance">

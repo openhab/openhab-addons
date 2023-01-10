@@ -81,8 +81,8 @@ public class OpenGarageHandler extends BaseThingHandler {
                         var doorOpen = command.equals(OnOffType.ON) || command.equals(UpDownType.UP);
                         changeStatus(maybeInvert.apply(doorOpen) ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
                         this.lastTransition = Instant.now();
-                        this.lastTransitionText = doorOpen ? this.config.door_opening_state
-                                : this.config.door_closing_state;
+                        this.lastTransitionText = doorOpen ? this.config.doorOpeningState
+                                : this.config.doorClosingState;
                         this.poller.reschedule(0, true);
                     }
                     break;
@@ -132,7 +132,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     private long pollStatus() throws IOException {
         ControllerVariables controllerVariables = webTargets.getControllerVariables();
         var lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
-        var inTransition = lastTransitionAgoSecs < this.config.door_transition_time_seconds;
+        var inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
         if (controllerVariables != null) {
             updateStatus(ThingStatus.ONLINE);
             updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
@@ -151,7 +151,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                 if (inTransition) {
                     transitionText = this.lastTransitionText;
                 } else {
-                    transitionText = doorOpen ? this.config.door_open_state : this.config.door_closed_state;
+                    transitionText = doorOpen ? this.config.doorOpenState : this.config.doorClosedState;
                 }
                 if (!inTransition) {
                     updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, onOff); // deprecated channel
@@ -181,7 +181,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         }
 
         if (inTransition) {
-            return Math.min(this.config.refresh, this.config.door_transition_time_seconds);
+            return Math.min(this.config.refresh, this.config.doorTransitionTimeSeconds);
         } else {
             return this.config.refresh;
         }

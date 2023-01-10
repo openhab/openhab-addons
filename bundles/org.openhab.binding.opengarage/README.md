@@ -19,13 +19,13 @@ As a minimum, the IP address is needed:
 - `port` - the port the OpenGarage is listening on. Defaults to port 80
 - `refresh` - The frequency with which to refresh information from the OpenGarage controller specified in seconds. Defaults to 10 seconds.
 - `password` - The password to send commands to the OpenGarage. Defaults to "opendoor"
-- `door_transition_time_seconds` - Specifies how long it takes the garage door
+- `doorTransitionTimeSeconds` - Specifies how long it takes the garage door
 to fully open / close after triggering it from OpenGarage, including auditory
 beeps. Recommend to round up or pad by a second or two.
-- `door_opening_state` - Text state to report when garage is opening. Defaults to "OPENING".
-- `door_open_state` - Text state to report when garage is open (and not transitioning). Defaults to "OPEN".
-- `door_closing_state` - Text state to report when garage is closing. Defaults to "CLOSING".
-- `door_closed_state` - Text state to report when garage is closed (and not transitioning). Defaults to "CLOSED".
+- `doorOpeningState` - Text state to report when garage is opening. Defaults to "OPENING".
+- `doorOpenState` - Text state to report when garage is open (and not transitioning). Defaults to "OPEN".
+- `doorClosingState` - Text state to report when garage is closing. Defaults to "CLOSING".
+- `doorClosedState` - Text state to report when garage is closed (and not transitioning). Defaults to "CLOSED".
 
 ## Channels
 
@@ -73,8 +73,8 @@ Text item=OpenGarage_Vehicle label="Vehicle Presence"
 
 ## Adding to HomeKit
 
-If you have the HomeKit extension installed, you can control your OpenGarage instance via your iPhone. To wire it up to
-HomeKit, you might specify the following:
+If you have the HomeKit extension installed, you can control your OpenGarage instance via your iPhone.
+To wire it up to HomeKit, you might specify the following:
 
 opengarage.items
 
@@ -85,8 +85,9 @@ String OpenGarage_CurrentState "Current state" (gOpenGarage) {homekit="GarageDoo
 Switch OpenGarage_xxObstruction "Obstruction (do not use)" (gOpenGarage) {homekit="GarageDoorOpener.ObstructionStatus"}
 ```
 
-The obstruction channel is not bound to any channel. It's needed because HomeKit requires it, and OpenGarage does not
-provide it.  HomeKit requires a status for the garage door of `OPEN`, `CLOSED`, `CLOSING`, `OPENING`. In order to report
-that, we must provide state transition information. State transition information is inferred when the garage door state
-is changed. For `door_transition_time_seconds` since the last open/close command was issued, the binding reports the
-state as either "closing" or "opening".
+The obstruction channel is not bound to any channel.
+It's needed because HomeKit requires it, and OpenGarage does not provide it.
+HomeKit requires a status for the garage door of `OPEN`, `CLOSED`, `CLOSING`, `OPENING`.
+In order to report that, we must provide state transition information.
+State transition information is inferred when the garage door state is changed.
+For `doorTransitionTimeSeconds` since the last open/close command was issued, the binding reports the state as either "closing" or "opening".
