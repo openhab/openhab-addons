@@ -64,7 +64,7 @@ public class OpenGarageHandler extends BaseThingHandler {
     private Instant lastTransition;
     private String lastTransitionText;
 
-    private @NonNullByDefault({}) OpenGarageConfiguration config;
+    private OpenGarageConfiguration config = new OpenGarageConfiguration();
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
