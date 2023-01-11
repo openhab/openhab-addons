@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
@@ -25,14 +26,13 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxI
 import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TestGetBytes} This test tests creation of IP packet and it's getBytes() method
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class TestGetBytes {
 
     private static final int PARTITION_NUMBER = 1;

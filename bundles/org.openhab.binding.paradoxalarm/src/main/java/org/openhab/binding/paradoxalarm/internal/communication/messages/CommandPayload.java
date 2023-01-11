@@ -26,10 +26,10 @@ public class CommandPayload implements IPayload {
 
     private static final int BYTES_LENGTH = 15;
 
-    private final byte MESSAGE_START = 0x40;
-    private final byte PAYLOAD_SIZE = 0x0f;
-    private final byte[] EMPTY_FOUR_BYTES = { 0, 0, 0, 0 };
-    private final byte CHECKSUM = 0;
+    private static final byte MESSAGE_START = 0x40;
+    private static final byte PAYLOAD_SIZE = 0x0f;
+    private static final byte[] EMPTY_FOUR_BYTES = { 0, 0, 0, 0 };
+    private static final byte CHECKSUM = 0;
 
     private final int partitionNumber;
     private final PartitionCommand command;

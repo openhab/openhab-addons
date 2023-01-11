@@ -32,7 +32,7 @@ public enum PartitionCommand {
     DISARM(6),
     BEEP(8);
 
-    private static final Logger logger = LoggerFactory.getLogger(PartitionCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PartitionCommand.class);
 
     private int command;
 
@@ -48,7 +48,7 @@ public enum PartitionCommand {
         try {
             return PartitionCommand.valueOf(command);
         } catch (IllegalArgumentException e) {
-            logger.debug("Unable to parse command={}. Fallback to UNKNOWN.", command);
+            LOGGER.debug("Unable to parse command={}. Fallback to UNKNOWN.", command);
             return PartitionCommand.UNKNOWN;
         }
     }

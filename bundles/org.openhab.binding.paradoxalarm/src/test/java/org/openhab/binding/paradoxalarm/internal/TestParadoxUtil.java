@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class TestParadoxUtil {
 
     @Test
