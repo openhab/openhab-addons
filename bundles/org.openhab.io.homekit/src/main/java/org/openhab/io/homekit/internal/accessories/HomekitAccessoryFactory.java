@@ -413,8 +413,9 @@ public class HomekitAccessoryFactory {
                 .collect(Collectors.toList())) {
             var characteristic = HomekitMetadataCharacteristicFactory.createCharacteristic(entry.getKey(),
                     entry.getValue());
-            if (characteristic.isPresent())
+            if (characteristic.isPresent()) {
                 accessory.addCharacteristic(characteristic.get());
+            }
         }
     }
 

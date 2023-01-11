@@ -72,7 +72,7 @@ public class HomekitMetadataCharacteristicFactory {
     private static final Logger logger = LoggerFactory.getLogger(HomekitMetadataCharacteristicFactory.class);
 
     // List of optional characteristics that can be set via metadata, and the corresponding method to create them.
-    private final static Map<HomekitCharacteristicType, Function<Object, Characteristic>> optional = new HashMap<>() {
+    private static final Map<HomekitCharacteristicType, Function<Object, Characteristic>> optional = new HashMap<>() {
         {
             put(ACTIVE_IDENTIFIER, HomekitMetadataCharacteristicFactory::createActiveIdentifierCharacteristic);
             put(ACTIVE_STATUS, HomekitMetadataCharacteristicFactory::createActiveStatusCharacteristic);
@@ -101,8 +101,9 @@ public class HomekitMetadataCharacteristicFactory {
 
     public static Optional<Characteristic> createCharacteristic(String characteristic, Object value) {
         var type = HomekitCharacteristicType.valueOfTag(characteristic);
-        if (type.isEmpty() || !optional.containsKey(type.get()))
+        if (type.isEmpty() || !optional.containsKey(type.get())) {
             return Optional.empty();
+        }
         return Optional.of(optional.get(type.get()).apply(value));
     }
 
