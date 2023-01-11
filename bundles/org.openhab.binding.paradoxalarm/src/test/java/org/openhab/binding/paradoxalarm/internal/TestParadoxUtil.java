@@ -32,19 +32,19 @@ public class TestParadoxUtil {
         final int rate = 16;
         byte[] extendedArray = ParadoxUtil.extendArray(arrayToExtend, rate);
 
-        final byte[] EXPECTED_RESULT = { 0x0A, 0x50, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x59, (byte) 0xEE, (byte) 0xEE,
+        final byte[] expectedResult = { 0x0A, 0x50, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x59, (byte) 0xEE, (byte) 0xEE,
                 (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE };
-        assertArrayEquals(EXPECTED_RESULT, extendedArray); //
+        assertArrayEquals(expectedResult, extendedArray); //
     }
 
     @Test
     public void testMergeArrays() {
-        final byte[] ARR1 = { 0x01, 0x02, 0x03 };
-        final byte[] ARR2 = { 0x04, 0x05, 0x06 };
-        final byte[] ARR3 = { 0x07, 0x08, 0x09 };
-        byte[] mergedArrays = ParadoxUtil.mergeByteArrays(ARR1, ARR2, ARR3);
+        final byte[] arr1 = { 0x01, 0x02, 0x03 };
+        final byte[] arr2 = { 0x04, 0x05, 0x06 };
+        final byte[] arr3 = { 0x07, 0x08, 0x09 };
+        byte[] mergedArrays = ParadoxUtil.mergeByteArrays(arr1, arr2, arr3);
 
-        final byte[] EXPECTED_RESULT = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09 };
-        assertArrayEquals(EXPECTED_RESULT, mergedArrays);
+        final byte[] expectedResult = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09 };
+        assertArrayEquals(expectedResult, mergedArrays);
     }
 }

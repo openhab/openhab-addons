@@ -24,8 +24,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ParadoxPanelHandler} This is the handler that takes care of the panel related stuff.
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ParadoxPanelHandler extends EntityBaseHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(ParadoxPanelHandler.class);
 
     public ParadoxPanelHandler(Thing thing) {
         super(thing);
