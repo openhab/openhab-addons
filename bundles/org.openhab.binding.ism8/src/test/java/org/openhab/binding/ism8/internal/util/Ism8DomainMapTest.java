@@ -14,8 +14,6 @@ package org.openhab.binding.ism8.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Locale;
-
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
