@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.parser;
 
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConstants;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
