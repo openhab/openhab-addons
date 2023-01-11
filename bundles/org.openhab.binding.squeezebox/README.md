@@ -115,8 +115,8 @@ All devices support some of the following channels:
 | artist                 | String    | Artist name of the current song                                                              |
 | year                   | String    | Release year of the current song                                                             |
 | genre                  | String    | Genre name of the current song                                                               |
-| albumartist            | String    | Main artist of the entire album                                                              |
-| trackartist            | String    | Main artist of the track                                                                     |
+| albumArtist            | String    | Main artist of the entire album                                                              |
+| trackArtist            | String    | Main artist of the track                                                                     |
 | band                   | String    | Band/orchestra that performed the work                                                       |
 | composer               | String    | Original composer of the work                                                                |
 | conductor              | String    | Person who conducted the performance                                                         |

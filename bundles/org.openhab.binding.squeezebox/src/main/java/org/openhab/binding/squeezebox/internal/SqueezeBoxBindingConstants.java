@@ -59,8 +59,8 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_ARTIST = "artist";
     public static final String CHANNEL_YEAR = "year";
     public static final String CHANNEL_GENRE = "genre";
-    public static final String CHANNEL_ALBUMARTIST = "albumartist";
-    public static final String CHANNEL_TRACKARTIST = "trackartist";
+    public static final String CHANNEL_ALBUM_ARTIST = "albumArtist";
+    public static final String CHANNEL_TRACK_ARTIST = "trackArtist";
     public static final String CHANNEL_BAND = "band";
     public static final String CHANNEL_COMPOSER = "composer";
     public static final String CHANNEL_CONDUCTOR = "conductor";

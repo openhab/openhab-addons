@@ -437,13 +437,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void albumartistChangeEvent(String mac, String albumartist) {
-        updateChannel(mac, CHANNEL_ALBUMARTIST, new StringType(albumartist));
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+        updateChannel(mac, CHANNEL_ALBUM_ARTIST, new StringType(albumArtist));
     }
 
     @Override
-    public void trackartistChangeEvent(String mac, String trackartist) {
-        updateChannel(mac, CHANNEL_TRACKARTIST, new StringType(trackartist));
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+        updateChannel(mac, CHANNEL_TRACK_ARTIST, new StringType(trackArtist));
     }
 
     @Override

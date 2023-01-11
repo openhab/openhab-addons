@@ -73,9 +73,9 @@ public interface SqueezeBoxPlayerEventListener {
 
     void genreChangeEvent(String mac, String genre);
 
-    void albumartistChangeEvent(String mac, String albumartist);
+    void albumArtistChangeEvent(String mac, String albumArtist);
 
-    void trackartistChangeEvent(String mac, String trackartist);
+    void trackArtistChangeEvent(String mac, String trackArtist);
 
     void bandChangeEvent(String mac, String band);
 

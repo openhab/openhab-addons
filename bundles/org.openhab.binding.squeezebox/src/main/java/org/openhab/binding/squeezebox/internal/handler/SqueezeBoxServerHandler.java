@@ -674,7 +674,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
-            String remoteTitle = "", artist = "", album = "", genre = "", year = "", albumartist = "", trackartist = "",
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "", albumArtist = "", trackArtist = "",
                     band = "", composer = "", conductor = "";
             boolean coverart = false;
             String coverid = null;
@@ -748,11 +748,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     }
                     // Parameter Album Artist
                     else if ("albumartist".equals(entry.key)) {
-                        albumartist = entry.value;
+                        albumArtist = entry.value;
                     }
                     // Parameter Track Artist
                     else if ("trackartist".equals(entry.key)) {
-                        trackartist = entry.value;
+                        trackArtist = entry.value;
                     }
                     // Parameter Band
                     else if ("band".equals(entry.key)) {
@@ -797,8 +797,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             final String finalAlbum = album;
             final String finalGenre = genre;
             final String finalYear = year;
-            final String finalAlbumartist = albumartist;
-            final String finalTrackartist = trackartist;
+            final String finalAlbumArtist = albumArtist;
+            final String finalTrackArtist = trackArtist;
             final String finalBand = band;
             final String finalComposer = composer;
             final String finalConductor = conductor;
@@ -810,8 +810,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 listener.albumChangeEvent(mac, finalAlbum);
                 listener.genreChangeEvent(mac, finalGenre);
                 listener.yearChangeEvent(mac, finalYear);
-                listener.albumartistChangeEvent(mac, finalAlbumartist);
-                listener.trackartistChangeEvent(mac, finalTrackartist);
+                listener.albumArtistChangeEvent(mac, finalAlbumArtist);
+                listener.trackArtistChangeEvent(mac, finalTrackArtist);
                 listener.bandChangeEvent(mac, finalBand);
                 listener.composerChangeEvent(mac, finalComposer);
                 listener.conductorChangeEvent(mac, finalConductor);
