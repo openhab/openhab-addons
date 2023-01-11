@@ -14,6 +14,8 @@ package org.openhab.binding.ism8.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Locale;
+
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
@@ -59,7 +61,7 @@ public class Ism8DomainMapTest {
         byte[] result = Ism8DomainMap.toISM8WriteData(dataPoint, command);
 
         // assert
-        assertEquals("40,5", dataPoint.getValueText());
+        assertEquals(String.format("%.1f", 40.5), dataPoint.getValueText());
         assertEquals("0620F080001604000000F0C100040001000400020FE9", HexUtils.bytesToHex(result));
     }
 
@@ -73,7 +75,7 @@ public class Ism8DomainMapTest {
         byte[] result = Ism8DomainMap.toISM8WriteData(dataPoint, command);
 
         // assert
-        assertEquals("40,5", dataPoint.getValueText());
+        assertEquals(String.format("%.1f", 40.5), dataPoint.getValueText());
         assertEquals("0620F080001604000000F0C100040001000400020FE9", HexUtils.bytesToHex(result));
     }
 
@@ -101,7 +103,7 @@ public class Ism8DomainMapTest {
         byte[] result = Ism8DomainMap.toISM8WriteData(dataPoint, command);
 
         // assert
-        assertEquals("13,0", dataPoint.getValueText());
+        assertEquals(String.format("%.1f", 13.0), dataPoint.getValueText());
         assertEquals("0620F080001504000000F0C1000300010003000121", HexUtils.bytesToHex(result));
     }
 
