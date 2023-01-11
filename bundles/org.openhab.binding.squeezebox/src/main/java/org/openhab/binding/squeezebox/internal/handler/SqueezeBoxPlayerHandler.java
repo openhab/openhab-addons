@@ -437,6 +437,31 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+        updateChannel(mac, CHANNEL_ALBUM_ARTIST, new StringType(albumArtist));
+    }
+
+    @Override
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+        updateChannel(mac, CHANNEL_TRACK_ARTIST, new StringType(trackArtist));
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+        updateChannel(mac, CHANNEL_BAND, new StringType(band));
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+        updateChannel(mac, CHANNEL_COMPOSER, new StringType(composer));
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
+        updateChannel(mac, CHANNEL_CONDUCTOR, new StringType(conductor));
+    }
+
+    @Override
     public void coverArtChangeEvent(String mac, String coverArtUrl) {
         updateChannel(mac, CHANNEL_COVERART_DATA, createImage(downloadImage(mac, coverArtUrl)));
     }
