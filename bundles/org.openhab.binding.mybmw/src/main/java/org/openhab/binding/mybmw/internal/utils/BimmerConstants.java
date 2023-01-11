@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * https://customer.bmwgroup.com/one/app/oauth.js
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - update to v2 API
  */
 @NonNullByDefault
 public class BimmerConstants {
@@ -67,7 +68,7 @@ public class BimmerConstants {
 
     // API endpoints
     public static final String API_OAUTH_CONFIG = "/eadrax-ucs/v1/presentation/oauth/config";
-    public static final String API_VEHICLES = "/eadrax-vcs/v1/vehicles";
+    public static final String API_VEHICLES = "/eadrax-vcs/v2/vehicles";
     public static final String API_REMOTE_SERVICE_BASE_URL = "/eadrax-vrccs/v2/presentation/remote-commands/"; // '/{vin}/{service_type}'
     public static final String API_POI = "/eadrax-dcs/v1/send-to-car/send-to-car";
 }

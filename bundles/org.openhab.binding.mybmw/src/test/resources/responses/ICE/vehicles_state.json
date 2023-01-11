@@ -1,0 +1,166 @@
+{
+    "state": {
+        "isLeftSteering": true,
+        "lastFetched": "2022-12-22T18:59:04.104Z",
+        "lastUpdatedAt": "2022-12-22T13:00:46Z",
+        "isLscSupported": true,
+        "range": 384,
+        "doorsState": {
+            "combinedSecurityState": "SECURED",
+            "leftFront": "CLOSED",
+            "rightFront": "CLOSED",
+            "combinedState": "CLOSED",
+            "hood": "CLOSED",
+            "trunk": "CLOSED"
+        },
+        "windowsState": {
+            "leftFront": "CLOSED",
+            "rightFront": "CLOSED",
+            "combinedState": "CLOSED"
+        },
+        "location": {
+            "coordinates": {
+				"latitude": 1.234,
+				"longitude": 5.678
+            },
+            "address": {
+                "formatted": "Leopoldstraße 25, 80333 München"
+            },
+            "heading": 177
+        },
+        "currentMileage": 750,
+        "requiredServices": [
+            {
+                "dateTime": "2025-10-01T00:00:00.000Z",
+                "type": "VEHICLE_TUV",
+                "status": "OK",
+                "description": "Next state inspection due by the specified date."
+            },
+            {
+                "dateTime": "2024-09-01T00:00:00.000Z",
+                "mileage": 30000,
+                "type": "OIL",
+                "status": "OK",
+                "description": "Next service due after the specified distance or date."
+            },
+            {
+                "dateTime": "2026-09-01T00:00:00.000Z",
+                "mileage": 60000,
+                "type": "VEHICLE_CHECK",
+                "status": "OK",
+                "description": "Next vehicle check due on the specified date or, if shown, after the specified distance."
+            },
+            {
+                "dateTime": "2025-09-01T00:00:00.000Z",
+                "type": "BRAKE_FLUID",
+                "status": "OK",
+                "description": "Next service due by the specified date."
+            }
+        ],
+        "checkControlMessages": [
+            {
+                "type": "TIRE_PRESSURE",
+                "severity": "LOW",
+                "id": 955,
+                "description": "Tire pressure notification: You can continue driving. Check tire pressure when the tires are cold and adjust if necessary. Perform reset after adjustment. See Owner's Manual for further information.",
+                "name": "Tire pressure notification"
+            },
+            {
+                "type": "ENGINE_OIL",
+                "severity": "LOW"
+            }
+        ],
+        "combustionFuelLevel": {
+            "remainingFuelLiters": 25,
+            "range": 384
+        },
+        "driverPreferences": {
+            "lscPrivacyMode": "OFF"
+        },
+        "climateTimers": [
+            {
+                "isWeeklyTimer": false,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            }
+        ]
+    },
+    "capabilities": {
+        "a4aType": "BLUETOOTH",
+        "climateNow": true,
+        "isClimateTimerSupported": true,
+        "climateTimerTrigger": "START_TIMER",
+        "climateFunction": "VENTILATION",
+        "horn": true,
+        "isBmwChargingSupported": false,
+        "isCarSharingSupported": true,
+        "isChargeNowForBusinessSupported": false,
+        "isChargingHistorySupported": false,
+        "isChargingHospitalityEnabled": false,
+        "isChargingLoudnessEnabled": false,
+        "isChargingPlanSupported": false,
+        "isChargingPowerLimitEnabled": false,
+        "isChargingSettingsEnabled": false,
+        "isChargingTargetSocEnabled": false,
+        "isCustomerEsimSupported": false,
+        "isDataPrivacyEnabled": false,
+        "isDCSContractManagementSupported": false,
+        "isEasyChargeEnabled": false,
+        "isMiniChargingSupported": false,
+        "isEvGoChargingSupported": false,
+        "isRemoteHistoryDeletionSupported": false,
+        "isRemoteEngineStartSupported": false,
+        "isRemoteServicesActivationRequired": false,
+        "isRemoteServicesBookingRequired": false,
+        "isScanAndChargeSupported": false,
+        "lastStateCallState": "ACTIVATED",
+        "lights": true,
+        "lock": true,
+        "sendPoi": true,
+        "speechThirdPartyAlexa": true,
+        "speechThirdPartyAlexaSDK": false,
+        "unlock": true,
+        "vehicleFinder": true,
+        "vehicleStateSource": "LAST_STATE_CALL",
+        "isRemoteHistorySupported": true,
+        "isWifiHotspotServiceSupported": false,
+        "isNonLscFeatureEnabled": false,
+        "isSustainabilitySupported": false,
+        "isSustainabilityAccumulatedViewEnabled": false,
+        "checkSustainabilityDPP": false,
+        "specialThemeSupport": [],
+        "isRemoteParkingSupported": false,
+        "remoteChargingCommands": {},
+        "isClimateTimerWeeklyActive": false,
+        "digitalKey": {
+            "bookedServicePackage": "NONE",
+            "state": "NOT_AVAILABLE"
+        }
+    }
+}

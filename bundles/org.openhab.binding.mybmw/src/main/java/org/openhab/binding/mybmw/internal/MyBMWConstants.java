@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send of charge profile
+ * @author Martin Grassl - updated enum values
  */
 @NonNullByDefault
 public class MyBMWConstants {
@@ -57,13 +58,13 @@ public class MyBMWConstants {
     }
 
     public enum ChargingMode {
-        immediateCharging,
-        delayedCharging
+        IMMEDIATE_CHARGING,
+        DELAYED_CHARGING
     }
 
     public enum ChargingPreference {
-        noPreSelection,
-        chargingWindow
+        NO_PRESELECTION,
+        CHARGING_WINDOW
     }
 
     public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
@@ -126,7 +127,6 @@ public class MyBMWConstants {
     public static final String PLUG_CONNECTION = "plug-connection";
     public static final String CHARGE_STATUS = "charge";
     public static final String CHARGE_INFO = "charge-info";
-    public static final String MOTION = "motion";
     public static final String LAST_UPDATE = "last-update";
     public static final String RAW = "raw";
 
@@ -189,6 +189,7 @@ public class MyBMWConstants {
     public static final String REMOTE_SERVICE_HORN = "horn-blow";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
+    public static final String REMOTE_SERVICE_CHARGE = "charge-now";
 
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";

@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.*;
-import static org.openhab.binding.mybmw.internal.utils.Constants.*;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER1;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER2;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER3;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER4;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.WINDOWEND;
+import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.WINDOWSTART;
+import static org.openhab.binding.mybmw.internal.utils.Constants.NULL_LOCAL_TIME;
+import static org.openhab.binding.mybmw.internal.utils.Constants.TIME_FORMATER;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -29,9 +35,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.ChargingMode;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.ChargingPreference;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargingWindow;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
 import org.openhab.binding.mybmw.internal.dto.charge.Timer;
 import org.slf4j.Logger;
@@ -42,10 +47,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - add ChargeProfileActions
+ * @author Martin Grassl - refactoring
  */
 @NonNullByDefault
 public class ChargeProfileWrapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChargeProfileWrapper.class);
+    private final Logger logger = LoggerFactory.getLogger(ChargeProfileWrapper.class);
 
     private static final String CHARGING_WINDOW = "chargingWindow";
     private static final String WEEKLY_PLANNER = "weeklyPlanner";
@@ -71,26 +77,26 @@ public class ChargeProfileWrapper {
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
     private final Map<ProfileKey, Set<DayOfWeek>> daysOfWeek = new HashMap<>();
 
-    public ChargeProfileWrapper(final ChargeProfile profile) {
-        setPreference(profile.chargingPreference);
-        setMode(profile.chargingMode);
-        controlType = Optional.of(profile.chargingControlType);
-        chargeSettings = Optional.of(profile.chargingSettings);
-        setEnabled(CLIMATE, profile.climatisationOn);
+    public ChargeProfileWrapper(final ChargingProfile profile) {
+        setPreference(profile.getChargingPreference());
+        setMode(profile.getChargingMode());
+        controlType = Optional.of(profile.getChargingControlType());
+        chargeSettings = Optional.of(profile.getChargingSettings());
+        // setEnabled(CLIMATE, profile.climatisationOn);
 
         addTimer(TIMER1, profile.getTimerId(1));
         addTimer(TIMER2, profile.getTimerId(2));
-        if (profile.chargingControlType.equals(WEEKLY_PLANNER)) {
+        if (profile.getChargingControlType().equals(WEEKLY_PLANNER)) {
             addTimer(TIMER3, profile.getTimerId(3));
             addTimer(TIMER4, profile.getTimerId(4));
         }
 
-        if (CHARGING_WINDOW.equals(profile.chargingPreference)) {
-            addTime(WINDOWSTART, profile.reductionOfChargeCurrent.start);
-            addTime(WINDOWEND, profile.reductionOfChargeCurrent.end);
+        if (CHARGING_WINDOW.equals(profile.getChargingPreference())) {
+            addTime(WINDOWSTART, profile.getReductionOfChargeCurrent().getStart());
+            addTime(WINDOWEND, profile.getReductionOfChargeCurrent().getEnd());
         } else {
             preference.ifPresent(pref -> {
-                if (ChargingPreference.chargingWindow.equals(pref)) {
+                if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
                     addTime(WINDOWSTART, null);
                     addTime(WINDOWEND, null);
                 }
@@ -128,7 +134,7 @@ public class ChargeProfileWrapper {
                 this.mode = Optional.of(ChargingMode.valueOf(mode));
                 return;
             } catch (IllegalArgumentException iae) {
-                LOGGER.warn("unexpected value for chargingMode: {}", mode);
+                logger.warn("unexpected value for chargingMode: {}", mode);
             }
         }
         this.mode = Optional.empty();
@@ -144,7 +150,7 @@ public class ChargeProfileWrapper {
                 this.preference = Optional.of(ChargingPreference.valueOf(preference));
                 return;
             } catch (IllegalArgumentException iae) {
-                LOGGER.warn("unexpected value for chargingPreference: {}", preference);
+                logger.warn("unexpected value for chargingPreference: {}", preference);
             }
         }
         this.preference = Optional.empty();
@@ -180,7 +186,7 @@ public class ChargeProfileWrapper {
         if (t != null) {
             return t;
         } else {
-            LOGGER.debug("Profile not valid - Key {} doesn't contain boolean value", key);
+            logger.debug("Profile not valid - Key {} doesn't contain boolean value", key);
             return Constants.NULL_LOCAL_TIME;
         }
     }
@@ -193,47 +199,11 @@ public class ChargeProfileWrapper {
         }
     }
 
-    public String getJson() {
-        final ChargeProfile profile = new ChargeProfile();
-
-        preference.ifPresent(pref -> profile.chargingPreference = pref.name());
-        profile.chargingControlType = controlType.get();
-        Boolean enabledBool = isEnabled(CLIMATE);
-        profile.climatisationOn = enabledBool == null ? false : enabledBool;
-        preference.ifPresent(pref -> {
-            if (ChargingPreference.chargingWindow.equals(pref)) {
-                profile.chargingMode = getMode();
-                final LocalTime start = getTime(WINDOWSTART);
-                final LocalTime end = getTime(WINDOWEND);
-                if (!start.equals(Constants.NULL_LOCAL_TIME) && !end.equals(Constants.NULL_LOCAL_TIME)) {
-                    ChargingWindow cw = new ChargingWindow();
-                    profile.reductionOfChargeCurrent = cw;
-                    cw.start = new Time();
-                    cw.start.hour = start.getHour();
-                    cw.start.minute = start.getMinute();
-                    cw.end = new Time();
-                    cw.end.hour = end.getHour();
-                    cw.end.minute = end.getMinute();
-                }
-            }
-        });
-        profile.departureTimes = new ArrayList<Timer>();
-        profile.departureTimes.add(getTimer(TIMER1));
-        profile.departureTimes.add(getTimer(TIMER2));
-        if (profile.chargingControlType.equals(WEEKLY_PLANNER)) {
-            profile.departureTimes.add(getTimer(TIMER3));
-            profile.departureTimes.add(getTimer(TIMER4));
-        }
-
-        profile.chargingSettings = chargeSettings.get();
-        return Converter.getGson().toJson(profile);
-    }
-
     private void addTime(final ProfileKey key, @Nullable final Time time) {
         try {
             times.put(key, time == null ? NULL_LOCAL_TIME : LocalTime.parse(Converter.getTime(time), TIME_FORMATER));
         } catch (DateTimeParseException dtpe) {
-            LOGGER.warn("unexpected value for {} time: {}", key.name(), time);
+            logger.warn("unexpected value for {} time: {}", key.name(), time);
         }
     }
 
@@ -252,7 +222,7 @@ public class ChargeProfileWrapper {
                     try {
                         daySet.add(DayOfWeek.valueOf(day.toUpperCase()));
                     } catch (IllegalArgumentException iae) {
-                        LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
+                        logger.warn("unexpected value for {} day: {}", key.name(), day);
                     }
                     daysOfWeek.put(key, daySet);
                 }
@@ -288,8 +258,8 @@ public class ChargeProfileWrapper {
         final LocalTime time = getTime(key);
         if (!time.equals(Constants.NULL_LOCAL_TIME)) {
             timer.timeStamp = new Time();
-            timer.timeStamp.hour = time.getHour();
-            timer.timeStamp.minute = time.getMinute();
+            timer.timeStamp.setHour(time.getHour());
+            timer.timeStamp.setMinute(time.getMinute());
         }
         final Set<DayOfWeek> days = daysOfWeek.get(key);
         if (days != null) {

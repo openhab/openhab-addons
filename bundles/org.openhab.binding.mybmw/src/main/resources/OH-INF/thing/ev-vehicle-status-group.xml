@@ -16,7 +16,6 @@
 			<channel id="plug-connection" typeId="plug-connection-channel"/>
 			<channel id="charge" typeId="charging-status-channel"/>
 			<channel id="charge-info" typeId="charging-info-channel"/>
-			<channel id="motion" typeId="motion-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
 			<channel id="raw" typeId="raw-channel"/>
 		</channels>

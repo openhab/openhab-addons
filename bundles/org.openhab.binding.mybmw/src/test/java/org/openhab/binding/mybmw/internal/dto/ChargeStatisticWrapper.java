@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.mybmw.internal.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_STATISTICS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ENERGY;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SESSIONS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.TITLE;
 
 import java.util.List;
 
@@ -22,7 +28,7 @@ import javax.measure.quantity.Energy;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
-import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -34,6 +40,7 @@ import org.openhab.core.types.State;
  * The {@link ChargeStatisticWrapper} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - small import change
  */
 @NonNullByDefault
 @SuppressWarnings("null")
@@ -41,7 +48,7 @@ public class ChargeStatisticWrapper {
     private ChargeStatisticsContainer chargeStatisticContainer;
 
     public ChargeStatisticWrapper(String content) {
-        ChargeStatisticsContainer fromJson = Converter.getGson().fromJson(content, ChargeStatisticsContainer.class);
+        ChargeStatisticsContainer fromJson = JsonStringDeserializer.getChargeStatistics(content);
         if (fromJson != null) {
             chargeStatisticContainer = fromJson;
         } else {

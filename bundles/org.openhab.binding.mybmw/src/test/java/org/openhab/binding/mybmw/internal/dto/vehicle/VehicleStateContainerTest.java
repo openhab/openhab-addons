@@ -1,0 +1,70 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.mybmw.internal.dto.vehicle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
+import org.openhab.binding.mybmw.internal.util.FileReader;
+import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
+import org.openhab.core.library.types.DateTimeType;
+
+import com.google.gson.Gson;
+
+/**
+ * 
+ * checks basic data of state of vehicle
+ * 
+ * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - refactoring
+ */
+public class VehicleStateContainerTest {
+    @Test
+    public void testVehicleStateDeserializationByGson() {
+        String vehicleStateJson = FileReader
+                .fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_state.json");
+        Gson gson = new Gson();
+
+        VehicleStateContainer vehicle = gson.fromJson(vehicleStateJson, VehicleStateContainer.class);
+
+        assertNotNull(vehicle);
+    }
+
+    @Test
+    public void testVehicleStateDeserializationByConverter() {
+        String vehicleStateJson = FileReader
+                .fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_state.json");
+
+        VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(vehicleStateJson);
+
+        assertNotNull(vehicleStateContainer);
+        assertEquals("2024-06-01T00:00",
+                ((DateTimeType) VehicleStatusUtils
+                        .getNextServiceDate(vehicleStateContainer.getState().getRequiredServices())).getZonedDateTime()
+                                .toLocalDateTime().toString(),
+                "Service Date");
+
+        ZonedDateTime zdt = ZonedDateTime.parse("2022-12-21T15:41:23Z").withZoneSameInstant(ZoneId.systemDefault());
+        LocalDateTime ldt = zdt.toLocalDateTime();
+        assertEquals(ldt.format(Converter.DATE_INPUT_PATTERN),
+                Converter.zonedToLocalDateTime(vehicleStateContainer.getState().getLastUpdatedAt()),
+                "Last update time");
+    }
+}

@@ -18,13 +18,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link HTTPConstants} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - added image content type
  */
 @NonNullByDefault
 public class HTTPConstants {
     public static final int HTTP_TIMEOUT_SEC = 10;
 
     public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
-    public static final String CONTENT_TYPE_JSON_ENCODED = "application/json";
+    public static final String CONTENT_TYPE_JSON = "application/json";
+    public static final String CONTENT_TYPE_IMAGE = "image/png";
     public static final String KEEP_ALIVE = "Keep-Alive";
     public static final String CLIENT_ID = "client_id";
     public static final String RESPONSE_TYPE = "response_type";

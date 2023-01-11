@@ -47,11 +47,6 @@
 		<label>Plug Connection Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="motion-channel">
-		<item-type>Switch</item-type>
-		<label>Motion Status</label>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
 		<label>Last Status Timestamp</label>
