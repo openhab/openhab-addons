@@ -16,7 +16,7 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * The {@link ChargingSettings} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
-* @author Martin Grassl - refactored to Java Bean
+ * @author Martin Grassl - refactored to Java Bean
  */
 public class ChargingSettings {
     private int acCurrentLimit = -1; // 32,

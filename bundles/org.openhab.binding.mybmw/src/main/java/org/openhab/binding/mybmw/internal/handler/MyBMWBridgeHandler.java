@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Martin Grassl - refactored, all discovery functionality moved to VehicleDiscovery 
+ * @author Martin Grassl - refactored, all discovery functionality moved to VehicleDiscovery
  */
 @NonNullByDefault
 public class MyBMWBridgeHandler extends BaseBridgeHandler {

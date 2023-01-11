@@ -16,7 +16,7 @@ package org.openhab.binding.mybmw.internal.dto.network;
  * The {@link NetworkException} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Martin Grassl - extend Exception 
+ * @author Martin Grassl - extend Exception
  */
 public class NetworkException extends Exception {
 
