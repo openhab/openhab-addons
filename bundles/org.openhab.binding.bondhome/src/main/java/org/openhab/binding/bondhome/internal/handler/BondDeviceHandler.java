@@ -584,7 +584,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         }
         // Remove power channels if we have a dimmer channel for them;
         // the dimmer channel already covers the power case.
-        // Add the raw channel for advanced users unless we're a ceiling fan.
+        // Add the raw channel for advanced users if we're a ceiling fan.
         if (availableChannelIds.contains(CHANNEL_FAN_SPEED)) {
             availableChannelIds.remove(CHANNEL_POWER);
             availableChannelIds.remove(CHANNEL_FAN_POWER);
