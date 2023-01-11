@@ -170,7 +170,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link VehicleHandler} handles responses from BMW API
  * 
- * the introduction of channelToBeUpdated is ugly, but if there is a refresh of one channel, always all channels were updated
+ * the introduction of channelToBeUpdated is ugly, but if there is a refresh of one channel, always all channels were
+ * updated
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send charge profile
@@ -251,7 +252,8 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         imageProperties = new ImageProperties();
-        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, Converter.toTitleCase(imageProperties.viewport), null);
+        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, Converter.toTitleCase(imageProperties.viewport),
+                null);
 
         // start update schedule
         startSchedule(vehicleConfiguration.get().getRefreshInterval());
@@ -318,8 +320,8 @@ public class VehicleHandler extends BaseThingHandler {
         });
     }
 
-    private void triggerVehicleStatusUpdate(VehicleStateContainer vehicleState, String channelToBeUpdated) {
-        logger.debug("xxxVehicleHandler.triggerVehicleStatusUpdate");
+    private void triggerVehicleStatusUpdate(VehicleStateContainer vehicleState, @Nullable String channelToBeUpdated) {
+        logger.debug("xxxVehicleHandler.triggerVehicleStatusUpdate for {}", channelToBeUpdated);
         if (vehicleConfiguration.isPresent()) {
             vehicleStatusCache = Optional.of(vehicleState);
             updateChannel(CHANNEL_GROUP_STATUS, RAW, vehicleState.getRawStateJson(), channelToBeUpdated);
@@ -350,15 +352,18 @@ public class VehicleHandler extends BaseThingHandler {
         return scheduler;
     }
 
-    private void updateChannel(final String group, final String id, @Nullable final String state, final String channelToBeUpdated) {
+    private void updateChannel(final String group, final String id, final String state,
+            @Nullable final String channelToBeUpdated) {
         updateChannel(group, id, StringType.valueOf(state), channelToBeUpdated);
     }
 
     /**
-     * this method sets the state for a single channel. if a channelToBeUpdated is provided, the update will only take place for that
+     * this method sets the state for a single channel. if a channelToBeUpdated is provided, the update will only take
+     * place for that
      * single channel
      */
-    private void updateChannel(final String group, final String id, final State state, @Nullable final String channelToBeUpdated) {
+    private void updateChannel(final String group, final String id, final State state,
+            @Nullable final String channelToBeUpdated) {
 
         if (channelToBeUpdated == null || id.equals(channelToBeUpdated)) {
             if (!"png".equals(id)) {
@@ -371,7 +376,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeStatistics(ChargeStatisticsContainer csc, String channelToBeUpdated) {
+    private void updateChargeStatistics(ChargeStatisticsContainer csc, @Nullable String channelToBeUpdated) {
         if (!"".equals(csc.description)) {
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, csc.description, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
@@ -386,7 +391,7 @@ public class VehicleHandler extends BaseThingHandler {
      * 
      * @param vehicleStateState
      */
-    private void updateVehicleStatus(VehicleState vehicleStateState, String channelToBeUpdated) {
+    private void updateVehicleStatus(VehicleState vehicleStateState, @Nullable String channelToBeUpdated) {
         updateVehicleOverallStatus(vehicleStateState, channelToBeUpdated);
         updateRange(vehicleStateState, channelToBeUpdated);
         updateDoors(vehicleStateState.getDoorsState(), channelToBeUpdated);
@@ -398,7 +403,7 @@ public class VehicleHandler extends BaseThingHandler {
         updateTires(vehicleStateState.getTireState(), channelToBeUpdated);
     }
 
-    private void updateTires(@Nullable VehicleTireStates vehicleTireStates, String channelToBeUpdated) {
+    private void updateTires(@Nullable VehicleTireStates vehicleTireStates, @Nullable String channelToBeUpdated) {
         if (vehicleTireStates == null) {
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT, UnDefType.UNDEF, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_TARGET, UnDefType.UNDEF, channelToBeUpdated);
@@ -410,21 +415,29 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_TARGET, UnDefType.UNDEF, channelToBeUpdated);
         } else {
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT,
-                    calculatePressure(vehicleTireStates.getFrontLeft().getStatus().getCurrentPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getFrontLeft().getStatus().getCurrentPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_TARGET,
-                    calculatePressure(vehicleTireStates.getFrontLeft().getStatus().getTargetPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getFrontLeft().getStatus().getTargetPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_CURRENT,
-                    calculatePressure(vehicleTireStates.getFrontRight().getStatus().getCurrentPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getFrontRight().getStatus().getCurrentPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_TARGET,
-                    calculatePressure(vehicleTireStates.getFrontRight().getStatus().getTargetPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getFrontRight().getStatus().getTargetPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_CURRENT,
-                    calculatePressure(vehicleTireStates.getRearLeft().getStatus().getCurrentPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getRearLeft().getStatus().getCurrentPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_TARGET,
-                    calculatePressure(vehicleTireStates.getRearLeft().getStatus().getTargetPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getRearLeft().getStatus().getTargetPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_CURRENT,
-                    calculatePressure(vehicleTireStates.getRearRight().getStatus().getCurrentPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getRearRight().getStatus().getCurrentPressure()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_TARGET,
-                    calculatePressure(vehicleTireStates.getRearRight().getStatus().getTargetPressure()), channelToBeUpdated);
+                    calculatePressure(vehicleTireStates.getRearRight().getStatus().getTargetPressure()),
+                    channelToBeUpdated);
         }
     }
 
@@ -442,7 +455,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateVehicleOverallStatus(VehicleState vehicleState, String channelToBeUpdated) {
+    private void updateVehicleOverallStatus(VehicleState vehicleState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_STATUS, LOCK,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedSecurityState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
@@ -452,7 +465,8 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 Converter.toTitleCase(vehicleState.getOverallCheckControlStatus()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
-                DateTimeType.valueOf(Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt())), channelToBeUpdated);
+                DateTimeType.valueOf(Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, DOORS,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,
@@ -460,15 +474,17 @@ public class VehicleHandler extends BaseThingHandler {
 
         if (isElectric) {
             updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
-                    Converter.getConnectionState(vehicleState.getElectricChargingState().isChargerConnected()), channelToBeUpdated);
+                    Converter.getConnectionState(vehicleState.getElectricChargingState().isChargerConnected()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
-                    Converter.toTitleCase(vehicleState.getElectricChargingState().getChargingStatus()), channelToBeUpdated);
+                    Converter.toTitleCase(vehicleState.getElectricChargingState().getChargingStatus()),
+                    channelToBeUpdated);
             // TODO: I don't know what to set here with API v2
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_INFO, StringType.valueOf(Constants.UNDEF), channelToBeUpdated);
         }
     }
 
-    private void updateRange(VehicleState vehicleState, String channelToBeUpdated) {
+    private void updateRange(VehicleState vehicleState, @Nullable String channelToBeUpdated) {
         // get the right unit
         Unit<Length> lengthUnit = Constants.KILOMETRE_UNIT;
 
@@ -504,16 +520,20 @@ public class VehicleHandler extends BaseThingHandler {
                     QuantityType.valueOf(vehicleState.getCurrentMileage(), lengthUnit), channelToBeUpdated);
         }
         if (isElectric) {
-            updateChannel(CHANNEL_GROUP_RANGE, SOC, QuantityType
-                    .valueOf(vehicleState.getElectricChargingState().getChargingLevelPercent(), Units.PERCENT), channelToBeUpdated);
+            updateChannel(
+                    CHANNEL_GROUP_RANGE, SOC, QuantityType
+                            .valueOf(vehicleState.getElectricChargingState().getChargingLevelPercent(), Units.PERCENT),
+                    channelToBeUpdated);
         }
         if (hasFuel) {
             updateChannel(CHANNEL_GROUP_RANGE, REMAINING_FUEL,
-                    QuantityType.valueOf(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), Units.LITRE), channelToBeUpdated);
+                    QuantityType.valueOf(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), Units.LITRE),
+                    channelToBeUpdated);
         }
     }
 
-    private void updateCheckControls(List<CheckControlMessage> checkControlMessages, String channelToBeUpdated) {
+    private void updateCheckControls(List<CheckControlMessage> checkControlMessages,
+            @Nullable String channelToBeUpdated) {
         if (checkControlMessages.isEmpty()) {
             // No Check Control available - show not active
             CheckControlMessage checkControlMessage = new CheckControlMessage();
@@ -545,11 +565,12 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void selectCheckControl(int index, String channelToBeUpdated) {
+    private void selectCheckControl(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < checkControlList.size()) {
             CheckControlMessage checkControlMessage = checkControlList.get(index);
             selectedCC = checkControlMessage.getType();
-            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, Converter.toTitleCase(checkControlMessage.getType()), channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, Converter.toTitleCase(checkControlMessage.getType()),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, DETAILS,
                     StringType.valueOf(checkControlMessage.getDescription()), channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHECK_CONTROL, SEVERITY,
@@ -557,7 +578,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateServices(List<RequiredService> requiredServiceList, String channelToBeUpdated) {
+    private void updateServices(List<RequiredService> requiredServiceList, @Nullable String channelToBeUpdated) {
         // if list is empty add "undefined" element
         if (requiredServiceList.isEmpty()) {
             RequiredService requiredService = new RequiredService();
@@ -589,7 +610,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void selectService(int index, String channelToBeUpdated) {
+    private void selectService(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < serviceList.size()) {
             RequiredService serviceEntry = serviceList.get(index);
             selectedService = serviceEntry.getType();
@@ -613,7 +634,8 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeSessions(ChargeSessionsContainer chargeSessionsContainer, String channelToBeUpdated) {
+    private void updateChargeSessions(ChargeSessionsContainer chargeSessionsContainer,
+            @Nullable String channelToBeUpdated) {
         List<ChargeSession> chargeSessions = new ArrayList<>();
 
         if (chargeSessionsContainer.chargingSessions != null
@@ -649,32 +671,42 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void selectSession(int index, String channelToBeUpdated) {
+    private void selectSession(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < sessionList.size()) {
             ChargeSession sessionEntry = sessionList.get(index);
             selectedService = sessionEntry.title;
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title), channelToBeUpdated);
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.subtitle), channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title),
+                    channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.subtitle),
+                    channelToBeUpdated);
             if (sessionEntry.energyCharged != null) {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(sessionEntry.energyCharged), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(sessionEntry.energyCharged),
+                        channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(Constants.UNDEF), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(Constants.UNDEF),
+                        channelToBeUpdated);
             }
             if (sessionEntry.issues != null) {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.issues), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.issues),
+                        channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.HYPHEN), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.HYPHEN),
+                        channelToBeUpdated);
             }
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.sessionStatus), channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.sessionStatus),
+                    channelToBeUpdated);
         }
     }
 
-    private void updateChargingProfile(ChargingProfile cp, String channelToBeUpdated) {
+    private void updateChargingProfile(ChargingProfile cp, @Nullable String channelToBeUpdated) {
         ChargeProfileWrapper cpw = new ChargeProfileWrapper(cp);
 
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, StringType.valueOf(cpw.getPreference()), channelToBeUpdated);
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE, StringType.valueOf(cpw.getMode()), channelToBeUpdated);
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()), channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, StringType.valueOf(cpw.getPreference()),
+                channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE, StringType.valueOf(cpw.getMode()),
+                channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()),
+                channelToBeUpdated);
         ChargingSettings cs = cpw.getChargeSettings();
         if (cs != null) {
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
@@ -693,13 +725,14 @@ public class VehicleHandler extends BaseThingHandler {
         updateTimedState(cpw, ProfileKey.TIMER4, channelToBeUpdated);
     }
 
-    private void updateTimedState(ChargeProfileWrapper profile, ProfileKey key, String channelToBeUpdated) {
+    private void updateTimedState(ChargeProfileWrapper profile, ProfileKey key, @Nullable String channelToBeUpdated) {
         final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time,
                     time.equals(Constants.NULL_LOCAL_TIME) ? UnDefType.UNDEF
-                            : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())), channelToBeUpdated);
+                            : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())),
+                    channelToBeUpdated);
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
                 updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.timer + CHARGE_ENABLED,
@@ -709,14 +742,15 @@ public class VehicleHandler extends BaseThingHandler {
                     EnumSet.allOf(DayOfWeek.class).forEach(day -> {
                         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE,
                                 timed.timer + ChargeProfileUtils.getDaysChannel(day),
-                                days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)), channelToBeUpdated);
+                                days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)),
+                                channelToBeUpdated);
                     });
                 }
             }
         }
     }
 
-    private void updateDoors(VehicleDoorsState vehicleDoorsState, String channelToBeUpdated) {
+    private void updateDoors(VehicleDoorsState vehicleDoorsState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getLeftFront())), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR,
@@ -727,11 +761,11 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getRightRear())), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, TRUNK,
                 StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getTrunk())), channelToBeUpdated);
-        updateChannel(CHANNEL_GROUP_DOORS, HOOD,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getHood())), channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_DOORS, HOOD, StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getHood())),
+                channelToBeUpdated);
     }
 
-    private void updateWindows(VehicleWindowsState vehicleWindowState, String channelToBeUpdated) {
+    private void updateWindows(VehicleWindowsState vehicleWindowState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getLeftFront())), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_REAR,
@@ -742,12 +776,12 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getRightRear())), channelToBeUpdated);
     }
 
-    private void updateRoof(VehicleRoofState vehicleRoofState, String channelToBeUpdated) {
+    private void updateRoof(VehicleRoofState vehicleRoofState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, SUNROOF,
                 StringType.valueOf(Converter.toTitleCase(vehicleRoofState.getRoofState())), channelToBeUpdated);
     }
 
-    private void updatePosition(VehicleLocation location, String channelToBeUpdated) {
+    private void updatePosition(VehicleLocation location, @Nullable String channelToBeUpdated) {
         if (location.getCoordinates().getLatitude() < 0) {
             updateChannel(CHANNEL_GROUP_LOCATION, GPS, UnDefType.UNDEF, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_LOCATION, HEADING, UnDefType.UNDEF, channelToBeUpdated);
@@ -759,11 +793,13 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_LOCATION, GPS, vehicleLocation, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_LOCATION, HEADING,
                     QuantityType.valueOf(location.getHeading(), Units.DEGREE_ANGLE), channelToBeUpdated);
-            updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(location.getAddress().getFormatted()), channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(location.getAddress().getFormatted()),
+                    channelToBeUpdated);
             PointType homeLocation = locationProvider.getLocation();
             if (homeLocation != null) {
                 updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE,
-                        QuantityType.valueOf(vehicleLocation.distanceFrom(homeLocation).intValue(), SIUnits.METRE), channelToBeUpdated);
+                        QuantityType.valueOf(vehicleLocation.distanceFrom(homeLocation).intValue(), SIUnits.METRE),
+                        channelToBeUpdated);
             } else {
                 updateChannel(CHANNEL_GROUP_LOCATION, HOME_DISTANCE, UnDefType.UNDEF, channelToBeUpdated);
             }
@@ -772,15 +808,17 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("xxxVehicleHandler.handleCommand {} {}", channelUID.getAsString(), channelUID.getIdWithoutGroup(), command.toString());
+        logger.debug("xxxVehicleHandler.handleCommand {}, {}, {}", command.toFullString(), channelUID.getAsString(),
+                channelUID.getIdWithoutGroup());
         String group = channelUID.getGroupId();
 
         // Refresh of Channels with cached values
         if (command instanceof RefreshType) {
-            if (CHANNEL_GROUP_STATUS.equals(group)) {
-                vehicleStatusCache.ifPresent(vehicleStatus -> triggerVehicleStatusUpdate(vehicleStatus, channelUID.getIdWithoutGroup()));
-            } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
+            if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCache.ifPresent(image -> updateImage(image));
+            } else {
+                vehicleStatusCache.ifPresent(
+                        vehicleStatus -> triggerVehicleStatusUpdate(vehicleStatus, channelUID.getIdWithoutGroup()));
             }
             // Check for Channel Group and corresponding Actions
         } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
@@ -839,7 +877,8 @@ public class VehicleHandler extends BaseThingHandler {
                                 imageContent.ifPresent(imageContentData -> updateImage(imageContentData));
                             }
                         }
-                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport), IMAGE_VIEWPORT);
+                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport),
+                                IMAGE_VIEWPORT);
                     }
                 }
             });
@@ -877,7 +916,8 @@ public class VehicleHandler extends BaseThingHandler {
         if (imageContent.length > 0) {
             imageCache = Optional.of(imageContent);
             String contentType = HttpUtil.guessContentTypeFromData(imageContent);
-            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT, new RawType(imageContent, contentType), IMAGE_FORMAT);
+            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT, new RawType(imageContent, contentType),
+                    IMAGE_FORMAT);
         } else {
             synchronized (imageProperties) {
                 imageProperties.failed();
