@@ -41,6 +41,7 @@ HomeKit integration supports following accessory types:
 - Battery
 - Filter Maintenance
 - Television
+- Irrigation System
 
 ## Quick start
 
