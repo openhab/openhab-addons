@@ -34,6 +34,11 @@ import io.github.hapjava.services.impl.IrrigationSystemService;
 import io.github.hapjava.services.impl.ServiceLabelService;
 
 /**
+ * Implements an Irrigation System accessory.
+ * 
+ * To be a complete accessory, the user must configure individual valves linked
+ * to this primary service. This class also adds the ServiceLabelService
+ * automatically.
  *
  * @author Cody Cutrer - Initial contribution
  */
