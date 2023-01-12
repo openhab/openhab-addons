@@ -209,7 +209,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, LocationProvider lp, String driveTrain) {
         super(thing);
-        logger.debug("xxxVehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
+        logger.trace("xxxVehicleHandler.constructor {}, {}", thing.getUID(), driveTrain);
         commandOptionProvider = cop;
         locationProvider = lp;
         if (lp.getLocation() == null) {
@@ -234,7 +234,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("xxxVehicleHandler.initialize");
+        logger.trace("xxxVehicleHandler.initialize");
         updateStatus(ThingStatus.UNKNOWN);
         vehicleConfiguration = Optional.of(getConfigAs(MyBMWVehicleConfiguration.class));
 
@@ -260,7 +260,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void startSchedule(int interval) {
-        logger.debug("xxxVehicleHandler.startSchedule");
+        logger.trace("xxxVehicleHandler.startSchedule");
         refreshJob.ifPresentOrElse(job -> {
             if (job.isCancelled()) {
                 refreshJob = Optional
@@ -273,14 +273,14 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("xxxVehicleHandler.idispose");
+        logger.trace("xxxVehicleHandler.idispose");
         refreshJob.ifPresent(job -> job.cancel(true));
         editTimeout.ifPresent(job -> job.cancel(true));
         remote.ifPresent(RemoteServiceExecutor::cancel);
     }
 
     public void getData() {
-        logger.debug("xxxVehicleHandler.getData");
+        logger.trace("xxxVehicleHandler.getData");
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
 
@@ -297,10 +297,13 @@ public class VehicleHandler extends BaseThingHandler {
                     stateError = true;
                 }
 
+                // TODO: disabled charge statistics and charge sessions as the API returns an error
                 if (!stateError && isElectric) {
                     try {
-                        updateChargeStatistics(prox.requestChargeStatistics(config), null);
-                        updateChargeSessions(prox.requestChargeSessions(config), null);
+                        updateChargeStatistics(prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()),
+                                null);
+                        updateChargeSessions(prox.requestChargeSessions(config.getVin(), config.getVehicleBrand()),
+                                null);
                     } catch (NetworkException e) {
                         logger.debug("{}", e.toString());
                     }
@@ -321,7 +324,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void triggerVehicleStatusUpdate(VehicleStateContainer vehicleState, @Nullable String channelToBeUpdated) {
-        logger.debug("xxxVehicleHandler.triggerVehicleStatusUpdate for {}", channelToBeUpdated);
+        logger.trace("xxxVehicleHandler.triggerVehicleStatusUpdate for {}", channelToBeUpdated);
         if (vehicleConfiguration.isPresent()) {
             vehicleStatusCache = Optional.of(vehicleState);
             updateChannel(CHANNEL_GROUP_STATUS, RAW, vehicleState.getRawStateJson(), channelToBeUpdated);
@@ -343,12 +346,12 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public Optional<MyBMWVehicleConfiguration> getVehicleConfiguration() {
-        logger.debug("xxxVehicleHandler.getVehicleConfiguration");
+        logger.trace("xxxVehicleHandler.getVehicleConfiguration");
         return vehicleConfiguration;
     }
 
     public ScheduledExecutorService getScheduler() {
-        logger.debug("xxxVehicleHandler.getScheduler");
+        logger.trace("xxxVehicleHandler.getScheduler");
         return scheduler;
     }
 
@@ -367,9 +370,9 @@ public class VehicleHandler extends BaseThingHandler {
 
         if (channelToBeUpdated == null || id.equals(channelToBeUpdated)) {
             if (!"png".equals(id)) {
-                logger.debug("updating channel {}, {}, {}", group, id, state.toFullString());
+                logger.trace("updating channel {}, {}, {}", group, id, state.toFullString());
             } else {
-                logger.debug("updating channel {}, {}, {}", group, id, "not printed");
+                logger.trace("updating channel {}, {}, {}", group, id, "not printed");
             }
 
             updateState(new ChannelUID(thing.getUID(), group, id), state);
@@ -808,7 +811,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("xxxVehicleHandler.handleCommand {}, {}, {}", command.toFullString(), channelUID.getAsString(),
+        logger.trace("xxxVehicleHandler.handleCommand {}, {}, {}", command.toFullString(), channelUID.getAsString(),
                 channelUID.getIdWithoutGroup());
         String group = channelUID.getGroupId();
 
