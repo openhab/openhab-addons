@@ -17,7 +17,7 @@ import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBin
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.core.library.types.OnOffType;

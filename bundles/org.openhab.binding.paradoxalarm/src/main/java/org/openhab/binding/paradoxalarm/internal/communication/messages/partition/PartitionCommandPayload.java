@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication.messages;
+package org.openhab.binding.paradoxalarm.internal.communication.messages.partition;
 
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload;
 
 /**
- * The {@link CommandPayload} Class that structures the payload for partition commands.
+ * The {@link PartitionCommandPayload} Class that structures the payload for partition commands.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class CommandPayload implements IPayload {
+public class PartitionCommandPayload implements IPayload {
 
     private static final int BYTES_LENGTH = 15;
 
@@ -34,7 +35,7 @@ public class CommandPayload implements IPayload {
     private final int partitionNumber;
     private final PartitionCommand command;
 
-    public CommandPayload(int partitionNumber, PartitionCommand command) {
+    public PartitionCommandPayload(int partitionNumber, PartitionCommand command) {
         this.partitionNumber = partitionNumber;
         this.command = command;
     }

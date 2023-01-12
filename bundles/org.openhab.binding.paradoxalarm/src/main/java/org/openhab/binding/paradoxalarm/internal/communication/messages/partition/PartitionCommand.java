@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication.messages;
+package org.openhab.binding.paradoxalarm.internal.communication.messages.partition;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;

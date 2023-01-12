@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -33,13 +33,13 @@ public class TestCreateCommandPayload {
     public void testCreatePayload() {
         for (PartitionCommand command : PartitionCommand.values()) {
             for (int partitionNumber = 1; partitionNumber <= 8; partitionNumber++) {
-                CommandPayload payload = new CommandPayload(partitionNumber, command);
+                PartitionCommandPayload payload = new PartitionCommandPayload(partitionNumber, command);
                 assertNibble(partitionNumber, command, payload);
             }
         }
     }
 
-    private void assertNibble(int partitionNumber, PartitionCommand command, CommandPayload payload) {
+    private void assertNibble(int partitionNumber, PartitionCommand command, PartitionCommandPayload payload) {
         byte[] bytes = payload.getBytes();
         int payloadIndexOfByteToCheck = 6 + (partitionNumber - 1) / 2;
         byte byteValue = bytes[payloadIndexOfByteToCheck];

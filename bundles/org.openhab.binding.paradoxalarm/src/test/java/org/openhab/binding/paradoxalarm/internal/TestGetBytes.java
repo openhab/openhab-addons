@@ -18,12 +18,12 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
-import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -65,8 +65,8 @@ public class TestGetBytes {
             0x00, 0x00, 0x00, 0x00, 0x00 };
 
     @Test
-    public void testCommandPayload() {
-        CommandPayload payload = new CommandPayload(PARTITION_NUMBER, PartitionCommand.ARM);
+    public void testPartitionCommandPayload() {
+        PartitionCommandPayload payload = new PartitionCommandPayload(PARTITION_NUMBER, PartitionCommand.ARM);
         final byte[] packetBytes = payload.getBytes();
 
         ParadoxUtil.printByteArray("Expected =", EXPECTED_COMMAND_PAYLOAD);
