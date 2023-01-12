@@ -23,24 +23,24 @@ public class NetworkException extends Exception {
     private String url;
     private int status;
     private String reason;
-    private String params;
+    private String body;
 
     public NetworkException() {
     }
 
-    public NetworkException(String url, int status, String reason, String params) {
+    public NetworkException(String url, int status, String reason, String body) {
         this.url = url;
         this.status = status;
         this.reason = reason;
-        this.params = params;
+        this.body = body;
     }
 
-    public NetworkException(String url, int status, String reason, String params, Throwable cause) {
+    public NetworkException(String url, int status, String reason, String body, Throwable cause) {
         super(cause);
         this.url = url;
         this.status = status;
         this.reason = reason;
-        this.params = params;
+        this.body = body;
     }
 
     public NetworkException(String message) {
@@ -81,17 +81,16 @@ public class NetworkException extends Exception {
         this.reason = reason;
     }
 
-    public String getParams() {
-        return params;
+    public String getBody() {
+        return body;
     }
 
-    public void setParams(String params) {
-        this.params = params;
+    public void setBody(String body) {
+        this.body = body;
     }
 
     @Override
     public String toString() {
-        return "NetworkException [url=" + url + ", status=" + status + ", reason=" + reason + ", params=" + params
-                + "]";
+        return "NetworkException [url=" + url + ", status=" + status + ", reason=" + reason + ", body=" + body + "]";
     }
 }

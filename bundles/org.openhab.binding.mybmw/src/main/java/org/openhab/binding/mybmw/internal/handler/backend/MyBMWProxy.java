@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HTTP_TIMEOUT_SEC;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -32,7 +30,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
-import org.openhab.binding.mybmw.internal.MyBMWVehicleConfiguration;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
@@ -118,7 +115,7 @@ public class MyBMWProxy {
      * @param brand
      */
     public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException {
-        byte[] vehicleResponse = get(vehicleUrl, null, brand, HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] vehicleResponse = get(vehicleUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleResponseString = new String(vehicleResponse, Charset.defaultCharset());
 
         return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
@@ -152,7 +149,7 @@ public class MyBMWProxy {
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-ics/v3/presentation/vehicles/" + vin + "/images?carView=" + props.viewport;
-        return get(localImageUrl, null, brand, HTTPConstants.CONTENT_TYPE_IMAGE);
+        return get(localImageUrl, brand, HTTPConstants.CONTENT_TYPE_IMAGE);
     }
 
     /**
@@ -162,8 +159,7 @@ public class MyBMWProxy {
      * @return
      */
     public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException {
-        byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", null, brand,
-                HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", brand, HTTPConstants.CONTENT_TYPE_JSON);
 
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
 
@@ -174,15 +170,14 @@ public class MyBMWProxy {
      * request charge statistics for electric vehicles
      *
      */
-    public ChargeStatisticsContainer requestChargeStatistics(MyBMWVehicleConfiguration config) throws NetworkException {
+    public ChargeStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
         MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
-        chargeStatisticsParams.put("vin", config.getVin());
+        chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
-        byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, null, config.getVehicleBrand(),
-                HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
 
         return JsonStringDeserializer.getChargeStatistics(new String(chargeStatisticsResponse));
     }
@@ -191,17 +186,16 @@ public class MyBMWProxy {
      * request charge sessions for electric vehicles
      *
      */
-    public ChargeSessionsContainer requestChargeSessions(MyBMWVehicleConfiguration config) throws NetworkException {
+    public ChargeSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
         MultiMap<String> chargeSessionsParams = new MultiMap<String>();
-        chargeSessionsParams.put("vin", config.getVin());
+        chargeSessionsParams.put("vin", vin);
         chargeSessionsParams.put("maxResults", "40");
         chargeSessionsParams.put("include_date_picker", "true");
         String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-sessions?" + params;
 
-        byte[] chargeSessionsResponse = get(chargeSessionsUrl, null, config.getVehicleBrand(),
-                HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
 
         return JsonStringDeserializer.getChargeSessions(new String(chargeSessionsResponse));
     }
@@ -210,7 +204,7 @@ public class MyBMWProxy {
             throws NetworkException {
         String executionUrl = remoteCommandUrl + vin + "/" + service.getCommand();
 
-        byte[] response = post(executionUrl, null, brand, HTTPConstants.CONTENT_TYPE_JSON, service.getBody());
+        byte[] response = post(executionUrl, brand, HTTPConstants.CONTENT_TYPE_JSON, service.getBody());
 
         return JsonStringDeserializer.getExecutionStatus(new String(response));
     }
@@ -219,7 +213,7 @@ public class MyBMWProxy {
             throws NetworkException {
         String executionUrl = remoteStatusUrl + Constants.QUESTION + "eventId=" + eventId;
 
-        byte[] response = post(executionUrl, null, brand, HTTPConstants.CONTENT_TYPE_JSON, null);
+        byte[] response = post(executionUrl, brand, HTTPConstants.CONTENT_TYPE_JSON, null);
 
         return JsonStringDeserializer.getExecutionStatus(new String(response));
     }
@@ -234,9 +228,8 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private byte[] get(String url, @Nullable String params, final String brand, String contentType)
-            throws NetworkException {
-        return call(url, false, params, brand, contentType, null);
+    private byte[] get(String url, final String brand, String contentType) throws NetworkException {
+        return call(url, false, brand, contentType, null);
     }
 
     /**
@@ -249,9 +242,9 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private byte[] post(String url, @Nullable String params, final String brand, String contentType,
-            @Nullable String body) throws NetworkException {
-        return call(url, true, params, brand, contentType, body);
+    private byte[] post(String url, final String brand, String contentType, @Nullable String body)
+            throws NetworkException {
+        return call(url, true, brand, contentType, body);
     }
 
     /**
@@ -265,8 +258,8 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private synchronized byte[] call(final String url, final boolean post, final @Nullable String queryParams,
-            final String brand, String contentType, @Nullable String body) throws NetworkException {
+    private synchronized byte[] call(final String url, final boolean post, final String brand, String contentType,
+            @Nullable String body) throws NetworkException {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
@@ -276,14 +269,11 @@ public class MyBMWProxy {
         }
 
         final Request req;
-        final String completeUrl;
 
         if (post) {
-            completeUrl = url;
             req = httpClient.POST(url);
         } else {
-            completeUrl = queryParams == null ? url : url + Constants.QUESTION + queryParams;
-            req = httpClient.newRequest(completeUrl);
+            req = httpClient.newRequest(url);
         }
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenHandler.getToken().getBearerToken());
@@ -293,11 +283,11 @@ public class MyBMWProxy {
         req.header(HttpHeader.ACCEPT, contentType);
 
         try {
-            ContentResponse response = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            ContentResponse response = req.timeout(HTTPConstants.HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (response.getStatus() >= 300) {
                 responseByteArray = "".getBytes();
-                NetworkException exception = new NetworkException(completeUrl, response.getStatus(),
-                        ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), queryParams);
+                NetworkException exception = new NetworkException(url, response.getStatus(),
+                        ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), body);
                 logFingerprint(exception.getUrl(), exception.getReason());
                 throw exception;
             } else {
@@ -305,13 +295,13 @@ public class MyBMWProxy {
 
                 // don't print images
                 if (!HTTPConstants.CONTENT_TYPE_IMAGE.equals(contentType)) {
-                    logFingerprint(completeUrl,
+                    logFingerprint(url,
                             ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()));
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logFingerprint(completeUrl, e.getMessage());
-            throw new NetworkException(completeUrl, -1, null, queryParams, e);
+            logFingerprint(url, e.getMessage());
+            throw new NetworkException(url, -1, null, body, e);
         }
 
         return responseByteArray;
