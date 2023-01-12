@@ -45,9 +45,12 @@ public class VehicleBaseTest {
 
         if ("debug".equals(System.getenv("LOG_LEVEL"))) {
             ((ch.qos.logback.classic.Logger) root).setLevel(Level.DEBUG);
-            logger.debug("debugging enabled");
+        } else if ("trace".equals(System.getenv("LOG_LEVEL"))) {
+            ((ch.qos.logback.classic.Logger) root).setLevel(Level.TRACE);
         }
 
+        logger.trace("tracing enabled");
+        logger.debug("debugging enabled");
         logger.info("info enabled");
     }
 

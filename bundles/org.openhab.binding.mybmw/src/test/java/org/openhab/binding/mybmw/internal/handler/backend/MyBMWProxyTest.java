@@ -62,10 +62,13 @@ public class MyBMWProxyTest {
 
         if ("debug".equals(System.getenv("LOG_LEVEL"))) {
             ((ch.qos.logback.classic.Logger) root).setLevel(Level.DEBUG);
+        } else if ("trace".equals(System.getenv("LOG_LEVEL"))) {
+            ((ch.qos.logback.classic.Logger) root).setLevel(Level.TRACE);
         }
 
+        logger.trace("tracing enabled");
         logger.debug("debugging enabled");
-        logger.warn("warning enabled");
+        logger.info("info enabled");
     }
 
     @Test

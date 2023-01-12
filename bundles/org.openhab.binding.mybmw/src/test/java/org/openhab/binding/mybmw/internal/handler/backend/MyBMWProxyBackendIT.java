@@ -26,6 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -76,19 +78,18 @@ public class MyBMWProxyBackendIT {
     public void setupLogger() {
         Logger root = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
-        if ("debug".equals(System.getenv("LOG_LEVEL"))) {
-            ((ch.qos.logback.classic.Logger) root).setLevel(Level.DEBUG);
-        }
+        ((ch.qos.logback.classic.Logger) root).setLevel(Level.DEBUG);
 
+        logger.trace("tracing enabled");
         logger.debug("debugging enabled");
-        logger.warn("warning enabled");
+        logger.info("info enabled");
     }
 
     @Test
-    @Disabled
     public void testSequence() {
         MyBMWProxy myBMWProxy = initializeProxy();
 
+        // get list of vehicles
         List<@NonNull VehicleBase> vehicles = null;
         try {
             vehicles = myBMWProxy.requestVehiclesBase();
@@ -103,8 +104,7 @@ public class MyBMWProxyBackendIT {
             assertNotNull(vehicleBase.getVin());
             assertNotNull(vehicleBase.getAttributes().getBrand());
 
-            logger.warn("{}", vehicleBase.toString());
-
+            // get image
             try {
                 byte[] bmwImage = myBMWProxy.requestImage(vehicleBase.getVin(), vehicleBase.getAttributes().getBrand(),
                         new ImageProperties());
@@ -114,6 +114,7 @@ public class MyBMWProxyBackendIT {
                 fail(e.getReason(), e);
             }
 
+            // get state
             VehicleStateContainer vehicleState = null;
             try {
                 vehicleState = myBMWProxy.requestVehicleState(vehicleBase.getVin(),
@@ -121,10 +122,24 @@ public class MyBMWProxyBackendIT {
             } catch (NetworkException e) {
                 fail(e.getReason(), e);
             }
-
             assertNotNull(vehicleState);
 
-            logger.warn("{}", vehicleState.toString());
+            // get charge statistics -> only successful for electric vehicles
+            ChargeStatisticsContainer chargeStatisticsContainer = null;
+            try {
+                chargeStatisticsContainer = myBMWProxy.requestChargeStatistics(vehicleBase.getVin(),
+                        vehicleBase.getAttributes().getBrand());
+            } catch (NetworkException e) {
+                logger.trace("error: {}", e.toString());
+            }
+
+            ChargeSessionsContainer chargeSessionsContainer = null;
+            try {
+                chargeSessionsContainer = myBMWProxy.requestChargeSessions(vehicleBase.getVin(),
+                        vehicleBase.getAttributes().getBrand());
+            } catch (NetworkException e) {
+                logger.trace("error: {}", e.toString());
+            }
 
             ExecutionStatusContainer remoteExecutionResponse = null;
             try {

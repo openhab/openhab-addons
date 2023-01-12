@@ -66,7 +66,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof MyBMWBridgeHandler) {
-            logger.debug("xxxVehicleDiscovery.setThingHandler for MybmwBridge");
+            logger.trace("xxxVehicleDiscovery.setThingHandler for MybmwBridge");
             bridgeHandler = Optional.of((MyBMWBridgeHandler) handler);
             bridgeHandler.get().setVehicleDiscovery(this);
             bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
@@ -80,19 +80,19 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
 
     @Override
     protected void startScan() {
-        logger.debug("xxxVehicleDiscovery.startScan");
+        logger.trace("xxxVehicleDiscovery.startScan");
         discoverVehicles();
     }
 
     @Override
     public void deactivate() {
-        logger.debug("xxxVehicleDiscovery.deactivate");
+        logger.trace("xxxVehicleDiscovery.deactivate");
 
         super.deactivate();
     }
 
     public void discoverVehicles() {
-        logger.debug("xxxVehicleDiscovery.discoverVehicles");
+        logger.trace("xxxVehicleDiscovery.discoverVehicles");
 
         if (!myBMWProxy.isPresent()) {
             myBMWProxy = bridgeHandler.get().getProxy();
@@ -118,7 +118,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
      * @param vehicleList
      */
     private void processVehicles(List<Vehicle> vehicleList) {
-        logger.debug("xxxVehicleDiscovery.processVehicles");
+        logger.trace("xxxVehicleDiscovery.processVehicles");
 
         vehicleList.forEach(vehicle -> {
             // the DriveTrain field in the delivered json is defining the Vehicle Type
