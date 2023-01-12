@@ -193,9 +193,11 @@ public class Clip2Bridge implements Closeable {
         public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
             Objects.requireNonNull(frame);
             Objects.requireNonNull(callback);
-            strings.add(StandardCharsets.UTF_8.decode(frame.getData()).toString());
-            if (frame.isEndStream() && !completable.isDone()) {
-                completable.complete(String.join("", strings));
+            synchronized (this) {
+                strings.add(StandardCharsets.UTF_8.decode(frame.getData()).toString());
+                if (frame.isEndStream() && !completable.isDone()) {
+                    completable.complete(String.join("", strings));
+                }
             }
             callback.succeeded();
         }
@@ -248,12 +250,14 @@ public class Clip2Bridge implements Closeable {
             if (!completable.isDone()) {
                 completable.complete(Boolean.toString(true));
             }
-            String lines = StandardCharsets.UTF_8.decode(frame.getData()).toString();
-            for (String line : lines.split("\n")) {
-                if (line.startsWith("data: ")) {
-                    strings.add(line.substring(6));
-                } else if (!strings.isEmpty()) {
-                    owner.onEventData(String.join("", strings).trim());
+            synchronized (this) {
+                for (String line : StandardCharsets.UTF_8.decode(frame.getData()).toString().split("\\R")) {
+                    if (line.startsWith("data: ")) {
+                        strings.add(line.substring(6));
+                    }
+                }
+                if (!strings.isEmpty()) {
+                    owner.onEventData(String.join("", strings));
                     strings.clear();
                 }
             }
