@@ -15,18 +15,18 @@ package org.openhab.binding.hue.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when one of the connection or handler classes has not loaded all its assets.
+ * Thrown when an HTTP call to the CLIP 2 bridge returns with an 'unauthorized' status code.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class AssetNotLoadedException extends Exception {
+public class HttpUnAuthorizedException extends Exception {
     private static final long serialVersionUID = -1;
 
-    public AssetNotLoadedException() {
+    public HttpUnAuthorizedException() {
     }
 
-    public AssetNotLoadedException(String message) {
+    public HttpUnAuthorizedException(String message) {
         super(message);
     }
 }

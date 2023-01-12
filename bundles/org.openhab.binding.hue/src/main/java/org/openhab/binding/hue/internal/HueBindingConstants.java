@@ -94,10 +94,18 @@ public class HueBindingConstants {
     // Thing configuration properties
     public static final String LIGHT_ID = "lightId";
     public static final String SENSOR_ID = "sensorId";
-    public static final String PRODUCT_NAME = "productName";
+    public static final String PROPERTY_PRODUCT_NAME = "productName";
     public static final String UNIQUE_ID = "uniqueId";
     public static final String FADETIME = "fadetime";
     public static final String GROUP_ID = "groupId";
+
+    // property names for CLIP 2
+    public static final String PROPERTY_RESOURCE_ID = "resourceId";
+    public static final String PROPERTY_RESOURCE_TYPE = "resourceType";
+    public static final String PROPERTY_RESOURCE_NAME = "resourceName";
+    public static final String PROPERTY_RESOURCE_ARCHETYPE = "resourceArchetype";
+    public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
+    public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -120,13 +128,4 @@ public class HueBindingConstants {
     public static final String CHANNEL_LIGHT_LEVEL_ENABLED = "lightLevelEnabled";
     public static final String CHANNEL_ZIGBEE_STATUS = "zigbeeStatus";
     public static final String CHANNEL_ROTARY_STEPS = "rotarySteps";
-
-    // property names for CLIP 2
-    public static final String PROPERTY_RESOURCE_ID = "resourceId";
-    public static final String PROPERTY_RESOURCE_TYPE = "resourceType";
-    public static final String PROPERTY_RESOURCE_NAME = "resourceName";
-    public static final String PROPERTY_RESOURCE_ARCHETYPE = "resourceArchetype";
-    public static final String PROPERTY_PRODUCT_NAME = "productName";
-    public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
-    public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
 }

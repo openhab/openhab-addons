@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.binding.hue.internal.exceptions.HttpUnAuthorizedException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.library.types.StringType;
@@ -103,10 +105,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Try to connect and set the online status accordingly. If the connection attempt throws an IllegalAccessException
-     * then try to register the existing application key, or create a new one, with the hub. If the connection attempt
-     * throws an ApiException then set the thing status to offline. This method is called on a scheduler thread, which
-     * reschedules itself repeatedly until the thing is shutdown.
+     * Try to connect and set the online status accordingly. If the connection attempt throws an
+     * HttpUnAuthorizedException then try to register the existing application key, or create a new one, with the hub.
+     * If the connection attempt throws an ApiException then set the thing status to offline. This method is called on a
+     * scheduler thread, which reschedules itself repeatedly until the thing is shutdown.
      */
     private void checkConnection() {
         logger.debug("checkConnection() called");
@@ -117,7 +119,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             checkAssetsLoaded();
             getClip2Bridge().testConnectionState();
             thingStatus = ThingStatusDetail.NONE;
-        } catch (IllegalAccessException e) {
+        } catch (HttpUnAuthorizedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
             thingStatus = ThingStatusDetail.CONFIGURATION_ERROR;
         } catch (ApiException e) {
@@ -139,7 +141,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     try {
                         registerApplicationKey();
                         retryApplicationKey = true;
-                    } catch (IllegalAccessException e) {
+                    } catch (HttpUnAuthorizedException e) {
                         retryApplicationKey = true;
                     } catch (ApiException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -358,19 +360,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             }
 
             try {
-                Clip2Bridge.testSupportsClip2(ipAddress);
-            } catch (IllegalStateException e) {
-                logger.debug("initializeAssets() hub does not support clip 2");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.clip2.conf-error-clip2-not-supported");
-                return;
-            } catch (IllegalArgumentException e) {
-                logger.debug("initializeAssets() invalid ip address '{}'", ipAddress);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.clip2.conf-error-invalid-ip-address");
-                return;
-            } catch (ApiException e) {
-                logger.debug("initializeAssets() communication error on '{}'", ipAddress);
+                if (!Clip2Bridge.isClip2Supported(ipAddress)) {
+                    logger.debug("initializeAssets() hub does not support clip 2");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.clip2.conf-error-clip2-not-supported");
+                    return;
+                }
+            } catch (IOException e) {
+                logger.debug("initializeAssets() communication error on '{}'", ipAddress, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error");
                 return;
@@ -450,9 +447,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @param resources a list of incoming resource objects.
      */
-    public void onSseResources(List<Resource> resources) {
+    public void onResourcesEvent(List<Resource> resources) {
         if (assetsLoaded) {
-            logger.debug("onSseResources() called with resource count {}", resources.size());
+            logger.debug("onResourcesEvent() called with resource count {}", resources.size());
             resources.forEach(resource -> onResource(resource));
         }
     }
@@ -475,11 +472,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
-     * @throws IllegalAccessException if the communication was OK but the registration failed anyway.
+     * @throws HttpUnAuthorizedException if the communication was OK but the registration failed anyway.
      * @throws IllegalStateException if the configuration cannot be changed e.g. read only.
      */
     private void registerApplicationKey()
-            throws IllegalAccessException, ApiException, AssetNotLoadedException, IllegalStateException {
+            throws HttpUnAuthorizedException, ApiException, AssetNotLoadedException, IllegalStateException {
         logger.debug("registerApplicationKey() called");
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         String newApplicationKey = getClip2Bridge().registerApplicationKey(config.applicationKey);
@@ -566,7 +563,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.clip2.conf-error-assets-not-loaded");
-        } catch (IllegalAccessException e) {
+        } catch (HttpUnAuthorizedException e) {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.clip2.conf-error-access_denied");
