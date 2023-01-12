@@ -92,6 +92,10 @@ public class DeviceThingHandler extends BaseThingHandler {
             task.cancel(true);
         }
         updateContributorsTask = null;
+        supportedChannelIds.clear();
+        commandResourceIds.clear();
+        contributorsCache.clear();
+        controlIds.clear();
     }
 
     /**
@@ -202,11 +206,6 @@ public class DeviceThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         thisResource.setId(resourceId);
-
-        supportedChannelIds.clear();
-        commandResourceIds.clear();
-        contributorsCache.clear();
-        controlIds.clear();
 
         disposing = false;
         hasConnectivityIssue = false;
