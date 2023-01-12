@@ -33,7 +33,7 @@ public class Util {
      * @return true or false
      */
     public static boolean inRange(int value, int min, int max) {
-        return !((value < min) || (value > max));
+        return value >= min && value <= max;
     }
 
     /**

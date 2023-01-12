@@ -35,18 +35,13 @@ public class A5_11_03 extends _4BSMessage {
         super(packet);
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     protected boolean isErrorState() {
         byte db1 = getDB_1();
 
         int state = (db1 >> 4) & 0x03;
 
-        if (state != 0) {
-            // TODO: display error state on thing
-            return true;
-        } else {
-            return false;
-        }
+        // TODO: display error state on thing
+        return state != 0;
     }
 
     protected State getPositionData() {
