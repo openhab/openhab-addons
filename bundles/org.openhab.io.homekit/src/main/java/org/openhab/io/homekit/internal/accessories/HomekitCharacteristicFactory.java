@@ -16,7 +16,9 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -38,6 +40,7 @@ import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -70,6 +73,7 @@ import io.github.hapjava.characteristics.impl.airquality.PM10DensityCharacterist
 import io.github.hapjava.characteristics.impl.airquality.PM25DensityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.SulphurDioxideDensityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.VOCDensityCharacteristic;
+import io.github.hapjava.characteristics.impl.audio.MuteCharacteristic;
 import io.github.hapjava.characteristics.impl.audio.VolumeCharacteristic;
 import io.github.hapjava.characteristics.impl.battery.StatusLowBatteryCharacteristic;
 import io.github.hapjava.characteristics.impl.battery.StatusLowBatteryEnum;
@@ -79,7 +83,11 @@ import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxid
 import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxidePeakLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ActiveEnum;
+import io.github.hapjava.characteristics.impl.common.ActiveIdentifierCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ConfiguredNameCharacteristic;
+import io.github.hapjava.characteristics.impl.common.IdentifierCharacteristic;
+import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
+import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ObstructionDetectedCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusActiveCharacteristic;
@@ -101,12 +109,38 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
 import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
+import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
+import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateEnum;
+import io.github.hapjava.characteristics.impl.inputsource.InputDeviceTypeCharacteristic;
+import io.github.hapjava.characteristics.impl.inputsource.InputDeviceTypeEnum;
+import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeCharacteristic;
+import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeEnum;
+import io.github.hapjava.characteristics.impl.inputsource.TargetVisibilityStateCharacteristic;
+import io.github.hapjava.characteristics.impl.inputsource.TargetVisibilityStateEnum;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.SaturationCharacteristic;
 import io.github.hapjava.characteristics.impl.slat.CurrentTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.slat.TargetTiltAngleCharacteristic;
+import io.github.hapjava.characteristics.impl.television.ClosedCaptionsCharacteristic;
+import io.github.hapjava.characteristics.impl.television.ClosedCaptionsEnum;
+import io.github.hapjava.characteristics.impl.television.CurrentMediaStateCharacteristic;
+import io.github.hapjava.characteristics.impl.television.CurrentMediaStateEnum;
+import io.github.hapjava.characteristics.impl.television.PictureModeCharacteristic;
+import io.github.hapjava.characteristics.impl.television.PictureModeEnum;
+import io.github.hapjava.characteristics.impl.television.PowerModeCharacteristic;
+import io.github.hapjava.characteristics.impl.television.PowerModeEnum;
+import io.github.hapjava.characteristics.impl.television.RemoteKeyCharacteristic;
+import io.github.hapjava.characteristics.impl.television.RemoteKeyEnum;
+import io.github.hapjava.characteristics.impl.television.SleepDiscoveryModeCharacteristic;
+import io.github.hapjava.characteristics.impl.television.SleepDiscoveryModeEnum;
+import io.github.hapjava.characteristics.impl.television.TargetMediaStateCharacteristic;
+import io.github.hapjava.characteristics.impl.television.TargetMediaStateEnum;
+import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeControlTypeCharacteristic;
+import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeControlTypeEnum;
+import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeSelectorCharacteristic;
+import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeSelectorEnum;
 import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.valve.RemainingDurationCharacteristic;
@@ -176,11 +210,38 @@ public class HomekitCharacteristicFactory {
             put(FILTER_RESET_INDICATION, HomekitCharacteristicFactory::createFilterResetCharacteristic);
             put(ACTIVE, HomekitCharacteristicFactory::createActiveCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
+            put(ACTIVE_IDENTIFIER, HomekitCharacteristicFactory::createActiveIdentifierCharacteristic);
+            put(REMOTE_KEY, HomekitCharacteristicFactory::createRemoteKeyCharacteristic);
+            put(SLEEP_DISCOVERY_MODE, HomekitCharacteristicFactory::createSleepDiscoveryModeCharacteristic);
+            put(POWER_MODE, HomekitCharacteristicFactory::createPowerModeCharacteristic);
+            put(CLOSED_CAPTIONS, HomekitCharacteristicFactory::createClosedCaptionsCharacteristic);
+            put(PICTURE_MODE, HomekitCharacteristicFactory::createPictureModeCharacteristic);
+            put(CONFIGURED, HomekitCharacteristicFactory::createIsConfiguredCharacteristic);
+            put(INPUT_SOURCE_TYPE, HomekitCharacteristicFactory::createInputSourceTypeCharacteristic);
+            put(CURRENT_VISIBILITY, HomekitCharacteristicFactory::createCurrentVisibilityStateCharacteristic);
+            put(IDENTIFIER, HomekitCharacteristicFactory::createIdentifierCharacteristic);
+            put(INPUT_DEVICE_TYPE, HomekitCharacteristicFactory::createInputDeviceTypeCharacteristic);
+            put(TARGET_VISIBILITY_STATE, HomekitCharacteristicFactory::createTargetVisibilityStateCharacteristic);
+            put(VOLUME_SELECTOR, HomekitCharacteristicFactory::createVolumeSelectorCharacteristic);
+            put(VOLUME_CONTROL_TYPE, HomekitCharacteristicFactory::createVolumeControlTypeCharacteristic);
+            put(CURRENT_MEDIA_STATE, HomekitCharacteristicFactory::createCurrentMediaStateCharacteristic);
+            put(TARGET_MEDIA_STATE, HomekitCharacteristicFactory::createTargetMediaStateCharacteristic);
+            put(MUTE, HomekitCharacteristicFactory::createMuteCharacteristic);
         }
     };
 
+    public static @Nullable Characteristic createNullableCharacteristic(HomekitTaggedItem item,
+            HomekitAccessoryUpdater updater) {
+        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
+        logger.trace("Create characteristic {}", item);
+        if (optional.containsKey(type)) {
+            return optional.get(type).apply(item, updater);
+        }
+        return null;
+    }
+
     /**
-     * create optional HomeKit characteristic
+     * Create HomeKit characteristic
      *
      * @param item corresponding OH item
      * @param updater update to keep OH item and HomeKit characteristic in sync
@@ -188,15 +249,80 @@ public class HomekitCharacteristicFactory {
      */
     public static Characteristic createCharacteristic(HomekitTaggedItem item, HomekitAccessoryUpdater updater)
             throws HomekitException {
-        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.trace("Create characteristic {}", item);
-        if (optional.containsKey(type)) {
-            return optional.get(type).apply(item, updater);
+        Characteristic characteristic = createNullableCharacteristic(item, updater);
+        if (characteristic != null) {
+            return characteristic;
         }
+        final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
         logger.warn("Unsupported optional characteristic from item {}. Accessory type {}, characteristic type {}",
                 item.getName(), item.getAccessoryType(), type.getTag());
         throw new HomekitException(
                 "Unsupported optional characteristic. Characteristic type \"" + type.getTag() + "\"");
+    }
+
+    public static <T extends Enum<T>> Map<T, String> createMapping(HomekitTaggedItem item, Class<T> klazz) {
+        EnumMap<T, String> map = new EnumMap(klazz);
+        for (var k : klazz.getEnumConstants()) {
+            map.put(k, k.toString());
+        }
+        var configuration = item.getConfiguration();
+        if (configuration != null) {
+            updateMapping(configuration, map);
+        }
+        return map;
+    }
+
+    /**
+     * Update mapping with values from item configuration.
+     * It checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
+     * replace the value.
+     *
+     * @param configuration tagged item configuration
+     * @param map mapping to update
+     * @param customEnumList list to store custom state enumeration
+     */
+    public static <T> void updateMapping(Map<String, Object> configuration, Map<T, String> map,
+            @Nullable List<T> customEnumList) {
+        map.forEach((k, current_value) -> {
+            final Object new_value = configuration.get(k.toString());
+            if (new_value instanceof String) {
+                map.put(k, (String) new_value);
+                if (customEnumList != null) {
+                    customEnumList.add(k);
+                }
+            }
+        });
+    }
+
+    public static <T> void updateMapping(Map<String, Object> configuration, Map<T, String> map) {
+        updateMapping(configuration, map, null);
+    }
+
+    /**
+     * Takes item state as value and retrieves the key for that value from mapping.
+     * E.g. used to map StringItem value to HomeKit Enum
+     *
+     * @param characteristicType characteristicType to identify item
+     * @param mapping mapping
+     * @param defaultValue default value if nothing found in mapping
+     * @param <T> type of the result derived from
+     * @return key for the value
+     */
+    public static <T> T getKeyFromMapping(HomekitTaggedItem item, Map<T, String> mapping, T defaultValue) {
+        final State state = item.getItem().getState();
+        logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
+                state, mapping);
+        if (state instanceof StringType) {
+            return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
+                    .findAny().map(Map.Entry::getKey).orElseGet(() -> {
+                        logger.warn(
+                                "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
+                                state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(),
+                                defaultValue);
+                        return defaultValue;
+                    });
+        }
+        return defaultValue;
     }
 
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
@@ -206,6 +332,11 @@ public class HomekitCharacteristicFactory {
     public static boolean useFahrenheit() {
         return FrameworkUtil.getBundle(HomekitImpl.class).getBundleContext()
                 .getServiceReference(Homekit.class.getName()).getProperty("useFahrenheitTemperature") == Boolean.TRUE;
+    }
+
+    private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
+            Map<T, String> mapping, T defaultValue) {
+        return CompletableFuture.completedFuture(getKeyFromMapping(item, mapping, defaultValue));
     }
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
@@ -226,6 +357,11 @@ public class HomekitCharacteristicFactory {
                 "Item state {} is not supported. Only OnOffType,OpenClosedType and Decimal (0/1) are supported. Ignore item {}",
                 state, item.getName());
         return CompletableFuture.completedFuture(defaultEnum);
+    }
+
+    private static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value,
+            Map<T, String> map) {
+        taggedItem.send(new StringType(map.get(value)));
     }
 
     private static void setValueFromEnum(HomekitTaggedItem taggedItem, CharacteristicEnum value,
@@ -914,8 +1050,8 @@ public class HomekitCharacteristicFactory {
     private static ActiveCharacteristic createActiveCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new ActiveCharacteristic(
-                () -> getEnumFromItem(taggedItem, ActiveEnum.ACTIVE, ActiveEnum.INACTIVE, ActiveEnum.INACTIVE),
-                (value) -> setValueFromEnum(taggedItem, value, ActiveEnum.ACTIVE, ActiveEnum.INACTIVE),
+                () -> getEnumFromItem(taggedItem, ActiveEnum.INACTIVE, ActiveEnum.ACTIVE, ActiveEnum.INACTIVE),
+                (value) -> setValueFromEnum(taggedItem, value, ActiveEnum.INACTIVE, ActiveEnum.ACTIVE),
                 getSubscriber(taggedItem, ACTIVE, updater), getUnsubscriber(taggedItem, ACTIVE, updater));
     }
 
@@ -928,5 +1064,150 @@ public class HomekitCharacteristicFactory {
         }, (value) -> ((StringItem) taggedItem.getItem()).send(new StringType(value)),
                 getSubscriber(taggedItem, CONFIGURED_NAME, updater),
                 getUnsubscriber(taggedItem, CONFIGURED_NAME, updater));
+    }
+
+    private static ActiveIdentifierCharacteristic createActiveIdentifierCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new ActiveIdentifierCharacteristic(getIntSupplier(taggedItem, 1), setIntConsumer(taggedItem),
+                getSubscriber(taggedItem, ACTIVE_IDENTIFIER, updater),
+                getUnsubscriber(taggedItem, ACTIVE_IDENTIFIER, updater));
+    }
+
+    private static RemoteKeyCharacteristic createRemoteKeyCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, RemoteKeyEnum.class);
+        return new RemoteKeyCharacteristic((value) -> setValueFromEnum(taggedItem, value, map));
+    }
+
+    private static SleepDiscoveryModeCharacteristic createSleepDiscoveryModeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new SleepDiscoveryModeCharacteristic(
+                () -> getEnumFromItem(taggedItem, SleepDiscoveryModeEnum.NOT_DISCOVERABLE,
+                        SleepDiscoveryModeEnum.ALWAYS_DISCOVERABLE, SleepDiscoveryModeEnum.ALWAYS_DISCOVERABLE),
+                getSubscriber(taggedItem, SLEEP_DISCOVERY_MODE, updater),
+                getUnsubscriber(taggedItem, SLEEP_DISCOVERY_MODE, updater));
+    }
+
+    private static PowerModeCharacteristic createPowerModeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new PowerModeCharacteristic(
+                (value) -> setValueFromEnum(taggedItem, value, PowerModeEnum.HIDE, PowerModeEnum.SHOW));
+    }
+
+    private static ClosedCaptionsCharacteristic createClosedCaptionsCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new ClosedCaptionsCharacteristic(
+                () -> getEnumFromItem(taggedItem, ClosedCaptionsEnum.DISABLED, ClosedCaptionsEnum.ENABLED,
+                        ClosedCaptionsEnum.DISABLED),
+                (value) -> setValueFromEnum(taggedItem, value, ClosedCaptionsEnum.DISABLED, ClosedCaptionsEnum.ENABLED),
+                getSubscriber(taggedItem, CLOSED_CAPTIONS, updater),
+                getUnsubscriber(taggedItem, CLOSED_CAPTIONS, updater));
+    }
+
+    private static PictureModeCharacteristic createPictureModeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, PictureModeEnum.class);
+        return new PictureModeCharacteristic(() -> getEnumFromItem(taggedItem, map, PictureModeEnum.OTHER),
+                (value) -> setValueFromEnum(taggedItem, value, map), getSubscriber(taggedItem, PICTURE_MODE, updater),
+                getUnsubscriber(taggedItem, PICTURE_MODE, updater));
+    }
+
+    private static IsConfiguredCharacteristic createIsConfiguredCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new IsConfiguredCharacteristic(
+                () -> getEnumFromItem(taggedItem, IsConfiguredEnum.NOT_CONFIGURED, IsConfiguredEnum.CONFIGURED,
+                        IsConfiguredEnum.NOT_CONFIGURED),
+                (value) -> setValueFromEnum(taggedItem, value, IsConfiguredEnum.NOT_CONFIGURED,
+                        IsConfiguredEnum.CONFIGURED),
+                getSubscriber(taggedItem, CONFIGURED, updater), getUnsubscriber(taggedItem, CONFIGURED, updater));
+    }
+
+    private static InputSourceTypeCharacteristic createInputSourceTypeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, InputSourceTypeEnum.class);
+        return new InputSourceTypeCharacteristic(() -> getEnumFromItem(taggedItem, map, InputSourceTypeEnum.OTHER),
+                getSubscriber(taggedItem, INPUT_SOURCE_TYPE, updater),
+                getUnsubscriber(taggedItem, INPUT_SOURCE_TYPE, updater));
+    }
+
+    private static CurrentVisibilityStateCharacteristic createCurrentVisibilityStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        return new CurrentVisibilityStateCharacteristic(
+                () -> getEnumFromItem(taggedItem, CurrentVisibilityStateEnum.HIDDEN, CurrentVisibilityStateEnum.SHOWN,
+                        CurrentVisibilityStateEnum.HIDDEN),
+                getSubscriber(taggedItem, CURRENT_VISIBILITY, updater),
+                getUnsubscriber(taggedItem, CURRENT_VISIBILITY, updater));
+    }
+
+    private static IdentifierCharacteristic createIdentifierCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        return new IdentifierCharacteristic(getIntSupplier(taggedItem, 1));
+    }
+
+    private static InputDeviceTypeCharacteristic createInputDeviceTypeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var mapping = createMapping(taggedItem, InputDeviceTypeEnum.class);
+        return new InputDeviceTypeCharacteristic(() -> getEnumFromItem(taggedItem, mapping, InputDeviceTypeEnum.OTHER),
+                getSubscriber(taggedItem, INPUT_DEVICE_TYPE, updater),
+                getUnsubscriber(taggedItem, INPUT_DEVICE_TYPE, updater));
+    }
+
+    private static TargetVisibilityStateCharacteristic createTargetVisibilityStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        return new TargetVisibilityStateCharacteristic(
+                () -> getEnumFromItem(taggedItem, TargetVisibilityStateEnum.HIDDEN, TargetVisibilityStateEnum.SHOWN,
+                        TargetVisibilityStateEnum.HIDDEN),
+                (value) -> setValueFromEnum(taggedItem, value, TargetVisibilityStateEnum.HIDDEN,
+                        TargetVisibilityStateEnum.SHOWN),
+                getSubscriber(taggedItem, TARGET_VISIBILITY_STATE, updater),
+                getUnsubscriber(taggedItem, TARGET_VISIBILITY_STATE, updater));
+    }
+
+    private static VolumeSelectorCharacteristic createVolumeSelectorCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        if (taggedItem.getItem() instanceof DimmerItem) {
+            return new VolumeSelectorCharacteristic((value) -> taggedItem
+                    .send(value.equals(VolumeSelectorEnum.INCREMENT) ? IncreaseDecreaseType.INCREASE
+                            : IncreaseDecreaseType.DECREASE));
+        } else {
+            var map = createMapping(taggedItem, VolumeSelectorEnum.class);
+            return new VolumeSelectorCharacteristic((value) -> setValueFromEnum(taggedItem, value, map));
+        }
+    }
+
+    private static VolumeControlTypeCharacteristic createVolumeControlTypeCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, VolumeControlTypeEnum.class);
+        return new VolumeControlTypeCharacteristic(() -> getEnumFromItem(taggedItem, map, VolumeControlTypeEnum.NONE),
+                getSubscriber(taggedItem, VOLUME_CONTROL_TYPE, updater),
+                getUnsubscriber(taggedItem, VOLUME_CONTROL_TYPE, updater));
+    }
+
+    private static CurrentMediaStateCharacteristic createCurrentMediaStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, CurrentMediaStateEnum.class);
+        return new CurrentMediaStateCharacteristic(
+                () -> getEnumFromItem(taggedItem, map, CurrentMediaStateEnum.UNKNOWN),
+                getSubscriber(taggedItem, CURRENT_MEDIA_STATE, updater),
+                getUnsubscriber(taggedItem, CURRENT_MEDIA_STATE, updater));
+    }
+
+    private static TargetMediaStateCharacteristic createTargetMediaStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, TargetMediaStateEnum.class);
+        return new TargetMediaStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetMediaStateEnum.STOP),
+                (value) -> setValueFromEnum(taggedItem, value, map),
+                getSubscriber(taggedItem, TARGET_MEDIA_STATE, updater),
+                getUnsubscriber(taggedItem, TARGET_MEDIA_STATE, updater));
+    }
+
+    private static MuteCharacteristic createMuteCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        BooleanItemReader muteReader = new BooleanItemReader(taggedItem.getItem(),
+                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        return new MuteCharacteristic(() -> CompletableFuture.completedFuture(muteReader.getValue()),
+                (value) -> taggedItem.send(value ? OnOffType.ON : OnOffType.OFF),
+                getSubscriber(taggedItem, MUTE, updater), getUnsubscriber(taggedItem, MUTE, updater));
     }
 }

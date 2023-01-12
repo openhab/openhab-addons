@@ -55,6 +55,9 @@ public enum HomekitAccessoryType {
     FAUCET("Faucet"),
     MICROPHONE("Microphone"),
     SLAT("Slat"),
+    TELEVISION("Television"),
+    INPUT_SOURCE("InputSource"),
+    TELEVISION_SPEAKER("TelevisionSpeaker"),
     ACCESSORY_GROUP("AccessoryGroup"),
     DUMMY("Dummy");
 
