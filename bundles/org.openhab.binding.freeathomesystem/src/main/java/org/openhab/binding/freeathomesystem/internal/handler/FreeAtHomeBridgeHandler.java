@@ -95,7 +95,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     int numberOfComponents = 0;
 
-    private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 30;
+    private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 60;
 
     private List<String> listOfComponentId = new ArrayList<String>();
 
@@ -545,6 +545,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 websocketClient.start();
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
+                request.setTimeout(BRIDGE_WEBSOCKET_RECONNECT_DELAY, TimeUnit.SECONDS);
                 websocketClient.connect(socket, uri, request);
                 websocketClient.setMaxIdleTimeout(3000000);
 
@@ -761,13 +762,15 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                             socket.awaitEndCommunication();
 
                             logger.debug("Socket connection closed");
+
+                            reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                         }
                     } else {
                         TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("Thread interrupted [{}]", e.getMessage());
+                logger.error("Thread interrupted [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Problem in websocket connection");
             }
@@ -777,15 +780,19 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             int delay = reconnectDelay.get();
 
             if (delay > 0) {
-                logger.debug("Delaying connect request by {} seconds.", reconnectDelay);
+                logger.debug("Delaying (re)connect request by {} seconds.", reconnectDelay);
                 TimeUnit.SECONDS.sleep(delay);
             }
 
             logger.debug("Server connecting to websocket");
 
+            socket.resetEventSocket();
+
             if (!connectWebsocketSession()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Problem in websocket connection");
+
+                logger.error("Problem in websocket connection, trying to reconnect");
 
                 reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
 

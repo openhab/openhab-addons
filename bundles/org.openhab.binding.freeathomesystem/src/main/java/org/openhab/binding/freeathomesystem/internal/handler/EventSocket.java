@@ -36,12 +36,17 @@ public class EventSocket extends WebSocketAdapter {
 
     private @Nullable FreeAtHomeBridgeHandler freeAtHomeBridge;
 
-    private CountDownLatch closureLatch = new CountDownLatch(1);
+    private CountDownLatch closureLatch = null;
 
     @Override
     public void onWebSocketConnect(Session session) {
         super.onWebSocketConnect(session);
-        logger.debug("Socket Connected: {}", session);
+
+        if (closureLatch != null) {
+            logger.debug("Socket Connected - latch [ {} ] - sesson: {}", closureLatch.getCount(), session);
+        } else {
+            logger.debug("Socket Connected - but latch was not initialized - sesson: {}", session);
+        }
     }
 
     @Override
@@ -53,8 +58,8 @@ public class EventSocket extends WebSocketAdapter {
             getSession().close(StatusCode.NORMAL, "Thanks");
             logger.debug("Websocket connection closed: {} ", message);
         } else {
+            logger.debug("Received websocket text: {} ", message);
             if (freeAtHomeBridge != null) {
-                logger.debug("Handle websocket text: {} ", message);
                 freeAtHomeBridge.processSocketEvent(message);
             } else {
                 logger.debug("No brigde available to handle the event");
@@ -65,20 +70,43 @@ public class EventSocket extends WebSocketAdapter {
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
         super.onWebSocketClose(statusCode, reason);
+
         logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
-        closureLatch.countDown();
+
+        if (closureLatch != null) {
+            closureLatch.countDown();
+
+            logger.debug("Socket Closed - Latch [ {} ]", closureLatch.getCount());
+        } else {
+            logger.debug("Socket Closed - Latch was not reseted");
+        }
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
         super.onWebSocketError(cause);
+
         logger.debug("Socket Error: {}", cause.getLocalizedMessage());
-        closureLatch.countDown();
+
+        if (closureLatch != null) {
+            closureLatch.countDown();
+        } else {
+            logger.debug("Socket Error - Latch was not reseted");
+        }
     }
 
     public void awaitEndCommunication() throws InterruptedException {
-        logger.debug("Awaiting ending the communication from remote or error");
-        closureLatch.await();
+        if (closureLatch != null) {
+            logger.debug("Awaiting ending the communication from remote or error");
+            closureLatch.await();
+        } else {
+            logger.debug("Awaiting called - Latch was not reseted");
+        }
+    }
+
+    public void resetEventSocket() {
+        closureLatch = new CountDownLatch(1);
+        logger.debug("Socket latch reseted - restart latch to [ {} ]", closureLatch.getCount());
     }
 
     public CountDownLatch getLatch() {
@@ -86,10 +114,12 @@ public class EventSocket extends WebSocketAdapter {
     }
 
     public void setBridge(FreeAtHomeBridgeHandler bridge) {
+        logger.debug("Set brigde to handle the events");
+
         freeAtHomeBridge = bridge;
 
-        if (freeAtHomeBridge != null) {
-            logger.debug("No brigde available to handle the event");
+        if (freeAtHomeBridge == null) {
+            logger.debug("Incorrect brigde for event handling");
         }
     }
 }
