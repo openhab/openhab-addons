@@ -29,8 +29,8 @@ public class UniFiUnknownClient extends UniFiClient {
     }
 
     @Override
-    public Boolean isWired() {
-        return null; // mgb: no is_wired property in the json
+    public boolean isWired() {
+        return false; // mgb: no is_wired property in the json
     }
 
     @Override
