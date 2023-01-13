@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,59 +12,50 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lan;
 
-import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.Response;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.NetworkMode;
 
 /**
- * The {@link LanConfig} is the Java class used to map the "LanConfig"
- * structure used by the LAN configuration API
+ * The {@link LanConfig} is the Java class used to map the "LanConfig" structure used by the LAN configuration API
+ *
  * https://dev.freebox.fr/sdk/os/lan/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class LanConfig implements ConnectivityData {
-    public static class LanConfigResponse extends Response<LanConfig> {
-    }
-
-    public static enum NetworkMode {
-        UNKNOWN,
-        @SerializedName("router")
-        ROUTER,
-        @SerializedName("bridge")
-        BRIDGE;
-    }
-
-    private @NonNullByDefault({}) String name;
+public class LanConfig {
     private @Nullable String ip;
-    private @Nullable NetworkMode mode;
+    private @Nullable String name;
+    private @Nullable String nameDns;
+    private @Nullable String nameMdns;
+    private @Nullable String nameNetbios;
+    private NetworkMode mode = NetworkMode.UNKNOWN;
 
-    public NetworkMode getMode() {
-        NetworkMode localMode = mode;
-        return localMode != null ? localMode : NetworkMode.UNKNOWN;
+    public String getIp() {
+        return Objects.requireNonNull(ip);
     }
 
     public String getName() {
-        return name;
+        return Objects.requireNonNull(name);
     }
 
-    @Override
-    public boolean isReachable() {
-        return true;
+    public String getNameDns() {
+        return Objects.requireNonNull(nameDns);
     }
 
-    @Override
-    public @Nullable ZonedDateTime getLastSeen() {
-        return ZonedDateTime.now();
+    public String getNameMdns() {
+        return Objects.requireNonNull(nameMdns);
     }
 
-    @Override
-    public @Nullable String getIpv4() {
-        return ip;
+    public String getNameNetbios() {
+        return Objects.requireNonNull(nameNetbios);
     }
+
+    public NetworkMode getMode() {
+        return mode;
+    }
+
 }

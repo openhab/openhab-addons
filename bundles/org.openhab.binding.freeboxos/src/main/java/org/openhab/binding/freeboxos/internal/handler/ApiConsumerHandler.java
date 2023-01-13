@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,12 +22,11 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
+import org.openhab.binding.freeboxos.internal.rest.RestManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -46,7 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ServerHandler} handle common parts of Freebox bridges.
+ * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -61,32 +60,35 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         super(thing);
     }
 
-    public <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
-        FreeboxOsHandler handler = bridgeHandler;
-        if (handler == null) {
-            throw new FreeboxException("Bridge handler not yet defined");
-        }
-        return handler.getManager(clazz);
-    }
-
     @Override
     public void initialize() {
         logger.debug("Initializing handler for thing {}", getThing().getUID());
-        if (checkBridgeHandler()) {
-            Map<String, String> properties = editProperties();
-            if (properties.isEmpty()) {
-                try {
-                    internalGetProperties(properties);
-                    updateProperties(properties);
-                } catch (FreeboxException e) {
-                    logger.warn("Error getting thing properties : {}", e.getMessage());
-                }
-            }
-            startRefreshJob();
+        if (!checkBridgeHandler()) {
+            return;
         }
+
+        Map<String, String> properties = editProperties();
+        if (properties.isEmpty()) {
+            try {
+                initializeProperties(properties);
+                updateProperties(properties);
+            } catch (FreeboxException e) {
+                logger.warn("Error getting thing properties : {}", e.getMessage());
+            }
+        }
+
+        startRefreshJob();
     }
 
-    abstract void internalGetProperties(Map<String, String> properties) throws FreeboxException;
+    public <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
+        FreeboxOsHandler handler = bridgeHandler;
+        if (handler != null) {
+            return handler.getManager(clazz);
+        }
+        throw new FreeboxException("Bridge handler not yet defined");
+    }
+
+    abstract void initializeProperties(Map<String, String> properties) throws FreeboxException;
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -104,7 +106,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
             return;
         }
         try {
-            if (bridgeHandler == null || !internalHandleCommand(channelUID, command)) {
+            if (bridgeHandler == null || !internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
                 logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
             }
         } catch (FreeboxException e) {
@@ -182,14 +184,21 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
     }
 
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
+    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         return false;
     }
 
     protected abstract void internalPoll() throws FreeboxException;
 
-    private void updateIfActive(String group, String channelId, State state) {
+    protected void updateIfActive(String group, String channelId, State state) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+        if (isLinked(id)) {
+            updateState(id, state);
+        }
+    }
+
+    protected void updateIfActive(String channelId, State state) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), channelId);
         if (isLinked(id)) {
             updateState(id, state);
         }
@@ -203,12 +212,20 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         updateIfActive(group, channelId, OnOffType.from(value));
     }
 
-    protected void updateChannelOpenClosed(String group, String channelId, OpenClosedType value) {
-        updateIfActive(group, channelId, value);
+    protected void updateChannelOnOff(String channelId, boolean value) {
+        updateIfActive(channelId, OnOffType.from(value));
     }
 
     protected void updateChannelString(String group, String channelId, @Nullable String value) {
         updateIfActive(group, channelId, value != null ? new StringType(value) : UnDefType.NULL);
+    }
+
+    protected void updateChannelString(String channelId, @Nullable String value) {
+        updateIfActive(channelId, value != null ? new StringType(value) : UnDefType.NULL);
+    }
+
+    protected void updateChannelString(String group, String channelId, Enum<?> value) {
+        updateIfActive(group, channelId, new StringType(value.name()));
     }
 
     protected void updateChannelQuantity(String group, String channelId, double d, Unit<?> unit) {
@@ -219,8 +236,16 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         updateIfActive(group, channelId, quantity != null ? quantity : UnDefType.NULL);
     }
 
+    protected void updateChannelDecimal(String channelId, @Nullable Integer value) {
+        updateIfActive(channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
+    }
+
     protected void updateChannelDecimal(String group, String channelId, @Nullable Integer value) {
         updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
+    }
+
+    protected void updateChannelDecimal(String channelId, @Nullable Double value) {
+        updateIfActive(channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
     }
 
     protected void updateChannelDecimal(String group, String channelId, @Nullable Double value) {

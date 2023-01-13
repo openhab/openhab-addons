@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,49 +12,94 @@
  */
 package org.openhab.binding.freeboxos.internal.api.repeater;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ModelInfo;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.RepeaterConnection;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.RepeaterStatus;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Repeater extends FbxDevice {
-    public static class RepeatersResponse extends Response<List<Repeater>> {
-    }
-
-    public static class RepeaterResponse extends Response<Repeater> {
-    }
-
-    private @Nullable String connection;
-    private @Nullable ZonedDateTime bootTime;
+public class Repeater {
     private boolean ledActivated;
-    private @NonNullByDefault({}) String sn;
-    private @NonNullByDefault({}) String firmwareVersion;
+    private boolean enabled;
+    private @Nullable String name;
+    private RepeaterConnection connection = RepeaterConnection.UNKNOWN;
+    private @Nullable ZonedDateTime bootTime;
+    private RepeaterStatus status = RepeaterStatus.UNKNOWN;
+    private @Nullable String mainMac;
+    private @Nullable String sn;
+    private int id;
+    private @Nullable String apiVer;
+    private @Nullable ZonedDateTime lastSeen;
+    private ModelInfo model = ModelInfo.UNKNOWN;
+    private @Nullable String firmwareVersion;
 
-    public @Nullable ZonedDateTime getBootTime() {
-        return bootTime;
-    }
-
-    public @Nullable String getConnection() {
+    public RepeaterConnection getConnection() {
         return connection;
     }
 
-    public boolean getLedActivated() {
+    private ZonedDateTime getBootTime() {
+        return Objects.requireNonNull(bootTime);
+    }
+
+    public long getUptimeVal() {
+        return Duration.between(getBootTime(), ZonedDateTime.now()).toSeconds();
+    }
+
+    public boolean isLedActivated() {
         return ledActivated;
     }
 
-    public String getSerial() {
-        return sn;
+    public void setLedActivated(boolean ledActivated) {
+        this.ledActivated = ledActivated;
+    }
+
+    public RepeaterStatus getStatus() {
+        return status;
+    }
+
+    public String getMainMac() {
+        return Objects.requireNonNull(mainMac);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getSn() {
+        return Objects.requireNonNull(sn);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getApiVer() {
+        return Objects.requireNonNull(apiVer);
+    }
+
+    public ZonedDateTime getLastSeen() {
+        return Objects.requireNonNull(lastSeen);
+    }
+
+    public String getName() {
+        return Objects.requireNonNull(name);
+    }
+
+    public ModelInfo getModel() {
+        return model;
     }
 
     public String getFirmwareVersion() {
-        return firmwareVersion;
+        return Objects.requireNonNull(firmwareVersion);
     }
+
 }

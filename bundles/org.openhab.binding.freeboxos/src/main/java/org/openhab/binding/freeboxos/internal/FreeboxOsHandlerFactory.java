@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,23 +14,33 @@ package org.openhab.binding.freeboxos.internal;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.BasicShutterHandler;
+import org.openhab.binding.freeboxos.internal.handler.CallHandler;
+import org.openhab.binding.freeboxos.internal.handler.DectHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeplugHandler;
+import org.openhab.binding.freeboxos.internal.handler.FxsHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
-import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
 import org.openhab.binding.freeboxos.internal.handler.RevolutionHandler;
 import org.openhab.binding.freeboxos.internal.handler.ServerHandler;
 import org.openhab.binding.freeboxos.internal.handler.ShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
-import org.openhab.binding.freeboxos.internal.handler.WifiHostHandler;
+import org.openhab.binding.freeboxos.internal.handler.WifiStationHandler;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.core.audio.AudioHTTPServer;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -41,11 +51,11 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link FreeboxOsHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link FreeboxOsHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -53,18 +63,28 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.freeboxos")
 public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
+    private final HttpClient httpClient;
     private final ApiHandler apiHandler;
-    private final @Nullable String ipAddress;
+    private final String ipAddress;
 
     @Activate
     public FreeboxOsHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService, final @Reference ApiHandler apiHandler,
-            ComponentContext componentContext) {
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider,
+            ComponentContext componentContext, Map<String, Object> config) {
         super.activate(componentContext);
         this.audioHTTPServer = audioHTTPServer;
-        this.apiHandler = apiHandler;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
 
-        ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        ipAddress = Objects.requireNonNull(networkAddressService.getPrimaryIpv4HostAddress());
+        apiHandler = new ApiHandler(httpClient, timeZoneProvider);
+        configChanged(config);
+    }
+
+    @Modified
+    public void configChanged(Map<String, Object> config) {
+        String timeout = (String) config.getOrDefault(TIMEOUT, "8");
+        apiHandler.setTimeout(TimeUnit.SECONDS.toMillis(Long.parseLong(timeout)));
     }
 
     @Override
@@ -78,29 +98,36 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
 
         if (BRIDGE_TYPE_API.equals(thingTypeUID)) {
             return new FreeboxOsHandler((Bridge) thing, new FreeboxOsSession(apiHandler));
+        } else if (THING_TYPE_FREEPLUG.equals(thingTypeUID)) {
+            return new FreeplugHandler(thing);
+        } else if (THING_TYPE_FXS.equals(thingTypeUID)) {
+            return new FxsHandler(thing);
+        } else if (THING_TYPE_DECT.equals(thingTypeUID)) {
+            return new DectHandler(thing);
+        } else if (THING_TYPE_CALL.equals(thingTypeUID)) {
+            return new CallHandler(thing);
         } else if (THING_TYPE_REVOLUTION.equals(thingTypeUID)) {
-            return new RevolutionHandler(thing, audioHTTPServer, ipAddress, bundleContext);
+            return new RevolutionHandler(thing/* , audioHTTPServer, ipAddress, bundleContext */);
         } else if (THING_TYPE_DELTA.equals(thingTypeUID)) {
-            return new ServerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
+            return new ServerHandler(thing/* , audioHTTPServer, ipAddress, bundleContext */);
+        } else if (THING_TYPE_HOST.equals(thingTypeUID)) {
+            return new HostHandler(thing);
+        } else if (THING_TYPE_WIFI_HOST.equals(thingTypeUID)) {
+            return new WifiStationHandler(thing);
+        } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
+            return new RepeaterHandler(thing);
+        } else if (THING_TYPE_VM.equals(thingTypeUID)) {
+            return new VmHandler(thing);
         } else if (THING_TYPE_ACTIVE_PLAYER.equals(thingTypeUID)) {
             return new ActivePlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
         } else if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             return new PlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
-        } else if (THING_TYPE_HOST.equals(thingTypeUID)) {
-            return new HostHandler(thing);
-        } else if (THING_TYPE_WIFI_HOST.equals(thingTypeUID)) {
-            return new WifiHostHandler(thing);
-        } else if (THING_TYPE_LANDLINE.equals(thingTypeUID)) {
-            return new LandlineHandler(thing);
-        } else if (THING_TYPE_VM.equals(thingTypeUID)) {
-            return new VmHandler(thing);
-        } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
-            return new RepeaterHandler(thing);
         } else if (THING_TYPE_HOME_BASIC_SHUTTER.equals(thingTypeUID)) {
             return new BasicShutterHandler(thing);
         } else if (THING_TYPE_HOME_SHUTTER.equals(thingTypeUID)) {
             return new ShutterHandler(thing);
         }
+
         return null;
     }
 }

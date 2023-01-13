@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,13 +25,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
 import org.openhab.binding.freeboxos.internal.api.player.Player;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
-import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
+import org.openhab.binding.freeboxos.internal.api.system.SystemConfig;
 import org.openhab.binding.freeboxos.internal.config.PlayerConfiguration;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -50,32 +50,24 @@ import org.slf4j.LoggerFactory;
  *         http://192.168.0.98/pub/remote_control?code=78952520&key=1&long=true
  */
 @NonNullByDefault
-public class PlayerHandler extends FreeDeviceHandler {
+public class PlayerHandler extends FreeDeviceHandler2Del implements FreeClientIntf {
     private static final List<String> VALID_REMOTE_KEYS = Arrays.asList("red", "green", "blue", "yellow", "power",
             "list", "tv", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "vol_inc", "vol_dec", "mute", "prgm_inc",
             "prgm_dec", "prev", "bwd", "play", "rec", "fwd", "next", "up", "right", "down", "left", "back", "swap",
             "info", "epg", "mail", "media", "help", "options", "pip", "ok", "home");
 
     private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
+    private @Nullable String ipAddress;
 
-    public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
-            BundleContext bundleContext) {
+    public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, String ipAddress, BundleContext bundleContext) {
         super(thing, audioHTTPServer, ipAddress, bundleContext);
     }
 
     @Override
-    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
-        super.internalGetProperties(properties);
-        for (Player player : getManager(PlayerManager.class).getDevices()) {
-            if (player.getMac().equals(getMac())) {
-                properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
-                if (player.isApiAvailable() && player.isReachable()) {
-                    DeviceConfig config = getManager(PlayerManager.class).getConfig(player.getId());
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
-                }
-            }
-        }
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        super.initializeProperties(properties);
+        Player player = getManager(PlayerManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MODEL_ID, player.getDeviceModel().name());
     }
 
     // private String getPassword() {
@@ -83,13 +75,13 @@ public class PlayerHandler extends FreeDeviceHandler {
     // }
 
     @Override
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        if (KEY_CODE.equals(channelUID.getIdWithoutGroup()) && command instanceof StringType) {
+    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
+        if (KEY_CODE.equals(channelId) && command instanceof StringType) {
             sendKey(command.toString(), false, 1);
             return true;
         }
 
-        return super.internalHandleCommand(channelUID, command);
+        return super.internalHandleCommand(channelId, command);
     }
 
     public void sendKey(String key, boolean longPress, int count) {
@@ -113,11 +105,21 @@ public class PlayerHandler extends FreeDeviceHandler {
         }
     }
 
+    @Override
+    public void updateConnectivityChannels(LanHost host) {
+        super.updateConnectivityChannels(host);
+        ipAddress = host.getIpv4();
+    }
+
     public void sendMultipleKeys(String keys) {
         String[] keyChain = keys.split(",");
         Arrays.stream(keyChain).forEach(key -> {
             sendKey(key, false, 1);
         });
+    }
+
+    public @Nullable String getIpAddress() {
+        return ipAddress;
     }
 
     @Override
@@ -126,7 +128,7 @@ public class PlayerHandler extends FreeDeviceHandler {
     }
 
     @Override
-    protected Optional<DeviceConfig> getDeviceConfig() throws FreeboxException {
+    protected Optional<SystemConfig> getDeviceConfig() throws FreeboxException {
         return Optional.empty();
     }
 

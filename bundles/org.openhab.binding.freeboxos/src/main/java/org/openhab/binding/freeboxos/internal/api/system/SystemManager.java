@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,22 +12,24 @@
  */
 package org.openhab.binding.freeboxos.internal.api.system;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.rest.ConfigurableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.system.SystemConf.SystemConfigurationResponse;
+import org.openhab.binding.freeboxos.internal.api.system.SystemResponses.ConfigurationResponse;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
- * The {@link SystemManager} is the Java class used to handle api requests
- * related to system
+ * The {@link SystemManager} is the Java class used to handle api requests related to system
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SystemManager extends ConfigurableRest<SystemConf, SystemConfigurationResponse> {
+public class SystemManager extends ConfigurableRest<SystemConfig, ConfigurationResponse> {
+
     public SystemManager(FreeboxOsSession session) {
-        super(session, SystemConfigurationResponse.class, SYSTEM_SUB_PATH, null);
+        super(session, ConfigurationResponse.class, SYSTEM_SUB_PATH, null);
     }
 
     public void reboot() throws FreeboxException {

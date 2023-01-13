@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
 
 import java.net.URL;
 
@@ -40,6 +40,6 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
         if (resource != null) {
             return resource;
         }
-        throw new IllegalStateException("Certifcate resource not found or not accessible");
+        throw new IllegalStateException("Certificate resource not found or not accessible");
     }
 }

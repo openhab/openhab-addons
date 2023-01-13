@@ -78,20 +78,28 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Actual measured rotation speed (rpm) of the sensor</description>
+		<category>Fan</category>
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
 	<channel-type id="samba-file-status" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Windows File Sharing Enabled</label>
-		<description>Indicates whether Windows File Sharing is enabled</description>
+		<label>Windows File Sharing</label>
+		<description>Status of Windows File Sharing (Samba)</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="afp-file-status" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mac OS File Sharing</label>
+		<description>Status of Mac OS File Sharing</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="samba-printer-status" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Windows Printer Sharing Enabled</label>
-		<description>Indicates whether Windows Printer Sharing is enabled</description>
+		<label>Windows Printer Sharing</label>
+		<description>Status of Windows Printer Sharing</description>
 		<category>Switch</category>
 	</channel-type>
 
@@ -107,6 +115,13 @@
 		<label>Transfer Rate</label>
 		<description>Current transfer rate</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="transfer-rate-bps" advanced="true">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Transfer Rate</label>
+		<description>Current transfer rate</description>
+		<state readOnly="true" pattern="%.2f bit/s"/>
 	</channel-type>
 
 	<channel-type id="transfer-bytes" advanced="true">
@@ -134,13 +149,40 @@
 	<channel-type id="line-status">
 		<item-type>String</item-type>
 		<label>Line Status</label>
-		<description>Status of network line connexion</description>
+		<description>Status of network line connection</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="GOING_UP">Connection is initializing</option>
 				<option value="UP">Connection is active</option>
 				<option value="GOING_DOWN">Connection is about to become inactive</option>
 				<option value="DOWN">Connection is inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="line-type">
+		<item-type>String</item-type>
+		<label>Line Type</label>
+		<description>Type of network line connection</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="ETHERNET">FTTH/ethernet</option>
+				<option value="RFC2684">xDSL (unbundled)</option>
+				<option value="PPPOATM">xDSL</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="line-media">
+		<item-type>String</item-type>
+		<label>Line Media</label>
+		<description>Media of network line connection</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="FTTH">FTTH</option>
+				<option value="ETHERNET">Ethernet</option>
+				<option value="XDSL">xDSL</option>
+				<option value="BACKUP_4G">Internet Backup</option>
 			</options>
 		</state>
 	</channel-type>
@@ -320,13 +362,31 @@
 		<label>Led Activated</label>
 		<description>Led indicator status</description>
 		<category>Switch</category>
-		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gain">
+		<item-type>Dimmer</item-type>
+		<label>Gain</label>
 	</channel-type>
 
 	<channel-type id="connection-status">
 		<item-type>String</item-type>
 		<label>Connection</label>
 		<description>Connection Status</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="hardware-status">
+		<item-type>String</item-type>
+		<label>Hardware status</label>
+		<description>Hardware status of the phone line</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="telephony-service">
+		<item-type>String</item-type>
+		<label>Telephony Service</label>
+		<description>Status of the telephony service</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 

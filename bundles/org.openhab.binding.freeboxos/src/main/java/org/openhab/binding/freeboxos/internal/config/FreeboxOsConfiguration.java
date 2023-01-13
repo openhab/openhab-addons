@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,18 +31,22 @@ public class FreeboxOsConfiguration {
     public static final String HTTPS_PORT = "httpsPort";
     public static final String HTTPS_AVAILABLE = "httpsAvailable";
 
-    public String apiDomain = DEFAULT_FREEBOX_NAME;
+    private String apiDomain = DEFAULT_FREEBOX_NAME;
     public String appToken = "";
     public boolean discoverNetDevice;
 
     private int httpsPort = 15682;
     private boolean httpsAvailable;
 
-    public String getScheme() {
+    private String getScheme() {
         return httpsAvailable ? "https" : "http";
     }
 
-    public int getPort() {
+    private int getPort() {
         return httpsAvailable ? httpsPort : 80;
+    }
+
+    public UriBuilder getUriBuilder(String path) {
+        return UriBuilder.fromPath("/").scheme(getScheme()).port(getPort()).host(apiDomain).path(path).clone();
     }
 }

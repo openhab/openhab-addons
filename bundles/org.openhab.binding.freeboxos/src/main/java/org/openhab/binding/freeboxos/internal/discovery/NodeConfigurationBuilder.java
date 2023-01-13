@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,9 @@ package org.openhab.binding.freeboxos.internal.discovery;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNode;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
@@ -28,8 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NodeConfigurationBuilder} is responsible for holding configuration informations associated to a Freebox
- * Home
- * thing type
+ * Home thing type
  *
  * @author ben12 - Initial contribution
  */
@@ -46,7 +46,7 @@ public class NodeConfigurationBuilder {
         return BUILDER_INSTANCE;
     }
 
-    public @Nullable DiscoveryResultBuilder configure(ThingUID bridgeUID, HomeNode node) {
+    public Optional<DiscoveryResultBuilder> configure(ThingUID bridgeUID, HomeNode node) {
         DiscoveryResultBuilder discoveryResultBuilder = null;
         try {
             switch (node.getCategory()) {
@@ -70,8 +70,9 @@ public class NodeConfigurationBuilder {
             discoveryResultBuilder = null;
         }
         if (discoveryResultBuilder != null) {
-            discoveryResultBuilder.withProperty(ClientConfiguration.ID, node.getId());
+            discoveryResultBuilder.withProperty(ClientConfiguration.ID, node.getId()).withLabel(node.getLabel())
+                    .withRepresentationProperty(ClientConfiguration.ID).withBridge(bridgeUID);
         }
-        return discoveryResultBuilder;
+        return Optional.ofNullable(discoveryResultBuilder);
     }
 }

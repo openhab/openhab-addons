@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.EpType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNode;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpoint;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpoint.EpType;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 
 /**
@@ -27,11 +27,11 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
  */
 @NonNullByDefault
 public class ShutterConfiguration extends ClientConfiguration {
-    public static final String POSITION_SLOT_ID = "positionSlotId";
-    public static final String STOP_SLOT_ID = "stopSlotId";
-    public static final String TOGGLE_SLOT_ID = "toggleSlotId";
-    public static final String POSITION_SIGNAL_ID = "positionSignalId";
-    public static final String STATE_SIGNAL_ID = "stateSignalId";
+    private static final String POSITION_SLOT_ID = "positionSlotId";
+    private static final String STOP_SLOT_ID = "stopSlotId";
+    private static final String TOGGLE_SLOT_ID = "toggleSlotId";
+    private static final String POSITION_SIGNAL_ID = "positionSignalId";
+    private static final String STATE_SIGNAL_ID = "stateSignalId";
 
     public int positionSlotId = 0;
     public int stopSlotId = 1;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,24 @@
  */
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ftp.FtpConfig.FtpConfigResponse;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.ftp.FtpResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
- * The {@link FtpManager} is the Java class used to handle api requests
- * related to ftp
+ * The {@link FtpManager} is the Java class used to handle api requests related to ftp
+ *
  * https://dev.freebox.fr/sdk/os/system/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FtpManager extends ActivableRest<FtpConfig, FtpConfigResponse> {
-    private static final String FTP_PATH = "ftp";
+public class FtpManager extends ActivableRest<FtpConfig, ConfigResponse> {
 
     public FtpManager(FreeboxOsSession session) {
-        super(session, FtpConfigResponse.class, FTP_PATH, CONFIG_SUB_PATH);
+        super(session, ConfigResponse.class, FTP_PATH, CONFIG_SUB_PATH);
     }
 }

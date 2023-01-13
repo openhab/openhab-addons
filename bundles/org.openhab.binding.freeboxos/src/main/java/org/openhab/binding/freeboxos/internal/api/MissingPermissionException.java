@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 
 /**
  * Exception for errors when Session require missing permission
@@ -24,20 +24,10 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 public class MissingPermissionException extends FreeboxException {
     private static final long serialVersionUID = 3965810786699311126L;
 
-    private Permission permission;
-
-    public MissingPermissionException(Permission permission, Exception cause, String format, Object... args) {
-        super(cause, format, args);
-        this.permission = permission;
-    }
+    private final Permission permission;
 
     public MissingPermissionException(Permission permission, String format, Object... args) {
         super(format, args);
-        this.permission = permission;
-    }
-
-    public MissingPermissionException(Permission permission, String msg) {
-        super(msg);
         this.permission = permission;
     }
 

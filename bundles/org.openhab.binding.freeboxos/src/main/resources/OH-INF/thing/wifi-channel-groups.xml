@@ -11,6 +11,14 @@
 			<channel id="wifi-quality" typeId="system.signal-strength"/>
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="wifi-host" typeId="wifi-host"/>
+			<channel id="rate-up" typeId="transfer-rate-bps">
+				<label>Tx Rate</label>
+				<description>Current TX Rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate-bps">
+				<label>Rx Rate</label>
+				<description>Current RX rate</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

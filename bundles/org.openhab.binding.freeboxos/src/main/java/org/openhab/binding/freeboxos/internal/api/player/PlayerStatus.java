@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,36 +12,34 @@
  */
 package org.openhab.binding.freeboxos.internal.api.player;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.Response;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.PowerState;
 
 /**
- * The {@link PlayerStatus} is the Java class used to map the "ConnectionStatus"
- * structure used by the connection API
+ * The {@link PlayerStatus} is the Java class used to map the "ConnectionStatus" structure used by the connection API
+ *
  * https://dev.freebox.fr/sdk/os/connection/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class PlayerStatus {
-    public static class PlayerStatusResponse extends Response<PlayerStatus> {
-    }
-
-    public static enum PowerState {
-        UNKNOWN,
-        @SerializedName("standby")
-        STANDBY,
-        @SerializedName("running")
-        RUNNING;
-    }
-
-    private @Nullable PowerState powerState;
+    private PowerState powerState = PowerState.UNKNOWN;
+    private @Nullable PlayerStatusInformation player;
+    private @Nullable PlayerStatusForegroundApp foregroundApp;
 
     public PowerState getPowerState() {
-        PowerState power = powerState;
-        return power != null ? power : PowerState.UNKNOWN;
+        return powerState;
+    }
+
+    public PlayerStatusInformation getPlayer() {
+        return Objects.requireNonNull(player);
+    }
+
+    public PlayerStatusForegroundApp getForegroundApp() {
+        return Objects.requireNonNull(foregroundApp);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,47 +12,72 @@
  */
 package org.openhab.binding.freeboxos.internal.api.phone;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig.PhoneConfigResponse;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus.PhoneStatusResponse;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.StatusResponse;
+import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.StatusesResponse;
+import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
- * The {@link PhoneManager} is the Java class used to handle api requests
- * related to phone and calls
+ * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PhoneManager extends ActivableRest<PhoneConfig, PhoneConfigResponse> {
-    private static final String PHONE_SUB_PATH = "phone";
+public class PhoneManager extends ActivableRest<PhoneConfig, ConfigResponse> {
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, PhoneConfigResponse.class, PHONE_SUB_PATH, CONFIG_SUB_PATH);
+        super(session, Permission.CALLS, ConfigResponse.class, PHONE_SUB_PATH, CONFIG_SUB_PATH);
     }
 
     public List<PhoneStatus> getPhoneStatuses() throws FreeboxException {
-        return getList(PhoneStatusResponse.class, "");
+        return getList(StatusesResponse.class, "");
     }
 
-    public Optional<PhoneStatus> getStatus(int id) throws FreeboxException {
-        List<PhoneStatus> statuses = getPhoneStatuses();
-        return statuses.stream().filter(status -> status.getId() == id).findFirst();
+    public Optional<PhoneStatus> getOptStatus(int id) throws FreeboxException {
+        return Optional.ofNullable(getStatus(id));
     }
 
-    public void ring(boolean startIt) throws FreeboxException {
-        post(String.format("fxs_ring_%s", (startIt ? "start" : "stop")));
+    public @Nullable PhoneStatus getStatus(int id) throws FreeboxException {
+        return get(StatusResponse.class, Integer.toString(id));
+    }
+
+    public void ringFxs(boolean startIt) throws FreeboxException {
+        post("fxs_ring_%s".formatted(startIt ? "start" : "stop"));
+    }
+
+    public void ringDect(boolean startIt) throws FreeboxException {
+        post("dect_page_%s".formatted(startIt ? "start" : "stop"));
     }
 
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
-        put(PhoneConfigResponse.class, config, CONFIG_SUB_PATH);
+        put(ConfigResponse.class, config, CONFIG_SUB_PATH);
+    }
+
+    public void setGainRx(int clientId, int gain) throws FreeboxException {
+        PhoneStatus status = getStatus(clientId);
+        if (status != null) {
+            status.setGainRx(gain);
+            put(StatusResponse.class, status, Integer.toString(clientId));
+        }
+    }
+
+    public void setGainTx(int clientId, int gain) throws FreeboxException {
+        PhoneStatus status = getStatus(clientId);
+        if (status != null) {
+            status.setGainTx(gain);
+            put(StatusResponse.class, status, Integer.toString(clientId));
+        }
     }
 }

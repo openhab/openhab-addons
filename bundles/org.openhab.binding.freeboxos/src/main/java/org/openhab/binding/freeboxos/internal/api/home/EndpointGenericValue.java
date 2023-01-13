@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.home;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EndpointGenericValue} is a Java class used to map the
- * structure used by the home API
+ * The {@link EndpointGenericValue} is a Java class used to map the structure used by the home API
  *
  * @param <T> Endpoint value type
  *
@@ -24,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class EndpointGenericValue<T> {
-
     private T value;
 
     public EndpointGenericValue(T value) {

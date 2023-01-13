@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,13 @@ package org.openhab.binding.freeboxos.internal.api.home;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ValueType;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HomeNodeEndpointState} is a Java class used to map the
- * structure used by the home API
+ * The {@link HomeNodeEndpointState} is a Java class used to map the structure used by the home API
  *
  * @author ben12 - Initial contribution
  */
@@ -30,21 +29,8 @@ public class HomeNodeEndpointState {
     public static class HomeNodeEndpointStateResponse extends Response<HomeNodeEndpointState> {
     }
 
-    public static enum ValueType {
-        @SerializedName("bool")
-        BOOL,
-        @SerializedName("int")
-        INT,
-        @SerializedName("float")
-        FLOAT,
-        @SerializedName("void")
-        VOID,
-        @SerializedName("string")
-        STRING;
-    }
-
     private @Nullable JsonElement value;
-    private ValueType valueType = ValueType.VOID;
+    private ValueType valueType = ValueType.UNKNOWN;
     private long refresh;
 
     public @Nullable JsonElement getValue() {

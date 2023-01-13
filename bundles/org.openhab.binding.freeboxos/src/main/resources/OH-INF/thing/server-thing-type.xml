@@ -15,11 +15,11 @@
 		<channel-groups>
 			<channel-group typeId="display" id="display"/>
 			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="fans" id="fans"/>
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
-			<channel-group typeId="connectivity" id="connectivity"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
@@ -35,11 +35,11 @@
 
 		<channel-groups>
 			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="fans" id="fans"/>
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
-			<channel-group typeId="connectivity" id="connectivity"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
