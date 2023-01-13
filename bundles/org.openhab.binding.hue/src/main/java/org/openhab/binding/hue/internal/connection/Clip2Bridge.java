@@ -796,11 +796,13 @@ public class Clip2Bridge implements Closeable {
     /**
      * Use an HTTP PUT to send a Resource to the server.
      * <p>
-     * Developer Note:
+     * <b>Developer Note:</b>
      * For best performance this method should use a new stream on the existing HTTP/2.0 session. However the Jetty
      * HTTP2 library version currently used by OH [v9.4.46.v20220331] fails with an 'hpack' (header compression) error
-     * when attempting to encode the PUT method. This may be fixed when the OH Jetty library is increased to a higher
-     * version, but in the meantime we use a regular HTTP/1.1 call instead.
+     * <a href="https://github.com/eclipse/jetty.project/issues/9168">(Jetty Issue 9168)</a> when attempting to encode
+     * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, but in the meantime
+     * we use a regular HTTP/1.1 call instead.
+     *
      * </p>
      *
      * @param resource the resource to put.
