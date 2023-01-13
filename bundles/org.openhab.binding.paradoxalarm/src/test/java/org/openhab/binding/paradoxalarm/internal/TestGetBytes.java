@@ -24,6 +24,8 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPayload
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.partition.PartitionCommandPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommand;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -61,18 +63,18 @@ public class TestGetBytes {
         assertTrue(Arrays.equals(packetBytes, EXPECTED1));
     }
 
-    private static final byte[] EXPECTED_COMMAND_PAYLOAD = { 0x40, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00 };
+    private static final byte[] EXPECTED_PARTITION_COMMAND_PAYLOAD = { 0x40, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
     @Test
     public void testPartitionCommandPayload() {
         PartitionCommandPayload payload = new PartitionCommandPayload(PARTITION_NUMBER, PartitionCommand.ARM);
         final byte[] packetBytes = payload.getBytes();
 
-        ParadoxUtil.printByteArray("Expected =", EXPECTED_COMMAND_PAYLOAD);
+        ParadoxUtil.printByteArray("Expected =", EXPECTED_PARTITION_COMMAND_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", packetBytes);
 
-        assertTrue(Arrays.equals(packetBytes, EXPECTED_COMMAND_PAYLOAD));
+        assertTrue(Arrays.equals(packetBytes, EXPECTED_PARTITION_COMMAND_PAYLOAD));
     }
 
     private static final byte[] EXPECTED_MEMORY_PAYLOAD = { (byte) 0xAA, 0x0A, 0x00, 0x03, 0x08, (byte) 0xF0, 0x00,
@@ -87,6 +89,23 @@ public class TestGetBytes {
         byte[] bytes = payload.getBytes();
         ParadoxUtil.printByteArray("Expected =", EXPECTED_MEMORY_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", bytes);
+    }
+
+    private static final byte[] EXPECTED_ZONE_COMMAND_PAYLOAD = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x10, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00 }; // checksum last byte - 0x0f
+
+    @Test
+    public void testZoneCommandPayload() {
+        for (int i = 1; i <= 32; i++) {
+            ZoneCommandPayload payload = new ZoneCommandPayload(i, ZoneCommand.BYPASS);
+            final byte[] packetBytes = payload.getBytes();
+
+            // ParadoxUtil.printByteArray("Expected =", EXPECTED_ZONE_COMMAND_PAYLOAD);
+            ParadoxUtil.printByteArray("Result   =", packetBytes);
+        }
+
+        // assertTrue(Arrays.equals(packetBytes, EXPECTED_ZONE_COMMAND_PAYLOAD));
     }
 
 }

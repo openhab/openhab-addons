@@ -12,13 +12,13 @@ public enum ZoneCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PartitionCommand.class);
 
-    private int command;
+    private byte command;
 
     ZoneCommand(int command) {
-        this.command = command;
+        this.command = (byte) command;
     }
 
-    public int getCommand() {
+    public byte getCommand() {
         return command;
     }
 
