@@ -74,6 +74,7 @@ public class Range {
         this.maxInclusive = maxInclusive;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     public boolean contains(final BigDecimal value) {
         final boolean minMatch;
         if (min == null) {

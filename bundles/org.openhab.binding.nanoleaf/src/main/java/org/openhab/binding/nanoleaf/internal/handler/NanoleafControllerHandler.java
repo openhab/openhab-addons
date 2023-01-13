@@ -903,8 +903,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 break;
             case CHANNEL_COLOR_TEMPERATURE_ABS:
                 // Color temperature (absolute)
-                int colorTempKelvin;
-
                 IntegerState state = new Ct();
                 if (command instanceof DecimalType) {
                     state.setValue(((DecimalType) command).intValue());

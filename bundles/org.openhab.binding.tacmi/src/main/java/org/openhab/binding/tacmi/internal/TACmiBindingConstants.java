@@ -53,5 +53,5 @@ public class TACmiBindingConstants {
             "schema-state-ro");
 
     // Channel specific configuration items
-    public final static String CHANNEL_CONFIG_OUTPUT = "output";
+    public static final String CHANNEL_CONFIG_OUTPUT = "output";
 }

@@ -128,7 +128,7 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        if (station.isOpen() == true) {
+        if (station.isOpen()) {
             logger.debug("Checked Station is open! '{}'", getThing().getUID());
             updateState(CHANNEL_STATION_OPEN, OpenClosedType.OPEN);
             if (station.getDiesel() != null) {

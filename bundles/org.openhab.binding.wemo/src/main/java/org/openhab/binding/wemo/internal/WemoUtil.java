@@ -131,7 +131,7 @@ public class WemoUtil {
     }
 
     public static String createBinaryStateContent(boolean binaryState) {
-        String binary = binaryState == true ? "1" : "0";
+        String binary = binaryState ? "1" : "0";
         String content = "<?xml version=\"1.0\"?>"
                 + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
                 + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<BinaryState>"
