@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public enum ZoneCommand {
-    UNBYPASS(0),
+    CLEAR_BYPASS(0),
     BYPASS(8);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PartitionCommand.class);
@@ -27,7 +27,7 @@ public enum ZoneCommand {
             return ZoneCommand.valueOf(command);
         } catch (IllegalArgumentException e) {
             LOGGER.debug("Unable to parse command={}. Fallback to UNKNOWN.", command);
-            return ZoneCommand.UNBYPASS;
+            return ZoneCommand.CLEAR_BYPASS;
         }
     }
 }

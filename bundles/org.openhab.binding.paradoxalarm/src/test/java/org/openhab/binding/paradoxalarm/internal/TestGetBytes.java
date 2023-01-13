@@ -91,21 +91,36 @@ public class TestGetBytes {
         ParadoxUtil.printByteArray("Result   =", bytes);
     }
 
-    private static final byte[] EXPECTED_ZONE_COMMAND_PAYLOAD = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x10, 0x00,
+    private static final byte[] EXPECTED_ZONE_5_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x10,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00 }; // checksum last byte - 0x0f
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x0f };
+    private static final byte[] EXPECTED_ZONE_5_CLEAR_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x00, 0x00, 0x00,
+            0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07 };
+    private static final byte[] EXPECTED_ZONE_20_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x07 };
+    private static final byte[] EXPECTED_ZONE_23_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x3f };
 
     @Test
     public void testZoneCommandPayload() {
-        for (int i = 1; i <= 32; i++) {
-            ZoneCommandPayload payload = new ZoneCommandPayload(i, ZoneCommand.BYPASS);
-            final byte[] packetBytes = payload.getBytes();
+        testZoneCommandPayload(5, ZoneCommand.BYPASS, EXPECTED_ZONE_5_BYPASS_COMMAND);
+        testZoneCommandPayload(5, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_5_CLEAR_BYPASS_COMMAND);
+        testZoneCommandPayload(20, ZoneCommand.BYPASS, EXPECTED_ZONE_20_BYPASS_COMMAND);
+        testZoneCommandPayload(23, ZoneCommand.BYPASS, EXPECTED_ZONE_23_BYPASS_COMMAND);
+        testZoneCommandPayload(23, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_23_BYPASS_COMMAND);
+    }
 
-            // ParadoxUtil.printByteArray("Expected =", EXPECTED_ZONE_COMMAND_PAYLOAD);
-            ParadoxUtil.printByteArray("Result   =", packetBytes);
-        }
+    private void testZoneCommandPayload(int zoneNumber, ZoneCommand command, byte[] expected) {
+        ZoneCommandPayload payload = new ZoneCommandPayload(zoneNumber, command);
+        final byte[] packetBytes = payload.getBytes();
 
-        // assertTrue(Arrays.equals(packetBytes, EXPECTED_ZONE_COMMAND_PAYLOAD));
+        ParadoxUtil.printByteArray("Expected " + zoneNumber + " =", expected);
+        ParadoxUtil.printByteArray("Result   " + zoneNumber + " =", packetBytes);
+
+        assertTrue(Arrays.equals(packetBytes, expected));
     }
 
 }

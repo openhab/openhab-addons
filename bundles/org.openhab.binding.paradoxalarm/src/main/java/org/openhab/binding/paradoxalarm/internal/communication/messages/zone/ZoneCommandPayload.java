@@ -33,7 +33,7 @@ public class ZoneCommandPayload implements IPayload {
         buf.put(command.getCommand());
         buf.put(EMPTY_TWO_BYTES);
         buf.put(calculateMessageBytes());
-        buf.put(CHECKSUM);
+        buf.put(ParadoxUtil.calculateChecksum(bufferArray));
         return bufferArray;
     }
 
