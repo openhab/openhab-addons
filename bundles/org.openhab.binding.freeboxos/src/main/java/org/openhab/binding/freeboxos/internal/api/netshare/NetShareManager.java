@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,36 +12,28 @@
  */
 package org.openhab.binding.freeboxos.internal.api.netshare;
 
-import javax.ws.rs.core.UriBuilder;
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.NETSHARE_PATH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig.SambaConfigResponse;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.netshare.afp.AfpManager;
+import org.openhab.binding.freeboxos.internal.api.netshare.samba.SambaManager;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.rest.RestManager;
 
 /**
- * The {@link NetShareManager} is the Java class used to handle api requests
- * related to network shares
+ * The {@link NetShareManager} is the Java class used to handle api requests related to network shares
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class NetShareManager extends RestManager {
-    private static final String NETSHARE_SUB_PATH = "netshare";
 
-    public class SambaManager extends ActivableRest<SambaConfig, SambaConfigResponse> {
-        private static final String SAMBA_SUB_PATH = "samba";
-
-        public SambaManager(FreeboxOsSession session, UriBuilder uriBuilder) {
-            super(session, SambaConfigResponse.class, uriBuilder, SAMBA_SUB_PATH, null);
-        }
-    }
-
-    public NetShareManager(FreeboxOsSession session) {
-        super(session, NETSHARE_SUB_PATH);
+    public NetShareManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, NETSHARE_PATH);
         session.addManager(SambaManager.class, new SambaManager(session, getUriBuilder()));
-
-        // TODO : Mac OS shares handling could later be added here
+        session.addManager(AfpManager.class, new AfpManager(session, getUriBuilder()));
     }
+
 }

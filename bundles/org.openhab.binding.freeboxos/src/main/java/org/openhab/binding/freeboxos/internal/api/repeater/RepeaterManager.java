@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,57 +12,58 @@
  */
 package org.openhab.binding.freeboxos.internal.api.repeater;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
-import org.openhab.binding.freeboxos.internal.api.lan.LanHost.LanHostsResponse;
-import org.openhab.binding.freeboxos.internal.api.repeater.Repeater.RepeaterResponse;
-import org.openhab.binding.freeboxos.internal.api.repeater.Repeater.RepeatersResponse;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserResponses.HostsResponse;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
+import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterResponses.RepeaterResponse;
+import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterResponses.RepeatersResponse;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
 /**
- * The {@link RepeaterManager} is the Java class used to handle api requests
- * related to repeater
+ * The {@link RepeaterManager} is the Java class used to handle api requests related to repeater
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class RepeaterManager extends ListableRest<Repeater, RepeaterResponse, RepeatersResponse> {
-    private static final String HOST_SUB_PATH = "host";
-    private static final String REPEATER_SUB_PATH = "repeater";
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
         super(session, RepeaterResponse.class, RepeatersResponse.class, REPEATER_SUB_PATH);
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
-        return getList(LanHostsResponse.class, Integer.toString(id), HOST_SUB_PATH);
+        return getList(HostsResponse.class, Integer.toString(id), HOST_SUB_PATH);
     }
 
-    private synchronized List<LanHost> getHosts() throws FreeboxException {
+    public synchronized List<LanHost> getHosts() throws FreeboxException {
         List<LanHost> hosts = new ArrayList<>();
         for (Repeater rep : getDevices()) {
-            List<LanHost> repHosts = getRepeaterHosts(rep.getId());
-            hosts.addAll(repHosts);
+            hosts.addAll(getRepeaterHosts(rep.getId()));
         }
         return hosts;
     }
 
-    public Map<String, @Nullable LanHost> getHostsMap() throws FreeboxException {
-        Map<String, @Nullable LanHost> result = new HashMap<>();
-        getHosts().stream().forEach(host -> {
-            String mac = host.getMac();
-            if (mac != null) {
-                result.put(mac, host);
-            }
-        });
-        return result;
+    public Optional<LanHost> getHost(String mac) throws FreeboxException {
+        return getHosts().stream().filter(host -> mac.equalsIgnoreCase(host.getMac())).findFirst();
     }
+
+    public void reboot(int id) throws FreeboxException {
+        post(Integer.toString(id), REBOOT_SUB_PATH);
+    }
+
+    public Optional<Repeater> led(int id, boolean enable) throws FreeboxException {
+        Repeater config = getDevice(id);
+        config.setLedActivated(enable);
+        Repeater result = put(RepeaterResponse.class, config, Integer.toString(id));
+        return Optional.ofNullable(result);
+    }
+
 }

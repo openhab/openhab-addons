@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,36 +12,29 @@
  */
 package org.openhab.binding.freeboxos.internal.api.phone;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.Response;
-
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.PhoneType;
 
 /**
- * The {@link PhoneStatus} is the Java class used to map the
- * structure used by the phone API
+ * The {@link PhoneStatus} is the Java class used to map the structure used by the phone API
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class PhoneStatus {
-    public static class PhoneStatusResponse extends Response<List<PhoneStatus>> {
-    }
-
-    public enum PhoneType {
-        UNKNOWN,
-        @SerializedName("fxs")
-        LAND_LINE,
-        @SerializedName("dect")
-        DECT;
-    }
-
     private int id;
     private boolean isRinging;
     private boolean onHook;
+    private boolean hardwareDefect;
     private PhoneType type = PhoneType.UNKNOWN;
+    private @Nullable String vendor;
+    private int gainRx;
+    private int gainTx;
+
+    public int getId() {
+        return id;
+    }
 
     public boolean isRinging() {
         return isRinging;
@@ -55,7 +48,28 @@ public class PhoneStatus {
         return type;
     }
 
-    public long getId() {
-        return id;
+    public boolean isHardwareDefect() {
+        return hardwareDefect;
     }
+
+    public @Nullable String getVendor() {
+        return vendor;
+    }
+
+    public int getGainRx() {
+        return gainRx;
+    }
+
+    public int getGainTx() {
+        return gainTx;
+    }
+
+    public void setGainRx(int gainRx) {
+        this.gainRx = gainRx;
+    }
+
+    public void setGainTx(int gainTx) {
+        this.gainTx = gainTx;
+    }
+
 }

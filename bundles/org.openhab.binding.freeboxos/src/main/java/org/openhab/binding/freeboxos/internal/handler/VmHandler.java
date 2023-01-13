@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -85,6 +86,9 @@ public class VmHandler extends HostHandler {
         return super.internalHandleCommand(channelId, command);
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,13 +104,11 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.VmStatus;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine;
-import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine.Status;
 import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
-import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -119,7 +121,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VmHandler extends HostHandler {
+public class VmHandler extends HostHandler implements FreeClientIntf {
     private final Logger logger = LoggerFactory.getLogger(VmHandler.class);
 
     public VmHandler(Thing thing) {
@@ -131,18 +133,22 @@ public class VmHandler extends HostHandler {
         super.internalPoll();
         logger.debug("Polling Virtual machine status");
         VmManager vmManager = getManager(VmManager.class);
-        VirtualMachine vm = vmManager.getDevice(getConfigAs(ClientConfiguration.class).id);
-        updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
+        VirtualMachine vm = vmManager.getDevice(getClientId());
+        updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == VmStatus.RUNNING);
     }
 
     @Override
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
+    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         VmManager vmManager = getManager(VmManager.class);
-        if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-            vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);
+        if (STATUS.equals(channelId) && command instanceof OnOffType) {
+            vmManager.power(getClientId(), command == OnOffType.ON);
             return true;
         }
+<<<<<<< Upstream, based on origin/main
         return super.internalHandleCommand(channelUID, command);
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+        return super.internalHandleCommand(channelId, command);
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
 }

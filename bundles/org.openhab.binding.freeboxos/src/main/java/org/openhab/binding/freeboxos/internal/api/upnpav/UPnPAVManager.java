@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,22 +12,22 @@
  */
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVConfig.UPnPAVConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
- * The {@link UPnPAVManager} is the Java class used to handle api requests
- * related to UPnP AV
+ * The {@link UPnPAVManager} is the Java class used to handle api requests related to UPnP AV
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class UPnPAVManager extends ActivableRest<UPnPAVConfig, UPnPAVConfigResponse> {
-    private static final String UPNPAV_URL = "upnpav";
+public class UPnPAVManager extends ActivableRest<UPnPAVConfig, ConfigResponse> {
 
     public UPnPAVManager(FreeboxOsSession session) {
-        super(session, UPnPAVConfigResponse.class, UPNPAV_URL, CONFIG_SUB_PATH);
+        super(session, ConfigResponse.class, UPNPAV_URL, CONFIG_SUB_PATH);
     }
 }

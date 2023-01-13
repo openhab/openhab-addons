@@ -11,6 +11,7 @@ The server can be connected to Free infrastructures either by xDSL or fiber opti
 This binding supports the following thing types:
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 | Thing             | Thing Type | Description                                          |
 |-------------------|------------|------------------------------------------------------|
 | api               | Bridge     | Bridge to access freebox OS API hosted by the server |
@@ -243,6 +244,24 @@ This binding supports the following thing types:
 | repeater      | Thing      | A Free wifi repeater.                                 |
 | basic_shutter | Thing      | RTS Shutter configured in Freebox Home (>= Delta).    |
 >>>>>>> e544018 README for basic shutter
+=======
+| Thing             | Thing Type | Description                                          |
+|-------------------|------------|------------------------------------------------------|
+| api               | Bridge     | Bridge to access freebox OS API hosted by the server |
+| delta             | Thing      | A Freebox Delta server                               |
+| revolution        | Thing      | A Freebox Revolution server                          |
+| player            | Thing      | The TV player equipment (e.g. Devialet)              |
+| landline          | Thing      | The phone wired to the Freebox Server                |
+| host              | Thing      | A network device on the local network                |
+| wifihost          | Thing      | A wifi networked device on the local network         |
+| vm            (*) | Thing      | A virtual machine hosted on the server               |
+| freeplug          | Thing      | A virtual machine hosted on the server               |
+| repeater          | Thing      | A Free wifi repeater                                 |
+| shutter       (*) | Thing      | IO Home Control shutter configured in Freebox Home   |
+| basic_shutter (*) | Thing      | RTS Shutter configured in Freebox Home               |
+
+(*) For servers >= Delta
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 
 ## Discovery
 
@@ -379,17 +398,20 @@ The following channels are supported:
 | server (*)    | bytes_down                  | Number        | R           | Total downloaded  bytes since last connection                                  |
 | phone         | state#onhook                | Switch        | R           | Indicates whether the phone is on hook                                         |
 | phone         | state#ringing               | Switch        | R           | Is the phone ringing                                                           |
-| phone         | accepted#number             | Call          | R           | Last accepted call: number                                                     |
-| phone         | accepted#duration           | Number        | R           | Last accepted call: duration in seconds                                        |
-| phone         | accepted#timestamp          | DateTime      | R           | Last accepted call: creation timestamp                                         |
-| phone         | accepted#name               | String        | R           | Last accepted call: caller name                                                |
-| phone         | missed#number               | Call          | R           | Last missed call: number                                                       |
-| phone         | missed#timestamp            | DateTime      | R           | Last missed call: creation timestamp                                           |
-| phone         | missed#name                 | String        | R           | Last missed call: caller name                                                  |
-| phone         | outgoing#number             | Call          | R           | Last outgoing call: number                                                     |
-| phone         | outgoing#duration           | Number        | R           | Last outgoing call: duration in seconds                                        |
-| phone         | outgoing#timestamp          | DateTime      | R           | Last outgoing call: creation timestamp                                         |
-| phone         | outgoing#name               | String        | R           | Last outgoing call: called name                                                |
+| call          | incoming#number             | Call          | R           | Current incoming call number                                                   |
+| call          | incoming#timestamp          | DateTime      | R           | Current incoming call creation timestamp                                       |
+| call          | incoming#name               | String        | R           | Current incoming caller name                                                   |
+| call          | accepted#number             | Call          | R           | Last accepted call number                                                      |
+| call          | accepted#duration           | Number        | R           | Last accepted call duration in seconds                                         |
+| call          | accepted#timestamp          | DateTime      | R           | Last accepted call creation timestamp                                          |
+| call          | accepted#name               | String        | R           | Last accepted caller name                                                      |
+| call          | missed#number               | Call          | R           | Last missed call number                                                        |
+| call          | missed#timestamp            | DateTime      | R           | Last missed call creation timestamp                                            |
+| call          | missed#name                 | String        | R           | Last missed  caller name                                                       |
+| call          | outgoing#number             | Call          | R           | Last outgoing call number                                                      |
+| call          | outgoing#duration           | Number        | R           | Last outgoing call duration in seconds                                         |
+| call          | outgoing#timestamp          | DateTime      | R           | Last outgoing call creation timestamp                                          |
+| call          | outgoing#name               | String        | R           | Last outgoing called name                                                      |
 | net_device    | reachable                   | Switch        | R           | Indicates whether the network device is reachable                              |
 | net_interface | reachable                   | Switch        | R           | Indicates whether the network interface is reachable                           |
 | airplay       | playurl                     | String        | W           | Play an audio or video media from the given URL                                |
@@ -398,18 +420,26 @@ The following channels are supported:
 
 (*) : server means *delta* or *revolution*
 
-## Actions for ules
+## Actions for rules
 
 The following actions are available in rules/scripting:
 
 | Thing Type  | Action Name      | Description                                          | 
 |-------------|------------------|------------------------------------------------------|
 | host        | wol              | Sends a wake on lan packet to the lan connected host |
-| player      | reboot           | Reboots the player device.                           |
+| player      | reboot           | Reboots the player device                            |
 | player      | sendKey          | Send a key (remote emulation) to the player          |
 | player      | sendLongKey      | Sends the key emulating a longpress on the button    |
 | player      | sendMultipleKeys | Sends multiple keys to the player, comma separated   |
 | player      | sendKeyRepeat    | Sends the key multiple times                         |
+<<<<<<< Upstream, based on origin/main
 | server      | reboot           | Reboots the Freebox Server.                          |
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+| server      | reboot           | Reboots the Freebox Server                           |
+| freeplug    | reset            | Resets the Freeplug                                  |
+| call        | emptyQueue       | Clears the call log queue                            |
+| repeater    | reboot           | Reboots the Repeater                                 |
+
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 

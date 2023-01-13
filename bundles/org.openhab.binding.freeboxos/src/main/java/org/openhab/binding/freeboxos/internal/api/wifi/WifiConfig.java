@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,22 +13,17 @@
 package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
+import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
- * The {@link WifiConfig} is the Java class used to map the "WifiGlobalConfig"
- * structure used by the Wifi global configuration API
- * https://dev.freebox.fr/sdk/os/wifi/#
+ * The {@link WifiConfig} is the Java class used to map the "Wifi Config" structure
+ *
+ * https://dev.freebox.fr/sdk/os/airmedia/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WifiConfig implements ActivableConfig {
-    // Response classes
-    public static class WifiConfigResponse extends Response<WifiConfig> {
-    }
-
+public class WifiConfig implements ActivableConfigIntf {
     private boolean enabled;
 
     @Override

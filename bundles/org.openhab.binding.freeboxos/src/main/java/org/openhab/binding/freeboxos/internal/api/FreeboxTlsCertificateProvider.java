@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -46,6 +47,9 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
         throw new IllegalStateException("Certificate '%s' not found or not accessible".formatted(CERTIFICATE_NAME));
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +62,7 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
  */
 package org.openhab.binding.freeboxos.internal.api;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
 
 import java.net.URL;
 
@@ -86,7 +90,11 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
         if (resource != null) {
             return resource;
         }
+<<<<<<< Upstream, based on origin/main
         throw new IllegalStateException("Certifcate resource not found or not accessible");
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+        throw new IllegalStateException("Certificate resource not found or not accessible");
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
 }

@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -112,6 +113,9 @@ public class Response<ResultType> {
     public LoginManager.Permission getMissingRight() {
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,9 +130,8 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 
 /**
  * Defines an API result that returns a single object
@@ -136,25 +139,14 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Response<T> {
-    public static enum ErrorCode {
-        NONE,
-        @SerializedName("auth_required")
-        AUTHORIZATION_REQUIRED,
-        @SerializedName("internal_error")
-        INTERNAL_ERROR,
-        @SerializedName("invalid_token")
-        INVALID_TOKEN;
-    }
-
-    private boolean success;
+public class Response<ResultType> {
     private ErrorCode errorCode = ErrorCode.NONE;
+    private Permission missingRight = Permission.NONE;
     private String msg = "";
+    private @Nullable ResultType result;
+    private boolean success;
 
-    private @Nullable Permission missingRight;
-    private @Nullable T result;
-
-    public @Nullable T getResult() {
+    public @Nullable ResultType getResult() {
         return result;
     }
 
@@ -162,8 +154,12 @@ public class Response<T> {
         return success;
     }
 
+<<<<<<< Upstream, based on origin/main
     public @Nullable Permission getMissingRight() {
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    public Permission getMissingRight() {
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
         return missingRight;
     }
 

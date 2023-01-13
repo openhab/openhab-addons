@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.handler;
 
 import java.util.Map;
+<<<<<<< Upstream, based on origin/main
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,4 +54,35 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
         stopRefreshJob();
         getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
     }
+=======
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+
+@NonNullByDefault
+public interface FreeDeviceIntf {
+    public ChannelUID getEventChannelUID();
+
+    public void triggerChannel(ChannelUID channelUID, String event);
+
+    public Map<String, String> editProperties();
+
+    public void updateProperties(@Nullable Map<String, String> properties);
+
+    default long controlUptimeAndFirmware(long newUptime, long oldUptime, String firmwareVersion) {
+        if (newUptime < oldUptime) {
+            triggerChannel(getEventChannelUID(), "restarted");
+            Map<String, String> properties = editProperties();
+            if (!firmwareVersion.equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+                updateProperties(properties);
+                triggerChannel(getEventChannelUID(), "firmware_updated");
+            }
+        }
+        return newUptime;
+    }
+
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 }

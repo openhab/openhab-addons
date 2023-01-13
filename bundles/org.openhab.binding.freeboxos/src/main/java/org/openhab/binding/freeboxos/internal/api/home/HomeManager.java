@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.freeboxos.internal.api.home;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNode.HomeNodesResponse;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpointState.HomeNodeEndpointStateResponse;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.rest.RestManager;
 
 /**
  * The {@link HomeManager} is the Java class used to handle api requests related to home
@@ -30,9 +32,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
  */
 @NonNullByDefault
 public class HomeManager extends RestManager {
-    public static final String HOME_PATH = "home";
-    public static final String NODES_SUB_PATH = "nodes";
-    public static final String ENDPOINTS_SUB_PATH = "endpoints";
 
     public HomeManager(FreeboxOsSession session) throws FreeboxException {
         super(session, Permission.HOME, HOME_PATH);

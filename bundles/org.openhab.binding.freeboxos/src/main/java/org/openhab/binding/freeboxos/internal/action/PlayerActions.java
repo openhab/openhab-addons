@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -90,6 +91,9 @@ public class PlayerActions implements ThingActions {
             logger.warn("Freebox Player Action service ThingHandler is null");
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,8 +118,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {PlayerActions} class is responsible to call corresponding
- * actions on Freebox Player
+ * The {PlayerActions} class is responsible to call corresponding actions on Freebox Player
  *
  * @author Gaël L'hopital - Initial contribution
  */

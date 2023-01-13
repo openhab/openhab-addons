@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.freeboxos.internal.api.home;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.EpType;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Visibility;
 
 /**
  * The {@link HomeNodeEndpoint} is a Java class used to map the structure used by the home API
@@ -23,50 +23,12 @@ import com.google.gson.annotations.SerializedName;
  * @author ben12 - Initial contribution
  */
 @NonNullByDefault
-public class HomeNodeEndpoint {
-
-    public static enum EpType {
-        @SerializedName("signal")
-        SIGNAL,
-        @SerializedName("slot")
-        SLOT;
-    }
-
-    public static enum Visibility {
-        @SerializedName("internal")
-        INTERNAL,
-        @SerializedName("normal")
-        NORMAL,
-        @SerializedName("dashboard")
-        DASHBOARD;
-    }
-
-    private int id;
-
-    private @Nullable String label;
-
-    private @Nullable String name;
-
-    private @NonNullByDefault({}) EpType epType;
-    private @NonNullByDefault({}) Visibility visibility;
-
-    private @Nullable String valueType;
-
+public class HomeNodeEndpoint extends Node {
+    private EpType epType = EpType.UNKNOWN;
+    private Visibility visibility = Visibility.UNKNOWN;
     private int refresh;
-
+    private @Nullable String valueType;
     private @Nullable HomeNodeEndpointUi ui;
-
-    public int getId() {
-        return id;
-    }
-
-    public @Nullable String getLabel() {
-        return label;
-    }
-
-    public @Nullable String getName() {
-        return name;
-    }
 
     public EpType getEpType() {
         return epType;

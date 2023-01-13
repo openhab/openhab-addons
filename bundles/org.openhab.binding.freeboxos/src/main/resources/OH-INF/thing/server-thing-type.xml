@@ -16,6 +16,7 @@
 			<channel-group typeId="display" id="display"/>
 			<channel-group typeId="sensors" id="sensors"/>
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 			<channel-group typeId="fans" id="fans"/>
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
@@ -42,11 +43,13 @@
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
 =======
+=======
+			<channel-group typeId="fans" id="fans"/>
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
-			<channel-group typeId="connectivity" id="connectivity"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
@@ -62,12 +65,16 @@
 
 		<channel-groups>
 			<channel-group typeId="sensors" id="sensors"/>
+			<channel-group typeId="fans" id="fans"/>
 			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
+<<<<<<< Upstream, based on origin/main
 			<channel-group typeId="connectivity" id="connectivity"/>
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,23 @@
  */
 package org.openhab.binding.freeboxos.internal.api.vm;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.VM_SUB_PATH;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
-import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine.VirtualMachineResponse;
-import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine.VirtualMachinesResponse;
+import org.openhab.binding.freeboxos.internal.api.vm.VmResponses.VirtualMachineResponse;
+import org.openhab.binding.freeboxos.internal.api.vm.VmResponses.VirtualMachinesResponse;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
 /**
- * The {@link VmManager} is the Java class used to handle api requests
- * related to virtual machines
+ * The {@link VmManager} is the Java class used to handle api requests related to virtual machines
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class VmManager extends ListableRest<VirtualMachine, VirtualMachineResponse, VirtualMachinesResponse> {
-    private static final String VM_SUB_PATH = "vm";
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
         super(session, Permission.VM, VirtualMachineResponse.class, VirtualMachinesResponse.class, VM_SUB_PATH);

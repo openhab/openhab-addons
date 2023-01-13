@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.action;
 
+<<<<<<< Upstream, based on origin/main
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
@@ -54,5 +55,47 @@ public class RepeaterActions implements ThingActions {
         } else {
             logger.warn("Repeater Action service ThingHandler is null");
         }
+=======
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
+import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.thing.binding.ThingActions;
+import org.openhab.core.thing.binding.ThingActionsScope;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {RepeaterActions} class is responsible to call corresponding actions on Freebox Repeater
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@ThingActionsScope(name = "freeboxos")
+@NonNullByDefault
+public class RepeaterActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(RepeaterActions.class);
+    private Optional<RepeaterHandler> handler = Optional.empty();
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof RepeaterHandler repeaterHandler) {
+            this.handler = Optional.of(repeaterHandler);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler.orElse(null);
+    }
+
+    @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
+    public void reboot() {
+        logger.debug("Repeater reboot called");
+        handler.ifPresentOrElse(RepeaterHandler::reboot,
+                () -> logger.warn("Repeater Action service ThingHandler is null!"));
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
 }

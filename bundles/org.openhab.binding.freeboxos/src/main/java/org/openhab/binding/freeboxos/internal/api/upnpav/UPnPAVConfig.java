@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,17 @@
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
+import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
- * The {@link UPnPAVConfig} is the Java class used to map the "UPnPAVConfig"
- * structure used by the UPnP AV configuration API
- * https://dev.freebox.fr/sdk/os/upnpav/#
+ * The {@link UPnPAVConfig} is the Java class used to map the "UPnP AV Config" structure
+ *
+ * https://dev.freebox.fr/sdk/os/airmedia/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class UPnPAVConfig implements ActivableConfig {
-    public static class UPnPAVConfigResponse extends Response<UPnPAVConfig> {
-    }
-
+public class UPnPAVConfig implements ActivableConfigIntf {
     private boolean enabled;
 
     @Override

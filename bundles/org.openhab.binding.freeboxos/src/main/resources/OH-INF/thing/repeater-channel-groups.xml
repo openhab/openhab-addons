@@ -8,6 +8,7 @@
 		<label>Repeater Settings</label>
 		<channels>
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="led" typeId="led"/>
 			<channel id="connection-status" typeId="connection-status"/>
@@ -19,10 +20,19 @@
 			<channel id="start-timestamp" typeId="timestamp">
 				<label>Started Since</label>
 			</channel>
+=======
+			<channel id="uptime" typeId="uptime"/>
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 			<channel id="led" typeId="led"/>
 			<channel id="connection-status" typeId="connection-status"/>
 			<channel id="host-count" typeId="host-count"/>
+<<<<<<< Upstream, based on origin/main
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+			<channel id="box-event" typeId="box-event">
+				<label>Repeater Event</label>
+			</channel>
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 		</channels>
 	</channel-group-type>
 

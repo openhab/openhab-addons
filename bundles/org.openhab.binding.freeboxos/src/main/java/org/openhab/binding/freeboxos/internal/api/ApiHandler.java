@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -145,6 +146,9 @@ public class ApiHandler {
         logger.debug("Timeout set to {} ms", timeoutInMs);
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,10 +161,12 @@ public class ApiHandler {
  */
 package org.openhab.binding.freeboxos.internal.api;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import java.net.URI;
-import java.util.Map;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -168,56 +174,58 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerStatusForegroundApp;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+
 /**
- * The {@link ApiHandler} is responsible for sending requests toward
- * a given url and transform the answer in appropriate dto.
+ * The {@link ApiHandler} is responsible for sending requests toward a given url and transform the answer in appropriate
+ * DTO.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ApiHandler.class, configurationPid = "binding.freeboxos")
 public class ApiHandler {
-    private static final String AUTH_HEADER = "X-Fbx-App-Auth";
-    private static final String CONTENT_TYPE = "application/json; charset=" + DEFAULT_CHARSET.name();
-
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
-    private final FreeboxDeserializer deserializer;
+    private final Gson gson;
+
     private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
 
-    @Activate
-    public ApiHandler(@Reference HttpClientFactory httpClientFactory, @Reference FreeboxDeserializer deserializer,
-            Map<String, Object> config) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.deserializer = deserializer;
-        bindingConfigChanged(config);
-    }
-
-    @Modified
-    public void bindingConfigChanged(Map<String, Object> config) {
-        String timeout = (String) config.getOrDefault(TIMEOUT, "8");
-        timeoutInMs = TimeUnit.SECONDS.toMillis(Long.parseLong(timeout));
-        logger.debug("Timeout set to {} seconds", timeout);
+    public ApiHandler(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
+        this.httpClient = httpClient;
+        this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
+                            long timestamp = json.getAsJsonPrimitive().getAsLong();
+                            Instant i = Instant.ofEpochSecond(timestamp);
+                            return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
+                        })
+                .registerTypeAdapter(PlayerStatusForegroundApp.class, new ForegroundAppDeserializer())
+                .registerTypeAdapter(List.class, new ArrayListDeserializer())
+                .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
             @Nullable Object payload) throws FreeboxException {
-        logger.debug("executeUrl {} - {} ", method, uri);
+        logger.debug("executeUrl {} : {} ", method, uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS)
                 .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
@@ -227,23 +235,63 @@ public class ApiHandler {
         }
 
         if (payload != null) {
-            request.content(deserializer.serialize(payload), null);
+            request.content(serialize(payload), null);
         }
+
         try {
             ContentResponse response = request.send();
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String content = new String(response.getContent(), DEFAULT_CHARSET);
             logger.trace("executeUrl {} - {} returned {}", method, uri, content);
             if (statusCode == Code.OK) {
-                return deserializer.deserialize(clazz, content);
+                return deserialize(clazz, content);
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
-                throw new FreeboxException(ErrorCode.AUTHORIZATION_REQUIRED);
+                throw new FreeboxException(ErrorCode.AUTH_REQUIRED);
             }
             throw new FreeboxException("Error '%s' requesting : %s", statusCode.getMessage(), uri.toString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new FreeboxException(e, "Exception while calling %s", request.getURI());
         }
 >>>>>>> 46dadb1 SAT warnings handling
+    }
+
+    public <T> T deserialize(Class<T> clazz, String json) throws FreeboxException {
+        try {
+            @Nullable
+            T result = gson.fromJson(json, clazz);
+            if (result != null) {
+                return result;
+            }
+            throw new FreeboxException("Deserialization of '%s' resulted in null value", json);
+        } catch (JsonSyntaxException e) {
+            throw new FreeboxException(e, "Unexpected error deserializing '%s'", json);
+        }
+    }
+
+    public <T> T deserialize(Class<T> clazz, JsonElement json) throws FreeboxException {
+        try {
+            @Nullable
+            T result = gson.fromJson(json, clazz);
+            if (result != null) {
+                return result;
+            }
+            throw new FreeboxException("Deserialization of '%s' resulted in null value", json);
+        } catch (JsonSyntaxException e) {
+            throw new FreeboxException(e, "Unexpected error deserializing '%s'", json);
+        }
+    }
+
+    public ContentProvider serialize(Object payload) {
+        return new StringContentProvider(gson.toJson(payload), DEFAULT_CHARSET);
+    }
+
+    public void setTimeout(long millis) {
+        timeoutInMs = millis;
+        logger.debug("Timeout set to {} ms", timeoutInMs);
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 }

@@ -1,5 +1,8 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
+=======
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional

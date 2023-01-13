@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -68,6 +69,9 @@ public class BasicShutterHandler extends HomeNodeHandler {
         return false;
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,14 +89,13 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ValueType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.home.HomeManager;
 import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpointState;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpointState.ValueType;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
@@ -110,7 +113,7 @@ public class BasicShutterHandler extends ApiConsumerHandler {
     }
 
     @Override
-    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
     }
 
     @Override
@@ -136,8 +139,8 @@ public class BasicShutterHandler extends ApiConsumerHandler {
     }
 
     @Override
-    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        if (BASIC_SHUTTER_CMD.equals(channelUID.getIdWithoutGroup())) {
+    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
+        if (BASIC_SHUTTER_CMD.equals(channelId)) {
             BasicShutterConfiguration config = getConfiguration();
             if (UpDownType.UP.equals(command)) {
                 getManager(HomeManager.class).putCommand(config.id, config.upSlotId, true);
@@ -150,7 +153,11 @@ public class BasicShutterHandler extends ApiConsumerHandler {
                 return true;
             }
         }
+<<<<<<< Upstream, based on origin/main
         return super.internalHandleCommand(channelUID, command);
 >>>>>>> e4c7780 Implementing SHUTTER Home Node
+=======
+        return super.internalHandleCommand(channelId, command);
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
 }

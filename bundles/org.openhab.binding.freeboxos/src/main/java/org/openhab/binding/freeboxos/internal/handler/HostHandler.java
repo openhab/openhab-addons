@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -104,6 +105,9 @@ public class HostHandler extends ApiConsumerHandler {
         return Collections.singletonList(HostActions.class);
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,13 +127,14 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.HostNameSource;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.MediaReceiverManager;
-import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
-import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
+import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserManager;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
+import org.openhab.binding.freeboxos.internal.api.ws.WebSocketManager;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -137,53 +142,62 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HostHandler} is responsible for handling everything associated to
- * any Freebox thing types except the bridge thing type.
+ * The {@link HostHandler} is responsible for all network equipments hosted on the network
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class HostHandler extends ApiConsumerHandler {
+public class HostHandler extends ApiConsumerHandler implements NetworkHostIntf {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
-    private @Nullable String ipAddress;
+
+    // We start in pull mode and switch to push after a first update
+    private boolean pushSubscribed = false;
 
     public HostHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(host -> {
-            host.getPrimaryName().ifPresent(name -> properties.put(NameSource.UPNP.name(), name));
-            properties.put(Thing.PROPERTY_VENDOR, host.getVendorName().orElse("Unknown"));
-        });
-        String name = properties.get(NameSource.UPNP.name());
-        if (name != null) {
-            getManager(MediaReceiverManager.class).getDevices().stream().filter(r -> name.equals(r.getName()))
-                    .findFirst().ifPresent(receiver -> {
-                        receiver.getCapabilities().entrySet()
-                                .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString()));
-                    });
+    public void dispose() {
+        try {
+            getManager(WebSocketManager.class).unregisterListener(getMac());
+        } catch (FreeboxException e) {
+            logger.warn("Error unregistering host from the websocket : {}", e.getMessage());
         }
+        super.dispose();
+    }
+
+    @Override
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(host -> {
+            host.getUPnPName().ifPresent(upnpName -> properties.put(HostNameSource.UPNP.name(), upnpName));
+            host.getVendorName().ifPresent(vendor -> properties.put(Thing.PROPERTY_VENDOR, vendor));
+        });
+        String upnpName = properties.getOrDefault(HostNameSource.UPNP.name(), "");
+        getManager(MediaReceiverManager.class).getDevices().stream().filter(r -> upnpName.equals(r.getName()))
+                .findFirst().ifPresent(receiver -> receiver.getCapabilities().entrySet()
+                        .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString())));
+    }
+
+    public void updateConnectivityChannels(LanHost host) {
+        updateChannelOnOff(CONNECTIVITY, REACHABLE, host.isReachable());
+        updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
+        updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
+        updateStatus(host.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
-        ConnectivityData lanHost = fetchConnectivity();
-        ipAddress = lanHost.getIpv4();
-        updateChannelOnOff(CONNECTIVITY, REACHABLE, lanHost.isReachable());
-        updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, lanHost.getLastSeen());
-        updateChannelString(CONNECTIVITY, IP_ADDRESS, ipAddress);
-        updateStatus(lanHost.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-    }
-
-    protected ConnectivityData fetchConnectivity() throws FreeboxException {
-        return getManager(LanBrowserManager.class).getHost(getMac())
+        if (pushSubscribed) {
+            return;
+        }
+        LanHost data = getManager(LanBrowserManager.class).getHost(getMac())
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
-    }
+        updateConnectivityChannels(data);
 
-    public @Nullable String getIpAddress() {
-        return ipAddress;
+        logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
+        getManager(WebSocketManager.class).registerListener(getMac(), this);
+        pushSubscribed = true;
     }
 
     public void wol() {
@@ -199,8 +213,14 @@ public class HostHandler extends ApiConsumerHandler {
         return Collections.singletonList(HostActions.class);
     }
 
+<<<<<<< Upstream, based on origin/main
     protected String getMac() {
         return ((String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS)).toLowerCase();
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    @Override
+    public Configuration getConfig() {
+        return super.getConfig();
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
 }

@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -42,6 +43,9 @@ public class FreeboxException extends Exception {
     public ErrorCode getErrorCode() {
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +59,7 @@ public class FreeboxException extends Exception {
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
 
 /**
  * Exception for errors when using the Freebox API
@@ -66,11 +69,7 @@ import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 @NonNullByDefault
 public class FreeboxException extends Exception {
     private static final long serialVersionUID = 9197365222439228186L;
-    private @Nullable ErrorCode errorCode;
-
-    public FreeboxException(String msg) {
-        super(msg);
-    }
+    private ErrorCode errorCode = ErrorCode.NONE;
 
     public FreeboxException(String format, Object... args) {
         super(String.format(format, args));
@@ -80,17 +79,21 @@ public class FreeboxException extends Exception {
         super(String.format(format, args), cause);
     }
 
-    public FreeboxException(ErrorCode errorCode, String message, @Nullable Exception cause) {
-        super(message, cause);
+    public FreeboxException(ErrorCode errorCode) {
+        this(errorCode.toString());
         this.errorCode = errorCode;
     }
 
+<<<<<<< Upstream, based on origin/main
     public FreeboxException(ErrorCode errorCode) {
         this(errorCode, errorCode.toString(), null);
     }
 
     public @Nullable ErrorCode getErrorCode() {
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    public ErrorCode getErrorCode() {
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
         return errorCode;
     }
 }

@@ -19,6 +19,7 @@
 			<channel id="hardware-status" typeId="hardware-status"/>
 		</channels>
 
+<<<<<<< Upstream, based on origin/main
 		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
@@ -47,6 +48,32 @@
 		</channels>
 
 		<representation-property>id</representation-property>
+=======
+		<config-description-ref uri="thing-type:freeboxos:phone"/>
+	</thing-type>
+
+	<thing-type id="dect">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>DECT</label>
+		<description>Provides various informations regarding the DECT state and configuration</description>
+
+		<channels>
+			<channel id="telephony-service" typeId="telephony-service"/>
+			<channel id="dect-active" typeId="dect-active"/>
+			<channel id="alternate-ring" typeId="alternate-ring"/>
+			<channel id="ringing" typeId="ringing"/>
+			<channel id="hardware-status" typeId="hardware-status"/>
+			<channel id="gain-rx" typeId="gain">
+				<label>Gain RX</label>
+			</channel>
+			<channel id="gain-tx" typeId="gain">
+				<label>Gain TX</label>
+			</channel>
+		</channels>
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
 	</thing-type>

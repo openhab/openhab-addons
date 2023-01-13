@@ -35,6 +35,7 @@ public class FreeplugActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
+<<<<<<< Upstream, based on origin/main
         if (handler instanceof FreeplugHandler plugHandler) {
             this.handler = plugHandler;
         }
@@ -53,6 +54,26 @@ public class FreeplugActions implements ThingActions {
             plugHandler.reset();
         } else {
             logger.warn("Freeplug Action service ThingHandler is null");
+=======
+        if (handler instanceof FreeplugHandler) {
+            this.handler = (FreeplugHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return this.handler;
+    }
+
+    @RuleAction(label = "reset freeplug", description = "Resets the Freeplug")
+    public void reset() {
+        logger.debug("Freeplug reset requested");
+        FreeplugHandler plugHandler = this.handler;
+        if (plugHandler != null) {
+            plugHandler.reset();
+        } else {
+            logger.warn("Freeplug Action service ThingHandler is null!");
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
         }
     }
 }

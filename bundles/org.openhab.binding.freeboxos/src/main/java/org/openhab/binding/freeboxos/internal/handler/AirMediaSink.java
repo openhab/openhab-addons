@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -139,6 +140,9 @@ public class AirMediaSink implements AudioSink {
     public Set<AudioFormat> getSupportedFormats() {
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -160,11 +164,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaAction;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaAction;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.airmedia.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverManager;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;

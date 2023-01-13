@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 
 /**
- * The {@link OpenSessionData} holds and handle data needed to
- * be sent to API in order to open a new session
+ * The {@link OpenSessionData} holds and handle data needed to be sent to API in order to open a new session
+ *
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Gaël L'hopital - Initial contribution
@@ -37,7 +35,7 @@ public class OpenSessionData {
     protected final String appId;
     protected final String password;
 
-    public OpenSessionData(String appId, String appToken, String challenge) throws FreeboxException {
+    public OpenSessionData(String appId, String appToken, String challenge) {
         this.appId = appId;
         try {
             Mac mac = Mac.getInstance(ALGORITHM);
@@ -51,7 +49,7 @@ public class OpenSessionData {
             // Convert raw bytes to Hex
             this.password = printHexBinary(rawHmac).toLowerCase();
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new FreeboxException(ErrorCode.INVALID_TOKEN, "Error encoding session password", e);
+            throw new IllegalArgumentException(e);
         }
     }
 

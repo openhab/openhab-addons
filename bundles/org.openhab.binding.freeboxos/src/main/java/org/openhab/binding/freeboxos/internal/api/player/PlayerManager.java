@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,40 +12,37 @@
  */
 package org.openhab.binding.freeboxos.internal.api.player;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-import org.openhab.binding.freeboxos.internal.api.player.Player.PlayerResponse;
-import org.openhab.binding.freeboxos.internal.api.player.Player.PlayersResponse;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerStatus.PlayerStatusResponse;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
-import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
-import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig.DeviceConfigurationResponse;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.ConfigurationResponse;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayerResponse;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayerStatusResponse;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayersResponse;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
 /**
- * The {@link PlayerManager} is the Java class used to handle api requests
- * related to player
+ * The {@link PlayerManager} is the Java class used to handle api requests related to player
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersResponse> {
-    private static final String STATUS_SUB_PATH = "status";
-    private static final String PLAYER_SUB_PATH = "player";
-
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class, PLAYER_SUB_PATH);
-        getDevices().forEach(player -> subPaths.put(player.getId(), player.baseUrl()));
+        getDevices().stream().filter(Player::isApiAvailable)
+                .forEach(player -> subPaths.put(player.getId(), player.baseUrl()));
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
@@ -56,8 +53,17 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
         throw new FreeboxException("Player status is null");
     }
 
-    public DeviceConfig getConfig(int id) throws FreeboxException {
-        DeviceConfig response = get(DeviceConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
+    // The player API does not allow to directly request a given player like others api parts
+    @Override
+    public Player getDevice(int id) throws FreeboxException {
+        return getDevices().stream().filter(player -> player.getId() == id).findFirst().orElse(null);
+    }
+
+    public PlayerSystemConfiguration getConfig(int id) throws FreeboxException {
+        PlayerSystemConfiguration response = get(ConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
+        // Modification temporaire en attendant de revenir dessus quand tout aura été remis à plat.
+        // Vérifier que ceci fonctionne.
+        // SystemConfig response = get(ConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
         if (response != null) {
             return response;
         }
@@ -75,10 +81,8 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
         }
         try {
             session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
-        } catch (IllegalArgumentException | UriBuilderException e) {
-            // This call does not answer anything, we can safely ignore
         } catch (FreeboxException ignore) {
-            // This call does not answer anything, we can safely ignore
+            // This call does not return anything, we can safely ignore
         }
     }
 

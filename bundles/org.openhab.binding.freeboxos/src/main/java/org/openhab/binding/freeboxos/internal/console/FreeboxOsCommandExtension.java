@@ -1,5 +1,6 @@
 /**
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -84,6 +85,9 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
                         console.println("Your application token is " + (token.isEmpty() ? "undefined" : token));
 =======
  * Copyright (c) 2010-2022 Contributors to the openHAB project
+=======
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,9 +168,13 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
                 switch (args[1]) {
                     case APP_TOKEN:
                         String token = handler.getConfiguration().appToken;
+<<<<<<< Upstream, based on origin/main
                         console.println("Your application token is "
                                 + (token == null || token.isEmpty() ? "undefined" : token));
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+                        console.println("Your application token is " + (token.isEmpty() ? "undefined" : token));
+>>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
                         break;
                     default:
                         printUsage(console);

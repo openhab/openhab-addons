@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,24 @@
  */
 package org.openhab.binding.freeboxos.internal.api.wifi;
 
+import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiConfig.WifiConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.wifi.WifiResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointManager;
+import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
- * The {@link WifiManager} is the Java class used to handle api requests
- * related to wifi
+ * The {@link WifiManager} is the Java class used to handle api requests related to wifi
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WifiManager extends ActivableRest<WifiConfig, WifiConfigResponse> {
-    public static final String WIFI_SUB_PATH = "wifi";
+public class WifiManager extends ActivableRest<WifiConfig, ConfigResponse> {
 
     public WifiManager(FreeboxOsSession session) {
-        super(session, WifiConfigResponse.class, WIFI_SUB_PATH, CONFIG_SUB_PATH);
-        session.addManager(APManager.class, new APManager(session, getUriBuilder()));
+        super(session, ConfigResponse.class, WIFI_SUB_PATH, CONFIG_SUB_PATH);
+        session.addManager(AccessPointManager.class, new AccessPointManager(session, getUriBuilder()));
     }
 }
