@@ -59,6 +59,7 @@ public enum HomekitAccessoryType {
     INPUT_SOURCE("InputSource"),
     TELEVISION_SPEAKER("TelevisionSpeaker"),
     ACCESSORY_GROUP("AccessoryGroup"),
+    IRRIGATION_SYSTEM("IrrigationSystem"),
     DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
