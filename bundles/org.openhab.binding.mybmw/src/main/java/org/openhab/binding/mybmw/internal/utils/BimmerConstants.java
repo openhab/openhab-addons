@@ -35,8 +35,9 @@ public class BimmerConstants {
     public static final String REGION_ROW = "ROW";
 
     public static final String BRAND_BMW = "bmw";
+    public static final String BRAND_BMWI = "bmw_i";
     public static final String BRAND_MINI = "mini";
-    public static final List<String> ALL_BRANDS = List.of(BRAND_BMW, BRAND_MINI);
+    public static final List<String> ALL_BRANDS = List.of(BRAND_BMW, BRAND_MINI, BRAND_BMWI);
 
     public static final String OAUTH_ENDPOINT = "/gcdm/oauth/authenticate";
 

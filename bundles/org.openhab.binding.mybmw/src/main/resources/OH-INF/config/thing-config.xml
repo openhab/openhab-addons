@@ -16,7 +16,7 @@
 		</parameter>
 		<parameter name="vehicleBrand" type="text" required="true">
 			<label>Brand of the Vehicle</label>
-			<description>Vehicle brand like BMW or Mini</description>
+			<description>Vehicle brand like BMW, BMWi or Mini</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -31,6 +31,7 @@ public class MyBMWVehicleConfiguration {
     /**
      * Vehicle brand
      * - bmw
+     * - bmw_i
      * - mini
      */
     private String vehicleBrand = Constants.EMPTY;

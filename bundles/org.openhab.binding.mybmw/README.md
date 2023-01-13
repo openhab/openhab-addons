@@ -125,6 +125,7 @@ The _vehicleBrand_ is automatically obtained by the discovery service and shall 
 If thing is defined manually via *.things file following brands are supported
 
 * BMW
+* BMW_I
 * MINI
 
 

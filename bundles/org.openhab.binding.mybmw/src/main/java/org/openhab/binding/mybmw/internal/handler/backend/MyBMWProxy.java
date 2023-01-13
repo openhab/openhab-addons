@@ -288,29 +288,31 @@ public class MyBMWProxy {
                 responseByteArray = "".getBytes();
                 NetworkException exception = new NetworkException(url, response.getStatus(),
                         ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), body);
-                logFingerprint(exception.getUrl(), exception.getReason());
+                logResponse(exception.getUrl(), exception.getReason(), body);
                 throw exception;
             } else {
                 responseByteArray = response.getContent();
 
                 // don't print images
                 if (!HTTPConstants.CONTENT_TYPE_IMAGE.equals(contentType)) {
-                    logFingerprint(url,
-                            ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()));
+                    logResponse(url, ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()),
+                            body);
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logFingerprint(url, e.getMessage());
+            logResponse(url, e.getMessage(), body);
             throw new NetworkException(url, -1, null, body, e);
         }
 
         return responseByteArray;
     }
 
-    private void logFingerprint(@Nullable String url, @Nullable String fingerprint) {
-        logger.debug("###### Fingerprint URL - BEGIN ######");
+    private void logResponse(@Nullable String url, @Nullable String fingerprint, @Nullable String body) {
+        logger.debug("###### Request URL - BEGIN ######");
         logger.debug("URL - please anonymize VIN on your own!: {}", url);
-        logger.debug("###### Fingerprint Data - BEGIN ######");
+        logger.debug("###### Request Body - BEGIN ######");
+        logger.debug("{}", body);
+        logger.debug("###### Response Data - BEGIN ######");
         logger.debug("{}", fingerprint);
         logger.debug("###### Fingerprint Data - END ######");
     }
