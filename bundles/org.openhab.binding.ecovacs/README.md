@@ -10,6 +10,7 @@ It discovers devices and communicates to them by using Ecovacs' cloud services.
 
 At this point, the following devices are fully supported and verified to be working:
 
+- Deebot 900/901
 - Deebot OZMO 920
 - Deebot OZMO 930
 - Deebot OZMO 950
@@ -21,7 +22,6 @@ The following devices will likely work because they are using similar protocols 
 - Deebot 600/601/605
 - Deebot OZMO 610
 - Deebot 710/711/711s
-- Deebot 900/901
 - Deebot OZMO 900/905
 - Deebot OZMO T5
 - Deebot (OZMO) T8 series
