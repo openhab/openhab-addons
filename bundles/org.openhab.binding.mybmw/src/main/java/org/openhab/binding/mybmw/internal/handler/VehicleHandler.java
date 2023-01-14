@@ -554,7 +554,8 @@ public class VehicleHandler extends BaseThingHandler {
         boolean isSelectedElementIn = false;
         int index = 0;
         for (CheckControlMessage checkControlMessage : checkControlList) {
-            ccmDescriptionOptions.add(new CommandOption(Integer.toString(index), checkControlMessage.getType()));
+            ccmDescriptionOptions.add(
+                    new CommandOption(Integer.toString(index), Converter.toTitleCase(checkControlMessage.getType())));
             if (selectedCC.equals(checkControlMessage.getType())) {
                 isSelectedElementIn = true;
             }
