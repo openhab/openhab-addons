@@ -143,9 +143,9 @@ public class GreeBindingConstants {
     // Temperatur types and min/max ranges
     public static final int TEMP_UNIT_CELSIUS = 0;
     public static final int TEMP_UNIT_FAHRENHEIT = 1;
-    public static final int TEMP_MIN_C = 16;
+    public static final int TEMP_MIN_C = 5;
     public static final int TEMP_MAX_C = 30;
-    public static final int TEMP_MIN_F = 61;
+    public static final int TEMP_MIN_F = 41;
     public static final int TEMP_MAX_F = 86;
     public static final int TEMP_HALFSTEP_NO = 0;
     public static final int TEMP_HALFSTEP_YES = 1;
