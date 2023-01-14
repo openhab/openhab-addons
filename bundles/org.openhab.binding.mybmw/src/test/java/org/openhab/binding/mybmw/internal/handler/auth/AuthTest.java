@@ -21,7 +21,7 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.AUTHORIZATI
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_JSON;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_URL_ENCODED;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.X_USER_AGENT;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_USER_AGENT;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -410,7 +410,7 @@ class AuthTest {
             String url = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
                     + BimmerConstants.CHINA_PUBLIC_KEY;
             Request oauthQueryRequest = authHttpClient.newRequest(url);
-            oauthQueryRequest.header(X_USER_AGENT,
+            oauthQueryRequest.header(HEADER_X_USER_AGENT,
                     String.format(BimmerConstants.BRAND_BMW, BimmerConstants.BRAND_BMW, BimmerConstants.REGION_ROW));
 
             ContentResponse publicKeyResponse = oauthQueryRequest.send();

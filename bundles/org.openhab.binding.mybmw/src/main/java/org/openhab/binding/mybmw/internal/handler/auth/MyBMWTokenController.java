@@ -12,7 +12,21 @@
  */
 package org.openhab.binding.mybmw.internal.handler.auth;
 
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.ACP_SUBSCRIPTION_KEY;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.API_OAUTH_CONFIG;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTHORIZATION_CODE;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTH_PROVIDER;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.BRAND_BMW;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_LOGIN;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_PUBLIC_KEY;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.EADRAX_SERVER_MAP;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.LOGIN_NONCE;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OAUTH_ENDPOINT;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OCP_APIM_KEYS;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_CHINA;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_NORTH_AMERICA;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_ROW;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.USER_AGENT;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.X_USER_AGENT;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.AUTHORIZATION;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CLIENT_ID;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE;
@@ -21,6 +35,11 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLE
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_VERIFIER;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_URL_ENCODED;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.GRANT_TYPE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_ACP_SUBSCRIPTION_KEY;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_BMW_CORRELATION_ID;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_CORRELATION_ID;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_IDENTITY_PROVIDER;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_USER_AGENT;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.NONCE;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.PASSWORD;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.REDIRECT_URI;
@@ -28,14 +47,15 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.RESPONSE_TY
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.SCOPE;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.STATE;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.USERNAME;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.X_USER_AGENT;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.UUID;
 
 import javax.crypto.Cipher;
 
@@ -55,7 +75,6 @@ import org.openhab.binding.mybmw.internal.dto.auth.ChinaPublicKeyResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenExpiration;
 import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenResponse;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
-import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.slf4j.Logger;
@@ -64,6 +83,8 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * requests the tokens for MyBMW API authorization
+ * 
+ * thanks to bimmer_connected https://github.com/bimmerconnected/bimmer_connected
  * 
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - extracted from myBmwProxy
@@ -95,13 +116,13 @@ public class MyBMWTokenController {
         if (!token.isValid()) {
             boolean tokenUpdateSuccess = false;
             switch (configuration.region) {
-                case BimmerConstants.REGION_CHINA:
+                case REGION_CHINA:
                     tokenUpdateSuccess = updateTokenChina();
                     break;
-                case BimmerConstants.REGION_NORTH_AMERICA:
+                case REGION_NORTH_AMERICA:
                     tokenUpdateSuccess = updateToken();
                     break;
-                case BimmerConstants.REGION_ROW:
+                case REGION_ROW:
                     tokenUpdateSuccess = updateToken();
                     break;
                 default:
@@ -129,12 +150,15 @@ public class MyBMWTokenController {
             /*
              * Step 1) Get basic values for further queries
              */
-            String authValuesUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
-                    + BimmerConstants.API_OAUTH_CONFIG;
+            String uuidString = UUID.randomUUID().toString();
+
+            String authValuesUrl = "https://" + EADRAX_SERVER_MAP.get(configuration.region) + API_OAUTH_CONFIG;
             Request authValuesRequest = httpClient.newRequest(authValuesUrl);
-            authValuesRequest.header(ACP_SUBSCRIPTION_KEY, BimmerConstants.OCP_APIM_KEYS.get(configuration.region));
-            authValuesRequest.header(X_USER_AGENT,
-                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
+            authValuesRequest.header(HEADER_ACP_SUBSCRIPTION_KEY, OCP_APIM_KEYS.get(configuration.region));
+            authValuesRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
+            authValuesRequest.header(HEADER_X_IDENTITY_PROVIDER, AUTH_PROVIDER);
+            authValuesRequest.header(HEADER_X_CORRELATION_ID, uuidString);
+            authValuesRequest.header(HEADER_BMW_CORRELATION_ID, uuidString);
 
             ContentResponse authValuesResponse = authValuesRequest.send();
             if (authValuesResponse.getStatus() != 200) {
@@ -145,36 +169,35 @@ public class MyBMWTokenController {
             AuthQueryResponse aqr = JsonStringDeserializer.deserializeString(authValuesResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
+            logger.trace("authQueryResponse: {}", aqr);
+
             /*
-             * Step 2) Calculate values for base parameters
+             * Step 2) Calculate values for oauth base parameters
              */
-            String verfifierBytes = Converter.getRandomString(64);
-            String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
-            String codeChallange = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-            String stateBytes = Converter.getRandomString(16);
-            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
+            String codeVerifier = generateCodeVerifier();
+            String codeChallenge = generateCodeChallenge(codeVerifier);
+            String state = generateState();
 
             MultiMap<String> baseParams = new MultiMap<String>();
             baseParams.put(CLIENT_ID, aqr.clientId);
             baseParams.put(RESPONSE_TYPE, CODE);
             baseParams.put(REDIRECT_URI, aqr.returnUrl);
             baseParams.put(STATE, state);
-            baseParams.put(NONCE, BimmerConstants.LOGIN_NONCE);
+            baseParams.put(NONCE, LOGIN_NONCE);
             baseParams.put(SCOPE, String.join(Constants.SPACE, aqr.scopes));
-            baseParams.put(CODE_CHALLENGE, codeChallange);
+            baseParams.put(CODE_CHALLENGE, codeChallenge);
             baseParams.put(CODE_CHALLENGE_METHOD, "S256");
 
             /**
              * Step 3) Authorization with username and password
              */
-            String loginUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
+            String loginUrl = aqr.gcdmBaseUrl + OAUTH_ENDPOINT;
             Request loginRequest = httpClient.POST(loginUrl);
+
             loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
 
             MultiMap<String> loginParams = new MultiMap<String>(baseParams);
-            loginParams.put(GRANT_TYPE, BimmerConstants.AUTHORIZATION_CODE);
+            loginParams.put(GRANT_TYPE, AUTHORIZATION_CODE);
             loginParams.put(USERNAME, configuration.userName);
             loginParams.put(PASSWORD, configuration.password);
             loginRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
@@ -216,7 +239,7 @@ public class MyBMWTokenController {
             codeParams.put(CODE, code);
             codeParams.put(CODE_VERIFIER, codeVerifier);
             codeParams.put(REDIRECT_URI, aqr.returnUrl);
-            codeParams.put(GRANT_TYPE, BimmerConstants.AUTHORIZATION_CODE);
+            codeParams.put(GRANT_TYPE, AUTHORIZATION_CODE);
             codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse codeResponse = codeRequest.send();
@@ -234,6 +257,22 @@ public class MyBMWTokenController {
             logger.warn("Authorization Exception: {}", e.getMessage());
         }
         return false;
+    }
+
+    private String generateState() {
+        String stateBytes = Converter.getRandomString(16);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
+    }
+
+    private String generateCodeChallenge(String codeVerifier) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+    }
+
+    private String generateCodeVerifier() {
+        String verfifierBytes = Converter.getRandomString(64);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
     }
 
     private String getAuthCode(String response) {
@@ -269,12 +308,10 @@ public class MyBMWTokenController {
             /**
              * Step 1) get public key
              */
-            String publicKeyUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
-                    + BimmerConstants.CHINA_PUBLIC_KEY;
+            String publicKeyUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_PUBLIC_KEY;
             Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
-            oauthQueryRequest.header(HttpHeader.USER_AGENT, BimmerConstants.USER_AGENT);
-            oauthQueryRequest.header(X_USER_AGENT,
-                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
+            oauthQueryRequest.header(HttpHeader.USER_AGENT, USER_AGENT);
+            oauthQueryRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
             ContentResponse publicKeyResponse = oauthQueryRequest.send();
             if (publicKeyResponse.getStatus() != 200) {
                 throw new HttpResponseException("URL: " + oauthQueryRequest.getURI() + ", Error: "
@@ -305,11 +342,9 @@ public class MyBMWTokenController {
             /**
              * Step 3) Send Auth with encoded password
              */
-            String tokenUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
-                    + BimmerConstants.CHINA_LOGIN;
+            String tokenUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_LOGIN;
             Request loginRequest = httpClient.POST(tokenUrl);
-            loginRequest.header(X_USER_AGENT,
-                    String.format(BimmerConstants.X_USER_AGENT, BimmerConstants.BRAND_BMW, configuration.region));
+            loginRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
             String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword
                     + "\"}";
             loginRequest.content(new StringContentProvider(jsonContent));
