@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MagentaTVControl {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVControl.class);
-    private final static HashMap<String, String> KEY_MAP = new HashMap<>();
+    private static final HashMap<String, String> KEY_MAP = new HashMap<>();
 
     private final MagentaTVNetwork network;
     private final MagentaTVHttp http = new MagentaTVHttp();

@@ -327,10 +327,8 @@ public class VentaThingHandler extends BaseThingHandler {
         }
 
         private boolean messageIsEmpty(DeviceInfoMessage message) {
-            if (message.getCurrentActions() == null && message.getInfo() == null && message.getMeasurements() == null) {
-                return true;
-            }
-            return false;
+            return (message.getCurrentActions() == null && message.getInfo() == null
+                    && message.getMeasurements() == null);
         }
 
         /**

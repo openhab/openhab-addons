@@ -78,7 +78,7 @@ public class PanelLayout {
             goEquals = go.equals(otherGo);
         }
 
-        if (goEquals == false) {
+        if (!goEquals) {
             // No reason to compare layout if global oriantation is different
             return false;
         }

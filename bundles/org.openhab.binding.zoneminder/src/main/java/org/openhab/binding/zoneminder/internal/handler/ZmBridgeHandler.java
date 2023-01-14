@@ -141,7 +141,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         defaultImageRefreshInterval = config.defaultImageRefreshInterval;
 
         backgroundDiscoveryEnabled = config.discoveryEnabled;
-        logger.debug("Bridge: Background discovery is {}", backgroundDiscoveryEnabled == true ? "ENABLED" : "DISABLED");
+        logger.debug("Bridge: Background discovery is {}", backgroundDiscoveryEnabled ? "ENABLED" : "DISABLED");
 
         host = config.host;
         useSSL = config.useSSL.booleanValue();

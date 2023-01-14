@@ -91,11 +91,7 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     private boolean isTriggerChannel(byte address, byte channel) {
         VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
 
-        if (getModuleAddress().getChannelNumber(velbusChannelIdentifier) == 6) {
-            return true;
-        } else {
-            return false;
-        }
+        return getModuleAddress().getChannelNumber(velbusChannelIdentifier) == 6;
     }
 
     @Override

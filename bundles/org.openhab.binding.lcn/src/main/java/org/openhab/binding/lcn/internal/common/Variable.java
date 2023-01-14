@@ -244,6 +244,7 @@ public enum Variable {
      * @param is2013 the target module's-generation
      * @return true if a poll is required to get the new status-value
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     public boolean shouldPollStatusAfterCommand(int firmwareVersion) {
         // Regulator set-points will send status-messages on every change (all firmware versions)
         if (type == Type.REGULATOR) {

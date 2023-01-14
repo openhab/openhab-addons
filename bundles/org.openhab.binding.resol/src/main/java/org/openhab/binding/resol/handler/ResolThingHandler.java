@@ -308,6 +308,7 @@ public class ResolThingHandler extends ResolBaseThingHandler {
     }
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean isSpecialValue(Double dd) {
         if ((Math.abs(dd - 888.8) < 0.1) || (Math.abs(dd - (-888.8)) < 0.1)) {
             /* value out of range */

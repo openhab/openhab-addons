@@ -543,7 +543,7 @@ In case you want to check if the communication between the machine and the gatew
 - make sure you have **netcat** installed
 - Enter ```netcat -ukl 9898```
 - At least every 10 seconds you should see a message coming in from the gateway which looks like
-```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+  ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
 
 #### Multiple network interfaces
 

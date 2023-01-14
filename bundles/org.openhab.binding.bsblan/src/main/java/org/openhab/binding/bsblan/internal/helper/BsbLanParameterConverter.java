@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
-import org.openhab.binding.bsblan.internal.handler.BsbLanParameterHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;

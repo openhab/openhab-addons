@@ -131,8 +131,9 @@ public abstract class RpcClient<T> {
      * Disposes the client.
      */
     public void dispose() {
-        if (future != null)
+        if (future != null) {
             future.cancel(true);
+        }
     }
 
     /**
