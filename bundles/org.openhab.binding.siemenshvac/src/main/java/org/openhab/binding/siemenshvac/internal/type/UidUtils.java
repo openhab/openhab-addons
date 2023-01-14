@@ -38,97 +38,66 @@ public class UidUtils {
 
         for (int i = 0; i < st.length(); i++) {
             char c = st.charAt(i);
+            if (c == 130) {
 
-            if (c == 'é') {
+            } else if (c == 131) {
                 c = 'e';
-            } else if (c == 'è') {
+            } else if (c == 136) {
                 c = 'e';
-            } else if (c == 'ê') {
+            } else if (c == 137) {
                 c = 'e';
-            } else if (c == 'ë') {
-                c = 'e';
-            } else if (c == 'ě') {
-                c = 'e';
-            } else if (c == 'É') {
+            } else if (c == 144) {
                 c = 'E';
-            } else if (c == 'É') {
+            } else if (c == 212) {
                 c = 'E';
             }
 
-            else if (c == 'î') {
+            else if (c == 140) {
                 c = 'i';
-            } else if (c == 'ï') {
+            } else if (c == 139) {
                 c = 'i';
-            } else if (c == 'í') {
+            } else if (c == 161) {
                 c = 'i';
-            } else if (c == 'í') {
+            } else if (c == 141) {
                 c = 'i';
             }
 
-            else if (c == 'ô') {
+            else if (c == 147) {
                 c = 'o';
-            } else if (c == 'ó') {
+            } else if (c == 162) {
                 c = 'o';
-            } else if (c == 'ò') {
+            } else if (c == 149) {
                 c = 'o';
-            } else if (c == 'ö') {
+            } else if (c == 148) {
                 c = 'o';
             }
 
-            else if (c == 'ú') {
+            else if (c == 163) {
                 c = 'u';
-            } else if (c == 'ù') {
+            } else if (c == 151) {
                 c = 'u';
-            } else if (c == 'û') {
+            } else if (c == 150) {
                 c = 'u';
-            } else if (c == 'ü') {
+            } else if (c == 129) {
                 c = 'u';
-            } else if (c == 'ů') {
-                c = 'u';
-            } else if (c == 'Ú') {
+            } else if (c == 233) {
                 c = 'U';
             }
 
-            else if (c == 'à') {
+            else if (c == 133) {
                 c = 'a';
-            } else if (c == 'ä') {
+            } else if (c == 132) {
                 c = 'a';
-            } else if (c == 'â') {
+            } else if (c == 131) {
                 c = 'a';
-            } else if (c == 'á') {
+            } else if (c == 160) {
                 c = 'a';
             }
 
-            else if (c == 'ř') {
-                c = 'r';
-            } else if (c == 'ť') {
-                c = 't';
-            }
-
-            else if (c == 'š') {
-                c = 's';
-            }
-
-            else if (c == 'ý') {
-                c = 'y';
-            } else if (c == 'ÿ') {
-                c = 'y';
-            }
-
-            else if (c == 'ž') {
-                c = 'z';
-            }
-
-            else if (c == 'ç') {
+            else if (c == 135) {
                 c = 'c';
-            } else if (c == 'č') {
-                c = 'c';
-            } else if (c == 'Č') {
+            } else if (c == 128) {
                 c = 'C';
-            }
-
-            else if (c == 'Ž') {
-                c = 'Z';
             }
 
             else if (c == '_') {
@@ -147,7 +116,7 @@ public class UidUtils {
                 c = '_';
             }
 
-            else if (c == '°') {
+            else if (c == 248) {
                 c = '_';
             } else if (c == '\'') {
                 c = '_';
