@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnectorImpl
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelGroupTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacConfigDescriptionProvider;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacThingTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.OpenHAB;
@@ -167,7 +168,11 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     public void initialize() {
     }
 
-    public void InitDptMap(SiemensHvacMetadata node) {
+    public void InitDptMap(@Nullable SiemensHvacMetadata node) {
+
+        if (node == null) {
+            return;
+        }
 
         if (node.getClass() == SiemensHvacMetadataMenu.class) {
             SiemensHvacMetadataMenu mInformation = (SiemensHvacMetadataMenu) node;
@@ -285,7 +290,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    private void generateThingsType(SiemensHvacMetadataDevice device) {
+    private void generateThingsType(SiemensHvacMetadataDevice device) throws Exception {
         logger.debug("Generate thing types for device : {} / {}", device.getName(), device.getSerialNr());
         if (thingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
@@ -349,8 +354,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
@@ -451,7 +456,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     /**
      * Creates the ThingType for the given device.
      */
-    private ThingType createThingType(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes) {
+    private ThingType createThingType(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes)
+            throws Exception {
         String name = device.getName();
         String description = device.getName();
 
@@ -481,13 +487,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 .withCategory(SiemensHvacBindingConstants.CATEGORY_THING_HVAC).build();
     }
 
-    private URI getConfigDescriptionURI(SiemensHvacMetadataDevice device) {
+    private URI getConfigDescriptionURI(SiemensHvacMetadataDevice device) throws Exception {
         try {
             return new URI(String.format("%s:%s", SiemensHvacBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
                     UidUtils.generateThingTypeUID(device)));
         } catch (URISyntaxException ex) {
             logger.warn("Can't create configDescriptionURI for device type {}", device.getName());
-            throw new RuntimeException("can't construct URI");
+            throw new SiemensHvacException("can't construct URI");
         }
     }
 
