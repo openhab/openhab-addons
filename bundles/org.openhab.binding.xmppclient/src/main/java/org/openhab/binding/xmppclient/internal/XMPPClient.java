@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,6 +42,7 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientMessageSubscriber;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +50,18 @@ import org.slf4j.LoggerFactory;
  * The {@link XMPPClient} is lib for handling XMPP connection and messaging
  *
  * @author Pavel Gololobov - Initial contribution
+ * @author Leo Siepel - Add reconnection logic
  */
 @NonNullByDefault
 public class XMPPClient implements IncomingChatMessageListener, ConnectionListener {
+    private static final int CONNECTION_CHECK_INTERVAL = 180;
     private final Logger logger = LoggerFactory.getLogger(XMPPClient.class);
     private @Nullable AbstractXMPPConnection connection;
     private @Nullable ChatManager chatManager;
     private @Nullable HttpFileUploadManager httpFileUploadManager;
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
+    private @Nullable ScheduledFuture<?> connectionCheckJob;
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ConnectionCheck");
 
     public void subscribe(XMPPClientMessageSubscriber channel) {
         logger.debug("Channel {} subscribed", channel.getName());
@@ -100,9 +108,46 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         chatManagerLocal.addIncomingListener(this);
         chatManager = chatManagerLocal;
         httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
+
+        scheduleConnectionCheck();
+    }
+
+    private void checkAndReconnect() {
+        AbstractXMPPConnection connectionLocal = connection;
+        if (connectionLocal == null) {
+            logger.warn("XMPP connection is null, cannot automatic recover from this permanent failure");
+            return;
+        }
+
+        if (!connectionLocal.isConnected()) {
+            connectionLocal.disconnect();
+            try {
+                connectionLocal.connect().login();
+            } catch (SmackException | IOException | XMPPException | InterruptedException ex) {
+                logger.info("XMPP connection error", ex);
+            }
+        }
+    }
+
+    private synchronized void scheduleConnectionCheck() {
+        if (this.connectionCheckJob == null) {
+            logger.debug("Scheduling connection check job every {}s", CONNECTION_CHECK_INTERVAL);
+            this.connectionCheckJob = scheduler.scheduleWithFixedDelay(this::checkAndReconnect, 0,
+                    CONNECTION_CHECK_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void cancelConnectionCheck() {
+        ScheduledFuture<?> connectionCheckJobLocal = connectionCheckJob;
+        if (connectionCheckJobLocal != null) {
+            logger.debug("Cancelling connection check job");
+            connectionCheckJobLocal.cancel(true);
+            this.connectionCheckJob = null;
+        }
     }
 
     public void disconnect() {
+        cancelConnectionCheck();
         AbstractXMPPConnection connectionLocal = connection;
         if (connectionLocal != null) {
             connectionLocal.disconnect();
@@ -179,14 +224,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     @Override
     public void connectionClosedOnError(@Nullable Exception e) {
         logger.debug("Connection to XMPP server was lost.");
-        AbstractXMPPConnection connectionLocal = connection;
-        if (connectionLocal != null) {
-            connectionLocal.disconnect();
-            try {
-                connectionLocal.connect().login();
-            } catch (SmackException | IOException | XMPPException | InterruptedException ex) {
-                logger.info("XMPP connection error", ex);
-            }
-        }
+        checkAndReconnect();
     }
 }
