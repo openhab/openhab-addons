@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -192,9 +192,6 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
-        if (typeFieldName == null || baseType == null) {
-            throw new NullPointerException();
-        }
         this.baseType = baseType;
         this.typeFieldName = typeFieldName;
     }
@@ -223,9 +220,6 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      *             have already been registered on this type adapter.
      */
     public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
-        if (type == null || label == null) {
-            throw new NullPointerException();
-        }
         if (subtypeToLabel.containsKey(type) || labelToSubtype.containsKey(label)) {
             throw new IllegalArgumentException("types and labels must be unique");
         }

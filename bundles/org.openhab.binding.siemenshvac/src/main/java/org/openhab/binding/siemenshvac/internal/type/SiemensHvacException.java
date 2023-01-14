@@ -10,15 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.siemenshvac.internal.handler;
+package org.openhab.binding.siemenshvac.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
  * @author Laurent Arnal - Initial contribution
+ *
+ *         An exception that occurred while operating the binding
+ *
  */
 @NonNullByDefault
-public interface SiemensHvacHandler {
+public class SiemensHvacException extends Exception {
+    private static final long serialVersionUID = -3398100220952729816L;
 
+    public SiemensHvacException(String message, Exception e) {
+        super(message, e);
+    }
+
+    public SiemensHvacException(String message) {
+        super(message);
+    }
 }

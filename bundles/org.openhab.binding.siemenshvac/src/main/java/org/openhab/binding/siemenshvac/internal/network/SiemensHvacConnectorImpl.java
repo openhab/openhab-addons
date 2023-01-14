@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadata;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.types.Type;
@@ -165,7 +166,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 response = request.send();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new Exception("siemensHvac:Exception by executing request: " + request.getQuery() + " ; "
+            throw new SiemensHvacException("siemensHvac:Exception by executing request: " + request.getQuery() + " ; "
                     + e.getLocalizedMessage());
         }
         return response;
@@ -177,7 +178,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         if (hvacBridgeBaseThingHandler != null) {
             config = hvacBridgeBaseThingHandler.getThing().getConfiguration();
         } else {
-            throw new Exception(
+            throw new SiemensHvacException(
                     "siemensHvac:Exception unable to get config because hvacBridgeBaseThingHandler is null");
         }
 
