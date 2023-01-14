@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -58,7 +57,7 @@ public class SiemensHvacChannelGroupTypeProviderImpl implements SiemensHvacChann
 
     /**
      *
-     * @see ChannelTypeRegistry#getChannelGroupTypes(Locale)
+     * @see ChannelTypeRegistr#getChannelGroupTypes(Locale)
      *
      */
     @Override

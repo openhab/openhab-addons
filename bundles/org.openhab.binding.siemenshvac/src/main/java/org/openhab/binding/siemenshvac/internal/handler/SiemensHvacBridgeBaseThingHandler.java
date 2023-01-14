@@ -44,18 +44,18 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     private final @Nullable NetworkAddressService networkAddressService;
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
-    private @Nullable SiemensHvacConnector connector;
 
     public SiemensHvacBridgeBaseThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
             @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge);
+        SiemensHvacConnector lcConnector = null;
         this.networkAddressService = networkAddressService;
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
 
-        connector = this.metaDataRegistry.getSiemensHvacConnector();
-        if (connector != null) {
-            connector.setSiemensHvacBridgeBaseThingHandler(this);
+        lcConnector = this.metaDataRegistry.getSiemensHvacConnector();
+        if (lcConnector != null) {
+            lcConnector.setSiemensHvacBridgeBaseThingHandler(this);
         }
     }
 
@@ -90,9 +90,10 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     }
 
     public boolean registerDiscoveryListener(SiemensHvacDeviceDiscoveryService listener) {
-        if (discoveryService == null) {
-            discoveryService = listener;
-            discoveryService.setSiemensHvacMetadataRegistry(metaDataRegistry);
+        SiemensHvacDeviceDiscoveryService lcDiscoveryService = discoveryService;
+        if (lcDiscoveryService == null) {
+            lcDiscoveryService = listener;
+            lcDiscoveryService.setSiemensHvacMetadataRegistry(metaDataRegistry);
             // getFullLights().forEach(listener::addLightDiscovery);
             return true;
         }
@@ -101,8 +102,9 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     }
 
     public boolean unregisterDiscoveryListener() {
-        if (discoveryService != null) {
-            discoveryService = null;
+        SiemensHvacDeviceDiscoveryService lcDiscoveryService = discoveryService;
+        if (lcDiscoveryService != null) {
+            lcDiscoveryService = null;
             return true;
         }
 
