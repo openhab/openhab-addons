@@ -5,21 +5,29 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<thing-type id="fanSpeedControl">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
 			<bridge-type-ref id="ModuledSmartHomeBridge" />
 			</supported-bridge-type-refs>
 		-->
 
-		<label>ModuledSmartHome Binding Thing</label>
-		<description>Sample thing for ModuledSmartHome Binding</description>
+		<label>ModuledSmartHome - Fan Speed Control</label>
+		<description>A single thing capable for controle the speed and direction of a ceiling fan</description>
+		<category>HVAC</category>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="channel1" typeId="fanSpeed"/>
+			<channel id="channel2" typeId="fanDirection"/>
 		</channels>
 
+		<representation-property>uniqueId</representation-property>
+
 		<config-description>
+			<parameter name="uniqueId" type="text">
+				<label>Unique Id</label>
+				<description>The Unique Id for Representation Property</description>
+			</parameter>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
@@ -40,9 +48,33 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for ModuledSmartHome Binding</description>
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Setpoint Speed</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Channel for setting speed</description>
+		<category>HVAC</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state min="1" max="5" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
+
+	<channel-type id="fanDirection">
+		<item-type>String</item-type>
+		<label>Set Direction</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Channel for setting direction</description>
+		<category>HVAC</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Wind</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="UP">UP Direction</option>
+				<option value="DOWN">DOWN Direction</option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>
