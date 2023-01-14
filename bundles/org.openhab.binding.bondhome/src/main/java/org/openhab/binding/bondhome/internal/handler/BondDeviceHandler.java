@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,6 +202,27 @@ public class BondDeviceHandler extends BaseThingHandler {
                     }
                 } else {
                     logger.info("Unsupported command on fan speed channel");
+                }
+                break;
+
+            case CHANNEL_RAW_FAN_SPEED:
+                if (command instanceof DecimalType) {
+                    value = ((DecimalType) command).intValue();
+                    BondDeviceProperties devProperties = this.deviceProperties;
+                    if (devProperties != null) {
+                        if (value < 1) {
+                            // Interpret any 0 or less value as a request to turn off
+                            action = BondDeviceAction.TURN_OFF;
+                            value = null;
+                        } else {
+                            action = BondDeviceAction.SET_SPEED;
+                            value = Math.min(value, devProperties.maxSpeed);
+                        }
+                        logger.trace("Fan raw speed command with speed set as {}, action as {}", value, action);
+                        api.executeDeviceAction(deviceId, action, value);
+                    }
+                } else {
+                    logger.info("Unsupported command on raw fan speed channel");
                 }
                 break;
 
@@ -548,6 +569,7 @@ public class BondDeviceHandler extends BaseThingHandler {
         logger.trace("Deleting channels based on the available actions");
         // Get the thing to edit
         ThingBuilder thingBuilder = editThing();
+        final BondDevice devInfo = this.deviceInfo;
 
         // Now, look at the whole list of possible channels
         List<Channel> possibleChannels = this.getThing().getChannels();
@@ -561,10 +583,14 @@ public class BondDeviceHandler extends BaseThingHandler {
             }
         }
         // Remove power channels if we have a dimmer channel for them;
-        // the dimmer channel already covers the power case
+        // the dimmer channel already covers the power case.
+        // Add the raw channel for advanced users if we're a ceiling fan.
         if (availableChannelIds.contains(CHANNEL_FAN_SPEED)) {
             availableChannelIds.remove(CHANNEL_POWER);
             availableChannelIds.remove(CHANNEL_FAN_POWER);
+            if (devInfo != null && devInfo.type == BondDeviceType.CEILING_FAN) {
+                availableChannelIds.add(CHANNEL_RAW_FAN_SPEED);
+            }
         }
         if (availableChannelIds.contains(CHANNEL_LIGHT_BRIGHTNESS)) {
             availableChannelIds.remove(CHANNEL_LIGHT_POWER);
@@ -631,6 +657,7 @@ public class BondDeviceHandler extends BaseThingHandler {
                 logger.info("Unable to convert fan speed to a percent for {}!", this.getThing().getLabel());
             }
             updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
+            updateState(CHANNEL_RAW_FAN_SPEED, fanOn ? new DecimalType(updateState.speed) : DecimalType.ZERO);
         }
         updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
         updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));

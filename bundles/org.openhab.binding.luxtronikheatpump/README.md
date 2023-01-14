@@ -367,4 +367,4 @@ This binding was initially based on the [Novelan/Luxtronik Heat Pump Binding](ht
 Luxtronik control units have an internal webserver which serves a Java applet. This applet can be used to configure some parts of the heat pump. The applet itselves uses a socket connection to fetch and send data to the heatpump.
 This socket is also used by this binding. To get some more information on how this socket works you can check out other Luxtronik tools like [Luxtronik2 for NodeJS](https://github.com/coolchip/luxtronik2).
 
-A detailed parameter descriptions for the Java Webinterface can be found in the [Loxwiki](https://www.loxwiki.eu/display/LOX/Java+Webinterface)
+A detailed parameter descriptions for the Java Webinterface can be found in the [Loxwiki](https://loxwiki.atlassian.net/wiki/spaces/LOX/pages/1533935933/Java+Webinterface)

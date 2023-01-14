@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class ParadoxUtil {
 
     private static final String SPACE_DELIMITER = " ";
-    private final static Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
 
     public static byte calculateChecksum(byte[] payload) {
         int result = 0;

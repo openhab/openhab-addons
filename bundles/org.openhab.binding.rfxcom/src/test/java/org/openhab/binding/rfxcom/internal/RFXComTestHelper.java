@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,13 +33,13 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class RFXComTestHelper {
-    static final public ThingUID bridgeUID = new ThingUID("rfxcom", "tcpbridge", "rfxtrx0");
-    static final public ThingUID thingUID = new ThingUID("rfxcom", bridgeUID, "mocked");
-    static final public ThingTypeUID thingTypeUID = new ThingTypeUID("rfxcom", "raw");
+    public static final ThingUID bridgeUID = new ThingUID("rfxcom", "tcpbridge", "rfxtrx0");
+    public static final ThingUID thingUID = new ThingUID("rfxcom", bridgeUID, "mocked");
+    public static final ThingTypeUID thingTypeUID = new ThingTypeUID("rfxcom", "raw");
 
-    static final public ChannelUID commandChannelUID = new ChannelUID(thingUID, RFXComBindingConstants.CHANNEL_COMMAND);
+    public static final ChannelUID commandChannelUID = new ChannelUID(thingUID, RFXComBindingConstants.CHANNEL_COMMAND);
 
-    static public void basicBoundaryCheck(PacketType packetType, RFXComMessage message) throws RFXComException {
+    public static void basicBoundaryCheck(PacketType packetType, RFXComMessage message) throws RFXComException {
         // This is a place where its easy to make mistakes in coding, and can result in errors, normally
         // array bounds errors
         byte[] binaryMessage = message.decodeMessage();
@@ -47,7 +47,7 @@ public class RFXComTestHelper {
         assertEquals(packetType.toByte(), binaryMessage[1], "Wrong packet type");
     }
 
-    static public int getActualIntValue(RFXComDeviceMessage msg, RFXComDeviceConfiguration config, String channelId)
+    public static int getActualIntValue(RFXComDeviceMessage msg, RFXComDeviceConfiguration config, String channelId)
             throws RFXComException {
         return ((DecimalType) msg.convertToState(channelId, config, new MockDeviceState())).intValue();
     }

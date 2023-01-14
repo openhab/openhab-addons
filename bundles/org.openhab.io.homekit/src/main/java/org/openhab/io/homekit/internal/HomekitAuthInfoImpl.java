@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,15 +147,25 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     public void clear() {
-        logger.trace("clear all users");
         if (!this.blockUserDeletion) {
             for (String key : new HashSet<>(storage.getKeys())) {
                 if (isUserKey(key)) {
                     storage.remove(key);
                 }
             }
+            mac = HomekitServer.generateMac();
+            storage.put(STORAGE_MAC, mac);
+            storage.remove(STORAGE_SALT);
+            storage.remove(STORAGE_PRIVATE_KEY);
+            try {
+                initializeStorage();
+                logger.info("All users cleared from HomeKit bridge; re-pairing required.");
+            } catch (InvalidAlgorithmParameterException e) {
+                logger.warn(
+                        "Failed generating new encryption settings for HomeKit bridge; re-pairing required, but will likely fail.");
+            }
         } else {
-            logger.debug("deletion of users information was blocked by binding settings");
+            logger.warn("Deletion of HomeKit users was blocked by addon settings.");
         }
     }
 

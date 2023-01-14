@@ -22,26 +22,32 @@ These expressions are evaluated from top to bottom.
 The first range that includes the value is selected.
 
 ## Special entries
+
 Some special entries can be used in the scale file.
 
 ### Catchall Entry
+
 `[..]=Catchall`
 
 This entry will match all numeric values not met by a previous range. Obviously, this one should be put at the very end of the scale definition file.
 
 ### Not A Number
+
 Scale transform is designed to work with numeric or quantity states. When the value presented to scale transform does not match this (most of the time with NULL or UNDEF states) it will not be handled and a warning is raised in the openhab.log . This case can be smoothly avoided with a 
 
 `NaN=Non Numeric State presented`
 
 ### Formatting output
+
 At last, Scale transform can take care of formatting an output with this entry :
 
 `format=%label% (%value%) !`
 
 Where : 
+
 - `%label%` will be replaced by transformed value and 
 - `%value%` is the numeric value presen
+
 ## Example
 
 The following example shows how to break down numeric UV values into fixed UV index categories.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -221,6 +221,7 @@ public enum MiIoDevices {
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROCKROBO_VACUUM_V1("rockrobo.vacuum.v1", "Mi Robot Vacuum", THING_TYPE_VACUUM),
     ROIDMI_VACUUM_V60("roidmi.vacuum.v60", "ROIDMI EVE vacuum", THING_TYPE_BASIC),
+    ROIDMI_VACUUM_V66("roidmi.vacuum.v66", "ROIDMI EVA", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH01("090615.switch.xswitch01", "PTX OneKey Switch (WIFI)", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH02("090615.switch.xswitch02", "PTX Twokey switch(wifi)", THING_TYPE_BASIC),
     S090615_SWITCH_XSWITCH03("090615.switch.xswitch03", "PTX ThreeKey Switch (WIFI)", THING_TYPE_BASIC),
@@ -390,6 +391,7 @@ public enum MiIoDevices {
     ZHIMI_AIRP_CPA4("zhimi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB4A("zhimi.airp.mb4a", "Mi Air Purifier 3C", THING_TYPE_BASIC),
     ZHIMI_AIRP_MB5("zhimi.airp.mb5", "Xiaomi Smart Air Purifier 4", THING_TYPE_BASIC),
+    ZHIMI_AIRP_VB4("zhimi.airp.vb4", "Xiaomi Smart Air Purifier 4 Pro", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MA1("zhimi.airpurifier.ma1", "Mi Air Purifier 2S", THING_TYPE_BASIC),

@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Dresden Elektronik deCONZ Binding</name>
+	<name>deCONZ Binding</name>
 	<description>Allows to use the real-time channel of the deCONZ software for Zigbee sensors and switches. deCONZ is the
-		accompanying software for the Raspbee and Conbee Zigbee dongles from Dresden Elektronik. Is meant to be used together
+		accompanying software for the Raspbee and ConBee Zigbee dongles from Dresden Elektronik. Is meant to be used together
 		with the HUE binding which makes the lights and plugs available.</description>
 </binding:binding>

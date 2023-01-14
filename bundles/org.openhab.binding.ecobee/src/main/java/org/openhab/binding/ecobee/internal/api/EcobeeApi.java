@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -32,6 +33,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecobee.internal.dto.AbstractResponseDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.SelectionType;
+import org.openhab.binding.ecobee.internal.dto.thermostat.InstantDeserializer;
+import org.openhab.binding.ecobee.internal.dto.thermostat.LocalDateTimeDeserializer;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatRequestDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatResponseDTO;
@@ -66,7 +69,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EcobeeApi implements AccessTokenRefreshListener {
 
-    private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss")
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
             .registerTypeAdapter(RevisionDTO.class, new RevisionDTODeserializer())
             .registerTypeAdapter(RunningDTO.class, new RunningDTODeserializer()).create();
 
