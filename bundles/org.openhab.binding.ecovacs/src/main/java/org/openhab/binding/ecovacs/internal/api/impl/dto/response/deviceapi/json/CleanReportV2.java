@@ -46,7 +46,7 @@ public class CleanReportV2 {
 
     public CleanMode determineCleanMode(Gson gson) {
         final String modeValue;
-        if (cleanState != null) {
+        if ("clean".equals(state) && cleanState != null) {
             if ("working".equals(cleanState.motionState)) {
                 modeValue = cleanState.content.type;
             } else {

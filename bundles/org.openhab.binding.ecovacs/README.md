@@ -89,7 +89,7 @@ it is automatically removed from the given thing.
 Remarks:
 
 - [1] See [section below](#command-channel-actions)
-- [2] Possible states: 'cleaning', 'pause', 'stop', 'returning' and 'charging'
+- [2] Possible states: 'cleaning', 'pause', 'stop', 'drying', 'returning' and 'charging' (where 'drying is only available on newer models with auto empty station)
 - [3] Possible states: 'auto', 'edge', 'spot', 'spotArea', 'customArea', 'singleRoom' (some of which depend on device capabilities)
 - [4] Current cleaning status is only valid if the device is currently cleaning
 - [5] Only valid for 'spot', 'spotArea' and 'customArea' cleaning modes; value can be used for 'spotArea' and 'customArea' commands (see below)

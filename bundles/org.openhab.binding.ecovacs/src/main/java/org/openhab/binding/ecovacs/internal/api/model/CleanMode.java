@@ -39,11 +39,17 @@ public enum CleanMode {
     STOP,
     @SerializedName(value = "going", alternate = { "goCharging" })
     RETURNING,
+    @SerializedName("drying")
+    DRYING,
     @SerializedName("idle")
     IDLE;
 
     public boolean isActive() {
         return this == AUTO || this == EDGE || this == SPOT || this == SPOT_AREA || this == CUSTOM_AREA
                 || this == SINGLE_ROOM;
+    }
+
+    public boolean isIdle() {
+        return this == IDLE || this == DRYING;
     }
 }

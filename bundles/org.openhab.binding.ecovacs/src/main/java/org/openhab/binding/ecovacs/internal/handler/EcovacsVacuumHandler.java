@@ -297,7 +297,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         lastCleanMode = newMode;
         if (newMode.isActive()) {
             lastActiveCleanMode = newMode;
-        } else if (newMode == CleanMode.IDLE) {
+        } else if (newMode.isIdle()) {
             lastActiveCleanMode = null;
         }
         updateStateAndCommandChannels();
@@ -321,7 +321,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, areaDefState.orElse(UnDefType.UNDEF));
         if (newMode == CleanMode.RETURNING) {
             scheduleNextPoll(30);
-        } else if (newMode == CleanMode.IDLE) {
+        } else if (newMode.isIdle()) {
             updateState(CHANNEL_ID_CLEANED_AREA, UnDefType.UNDEF);
             updateState(CHANNEL_ID_CLEANING_TIME, UnDefType.UNDEF);
         }

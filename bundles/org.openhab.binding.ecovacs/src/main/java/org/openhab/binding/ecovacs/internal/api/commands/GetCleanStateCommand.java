@@ -51,15 +51,19 @@ public class GetCleanStateCommand extends IotDeviceCommand<CleanMode> {
     public CleanMode convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse) {
+            final PortalIotCommandJsonResponse jsonResponse = (PortalIotCommandJsonResponse) response;
+            final CleanMode mode;
             if (version == ProtocolVersion.JSON) {
-                CleanReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                        CleanReport.class);
-                return resp.determineCleanMode(gson);
+                CleanReport resp = jsonResponse.getResponsePayloadAs(gson, CleanReport.class);
+                mode = resp.determineCleanMode(gson);
             } else {
-                CleanReportV2 resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                        CleanReportV2.class);
-                return resp.determineCleanMode(gson);
+                CleanReportV2 resp = jsonResponse.getResponsePayloadAs(gson, CleanReportV2.class);
+                mode = resp.determineCleanMode(gson);
             }
+            if (mode == null) {
+                throw new DataParsingException("Could not get clean mode from response " + jsonResponse.response);
+            }
+            return mode;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return CleaningInfo.parseCleanStateInfo(payload, gson).mode;

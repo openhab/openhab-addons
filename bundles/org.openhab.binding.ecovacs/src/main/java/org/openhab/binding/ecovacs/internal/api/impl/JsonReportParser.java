@@ -78,16 +78,24 @@ class JsonReportParser implements ReportParser {
             }
             case "cleaninfo": {
                 CleanReport report = payloadAs(response, CleanReport.class);
+                CleanMode mode = report.determineCleanMode(gson);
+                if (mode == null) {
+                    throw new DataParsingException("Could not get clean mode from response " + payload);
+                }
                 String area = report.cleanState != null ? report.cleanState.areaDefinition : null;
-                handleCleanModeChange(report.determineCleanMode(gson), area);
+                handleCleanModeChange(mode, area);
                 break;
             }
             case "cleaninfo_v2": {
                 CleanReportV2 report = payloadAs(response, CleanReportV2.class);
+                CleanMode mode = report.determineCleanMode(gson);
+                if (mode == null) {
+                    throw new DataParsingException("Could not get clean mode from response " + payload);
+                }
                 String area = report.cleanState != null && report.cleanState.content != null
                         ? report.cleanState.content.areaDefinition
                         : null;
-                handleCleanModeChange(report.determineCleanMode(gson), area);
+                handleCleanModeChange(mode, area);
                 break;
             }
             case "error": {
