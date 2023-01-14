@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class ChromecastCommander {
                 handleControl(command);
                 break;
             case CHANNEL_STOP:
-                handleStop(command);
+                handleCloseApp(command);
                 break;
             case CHANNEL_VOLUME:
                 handleVolume(command);
@@ -117,12 +117,18 @@ public class ChromecastCommander {
                 if (mediaStatus != null && mediaStatus.playerState == MediaStatus.PlayerState.IDLE
                         && mediaStatus.idleReason != null
                         && mediaStatus.idleReason != MediaStatus.IdleReason.INTERRUPTED) {
-                    stopMediaPlayerApp();
+                    closeApp(MEDIA_PLAYER);
                 }
             }
         } catch (IOException ex) {
             logger.debug("Failed to request media status with a running app: {}", ex.getMessage());
             // We were just able to request status, so let's not put the device OFFLINE.
+        }
+    }
+
+    public void handleCloseApp(final Command command) {
+        if (command == OnOffType.ON) {
+            closeApp(MEDIA_PLAYER);
         }
     }
 
@@ -163,7 +169,6 @@ public class ChromecastCommander {
             if (command instanceof NextPreviousType) {
                 // Next is implemented by seeking to the end of the current media
                 if (command == NextPreviousType.NEXT) {
-
                     Double duration = statusUpdater.getLastDuration();
                     if (duration != null) {
                         chromeCast.seek(duration.doubleValue() - 5);
@@ -179,18 +184,6 @@ public class ChromecastCommander {
         } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
             statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    public void handleStop(final Command command) {
-        if (command == OnOffType.ON) {
-            try {
-                chromeCast.stopApp();
-                statusUpdater.updateStatus(ThingStatus.ONLINE);
-            } catch (final IOException ex) {
-                logger.debug("{} command failed: {}", command, ex.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
-            }
         }
     }
 
@@ -229,44 +222,69 @@ public class ChromecastCommander {
         }
     }
 
-    public void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
+    public void startApp(@Nullable String appId) {
+        if (appId == null) {
+            return;
+        }
         try {
-            if (chromeCast.isAppAvailable(MEDIA_PLAYER)) {
-                if (!chromeCast.isAppRunning(MEDIA_PLAYER)) {
-                    final Application app = chromeCast.launchApp(MEDIA_PLAYER);
+            if (chromeCast.isAppAvailable(appId)) {
+                if (!chromeCast.isAppRunning(appId)) {
+                    final Application app = chromeCast.launchApp(appId);
                     statusUpdater.setAppSessionId(app.sessionId);
-                    logger.debug("Application launched: {}", app);
+                    logger.debug("Application launched: {}", appId);
                 }
-                if (url != null) {
-                    // If the current track is paused, launching a new request results in nothing happening, therefore
-                    // resume current track.
-                    MediaStatus ms = chromeCast.getMediaStatus();
-                    if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState && url.equals(ms.media.url)) {
-                        logger.debug("Current stream paused, resuming");
-                        chromeCast.play();
-                    } else {
-                        chromeCast.load(title, null, url, mimeType);
-                    }
+            } else {
+                logger.warn("Failed starting app, app probably not installed. Appid: {}", appId);
+            }
+            statusUpdater.updateStatus(ThingStatus.ONLINE);
+        } catch (final IOException e) {
+            logger.warn("Failed starting app: {}. Message: {}", appId, e.getMessage());
+        }
+    }
+
+    public void closeApp(@Nullable String appId) {
+        if (appId == null) {
+            return;
+        }
+
+        try {
+            if (chromeCast.isAppRunning(appId)) {
+                Application app = chromeCast.getRunningApp();
+                if (app.id.equals(appId) && app.sessionId.equals(statusUpdater.getAppSessionId())) {
+                    chromeCast.stopApp();
+                    logger.debug("Application closed: {}", appId);
+                }
+            }
+        } catch (final IOException e) {
+            logger.debug("Failed stopping media player app: {} with message: {}", appId, e.getMessage());
+        }
+    }
+
+    public void playMedia(@Nullable String title, @Nullable String url, @Nullable String mimeType) {
+        startApp(MEDIA_PLAYER);
+        try {
+            if (url != null && chromeCast.isAppRunning(MEDIA_PLAYER)) {
+                // If the current track is paused, launching a new request results in nothing happening, therefore
+                // resume current track.
+                MediaStatus ms = chromeCast.getMediaStatus();
+                if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState && url.equals(ms.media.url)) {
+                    logger.debug("Current stream paused, resuming");
+                    chromeCast.play();
+                } else {
+                    chromeCast.load(title, null, url, mimeType);
                 }
             } else {
                 logger.warn("Missing media player app - cannot process media.");
             }
             statusUpdater.updateStatus(ThingStatus.ONLINE);
         } catch (final IOException e) {
-            logger.debug("Failed playing media: {}", e.getMessage());
-            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void stopMediaPlayerApp() {
-        try {
-            Application app = chromeCast.getRunningApp();
-            if (app.id.equals(MEDIA_PLAYER) && app.sessionId.equals(statusUpdater.getAppSessionId())) {
-                chromeCast.stopApp();
-                logger.debug("Media player app stopped");
+            if ("Unable to load media".equals(e.getMessage())) {
+                logger.warn("Unable to load media: {}", url);
+            } else {
+                logger.debug("Failed playing media: {}", e.getMessage());
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR,
+                        "IOException while trying to play media: " + e.getMessage());
             }
-        } catch (final IOException e) {
-            logger.debug("Failed stopping media player app", e);
         }
     }
 }

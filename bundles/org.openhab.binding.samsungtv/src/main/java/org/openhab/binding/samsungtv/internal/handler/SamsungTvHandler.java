@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -242,12 +242,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         boolean isOnline = false;
 
         for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
-            if (createService((RemoteDevice) device) == true) {
+            if (createService((RemoteDevice) device)) {
                 isOnline = true;
             }
         }
 
-        if (isOnline == true) {
+        if (isOnline) {
             logger.debug("Device was online");
             putOnline();
         } else {

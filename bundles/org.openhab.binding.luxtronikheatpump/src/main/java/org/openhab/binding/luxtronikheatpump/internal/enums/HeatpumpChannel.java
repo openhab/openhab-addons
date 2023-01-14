@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1410,11 +1410,7 @@ public enum HeatpumpChannel {
 
         int code = visiblity.getCode();
 
-        if (visibilityValues.length < code || visibilityValues[code] == 1) {
-            return true;
-        }
-
-        return false;
+        return (visibilityValues.length < code || visibilityValues[code] == 1);
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {

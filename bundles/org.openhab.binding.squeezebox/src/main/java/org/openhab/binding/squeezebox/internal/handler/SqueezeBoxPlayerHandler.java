@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -434,6 +434,31 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void artistChangeEvent(String mac, String artist) {
         updateChannel(mac, CHANNEL_ARTIST, new StringType(artist));
+    }
+
+    @Override
+    public void albumArtistChangeEvent(String mac, String albumArtist) {
+        updateChannel(mac, CHANNEL_ALBUM_ARTIST, new StringType(albumArtist));
+    }
+
+    @Override
+    public void trackArtistChangeEvent(String mac, String trackArtist) {
+        updateChannel(mac, CHANNEL_TRACK_ARTIST, new StringType(trackArtist));
+    }
+
+    @Override
+    public void bandChangeEvent(String mac, String band) {
+        updateChannel(mac, CHANNEL_BAND, new StringType(band));
+    }
+
+    @Override
+    public void composerChangeEvent(String mac, String composer) {
+        updateChannel(mac, CHANNEL_COMPOSER, new StringType(composer));
+    }
+
+    @Override
+    public void conductorChangeEvent(String mac, String conductor) {
+        updateChannel(mac, CHANNEL_CONDUCTOR, new StringType(conductor));
     }
 
     @Override
