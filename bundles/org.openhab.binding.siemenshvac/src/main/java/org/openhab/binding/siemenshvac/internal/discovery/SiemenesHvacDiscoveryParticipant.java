@@ -47,12 +47,10 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Activate
     public void activate(@Nullable Map<String, Object> configProperties) {
-
     }
 
     @Modified
     public void modified(@Nullable Map<String, Object> configProperties) {
-
     }
 
     @Override
