@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,8 +188,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ESENSOR_TEMP5 = CHANNEL_SENSOR_TEMP + "5";
     public static final String CHANNEL_ESENSOR_HUMIDITY = CHANNEL_SENSOR_HUM;
     public static final String CHANNEL_ESENSOR_VOLTAGE = CHANNEL_SENSOR_VOLTAGE;
-    public static final String CHANNEL_ESENSOR_DIGITALINPUT = "digitalInput";;
-    public static final String CHANNEL_ESENSOR_ANALOGINPUT = "analogInput";;
+    public static final String CHANNEL_ESENSOR_DIGITALINPUT = "digitalInput";
+    public static final String CHANNEL_ESENSOR_ANALOGINPUT = "analogInput";
     public static final String CHANNEL_ESENSOR_INPUT = "input";
     public static final String CHANNEL_ESENSOR_INPUT1 = CHANNEL_ESENSOR_INPUT + "1";
 

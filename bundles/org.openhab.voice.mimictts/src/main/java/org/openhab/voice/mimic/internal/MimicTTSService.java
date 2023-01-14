@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,20 @@
  */
 package org.openhab.voice.mimic.internal;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,6 +38,8 @@ import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.OpenHAB;
+import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.config.core.ConfigurableService;
@@ -75,6 +84,7 @@ public class MimicTTSService implements TTSService {
      * Configuration parameters
      */
     private static final String PARAM_URL = "url";
+    private static final String PARAM_WORKAROUNDSERVLETSINK = "workaroundServletSink";
     private static final String PARAM_SPEAKINGRATE = "speakingRate";
     private static final String PARAM_AUDIOVOLATITLITY = "audioVolatility";
     private static final String PARAM_PHONEMEVOLATITLITY = "phonemeVolatility";
@@ -118,6 +128,12 @@ public class MimicTTSService implements TTSService {
             logger.warn("Missing URL to access Mimic TTS API. Using localhost");
         } else {
             config.url = param.toString();
+        }
+
+        // workaround
+        param = newConfig.get(PARAM_WORKAROUNDSERVLETSINK);
+        if (param != null) {
+            config.workaroundServletSink = Boolean.parseBoolean(param.toString());
         }
 
         // audio volatility
@@ -232,22 +248,29 @@ public class MimicTTSService implements TTSService {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
 
-        String ssml = "";
-        if (text.startsWith("<speak>")) {
-            ssml = "&ssml=true";
+        String encodedVoice;
+        try {
+            encodedVoice = URLEncoder.encode(((MimicVoice) voice).getTechnicalName(),
+                    StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Cannot encode voice in URL " + ((MimicVoice) voice).getTechnicalName());
         }
 
         // create the url for given locale, format
-        String urlTTS = config.url + SYNTHETIZE_URL + "?voice=" + ((MimicVoice) voice).getTechnicalName() + ssml
-                + "&noiseScale=" + config.audioVolatility + "&noiseW=" + config.phonemeVolatility + "&lengthScale="
-                + config.speakingRate + "&audioTarget=client";
+        String urlTTS = config.url + SYNTHETIZE_URL + "?voice=" + encodedVoice + "&noiseScale=" + config.audioVolatility
+                + "&noiseW=" + config.phonemeVolatility + "&lengthScale=" + config.speakingRate + "&audioTarget=client";
         logger.debug("Querying mimic with URL {}", urlTTS);
 
         // prepare the response as an inputstream
         InputStreamResponseListener inputStreamResponseListener = new InputStreamResponseListener();
         // we will use a POST method for the text
         StringContentProvider textContentProvider = new StringContentProvider(text, StandardCharsets.UTF_8);
-        httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+        if (text.startsWith("<speak>")) {
+            httpClient.POST(urlTTS).header("Content-Type", "application/ssml+xml").content(textContentProvider)
+                    .accept("audio/wav").send(inputStreamResponseListener);
+        } else {
+            httpClient.POST(urlTTS).content(textContentProvider).accept("audio/wav").send(inputStreamResponseListener);
+        }
 
         // compute the estimated timeout using a "stupid" method based on text length, as the response time depends on
         // the requested text. Average speaker speed estimated to 10/second.
@@ -269,7 +292,26 @@ public class MimicTTSService implements TTSService {
                             "Cannot get Content-Length header from mimic response. Are you sure to query a mimic TTS server at "
                                     + urlTTS + " ?");
                 }
-                return new InputStreamAudioStream(inputStreamResponseListener.getInputStream(), AUDIO_FORMAT, length);
+
+                InputStream inputStreamFromMimic = inputStreamResponseListener.getInputStream();
+                try {
+                    if (!config.workaroundServletSink) {
+                        return new InputStreamAudioStream(inputStreamFromMimic, AUDIO_FORMAT, length);
+                    } else {
+                        // Some audio sinks use the openHAB servlet to get audio. This servlet require the
+                        // getClonedStream()
+                        // method
+                        // So we cache the file on disk, thus implementing the method thanks to FileAudioStream.
+                        return createTemporaryFile(inputStreamFromMimic, AUDIO_FORMAT);
+                    }
+                } catch (TTSException e) {
+                    try {
+                        inputStreamFromMimic.close();
+                    } catch (IOException e1) {
+                    }
+                    throw e;
+                }
+
             } else {
                 String errorMessage = "Cannot get wav from mimic url " + urlTTS + " with HTTP response code "
                         + response.getStatus() + " for reason " + response.getReason();
@@ -280,6 +322,19 @@ public class MimicTTSService implements TTSService {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             String errorMessage = "Cannot get wav from mimic url " + urlTTS;
             throw new TTSException(errorMessage, e);
+        }
+    }
+
+    private AudioStream createTemporaryFile(InputStream inputStream, AudioFormat audioFormat) throws TTSException {
+        File mimicDirectory = new File(OpenHAB.getUserDataFolder(), "mimic");
+        mimicDirectory.mkdir();
+        try {
+            File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".wav", mimicDirectory);
+            tempFile.deleteOnExit();
+            Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return new AutoDeleteFileAudioStream(tempFile, audioFormat);
+        } catch (AudioException | IOException e) {
+            throw new TTSException("Cannot create temporary audio file", e);
         }
     }
 }

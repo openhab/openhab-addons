@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
@@ -87,9 +88,13 @@ public class MyRenaultHttpSession {
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("loginID", config.myRenaultUsername);
         fields.add("password", config.myRenaultPassword);
-        logger.debug("URL: {}/accounts.login", this.constants.getGigyaRootUrl());
-        ContentResponse response = httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.login", fields);
+        final String url = this.constants.getGigyaRootUrl() + "/accounts.login";
+        ContentResponse response = httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonObject sessionInfoJson = responseJson.getAsJsonObject("sessionInfo");
@@ -104,11 +109,11 @@ public class MyRenaultHttpSession {
                 throw new RenaultException("Login Error: cookie value not found in JSON response");
             }
             if (cookieValue == null) {
-                logger.warn("Login Error: cookie value not found! Response: [{}] {}\n{}", response.getStatus(),
-                        response.getReason(), response.getContentAsString());
+                logger.warn("Login Error: cookie value not found! Response: {}", response.getContentAsString());
+                throw new RenaultException("Login Error: cookie value not found in JSON response");
             }
         } else {
-            logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
                     response.getContentAsString());
             throw new RenaultException("Login Error: " + response.getReason());
         }
@@ -118,9 +123,13 @@ public class MyRenaultHttpSession {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("login_token", cookieValue);
-        ContentResponse response = httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.getAccountInfo",
-                fields);
+        final String url = this.constants.getGigyaRootUrl() + "/accounts.getAccountInfo";
+        ContentResponse response = httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonObject dataJson = responseJson.getAsJsonObject("data");
@@ -138,7 +147,7 @@ public class MyRenaultHttpSession {
                         "Get Account Info Error: personId or gigyaDataCenter value not found in JSON response");
             }
         } else {
-            logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
                     response.getContentAsString());
             throw new RenaultException("Get Account Info Error: " + response.getReason());
         }
@@ -151,20 +160,25 @@ public class MyRenaultHttpSession {
         fields.add("fields", "data.personId,data.gigyaDataCenter");
         fields.add("personId", personId);
         fields.add("gigyaDataCenter", gigyaDataCenter);
-        ContentResponse response = this.httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.getJWT", fields);
+        final String url = this.constants.getGigyaRootUrl() + "/accounts.getJWT";
+        ContentResponse response = this.httpClient.FORM(url, fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
             try {
                 JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 JsonElement element = responseJson.get("id_token");
                 if (element != null) {
                     jwt = element.getAsString();
-                    logger.debug("jwt: {} ", jwt);
+                    logger.debug("GigyaApi jwt: {} ", jwt);
                 }
             } catch (JsonParseException | ClassCastException | IllegalStateException e) {
                 throw new RenaultException("Get JWT Error: jwt value not found in JSON response");
             }
         } else {
-            logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("GigyaApi Request: {} Response: [{}] {}\n{}", url, response.getStatus(), response.getReason(),
                     response.getContentAsString());
             throw new RenaultException("Get JWT Error: " + response.getReason());
         }
@@ -233,106 +247,99 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void actionHvacOn(double hvacTargetTemperature)
-            throws RenaultForbiddenException, RenaultNotImplementedException {
-        Request request = httpClient
-                .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
-                        + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/hvac-start?country="
-                        + getCountry(config))
-                .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.config.kamereonApiKey)
-                .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
-        request.content(new StringContentProvider(
-                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
-                        + hvacTargetTemperature + "\"}}}",
-                "utf-8"));
-        try {
-            ContentResponse response = request.send();
-            logger.debug("Kamereon Response HVAC ON: {}", response.getContentAsString());
-            if (HttpStatus.OK_200 != response.getStatus()) {
-                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                    throw new RenaultForbiddenException(
-                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
-                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
-                    throw new RenaultNotImplementedException(
-                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
-                }
-            }
-        } catch (InterruptedException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
-            Thread.currentThread().interrupt();
-        } catch (JsonParseException | TimeoutException | ExecutionException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+    public void getLockStatus(Car car)
+            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+        JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
+                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/lock-status?country=" + getCountry(config));
+        if (responseJson != null) {
+            car.setLockStatus(responseJson);
         }
     }
 
-    public void actionChargeMode(ChargingMode mode) throws RenaultForbiddenException, RenaultNotImplementedException {
-        Request request = httpClient
-                .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
-                        + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/charge-mode?country="
-                        + getCountry(config))
-                .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.config.kamereonApiKey)
-                .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
+    public void actionHvacOn(double hvacTargetTemperature)
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+        final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/"
+                + config.vin + "/actions/hvac-start?country=" + getCountry(config);
+        postKamereonRequest(path,
+                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
+                        + hvacTargetTemperature + "\"}}}");
+    }
 
+    public void actionChargeMode(ChargingMode mode)
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
         final String apiMode = ChargingMode.SCHEDULE_MODE.equals(mode) ? CHARGING_MODE_SCHEDULE : CHARGING_MODE_ALWAYS;
-        request.content(new StringContentProvider(
-                "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}", "utf-8"));
+        final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/"
+                + config.vin + "/actions/charge-mode?country=" + getCountry(config);
+        postKamereonRequest(path,
+                "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
+    }
+
+    private void postKamereonRequest(final String path, final String content)
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+        Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.POST)
+                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
+                .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt)
+                .content(new StringContentProvider(content, "utf-8"));
         try {
             ContentResponse response = request.send();
-            logger.debug("Kamereon Response set ChargeMode: {}", response.getContentAsString());
-            if (HttpStatus.OK_200 != response.getStatus()) {
-                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                    throw new RenaultForbiddenException(
-                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
-                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
-                    throw new RenaultNotImplementedException(
-                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
-                }
-            }
+            logKamereonCall(request, response);
+            checkResponse(response);
         } catch (InterruptedException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
             Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+            throw new RenaultActionException(e.toString());
         }
     }
 
     private @Nullable JsonObject getKamereonResponse(String path)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultUpdateException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
                 .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         try {
             ContentResponse response = request.send();
+            logKamereonCall(request, response);
             if (HttpStatus.OK_200 == response.getStatus()) {
-                logger.debug("Kamereon Response: {}", response.getContentAsString());
                 return JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            } else {
-                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                    throw new RenaultForbiddenException(
-                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
-                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
-                    throw new RenaultNotImplementedException(
-                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
-                } else {
-                    throw new RenaultUpdateException(
-                            "Kamereon Response Failed! Error: [" + response.getStatus() + "] " + response.getReason());
-                }
             }
+            checkResponse(response);
         } catch (InterruptedException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
             Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+            throw new RenaultUpdateException(e.toString());
         }
         return null;
+    }
+
+    private void logKamereonCall(Request request, ContentResponse response) {
+        if (HttpStatus.OK_200 == response.getStatus()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Kamereon Request: {} Response:  [{}] {}\n{}", request.getURI().toString(),
+                        response.getStatus(), response.getReason(), response.getContentAsString());
+            }
+        } else {
+            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
+                    response.getReason(), response.getContentAsString());
+        }
+    }
+
+    private void checkResponse(ContentResponse response)
+            throws RenaultForbiddenException, RenaultNotImplementedException {
+        switch (response.getStatus()) {
+            case HttpStatus.FORBIDDEN_403:
+                throw new RenaultForbiddenException(
+                        "Kamereon request forbidden! Ensure the car is paired in your MyRenault App.");
+            case HttpStatus.NOT_FOUND_404:
+                throw new RenaultNotImplementedException("Kamereon service not found");
+            case HttpStatus.NOT_IMPLEMENTED_501:
+                throw new RenaultNotImplementedException("Kamereon request not implemented");
+            case HttpStatus.BAD_GATEWAY_502:
+                throw new RenaultNotImplementedException("Kamereon request failed");
+            default:
+                break;
+        }
     }
 
     private String getCountry(RenaultConfiguration config) {

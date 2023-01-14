@@ -343,10 +343,18 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>3.2.0</version>
           <configuration>
             <failOnError>!${quality.skip}</failOnError>
           </configuration>
+          <dependencies>
+            <!-- This newer version fixes issues with resolving tech.units:indriya packages -->
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-java</artifactId>
+              <version>1.0.7</version>
+            </dependency>
+          </dependencies>
         </plugin>
 
         <plugin>
@@ -425,13 +433,14 @@ Import-Package: \\
               <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
+              <exclude>**/3rdparty/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/pom.xml</exclude>
               <exclude>_*.java</exclude>
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2022</year>
+              <year>2023</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>

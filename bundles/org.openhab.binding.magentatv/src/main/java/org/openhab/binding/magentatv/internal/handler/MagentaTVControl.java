@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MagentaTVControl {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVControl.class);
-    private final static HashMap<String, String> KEY_MAP = new HashMap<>();
+    private static final HashMap<String, String> KEY_MAP = new HashMap<>();
 
     private final MagentaTVNetwork network;
     private final MagentaTVHttp http = new MagentaTVHttp();

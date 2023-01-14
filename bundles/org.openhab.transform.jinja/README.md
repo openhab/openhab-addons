@@ -33,6 +33,7 @@ the template
 extracts the string `4.7`.
 
 #### Outgoing data
+
 The JINJA transformation can be used to publish simple JSON strings through, for example, the HTTP Binding's `commandTransformation` parameter.
 
 Say we have a String Item which holds the following value:
@@ -52,6 +53,7 @@ will send the following string out of openHAB
 ```json
 {"msgtype":"m.text", "body":"This is my string"}
 ```
+
 `{{value}}` will be replaced by whatever the value of your Item is.
 
 Note that if using \*.things files you must escape quotation marks, for example:
