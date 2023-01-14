@@ -74,7 +74,7 @@ public class NetworkUtils {
     /**
      * Adds cors headers to the given response and returns it.
      */
-    public static ResponseBuilder ResponseWithCors(ResponseBuilder response) {
+    public static ResponseBuilder responseWithCors(ResponseBuilder response) {
         return response.encoding(StandardCharsets.UTF_8.name()) //
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")

@@ -115,6 +115,11 @@ All devices support some of the following channels:
 | artist                 | String    | Artist name of the current song                                                              |
 | year                   | String    | Release year of the current song                                                             |
 | genre                  | String    | Genre name of the current song                                                               |
+| albumArtist            | String    | Main artist of the entire album                                                              |
+| trackArtist            | String    | Main artist of the track                                                                     |
+| band                   | String    | Band/orchestra that performed the work                                                       |
+| composer               | String    | Original composer of the work                                                                |
+| conductor              | String    | Person who conducted the performance                                                         |
 | coverartdata           | Image     | Image data of cover art of the current song                                                  |
 | ircode                 | String    | Received IR code                                                                             |
 | numberPlaylistTracks   | Number    | Number of playlist tracks                                                                    |

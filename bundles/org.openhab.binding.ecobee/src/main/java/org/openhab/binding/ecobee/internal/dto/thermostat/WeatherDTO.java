@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class WeatherDTO {
     /*
      * The time stamp in UTC of the weather forecast
      */
-    public Date timestamp;
+    public Instant timestamp;
 
     /*
      * The weather station identifier

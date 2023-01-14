@@ -74,6 +74,7 @@ public class MeterValue<Q extends Quantity<Q>> {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {

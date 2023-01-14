@@ -68,6 +68,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super(thing, httpClient);
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanExpressions")
     @Override
     protected State getValue(String channelId, GoEStatusResponseBaseDTO goeResponseBase) {
         var state = super.getValue(channelId, goeResponseBase);

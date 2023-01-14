@@ -28,11 +28,11 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DanfossAirUnitBindingConstants {
 
-    public static String BINDING_ID = "danfossairunit";
+    public static final String BINDING_ID = "danfossairunit";
 
     // The only thing type UIDs
-    public static ThingTypeUID THING_TYPE_AIRUNIT = new ThingTypeUID(BINDING_ID, "airunit");
+    public static final ThingTypeUID THING_TYPE_AIRUNIT = new ThingTypeUID(BINDING_ID, "airunit");
 
     // The thing type as a set
-    public static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRUNIT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRUNIT);
 }

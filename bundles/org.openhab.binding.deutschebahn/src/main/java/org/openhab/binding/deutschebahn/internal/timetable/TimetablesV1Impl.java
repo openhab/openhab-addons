@@ -193,6 +193,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     /**
      * Build rest endpoint URL for request the planned timetable.
      */
+    @SuppressWarnings("PMD.UnsynchronizedStaticFormatter")
     private String buildPlanRequestURL(final String evaNr, final Date date) {
         synchronized (this) {
             final String dateParam = DATE_FORMAT.format(date);

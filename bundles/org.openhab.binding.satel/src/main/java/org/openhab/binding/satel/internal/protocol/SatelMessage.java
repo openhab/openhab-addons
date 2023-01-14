@@ -158,6 +158,7 @@ public class SatelMessage {
         return String.format("Message: command = %02X, payload = %s", this.command, getPayloadAsHex());
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {

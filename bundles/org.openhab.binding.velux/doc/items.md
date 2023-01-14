@@ -1,22 +1,4 @@
-/**
- *
- * Copyright (c) 2010-2023 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- */
-
-/**
- * OpenHAB item defintion for velux binding:
- *  Velux Bridge and Devices
- *
- * @author Guenther Schreiner - Initial contribution
- */
-
+```java
 //  Group for simulating push buttons
 
 Group:Switch:OR(ON, OFF) gV "PushButton"
@@ -58,9 +40,4 @@ Rollershutter	V_DG_M_W2	"DG Fenster Bad [%d]"		{ channel="velux:klf200:home:V_DG
 Rollershutter	V_DG_M_S    	"DG Bad  [%d]"			{ channel="velux:klf200:home:V_DG_M_S" }
 Rollershutter	V_DG_W_S    	"DG West [%d]"			{ channel="velux:klf200:home:V_DG_W_S" }
 Rollershutter	V_DG_O_S    	"DG Ost  [%d]"			{ channel="velux:klf200:home:V_DG_O_S" }
-
-//
-// vim: syntax=Xtend vim: noai:ts=4:sw=4
-//
-// end-of-items/velux.items
-//
+```

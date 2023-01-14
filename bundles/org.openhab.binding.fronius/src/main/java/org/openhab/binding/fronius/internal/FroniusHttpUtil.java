@@ -38,7 +38,7 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public synchronized static String executeUrl(String url, int timeout) throws FroniusCommunicationException {
+    public static synchronized String executeUrl(String url, int timeout) throws FroniusCommunicationException {
         int attemptCount = 1;
         try {
             while (true) {

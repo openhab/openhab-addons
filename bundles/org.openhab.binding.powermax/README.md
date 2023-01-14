@@ -82,7 +82,7 @@ Some notes:
 - On Linux, you may get an error stating the serial port cannot be opened when the Powermax binding tries to load.
 You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 - Also on Linux you may have issues with the USB if using two serial USB devices e.g. Powermax and RFXcom.
-See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+  See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ### X10 device
 
