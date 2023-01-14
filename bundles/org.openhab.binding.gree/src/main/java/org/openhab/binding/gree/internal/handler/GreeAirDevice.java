@@ -479,13 +479,13 @@ public class GreeAirDevice {
         // Status message back from A/C always reports degrees C
         // If using Fahrenheit, us SetTem, TemUn and TemRec to reconstruct the Fahrenheit temperature
         // Get Celsius or Fahrenheit from status message
-        int CorF = getIntStatusVal(GREE_PROP_TEMPUNIT);
+        int celsiusOrFahrenheit = getIntStatusVal(GREE_PROP_TEMPUNIT);
         int newVal = getIntStatusVal(GREE_PROP_SETTEMP);
         int halfStep = getIntStatusVal(GREE_PROP_TEMPREC);
 
-        if ((CorF == -1) || (newVal == -1) || (halfStep == -1)) {
+        if ((celsiusOrFahrenheit == -1) || (newVal == -1) || (halfStep == -1)) {
             throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
-        } else if (CorF == 1) { // convert SetTem to Fahrenheit
+        } else if (celsiusOrFahrenheit == 1) { // convert SetTem to Fahrenheit
             // Find the valueName in the Returned Status object
             String[] columns = statusResponseGson.get().packJson.cols;
             Integer[] values = statusResponseGson.get().packJson.dat;
