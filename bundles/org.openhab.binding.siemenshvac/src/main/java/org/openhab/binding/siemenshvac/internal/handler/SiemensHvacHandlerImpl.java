@@ -237,7 +237,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            logger.info("Start read :" + dp);
+            logger.info("Start read : {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
             // logger.debug("siemensHvac:ReadDp:DoRequest():" + request);
@@ -264,7 +264,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End read :" + dp);
+            logger.info("End read : {}", dp);
             lockObj.unlock();
 
         }
@@ -278,7 +278,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            logger.info("Start write :" + dp);
+            // logger.info("Start write :" + dp);
             String valUpdate = "0";
             String valUpdateEnum = "";
 
@@ -304,10 +304,10 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + type;
 
             if (lcHvacConnector != null) {
-                logger.info("Write request for : " + valUpdate);
+                logger.info("Write request for : {} ", valUpdate);
                 JsonObject response = lcHvacConnector.DoRequest(request, null);
 
-                logger.info("Write request response : " + response);
+                logger.info("Write request response : {} ", response);
                 if (response instanceof JsonObject) {
                     logger.debug("p1");
                 }
@@ -317,7 +317,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End write :" + dp);
+            logger.info("End write : {}", dp);
             lockObj.unlock();
         }
     }
