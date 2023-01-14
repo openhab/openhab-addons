@@ -83,6 +83,7 @@ public class AssignSensorType {
      * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

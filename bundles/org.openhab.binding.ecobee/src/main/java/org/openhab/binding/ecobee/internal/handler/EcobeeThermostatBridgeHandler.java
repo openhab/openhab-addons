@@ -662,6 +662,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             return;
         }
         final String weatherGrp = CHGRP_WEATHER + "#";
+
         updateChannel(weatherGrp + CH_WEATHER_TIMESTAMP, EcobeeUtils.undefOrDate(weather.timestamp, timeZoneProvider));
         updateChannel(weatherGrp + CH_WEATHER_WEATHER_STATION, EcobeeUtils.undefOrString(weather.weatherStation));
 

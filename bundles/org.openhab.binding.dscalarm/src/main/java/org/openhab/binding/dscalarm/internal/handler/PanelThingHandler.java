@@ -380,7 +380,6 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE,
                 PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
 
-        String channel;
         ChannelUID channelUID = null;
 
         int bitCount = 8;
