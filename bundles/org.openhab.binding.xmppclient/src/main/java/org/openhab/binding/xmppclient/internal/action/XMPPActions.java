@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "xmppclient")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
-    private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
+    private final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
     private @Nullable XMPPClientHandler handler;
 
     @Override
@@ -55,10 +55,6 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
         if ((to == null) || (text == null)) {
             logger.info("Skipping XMPP messaging to {} value {}", to, text);
             return;
@@ -77,10 +73,6 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
         if ((to == null) || (filename == null)) {
             logger.warn("Skipping XMPP messaging to {} value {}", to, filename);
             return;

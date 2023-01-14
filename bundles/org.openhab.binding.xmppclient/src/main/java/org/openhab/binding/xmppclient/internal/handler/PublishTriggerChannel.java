@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.xmppclient.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.openhab.core.thing.ChannelUID;
 
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ChannelUID;
  *
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
     private final XMPPClient connection;
     private final PublishTriggerChannelConfig config;

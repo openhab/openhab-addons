@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
@@ -40,15 +41,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Gololobov - Initial contribution
  */
-
+@NonNullByDefault
 public class XMPPClientHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(XMPPClientHandler.class);
     private XMPPClient xmppClient;
-    private XMPPClientConfiguration config;
     private final Map<ChannelUID, PublishTriggerChannel> channelStateByChannelUID = new HashMap<>();
 
     public XMPPClientHandler(Bridge thing) {
         super(thing);
+        xmppClient = new XMPPClient();
     }
 
     public XMPPClient getXMPPClient() {
@@ -85,10 +86,14 @@ public class XMPPClientHandler extends BaseBridgeHandler {
     }
 
     private void doConnect() {
-        config = getConfigAs(XMPPClientConfiguration.class);
-        xmppClient = new XMPPClient();
+        XMPPClientConfiguration config = getConfigAs(XMPPClientConfiguration.class);
+        if (!config.isValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Please check host configuration");
+            return;
+        }
+        String host = config.host;
         try {
-            xmppClient.connect(config.host, config.port, config.username, config.domain, config.password);
+            xmppClient.connect(host != null ? host : "", config.port, config.username, config.domain, config.password);
         } catch (SmackException | IOException | XMPPException e) {
             logger.info("XMPP connection error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
