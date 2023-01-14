@@ -49,7 +49,7 @@ public class ESP3PacketFactory {
                 new byte[] { SAMessageType.SA_WR_LEARNMODE.getValue(), (byte) (activate ? 1 : 0), 0, 0, 0, 0, 0 });
     }
 
-    public final static BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
+    public static final BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
 
     public static BasePacket SA_RD_MAILBOX_STATUS(byte[] clientId, byte[] controllerId) {
         return new SAMessage(SAMessageType.SA_RD_MAILBOX_STATUS,

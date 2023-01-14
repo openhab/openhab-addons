@@ -1410,11 +1410,7 @@ public enum HeatpumpChannel {
 
         int code = visiblity.getCode();
 
-        if (visibilityValues.length < code || visibilityValues[code] == 1) {
-            return true;
-        }
-
-        return false;
+        return (visibilityValues.length < code || visibilityValues[code] == 1);
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {

@@ -128,10 +128,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
     private boolean allowModelUpdate() {
         final long timeSinceLastUpdate = System.currentTimeMillis() - model.getLastUpdated();
-        if (timeSinceLastUpdate > MIN_TIME_BETWEEEN_MODEL_UPDATES_MS) {
-            return true;
-        }
-        return false;
+        return timeSinceLastUpdate > MIN_TIME_BETWEEEN_MODEL_UPDATES_MS;
     }
 
     public MillheatModel getModel() {

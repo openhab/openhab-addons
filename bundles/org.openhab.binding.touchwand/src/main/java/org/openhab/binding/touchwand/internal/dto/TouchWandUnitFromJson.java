@@ -34,7 +34,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TouchWandUnitFromJson {
 
-    private final static Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
+    private static final Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
 
     public TouchWandUnitFromJson() {
     }
