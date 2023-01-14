@@ -177,7 +177,8 @@ public class OJCloudHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.ONLINE);
         }
-        this.updateService = new UpdateService(configuration, httpClient, sessionId);
+        this.updateService = new UpdateService(configuration, httpClient, this::handleConnectionLost,
+                this::handleUnauthorized);
     }
 
     private void handleUnauthorized() {

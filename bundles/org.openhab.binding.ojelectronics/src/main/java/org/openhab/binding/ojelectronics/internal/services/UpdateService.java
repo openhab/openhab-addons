@@ -46,14 +46,17 @@ public final class UpdateService {
     private final Gson gson = OJGSonBuilder.getGSon();
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(UpdateService.class));
 
-    private final String sessionId;
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration configuration;
+    private final Runnable unauthorized;
+    private final Runnable connectionLost;
 
-    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient, String sessionId) {
+    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient, Runnable connectionLost,
+            Runnable unauthorized) {
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.sessionId = sessionId;
+        this.unauthorized = unauthorized;
+        this.connectionLost = connectionLost;
     }
 
     /**
@@ -62,12 +65,18 @@ public final class UpdateService {
      * @param things
      */
     public void updateAllThermostats(List<Thing> things) {
-        things.stream().filter(thing -> thing.getHandler() instanceof ThermostatHandler)
-                .map(thing -> (ThermostatHandler) thing.getHandler())
-                .map(handler -> handler.tryHandleAndGetUpdatedThermostat()).forEach(this::updateThermostat);
+        new SignInService(configuration, httpClient).signIn((sessionId) -> updateAllThermostats(things, sessionId),
+                connectionLost, unauthorized);
     }
 
-    private void updateThermostat(@Nullable ThermostatModel thermostat) {
+    private void updateAllThermostats(List<Thing> things, String sessionId) {
+        things.stream().filter(thing -> thing.getHandler() instanceof ThermostatHandler)
+                .map(thing -> (ThermostatHandler) thing.getHandler())
+                .map(handler -> handler.tryHandleAndGetUpdatedThermostat())
+                .forEach((thermostat) -> updateThermostat(thermostat, sessionId));
+    }
+
+    private void updateThermostat(@Nullable ThermostatModel thermostat, String sessionId) {
         if (thermostat == null) {
             return;
         }
