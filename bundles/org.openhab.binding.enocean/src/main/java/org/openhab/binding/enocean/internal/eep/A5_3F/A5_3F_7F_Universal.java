@@ -46,7 +46,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
         if (config == null) {
-            logger.debug("Command {} could not transformed without proper configuration", command.toString());
+            logger.error("Command {} could not transformed without proper configuration", command.toString());
             return;
         }
         try {
@@ -58,7 +58,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
                 setData(HexUtils.hexToBytes(c));
             }
         } catch (IllegalArgumentException e) {
-            logger.error("Command {} could not transformed", command.toString());
+            logger.debug("Command {} could not transformed", command.toString());
             throw e;
         }
     }
