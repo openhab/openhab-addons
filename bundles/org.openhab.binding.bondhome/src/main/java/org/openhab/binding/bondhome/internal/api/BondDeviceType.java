@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,9 @@ public enum BondDeviceType {
     @SerializedName("FP")
     FIREPLACE(THING_TYPE_BOND_FIREPLACE),
     @SerializedName("GX")
-    GENERIC_DEVICE(THING_TYPE_BOND_GENERIC);
-    // TODO: add Light ("LT") type
+    GENERIC_DEVICE(THING_TYPE_BOND_GENERIC),
+    @SerializedName("LT")
+    LIGHT(THING_TYPE_BOND_LIGHT);
 
     private ThingTypeUID deviceTypeUid;
 

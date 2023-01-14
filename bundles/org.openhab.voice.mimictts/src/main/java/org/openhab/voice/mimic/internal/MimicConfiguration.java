@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,4 +25,5 @@ public class MimicConfiguration {
     public Double speakingRate = 1.0;
     public Double audioVolatility = 0.667;
     public Double phonemeVolatility = 0.8;
+    public Boolean workaroundServletSink = false;
 }

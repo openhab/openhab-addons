@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +39,10 @@ import org.openhab.binding.doorbird.internal.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
 import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
 import org.openhab.binding.doorbird.internal.api.SipStatus;
+import org.openhab.binding.doorbird.internal.audio.DoorbirdAudioSink;
 import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -56,6 +60,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,13 +94,19 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private DoorbirdAPI api = new DoorbirdAPI();
 
+    private BundleContext bundleContext;
+
+    private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
+
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
-    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
+    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient,
+            BundleContext bundleContext) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
+        this.bundleContext = bundleContext;
         udpListener = new DoorbirdUdpListener(this);
     }
 
@@ -120,6 +132,7 @@ public class DoorbellHandler extends BaseThingHandler {
         api.setHttpClient(httpClient);
         startImageRefreshJob();
         startUDPListenerJob();
+        startAudioSink();
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -129,6 +142,7 @@ public class DoorbellHandler extends BaseThingHandler {
         stopImageRefreshJob();
         stopDoorbellOffJob();
         stopMotionOffJob();
+        stopAudioSink();
         super.dispose();
     }
 
@@ -238,6 +252,10 @@ public class DoorbellHandler extends BaseThingHandler {
 
     public void actionSIPHangup() {
         api.sipHangup();
+    }
+
+    public void sendAudio(InputStream inputStream) {
+        api.sendAudio(inputStream);
     }
 
     public String actionGetRingTimeLimit() {
@@ -408,6 +426,23 @@ public class DoorbellHandler extends BaseThingHandler {
             motionOffJob.cancel(true);
             motionOffJob = null;
             logger.debug("Canceling motion off job");
+        }
+    }
+
+    private void startAudioSink() {
+        final DoorbellHandler thisHandler = this;
+        // Register an audio sink in openhab
+        logger.trace("Registering an audio sink for this {}", thing.getUID());
+        audioSinkRegistration = bundleContext.registerService(AudioSink.class, new DoorbirdAudioSink(thisHandler),
+                new Hashtable<>());
+    }
+
+    private void stopAudioSink() {
+        // Unregister the doorbird audio sink
+        ServiceRegistration<AudioSink> audioSinkRegistrationLocal = audioSinkRegistration;
+        if (audioSinkRegistrationLocal != null) {
+            logger.trace("Unregistering the audio sync service for the doorbird thing {}", getThing().getUID());
+            audioSinkRegistrationLocal.unregister();
         }
     }
 

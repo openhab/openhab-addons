@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
-    private final static Gson gson = new Gson();
+    private static final Gson gson = new Gson();
     private boolean isBound = false;
     private final InetAddress ipAddress;
     private int port = 0;
@@ -80,7 +80,6 @@ public class GreeAirDevice {
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
-
         if (!isBound) {
             throw new GreeException("Device not bound");
         }

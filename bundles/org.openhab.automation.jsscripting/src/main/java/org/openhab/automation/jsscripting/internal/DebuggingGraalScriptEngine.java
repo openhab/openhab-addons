@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,9 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     @Override
     public Exception afterThrowsInvocation(Exception e) {
         Throwable cause = e.getCause();
+        if (cause instanceof IllegalArgumentException) {
+            STACK_LOGGER.error("Failed to execute script:", e);
+        }
         if (cause instanceof PolyglotException) {
             STACK_LOGGER.error("Failed to execute script:", cause);
         }

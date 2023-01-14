@@ -4,7 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Bond Home Binding</name>
-	<description>This is the binding for the Bond Bridge for Ceiling Fans and and other RF devices.</description>
-	<author>Sara Geleskie Damiano</author>
+	<description>This is the binding for the Bond Bridge for Ceiling Fans and other RF devices.</description>
 
 </binding:binding>

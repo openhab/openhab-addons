@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,10 @@ import org.openhab.binding.neohub.internal.NeoHubReadDcbResponse;
 import org.openhab.binding.neohub.internal.NeoHubSocket;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * JUnit for testing JSON parsing.
@@ -363,7 +367,7 @@ public class NeoHubJsonTests {
         config.hostName = HUB_IP_ADDRESS;
         config.socketTimeout = 5;
         try {
-            NeoHubSocket socket = new NeoHubSocket(config);
+            NeoHubSocket socket = new NeoHubSocket(config, "test");
             String responseJson = socket.sendMessage(requestJson);
             socket.close();
             return responseJson;
@@ -415,5 +419,48 @@ public class NeoHubJsonTests {
 
         responseJson = testCommunicationInner(String.format(CMD_CODE_TEMP, "20", "Hallway"));
         assertFalse(responseJson.isEmpty());
+    }
+
+    @Test
+    public void testJsonValidation() {
+        JsonElement jsonElement;
+
+        jsonElement = JsonParser.parseString("");
+        assertFalse(jsonElement.isJsonObject());
+
+        jsonElement = JsonParser.parseString("xx");
+        assertFalse(jsonElement.isJsonObject());
+
+        jsonElement = JsonParser.parseString("{}");
+        assertTrue(jsonElement.isJsonObject());
+        assertEquals(0, ((JsonObject) jsonElement).keySet().size());
+
+        jsonElement = JsonParser.parseString(load("dcb_celsius"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("live_data"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("engineers"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("info_new"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("info_old"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("system"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
+
+        jsonElement = JsonParser.parseString(load("info_sensors_closed"));
+        assertTrue(jsonElement.isJsonObject());
+        assertTrue(((JsonObject) jsonElement).keySet().size() > 0);
     }
 }

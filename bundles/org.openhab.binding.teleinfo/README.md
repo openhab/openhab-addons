@@ -153,6 +153,7 @@ The following channels are available on all Linky telemeters in standard TIC mod
 #### Three phase only channels
 
 These channels are available on the following telemeters:
+
 * lstm_electricitymeter
 * lsmt_prod_electricitymeter
 
@@ -171,6 +172,7 @@ These channels are available on the following telemeters:
 #### Producer only channels
 
 These channels are available on the following telemeters:
+
 * lsmm_prod_electricitymeter
 * lsmt_prod_electricitymeter
 
