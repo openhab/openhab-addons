@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -36,7 +35,6 @@ import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnectorImpl
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelGroupTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacConfigDescriptionProvider;
-import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacThingTypeProvider;
 import org.openhab.binding.siemenshvac.internal.type.UidUtils;
 import org.openhab.core.OpenHAB;
@@ -290,7 +288,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    private void generateThingsType(SiemensHvacMetadataDevice device) throws Exception {
+    private void generateThingsType(SiemensHvacMetadataDevice device) {
         logger.debug("Generate thing types for device : {} / {}", device.getName(), device.getSerialNr());
         if (thingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
@@ -354,8 +352,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
-                                                    .build();
+                                                            .withDescription(dataPoint.getLongDesc())
+                                                            .withProperties(props).build();
 
                                             channelDefinitions.add(channelDef);
                                         }
@@ -456,8 +454,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     /**
      * Creates the ThingType for the given device.
      */
-    private ThingType createThingType(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes)
-            throws Exception {
+    private ThingType createThingType(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes) {
         String name = device.getName();
         String description = device.getName();
 
@@ -487,14 +484,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 .withCategory(SiemensHvacBindingConstants.CATEGORY_THING_HVAC).build();
     }
 
-    private URI getConfigDescriptionURI(SiemensHvacMetadataDevice device) throws Exception {
-        try {
-            return new URI(String.format("%s:%s", SiemensHvacBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
-                    UidUtils.generateThingTypeUID(device)));
-        } catch (URISyntaxException ex) {
-            logger.warn("Can't create configDescriptionURI for device type {}", device.getName());
-            throw new SiemensHvacException("can't construct URI");
-        }
+    private URI getConfigDescriptionURI(SiemensHvacMetadataDevice device) {
+        return URI.create((String.format("%s:%s", SiemensHvacBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
+                UidUtils.generateThingTypeUID(device))));
     }
 
     private void generateConfigDescription(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes,
