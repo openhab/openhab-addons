@@ -28,7 +28,8 @@ public interface BusMessageListener {
     /**
      * Called when the KNX bridge receives a group write telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
@@ -37,7 +38,8 @@ public interface BusMessageListener {
     /**
      * Called when the KNX bridge receives a group read telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
@@ -46,7 +48,8 @@ public interface BusMessageListener {
     /**
      * Called when the KNX bridge receives a group read response telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
