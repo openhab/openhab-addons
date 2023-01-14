@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,9 @@ public class PercentageConverter {
      * @return if hexRepresentation == null return -1, otherwise return percentage
      */
     public static int getPercentage(@Nullable String hexRepresentation) {
-        if (hexRepresentation == null)
+        if (hexRepresentation == null) {
             return -1;
+        }
         int decimal = Integer.parseInt(hexRepresentation, 16);
         BigDecimal level = new BigDecimal(100 * decimal).divide(new BigDecimal(255), RoundingMode.FLOOR);
         return level.intValue();

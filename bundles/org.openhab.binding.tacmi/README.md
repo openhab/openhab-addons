@@ -8,10 +8,12 @@ These modes are:
 
 
 Via a "Schema API Page"
+
   * Read values from output nodes
   * Change values for controllable nodes
 
 CoE (CAN over Ethernet) Connection
+
   * Receive data from analog CAN-outputs defined in TAPPS2
   * Receive data from digital CAN-outputs defined in TAPPS2
   * Send ON/OFF to digital CAN-inputs defined in TAPPS2
