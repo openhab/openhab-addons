@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mybmw.internal.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,18 +97,21 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
             myBMWProxy = bridgeHandler.get().getProxy();
         }
 
-        Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
-            try {
-                return prox.requestVehicles();
-            } catch (NetworkException e) {
-                return new ArrayList<>();
-            }
-        });
-
-        vehicleList.ifPresentOrElse(vehicles -> {
-            bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoverySuccess());
-            processVehicles(vehicles);
-        }, () -> bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError()));
+        try {
+            Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
+                try {
+                    return prox.requestVehicles();
+                } catch (NetworkException e) {
+                    throw new IllegalStateException("vehicles could not be discovered: " + e.getMessage(), e);
+                }
+            });
+            vehicleList.ifPresentOrElse(vehicles -> {
+                bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoverySuccess());
+                processVehicles(vehicles);
+            }, () -> bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError()));
+        } catch (IllegalStateException ex) {
+            bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError());
+        }
     }
 
     /**
