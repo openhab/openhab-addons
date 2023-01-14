@@ -208,6 +208,7 @@
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
 /bundles/org.openhab.binding.modbus.studer/ @giovannimirulla
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
+/bundles/org.openhab.binding.moduledsmarthome/ @conradoad
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
