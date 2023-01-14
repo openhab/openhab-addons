@@ -18,6 +18,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,6 +59,8 @@ import com.google.gson.JsonObject;
 @Component(immediate = true)
 @NonNullByDefault
 public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensHvacHandler {
+
+    private Lock lockObj = new ReentrantLock();
 
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacHandlerImpl.class);
 
@@ -231,9 +235,9 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             return;
         }
 
-        try
-
-        {
+        try {
+            lockObj.lock();
+            logger.info("Start read :" + dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
             // logger.debug("siemensHvac:ReadDp:DoRequest():" + request);
@@ -259,17 +263,22 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
         } catch (Exception e) {
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
+        } finally {
+            logger.info("End read :" + dp);
+            lockObj.unlock();
+
         }
     }
 
     private void WriteDp(String dp, Type dpVal, String type) {
-        SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
         SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (("-1").equals(dp)) {
             return;
         }
 
         try {
+            lockObj.lock();
+            logger.info("Start write :" + dp);
             String valUpdate = "0";
             String valUpdateEnum = "";
 
@@ -292,38 +301,30 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                 }
             }
 
-            SiemensHvacMetadataDataPoint md = null;
-            String dptType = null;
-
-            if (lcMetaDataRegistry != null) {
-                md = (SiemensHvacMetadataDataPoint) lcMetaDataRegistry.getDptMap(dp);
-            }
-            if (md != null) {
-                dptType = md.getDptType();
-            }
-
-            String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + dptType;
+            String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + type;
 
             if (lcHvacConnector != null) {
-                lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
+                logger.info("Write request for : " + valUpdate);
+                JsonObject response = lcHvacConnector.DoRequest(request, null);
 
-                    @Override
-                    public void execute(java.net.URI uri, int status, @Nullable Object response) {
-                        if (response instanceof JsonObject) {
-                            logger.debug("p1");
-                        }
-                    }
-                });
+                logger.info("Write request response : " + response);
+                if (response instanceof JsonObject) {
+                    logger.debug("p1");
+                }
             }
 
         } catch (Exception e) {
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
+        } finally {
+            logger.info("End write :" + dp);
+            lockObj.unlock();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
         SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         logger.debug("handleCommand");
         if (command instanceof RefreshType) {
@@ -347,10 +348,21 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             String dptId = channel.getProperties().get("dptId");
             String uid = channel.getUID().getId();
             String type = tp.getItemType();
+            String dptType = "";
+            String id = "";
+            SiemensHvacMetadataDataPoint md = null;
+
+            if (lcMetaDataRegistry != null) {
+                md = (SiemensHvacMetadataDataPoint) lcMetaDataRegistry.getDptMap(dptId);
+                if (md != null) {
+                    id = "" + md.getId();
+                    dptType = md.getDptType();
+                }
+            }
 
             if (dptId != null && type != null) {
-                WriteDp(dptId, command, type);
-                ReadDp(dptId, uid, type, false);
+                WriteDp(id, command, dptType);
+                ReadDp(id, uid, dptType, false);
             }
         }
     }

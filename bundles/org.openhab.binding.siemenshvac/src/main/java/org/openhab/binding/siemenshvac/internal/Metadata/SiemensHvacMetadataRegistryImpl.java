@@ -277,6 +277,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             SaveMetaDataToCache();
 
             getRoot();
+            lcDevices = devices;
             if (lcDevices != null) {
                 for (SiemensHvacMetadataDevice device : lcDevices) {
                     if (device.getType().indexOf("OZW672") >= 0) {
