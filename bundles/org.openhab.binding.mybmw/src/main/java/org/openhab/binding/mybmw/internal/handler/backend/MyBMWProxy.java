@@ -128,13 +128,10 @@ public class MyBMWProxy {
      */
     public List<VehicleBase> requestVehiclesBase() throws NetworkException {
         List<VehicleBase> vehicles = new ArrayList<>();
-        BimmerConstants.ALL_BRANDS.forEach(brand -> {
-            try {
-                vehicles.addAll(requestVehiclesBase(brand));
-            } catch (NetworkException e) {
-                logger.error("Error calling {}: {}", e.getUrl(), e.getReason());
-            }
-        });
+
+        for (String brand : BimmerConstants.REQUESTED_BRANDS) {
+            vehicles.addAll(requestVehiclesBase(brand));
+        }
 
         return vehicles;
     }
@@ -263,7 +260,7 @@ public class MyBMWProxy {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
-        if (!BimmerConstants.ALL_BRANDS.contains(brand.toLowerCase())) {
+        if (!BimmerConstants.ALLOWED_BRANDS.contains(brand.toLowerCase())) {
             logger.warn("Unknown Brand {}", brand);
             throw new NetworkException("Unknown Brand " + brand);
         }
@@ -277,7 +274,7 @@ public class MyBMWProxy {
         }
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenHandler.getToken().getBearerToken());
-        req.header(HTTPConstants.X_USER_AGENT,
+        req.header(HTTPConstants.HEADER_X_USER_AGENT,
                 String.format(BimmerConstants.X_USER_AGENT, brand, configuration.region));
         req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
         req.header(HttpHeader.ACCEPT, contentType);
