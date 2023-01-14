@@ -114,6 +114,9 @@
 		<item-type>String</item-type>
 		<label>System Mode</label>
 		<description>Current System Operating Mode</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="off">Off</option>
@@ -284,6 +287,9 @@
 		<item-type>String</item-type>
 		<label>System State</label>
 		<description>Current System Operating State</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="idle">Idle</option>
@@ -307,6 +313,10 @@
 		<label>Heating Setpoint</label>
 		<description>Heating Setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="40" max="80" step="1.0"/>
 	</channel-type>
 
@@ -315,6 +325,10 @@
 		<label>Cooling Setpoint</label>
 		<description>Cooling Setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="60" max="95" step="1.0"/>
 	</channel-type>
 
@@ -323,6 +337,10 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -332,6 +350,10 @@
 		<label>Outdoor Temperature</label>
 		<description>Outdoor Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -341,6 +363,10 @@
 		<label>Humidity</label>
 		<description>Indoor Humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
