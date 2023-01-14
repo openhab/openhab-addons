@@ -252,11 +252,6 @@
         "deviceClassLink": "h18jkh"
     },
     {
-        "modelName": "DEEBOT OZMO T8+",
-        "deviceClass": "55aiho",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
         "modelName": "DEEBOT OZMO T8 AIVI",
         "deviceClass": "x5d34r",
         "deviceClassLink": "h18jkh"
@@ -320,9 +315,15 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "true_detect_3d",
             "mapping",
             "auto_empty_station"
         ]
+    },
+    {
+        "modelName": "DEEBOT OZMO T8+",
+        "deviceClass": "55aiho",
+        "deviceClassLink": "fqxoiu"
     },
     {
         "modelName": "DEEBOT OZMO T8 AIVI +",
