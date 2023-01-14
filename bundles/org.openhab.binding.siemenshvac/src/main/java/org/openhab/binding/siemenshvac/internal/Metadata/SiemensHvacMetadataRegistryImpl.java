@@ -52,6 +52,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
@@ -241,6 +242,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     @Override
     public void ReadMeta() {
+        ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (root == null) {
             logger.debug("siemensHvac:InitDptMap():begin");
 
@@ -251,8 +254,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             if (root == null) {
                 root = new SiemensHvacMetadataMenu();
                 ReadMetaData(root, -1);
-                if (hvacConnector != null) {
-                    hvacConnector.WaitAllPendingRequest();
+                if (lcHvacConnector != null) {
+                    lcHvacConnector.WaitAllPendingRequest();
                 }
             }
 
@@ -264,8 +267,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
             while (unresolveCount > 0) {
                 ResolveDetails();
-                if (hvacConnector != null) {
-                    hvacConnector.WaitAllPendingRequest();
+                if (lcHvacConnector != null) {
+                    lcHvacConnector.WaitAllPendingRequest();
                 }
                 unresolveCount = UnresolveCount();
 
@@ -274,8 +277,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             SaveMetaDataToCache();
 
             getRoot();
-            if (devices != null) {
-                for (SiemensHvacMetadataDevice device : devices) {
+            if (lcDevices != null) {
+                for (SiemensHvacMetadataDevice device : lcDevices) {
                     if (device.getType().indexOf("OZW672") >= 0) {
                         continue;
                     }
@@ -289,14 +292,15 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {
+        SiemensHvacThingTypeProvider lcThingTypeProvider = thingTypeProvider;
+        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+        SiemensHvacChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
         logger.debug("Generate thing types for device : {} / {}", device.getName(), device.getSerialNr());
-        if (thingTypeProvider != null) {
+        if (lcThingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
             ThingType tt = null;
 
-            if (thingTypeProvider != null) {
-                tt = thingTypeProvider.getInternalThingType(thingTypeUID);
-            }
+            tt = lcThingTypeProvider.getInternalThingType(thingTypeUID);
 
             if (tt == null) {
 
@@ -327,14 +331,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dataPoint);
 
                                         ChannelType channelType = null;
-                                        if (channelTypeProvider != null) {
+                                        if (lcChannelTypeProvider != null) {
 
-                                            channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
-                                            if (channelType == null && channelTypeProvider != null) {
+                                            channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                                            if (channelType == null) {
                                                 channelType = createChannelType(dataPoint, channelTypeUID);
-                                                if (channelTypeProvider != null) {
-                                                    channelTypeProvider.addChannelType(channelType);
-                                                }
+                                                lcChannelTypeProvider.addChannelType(channelType);
                                             }
                                         }
 
@@ -364,17 +366,15 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                 ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(subMenu);
                                 ChannelGroupType groupType = null;
 
-                                if (channelGroupTypeProvider != null) {
-                                    groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
+                                if (lcChannelGroupTypeProvider != null) {
+                                    groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
 
                                     if (groupType == null) {
                                         String groupLabel = subMenu.getShortDesc();
                                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                                 .withChannelDefinitions(channelDefinitions).withCategory("")
                                                 .withDescription(menu.getLongDesc()).build();
-                                        if (channelGroupTypeProvider != null) {
-                                            channelGroupTypeProvider.addChannelGroupType(groupType);
-                                        }
+                                        lcChannelGroupTypeProvider.addChannelGroupType(groupType);
                                         groupTypes.add(groupType);
                                     }
                                 }
@@ -386,9 +386,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 }
 
                 tt = createThingType(device, groupTypes);
-                if (thingTypeProvider != null) {
-                    thingTypeProvider.addThingType(tt);
-                }
+                lcThingTypeProvider.addThingType(tt);
             }
         }
     }
@@ -442,7 +440,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             isAdvanced = true;
         }
 
-        ChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+        final StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                 .withStateDescriptionFragment(stateFragment.build());
 
         channelType = channelTypeBuilder.isAdvanced(isAdvanced).withDescription(description).withCategory(category)
@@ -455,6 +453,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
      * Creates the ThingType for the given device.
      */
     private ThingType createThingType(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes) {
+        SiemensHvacConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
         String name = device.getName();
         String description = device.getName();
 
@@ -467,8 +466,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
 
         URI configDescriptionURI = getConfigDescriptionURI(device);
-        if (configDescriptionProvider != null
-                && configDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
+        if (lcConfigDescriptionProvider != null
+                && lcConfigDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
             generateConfigDescription(device, groupTypes, configDescriptionURI);
         }
 
@@ -491,11 +490,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     private void generateConfigDescription(SiemensHvacMetadataDevice device, List<ChannelGroupType> groupTypes,
             URI configDescriptionURI) {
+        SiemensHvacConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
         List<ConfigDescriptionParameter> parms = new ArrayList<>();
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
-        if (configDescriptionProvider != null) {
-            configDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
+        if (lcConfigDescriptionProvider != null) {
+            lcConfigDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
                     .withParameters(parms).withParameterGroups(groups).build());
         }
     }
@@ -572,12 +572,16 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     public void ReadDeviceList() {
         try {
-            devices = new ArrayList<SiemensHvacMetadataDevice>();
+            SiemensHvacConnector lcHvacConnector = hvacConnector;
+            ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
+
+            lcDevices = new ArrayList<SiemensHvacMetadataDevice>();
+            devices = lcDevices;
             String request = "api/devicelist/list.json?";
 
             JsonObject response = null;
-            if (hvacConnector != null) {
-                response = hvacConnector.DoRequest(request, null);
+            if (lcHvacConnector != null) {
+                response = lcHvacConnector.DoRequest(request, null);
             }
             JsonArray devicesList = null;
             if (response != null) {
@@ -637,8 +641,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 deviceObj.setTreeGenerated(TreeGenerated);
 
                 String request2 = "api/menutree/device_root.json?TreeName=Web&SerialNumber=" + SerialNr;
-                if (hvacConnector != null) {
-                    JsonObject response2 = hvacConnector.DoRequest(request2, null);
+                if (lcHvacConnector != null) {
+                    JsonObject response2 = lcHvacConnector.DoRequest(request2, null);
 
                     if (response2 != null && response2.has("TreeItem")) {
                         JsonObject tree = response2.getAsJsonObject("TreeItem");
@@ -649,9 +653,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     }
                 }
 
-                if (devices != null) {
-                    devices.add(deviceObj);
-                }
+                lcDevices.add(deviceObj);
             }
 
         } catch (Exception e) {
@@ -662,13 +664,14 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     public void ReadMetaData(@Nullable SiemensHvacMetadata parent, int id) {
         try {
+            SiemensHvacConnector lcHvacConnector = hvacConnector;
             String request = "api/menutree/list.json?";
             if (id != -1) {
                 request = request + "&Id=" + id;
             }
 
-            if (hvacConnector != null) {
-                hvacConnector.DoRequest(request, new SiemensHvacCallback() {
+            if (lcHvacConnector != null) {
+                lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
@@ -689,6 +692,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     private static int nbDpt = 0;
 
     public void DecodeMetaDataResult(JsonObject resultObj, @Nullable SiemensHvacMetadata parent, int id) {
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (resultObj.has("MenuItems")) {
             if (parent != null) {
                 logger.debug("Decode menuItem for : {}", parent.getShortDesc());
@@ -874,8 +878,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 request2 = request2 + "&id=" + id;
             }
 
-            if (hvacConnector != null) {
-                hvacConnector.DoRequest(request2, new SiemensHvacCallback() {
+            if (lcHvacConnector != null) {
+                lcHvacConnector.DoRequest(request2, new SiemensHvacCallback() {
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
@@ -980,13 +984,14 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     public void resolveDptDetails(SiemensHvacMetadataDataPoint dpt) {
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (dpt.getDetailsResolved()) {
             return;
         }
 
         String request = "api/menutree/datapoint_desc.json?Id=" + dpt.getId();
-        if (hvacConnector != null) {
-            hvacConnector.DoRequest(request, new SiemensHvacCallback() {
+        if (lcHvacConnector != null) {
+            lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
 
                 @Override
                 public void execute(URI uri, int status, @Nullable Object response) {

@@ -120,12 +120,14 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
         }
     }
 
     private void pollingCode() {
+        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
 
         var chList = this.getThing().getChannels();
         for (Channel ch : chList) {
@@ -144,8 +146,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             ChannelType tp = null;
 
-            if (channelTypeProvider != null) {
-                tp = channelTypeProvider.getInternalChannelType(ch.getChannelTypeUID());
+            if (lcChannelTypeProvider != null) {
+                tp = lcChannelTypeProvider.getInternalChannelType(ch.getChannelTypeUID());
             }
 
             if (tp == null) {
@@ -223,6 +225,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     }
 
     private void ReadDp(String dp, String uid, String type, boolean async) {
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
+
         if (("-1").equals(dp)) {
             return;
         }
@@ -235,8 +239,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             // logger.debug("siemensHvac:ReadDp:DoRequest():" + request);
 
             if (async) {
-                if (hvacConnector != null) {
-                    hvacConnector.DoRequest(request, new SiemensHvacCallback() {
+                if (lcHvacConnector != null) {
+                    lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
 
                         @Override
                         public void execute(java.net.URI uri, int status, @Nullable Object response) {
@@ -247,8 +251,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                     });
                 }
             } else {
-                if (hvacConnector != null) {
-                    JsonObject js = hvacConnector.DoRequest(request, null);
+                if (lcHvacConnector != null) {
+                    JsonObject js = lcHvacConnector.DoRequest(request, null);
                     DecodeReadDp(js, uid, dp, type);
                 }
             }
@@ -259,6 +263,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     }
 
     private void WriteDp(String dp, Type dpVal, String type) {
+        SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
         if (("-1").equals(dp)) {
             return;
         }
@@ -289,8 +295,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             SiemensHvacMetadataDataPoint md = null;
             String dptType = null;
 
-            if (metaDataRegistry != null) {
-                md = (SiemensHvacMetadataDataPoint) metaDataRegistry.getDptMap(dp);
+            if (lcMetaDataRegistry != null) {
+                md = (SiemensHvacMetadataDataPoint) lcMetaDataRegistry.getDptMap(dp);
             }
             if (md != null) {
                 dptType = md.getDptType();
@@ -298,8 +304,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + dptType;
 
-            if (hvacConnector != null) {
-                hvacConnector.DoRequest(request, new SiemensHvacCallback() {
+            if (lcHvacConnector != null) {
+                lcHvacConnector.DoRequest(request, new SiemensHvacCallback() {
 
                     @Override
                     public void execute(java.net.URI uri, int status, @Nullable Object response) {
@@ -318,6 +324,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         logger.debug("handleCommand");
         if (command instanceof RefreshType) {
             logger.debug("handleCommandRefresh");
@@ -329,8 +336,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             }
 
             ChannelType tp = null;
-            if (channelTypeProvider != null) {
-                tp = channelTypeProvider.getInternalChannelType(channel.getChannelTypeUID());
+            if (lcChannelTypeProvider != null) {
+                tp = lcChannelTypeProvider.getInternalChannelType(channel.getChannelTypeUID());
             }
 
             if (tp == null) {

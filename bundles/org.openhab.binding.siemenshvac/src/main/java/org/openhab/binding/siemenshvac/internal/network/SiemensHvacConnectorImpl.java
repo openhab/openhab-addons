@@ -37,6 +37,7 @@ import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThi
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.types.Type;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -175,8 +176,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private void _initConfig() throws Exception {
 
         Configuration config = null;
-        if (hvacBridgeBaseThingHandler != null) {
-            config = hvacBridgeBaseThingHandler.getThing().getConfiguration();
+        SiemensHvacBridgeBaseThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
+
+        if (lcHvacBridgeBaseThingHandler != null) {
+            Bridge bridge = lcHvacBridgeBaseThingHandler.getThing();
+            config = bridge.getConfiguration();
         } else {
             throw new SiemensHvacException(
                     "siemensHvac:Exception unable to get config because hvacBridgeBaseThingHandler is null");
