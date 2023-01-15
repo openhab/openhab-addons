@@ -7,7 +7,7 @@
 	<name>InfluxDB persistence</name>
 	<description>This is the persistence add-on for InfluxDB.</description>
 
-    <service-id>org.openhab.influxdb</config-id>
+    <service-id>org.openhab.influxdb</service-id>
 
     <config-description-ref uri="persistence:influxdb" />
 
