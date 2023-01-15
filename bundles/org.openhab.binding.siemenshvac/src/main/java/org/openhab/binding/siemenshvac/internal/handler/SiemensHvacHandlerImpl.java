@@ -41,6 +41,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -346,7 +347,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             }
 
             String dptId = channel.getProperties().get("dptId");
-            String uid = channel.getUID().getId();
             String type = tp.getItemType();
             String dptType = "";
             String id = "";
@@ -360,9 +360,13 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                 }
             }
 
+            if (command instanceof State) {
+                State state = (State) command;
+                this.updateState(channelUID, state);
+            }
+
             if (dptId != null && type != null) {
                 WriteDp(id, command, dptType);
-                ReadDp(id, uid, dptType, false);
             }
         }
     }
