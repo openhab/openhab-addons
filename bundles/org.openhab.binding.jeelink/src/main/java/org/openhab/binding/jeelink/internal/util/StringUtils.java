@@ -14,6 +14,11 @@ package org.openhab.binding.jeelink.internal.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * Utility class for strings
+ *
+ * @author Leo Siepel - Initial contribution
+ */
 @NonNullByDefault
 public final class StringUtils {
 
