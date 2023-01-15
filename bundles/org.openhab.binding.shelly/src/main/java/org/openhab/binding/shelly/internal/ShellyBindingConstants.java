@@ -83,6 +83,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSI4DC, //
             THING_TYPE_SHELLYPLUSHT, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
+            THING_TYPE_SHELLYPLUSDIMMERUS, //
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
 

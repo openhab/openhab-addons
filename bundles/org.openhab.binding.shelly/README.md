@@ -87,6 +87,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusi4        | Shelly Plus i4 with 4x AC input                          | SNSN-0024X     |
 | shellyplusi4dc      | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X     |
 | shellyplusht        | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A     |
+| shellypluswdus      | Shelly Plus Wall Dimmer US                               | SNDM-0013US    |
 
 ### Generation 2 Pro series
 
@@ -99,6 +100,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU |
+| shellypro3em        | Shelly Pro 3EM with 3x power meter                       | SPEM-003CEBEU  |
 
 
 ## Binding Configuration
@@ -1147,6 +1149,19 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
 
+### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+### Shelly Dimmer 1 + 2 (thing-type: shellydimmer, shellydimmer2)
+
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |brightness   |Dimmer   |r/w      |Currently selected brightness.                                                   |
+|          |autoOn       |Number   |r/w      |Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds|
+|          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
+|          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
+
 
 ## Shelly Pro Series
 
@@ -1289,6 +1304,34 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger, see section Button Events                                         |
 
+### Shelly Pro 3EM (thing-type: shellypro3em)
+
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kwh since the device powered up (resets on restart)  |
+|          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+|meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kwh since the device powered up (resets on restart)  |
+|          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+|meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |totalKWH     |Number   |yes      |Total energy consumption in kwh since the device powered up (resets on restart)  |
+|          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
+|          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
+|          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |current      |Number   |yes      |Current in A                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ## Full Example
 

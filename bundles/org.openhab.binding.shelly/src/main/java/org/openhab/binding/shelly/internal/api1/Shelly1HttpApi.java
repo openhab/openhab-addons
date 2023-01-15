@@ -290,7 +290,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void setLedStatus(String ledName, Boolean value) throws ShellyApiException {
+    public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
         httpRequest(SHELLY_URL_SETTINGS + "?" + ledName + "=" + (value ? SHELLY_API_TRUE : SHELLY_API_FALSE));
     }
 

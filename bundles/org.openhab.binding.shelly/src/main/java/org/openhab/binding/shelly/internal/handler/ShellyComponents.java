@@ -20,11 +20,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyADC;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
@@ -36,6 +39,8 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
+
+import com.google.gson.Gson;
 
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
@@ -541,6 +546,73 @@ public class ShellyComponents {
 
             if (updated) {
                 thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
+            }
+        }
+        return updated;
+    }
+
+    /**
+     * Update Relay/Roller channels
+     *
+     * @param th Thing Handler instance
+     * @param profile ShellyDeviceProfile
+     * @param status Last ShellySettingsStatus
+     *
+     * @throws ShellyApiException
+     */
+    public static boolean updateDimmers(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+            throws ShellyApiException {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.isDimmer) {
+            // We need to fixup the returned Json: The dimmer returns light[] element, which is ok, but it doesn't have
+            // the same structure as lights[] from Bulb,RGBW2 and Duo. The tag gets replaced by dimmers[] so that Gson
+            // maps to a different structure (ShellyShortLight).
+            Gson gson = new Gson();
+            ShellySettingsStatus dstatus = !profile.isGen2
+                    ? fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json), ShellySettingsStatus.class)
+                    : orgStatus;
+
+            int l = 0;
+            for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
+                Integer r = l + 1;
+                String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_DIMMER_CONTROL
+                        : CHANNEL_GROUP_DIMMER_CONTROL + r.toString();
+
+                if (!thingHandler.areChannelsCreated()) {
+                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
+                            .createDimmerChannels(thingHandler.getThing(), profile, dstatus, l));
+                }
+
+                ShellySettingsDimmer ds = profile.settings.dimmers.get(l);
+                if (ds.name != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(ds.name));
+                }
+
+                // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
+                // and send an OFF status to the same channel.
+                // When the device's brightness is > 0 we send the new value to the channel and an ON command
+                if (dimmer.ison) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                            toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE, Units.PERCENT));
+                } else {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                            toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
+                }
+
+                if (profile.settings.dimmers != null) {
+                    ShellySettingsDimmer dsettings = profile.settings.dimmers.get(l);
+                    if (dsettings != null) {
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                                toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                                toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                    }
+                }
+
+                l++;
             }
         }
         return updated;

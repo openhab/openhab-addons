@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * {@link Shelly2ApiJsonDTO} wraps the Shelly REST API and provides various low level function to access the device api
@@ -47,6 +53,10 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
     public static final String SHELLY2_COVER_CMD_CLOSE = "Close";
     public static final String SHELLY2_COVER_CMD_STOP = "Stop";
+    public static final String SHELLYRPC_METHOD_LIGHT_STATUS = "Light.GetStatus";
+    public static final String SHELLYRPC_METHOD_LIGHT_SET = "Light.Set";
+    public static final String SHELLYRPC_METHOD_LIGHT_SETCONFIG = "Light.SetConfig";
+    public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_ETHGETCONG = "Eth.GetConfig";
@@ -133,6 +143,12 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_WAKEUPOCAUSE_PERIODIC = "periodic";
     public static final String SHELLY2_WAKEUPOCAUSE_UPDATE = "status_update";
     public static final String SHELLY2_WAKEUPOCAUSE_UNDEFINED = "undefined";
+
+    // Dimmer US: LED power modes
+    public static final String SHELLY2_POWERLED_ON = "on";
+    public static final String SHELLY2_POWERLED_OFF = "off";
+    public static final String SHELLY2_POWERLED_MATCH = "match_output";
+    public static final String SHELLY2_POWERLED_INVERT = "inverted_output";
 
     public class Shelly2DevConfigBle {
         public Boolean enable;
@@ -344,6 +360,34 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceConfigCoverObstructionDetection obstructionDetection;
         }
 
+        public static class Shelly2GetConfigLight {
+            public static class Shelly2GetConfigLightDefault {
+                public Integer brightness;
+            }
+
+            public static class Shelly2GetConfigLightNightMode {
+                public boolean enable;
+                public Integer brightness;
+            }
+
+            public Integer id;
+            public String name;
+            @SerializedName("initial_state")
+            public String initialState;
+            @SerializedName("auto_on")
+            public Boolean autoOn;
+            @SerializedName("auto_off")
+            public Boolean autoOff;
+            @SerializedName("auto_on_delay")
+            public Double autoOnDelay;
+            @SerializedName("auto_off_delay")
+            public Double autoOffDelay;
+            @SerializedName("default")
+            public Shelly2GetConfigLightDefault defaultCfg;
+            @SerializedName("night_mode")
+            public Shelly2GetConfigLightNightMode nightMode;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -370,6 +414,9 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceConfigSys sys;
             public Shelly2DeviceConfigWiFi wifi;
 
+            @SerializedName("wd_ui")
+            public Shelly2DeviceConfigLed led;
+
             @SerializedName("input:0")
             public Shelly2DevConfigInput input0;
             @SerializedName("input:1")
@@ -393,6 +440,16 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
+
+            @SerializedName("light:0")
+            public Shelly2GetConfigLight light0;
+        }
+
+        public class Shelly2DeviceConfigLed {
+            @SerializedName("sys_led_enable")
+            public Boolean sysLedEnable;
+            @SerializedName("power_led")
+            public String powerLed;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -501,48 +558,143 @@ public class Shelly2ApiJsonDTO {
             }
 
             public static class Shelly2DeviceStatusEm {
+                public static class Shelly2EmDataPhase {
+                    public Double current;
+                    public Double voltage;
+                    public Double actPower;
+                    public Double aprtPower;
+                    public Double pf;
+                    public ArrayList<String> errors;
+                }
+
                 public Integer id;
-
-                @SerializedName("a_current")
-                public Double aCurrent;
-                @SerializedName("a_voltage")
-                public Double aVoltage;
-                @SerializedName("a_act_power")
-                public Double aActPower;
-                @SerializedName("a_aprt_power")
-                public Double aAprtPower;
-                @SerializedName("a_pf")
-                public Double aPF;
-
-                @SerializedName("b_current")
-                public Double bCurrent;
-                @SerializedName("b_voltage")
-                public Double bVoltage;
-                @SerializedName("b_act_power")
-                public Double bActPower;
-                @SerializedName("b_aprt_power")
-                public Double bAprtPower;
-                @SerializedName("b_pf")
-                public Double bPF;
-
-                @SerializedName("c_current")
-                public Double cCurrent;
-                @SerializedName("c_voltage")
-                public Double cVoltage;
-                @SerializedName("c_act_power")
-                public Double cActPower;
-                @SerializedName("c_aprt_power")
-                public Double cAprtPower;
-                @SerializedName("c_pf")
-                public Double cPF;
-
-                @SerializedName("n_current")
+                public Shelly2EmDataPhase[] phaseData;
                 public Double nCurrent;
+                public ArrayList<String> errors;
+
+                public Shelly2DeviceStatusEm() {
+                    phaseData = new Shelly2EmDataPhase[3];
+                    for (int i = 0; i < phaseData.length; i++) {
+                        phaseData[i] = new Shelly2EmDataPhase();
+                    }
+                }
+
+                public static class Shelly2EmDataTypeAdapter extends TypeAdapter<Shelly2DeviceStatusEm> {
+                    @Override
+                    public Shelly2DeviceStatusEm read(final JsonReader in) throws IOException {
+                        /*
+                         * parse JSON like
+                         * {"id":0,"a_current":0.027,"a_voltage":0.1,"a_act_power":-0.0,"a_aprt_power":0.0,"a_pf":1.00,
+                         * "b_current":0
+                         * .027,"b_voltage":0.1,"b_act_power":-0.0,"b_aprt_power":0.0,"b_pf":1.00,"c_current":0.027,
+                         * "c_voltage":232.
+                         * 6,"c_act_power":0.2,"c_aprt_power":6.2,"c_pf":1.00,"n_current":null}
+                         */
+                        Shelly2DeviceStatusEm data = new Shelly2DeviceStatusEm();
+                        in.beginObject();
+                        while (in.hasNext()) {
+                            String name = in.nextName();
+                            switch (name) {
+                                case "id":
+                                    data.id = in.nextInt();
+                                    break;
+                                case "n_current":
+                                    data.nCurrent = in.nextDouble();
+                                    break;
+                                case "errors":
+                                    in.beginArray();
+                                    data.errors = new ArrayList<>();
+                                    while (in.hasNext()) {
+                                        data.errors.add(in.nextString());
+                                    }
+                                    in.endArray();
+                                    break;
+                                default:
+                                    int idx = name.startsWith("a_") ? 0 : //
+                                            name.startsWith("b_") ? 1 : //
+                                                    name.startsWith("c_") ? 2 : -1;
+                                    if (idx >= 0) {
+                                        String field = substringAfter(name, "_");
+                                        switch (field) {
+                                            case "current":
+                                                data.phaseData[idx].current = in.nextDouble();
+                                                break;
+                                            case "voltage":
+                                                data.phaseData[idx].voltage = in.nextDouble();
+                                                break;
+                                            case "act_power":
+                                                data.phaseData[idx].actPower = in.nextDouble();
+                                                break;
+                                            case "aprt_power":
+                                                data.phaseData[idx].aprtPower = in.nextDouble();
+                                                break;
+                                            case "pf":
+                                                data.phaseData[idx].pf = in.nextDouble();
+                                                break;
+                                            case "errors":
+                                                in.beginArray();
+                                                data.phaseData[idx].errors = new ArrayList<>();
+                                                while (in.hasNext()) {
+                                                    data.phaseData[idx].errors.add(in.nextString());
+                                                }
+                                                in.endArray();
+                                                break;
+                                            default:
+                                                // skip data
+                                                in.nextNull();
+                                        }
+                                    } else {
+                                        // skip data
+                                        in.nextNull();
+                                    }
+                            }
+                        }
+
+                        in.endObject();
+                        return data;
+                    }
+
+                    @Override
+                    public void write(final JsonWriter out, final Shelly2DeviceStatusEm data) throws IOException {
+                        out.beginObject();
+                        out.name("id");
+                        out.value(getInteger(data.id));
+                        char p = 'a';
+                        for (int i = 0; i < data.phaseData.length; i++) {
+                            out.name(p + "_current");
+                            out.value(data.phaseData[i].current);
+                            out.name(p + "_voltage");
+                            out.value(data.phaseData[i].voltage);
+                            out.name(p + "_act_power");
+                            out.value(data.phaseData[i].actPower);
+                            out.name(p + "_aprt_power");
+                            out.value(data.phaseData[i].aprtPower);
+                            out.name(p + "_pf");
+                            out.value(data.phaseData[i].pf);
+                            p++;
+                        }
+                        out.name("n_current");
+                        out.value(data.nCurrent);
+
+                        out.endObject();
+                    }
+                }
             }
 
             public static class Shelly2DeviceStatusEmData {
                 public Integer id;
                 public String[] errors;
+            }
+
+            public static class Shelly2DeviceStatusLight {
+                public Integer id;
+                public String source;
+                public Boolean output;
+                public Double brightness;
+                @SerializedName("timer_started_at")
+                public Double timerStartedAt;
+                @SerializedName("timer_duration")
+                public Integer timerDuration;
             }
 
             public Shelly2DeviceStatusBle ble;
@@ -578,6 +730,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cover:0")
             public Shelly2CoverStatus cover0;
+
+            @SerializedName("light:0")
+            public Shelly2DeviceStatusLight light0;
 
             @SerializedName("temperature:0")
             public Shelly2DeviceStatusTempId temperature0;
@@ -710,6 +865,12 @@ public class Shelly2ApiJsonDTO {
         public Boolean autoOff;
         @SerializedName("auto_off_delay")
         public Double autoOffDelay;
+
+        // WD_UI.SetConfig
+        @SerializedName("sys_led_enable")
+        public Boolean sysLedEnable;
+        @SerializedName("power_led")
+        public String powerLed;
     }
 
     public static class Shelly2RpcRequest {
@@ -722,6 +883,11 @@ public class Shelly2ApiJsonDTO {
             // Cover
             public Integer pos;
             public Boolean on;
+
+            // Dimmer / Light
+            public Integer brightness;
+            @SerializedName("toggle_after")
+            public Integer toggleAfter;
 
             // Shelly.SetAuth
             public String user;

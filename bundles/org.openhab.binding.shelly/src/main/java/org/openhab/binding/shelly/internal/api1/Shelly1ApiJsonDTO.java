@@ -544,8 +544,9 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
-        public Double pf; // 3EM
-        public Double current; // 3EM
+        public Double pf; // 3EM: Power factor measurement value
+        public Double current; // 3EM: Current measurement value in A
+        public ArrayList<String> errors; // Pro 3EM: error indicators for this meter
     }
 
     public static class ShellySettingsUpdate {
@@ -740,6 +741,7 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;
         public ArrayList<ShellySettingsEMeter> emeters;
+        public Double nCurrent; // Pro 3EM: Neutral current measurement value
         @SerializedName("ext_temperature")
         public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
         @SerializedName("ext_humidity")
@@ -820,6 +822,8 @@ public class Shelly1ApiJsonDTO {
         public Integer brightness; // brightness: 0.100%
         @SerializedName("has_timer")
         public Boolean hasTimer;
+        @SerializedName("timer_duration")
+        public Integer timerDuration;
     }
 
     public static class ShellyStatusRelay {
