@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energidataservice"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="electricity">
+		<label>Electricity</label>
+		<description>Channels related to electricity</description>
+		<channels>
+			<channel id="currentSpotPrice" typeId="spotPrice">
+				<label>Current Spot Price</label>
+				<description>Spot price in DKK or EUR per kWh for current hour.</description>
+			</channel>
+			<channel id="currentNetTariff" typeId="datahubPrice">
+				<label>Current Net Tariff</label>
+				<description>Net tariff in DKK per kWh for current hour.</description>
+			</channel>
+			<channel id="currentSystemTariff" typeId="datahubPrice">
+				<label>Current System Tariff</label>
+				<description>System tariff in DKK per kWh for current hour.</description>
+			</channel>
+			<channel id="currentElectricityTax" typeId="datahubPrice">
+				<label>Current Electricity Tax</label>
+				<description>Electricity Tax in DKK per kWh for current hour.</description>
+			</channel>
+			<channel id="currentTransmissionNetTariff" typeId="datahubPrice">
+				<label>Current Transmission Tariff</label>
+				<description>Transmission Net Tariff in DKK per kWh for current hour.</description>
+			</channel>
+			<channel id="hourlyPrices" typeId="hourlyPrices"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
