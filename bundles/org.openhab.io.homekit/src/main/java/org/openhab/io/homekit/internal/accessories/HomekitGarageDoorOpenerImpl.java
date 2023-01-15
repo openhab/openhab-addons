@@ -47,8 +47,8 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
-        currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class);
-        targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class);
+        currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class, true);
+        targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class, true);
 
         getServices().add(new GarageDoorOpenerService(this));
     }

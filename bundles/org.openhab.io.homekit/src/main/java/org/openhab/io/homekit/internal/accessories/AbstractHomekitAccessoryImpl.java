@@ -271,7 +271,19 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     @NonNullByDefault
     protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz) {
-        return createMapping(characteristicType, klazz, null);
+        return createMapping(characteristicType, klazz, null, false);
+    }
+
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
+        return createMapping(characteristicType, klazz, null, true);
+    }
+
+    @NonNullByDefault
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
+        return createMapping(characteristicType, klazz, customEnumList, false);
     }
 
     /**
@@ -279,13 +291,15 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * 
      * @param characteristicType to identify item; must be present
      * @param customEnumList list to store custom state enumeration
+     * @param inverted if ON/OFF and OPEN/CLOSED should be inverted by default (inverted on the item will double-invert)
      * @return mapping of enum values to custom string values
      */
     @NonNullByDefault
     protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
-            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
+            HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList,
+            boolean inverted) {
         HomekitTaggedItem item = getCharacteristic(characteristicType).get();
-        return HomekitCharacteristicFactory.createMapping(item, klazz, customEnumList, false);
+        return HomekitCharacteristicFactory.createMapping(item, klazz, customEnumList, inverted);
     }
 
     /**
