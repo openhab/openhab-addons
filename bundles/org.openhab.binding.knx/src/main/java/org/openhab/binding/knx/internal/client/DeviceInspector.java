@@ -80,6 +80,15 @@ public class DeviceInspector {
         return client;
     }
 
+    /**
+     * {@link readDeviceInfo} tries to read information from the KNX device.
+     * This function catches {@link java.lang.InterruptedException}. It can safely be cancelled.
+     *
+     * The number of properties returned by this function depends on the data provided
+     * by the KNX device.
+     *
+     * @return List of device properties
+     */
     @Nullable
     public Result readDeviceInfo() {
         if (!getClient().isConnected()) {
@@ -92,12 +101,23 @@ public class DeviceInspector {
             properties.putAll(readDeviceDescription(address));
             properties.putAll(readDeviceProperties(address));
         } catch (InterruptedException e) {
-            logger.debug("Interrupted while fetching the device description for a device '{}' : {}", address,
-                    e.getMessage());
+            final String msg = e.getMessage();
+            logger.debug("Interrupted while fetching the device description for a device '{}' {}", address,
+                    msg != null ? ": " + msg : "");
         }
         return new Result(properties, Collections.emptySet());
     }
 
+    /**
+     * @implNote {@link readDeviceProperties(address)} tries to read several properties from the KNX device.
+     *           Errors reading single properties are ignored, the respective item is skipped and readout continues
+     *           with next property. {@link java.lang.InterruptedException} is thrown to allow for stopping the readout
+     *           task immediately on connection loss or thing deconstruction.
+     *
+     * @param address Individual address of KNX device
+     * @return List of device properties
+     * @throws InterruptedException
+     */
     private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
         Map<String, String> ret = new HashMap<>();
         Thread.sleep(OPERATION_INTERVAL);
@@ -152,6 +172,8 @@ public class DeviceInspector {
                 if (result != null) {
                     maxApdu = Integer.toString(toUnsigned(result));
                 }
+            } catch (InterruptedException e) {
+                throw e;
             } catch (Exception ignore) {
                 // allowed to fail, optional
             }
@@ -166,6 +188,8 @@ public class DeviceInspector {
                     if (result != null) {
                         maxApdu = Integer.toString(toUnsigned(result));
                     }
+                } catch (InterruptedException e) {
+                    throw e;
                 } catch (Exception ignore) {
                     // allowed to fail, optional
                 }
@@ -230,6 +254,8 @@ public class DeviceInspector {
                                 address);
                     }
                 }
+            } catch (InterruptedException e) {
+                throw e;
             } catch (Exception e) {
                 // allowed to fail, optional
             }
@@ -257,6 +283,15 @@ public class DeviceInspector {
         return input == null ? null : DataUnitBuilder.toHex(input, separator);
     }
 
+    /**
+     * @implNote {@link readDeviceDescription(address)} tries to read device description from the KNX device.
+     *           According to KNX specification, eihter device descriptor DD0 or DD2 must be implemented.
+     *           Currently only data from DD0 is returned; DD2 is just logged in debug mode.
+     *
+     * @param address Individual address of KNX device
+     * @return List of device properties
+     * @throws InterruptedException
+     */
     private Map<String, String> readDeviceDescription(IndividualAddress address) throws InterruptedException {
         Map<String, String> ret = new HashMap<>();
         byte[] data = getClient().readDeviceDescription(address, 0, false, OPERATION_TIMEOUT);
