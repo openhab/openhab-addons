@@ -125,7 +125,6 @@ The _vehicleBrand_ is automatically obtained by the discovery service and shall 
 If thing is defined manually via *.things file following brands are supported
 
 * BMW
-* BMW_I
 * MINI
 
 
@@ -365,11 +364,11 @@ Parallel execution isn't supported.
 
 The channel _command_ provides options
 
-* _flash-lights_
+* _ight-flash_
 * _vehicle-finder_
 * _door-lock_
 * _door-unlock_
-* _horn-low_
+* _horn-blow_
 * _climate-now-start_
 * _climate-now-stop_
 
@@ -544,11 +543,11 @@ Data like
 * Vehicle Identification Number (VIN)
 * Location data
 
-are anonymized.
+are anonymized in the JSON response, if you share the URL as well please anonymize the VIN on your own.
 You'll find the fingerprint in the logs with the command
 
 ```
-grep "Discovery Fingerprint Data" openhab.log
+grep "Fingerprint Data" openhab.log
 ```
 
 After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
