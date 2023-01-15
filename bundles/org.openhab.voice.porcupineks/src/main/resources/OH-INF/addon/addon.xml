@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.procupineks</service-id>
 
-	<config-description-ref uri="voice:porcupineks" />
+	<config-description-ref uri="voice:porcupineks"/>
 
 </addon:addon>

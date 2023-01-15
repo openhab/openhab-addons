@@ -10,5 +10,5 @@
 	<service-id>org.openhab.openhabcloud</service-id>
 
 	<config-description-ref uri="io.openhabcloud"/>
-	
+
 </addon:addon>

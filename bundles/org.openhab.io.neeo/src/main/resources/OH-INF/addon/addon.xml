@@ -10,5 +10,5 @@
 	<service-id>org.openhab.io.neeo.NeeoService</service-id>
 
 	<config-description-ref uri="io.neeo"/>
-	
+
 </addon:addon>

@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.voskstt</service-id>
 
-	<config-description-ref uri="voice:voskstt" />
+	<config-description-ref uri="voice:voskstt"/>
 
 </addon:addon>

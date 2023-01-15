@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.dynamodb</service-id>
 
-	<config-description-ref uri="persistence:dynamodb" />
+	<config-description-ref uri="persistence:dynamodb"/>
 
 </addon:addon>

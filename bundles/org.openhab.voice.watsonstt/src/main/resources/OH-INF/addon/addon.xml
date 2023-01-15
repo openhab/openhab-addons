@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.watsonstt</service-id>
 
-	<config-description-ref uri="voice:watsonstt" />
+	<config-description-ref uri="voice:watsonstt"/>
 
 </addon:addon>

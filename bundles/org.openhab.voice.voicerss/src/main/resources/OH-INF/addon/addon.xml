@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.voicerss</service-id>
 
-	<config-description-ref uri="voice:voicerss" />
+	<config-description-ref uri="voice:voicerss"/>
 
 </addon:addon>

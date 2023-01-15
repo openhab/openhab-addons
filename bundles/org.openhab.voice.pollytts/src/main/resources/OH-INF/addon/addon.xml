@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.pollytts</service-id>
 
-	<config-description-ref uri="voice:pollytts" />
+	<config-description-ref uri="voice:pollytts"/>
 
 </addon:addon>

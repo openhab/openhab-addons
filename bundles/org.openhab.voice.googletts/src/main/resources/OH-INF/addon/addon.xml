@@ -5,7 +5,8 @@
 
 	<type>voice</type>
 	<name>Google Cloud Test-to-speech</name>
-	<description>Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language (SSML) input into audio data of natural human speech.</description>
+	<description>Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech
+		Synthesis Markup Language (SSML) input into audio data of natural human speech.</description>
 
 	<service-id>org.openhab.voice.googletts</service-id>
 

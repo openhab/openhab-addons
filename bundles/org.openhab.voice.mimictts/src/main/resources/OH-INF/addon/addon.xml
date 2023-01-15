@@ -9,6 +9,6 @@
 
 	<service-id>org.openhab.voice.mimictts</service-id>
 
-	<config-description-ref uri="voice:mimictts" />
+	<config-description-ref uri="voice:mimictts"/>
 
 </addon:addon>
