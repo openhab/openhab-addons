@@ -70,7 +70,7 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
                 componentConfiguration.getUpdateListener())
                         .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                         .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos())
+                                channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                         .build();
     }
 }

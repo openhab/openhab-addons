@@ -85,6 +85,44 @@ public class SelectTests extends AbstractComponentTests {
         assertNotPublished("zigbee2mqtt/gbos/set/approach_distance", "bogus");
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testSelectWithCommandTemplate() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                    {
+                        "availability": [
+                            {"topic": "zigbee2mqtt/bridge/state"},
+                            {"topic": "zigbee2mqtt/gbos/availability"}
+                        ],
+                        "availability_mode": "all",
+                        "command_topic": "zigbee2mqtt/gbos/set/approach_distance",
+                        "command_template": "set to {{ value }}",
+                        "device": {
+                            "configuration_url": "#/device/0x54ef44100064b266/info",
+                            "identifiers": [
+                                "zigbee2mqtt_0x54ef44100064b266"
+                            ],
+                            "manufacturer": "Xiaomi",
+                            "model": "Aqara presence detector FP1 (RTCZCGQ11LM)",
+                            "name": "Guest Bathroom Occupancy Sensor",
+                            "sw_version": ""
+                        },
+                        "name": "Guest Bathroom Occupancy Sensor approach distance",
+                        "options": [
+                            "far",
+                            "medium",
+                            "near"
+                        ],
+                        "state_topic": "zigbee2mqtt/gbos",
+                        "unique_id": "0x54ef44100064b266_approach_distance_zigbee2mqtt",
+                        "value_template":"{{ value_json.approach_distance }}"
+                    }
+                """);
+
+        component.getChannel(Select.SELECT_CHANNEL_ID).getState().publishValue(new StringType("near"));
+        assertPublished("zigbee2mqtt/gbos/set/approach_distance", "set to near");
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
