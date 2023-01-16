@@ -232,9 +232,6 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_HOME_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, "basic_shutter");
     public static final ThingTypeUID THING_TYPE_HOME_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
 
-    // Configuration elements
-    public static final String TIMEOUT = "timeout";
-
     // All supported Thing types
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UIDS = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
@@ -246,7 +243,6 @@ public class FreeboxOsBindingConstants {
             .concat(BRIDGE_TYPE_UIDS.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
 
     // Thing properties
-    public static final String PHONE_TYPE = "phoneType";
     public static final String LAST_CALL_TIMESTAMP = "lastCallTimestamp";
     public static final String ROLE = "role";
     public static final String NET_ID = "netId";
@@ -263,7 +259,6 @@ public class FreeboxOsBindingConstants {
     public static final String ACTIONS = "actions";
     public static final String FILE_SHARING = "file-sharing";
     public static final String CONNECTIVITY = "connectivity";
-    public static final String STATE = "state";
     public static final String DISPLAY = "display";
     public static final String VM_STATUS = "vmstatus";
     public static final String GROUP_WIFI = "wifi";
@@ -277,7 +272,6 @@ public class FreeboxOsBindingConstants {
     public static final String WIFI_HOST = "wifi-host";
     public static final String UPTIME = "uptime";
     public static final String BOX_EVENT = "box-event";
-    public static final String PHONE_EVENT = "phone-event";
     public static final String LCD_BRIGHTNESS = "lcd-brightness";
     public static final String LCD_ORIENTATION = "lcd-orientation";
     public static final String LCD_FORCED = "lcd-forced";
@@ -288,6 +282,7 @@ public class FreeboxOsBindingConstants {
     public static final String LINE_TYPE = "line-type";
     public static final String LINE_MEDIA = "line-media";
     public static final String PLAYER_STATUS = "player-status";
+    public static final String PACKAGE = "package";
     public static final String RATE_UP = "rate-up";
     public static final String RATE_DOWN = "rate-down";
     public static final String BYTES_UP = "bytes-up";

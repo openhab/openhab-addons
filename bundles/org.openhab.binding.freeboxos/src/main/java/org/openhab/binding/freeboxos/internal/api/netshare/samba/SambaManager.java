@@ -17,7 +17,9 @@ import static org.openhab.binding.freeboxos.internal.api.ApiConstants.SAMBA_SUB_
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.netshare.samba.SambaResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
@@ -27,9 +29,11 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SambaManager extends ConfigurableRest<SambaConfig, ConfigResponse> {
+public class SambaManager extends ConfigurableRest<SambaConfig, SambaManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<SambaConfig> {
+    }
 
-    public SambaManager(FreeboxOsSession session, UriBuilder uriBuilder) {
-        super(session, ConfigResponse.class, uriBuilder, SAMBA_SUB_PATH, null);
+    public SambaManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(SAMBA_SUB_PATH), null);
     }
 }

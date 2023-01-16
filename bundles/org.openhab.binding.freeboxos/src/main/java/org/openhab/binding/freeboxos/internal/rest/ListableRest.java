@@ -28,51 +28,22 @@ import org.openhab.binding.freeboxos.internal.api.Response;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ListableRest<T, Z extends Response<T>, Y extends Response<List<T>>> extends RestManager {
-    private final Class<Y> listResponseClass;
+public class ListableRest<T, Z extends Response<T>> extends RestManager {
     private final Class<Z> deviceResponseClass;
 
     protected @Nullable String listSubPath = null;
 
-    public ListableRest(FreeboxOsSession session, Class<Z> devRespClass, Class<Y> listRespClass,
-            String... pathElements) {
-        super(session, pathElements);
-        this.listResponseClass = listRespClass;
-        this.deviceResponseClass = devRespClass;
-    }
-
-    public ListableRest(FreeboxOsSession session, Class<Z> devRespClass, Class<Y> listRespClass, UriBuilder parentUri,
-            String... pathElements) {
-        super(session, parentUri, pathElements);
-        this.listResponseClass = listRespClass;
-        this.deviceResponseClass = devRespClass;
-    }
-
-    public ListableRest(FreeboxOsSession session, Permission required, Class<Z> devRespClass, Class<Y> listRespClass,
-            String... pathElements) throws FreeboxException {
-        super(session, required, pathElements);
-        this.listResponseClass = listRespClass;
-        this.deviceResponseClass = devRespClass;
+    public ListableRest(FreeboxOsSession session, Permission required, Class<Z> respClass, UriBuilder uri)
+            throws FreeboxException {
+        super(session, required, uri);
+        this.deviceResponseClass = respClass;
     }
 
     public List<T> getDevices() throws FreeboxException {
-        if (listSubPath == null) {
-            List<T> result = get(listResponseClass);
-            return result != null ? result : List.of();
-        }
-        return getList(listResponseClass, listSubPath);
+        return listSubPath == null ? get(deviceResponseClass) : get(deviceResponseClass, listSubPath);
     }
 
     public T getDevice(int deviceId) throws FreeboxException {
-        @Nullable
-        T result = get(deviceResponseClass, deviceSubPath(deviceId));
-        if (result != null) {
-            return result;
-        }
-        throw new FreeboxException("Device is null");
-    }
-
-    protected String deviceSubPath(int deviceId) {
-        return "%d".formatted(deviceId);
+        return getSingle(deviceResponseClass, Integer.toString(deviceId));
     }
 }

@@ -15,8 +15,9 @@ package org.openhab.binding.freeboxos.internal.api.system;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.system.SystemResponses.ConfigurationResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
@@ -26,10 +27,13 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SystemManager extends ConfigurableRest<SystemConfig, ConfigurationResponse> {
+public class SystemManager extends ConfigurableRest<SystemConfig, SystemManager.ConfigurationResponse> {
+    public static class ConfigurationResponse extends Response<SystemConfig> {
+    }
 
-    public SystemManager(FreeboxOsSession session) {
-        super(session, ConfigurationResponse.class, SYSTEM_SUB_PATH, null);
+    public SystemManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigurationResponse.class, session.getUriBuilder().path(SYSTEM_SUB_PATH),
+                null);
     }
 
     public void reboot() throws FreeboxException {

@@ -599,6 +599,13 @@
 		<description>Status of the Freebox TV player</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+	
+    <channel-type id="package">
+        <item-type>String</item-type>
+        <label>Active Package</label>
+        <description>Name of the package currently active on the player</description>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
 
 	<channel-type id="wifi-status">
 		<item-type>Switch</item-type>

@@ -15,8 +15,10 @@ package org.openhab.binding.freeboxos.internal.api.ftp;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ftp.FtpResponses.ConfigResponse;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -27,9 +29,21 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FtpManager extends ActivableRest<FtpConfig, ConfigResponse> {
+public class FtpManager extends ConfigurableRest<FtpConfig, FtpManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<FtpConfig> {
+    }
 
-    public FtpManager(FreeboxOsSession session) {
-        super(session, ConfigResponse.class, FTP_PATH, CONFIG_SUB_PATH);
+    public FtpManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(FTP_PATH), CONFIG_SUB_PATH);
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        FtpConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }

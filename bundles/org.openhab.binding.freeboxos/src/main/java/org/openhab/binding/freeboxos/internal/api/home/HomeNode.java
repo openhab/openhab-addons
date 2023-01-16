@@ -25,7 +25,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
  */
 @NonNullByDefault
 public class HomeNode extends Node {
-    public class HomeNodesResponse extends Response<List<HomeNode>> {
+    public class HomeNodesResponse extends Response<HomeNode> {
     }
 
     private String category = "";

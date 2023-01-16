@@ -29,6 +29,8 @@ public class AuthorizationStatus {
     private TokenStatus status = TokenStatus.UNKNOWN;
     private boolean loggedIn;
     private @Nullable String challenge;
+    private @Nullable String passwordSalt;
+    private boolean passwordSet;
 
     public boolean isLoggedIn() {
         return loggedIn;
@@ -40,5 +42,13 @@ public class AuthorizationStatus {
 
     public TokenStatus getStatus() {
         return status;
+    }
+
+    public @Nullable String getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    public boolean isPasswordSet() {
+        return passwordSet;
     }
 }

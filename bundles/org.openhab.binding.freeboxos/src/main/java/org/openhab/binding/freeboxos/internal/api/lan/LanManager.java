@@ -15,8 +15,9 @@ package org.openhab.binding.freeboxos.internal.api.lan;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.LanResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
@@ -29,10 +30,13 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class LanManager extends ConfigurableRest<LanConfig, ConfigResponse> {
+public class LanManager extends ConfigurableRest<LanConfig, LanManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<LanConfig> {
+    }
 
     public LanManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, ConfigResponse.class, LAN_SUB_PATH, CONFIG_SUB_PATH);
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(LAN_SUB_PATH),
+                CONFIG_SUB_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
 

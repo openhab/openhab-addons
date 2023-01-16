@@ -16,6 +16,7 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import java.util.List;
 
+<<<<<<< Upstream, based on origin/main
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 
@@ -128,8 +129,9 @@ public class Response<ResultType> {
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+=======
+>>>>>>> b74f3ab Enhanced deserialization to simplify code
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 
@@ -143,10 +145,10 @@ public class Response<ResultType> {
     private ErrorCode errorCode = ErrorCode.NONE;
     private Permission missingRight = Permission.NONE;
     private String msg = "";
-    private @Nullable ResultType result;
+    private List<ResultType> result = List.of();
     private boolean success;
 
-    public @Nullable ResultType getResult() {
+    public List<ResultType> getResult() {
         return result;
     }
 

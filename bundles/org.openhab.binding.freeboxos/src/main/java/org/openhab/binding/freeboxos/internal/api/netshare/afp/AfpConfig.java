@@ -15,7 +15,6 @@ package org.openhab.binding.freeboxos.internal.api.netshare.afp;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.ServerType;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  * The {@link AfpConfig} is the Java class used to map answer returned by the AFP configuration API
@@ -25,24 +24,19 @@ import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AfpConfig implements ActivableConfigIntf {
+public class AfpConfig {
     private boolean enabled;
     private boolean guestAllow;
     private ServerType serverType = ServerType.UNKNOWN;
     private @Nullable String loginName;
     private @Nullable String loginPassword;
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if (loginPassword == null) {
-            loginPassword = "";
-        }
     }
 
     public boolean isGuestAllow() {

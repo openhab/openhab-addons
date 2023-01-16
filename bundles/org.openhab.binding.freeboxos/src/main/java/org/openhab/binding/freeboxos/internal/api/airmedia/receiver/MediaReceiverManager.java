@@ -19,9 +19,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaAction;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaType;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverResponses.ReceiverResponse;
-import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverResponses.ReceiversResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
@@ -31,10 +31,12 @@ import org.openhab.binding.freeboxos.internal.rest.ListableRest;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class MediaReceiverManager extends ListableRest<AirMediaReceiver, ReceiverResponse, ReceiversResponse> {
+public class MediaReceiverManager extends ListableRest<AirMediaReceiver, MediaReceiverManager.ReceiverResponse> {
+    public static class ReceiverResponse extends Response<AirMediaReceiver> {
+    }
 
-    public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) {
-        super(session, ReceiverResponse.class, ReceiversResponse.class, uriBuilder, RECEIVERS_SUB_PATH);
+    public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, ReceiverResponse.class, uriBuilder.path(RECEIVERS_SUB_PATH));
     }
 
     public void sendToReceiver(String receiver, String password, MediaAction action, MediaType type)

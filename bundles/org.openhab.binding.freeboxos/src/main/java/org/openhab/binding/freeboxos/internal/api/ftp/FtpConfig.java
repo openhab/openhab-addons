@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  * The {@link FtpConfig} is the Java class used to map the "FtpConfig" structure used by the FTP configuration API
@@ -23,7 +22,7 @@ import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FtpConfig implements ActivableConfigIntf {
+public class FtpConfig {
     private boolean enabled;
     private String password = "";
     private boolean allowAnonymous;
@@ -34,12 +33,10 @@ public class FtpConfig implements ActivableConfigIntf {
     private int portData;
     private String remoteDomain = "";
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

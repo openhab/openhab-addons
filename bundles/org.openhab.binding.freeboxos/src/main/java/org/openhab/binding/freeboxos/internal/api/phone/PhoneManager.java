@@ -21,10 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.ConfigResponse;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.StatusResponse;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneResponses.StatusesResponse;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -33,14 +31,23 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PhoneManager extends ActivableRest<PhoneConfig, ConfigResponse> {
+public class PhoneManager extends ConfigurableRest<PhoneConfig, PhoneManager.ConfigResponse> {
+    public class ConfigResponse extends Response<PhoneConfig> {
+    }
+
+    private class StatusResponse extends Response<PhoneStatus> {
+    }
+
+    private static class StatusesResponse extends Response<PhoneStatus> {
+    }
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, ConfigResponse.class, PHONE_SUB_PATH, CONFIG_SUB_PATH);
+        super(session, Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PHONE_SUB_PATH),
+                CONFIG_SUB_PATH);
     }
 
     public List<PhoneStatus> getPhoneStatuses() throws FreeboxException {
-        return getList(StatusesResponse.class, "");
+        return get(StatusesResponse.class, "");
     }
 
     public Optional<PhoneStatus> getOptStatus(int id) throws FreeboxException {
@@ -48,7 +55,7 @@ public class PhoneManager extends ActivableRest<PhoneConfig, ConfigResponse> {
     }
 
     public @Nullable PhoneStatus getStatus(int id) throws FreeboxException {
-        return get(StatusResponse.class, Integer.toString(id));
+        return getSingle(StatusResponse.class, Integer.toString(id));
     }
 
     public void ringFxs(boolean startIt) throws FreeboxException {
@@ -79,5 +86,15 @@ public class PhoneManager extends ActivableRest<PhoneConfig, ConfigResponse> {
             status.setGainTx(gain);
             put(StatusResponse.class, status, Integer.toString(clientId));
         }
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        PhoneConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }

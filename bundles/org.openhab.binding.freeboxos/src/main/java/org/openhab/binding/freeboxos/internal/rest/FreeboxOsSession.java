@@ -18,6 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
@@ -25,8 +26,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
@@ -87,7 +88,7 @@ public class FreeboxOsSession {
                 session = newSession;
                 return appToken;
             }
-            throw new FreeboxException(ErrorCode.INVALID_TOKEN);
+            throw new FreeboxException(ErrorCode.INVALID_TOKEN, "Token is invalid");
         } catch (FreeboxException e) {
             if (ErrorCode.INVALID_TOKEN.equals(e.getErrorCode())) {
                 appToken = getManager(LoginManager.class).grant();
@@ -120,7 +121,7 @@ public class FreeboxOsSession {
         getManager(AirMediaManager.class);
     }
 
-    private synchronized <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
+    private synchronized <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz,
             boolean retryAuth, int retryCount, @Nullable Object aPayload) throws FreeboxException {
         try {
             T response = apiHandler.executeUri(uri, method, clazz, getSessionToken(), aPayload);
@@ -143,7 +144,7 @@ public class FreeboxOsSession {
         }
     }
 
-    public <F, T extends Response<F>> @Nullable F execute(URI uri, HttpMethod method, Class<T> clazz,
+    public <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz,
             @Nullable Object aPayload) throws FreeboxException {
         boolean retryAuth = getSessionToken() != null;
         return execute(uri, method, clazz, retryAuth, 3, aPayload);

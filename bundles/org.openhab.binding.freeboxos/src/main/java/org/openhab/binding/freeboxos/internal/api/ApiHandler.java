@@ -182,7 +182,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerStatusForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.slf4j.Logger;
@@ -219,7 +218,7 @@ public class ApiHandler {
                             return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
                         })
                 .registerTypeAdapter(PlayerStatusForegroundApp.class, new ForegroundAppDeserializer())
-                .registerTypeAdapter(List.class, new ArrayListDeserializer())
+                .registerTypeAdapter(List.class, new ListDeserializer())
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
     }
 
@@ -243,11 +242,13 @@ public class ApiHandler {
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String content = new String(response.getContent(), DEFAULT_CHARSET);
             logger.trace("executeUrl {} - {} returned {}", method, uri, content);
+            T result = deserialize(clazz, content);
             if (statusCode == Code.OK) {
-                return deserialize(clazz, content);
+                return result;
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
-                throw new FreeboxException(ErrorCode.AUTH_REQUIRED);
+                Response<?> error = (Response<?>) result;
+                throw new FreeboxException(error.getErrorCode(), error.getMsg());
             }
             throw new FreeboxException("Error '%s' requesting : %s", statusCode.getMessage(), uri.toString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -282,7 +283,7 @@ public class ApiHandler {
         }
     }
 
-    public ContentProvider serialize(Object payload) {
+    private ContentProvider serialize(Object payload) {
         return new StringContentProvider(gson.toJson(payload), DEFAULT_CHARSET);
     }
 

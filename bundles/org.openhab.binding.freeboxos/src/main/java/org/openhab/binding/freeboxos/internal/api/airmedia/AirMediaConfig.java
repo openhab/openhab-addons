@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  * The {@link AirMediaConfig} is the Java class used to map the "AirMediaConfig" structure used by the AirMedia
@@ -24,7 +23,7 @@ import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AirMediaConfig implements ActivableConfigIntf {
+public class AirMediaConfig {
     private boolean enabled;
     private String password;
 
@@ -33,12 +32,10 @@ public class AirMediaConfig implements ActivableConfigIntf {
         this.password = password;
     }
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

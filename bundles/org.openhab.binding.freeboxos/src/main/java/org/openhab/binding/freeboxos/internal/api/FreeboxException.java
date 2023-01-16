@@ -79,8 +79,8 @@ public class FreeboxException extends Exception {
         super(String.format(format, args), cause);
     }
 
-    public FreeboxException(ErrorCode errorCode) {
-        this(errorCode.toString());
+    public FreeboxException(ErrorCode errorCode, String message) {
+        this(message);
         this.errorCode = errorCode;
     }
 

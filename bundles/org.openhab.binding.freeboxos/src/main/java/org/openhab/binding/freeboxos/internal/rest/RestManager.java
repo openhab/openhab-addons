@@ -20,7 +20,6 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
@@ -39,18 +38,10 @@ public class RestManager {
     private final UriBuilder uriBuilder;
     protected final FreeboxOsSession session;
 
-    public RestManager(FreeboxOsSession session, UriBuilder parentUri, String... pathElements) {
-        this.uriBuilder = assemblePath(parentUri, pathElements);
+    public RestManager(FreeboxOsSession session, Permission required, UriBuilder uri) throws FreeboxException {
+        this.uriBuilder = uri;
         this.session = session;
-    }
-
-    public RestManager(FreeboxOsSession session, String... pathElements) {
-        this(session, session.getUriBuilder(), pathElements);
-    }
-
-    public RestManager(FreeboxOsSession session, Permission required, String... pathElements) throws FreeboxException {
-        this(session, pathElements);
-        if (required != Permission.NONE && required != Permission.UNKNOWN && !session.hasPermission(required)) {
+        if (required != Permission.NONE && !session.hasPermission(required)) {
             throw new MissingPermissionException(required, "Permission missing : %s", required.toString());
         }
     }
@@ -59,52 +50,64 @@ public class RestManager {
         return uriBuilder.clone();
     }
 
-    private UriBuilder assemblePath(UriBuilder uriBuilder, String... pathElements) {
-        for (String path : pathElements) {
-            uriBuilder.path(path);
-        }
-        return uriBuilder;
-    }
-
     private URI buildUri(String... pathElements) {
-        return assemblePath(getUriBuilder(), pathElements).build();
+        UriBuilder localBuilder = getUriBuilder();
+        for (String path : pathElements) {
+            localBuilder.path(path);
+        }
+        return localBuilder.build();
     }
 
-    protected <F, T extends Response<List<F>>> List<F> getList(Class<T> clazz, String... pathElements)
-            throws FreeboxException {
-        List<F> result = session.execute(buildUri(pathElements), GET, clazz, null);
-        // GetList may return null object because API does not return anything for empty lists
-        return result != null ? result : List.of();
-    }
-
-    protected <F, T extends Response<F>> @Nullable F get(Class<T> clazz) throws FreeboxException {
+    protected <F, T extends Response<F>> List<F> get(Class<T> clazz) throws FreeboxException {
         return session.execute(getUriBuilder().build(), GET, clazz, null);
     }
 
-    protected <F, T extends Response<F>> @Nullable F get(Class<T> clazz, String... pathElements)
-            throws FreeboxException {
+    // Returns the first and supposed only element from the list. Presence of this element is expected and mandatory
+    protected <F, T extends Response<F>> F getSingle(Class<T> clazz) throws FreeboxException {
+        List<F> result = get(clazz);
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        throw new IllegalArgumentException("Result is empty or not singleton");
+    }
+
+    protected <F, T extends Response<F>> List<F> get(Class<T> clazz, String... pathElements) throws FreeboxException {
         return session.execute(buildUri(pathElements), GET, clazz, null);
     }
 
+    protected <F, T extends Response<F>> F getSingle(Class<T> clazz, String... pathElements) throws FreeboxException {
+        List<F> result = get(clazz, pathElements);
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        throw new IllegalArgumentException("Result is empty or not singleton");
+    }
+
+    protected <F, T extends Response<F>> F postSingle(Object payload, Class<T> clazz, String... pathElements)
+            throws FreeboxException {
+        List<F> result = session.execute(buildUri(pathElements), POST, clazz, payload);
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+        throw new IllegalArgumentException("Result is empty or not singleton");
+    }
+
     protected void post(Object payload, String... pathElements) throws FreeboxException {
-        session.execute(buildUri(pathElements), POST, GenericResponse.class, payload);
+        postSingle(payload, GenericResponse.class, pathElements);
     }
 
     protected void post(String... pathElements) throws FreeboxException {
         session.execute(buildUri(pathElements), POST, GenericResponse.class, null);
     }
 
-    protected <F, T extends Response<F>> @Nullable F post(Class<T> clazz, Object payload, String... pathElements)
-            throws FreeboxException {
-        return session.execute(buildUri(pathElements), POST, clazz, payload);
+    protected <F, T extends Response<F>> F put(Class<T> clazz, F payload) throws FreeboxException {
+        List<F> result = session.execute(getUriBuilder().build(), PUT, clazz, payload);
+        return result.get(0);
     }
 
-    protected <F, T extends Response<F>> @Nullable F put(Class<T> clazz, F payload) throws FreeboxException {
-        return session.execute(getUriBuilder().build(), PUT, clazz, payload);
-    }
-
-    protected <F, T extends Response<F>> @Nullable F put(Class<T> clazz, F payload, String... pathElements)
+    protected <F, T extends Response<F>> F put(Class<T> clazz, F payload, String... pathElements)
             throws FreeboxException {
-        return session.execute(buildUri(pathElements), PUT, clazz, payload);
+        List<F> result = session.execute(buildUri(pathElements), PUT, clazz, payload);
+        return result.get(0);
     }
 }

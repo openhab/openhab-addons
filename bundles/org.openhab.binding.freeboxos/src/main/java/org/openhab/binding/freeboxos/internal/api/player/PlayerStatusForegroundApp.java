@@ -54,7 +54,7 @@ public class PlayerStatusForegroundApp {
         return context;
     }
 
-    public String get_package() {
+    public String getPackage() {
         return Objects.requireNonNull(_package);
     }
 }

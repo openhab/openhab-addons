@@ -15,7 +15,6 @@ package org.openhab.binding.freeboxos.internal.api.call;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,16 +31,16 @@ import org.openhab.binding.freeboxos.internal.rest.RestManager;
  */
 @NonNullByDefault
 public class CallManager extends RestManager {
-    public class EntriesResponse extends Response<List<CallEntry>> {
+    public class EntriesResponse extends Response<CallEntry> {
     }
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, CALL_PATH);
+        super(session, Permission.CALLS, session.getUriBuilder().path(CALL_PATH));
     }
 
     // Retrieves a sorted list of all call entries
     public Stream<CallEntry> getCallEntries() throws FreeboxException {
-        return getList(EntriesResponse.class, CALL_LOG_SUB_PATH).stream()
+        return get(EntriesResponse.class, CALL_LOG_SUB_PATH).stream()
                 .sorted(Comparator.comparing(CallEntry::getDatetime));
     }
 

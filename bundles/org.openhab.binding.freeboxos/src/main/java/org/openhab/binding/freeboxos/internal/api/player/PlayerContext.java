@@ -15,9 +15,12 @@ package org.openhab.binding.freeboxos.internal.api.player;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerContext.Player.Metadata.PlaybackState;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerContext.Player.Metadata.SubtitleTrack;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerContext.Player.Metadata.VideoTrack;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -25,432 +28,400 @@ import org.openhab.binding.freeboxos.internal.api.player.PlayerContext.Player.Me
  */
 @NonNullByDefault
 public class PlayerContext {
-    private final Player player;
+    private @Nullable Player player;
 
-    public Player getPlayer() {
+    public @Nullable Player getPlayer() {
         return player;
     }
 
-    public static final class Player {
-        private final int audioIndex;
-        private final List<AudioTrack> audioList;
-        private final long curPos;
-        private final int duration;
-        private final long livePos;
-        private final long maxPos;
-        private final MediaState mediaState;
-        private final Metadata metadata;
-        private final long minPos;
-        private final PlaybackState playbackState;
-        private final long position;
-        private final String source;
-        private final int subtitleIndex;
-        private final List<SubtitleTrack> subtitleList;
-        private final int videoIndex;
-        private final List<VideoTrack> videoList;
+    public class Player {
+        @SerializedName("audioIndex")
+        private int audioIndex;
 
-        public static final class AudioTrack {
-            private final int bitrate;
-            private final int channelCount;
-            private final String codec;
-            private final String codecId;
-            private final String language;
-            private final String metadataId;
-            private final int pid;
-            private final int samplerate;
-            private final long uid;
+        @SerializedName("audioList")
+        private List<AudioTrack> audioList = List.of();
 
-            public AudioTrack(int pid, long uid, int samplerate, int channelCount, int bitrate, String codec,
-                    String codecId, String language, String metadataId) {
-                this.pid = pid;
-                this.uid = uid;
-                this.samplerate = samplerate;
-                this.channelCount = channelCount;
-                this.bitrate = bitrate;
-                this.codec = codec;
-                this.codecId = codecId;
-                this.language = language;
-                this.metadataId = metadataId;
-            }
+        @SerializedName("curPos")
+        private long curPos;
+
+        private int duration;
+
+        @SerializedName("livePos")
+        private long livePos;
+
+        @SerializedName("maxPos")
+        private long maxPos;
+
+        @SerializedName("mediaState")
+        private MediaState mediaState = MediaState.UNKNOWN;
+
+        private @Nullable Metadata metadata;
+
+        @SerializedName("minPos")
+        private long minPos;
+
+        @SerializedName("playbackState")
+        private PlaybackState playbackState = PlaybackState.UNKNOWN;
+
+        private long position;
+
+        private @Nullable String source;
+
+        @SerializedName("subtitleIndex")
+        private int subtitleIndex;
+
+        @SerializedName("subtitleList")
+        private List<SubtitleTrack> subtitleList = List.of();
+
+        @SerializedName("videoIndex")
+        private int videoIndex;
+
+        @SerializedName("videoList")
+        private List<VideoTrack> videoList = List.of();
+
+        public class AudioTrack {
+            private int bitrate;
+
+            @SerializedName("channelCount")
+            private int channelCount;
+
+            private @Nullable String codec;
+
+            @SerializedName("codecId")
+            private @Nullable String codecId;
+
+            private @Nullable String language;
+
+            @SerializedName("metadataId")
+            private @Nullable String metadataId;
+
+            private int pid;
+            private int samplerate;
+            private long uid;
 
             public int getBitrate() {
-                return this.bitrate;
+                return bitrate;
             }
 
             public int getChannelCount() {
-                return this.channelCount;
+                return channelCount;
             }
 
-            public String getCodec() {
-                return this.codec;
+            public @Nullable String getCodec() {
+                return codec;
             }
 
-            public String getCodecId() {
-                return this.codecId;
+            public @Nullable String getCodecId() {
+                return codecId;
             }
 
-            public String getLanguage() {
-                return this.language;
+            public @Nullable String getLanguage() {
+                return language;
             }
 
-            public String getMetadataId() {
-                return this.metadataId;
+            public @Nullable String getMetadataId() {
+                return metadataId;
             }
 
             public int getPid() {
-                return this.pid;
+                return pid;
             }
 
             public int getSamplerate() {
-                return this.samplerate;
+                return samplerate;
             }
 
             public long getUid() {
-                return this.uid;
+                return uid;
             }
 
         }
 
         public enum MediaState {
-            ready
+            READY,
+            UNKNOWN;
         }
 
-        public static final class Metadata {
-            private final String album;
-            private final String albumArtist;
-            private final String artist;
-            private final String author;
-            private final int bpm;
-            private final String comment;
-            private final boolean compilation;
-            private final String composer;
-            private final String container;
-            private final String copyright;
-            private final long date;
-            private final String discId;
-            private final int discNumber;
-            private final int discTotal;
-            private final String genre;
-            private final String musicbrainzDiscId;
-            private final String performer;
-            private final String title;
-            private final int trackNumber;
-            private final int trackTotal;
-            private final String url;
+        public class Metadata {
+            private @Nullable String album;
 
-            public Metadata(String musicbrainzDiscId, String discId, long date, String genre, String composer,
-                    String albumArtist, String url, String container, int discNumber, String copyright, String author,
-                    String artist, int trackTotal, int discTotal, int trackNumber, String title, String album, int bpm,
-                    boolean compilation, String comment, String performer) {
-                this.musicbrainzDiscId = musicbrainzDiscId;
-                this.discId = discId;
-                this.date = date;
-                this.genre = genre;
-                this.composer = composer;
-                this.albumArtist = albumArtist;
-                this.url = url;
-                this.container = container;
-                this.discNumber = discNumber;
-                this.copyright = copyright;
-                this.author = author;
-                this.artist = artist;
-                this.trackTotal = trackTotal;
-                this.discTotal = discTotal;
-                this.trackNumber = trackNumber;
-                this.title = title;
-                this.album = album;
-                this.bpm = bpm;
-                this.compilation = compilation;
-                this.comment = comment;
-                this.performer = performer;
+            @SerializedName("albumArtist")
+            private @Nullable String albumArtist;
+
+            private @Nullable String artist;
+            private @Nullable String author;
+            private int bpm;
+            private @Nullable String comment;
+            private boolean compilation;
+            private @Nullable String composer;
+            private @Nullable String container;
+            private @Nullable String copyright;
+            private long date;
+
+            @SerializedName("discId")
+            private @Nullable String discId;
+
+            @SerializedName("discNumber")
+            private int discNumber;
+
+            @SerializedName("discTotal")
+            private int discTotal;
+
+            private @Nullable String genre;
+
+            @SerializedName("musicbrainzDiscId")
+            private @Nullable String musicbrainzDiscId;
+
+            private @Nullable String performer;
+            private @Nullable String title;
+
+            @SerializedName("trackNumber")
+            private int trackNumber;
+
+            @SerializedName("trackTotal")
+            private int trackTotal;
+
+            private @Nullable String url;
+
+            public @Nullable String getAlbum() {
+                return album;
             }
 
-            public String getAlbum() {
-                return this.album;
+            public @Nullable String getAlbumArtist() {
+                return albumArtist;
             }
 
-            public String getAlbumArtist() {
-                return this.albumArtist;
+            public @Nullable String getArtist() {
+                return artist;
             }
 
-            public String getArtist() {
-                return this.artist;
-            }
-
-            public String getAuthor() {
-                return this.author;
+            public @Nullable String getAuthor() {
+                return author;
             }
 
             public int getBpm() {
-                return this.bpm;
+                return bpm;
             }
 
-            public String getComment() {
-                return this.comment;
+            public @Nullable String getComment() {
+                return comment;
             }
 
             public boolean getCompilation() {
-                return this.compilation;
+                return compilation;
             }
 
-            public String getComposer() {
-                return this.composer;
+            public @Nullable String getComposer() {
+                return composer;
             }
 
-            public String getContainer() {
-                return this.container;
+            public @Nullable String getContainer() {
+                return container;
             }
 
-            public String getCopyright() {
-                return this.copyright;
+            public @Nullable String getCopyright() {
+                return copyright;
             }
 
             public long getDate() {
-                return this.date;
+                return date;
             }
 
-            public String getDiscId() {
-                return this.discId;
+            public @Nullable String getDiscId() {
+                return discId;
             }
 
             public int getDiscNumber() {
-                return this.discNumber;
+                return discNumber;
             }
 
             public int getDiscTotal() {
-                return this.discTotal;
+                return discTotal;
             }
 
-            public String getGenre() {
-                return this.genre;
+            public @Nullable String getGenre() {
+                return genre;
             }
 
-            public String getMusicbrainzDiscId() {
-                return this.musicbrainzDiscId;
+            public @Nullable String getMusicbrainzDiscId() {
+                return musicbrainzDiscId;
             }
 
-            public String getPerformer() {
-                return this.performer;
+            public @Nullable String getPerformer() {
+                return performer;
             }
 
-            public String getTitle() {
-                return this.title;
+            public @Nullable String getTitle() {
+                return title;
             }
 
             public int getTrackNumber() {
-                return this.trackNumber;
+                return trackNumber;
             }
 
             public int getTrackTotal() {
-                return this.trackTotal;
+                return trackTotal;
             }
 
-            public String getUrl() {
-                return this.url;
+            public @Nullable String getUrl() {
+                return url;
             }
 
             public enum PlaybackState {
-                play,
-                pause
+                PLAY,
+                PAUSE,
+                UNKNOWN;
             }
 
-            public static final class SubtitleTrack {
-                private final String codec;
-                private final String language;
-                private final String pid;
-                private final Type type;
-                private final String uid;
+            public class SubtitleTrack {
+                private @Nullable String codec;
+                private @Nullable String language;
+                private @Nullable String pid;
+                private Type type = Type.UNKNOWN;
+                private @Nullable String uid;
 
                 public enum Type {
-                    Normal,
-                    HearingImpaired
+                    NORMAL,
+                    HEARINGIMPAIRED,
+                    UNKNOWN;
                 }
 
-                public SubtitleTrack(String codec, String pid, String uid, String language, Type type) {
-                    this.codec = codec;
-                    this.pid = pid;
-                    this.uid = uid;
-                    this.language = language;
-                    this.type = type;
+                public @Nullable String getCodec() {
+                    return codec;
                 }
 
-                public String getCodec() {
-                    return this.codec;
+                public @Nullable String getLanguage() {
+                    return language;
                 }
 
-                public String getLanguage() {
-                    return this.language;
-                }
-
-                public String getPid() {
-                    return this.pid;
+                public @Nullable String getPid() {
+                    return pid;
                 }
 
                 public Type getType() {
-                    return this.type;
+                    return type;
                 }
 
-                public String getUid() {
-                    return this.uid;
+                public @Nullable String getUid() {
+                    return uid;
                 }
             }
 
-            public static final class VideoTrack {
-                private final int bitrate;
-                private final String codec;
-                private final Framerate framerate;
-                private final int height;
-                private final int pid;
-                private final int uid;
-                private final int width;
+            public class VideoTrack {
+                private int bitrate;
+                private @Nullable String codec;
+                private @Nullable Framerate framerate;
+                private int height;
+                private int pid;
+                private int uid;
+                private int width;
 
-                public static final class Framerate {
-                    private final int den;
-                    private final int num;
-
-                    public Framerate(int den, int num) {
-                        this.den = den;
-                        this.num = num;
-                    }
+                public class Framerate {
+                    private int den;
+                    private int num;
 
                     public int getDen() {
-                        return this.den;
+                        return den;
                     }
 
                     public int getNum() {
-                        return this.num;
+                        return num;
                     }
                 }
 
-                public VideoTrack(int bitrate, String codec, int pid, int height, Framerate framerate, int uid,
-                        int width) {
-                    this.bitrate = bitrate;
-                    this.codec = codec;
-                    this.pid = pid;
-                    this.height = height;
-                    this.framerate = framerate;
-                    this.uid = uid;
-                    this.width = width;
-                }
-
                 public int getBitrate() {
-                    return this.bitrate;
+                    return bitrate;
                 }
 
-                public String getCodec() {
-                    return this.codec;
+                public @Nullable String getCodec() {
+                    return codec;
                 }
 
-                public Framerate getFramerate() {
-                    return this.framerate;
+                public @Nullable Framerate getFramerate() {
+                    return framerate;
                 }
 
                 public int getHeight() {
-                    return this.height;
+                    return height;
                 }
 
                 public int getPid() {
-                    return this.pid;
+                    return pid;
                 }
 
                 public int getUid() {
-                    return this.uid;
+                    return uid;
                 }
 
                 public int getWidth() {
-                    return this.width;
+                    return width;
                 }
             }
         }
 
-        public Player(String source, PlaybackState playbackState, long j, long j2, long j3, long j4, long j5, int i,
-                MediaState mediaState, int i2, int i3, int i4, Metadata metadata, List<AudioTrack> audioList,
-                List<VideoTrack> videoList, List<SubtitleTrack> subtitleList) {
-            this.source = source;
-            this.playbackState = playbackState;
-            this.livePos = j;
-            this.minPos = j2;
-            this.maxPos = j3;
-            this.curPos = j4;
-            this.position = j5;
-            this.duration = i;
-            this.mediaState = mediaState;
-            this.subtitleIndex = i2;
-            this.audioIndex = i3;
-            this.videoIndex = i4;
-            this.metadata = metadata;
-            this.audioList = audioList;
-            this.videoList = videoList;
-            this.subtitleList = subtitleList;
-        }
-
         public int getAudioIndex() {
-            return this.audioIndex;
+            return audioIndex;
         }
 
         public List<AudioTrack> getAudioList() {
-            return this.audioList;
+            return audioList;
         }
 
         public long getCurPos() {
-            return this.curPos;
+            return curPos;
         }
 
         public int getDuration() {
-            return this.duration;
+            return duration;
         }
 
         public long getLivePos() {
-            return this.livePos;
+            return livePos;
         }
 
         public long getMaxPos() {
-            return this.maxPos;
+            return maxPos;
         }
 
         public MediaState getMediaState() {
-            return this.mediaState;
+            return mediaState;
         }
 
-        public Metadata getMetadata() {
-            return this.metadata;
+        public @Nullable Metadata getMetadata() {
+            return metadata;
         }
 
         public long getMinPos() {
-            return this.minPos;
+            return minPos;
         }
 
         public PlaybackState getPlaybackState() {
-            return this.playbackState;
+            return playbackState;
         }
 
         public long getPosition() {
-            return this.position;
+            return position;
         }
 
-        public String getSource() {
-            return this.source;
+        public @Nullable String getSource() {
+            return source;
         }
 
         public int getSubtitleIndex() {
-            return this.subtitleIndex;
+            return subtitleIndex;
         }
 
         public List<SubtitleTrack> getSubtitleList() {
-            return this.subtitleList;
+            return subtitleList;
         }
 
         public int getVideoIndex() {
-            return this.videoIndex;
+            return videoIndex;
         }
 
         public List<VideoTrack> getVideoList() {
-            return this.videoList;
+            return videoList;
         }
-    }
-
-    public PlayerContext(Player player) {
-        this.player = player;
     }
 
 }

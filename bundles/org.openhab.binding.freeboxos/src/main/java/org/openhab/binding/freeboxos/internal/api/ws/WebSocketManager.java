@@ -38,7 +38,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     private volatile @Nullable Session wsSession;
 
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, WS_PATH);
+        super(session, Permission.NONE, session.getUriBuilder().path(WS_PATH));
     }
 
     public void openSession(@Nullable String sessionToken) throws FreeboxException {
@@ -57,18 +57,18 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     public void closeSession() {
         logger.info("Awaiting closure from remote");
-        wsSession.close();
+        Session localSession = wsSession;
+        if (localSession != null) {
+            localSession.close();
+        }
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
-        if (session == null) {
-            return;
-        }
-        this.wsSession = session;
+    public void onWebSocketConnect(@NonNullByDefault({}) Session wsSession) {
+        this.wsSession = wsSession;
         logger.info("Websocket connection establisehd");
         try {
-            session.getRemote().sendString("{\"action\" : \"register\", \"events\" : [\"vm_state_changed\", \""
+            wsSession.getRemote().sendString("{\"action\" : \"register\", \"events\" : [\"vm_state_changed\", \""
                     + HOST_REACHABLE + "\", \"" + HOST_UNREACHABLE + "\"] }");
         } catch (IOException e) {
             logger.warn("Error connecting to websocket : {}", e.getMessage());
@@ -77,8 +77,9 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     @Override
     public void onWebSocketText(@NonNullByDefault({}) String message) {
-        if (message.toLowerCase(Locale.US).contains("bye")) {
-            wsSession.close(StatusCode.NORMAL, "Thanks");
+        Session localSession = wsSession;
+        if (message.toLowerCase(Locale.US).contains("bye") && localSession != null) {
+            localSession.close(StatusCode.NORMAL, "Thanks");
             return;
         }
         try {
@@ -91,8 +92,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     case "notification":
                         logger.info("Notification received");
                         switch (result.getEvent()) {
-                            case HOST_UNREACHABLE:
-                            case HOST_REACHABLE:
+                            case HOST_UNREACHABLE, HOST_REACHABLE:
                                 JsonElement json = result.getResult();
                                 if (json != null) {
                                     LanHost host = session.getApiHandler().deserialize(LanHost.class, json);
@@ -119,7 +119,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketClose(int statusCode, @Nullable String reason) {
+    public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
         logger.info("Socket Closed: [{}] - reason {}", statusCode, reason);
         this.wsSession = null;
     }
