@@ -152,6 +152,7 @@
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
+    <module>org.openhab.binding.hapero</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.haywardomnilogic</module>
     <module>org.openhab.binding.hccrubbishcollection</module>
