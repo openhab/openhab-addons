@@ -680,8 +680,13 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private String determineStateChannelValue(boolean charging, CleanMode cleanMode) {
-        if (charging && cleanMode != CleanMode.RETURNING) {
-            return "charging";
+        if (charging) {
+            // Some devices already report charging state while returning to charging station, make sure to not report
+            // charging in that case. The same applies for models with pad washing/drying station, as those states imply
+            // the device being charging.
+            if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING) {
+                return "charging";
+            }
         }
         if (cleanMode.isActive()) {
             return "cleaning";

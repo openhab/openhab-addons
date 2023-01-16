@@ -131,6 +131,7 @@ public class EcovacsBindingConstants {
             new StateOptionEntry<CleanMode>(CleanMode.SINGLE_ROOM, "singleRoom", DeviceCapability.SINGLE_ROOM_CLEANING),
             new StateOptionEntry<CleanMode>(CleanMode.PAUSE, "pause"),
             new StateOptionEntry<CleanMode>(CleanMode.STOP, "stop"),
+            new StateOptionEntry<CleanMode>(CleanMode.WASHING, "washing"),
             new StateOptionEntry<CleanMode>(CleanMode.DRYING, "drying"),
             new StateOptionEntry<CleanMode>(CleanMode.RETURNING, "returning"));
 

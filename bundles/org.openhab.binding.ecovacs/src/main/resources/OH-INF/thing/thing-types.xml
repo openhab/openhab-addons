@@ -109,6 +109,8 @@
 				<option value="cleaning">Cleaning</option>
 				<option value="pause">Paused</option>
 				<option value="stop">Stopped</option>
+				<option value="washing">Washing the cleaning pad</option>
+				<option value="drying">Drying the cleaning pad</option>
 				<option value="returning">Going to charge station</option>
 				<option value="charging">Charging</option>
 				<option value="idle">Idle</option>
