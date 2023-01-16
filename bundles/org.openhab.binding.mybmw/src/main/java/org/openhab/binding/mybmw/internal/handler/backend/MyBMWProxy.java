@@ -260,7 +260,7 @@ public class MyBMWProxy {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
-        if (!BimmerConstants.ALLOWED_BRANDS.contains(brand.toLowerCase())) {
+        if (!BimmerConstants.REQUESTED_BRANDS.contains(brand.toLowerCase())) {
             logger.warn("Unknown Brand {}", brand);
             throw new NetworkException("Unknown Brand " + brand);
         }

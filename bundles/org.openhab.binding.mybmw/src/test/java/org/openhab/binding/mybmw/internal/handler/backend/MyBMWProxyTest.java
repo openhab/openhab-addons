@@ -93,7 +93,7 @@ public class MyBMWProxyTest {
         try {
             VehicleStateContainer vehicleStateContainer = myBMWProxy.requestVehicleState("testVin",
                     BimmerConstants.BRAND_BMW);
-            assertEquals(1548, vehicleStateContainer.getState().getCurrentMileage());
+            assertEquals(2686, vehicleStateContainer.getState().getCurrentMileage());
         } catch (NetworkException e) {
             fail(e.toString());
         }

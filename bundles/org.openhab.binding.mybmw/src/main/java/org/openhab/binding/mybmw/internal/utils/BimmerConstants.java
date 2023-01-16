@@ -38,7 +38,6 @@ public interface BimmerConstants {
     static final String BRAND_BMWI = "bmw_i";
     static final String BRAND_MINI = "mini";
     static final List<String> REQUESTED_BRANDS = List.of(BRAND_BMW, BRAND_MINI);
-    static final List<String> ALLOWED_BRANDS = List.of(BRAND_BMW, BRAND_MINI, BRAND_BMWI);
 
     static final String OAUTH_ENDPOINT = "/gcdm/oauth/authenticate";
     static final String AUTH_PROVIDER = "gcdm";

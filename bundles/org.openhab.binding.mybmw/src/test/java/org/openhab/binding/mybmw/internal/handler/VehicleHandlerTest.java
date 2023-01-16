@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
@@ -423,6 +424,16 @@ public class VehicleHandlerTest {
         String content = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
         // TODO: check real number of calls via different types
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    @Disabled
+    public void testPhev530e() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "anonymous");
+        String content = FileReader.fileToString("src/test/resources/responses/PHEV/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 }

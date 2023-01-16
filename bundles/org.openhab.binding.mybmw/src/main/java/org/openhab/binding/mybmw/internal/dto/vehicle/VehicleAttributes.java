@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.dto.vehicle;
 
+import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
+
 /**
  * 
  * derived from the API responses
@@ -60,7 +62,11 @@ public class VehicleAttributes {
     }
 
     public String getBrand() {
-        return brand;
+        if (BimmerConstants.BRAND_BMWI.equals(brand)) {
+            return BimmerConstants.BRAND_BMW;
+        } else {
+            return brand;
+        }
     }
 
     public void setBrand(String brand) {

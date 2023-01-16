@@ -60,7 +60,8 @@ public class MyBMWProxyBackendIT {
     private final Logger logger = LoggerFactory.getLogger(MyBMWProxyBackendIT.class);
 
     public MyBMWProxy initializeProxy() {
-        String connectedUser = System.getenv("CONNECTED_USER");
+        String connectedUser = System.getenv(
+                "                                                                                                                                                      ");
         String connectedPassword = System.getenv("CONNECTED_PASSWORD");
         assertNotNull(connectedUser);
         assertNotNull(connectedPassword);
