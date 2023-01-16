@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="Hapero"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="haperoBridge">
+		<label>Hapero Bridge</label>
+		<description>Bridge for Hapero HP02 Furnaces</description>
+		<config-description>
+			<parameter-group name="ftp">
+				<label>FTP</label>
+				<description><![CDATA[FTP Connection settings. <br /><b>Only required if "FTP" is selected as access method.</b>]]></description>
+			</parameter-group>
+			<parameter-group name="file">
+				<label>Filesystem</label>
+				<description><![CDATA[Filesystem Connection settings. <br /><b>Only required if "Filesystem" is selected as access method.</b>]]></description>
+			</parameter-group>
+			<parameter name="refreshTimeout" type="integer" unit="s" min="10" required="true">
+				<label>Refresh Timeout</label>
+				<description><![CDATA[An update of the Upload.hld is expected within this time.<br /> If no update occurs, the Bridge switches to
+                    offline.<br /> Check the FTP upload interval on your furnace and set this parameter to at least 2x this time.]]></description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="accessMode" type="text" required="true">
+				<label>Access Method</label>
+				<description>Select whether the upload.hld should be taken from the FTP Server or a path in the local file system.</description>
+				<options>
+					<option value="ftp">FTP Server</option>
+					<option value="file">Filesystem</option>
+				</options>
+				<default>ftp</default>
+			</parameter>
+			<parameter name="ftpServer" type="text" groupName="ftp">
+				<context>network-address</context>
+				<label>FTP Server Address</label>
+				<description>Address of the FTP Server to which the furnace writes the Upload.hld</description>
+			</parameter>
+			<parameter name="ftpPath" type="text" groupName="ftp">
+				<label>FTP Folder Path</label>
+				<description>Path to the folder on the FTP server to which the furnace writes the Upload.hld</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" groupName="ftp">
+				<label>Port</label>
+				<default>21</default>
+				<description>Port number of the FTP Server</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userName" type="text" groupName="ftp">
+				<label>User Name</label>
+			</parameter>
+			<parameter name="password" type="text" groupName="ftp">
+				<context>password</context>
+			</parameter>
+			<parameter name="fileStoragePath" type="text" groupName="file">
+				<label>Storage Path</label>
+				<description>Path to the FTP folder on the filesystem to which the furnace writes the Upload.hld.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Furnace Thing Type -->
+	<thing-type id="furnace">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="haperoBridge"/>
+		</supported-bridge-type-refs>
+		<label>Furnace</label>
+		<description>Central Heating Furnace Hapero HP02</description>
+		<channel-groups>
+			<channel-group id="temperatures" typeId="furnaceTemperatures"/>
+			<channel-group id="status" typeId="furnaceStatus"/>
+			<channel-group id="power" typeId="furnacePower"/>
+			<channel-group id="air" typeId="furnaceAir"/>
+		</channel-groups>
+		<properties>
+			<property name="vendor">Hapero / Spanner Re²</property>
+			<property name="modelId">HP02</property>
+			<property name="serialNumber">Unknown</property>
+			<property name="displaySerialNumber">Unknown</property>
+			<property name="programVersion">Unknown</property>
+			<property name="osVersion">Unknown</property>
+		</properties>
+		<representation-property>deviceID</representation-property>
+		<config-description>
+			<parameter name="deviceID" type="text">
+				<label>Id</label>
+				<description>The Id for Representation Property</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Buffer Tank Thing Type -->
+	<thing-type id="buffer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="haperoBridge"/>
+		</supported-bridge-type-refs>
+		<label>Buffer</label>
+		<description>Heating Buffer Tank</description>
+		<channels>
+			<channel id="temperatureTop" typeId="storageTemperatureTop"/>
+			<channel id="temperatureBottom" typeId="storageTemperatureBottom"/>
+			<channel id="onTemperature" typeId="temperatureOnSetpoint"/>
+			<channel id="offTemperature" typeId="temperatureOffSetpoint"/>
+			<channel id="pump" typeId="pumpStatus"/>
+			<channel id="switchValve" typeId="valveStatus"/>
+			<channel id="charging" typeId="chargingStatus"/>
+		</channels>
+		<representation-property>deviceID</representation-property>
+		<config-description>
+			<parameter name="deviceID" type="text">
+				<label>Id</label>
+				<description>The Id for Representation Property</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Boiler Tank Thing Type -->
+	<thing-type id="boiler">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="haperoBridge"/>
+		</supported-bridge-type-refs>
+		<label>Boiler</label>
+		<description>Warm Water Boiler Tank</description>
+		<channels>
+			<channel id="temperatureTop" typeId="storageTemperatureTop"/>
+			<channel id="temperatureBottom" typeId="storageTemperatureBottom"/>
+			<channel id="onTemperature" typeId="temperatureOnSetpoint"/>
+			<channel id="offTemperature" typeId="temperatureOffSetpoint"/>
+			<channel id="pump" typeId="pumpStatus"/>
+			<channel id="switchValve" typeId="valveStatus"/>
+			<channel id="charging" typeId="chargingStatus"/>
+		</channels>
+		<representation-property>deviceID</representation-property>
+		<config-description>
+			<parameter name="deviceID" type="text">
+				<label>Id Number</label>
+				<description>The Id Number for Representation Property</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Heating Circuit Thing Type -->
+	<thing-type id="heatingCircuit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="haperoBridge"/>
+		</supported-bridge-type-refs>
+		<label>Heating Circuit</label>
+		<description>Heating Circuit</description>
+		<channels>
+			<channel id="flowTemperature" typeId="flowTemperatureCurrent"/>
+			<channel id="flowTemperatureSet" typeId="flowTemperatureSetpoint"/>
+			<channel id="pump" typeId="pumpStatus"/>
+			<channel id="circuitMode" typeId="heatingCircuitMode"/>
+			<channel id="circuitSubMode" typeId="heatingCircuitSubMode"/>
+			<channel id="circuitFault" typeId="heatingCircuitFault"/>
+			<channel id="roomTemperature" typeId="roomTemperatureCurrent"/>
+			<channel id="roomTemperatureSet" typeId="roomTemperatureSetpoint"/>
+		</channels>
+		<representation-property>deviceID</representation-property>
+		<config-description>
+			<parameter name="deviceID" type="text">
+				<label>Id</label>
+				<description>The Id for Representation Property</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Furnace Channel Group Types -->
+	<channel-group-type id="furnaceTemperatures">
+		<label>Furnace Temperatures</label>
+		<description>Temperature Information</description>
+		<channels>
+			<channel id="combustionTemp" typeId="combustionTemperature"/>
+			<channel id="pelletChannelTemp" typeId="pelletChannelTemperature"/>
+			<channel id="boilerTemp" typeId="boilerTemperature"/>
+			<channel id="boilerSetTemp" typeId="boilerTemperatureSetpoint"/>
+			<channel id="outsideTemp" typeId="outsideTemperature"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="furnaceStatus">
+		<label>Furnace Status</label>
+		<description>Status Information</description>
+		<channels>
+			<channel id="furnaceStatus" typeId="furnaceStatusType"/>
+			<channel id="burnerStatus" typeId="furnaceBurnerStatus"/>
+			<channel id="materialStatus" typeId="furnaceMaterialStatus"/>
+			<channel id="airStatus" typeId="furnaceAirStatus"/>
+			<channel id="grateStatus" typeId="furnaceGrateStatus"/>
+			<channel id="errorStatus" typeId="furnaceErrorStatus"/>
+			<channel id="multifunctionMotorMode" typeId="furnaceMultifunctionMotorMode"/>
+			<channel id="multifunctionMotorStatus" typeId="furnaceMultifunctionMotorStatus"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="furnacePower">
+		<label>Furnace Power</label>
+		<description>Current operation power</description>
+		<channels>
+			<channel id="power" typeId="furnacePowerChannel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="furnaceAir">
+		<label>Furnace Air</label>
+		<description>Air supply data</description>
+		<channels>
+			<channel id="airFlow" typeId="furnaceAirFlow"/>
+			<channel id="airFlowSet" typeId="furnaceAirFlowSetpoint"/>
+			<channel id="airPower" typeId="furnaceAirPower"/>
+			<channel id="airDrive" typeId="furnaceAirDrive"/>
+			<channel id="airO2" typeId="furnaceAirO2"/>
+		</channels>
+	</channel-group-type>
+	<channel-type id="combustionTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Combustion Chamber Temperature</label>
+		<description>Temperature in the combustion chamber</description>
+		<category>Temperature</category>
+		<state min="0" max="600" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pelletChannelTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Pellet Channel Temperature</label>
+		<description>Temperature in the pellet feed channel</description>
+		<category>Temperature</category>
+		<state min="0" max="600" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="boilerTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Furnace Boiler Temperature</label>
+		<description>Temperature in the boiler</description>
+		<category>Temperature</category>
+		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="boilerTemperatureSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Furnace Boiler Target Temperature</label>
+		<description>Target temperature of the boiler</description>
+		<category>Temperature</category>
+		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="outsideTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<description>Outside temperature</description>
+		<category>Temperature</category>
+		<state min="0" max="100" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceStatusType">
+		<item-type>String</item-type>
+		<label>Furnace Status</label>
+		<description>Operating status of the furnace</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Starting</option>
+				<option value="2">Heating</option>
+				<option value="3">Stopping</option>
+				<option value="4">Suction</option>
+				<option value="5">Error</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceBurnerStatus">
+		<item-type>String</item-type>
+		<label>Burner Status</label>
+		<description>Operating status of the burner</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Grate</option>
+				<option value="2">Air check</option>
+				<option value="3">Prefilling</option>
+				<option value="4">Ignition detection</option>
+				<option value="5">Combustion start</option>
+				<option value="6">Ember buildup</option>
+				<option value="7">Controlled operation</option>
+				<option value="8">Combustion stop</option>
+				<option value="9">Grate movement</option>
+				<option value="10">Cleaning</option>
+				<option value="11">Restart</option>
+				<option value="12">Error</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceMaterialStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Material Status</label>
+		<description>Operating status of the material feed</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Prefilling</option>
+				<option value="2">Ignition detection</option>
+				<option value="3">Combustion start</option>
+				<option value="4">Ember buildup</option>
+				<option value="5">Controlled operation</option>
+				<option value="6">Combustion stop</option>
+				<option value="7">Suction</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceAirStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Air Status</label>
+		<description>Operating status of the air supply</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Air check</option>
+				<option value="2">Combustion start</option>
+				<option value="3">Ember buildup</option>
+				<option value="4">Controlled operation</option>
+				<option value="5">Combustion stop</option>
+				<option value="6">Ignition detection</option>
+				<option value="7">Maximum Air</option>
+				<option value="8">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceGrateStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Burner Grate Status</label>
+		<description>Operating status of the burner grate drive</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Standby</option>
+				<option value="1">Initializing</option>
+				<option value="2">Starting</option>
+				<option value="3">Ignition detection</option>
+				<option value="4">Grate cleaning</option>
+				<option value="5">Heating</option>
+				<option value="6">Opening</option>
+				<option value="7">Full open_close</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceErrorStatus">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Error Code</label>
+		<description>Last error code of the furnace controller</description>
+	</channel-type>
+	<channel-type id="furnaceMultifunctionMotorMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Multifunction Motor Mode</label>
+		<description>Operating mode of the multi function motor</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Idle</option>
+				<option value="1">Motor Stop</option>
+				<option value="2">Cleaning</option>
+				<option value="3">Heating position</option>
+				<option value="4">Standby position</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnaceMultifunctionMotorStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Multifunction Motor Status</label>
+		<description>Operating status of the multi function motor</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Position Unknown</option>
+				<option value="1">Heating position</option>
+				<option value="2">Standby position</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="furnacePowerChannel">
+		<item-type>Number</item-type>
+		<label>Power level</label>
+		<description>Power level of the furnace</description>
+		<state min="0" max="100" step="0.1" pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceAirFlow" advanced="true">
+		<item-type>Number</item-type>
+		<label>Air flow</label>
+		<description>Combustion air flow</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceAirFlowSetpoint" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Air flow</label>
+		<description>Target Air flow</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceAirPower" advanced="true">
+		<item-type>Number</item-type>
+		<label>Air Power level</label>
+		<description>Air Power level of the furnace</description>
+		<state min="0" max="100" step="0.1" pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceAirDrive" advanced="true">
+		<item-type>Number</item-type>
+		<label>Blower Motor Drive</label>
+		<description>Drive Value of the blower motor</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="furnaceAirO2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Remaining O2</label>
+		<description>Remaining O2 in combustion</description>
+		<state min="0" max="100" step="0.01" pattern="%.2f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="storageTemperatureTop">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Top</label>
+		<description>Temperature on top of the storage tank</description>
+		<category>Temperature</category>
+		<state min="0" max="800" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="storageTemperatureBottom">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Bottom</label>
+		<description>Temperature on the bottom of the storage tank</description>
+		<category>Temperature</category>
+		<state min="0" max="800" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureOnSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Request Start Temperature</label>
+		<description>Charging of the tank is requested at/below this temperature</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureOffSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Request End Temperature</label>
+		<description>Target temperature for charging of the tank</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pumpStatus" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Pump Status</label>
+		<description>Operation status of the pump</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valveStatus" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Switch Valve Status</label>
+		<description>Current status of the switch valve</description>
+		<category>Contact</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="chargingStatus" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Charging Request</label>
+		<description>Charging of the tank is requested</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="flowTemperatureCurrent">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Flow Temperature</label>
+		<description>Current flow temperature of the heating circuit</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="flowTemperatureSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Flow Temperature</label>
+		<description>Target flow temperature of the heating circuit</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingCircuitMode">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Mode</label>
+		<description>Current Mode of the heating circuit</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingCircuitSubMode">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Submode</label>
+		<description>Current submode of the heating circuit</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingCircuitFault">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Fault</label>
+		<description>Fault code of the heating circuit</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomTemperatureCurrent">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Room Temperature</label>
+		<description>Current room temperature for this heating circuit</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomTemperatureSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Room Temperature</label>
+		<description>Target room temperature for this heating circuit</description>
+		<category>Temperature</category>
+		<state min="0" max="80" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
