@@ -24,9 +24,9 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.library.types.StringType;
 
 /**
- * Tests for {@link Switch}
+ * Tests for {@link Select}
  *
- * @author Anton Kharuzhy - Initial contribution
+ * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
 public class SelectTests extends AbstractComponentTests {

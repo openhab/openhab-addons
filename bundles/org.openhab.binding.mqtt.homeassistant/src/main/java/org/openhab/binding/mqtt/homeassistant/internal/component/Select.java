@@ -39,6 +39,8 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
 
         protected @Nullable Boolean optimistic;
 
+        @SerializedName("command_template")
+        protected @Nullable String commandTemplate;
         @SerializedName("command_topic")
         protected @Nullable String commandTopic;
         @SerializedName("state_topic")
