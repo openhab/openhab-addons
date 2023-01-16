@@ -23,10 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.ConfigurationResponse;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayerResponse;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayerStatusResponse;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerResponses.PlayersResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
@@ -36,17 +33,26 @@ import org.openhab.binding.freeboxos.internal.rest.ListableRest;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersResponse> {
+public class PlayerManager extends ListableRest<Player, PlayerManager.PlayerResponse> {
+    public static class PlayerResponse extends Response<Player> {
+    }
+
+    private static class PlayerStatusResponse extends Response<PlayerStatus> {
+    }
+
+    private static class ConfigurationResponse extends Response<PlayerSystemConfiguration> {
+    }
+
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class, PLAYER_SUB_PATH);
+        super(session, Permission.PLAYER, PlayerResponse.class, session.getUriBuilder().path(PLAYER_SUB_PATH));
         getDevices().stream().filter(Player::isApiAvailable)
                 .forEach(player -> subPaths.put(player.getId(), player.baseUrl()));
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
-        PlayerStatus statusResponse = get(PlayerStatusResponse.class, subPaths.get(id), STATUS_SUB_PATH);
+        PlayerStatus statusResponse = getSingle(PlayerStatusResponse.class, subPaths.get(id), STATUS_SUB_PATH);
         if (statusResponse != null) {
             return statusResponse;
         }
@@ -60,7 +66,7 @@ public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersR
     }
 
     public PlayerSystemConfiguration getConfig(int id) throws FreeboxException {
-        PlayerSystemConfiguration response = get(ConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
+        PlayerSystemConfiguration response = getSingle(ConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
         // Modification temporaire en attendant de revenir dessus quand tout aura été remis à plat.
         // Vérifier que ceci fonctionne.
         // SystemConfig response = get(ConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);

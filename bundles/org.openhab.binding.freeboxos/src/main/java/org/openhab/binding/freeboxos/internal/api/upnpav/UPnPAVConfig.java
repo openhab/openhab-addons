@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  * The {@link UPnPAVConfig} is the Java class used to map the "UPnP AV Config" structure
@@ -23,15 +22,13 @@ import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class UPnPAVConfig implements ActivableConfigIntf {
+public class UPnPAVConfig {
     private boolean enabled;
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

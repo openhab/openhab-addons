@@ -31,29 +31,15 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
     private final Class<Y> responseClazz;
     private final @Nullable String configPath;
 
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, String path,
-            @Nullable String configPath) {
-        super(session, path);
-        this.responseClazz = responseClazz;
-        this.configPath = configPath;
-    }
-
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, UriBuilder parentUri, String path,
-            @Nullable String configPath) {
-        super(session, parentUri, path);
-        this.responseClazz = responseClazz;
-        this.configPath = configPath;
-    }
-
-    public ConfigurableRest(FreeboxOsSession session, Class<Y> responseClazz, Permission required, String path,
+    public ConfigurableRest(FreeboxOsSession session, Permission required, Class<Y> responseClazz, UriBuilder uri,
             @Nullable String configPath) throws FreeboxException {
-        super(session, required, path);
+        super(session, required, uri);
         this.responseClazz = responseClazz;
         this.configPath = configPath;
     }
 
     public T getConfig() throws FreeboxException {
-        return configPath != null ? get(responseClazz, configPath) : get(responseClazz);
+        return configPath != null ? getSingle(responseClazz, configPath) : getSingle(responseClazz);
     }
 
     public T setConfig(T config) throws FreeboxException {

@@ -32,23 +32,17 @@ import org.openhab.binding.freeboxos.internal.rest.RestManager;
  */
 @NonNullByDefault
 public class FreeplugManager extends RestManager {
-    private static class NetworksResponse extends Response<List<FreeplugNetwork>> {
-    }
-
-    public static class ReceiverResponse extends Response<Freeplug> {
+    private static class NetworksResponse extends Response<FreeplugNetwork> {
     }
 
     public FreeplugManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, FREEPLUG_PATH);
+        super(session, Permission.NONE, session.getUriBuilder().path(FREEPLUG_PATH));
     }
 
     // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
     public List<Freeplug> getPlugs() throws FreeboxException {
         List<Freeplug> plugs = new ArrayList<>();
-        List<FreeplugNetwork> networks = get(NetworksResponse.class);
-        if (networks != null) {
-            networks.forEach(network -> plugs.addAll(network.getMembers()));
-        }
+        get(NetworksResponse.class).forEach(network -> plugs.addAll(network.getMembers()));
         return plugs;
     }
 
@@ -59,5 +53,4 @@ public class FreeplugManager extends RestManager {
     public void reboot(String mac) throws FreeboxException {
         post(mac, "reset");
     }
-
 }

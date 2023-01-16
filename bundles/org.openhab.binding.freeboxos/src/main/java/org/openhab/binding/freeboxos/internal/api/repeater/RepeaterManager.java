@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserResponses.HostsResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserManager.HostsResponse;
 import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
-import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterResponses.RepeaterResponse;
-import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterResponses.RepeatersResponse;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
@@ -33,14 +33,16 @@ import org.openhab.binding.freeboxos.internal.rest.ListableRest;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class RepeaterManager extends ListableRest<Repeater, RepeaterResponse, RepeatersResponse> {
+public class RepeaterManager extends ListableRest<Repeater, RepeaterManager.RepeaterResponse> {
+    public static class RepeaterResponse extends Response<Repeater> {
+    }
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, RepeaterResponse.class, RepeatersResponse.class, REPEATER_SUB_PATH);
+        super(session, Permission.NONE, RepeaterResponse.class, session.getUriBuilder().path(REPEATER_SUB_PATH));
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
-        return getList(HostsResponse.class, Integer.toString(id), HOST_SUB_PATH);
+        return get(HostsResponse.class, Integer.toString(id), HOST_SUB_PATH);
     }
 
     public synchronized List<LanHost> getHosts() throws FreeboxException {

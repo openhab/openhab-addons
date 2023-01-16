@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.HostNameSource;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.HostType;
-import org.openhab.binding.freeboxos.internal.api.lan.control.LanHostNetworkControl;
 import org.openhab.binding.freeboxos.internal.api.wifi.ap.LanAccessPoint;
 
 /**
@@ -48,7 +47,6 @@ public class LanHost {
     private ZonedDateTime firstActivity = ApiConstants.EPOCH_ZERO;
     private List<LanHostName> names = List.of();
     private List<LanHostL3Connectivity> l3connectivities = List.of();
-    private @Nullable LanHostNetworkControl networkControl;
 
     private @Nullable LanAccessPoint accessPoint;
 
@@ -106,10 +104,6 @@ public class LanHost {
 
     public List<LanHostL3Connectivity> getL3connectivities() {
         return l3connectivities;
-    }
-
-    public @Nullable LanHostNetworkControl getNetworkControl() {
-        return networkControl;
     }
 
     public @Nullable String getMac() {

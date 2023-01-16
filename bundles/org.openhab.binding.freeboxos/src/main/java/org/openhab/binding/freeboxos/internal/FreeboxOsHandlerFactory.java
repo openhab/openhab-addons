@@ -62,6 +62,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.freeboxos")
 public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
+    private static final String TIMEOUT = "timeout";
+
     private final AudioHTTPServer audioHTTPServer;
     private final HttpClient httpClient;
     private final ApiHandler apiHandler;

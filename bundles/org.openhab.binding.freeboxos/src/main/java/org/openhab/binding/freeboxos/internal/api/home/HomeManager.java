@@ -34,16 +34,16 @@ import org.openhab.binding.freeboxos.internal.rest.RestManager;
 public class HomeManager extends RestManager {
 
     public HomeManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.HOME, HOME_PATH);
+        super(session, Permission.HOME, session.getUriBuilder().path(HOME_PATH));
     }
 
     public List<HomeNode> getHomeNodes() throws FreeboxException {
-        return getList(HomeNodesResponse.class, NODES_SUB_PATH);
+        return get(HomeNodesResponse.class, NODES_SUB_PATH);
     }
 
     public <T> @Nullable HomeNodeEndpointState getEndpointsState(int nodeId, int stateSignalId)
             throws FreeboxException {
-        return get(HomeNodeEndpointStateResponse.class, ENDPOINTS_SUB_PATH, String.valueOf(nodeId),
+        return getSingle(HomeNodeEndpointStateResponse.class, ENDPOINTS_SUB_PATH, String.valueOf(nodeId),
                 String.valueOf(stateSignalId));
     }
 

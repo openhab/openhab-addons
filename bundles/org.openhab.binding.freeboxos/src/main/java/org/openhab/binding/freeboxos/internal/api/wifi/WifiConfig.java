@@ -13,25 +13,22 @@
 package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  * The {@link WifiConfig} is the Java class used to map the "Wifi Config" structure
  *
- * https://dev.freebox.fr/sdk/os/airmedia/#
+ * https://dev.freebox.fr/sdk/os/wifi/#
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WifiConfig implements ActivableConfigIntf {
+public class WifiConfig {
     private boolean enabled;
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

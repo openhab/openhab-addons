@@ -15,6 +15,7 @@
 		<label>Player Status</label>
 		<channels>
 			<channel id="player-status" typeId="player-status"/>
+		    <channel id="package" typeId="package"/>
 		</channels>
 	</channel-group-type>
 

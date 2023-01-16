@@ -28,13 +28,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link ArrayListDeserializer} is a specialized deserializer aimed to transform a null object, a single object or
- * a list of objects into a list.
+ * The {@link ListDeserializer} is a specialized deserializer aimed to transform a null object, a single object or
+ * a list of objects into a list containing 0, 1 or n elements.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-class ArrayListDeserializer implements JsonDeserializer<List<?>> {
+class ListDeserializer implements JsonDeserializer<List<?>> {
 
     @Override
     public @Nullable List<?> deserialize(JsonElement json, Type clazz, JsonDeserializationContext context)
@@ -44,13 +44,12 @@ class ArrayListDeserializer implements JsonDeserializer<List<?>> {
         ArrayList<?> result = new ArrayList<>(jsonArray != null ? jsonArray.size() : 0);
 
         if (jsonArray != null) {
-            ParameterizedType parameterized = (ParameterizedType) clazz;
-            Type[] typeArguments = parameterized.getActualTypeArguments();
+            Type[] typeArguments = ((ParameterizedType) clazz).getActualTypeArguments();
             if (typeArguments.length > 0) {
                 Type objectType = typeArguments[0];
-                ((JsonArray) json).forEach(item -> {
-                    result.add(context.deserialize(item, objectType));
-                });
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    result.add(context.deserialize(jsonArray.get(i), objectType));
+                }
             }
         }
         return result;

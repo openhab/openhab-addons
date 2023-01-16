@@ -17,8 +17,10 @@ import static org.openhab.binding.freeboxos.internal.api.ApiConstants.AFP_SUB_PA
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.netshare.afp.AfpResponses.ConfigResponse;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -27,9 +29,21 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AfpManager extends ActivableRest<AfpConfig, ConfigResponse> {
+public class AfpManager extends ConfigurableRest<AfpConfig, AfpManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<AfpConfig> {
+    }
 
-    public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) {
-        super(session, ConfigResponse.class, uriBuilder, AFP_SUB_PATH, null);
+    public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(AFP_SUB_PATH), null);
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        AfpConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }

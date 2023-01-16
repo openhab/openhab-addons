@@ -31,7 +31,7 @@ import org.openhab.binding.freeboxos.internal.rest.RestManager;
 public class NetShareManager extends RestManager {
 
     public NetShareManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, NETSHARE_PATH);
+        super(session, Permission.NONE, session.getUriBuilder().path(NETSHARE_PATH));
         session.addManager(SambaManager.class, new SambaManager(session, getUriBuilder()));
         session.addManager(AfpManager.class, new AfpManager(session, getUriBuilder()));
     }

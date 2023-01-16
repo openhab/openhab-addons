@@ -15,7 +15,9 @@ package org.openhab.binding.freeboxos.internal.api.connection;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.CONNECTION_PATH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.connection.ConnectionResponses.StatusResponse;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
@@ -27,9 +29,11 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ConnectionManager extends ConfigurableRest<ConnectionStatus, StatusResponse> {
+public class ConnectionManager extends ConfigurableRest<ConnectionStatus, ConnectionManager.StatusResponse> {
+    public static class StatusResponse extends Response<ConnectionStatus> {
+    }
 
-    public ConnectionManager(FreeboxOsSession session) {
-        super(session, StatusResponse.class, CONNECTION_PATH, null);
+    public ConnectionManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, StatusResponse.class, session.getUriBuilder().path(CONNECTION_PATH), null);
     }
 }

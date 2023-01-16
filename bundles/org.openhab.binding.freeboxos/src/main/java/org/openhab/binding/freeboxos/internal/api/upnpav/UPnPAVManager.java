@@ -15,8 +15,10 @@ package org.openhab.binding.freeboxos.internal.api.upnpav;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVResponses.ConfigResponse;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -25,9 +27,22 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class UPnPAVManager extends ActivableRest<UPnPAVConfig, ConfigResponse> {
+public class UPnPAVManager extends ConfigurableRest<UPnPAVConfig, UPnPAVManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<UPnPAVConfig> {
+    }
 
-    public UPnPAVManager(FreeboxOsSession session) {
-        super(session, ConfigResponse.class, UPNPAV_URL, CONFIG_SUB_PATH);
+    public UPnPAVManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(UPNPAV_URL),
+                CONFIG_SUB_PATH);
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        UPnPAVConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }

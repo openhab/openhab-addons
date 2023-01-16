@@ -15,6 +15,9 @@ package org.openhab.binding.freeboxos.internal.api.player;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -22,162 +25,163 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TvContext {
-    private final Channel channel;
-    private final PlayerContext.Player player;
+    private @Nullable Channel channel;
+    private PlayerContext.@Nullable Player player;
 
-    public static final class Channel {
-        private final long bouquetId;
-        private final String bouquetName;
-        private final BouquetType bouquetType;
-        private final String channelName;
-        private final int channelNumber;
-        private final int channelSubNumber;
-        private final ChannelType channelType;
-        private final String channelUuid;
-        private final int currentServiceIndex;
-        private final boolean isTimeShifting;
-        private final List<Service> services;
-        private final boolean videoIsVisible;
+    public class Channel {
+        @SerializedName("bouquetId")
+        private long bouquetId;
+
+        @SerializedName("bouquetName")
+        private @Nullable String bouquetName;
+
+        @SerializedName("bouquetType")
+        private BouquetType bouquetType = BouquetType.UNKNOWN;
+
+        @SerializedName("channelName")
+        private @Nullable String channelName;
+
+        @SerializedName("channelNumber")
+        private int channelNumber;
+
+        @SerializedName("channelSubNumber")
+        private int channelSubNumber;
+
+        @SerializedName("channelType")
+        private ChannelType channelType = ChannelType.UNKNOWN;
+
+        @SerializedName("channelUuid")
+        private @Nullable String channelUuid;
+
+        @SerializedName("currentServiceIndex")
+        private int currentServiceIndex;
+
+        @SerializedName("isTimeShifting")
+        private boolean isTimeShifting;
+
+        private List<Service> services = List.of();
+
+        @SerializedName("videoIsVisible")
+        private boolean videoIsVisible;
 
         public enum BouquetType {
-            adsl
+            ADSL,
+            UNKNOWN;
         }
 
         public enum ChannelType {
-            regular
+            REGULAR,
+            UNKNOWN;
         }
 
-        public static final class Service {
-            private final long id;
-            private final String name;
-            private final String qualityLabel;
-            private final String qualityName;
-            private final int sortInfo;
-            private final String typeLabel;
-            private final String typeName;
-            private final String url;
+        public class Service {
+            private long id;
+            private @Nullable String name;
 
-            public Service(String qualityName, String qualityLabel, String name, int sortInfo, long id, String url,
-                    String typeName, String typeLabel) {
-                this.qualityName = qualityName;
-                this.qualityLabel = qualityLabel;
-                this.name = name;
-                this.sortInfo = sortInfo;
-                this.id = id;
-                this.url = url;
-                this.typeName = typeName;
-                this.typeLabel = typeLabel;
-            }
+            @SerializedName("qualityLabel")
+            private @Nullable String qualityLabel;
+
+            @SerializedName("qualityName")
+            private @Nullable String qualityName;
+
+            @SerializedName("sortInfo")
+            private int sortInfo;
+
+            @SerializedName("typeLabel")
+            private @Nullable String typeLabel;
+
+            @SerializedName("typeName")
+            private @Nullable String typeName;
+
+            private @Nullable String url;
 
             public long getId() {
-                return this.id;
+                return id;
             }
 
-            public String getName() {
-                return this.name;
+            public @Nullable String getName() {
+                return name;
             }
 
-            public String getQualityLabel() {
-                return this.qualityLabel;
+            public @Nullable String getQualityLabel() {
+                return qualityLabel;
             }
 
-            public String getQualityName() {
-                return this.qualityName;
+            public @Nullable String getQualityName() {
+                return qualityName;
             }
 
             public int getSortInfo() {
-                return this.sortInfo;
+                return sortInfo;
             }
 
-            public String getTypeLabel() {
-                return this.typeLabel;
+            public @Nullable String getTypeLabel() {
+                return typeLabel;
             }
 
-            public String getTypeName() {
-                return this.typeName;
+            public @Nullable String getTypeName() {
+                return typeName;
             }
 
-            public String getUrl() {
-                return this.url;
+            public @Nullable String getUrl() {
+                return url;
             }
-        }
-
-        public Channel(boolean isTimeShifting, boolean videoIsVisible, String bouquetName, String channelName,
-                long bouquetId, ChannelType channelType, String channelUuid, BouquetType bouquetType, int channelNumber,
-                int channelSubNumber, int currentServiceIndex, List<Service> services) {
-            this.isTimeShifting = isTimeShifting;
-            this.videoIsVisible = videoIsVisible;
-            this.bouquetName = bouquetName;
-            this.channelName = channelName;
-            this.bouquetId = bouquetId;
-            this.channelType = channelType;
-            this.channelUuid = channelUuid;
-            this.bouquetType = bouquetType;
-            this.channelNumber = channelNumber;
-            this.channelSubNumber = channelSubNumber;
-            this.currentServiceIndex = currentServiceIndex;
-            this.services = services;
         }
 
         public long getBouquetId() {
-            return this.bouquetId;
+            return bouquetId;
         }
 
-        public String getBouquetName() {
-            return this.bouquetName;
+        public @Nullable String getBouquetName() {
+            return bouquetName;
         }
 
         public BouquetType getBouquetType() {
-            return this.bouquetType;
+            return bouquetType;
         }
 
-        public String getChannelName() {
-            return this.channelName;
+        public @Nullable String getChannelName() {
+            return channelName;
         }
 
         public int getChannelNumber() {
-            return this.channelNumber;
+            return channelNumber;
         }
 
         public int getChannelSubNumber() {
-            return this.channelSubNumber;
+            return channelSubNumber;
         }
 
         public ChannelType getChannelType() {
-            return this.channelType;
+            return channelType;
         }
 
-        public String getChannelUuid() {
-            return this.channelUuid;
+        public @Nullable String getChannelUuid() {
+            return channelUuid;
         }
 
         public int getCurrentServiceIndex() {
-            return this.currentServiceIndex;
+            return currentServiceIndex;
         }
 
         public List<Service> getServices() {
-            return this.services;
+            return services;
         }
 
         public boolean getVideoIsVisible() {
-            return this.videoIsVisible;
+            return videoIsVisible;
         }
 
         public boolean isTimeShifting() {
-            return this.isTimeShifting;
+            return isTimeShifting;
         }
     }
 
-    public TvContext(PlayerContext.Player player, Channel channel) {
-        this.player = player;
-        this.channel = channel;
+    public @Nullable Channel getChannel() {
+        return channel;
     }
 
-    public Channel getChannel() {
-        return this.channel;
-    }
-
-    public PlayerContext.Player getPlayer() {
-        return this.player;
+    public PlayerContext.@Nullable Player getPlayer() {
+        return player;
     }
 }

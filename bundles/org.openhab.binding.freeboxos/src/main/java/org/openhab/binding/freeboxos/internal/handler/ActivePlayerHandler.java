@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.PLAYER_STATUS;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -64,6 +64,7 @@ public class ActivePlayerHandler extends PlayerHandler {
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
             PlayerStatus status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
             updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.getPowerState().name());
+            updateChannelString(PLAYER_STATUS, PACKAGE, status.getForegroundApp().getPackage());
         }
     }
 

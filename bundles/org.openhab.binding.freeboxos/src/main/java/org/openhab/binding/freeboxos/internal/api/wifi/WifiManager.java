@@ -15,9 +15,11 @@ package org.openhab.binding.freeboxos.internal.api.wifi;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointManager;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -26,10 +28,23 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WifiManager extends ActivableRest<WifiConfig, ConfigResponse> {
+public class WifiManager extends ConfigurableRest<WifiConfig, WifiManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<WifiConfig> {
+    }
 
-    public WifiManager(FreeboxOsSession session) {
-        super(session, ConfigResponse.class, WIFI_SUB_PATH, CONFIG_SUB_PATH);
+    public WifiManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(WIFI_SUB_PATH),
+                CONFIG_SUB_PATH);
         session.addManager(AccessPointManager.class, new AccessPointManager(session, getUriBuilder()));
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        WifiConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }

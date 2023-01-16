@@ -17,8 +17,7 @@ import static org.openhab.binding.freeboxos.internal.api.ApiConstants.VM_SUB_PAT
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.vm.VmResponses.VirtualMachineResponse;
-import org.openhab.binding.freeboxos.internal.api.vm.VmResponses.VirtualMachinesResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
@@ -28,13 +27,15 @@ import org.openhab.binding.freeboxos.internal.rest.ListableRest;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VmManager extends ListableRest<VirtualMachine, VirtualMachineResponse, VirtualMachinesResponse> {
+public class VmManager extends ListableRest<VirtualMachine, VmManager.VirtualMachineResponse> {
+    public class VirtualMachineResponse extends Response<VirtualMachine> {
+    }
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.VM, VirtualMachineResponse.class, VirtualMachinesResponse.class, VM_SUB_PATH);
+        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(VM_SUB_PATH));
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {
-        post(deviceSubPath(vmId), startIt ? "start" : "powerbutton");
+        post(Integer.toString(vmId), startIt ? "start" : "powerbutton");
     }
 }

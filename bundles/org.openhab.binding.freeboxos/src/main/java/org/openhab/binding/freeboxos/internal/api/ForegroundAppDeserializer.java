@@ -37,9 +37,6 @@ class ForegroundAppDeserializer implements JsonDeserializer<PlayerStatusForegrou
     @Override
     public @Nullable PlayerStatusForegroundApp deserialize(JsonElement json, Type typeOfT,
             JsonDeserializationContext context) throws JsonParseException {
-        // GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls().registerTypeAdapter(List.class,
-        // new ArrayListDeserializer());
-        // Gson create = gsonBuilder.create();
 
         Object obj;
 
@@ -48,10 +45,8 @@ class ForegroundAppDeserializer implements JsonDeserializer<PlayerStatusForegrou
         if (jsonElement2 == null) {
             obj = null;
         } else if ("fr.freebox.tv".equals(_package)) {
-            // obj = create.fromJson(new JsonTreeReader(jsonElement2), TvContext.class);
             obj = context.deserialize(jsonElement2, TvContext.class);
         } else {
-            // obj = create.fromJson(new JsonTreeReader(jsonElement2), PlayerContext.class);
             obj = context.deserialize(jsonElement2, PlayerContext.class);
         }
 

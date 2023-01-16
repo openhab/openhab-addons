@@ -21,10 +21,9 @@ import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointResponses.AccessPointResponse;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointResponses.AccessPointsResponse;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointResponses.ApHostsResponse;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.rest.ListableRest;
 
@@ -35,14 +34,19 @@ import org.openhab.binding.freeboxos.internal.rest.ListableRest;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AccessPointManager extends ListableRest<WifiAp, AccessPointResponse, AccessPointsResponse> {
+public class AccessPointManager extends ListableRest<WifiAp, AccessPointManager.AccessPointResponse> {
+    private class ApHostsResponse extends Response<WifiStation> {
+    }
 
-    public AccessPointManager(FreeboxOsSession session, UriBuilder uriBuilder) {
-        super(session, AccessPointResponse.class, AccessPointsResponse.class, uriBuilder, AP_SUB_PATH);
+    public class AccessPointResponse extends Response<WifiAp> {
+    }
+
+    public AccessPointManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, AccessPointResponse.class, uriBuilder.path(AP_SUB_PATH));
     }
 
     private List<WifiStation> getApStations(int apId) throws FreeboxException {
-        return getList(ApHostsResponse.class, Integer.toString(apId), STATIONS_SUB_PATH);
+        return get(ApHostsResponse.class, Integer.toString(apId), STATIONS_SUB_PATH);
     }
 
     public List<WifiStation> getStations() throws FreeboxException {

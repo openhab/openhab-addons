@@ -17,14 +17,13 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.PhoneNetworkStatus;
-import org.openhab.binding.freeboxos.internal.rest.ActivableConfigIntf;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PhoneConfig implements ActivableConfigIntf {
+public class PhoneConfig {
     private PhoneNetworkStatus network = PhoneNetworkStatus.UNKNOWN;
     private boolean dectEcoMode;
     private @Nullable String dectPin;
@@ -34,12 +33,10 @@ public class PhoneConfig implements ActivableConfigIntf {
     private boolean dectEnabled;
     private boolean dectRingOnOff;
 
-    @Override
     public boolean isEnabled() {
         return dectEnabled;
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
         this.dectEnabled = enabled;
     }

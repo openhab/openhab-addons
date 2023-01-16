@@ -15,9 +15,11 @@ package org.openhab.binding.freeboxos.internal.api.airmedia;
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaResponses.ConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverManager;
-import org.openhab.binding.freeboxos.internal.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.rest.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
 
 /**
@@ -26,10 +28,23 @@ import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AirMediaManager extends ActivableRest<AirMediaConfig, ConfigResponse> {
+public class AirMediaManager extends ConfigurableRest<AirMediaConfig, AirMediaManager.ConfigResponse> {
+    public static class ConfigResponse extends Response<AirMediaConfig> {
+    }
 
-    public AirMediaManager(FreeboxOsSession session) {
-        super(session, ConfigResponse.class, AIR_MEDIA_PATH, CONFIG_SUB_PATH);
+    public AirMediaManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(AIR_MEDIA_PATH),
+                CONFIG_SUB_PATH);
         session.addManager(MediaReceiverManager.class, new MediaReceiverManager(session, getUriBuilder()));
+    }
+
+    public boolean getStatus() throws FreeboxException {
+        return getConfig().isEnabled();
+    }
+
+    public boolean setStatus(boolean enabled) throws FreeboxException {
+        AirMediaConfig config = getConfig();
+        config.setEnabled(enabled);
+        return setConfig(config).isEnabled();
     }
 }
