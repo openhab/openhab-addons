@@ -757,102 +757,86 @@ public class VehicleHandler extends BaseThingHandler {
                 channelUID.getIdWithoutGroup());
         String group = channelUID.getGroupId();
 
-        // Refresh of Channels with cached values
+        if (group == null) {
+            logger.debug("Cannot handle command {}, no group for channel {}", command.toFullString(),
+                    channelUID.getAsString());
+            return;
+        }
+
         if (command instanceof RefreshType) {
+            // Refresh of Channels with cached values
             if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCache.ifPresent(image -> updateImage(image));
             } else {
                 vehicleStatusCache.ifPresent(
                         vehicleStatus -> triggerVehicleStatusUpdate(vehicleStatus, channelUID.getIdWithoutGroup()));
             }
+        } else if (command instanceof StringType) {
             // Check for Channel Group and corresponding Actions
-        } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
-            // Executing Remote Services
-            if (command instanceof StringType) {
-                String serviceCommand = ((StringType) command).toFullString();
-                remote.ifPresent(remot -> {
-                    switch (serviceCommand) {
-                        case REMOTE_SERVICE_LIGHT_FLASH:
-                        case REMOTE_SERVICE_DOOR_LOCK:
-                        case REMOTE_SERVICE_DOOR_UNLOCK:
-                        case REMOTE_SERVICE_HORN:
-                        case REMOTE_SERVICE_VEHICLE_FINDER:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        case REMOTE_SERVICE_AIR_CONDITIONING_START:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        case REMOTE_SERVICE_AIR_CONDITIONING_STOP:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        default:
-                            logger.debug("Remote service execution {} unknown", serviceCommand);
-                            break;
-                    }
-                });
-            }
-        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
-            // Image Change
-            vehicleConfiguration.ifPresent(config -> {
-                if (command instanceof StringType) {
-                    if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
-                        String newViewport = command.toString();
-                        synchronized (imageProperties) {
-                            if (!imageProperties.viewport.equals(newViewport)) {
-                                imageProperties = new ImageProperties(newViewport);
-                                imageCache = Optional.empty();
-                                Optional<byte[]> imageContent = proxy.map(prox -> {
-                                    try {
-                                        return prox.requestImage(config.getVin(), config.getVehicleBrand(),
-                                                imageProperties);
-                                    } catch (NetworkException e) {
-                                        logger.debug("{}", e.toString());
-                                        return "".getBytes();
-                                    }
+            switch (group) {
+                case CHANNEL_GROUP_REMOTE:
+                    // Executing Remote Services
+                    String serviceCommand = ((StringType) command).toFullString();
+                    remote.ifPresent(remot -> {
+                        RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
+                                .ifPresentOrElse(service -> remot.execute(service), () -> {
+                                    logger.debug("Remote service execution {} unknown", serviceCommand);
                                 });
-                                imageContent.ifPresent(imageContentData -> updateImage(imageContentData));
+                    });
+                    break;
+                case CHANNEL_GROUP_VEHICLE_IMAGE:
+                    // Image Change
+                    vehicleConfiguration.ifPresent(config -> {
+                        if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
+                            String newViewport = command.toString();
+                            synchronized (imageProperties) {
+                                if (!imageProperties.viewport.equals(newViewport)) {
+                                    imageProperties = new ImageProperties(newViewport);
+                                    imageCache = Optional.empty();
+                                    Optional<byte[]> imageContent = proxy.map(prox -> {
+                                        try {
+                                            return prox.requestImage(config.getVin(), config.getVehicleBrand(),
+                                                    imageProperties);
+                                        } catch (NetworkException e) {
+                                            logger.debug("{}", e.toString());
+                                            return "".getBytes();
+                                        }
+                                    });
+                                    imageContent.ifPresent(imageContentData -> updateImage(imageContentData));
+                                }
                             }
+                            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport),
+                                    IMAGE_VIEWPORT);
                         }
-                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport),
-                                IMAGE_VIEWPORT);
+                    });
+                    break;
+                case CHANNEL_GROUP_SERVICE:
+                    int serviceIndex = Converter.parseIntegerString(command.toFullString());
+                    if (serviceIndex != -1) {
+                        selectService(serviceIndex, null);
+                    } else {
+                        logger.debug("Cannot select Service index {}", command.toFullString());
                     }
-                }
-            });
-        } else if (CHANNEL_GROUP_SERVICE.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectService(index, null);
-                } else {
-                    logger.debug("Cannot select Service index {}", command.toFullString());
-                }
-            }
-        } else if (CHANNEL_GROUP_CHECK_CONTROL.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectCheckControl(index, null);
-                } else {
-                    logger.debug("Cannot select CheckControl index {}", command.toFullString());
-                }
-            }
-        } else if (CHANNEL_GROUP_CHARGE_SESSION.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectSession(index, null);
-                } else {
-                    logger.debug("Cannot select Session index {}", command.toFullString());
-                }
+                    break;
+                case CHANNEL_GROUP_CHECK_CONTROL:
+                    int checkControlIndex = Converter.parseIntegerString(command.toFullString());
+                    if (checkControlIndex != -1) {
+                        selectCheckControl(checkControlIndex, null);
+                    } else {
+                        logger.debug("Cannot select CheckControl index {}", command.toFullString());
+                    }
+                    break;
+                case CHANNEL_GROUP_CHARGE_SESSION:
+                    int sessionIndex = Converter.parseIntegerString(command.toFullString());
+                    if (sessionIndex != -1) {
+                        selectSession(sessionIndex, null);
+                    } else {
+                        logger.debug("Cannot select Session index {}", command.toFullString());
+                    }
+                    break;
+                default:
+                    logger.debug("Cannot handle command {}, channel {} in group {} not a command channel",
+                            command.toFullString(), channelUID.getAsString(), group);
             }
         }
     }
