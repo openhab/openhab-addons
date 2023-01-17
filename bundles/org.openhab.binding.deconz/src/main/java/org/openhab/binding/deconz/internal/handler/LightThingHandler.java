@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -392,7 +392,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 }
                 break;
             case CHANNEL_COLOR:
-                if (on != null && on == false) {
+                if (on != null && !on) {
                     updateState(channelId, OnOffType.OFF);
                 } else if (bri != null && "xy".equals(newState.colormode)) {
                     final double @Nullable [] xy = newState.xy;

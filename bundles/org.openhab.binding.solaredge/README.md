@@ -54,8 +54,8 @@ interval (minutes) in which live data values are retrieved from Solaredge.
 Setting less than 10 minutes is only allowed when using private API. (default = 10)
 
 - **aggregateDataPollingInterval** (optional)  
-interval (minutes) in which aggregate data values are retrieved from Solaredge.
-Setting less than 60 is only allowed when using private API. (default = 60)
+  interval (minutes) in which aggregate data values are retrieved from Solaredge.
+  Setting less than 60 is only allowed when using private API. (default = 60)
 
 ## Channels
 

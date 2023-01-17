@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,9 @@ public class BondHttpApi {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
         try {
-            return Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            BondDevice device = Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            device.actions.removeIf(Objects::isNull);
+            return device;
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
@@ -250,7 +252,7 @@ public class BondHttpApi {
                     logger.debug("Repeated Bond API calls to {} failed.", uri);
                     bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.api-call-failed");
-                    throw new BondException("@text/offline.conf-error.api-call-failed", true);
+                    throw new BondException("@text/offline.comm-error.api-call-failed", true);
                 }
             }
         } while (true);
