@@ -537,12 +537,16 @@ public class VehicleHandler extends BaseThingHandler {
         if (index >= 0 && index < serviceList.size()) {
             RequiredService serviceEntry = serviceList.get(index);
             selectedService = serviceEntry.getType();
-            updateChannel(CHANNEL_GROUP_SERVICE, NAME, Converter.toTitleCase(serviceEntry.getType()), NAME);
+            updateChannel(CHANNEL_GROUP_SERVICE, NAME, Converter.toTitleCase(serviceEntry.getType()),
+                    channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_SERVICE, DETAILS, StringType.valueOf(serviceEntry.getDescription()),
+                    channelToBeUpdated);
             if (serviceEntry.getDateTime() != null) {
                 updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.getDateTime())), DATE);
+                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.getDateTime())),
+                        channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF, DATE);
+                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF, channelToBeUpdated);
             }
 
             // TODO km vs mileage not available anymore in the response, it is set in the
@@ -551,8 +555,7 @@ public class VehicleHandler extends BaseThingHandler {
                 updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
                         QuantityType.valueOf(serviceEntry.getMileage(), Constants.KILOMETRE_UNIT), channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
-                        QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE, UnDefType.UNDEF, channelToBeUpdated);
             }
         }
     }
