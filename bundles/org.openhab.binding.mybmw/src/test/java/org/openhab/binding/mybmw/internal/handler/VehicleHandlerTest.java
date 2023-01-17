@@ -72,8 +72,8 @@ public class VehicleHandlerTest {
     private static final int DOORS = 11;
     private static final int CHECK_EMPTY = 3;
     private static final int CHECK_AVAILABLE = 3;
-    private static final int SERVICE_AVAILABLE = 3;
-    private static final int SERVICE_EMPTY = 3;
+    private static final int SERVICE_AVAILABLE = 4;
+    private static final int SERVICE_EMPTY = 4;
     private static final int LOCATION = 4;
     private static final int CHARGE_PROFILE = 44;
     private static final int TIRES = 8;

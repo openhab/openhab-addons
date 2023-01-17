@@ -183,6 +183,8 @@ public class StatusWrapper {
                                 wantedMileage = QuantityType.valueOf(
                                         vehicleState.getRequiredServices().get(0).getMileage(),
                                         Constants.KILOMETRE_UNIT);
+                            } else {
+                                wantedMileage = UnDefType.UNDEF;
                             }
                         }
                         assertEquals(wantedMileage, state, "Service Mileage");
@@ -448,8 +450,7 @@ public class StatusWrapper {
                     case CHANNEL_GROUP_SERVICE:
                         wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
                         if (!vehicleState.getRequiredServices().isEmpty()) {
-                            wanted = StringType.valueOf(
-                                    Converter.toTitleCase(vehicleState.getRequiredServices().get(0).getType()));
+                            wanted = StringType.valueOf(vehicleState.getRequiredServices().get(0).getDescription());
                         }
                         assertEquals(wanted.toString(), st.toString(), "Service Details");
                         break;
