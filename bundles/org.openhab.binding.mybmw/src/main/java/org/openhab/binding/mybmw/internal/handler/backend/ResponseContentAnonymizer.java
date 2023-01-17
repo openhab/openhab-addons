@@ -18,9 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * 
+ *
  * anonymizes all occurrencies of locations and vins
- * 
+ *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - refactoring & extension for any occurrence
  */
@@ -29,6 +29,7 @@ public interface ResponseContentAnonymizer {
 
     static final String ANONYMOUS_VIN = "anonymous";
     static final String VIN_PATTERN = "\"vin\":";
+    static final String VEHICLE_CHARGING_LOCATION_PATTERN = "\"subtitle\":";
     static final String VEHICLE_LOCATION_PATTERN = "\"location\":";
     static final String VEHICLE_LOCATION_LATITUDE_PATTERN = "latitude";
     static final String VEHICLE_LOCATION_LONGITUDE_PATTERN = "longitude";
@@ -57,7 +58,7 @@ public interface ResponseContentAnonymizer {
      * <p>
      * - location
      * </p>
-     * 
+     *
      * @param responseContent
      * @return
      */
@@ -72,7 +73,37 @@ public interface ResponseContentAnonymizer {
 
         String anonymizedRawLocationString = replaceRawLocations(anonymizedLocationString);
 
-        return anonymizedRawLocationString;
+        String anonymizedChargingLocationString = replaceChargingLocations(anonymizedRawLocationString);
+
+        return anonymizedChargingLocationString;
+    }
+
+    static String replaceChargingLocations(String stringToBeReplaced) {
+        String[] locationStrings = stringToBeReplaced.split(VEHICLE_CHARGING_LOCATION_PATTERN);
+
+        StringBuffer replacedString = new StringBuffer();
+        replacedString.append(locationStrings[0]);
+        for (int i = 1; locationStrings.length > 0 && i < locationStrings.length && locationStrings[i] != null; i++) {
+            replacedString.append(VEHICLE_CHARGING_LOCATION_PATTERN);
+            replacedString.append(replaceChargingLocation(locationStrings[i]));
+        }
+
+        return replacedString.toString();
+    }
+
+    static String replaceChargingLocation(String responseContent) {
+        String[] subtitleStrings = responseContent.split("•", 2);
+
+        StringBuffer replacedString = new StringBuffer();
+
+        replacedString.append("\"");
+        replacedString.append(VEHICLE_LOCATION_FORMATTED);
+        if (subtitleStrings.length > 1) {
+            replacedString.append(" •");
+            replacedString.append(subtitleStrings[1]);
+        }
+
+        return replacedString.toString();
     }
 
     static String replaceRawLocations(String stringToBeReplaced) {
@@ -89,7 +120,7 @@ public interface ResponseContentAnonymizer {
 
     /**
      * this just replaces a string
-     * 
+     *
      * @param string
      * @return
      */
@@ -202,5 +233,12 @@ public interface ResponseContentAnonymizer {
         replacedString.append(stringToBeReplaced.substring(endIndex));
 
         return replacedString.toString();
+    }
+
+    static @Nullable String replaceVin(@Nullable String stringToBeReplaced, @Nullable String vin) {
+        if (stringToBeReplaced == null) {
+            return null;
+        }
+        return vin != null ? stringToBeReplaced.replace(vin, ANONYMOUS_VIN) : stringToBeReplaced;
     }
 }

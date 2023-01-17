@@ -115,7 +115,7 @@ public class MyBMWProxy {
      * @param brand
      */
     public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException {
-        byte[] vehicleResponse = get(vehicleUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] vehicleResponse = get(vehicleUrl, brand, null, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleResponseString = new String(vehicleResponse, Charset.defaultCharset());
 
         return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
@@ -138,7 +138,7 @@ public class MyBMWProxy {
 
     /**
      * request the vehicle image
-     * 
+     *
      * @param config
      * @param props
      * @return
@@ -146,17 +146,18 @@ public class MyBMWProxy {
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-ics/v3/presentation/vehicles/" + vin + "/images?carView=" + props.viewport;
-        return get(localImageUrl, brand, HTTPConstants.CONTENT_TYPE_IMAGE);
+        return get(localImageUrl, brand, vin, HTTPConstants.CONTENT_TYPE_IMAGE);
     }
 
     /**
      * request the state for one specific vehicle
-     * 
+     *
      * @param baseVehicle
      * @return
      */
     public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException {
-        byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", brand, HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", brand, vin,
+                HTTPConstants.CONTENT_TYPE_JSON);
 
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
 
@@ -174,7 +175,7 @@ public class MyBMWProxy {
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
-        byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
 
         return JsonStringDeserializer.getChargeStatistics(new String(chargeStatisticsResponse));
     }
@@ -192,7 +193,7 @@ public class MyBMWProxy {
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-sessions?" + params;
 
-        byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
 
         return JsonStringDeserializer.getChargeSessions(new String(chargeSessionsResponse));
     }
@@ -201,7 +202,7 @@ public class MyBMWProxy {
             throws NetworkException {
         String executionUrl = remoteCommandUrl + vin + "/" + service.getCommand();
 
-        byte[] response = post(executionUrl, brand, HTTPConstants.CONTENT_TYPE_JSON, service.getBody());
+        byte[] response = post(executionUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON, service.getBody());
 
         return JsonStringDeserializer.getExecutionStatus(new String(response));
     }
@@ -210,14 +211,14 @@ public class MyBMWProxy {
             throws NetworkException {
         String executionUrl = remoteStatusUrl + Constants.QUESTION + "eventId=" + eventId;
 
-        byte[] response = post(executionUrl, brand, HTTPConstants.CONTENT_TYPE_JSON, null);
+        byte[] response = post(executionUrl, brand, null, HTTPConstants.CONTENT_TYPE_JSON, null);
 
         return JsonStringDeserializer.getExecutionStatus(new String(response));
     }
 
     /**
      * prepares a GET request to the backend
-     * 
+     *
      * @param url
      * @param coding
      * @param params
@@ -225,13 +226,14 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private byte[] get(String url, final String brand, String contentType) throws NetworkException {
-        return call(url, false, brand, contentType, null);
+    private byte[] get(String url, final String brand, @Nullable String vin, String contentType)
+            throws NetworkException {
+        return call(url, false, brand, vin, contentType, null);
     }
 
     /**
      * prepares a POST request to the backend
-     * 
+     *
      * @param url
      * @param coding
      * @param params
@@ -239,14 +241,14 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private byte[] post(String url, final String brand, String contentType, @Nullable String body)
+    private byte[] post(String url, final String brand, @Nullable String vin, String contentType, @Nullable String body)
             throws NetworkException {
-        return call(url, true, brand, contentType, body);
+        return call(url, true, brand, vin, contentType, body);
     }
 
     /**
      * executes the real call to the backend
-     * 
+     *
      * @param url
      * @param post
      * @param encoding
@@ -255,8 +257,8 @@ public class MyBMWProxy {
      * @param contentType
      * @return
      */
-    private synchronized byte[] call(final String url, final boolean post, final String brand, String contentType,
-            @Nullable String body) throws NetworkException {
+    private synchronized byte[] call(final String url, final boolean post, final String brand,
+            final @Nullable String vin, String contentType, @Nullable String body) throws NetworkException {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
@@ -285,19 +287,22 @@ public class MyBMWProxy {
                 responseByteArray = "".getBytes();
                 NetworkException exception = new NetworkException(url, response.getStatus(),
                         ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), body);
-                logResponse(exception.getUrl(), exception.getReason(), body);
+                logResponse(ResponseContentAnonymizer.replaceVin(exception.getUrl(), vin), exception.getReason(),
+                        ResponseContentAnonymizer.replaceVin(body, vin));
                 throw exception;
             } else {
                 responseByteArray = response.getContent();
 
                 // don't print images
                 if (!HTTPConstants.CONTENT_TYPE_IMAGE.equals(contentType)) {
-                    logResponse(url, ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()),
-                            body);
+                    logResponse(ResponseContentAnonymizer.replaceVin(url, vin),
+                            ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()),
+                            ResponseContentAnonymizer.replaceVin(body, vin));
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logResponse(url, e.getMessage(), body);
+            logResponse(ResponseContentAnonymizer.replaceVin(url, vin), e.getMessage(),
+                    ResponseContentAnonymizer.replaceVin(body, vin));
             throw new NetworkException(url, -1, null, body, e);
         }
 
@@ -306,11 +311,11 @@ public class MyBMWProxy {
 
     private void logResponse(@Nullable String url, @Nullable String fingerprint, @Nullable String body) {
         logger.debug("###### Request URL - BEGIN ######");
-        logger.debug("URL - please anonymize VIN on your own!: {}", url);
+        logger.debug("{}", url);
         logger.debug("###### Request Body - BEGIN ######");
         logger.debug("{}", body);
         logger.debug("###### Response Data - BEGIN ######");
         logger.debug("{}", fingerprint);
-        logger.debug("###### Fingerprint Data - END ######");
+        logger.debug("###### Response Data - END ######");
     }
 }
