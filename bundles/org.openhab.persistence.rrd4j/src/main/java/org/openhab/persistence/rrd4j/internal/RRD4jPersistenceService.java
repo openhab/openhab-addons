@@ -330,7 +330,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 ts += step;
             }
             return items;
-        } catch (IOException e) {
+        } catch (IllegalArgumentException | IOException e) {
             logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
             return List.of();
         } finally {
