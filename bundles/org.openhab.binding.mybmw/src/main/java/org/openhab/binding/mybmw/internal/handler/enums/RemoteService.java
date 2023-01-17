@@ -12,20 +12,14 @@
  */
 package org.openhab.binding.mybmw.internal.handler.enums;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_START;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_STOP;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_LOCK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_UNLOCK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_HORN;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_LIGHT_FLASH;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_VEHICLE_FINDER;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * 
+ *
  * possible remote services
- * 
+ *
  * @author Martin Grassl - initial contribution
  */
 @NonNullByDefault
@@ -36,7 +30,8 @@ public enum RemoteService {
     DOOR_UNLOCK("Door Unlock", REMOTE_SERVICE_DOOR_UNLOCK, REMOTE_SERVICE_DOOR_UNLOCK, ""),
     HORN_BLOW("Horn Blow", REMOTE_SERVICE_HORN, REMOTE_SERVICE_HORN, ""),
     CLIMATE_NOW_START("Start Climate", REMOTE_SERVICE_AIR_CONDITIONING_START, "climate-now", "{\"action\": \"START\"}"),
-    CLIMATE_NOW_STOP("Stop Climate", REMOTE_SERVICE_AIR_CONDITIONING_STOP, "climate-now", "{\"action\": \"STOP\"}");
+    CLIMATE_NOW_STOP("Stop Climate", REMOTE_SERVICE_AIR_CONDITIONING_STOP, "climate-now", "{\"action\": \"STOP\"}"),
+    CHARGE_NOW("Charge", REMOTE_SERVICE_CHARGE, "charge-now", "");
 
     private final String label;
     private final String id;

@@ -12,89 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.handler;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.ADDRESS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_PROFILE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_SESSION;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_STATISTICS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHECK_CONTROL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_DOORS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_LOCATION;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_RANGE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_REMOTE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_SERVICE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_STATUS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_TIRES;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_VEHICLE_IMAGE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_ENABLED;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_INFO;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_CLIMATE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_CONTROL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_LIMIT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_MODE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_PREFERENCE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_TARGET;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_STATUS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHECK_CONTROL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DATE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DETAILS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOORS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_FRONT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.ENERGY;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_TARGET;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.GPS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.HEADING;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOME_DISTANCE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_FORMAT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_VIEWPORT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.ISSUE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_UPDATE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.LOCK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.MILEAGE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.NAME;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.PLUG_CONNECTION;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_ELECTRIC;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_FUEL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_HYBRID;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_ELECTRIC;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_FUEL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_HYBRID;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.RAW;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_CURRENT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_TARGET;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_CURRENT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_TARGET;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMAINING_FUEL;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_START;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_STOP;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_COMMAND;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_LOCK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_UNLOCK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_HORN;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_LIGHT_FLASH;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_VEHICLE_FINDER;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_STATE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_DATE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_MILEAGE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SESSIONS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SEVERITY;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SOC;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.STATUS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUBTITLE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUNROOF;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.TITLE;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.TRUNK;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOWS;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_FRONT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_REAR;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_FRONT;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -169,7 +87,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VehicleHandler} handles responses from BMW API
- * 
+ *
  * the introduction of channelToBeUpdated is ugly, but if there is a refresh of one channel, always all channels were
  * updated
  *
@@ -185,12 +103,15 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean isElectric = false;
     private boolean isHybrid = false;
 
+    private boolean isLeftSteering = false;
+
     // List Interfaces
-    private List<RequiredService> serviceList = new ArrayList<>();
-    private String selectedService = Constants.UNDEF;
-    private List<CheckControlMessage> checkControlList = new ArrayList<>();
-    private String selectedCC = Constants.UNDEF;
-    private List<ChargeSession> sessionList = new ArrayList<>();
+    private volatile List<RequiredService> serviceList = List.of();
+    private volatile String selectedService = Constants.UNDEF;
+    private volatile List<CheckControlMessage> checkControlList = List.of();
+    private volatile String selectedCC = Constants.UNDEF;
+    private volatile List<ChargeSession> sessionList = List.of();
+    private volatile String selectedSession = Constants.UNDEF;
 
     private MyBMWCommandOptionProvider commandOptionProvider;
     private LocationProvider locationProvider;
@@ -288,6 +209,7 @@ public class VehicleHandler extends BaseThingHandler {
                 try {
                     VehicleStateContainer vehicleState = prox.requestVehicleState(config.getVin(),
                             config.getVehicleBrand());
+                    isLeftSteering = vehicleState.getState().isLeftSteering();
                     triggerVehicleStatusUpdate(vehicleState, null);
                     stateError = false;
                 } catch (NetworkException e) {
@@ -391,7 +313,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     /**
      * updates the channels with the current state of the vehicle
-     * 
+     *
      * @param vehicleStateState
      */
     private void updateVehicleStatus(VehicleState vehicleStateState, @Nullable String channelToBeUpdated) {
@@ -446,7 +368,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     /**
      * if the pressure is undef it is < 0
-     * 
+     *
      * @param pressure
      * @return
      */
@@ -618,12 +540,16 @@ public class VehicleHandler extends BaseThingHandler {
         if (index >= 0 && index < serviceList.size()) {
             RequiredService serviceEntry = serviceList.get(index);
             selectedService = serviceEntry.getType();
-            updateChannel(CHANNEL_GROUP_SERVICE, NAME, Converter.toTitleCase(serviceEntry.getType()), NAME);
+            updateChannel(CHANNEL_GROUP_SERVICE, NAME, Converter.toTitleCase(serviceEntry.getType()),
+                    channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_SERVICE, DETAILS, StringType.valueOf(serviceEntry.getDescription()),
+                    channelToBeUpdated);
             if (serviceEntry.getDateTime() != null) {
                 updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.getDateTime())), DATE);
+                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.getDateTime())),
+                        channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF, DATE);
+                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF, channelToBeUpdated);
             }
 
             // TODO km vs mileage not available anymore in the response, it is set in the
@@ -632,8 +558,7 @@ public class VehicleHandler extends BaseThingHandler {
                 updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
                         QuantityType.valueOf(serviceEntry.getMileage(), Constants.KILOMETRE_UNIT), channelToBeUpdated);
             } else {
-                updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
-                        QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE, UnDefType.UNDEF, channelToBeUpdated);
             }
         }
     }
@@ -662,7 +587,7 @@ public class VehicleHandler extends BaseThingHandler {
             // create StateOption with "value = list index" and "label = human readable
             // string"
             sessionNameOptions.add(new CommandOption(Integer.toString(index), session.title));
-            if (selectedService.equals(session.title)) {
+            if (selectedSession.equals(session.title)) {
                 isSelectedElementIn = true;
             }
             index++;
@@ -678,7 +603,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void selectSession(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < sessionList.size()) {
             ChargeSession sessionEntry = sessionList.get(index);
-            selectedService = sessionEntry.title;
+            selectedSession = sessionEntry.title;
             updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title),
                     channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.subtitle),
@@ -756,13 +681,21 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void updateDoors(VehicleDoorsState vehicleDoorsState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getLeftFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getLeftFront() : vehicleDoorsState.getRightFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getLeftRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getLeftRear() : vehicleDoorsState.getRightRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_PASSENGER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getRightFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getRightFront() : vehicleDoorsState.getLeftFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_PASSENGER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getRightRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getRightRear() : vehicleDoorsState.getLeftRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, TRUNK,
                 StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getTrunk())), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, HOOD, StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getHood())),
@@ -771,13 +704,21 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void updateWindows(VehicleWindowsState vehicleWindowState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getLeftFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getLeftFront() : vehicleWindowState.getRightFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getLeftRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getLeftRear() : vehicleWindowState.getRightRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getRightFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getRightFront() : vehicleWindowState.getLeftFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getRightRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getRightRear() : vehicleWindowState.getLeftRear())),
+                channelToBeUpdated);
     }
 
     private void updateRoof(VehicleRoofState vehicleRoofState, @Nullable String channelToBeUpdated) {
@@ -816,102 +757,86 @@ public class VehicleHandler extends BaseThingHandler {
                 channelUID.getIdWithoutGroup());
         String group = channelUID.getGroupId();
 
-        // Refresh of Channels with cached values
+        if (group == null) {
+            logger.debug("Cannot handle command {}, no group for channel {}", command.toFullString(),
+                    channelUID.getAsString());
+            return;
+        }
+
         if (command instanceof RefreshType) {
+            // Refresh of Channels with cached values
             if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
                 imageCache.ifPresent(image -> updateImage(image));
             } else {
                 vehicleStatusCache.ifPresent(
                         vehicleStatus -> triggerVehicleStatusUpdate(vehicleStatus, channelUID.getIdWithoutGroup()));
             }
+        } else if (command instanceof StringType) {
             // Check for Channel Group and corresponding Actions
-        } else if (CHANNEL_GROUP_REMOTE.equals(group)) {
-            // Executing Remote Services
-            if (command instanceof StringType) {
-                String serviceCommand = ((StringType) command).toFullString();
-                remote.ifPresent(remot -> {
-                    switch (serviceCommand) {
-                        case REMOTE_SERVICE_LIGHT_FLASH:
-                        case REMOTE_SERVICE_DOOR_LOCK:
-                        case REMOTE_SERVICE_DOOR_UNLOCK:
-                        case REMOTE_SERVICE_HORN:
-                        case REMOTE_SERVICE_VEHICLE_FINDER:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        case REMOTE_SERVICE_AIR_CONDITIONING_START:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        case REMOTE_SERVICE_AIR_CONDITIONING_STOP:
-                            RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
-                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
-                                        logger.debug("Remote service execution {} unknown", serviceCommand);
-                                    });
-                            break;
-                        default:
-                            logger.debug("Remote service execution {} unknown", serviceCommand);
-                            break;
-                    }
-                });
-            }
-        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
-            // Image Change
-            vehicleConfiguration.ifPresent(config -> {
-                if (command instanceof StringType) {
-                    if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
-                        String newViewport = command.toString();
-                        synchronized (imageProperties) {
-                            if (!imageProperties.viewport.equals(newViewport)) {
-                                imageProperties = new ImageProperties(newViewport);
-                                imageCache = Optional.empty();
-                                Optional<byte[]> imageContent = proxy.map(prox -> {
-                                    try {
-                                        return prox.requestImage(config.getVin(), config.getVehicleBrand(),
-                                                imageProperties);
-                                    } catch (NetworkException e) {
-                                        logger.debug("{}", e.toString());
-                                        return "".getBytes();
-                                    }
+            switch (group) {
+                case CHANNEL_GROUP_REMOTE:
+                    // Executing Remote Services
+                    String serviceCommand = ((StringType) command).toFullString();
+                    remote.ifPresent(remot -> {
+                        RemoteServiceUtils.getRemoteServiceFromCommand(serviceCommand)
+                                .ifPresentOrElse(service -> remot.execute(service), () -> {
+                                    logger.debug("Remote service execution {} unknown", serviceCommand);
                                 });
-                                imageContent.ifPresent(imageContentData -> updateImage(imageContentData));
+                    });
+                    break;
+                case CHANNEL_GROUP_VEHICLE_IMAGE:
+                    // Image Change
+                    vehicleConfiguration.ifPresent(config -> {
+                        if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
+                            String newViewport = command.toString();
+                            synchronized (imageProperties) {
+                                if (!imageProperties.viewport.equals(newViewport)) {
+                                    imageProperties = new ImageProperties(newViewport);
+                                    imageCache = Optional.empty();
+                                    Optional<byte[]> imageContent = proxy.map(prox -> {
+                                        try {
+                                            return prox.requestImage(config.getVin(), config.getVehicleBrand(),
+                                                    imageProperties);
+                                        } catch (NetworkException e) {
+                                            logger.debug("{}", e.toString());
+                                            return "".getBytes();
+                                        }
+                                    });
+                                    imageContent.ifPresent(imageContentData -> updateImage(imageContentData));
+                                }
                             }
+                            updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport),
+                                    IMAGE_VIEWPORT);
                         }
-                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport),
-                                IMAGE_VIEWPORT);
+                    });
+                    break;
+                case CHANNEL_GROUP_SERVICE:
+                    int serviceIndex = Converter.parseIntegerString(command.toFullString());
+                    if (serviceIndex != -1) {
+                        selectService(serviceIndex, null);
+                    } else {
+                        logger.debug("Cannot select Service index {}", command.toFullString());
                     }
-                }
-            });
-        } else if (CHANNEL_GROUP_SERVICE.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectService(index, null);
-                } else {
-                    logger.debug("Cannot select Service index {}", command.toFullString());
-                }
-            }
-        } else if (CHANNEL_GROUP_CHECK_CONTROL.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectCheckControl(index, null);
-                } else {
-                    logger.debug("Cannot select CheckControl index {}", command.toFullString());
-                }
-            }
-        } else if (CHANNEL_GROUP_CHARGE_SESSION.equals(group)) {
-            if (command instanceof StringType) {
-                int index = Converter.parseIntegerString(command.toFullString());
-                if (index != -1) {
-                    selectSession(index, null);
-                } else {
-                    logger.debug("Cannot select Session index {}", command.toFullString());
-                }
+                    break;
+                case CHANNEL_GROUP_CHECK_CONTROL:
+                    int checkControlIndex = Converter.parseIntegerString(command.toFullString());
+                    if (checkControlIndex != -1) {
+                        selectCheckControl(checkControlIndex, null);
+                    } else {
+                        logger.debug("Cannot select CheckControl index {}", command.toFullString());
+                    }
+                    break;
+                case CHANNEL_GROUP_CHARGE_SESSION:
+                    int sessionIndex = Converter.parseIntegerString(command.toFullString());
+                    if (sessionIndex != -1) {
+                        selectSession(sessionIndex, null);
+                    } else {
+                        logger.debug("Cannot select Session index {}", command.toFullString());
+                    }
+                    break;
+                default:
+                    logger.debug("Cannot handle command {}, channel {} in group {} not a command channel",
+                            command.toFullString(), channelUID.getAsString(), group);
             }
         }
     }
