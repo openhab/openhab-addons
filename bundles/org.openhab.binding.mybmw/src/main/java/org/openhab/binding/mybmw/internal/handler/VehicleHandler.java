@@ -103,6 +103,8 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean isElectric = false;
     private boolean isHybrid = false;
 
+    private boolean isLeftSteering = false;
+
     // List Interfaces
     private volatile List<RequiredService> serviceList = List.of();
     private volatile String selectedService = Constants.UNDEF;
@@ -207,6 +209,7 @@ public class VehicleHandler extends BaseThingHandler {
                 try {
                     VehicleStateContainer vehicleState = prox.requestVehicleState(config.getVin(),
                             config.getVehicleBrand());
+                    isLeftSteering = vehicleState.getState().isLeftSteering();
                     triggerVehicleStatusUpdate(vehicleState, null);
                     stateError = false;
                 } catch (NetworkException e) {
@@ -678,13 +681,21 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void updateDoors(VehicleDoorsState vehicleDoorsState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getLeftFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getLeftFront() : vehicleDoorsState.getRightFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getLeftRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getLeftRear() : vehicleDoorsState.getRightRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_PASSENGER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getRightFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getRightFront() : vehicleDoorsState.getLeftFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_PASSENGER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getRightRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleDoorsState.getRightRear() : vehicleDoorsState.getLeftRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, TRUNK,
                 StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getTrunk())), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, HOOD, StringType.valueOf(Converter.toTitleCase(vehicleDoorsState.getHood())),
@@ -693,13 +704,21 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void updateWindows(VehicleWindowsState vehicleWindowState, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getLeftFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getLeftFront() : vehicleWindowState.getRightFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getLeftRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getLeftRear() : vehicleWindowState.getRightRear())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_FRONT,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getRightFront())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getRightFront() : vehicleWindowState.getLeftFront())),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_REAR,
-                StringType.valueOf(Converter.toTitleCase(vehicleWindowState.getRightRear())), channelToBeUpdated);
+                StringType.valueOf(Converter.toTitleCase(
+                        isLeftSteering ? vehicleWindowState.getRightRear() : vehicleWindowState.getLeftRear())),
+                channelToBeUpdated);
     }
 
     private void updateRoof(VehicleRoofState vehicleRoofState, @Nullable String channelToBeUpdated) {
