@@ -547,7 +547,7 @@ are anonymized in the JSON response, if you share the URL as well please anonymi
 You'll find the fingerprint in the logs with the command
 
 ```
-grep "Fingerprint Data" openhab.log
+grep "Response Data - BEGIN" openhab.log
 ```
 
 After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
