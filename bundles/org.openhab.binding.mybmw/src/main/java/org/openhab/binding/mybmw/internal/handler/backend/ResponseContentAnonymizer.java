@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface ResponseContentAnonymizer {
 
-    static final String ANONYMOUS_VIN = "anonymous";
+    static final String ANONYMOUS_VIN = "anonymousVin";
     static final String VIN_PATTERN = "\"vin\":";
     static final String VEHICLE_CHARGING_LOCATION_PATTERN = "\"subtitle\":";
     static final String VEHICLE_LOCATION_PATTERN = "\"location\":";
@@ -37,13 +37,13 @@ public interface ResponseContentAnonymizer {
     static final String VEHICLE_LOCATION_HEADING_PATTERN = "heading";
     static final String VEHICLE_LOCATION_LATITUDE = "1.1";
     static final String VEHICLE_LOCATION_LONGITUDE = "2.2";
-    static final String VEHICLE_LOCATION_FORMATTED = "anonymousAddress";
+    static final String ANONYMOUS_ADDRESS = "anonymousAddress";
     static final String VEHICLE_LOCATION_HEADING = "-1";
     static final String RAW_VEHICLE_LOCATION_PATTERN_START = "\\\"location\\\"";
     static final String RAW_VEHICLE_LOCATION_PATTERN_END = "\\\"heading\\\"";
     static final String RAW_VEHICLE_LOCATION_PATTERN_REPLACER = "\"location\":{\"coordinates\":{\"latitude\":"
             + VEHICLE_LOCATION_LATITUDE + ",\"longitude\":" + VEHICLE_LOCATION_LONGITUDE
-            + "},\"address\":{\"formatted\":\"" + VEHICLE_LOCATION_FORMATTED + "\"},";
+            + "},\"address\":{\"formatted\":\"" + ANONYMOUS_ADDRESS + "\"},";
 
     static final String CLOSING_BRACKET = "}";
     static final String QUOTE = "\"";
@@ -92,14 +92,14 @@ public interface ResponseContentAnonymizer {
     }
 
     static String replaceChargingLocation(String responseContent) {
-        String[] subtitleStrings = responseContent.split("•", 2);
+        String[] subtitleStrings = responseContent.split(" • ", 2);
 
         StringBuffer replacedString = new StringBuffer();
 
         replacedString.append("\"");
-        replacedString.append(VEHICLE_LOCATION_FORMATTED);
+        replacedString.append(ANONYMOUS_ADDRESS);
         if (subtitleStrings.length > 1) {
-            replacedString.append(" •");
+            replacedString.append(" • ");
             replacedString.append(subtitleStrings[1]);
         }
 
@@ -161,7 +161,7 @@ public interface ResponseContentAnonymizer {
 
         // formatted address
         stringToBeReplaced = replaceStringValue(stringToBeReplaced, replacedString, VEHICLE_LOCATION_FORMATTED_PATTERN,
-                VEHICLE_LOCATION_FORMATTED);
+                ANONYMOUS_ADDRESS);
 
         // heading
         stringToBeReplaced = replaceNumberValue(stringToBeReplaced, replacedString, VEHICLE_LOCATION_HEADING_PATTERN,
