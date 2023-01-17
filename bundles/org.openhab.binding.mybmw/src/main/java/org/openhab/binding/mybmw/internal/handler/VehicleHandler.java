@@ -219,7 +219,6 @@ public class VehicleHandler extends BaseThingHandler {
                     stateError = true;
                 }
 
-                // TODO: disabled charge statistics and charge sessions as the API returns an error
                 if (!stateError && isElectric) {
                     try {
                         updateChargeStatistics(prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()),

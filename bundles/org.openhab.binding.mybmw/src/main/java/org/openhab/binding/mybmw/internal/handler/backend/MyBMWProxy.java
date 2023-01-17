@@ -49,10 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyBMWProxy} This class holds the important constants for the BMW
- * Connected Drive Authorization.
- * They
- * are taken from the Bimmercode from github
+ * The {@link MyBMWProxy} This class holds the important constants for the BMW Connected Drive Authorization.
+ * They are taken from the Bimmercode from github
  * {@link https://github.com/bimmerconnected/bimmer_connected}
  * File defining these constants
  * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
@@ -169,7 +167,7 @@ public class MyBMWProxy {
      *
      */
     public ChargeStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
-        MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+        MultiMap<@Nullable String> chargeStatisticsParams = new MultiMap<>();
         chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
@@ -185,7 +183,7 @@ public class MyBMWProxy {
      *
      */
     public ChargeSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
-        MultiMap<String> chargeSessionsParams = new MultiMap<String>();
+        MultiMap<@Nullable String> chargeSessionsParams = new MultiMap<>();
         chargeSessionsParams.put("vin", vin);
         chargeSessionsParams.put("maxResults", "40");
         chargeSessionsParams.put("include_date_picker", "true");
@@ -258,7 +256,7 @@ public class MyBMWProxy {
      * @return
      */
     private synchronized byte[] call(final String url, final boolean post, final String brand,
-            final @Nullable String vin, String contentType, @Nullable String body) throws NetworkException {
+            final @Nullable String vin, final String contentType, final @Nullable String body) throws NetworkException {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
