@@ -77,7 +77,7 @@ public class VehicleBaseTest {
         assertEquals(Constants.ANONYMOUS, vehicle.getVin(), "VIN");
         assertEquals("M340i xDrive", vehicle.getAttributes().getModel(), "Model");
         assertEquals(Constants.DRIVETRAIN_MILD_HYBRID, vehicle.getAttributes().getDriveTrain(), "DriveTrain");
-        assertEquals("BMW", vehicle.getAttributes().getBrand(), "Brand");
+        assertEquals("bmw", vehicle.getAttributes().getBrand(), "Brand");
         assertEquals(2022, vehicle.getAttributes().getYear(), "Year of Construction");
     }
 }
