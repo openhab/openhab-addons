@@ -27,7 +27,7 @@ import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -45,14 +45,14 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class ChargeStatisticWrapper {
-    private ChargeStatisticsContainer chargeStatisticContainer;
+    private ChargingStatisticsContainer chargeStatisticContainer;
 
     public ChargeStatisticWrapper(String content) {
-        ChargeStatisticsContainer fromJson = JsonStringDeserializer.getChargeStatistics(content);
+        ChargingStatisticsContainer fromJson = JsonStringDeserializer.getChargeStatistics(content);
         if (fromJson != null) {
             chargeStatisticContainer = fromJson;
         } else {
-            chargeStatisticContainer = new ChargeStatisticsContainer();
+            chargeStatisticContainer = new ChargingStatisticsContainer();
         }
     }
 

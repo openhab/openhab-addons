@@ -112,7 +112,7 @@ public class ChargeStatisticsTest {
 
         try {
             Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargeStatistics",
-                    ChargeStatisticsContainer.class);
+                    ChargingStatisticsContainer.class);
             updateChargeStatisticsMethod.invoke(vehicleHandler,
                     JsonStringDeserializer.getChargeStatistics(statusContent));
         } catch (Exception e) {

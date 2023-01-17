@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER1;
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER2;
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER3;
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.TIMER4;
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.WINDOWEND;
-import static org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey.WINDOWSTART;
-import static org.openhab.binding.mybmw.internal.utils.Constants.NULL_LOCAL_TIME;
-import static org.openhab.binding.mybmw.internal.utils.Constants.TIME_FORMATER;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.*;
+import static org.openhab.binding.mybmw.internal.utils.Constants.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -43,20 +37,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ChargeProfileWrapper} Wrapper for ChargeProfiles
+ * The {@link ChargingProfileWrapper} Wrapper for ChargingProfiles
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - add ChargeProfileActions
  * @author Martin Grassl - refactoring
  */
 @NonNullByDefault
-public class ChargeProfileWrapper {
-    private final Logger logger = LoggerFactory.getLogger(ChargeProfileWrapper.class);
+public class ChargingProfileWrapper {
+    private final Logger logger = LoggerFactory.getLogger(ChargingProfileWrapper.class);
 
-    private static final String CHARGING_WINDOW = "chargingWindow";
-    private static final String WEEKLY_PLANNER = "weeklyPlanner";
-    private static final String ACTIVATE = "activate";
-    private static final String DEACTIVATE = "deactivate";
+    private static final String CHARGING_WINDOW = "CHARGING_WINDOW";
+    private static final String WEEKLY_PLANNER = "WEEKLY_PLANNER";
+    private static final String ACTIVATE = "ACTIVATE";
+    private static final String DEACTIVATE = "DEACTIVATE";
 
     public enum ProfileKey {
         CLIMATE,
@@ -77,12 +71,12 @@ public class ChargeProfileWrapper {
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
     private final Map<ProfileKey, Set<DayOfWeek>> daysOfWeek = new HashMap<>();
 
-    public ChargeProfileWrapper(final ChargingProfile profile) {
+    public ChargingProfileWrapper(final ChargingProfile profile) {
         setPreference(profile.getChargingPreference());
         setMode(profile.getChargingMode());
         controlType = Optional.of(profile.getChargingControlType());
         chargeSettings = Optional.of(profile.getChargingSettings());
-        // setEnabled(CLIMATE, profile.climatisationOn);
+        setEnabled(ProfileKey.CLIMATE, profile.isClimatisationOn());
 
         addTimer(TIMER1, profile.getTimerId(1));
         addTimer(TIMER2, profile.getTimerId(2));
@@ -124,7 +118,7 @@ public class ChargeProfileWrapper {
         return controlType.get();
     }
 
-    public @Nullable ChargingSettings getChargeSettings() {
+    public @Nullable ChargingSettings getChargingSettings() {
         return chargeSettings.get();
     }
 

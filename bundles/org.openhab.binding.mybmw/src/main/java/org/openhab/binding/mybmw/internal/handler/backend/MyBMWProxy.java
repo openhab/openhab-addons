@@ -30,8 +30,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -166,7 +166,7 @@ public class MyBMWProxy {
      * request charge statistics for electric vehicles
      *
      */
-    public ChargeStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
+    public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeStatisticsParams = new MultiMap<>();
         chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
@@ -182,7 +182,7 @@ public class MyBMWProxy {
      * request charge sessions for electric vehicles
      *
      */
-    public ChargeSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
+    public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
         MultiMap<@Nullable String> chargeSessionsParams = new MultiMap<>();
         chargeSessionsParams.put("vin", vin);
         chargeSessionsParams.put("maxResults", "40");

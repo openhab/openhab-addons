@@ -34,9 +34,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.MyBMWVehicleConfiguration;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSession;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSession;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
@@ -50,10 +50,10 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleTireStates;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleWindowsState;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils.TimedChannel;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey;
+import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils;
+import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils.TimedChannel;
+import org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper;
+import org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
@@ -110,7 +110,7 @@ public class VehicleHandler extends BaseThingHandler {
     private volatile String selectedService = Constants.UNDEF;
     private volatile List<CheckControlMessage> checkControlList = List.of();
     private volatile String selectedCC = Constants.UNDEF;
-    private volatile List<ChargeSession> sessionList = List.of();
+    private volatile List<ChargingSession> sessionList = List.of();
     private volatile String selectedSession = Constants.UNDEF;
 
     private MyBMWCommandOptionProvider commandOptionProvider;
@@ -300,7 +300,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeStatistics(ChargeStatisticsContainer csc, @Nullable String channelToBeUpdated) {
+    private void updateChargeStatistics(ChargingStatisticsContainer csc, @Nullable String channelToBeUpdated) {
         if (!"".equals(csc.description)) {
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, csc.description, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
@@ -562,9 +562,9 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeSessions(ChargeSessionsContainer chargeSessionsContainer,
+    private void updateChargeSessions(ChargingSessionsContainer chargeSessionsContainer,
             @Nullable String channelToBeUpdated) {
-        List<ChargeSession> chargeSessions = new ArrayList<>();
+        List<ChargingSession> chargeSessions = new ArrayList<>();
 
         if (chargeSessionsContainer.chargingSessions != null
                 && chargeSessionsContainer.chargingSessions.sessions != null
@@ -572,7 +572,7 @@ public class VehicleHandler extends BaseThingHandler {
             chargeSessions.addAll(chargeSessionsContainer.chargingSessions.sessions);
         } else {
             // if list is empty add "undefined" element
-            ChargeSession cs = new ChargeSession();
+            ChargingSession cs = new ChargingSession();
             cs.title = Constants.NO_ENTRIES;
             chargeSessions.add(cs);
         }
@@ -582,7 +582,7 @@ public class VehicleHandler extends BaseThingHandler {
         List<CommandOption> sessionNameOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
-        for (ChargeSession session : sessionList) {
+        for (ChargingSession session : sessionList) {
             // create StateOption with "value = list index" and "label = human readable
             // string"
             sessionNameOptions.add(new CommandOption(Integer.toString(index), session.title));
@@ -601,7 +601,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void selectSession(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < sessionList.size()) {
-            ChargeSession sessionEntry = sessionList.get(index);
+            ChargingSession sessionEntry = sessionList.get(index);
             selectedSession = sessionEntry.title;
             updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title),
                     channelToBeUpdated);
@@ -627,7 +627,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void updateChargingProfile(ChargingProfile cp, @Nullable String channelToBeUpdated) {
-        ChargeProfileWrapper cpw = new ChargeProfileWrapper(cp);
+        ChargingProfileWrapper cpw = new ChargingProfileWrapper(cp);
 
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, StringType.valueOf(cpw.getPreference()),
                 channelToBeUpdated);
@@ -635,7 +635,7 @@ public class VehicleHandler extends BaseThingHandler {
                 channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()),
                 channelToBeUpdated);
-        ChargingSettings cs = cpw.getChargeSettings();
+        ChargingSettings cs = cpw.getChargingSettings();
         if (cs != null) {
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
                     DecimalType.valueOf(Integer.toString(cs.getTargetSoc())), channelToBeUpdated);
@@ -653,8 +653,8 @@ public class VehicleHandler extends BaseThingHandler {
         updateTimedState(cpw, ProfileKey.TIMER4, channelToBeUpdated);
     }
 
-    private void updateTimedState(ChargeProfileWrapper profile, ProfileKey key, @Nullable String channelToBeUpdated) {
-        final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
+    private void updateTimedState(ChargingProfileWrapper profile, ProfileKey key, @Nullable String channelToBeUpdated) {
+        final TimedChannel timed = ChargingProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time,
@@ -669,7 +669,7 @@ public class VehicleHandler extends BaseThingHandler {
                     final Set<DayOfWeek> days = profile.getDays(key);
                     EnumSet.allOf(DayOfWeek.class).forEach(day -> {
                         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE,
-                                timed.timer + ChargeProfileUtils.getDaysChannel(day),
+                                timed.timer + ChargingProfileUtils.getDaysChannel(day),
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)),
                                 channelToBeUpdated);
                     });

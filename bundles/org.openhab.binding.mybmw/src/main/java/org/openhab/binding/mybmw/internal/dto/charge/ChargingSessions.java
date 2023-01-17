@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.mybmw.internal.dto.charge;
 
+import java.util.List;
+
 /**
- * The {@link ChargeSession} Data Transfer Object
+ * The {@link ChargingSessions} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class ChargeSession {
-    public String id;// ": "2021-12-26T16:57:20Z_128fa4af",
-    public String title;// ": "Gestern 17:57",
-    public String subtitle;// ": "Uferstraße 4B • 7h 45min • -- EUR",
-    public String energyCharged;// ": "~ 31 kWh",
-    public String sessionStatus;// ": "FINISHED",
-    public String issues;// ": "2 Probleme",
-    public String isPublic;// ": false
+public class ChargingSessions {
+    public String total;// ": "~ 218 kWh",
+    public String numberOfSessions;// ": "17",
+    public String chargingListState;// ": "HAS_SESSIONS",
+    public List<ChargingSession> sessions;
 }
