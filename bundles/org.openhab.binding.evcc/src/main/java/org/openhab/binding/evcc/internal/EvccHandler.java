@@ -85,7 +85,7 @@ public class EvccHandler extends BaseThingHandler {
                 return;
             }
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
-            int loadpoint = Integer.parseInt(groupId.substring(9));
+            int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
@@ -206,7 +206,7 @@ public class EvccHandler extends BaseThingHandler {
 
     /**
      * Refreshes from evcc.
-     * 
+     *
      * First, checks connection and updates Thing status.
      * Second, creates all available channels.
      * Third, updates all channels.

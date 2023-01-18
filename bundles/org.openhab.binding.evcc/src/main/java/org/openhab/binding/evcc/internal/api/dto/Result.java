@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.106.3
+ * This DTO was written for evcc version 0.111.1
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -32,7 +32,7 @@ public class Result {
     @SerializedName("batteryPower")
     private float batteryPower;
 
-    @SerializedName("batterySoC")
+    @SerializedName("batterySoc")
     private float batterySoC;
 
     @SerializedName("gridConfigured")
@@ -47,7 +47,7 @@ public class Result {
     @SerializedName("loadpoints")
     private Loadpoint[] loadpoints;
 
-    @SerializedName("prioritySoC")
+    @SerializedName("prioritySoc")
     private float batteryPrioritySoC;
 
     @SerializedName("pvConfigured")
