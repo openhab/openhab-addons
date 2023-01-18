@@ -21,6 +21,7 @@
 			<channel id="voltagePV3" typeId="voltagePV3"/>
 			<channel id="energyToday" typeId="energyToday"/>
 			<channel id="energyTotal" typeId="energyTotal"/>
+			<channel id="temprature" typeId="temprature"/>
 		</channels>
 
 		<config-description>
@@ -114,5 +115,10 @@
 		<description>The amount of generated energy in total</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
+	<channel-type id="temprature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<state readOnly="true" pattern="%.f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>
