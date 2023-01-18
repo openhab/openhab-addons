@@ -73,7 +73,7 @@ public class StatusWrapper {
     }
 
     /**
-     * Test results auctomatically against json values
+     * Test results automatically against json values
      *
      * @param channels
      * @param states
@@ -210,7 +210,7 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(Units.MINUTE, qt.getUnit());
+                assertEquals(Units.MINUTE, qt.getUnit(), "Minute Unit");
                 assertEquals(vehicleState.getElectricChargingState().getRemainingChargingMinutes(), qt.intValue(),
                         "Charge Time Remaining");
                 break;

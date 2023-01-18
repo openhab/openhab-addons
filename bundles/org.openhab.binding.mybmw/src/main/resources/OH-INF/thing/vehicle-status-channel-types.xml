@@ -40,7 +40,7 @@
 	<channel-type id="charging-remaining-channel">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Charging Time</label>
-        <state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="plug-connection-channel">
 		<item-type>String</item-type>
