@@ -86,19 +86,19 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePV1">
-		<item-type>Number:Voltage</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage PV1</label>
 		<description>The voltage on input string 1</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePV2">
-		<item-type>Number:Voltage</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage PV2</label>
 		<description>The voltage on input string 2</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePV3">
-		<item-type>Number:Voltage</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>The voltage on input string 3</label>
 		<description>The voltage PV3</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -115,7 +115,6 @@
 		<description>The amount of generated energy in total</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="temprature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
