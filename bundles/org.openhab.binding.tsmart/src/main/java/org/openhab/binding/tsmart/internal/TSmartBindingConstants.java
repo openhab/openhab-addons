@@ -29,7 +29,7 @@ public class TSmartBindingConstants {
     private static final String BINDING_ID = "tsmart";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_T_SMART = new ThingTypeUID(BINDING_ID, "tSmart");
+    public static final ThingTypeUID THING_TYPE_T_SMART = new ThingTypeUID(BINDING_ID, "tsmart");
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";

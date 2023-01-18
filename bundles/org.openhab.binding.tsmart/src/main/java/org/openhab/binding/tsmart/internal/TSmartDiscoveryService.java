@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author James Melville - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.tSmart")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.tsmart")
 public class TSmartDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(TSmartDiscoveryService.class);
