@@ -171,7 +171,7 @@ Reflects overall status of the vehicle.
 | Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
 | Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
 | Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
-| Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
+| Remaining Charging Time   | charge-remaining    | Number:Time   | Remainining time for current charging session  |      |  X   |    X    |  X  |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
 
 Overall Door Status values
@@ -364,13 +364,14 @@ Parallel execution isn't supported.
 
 The channel _command_ provides options
 
-* _ight-flash_
+* _light-flash_
 * _vehicle-finder_
 * _door-lock_
 * _door-unlock_
 * _horn-blow_
 * _climate-now-start_
 * _climate-now-stop_
+* _charge-now_
 
 The channel _state_ shows the progress of the command execution in the following order
 

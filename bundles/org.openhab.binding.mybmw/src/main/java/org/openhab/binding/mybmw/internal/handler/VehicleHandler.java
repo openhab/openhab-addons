@@ -34,11 +34,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.MyBMWVehicleConfiguration;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSession;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargingProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.vehicle.CheckControlMessage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.RequiredService;
@@ -403,8 +403,10 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
                     Converter.toTitleCase(vehicleState.getElectricChargingState().getChargingStatus()),
                     channelToBeUpdated);
-            // TODO: I don't know what to set here with API v2
-            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_INFO, StringType.valueOf(Constants.UNDEF), channelToBeUpdated);
+            int remainingTime = vehicleState.getElectricChargingState().getRemainingChargingMinutes();
+            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_REMAINING,
+                    remainingTime >= 0 ? QuantityType.valueOf(remainingTime, Units.MINUTE) : UnDefType.UNDEF,
+                    channelToBeUpdated);
         }
     }
 
