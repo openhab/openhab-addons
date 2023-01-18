@@ -194,4 +194,12 @@ public class OmnikInverterMessage {
     public double getTotalEnergy() {
         return getInt(71, 10);
     }
+
+    /**
+     *
+     * @return the Current temprature in Celcius
+     */
+    public double getTemperature() {
+        return getShort(31, 10);
+    }
 }

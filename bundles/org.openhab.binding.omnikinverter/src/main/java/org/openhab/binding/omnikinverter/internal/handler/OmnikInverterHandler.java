@@ -30,6 +30,7 @@ import org.openhab.binding.omnikinverter.internal.OmnikInverterBindingConstants;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterConfiguration;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterMessage;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -127,6 +128,9 @@ public class OmnikInverterHandler extends BaseThingHandler {
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TOTAL,
                         new QuantityType<>(message.getTotalEnergy(), Units.KILOWATT_HOUR));
+
+                updateState(OmnikInverterBindingConstants.CHANNEL_TEMPRATURE,
+                        new QuantityType<>(message.getTemperature(), SIUnits.CELSIUS));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
