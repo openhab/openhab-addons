@@ -49,6 +49,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - updates for v2 API
+ * @author Mark Herwege - remaining charging time test
  */
 @NonNullByDefault
 @SuppressWarnings("null")

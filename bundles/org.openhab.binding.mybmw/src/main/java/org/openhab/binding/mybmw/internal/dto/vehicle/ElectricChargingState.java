@@ -17,6 +17,7 @@ package org.openhab.binding.mybmw.internal.dto.vehicle;
  * derived from the API responses
  *
  * @author Martin Grassl - initial contribution
+ * @author Mark Herwege - refactoring, V2 API charging 
  */
 public class ElectricChargingState {
     private String chargingConnectionType = ""; // UNKNOWN,

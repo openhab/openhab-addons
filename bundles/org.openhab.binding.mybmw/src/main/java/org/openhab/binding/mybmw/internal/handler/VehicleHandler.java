@@ -94,7 +94,8 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send charge profile
  * @author Martin Grassl - refactoring, merge with VehicleChannelHandler
- */
+ * @author Mark Herwege - refactoring, V2 API charging 
+*/
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);

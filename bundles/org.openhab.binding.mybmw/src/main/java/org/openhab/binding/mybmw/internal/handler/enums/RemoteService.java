@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * possible remote services
  *
  * @author Martin Grassl - initial contribution
+ * @author Mark Herwege - electric charging commands 
  */
 @NonNullByDefault
 public enum RemoteService {

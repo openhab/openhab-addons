@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send of charge profile
  * @author Martin Grassl - refactoring
+ * @author Mark Herwege - extended log anonymization 
  */
 @NonNullByDefault
 public class MyBMWProxy {
