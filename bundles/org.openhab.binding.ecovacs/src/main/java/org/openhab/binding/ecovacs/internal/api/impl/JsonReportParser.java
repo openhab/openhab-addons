@@ -31,6 +31,7 @@ import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Danny Baumann - Initial contribution
@@ -52,7 +53,15 @@ class JsonReportParser implements ReportParser {
 
     @Override
     public void handleMessage(String eventName, String payload) throws DataParsingException {
-        JsonResponsePayloadWrapper response = gson.fromJson(payload, JsonResponsePayloadWrapper.class);
+        JsonResponsePayloadWrapper response;
+        try {
+            response = gson.fromJson(payload, JsonResponsePayloadWrapper.class);
+        } catch (JsonSyntaxException e) {
+            // The onFwBuryPoint-bd_sysinfo sends a JSON array instead of the expected JsonResponsePayloadBody object.
+            // Since we don't do anything with it anyway, just ignore it
+            logger.debug("{}: Got invalid JSON message payload, ignoring: {}", device.getSerialNumber(), payload, e);
+            response = null;
+        }
         if (response == null) {
             return;
         }
@@ -139,11 +148,11 @@ class JsonReportParser implements ReportParser {
         listener.onCleaningModeUpdated(device, mode, Optional.ofNullable(areaDefinition));
     }
 
-    private <T> T payloadAs(JsonResponsePayloadWrapper response, Class<T> clazz) {
+    private <T> T payloadAs(JsonResponsePayloadWrapper response, Class<T> clazz) throws DataParsingException {
         @Nullable
         T payload = gson.fromJson(response.body.payload, clazz);
         if (payload == null) {
-            throw new IllegalArgumentException("Null payload");
+            throw new DataParsingException("Null payload in response " + response);
         }
         return payload;
     }
