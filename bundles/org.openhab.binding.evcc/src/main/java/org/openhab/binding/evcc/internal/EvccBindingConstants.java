@@ -31,6 +31,7 @@ public class EvccBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel Type UIDs
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_CAPACITY = new ChannelTypeUID(BINDING_ID, "batteryCapacity");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_POWER = new ChannelTypeUID(BINDING_ID, "batteryPower");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_SOC = new ChannelTypeUID(BINDING_ID, "batterySoC");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC = new ChannelTypeUID(BINDING_ID,
@@ -88,6 +89,7 @@ public class EvccBindingConstants {
             "vehicleTitle");
 
     // List of all Channel ids
+    public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
     public static final String CHANNEL_BATTERY_POWER = "batteryPower";
     public static final String CHANNEL_BATTERY_SOC = "batterySoC";
     public static final String CHANNEL_BATTERY_PRIORITY_SOC = "batteryPrioritySoC";

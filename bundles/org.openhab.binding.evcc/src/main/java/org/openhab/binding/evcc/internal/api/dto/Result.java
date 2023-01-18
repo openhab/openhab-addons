@@ -26,6 +26,9 @@ public class Result {
 
     // "auth" is left out because it does not provide any useful information
 
+    @SerializedName("batteryCapacity")
+    private float batteryCapacity;
+
     @SerializedName("batteryConfigured")
     private boolean batteryConfigured;
 
@@ -58,6 +61,13 @@ public class Result {
 
     @SerializedName("siteTitle")
     private String siteTitle;
+
+    /**
+     * @return battery's capacity
+     */
+    public float getBatteryCapacity() {
+        return batteryCapacity;
+    }
 
     /**
      * @return whether battery is configured
