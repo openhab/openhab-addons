@@ -22,10 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.AlimentationStatus;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SdCardStatus;
-import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
-import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.api.dto.*;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
@@ -75,6 +72,15 @@ public class CameraCapability extends HomeSecurityThingCapability {
                 || !AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
             statusReason = String.format("%s, %s", newData.getSdStatus(), newData.getAlimStatus());
         }
+    }
+
+    @Override
+    protected void updateWebhookEvent(WebhookEvent event) {
+        super.updateWebhookEvent(event);
+
+        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
+        // the new updated data from the other channels.
+        handler.triggerChannel(CHANNEL_HOME_EVENT, event.getEventType().name());
     }
 
     @Override

@@ -44,8 +44,6 @@ public class DoorbellCapability extends CameraCapability {
 
     @Override
     public void updateWebhookEvent(WebhookEvent event) {
-        super.updateWebhookEvent(event);
-
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TYPE),
                 toStringType(event.getEventType()));
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_TIME),
@@ -62,5 +60,7 @@ public class DoorbellCapability extends CameraCapability {
         String message = event.getName();
         handler.updateState(new ChannelUID(thingUid, GROUP_SUB_EVENT, CHANNEL_EVENT_MESSAGE),
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+
+        super.updateWebhookEvent(event);
     }
 }
