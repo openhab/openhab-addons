@@ -37,10 +37,10 @@
 		<label>Charging Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="charging-info-channel">
-		<item-type>String</item-type>
-		<label>Charging Information</label>
-		<state readOnly="true"/>
+	<channel-type id="charging-remaining-channel">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Charging Time</label>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="plug-connection-channel">
 		<item-type>String</item-type>

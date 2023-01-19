@@ -30,8 +30,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -49,10 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyBMWProxy} This class holds the important constants for the BMW
- * Connected Drive Authorization.
- * They
- * are taken from the Bimmercode from github
+ * The {@link MyBMWProxy} This class holds the important constants for the BMW Connected Drive Authorization.
+ * They are taken from the Bimmercode from github
  * {@link https://github.com/bimmerconnected/bimmer_connected}
  * File defining these constants
  * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
@@ -61,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send of charge profile
  * @author Martin Grassl - refactoring
+ * @author Mark Herwege - extended log anonymization
  */
 @NonNullByDefault
 public class MyBMWProxy {
@@ -115,10 +114,14 @@ public class MyBMWProxy {
      * @param brand
      */
     public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException {
+        String vehicleResponseString = requestVehiclesBaseJson(brand);
+        return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
+    }
+
+    public String requestVehiclesBaseJson(String brand) throws NetworkException {
         byte[] vehicleResponse = get(vehicleUrl, brand, null, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleResponseString = new String(vehicleResponse, Charset.defaultCharset());
-
-        return JsonStringDeserializer.getVehicleBaseList(vehicleResponseString);
+        return vehicleResponseString;
     }
 
     /**
@@ -156,46 +159,58 @@ public class MyBMWProxy {
      * @return
      */
     public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException {
+        String vehicleStateResponseString = requestVehicleStateJson(vin, brand);
+        return JsonStringDeserializer.getVehicleState(vehicleStateResponseString);
+    }
+
+    public String requestVehicleStateJson(String vin, String brand) throws NetworkException {
         byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", brand, vin,
                 HTTPConstants.CONTENT_TYPE_JSON);
-
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
-
-        return JsonStringDeserializer.getVehicleState(vehicleStateResponseString);
+        return vehicleStateResponseString;
     }
 
     /**
      * request charge statistics for electric vehicles
      *
      */
-    public ChargeStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
-        MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+    public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
+        String chargeStatisticsResponseString = requestChargeStatisticsJson(vin, brand);
+        return JsonStringDeserializer.getChargeStatistics(new String(chargeStatisticsResponseString));
+    }
+
+    public String requestChargeStatisticsJson(String vin, String brand) throws NetworkException {
+        MultiMap<@Nullable String> chargeStatisticsParams = new MultiMap<>();
         chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
         byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
-
-        return JsonStringDeserializer.getChargeStatistics(new String(chargeStatisticsResponse));
+        String chargeStatisticsResponseString = new String(chargeStatisticsResponse);
+        return chargeStatisticsResponseString;
     }
 
     /**
      * request charge sessions for electric vehicles
      *
      */
-    public ChargeSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
-        MultiMap<String> chargeSessionsParams = new MultiMap<String>();
+    public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
+        String chargeSessionsResponseString = requestChargeSessionsJson(vin, brand);
+        return JsonStringDeserializer.getChargeSessions(chargeSessionsResponseString);
+    }
+
+    public String requestChargeSessionsJson(String vin, String brand) throws NetworkException {
+        MultiMap<@Nullable String> chargeSessionsParams = new MultiMap<>();
         chargeSessionsParams.put("vin", vin);
         chargeSessionsParams.put("maxResults", "40");
         chargeSessionsParams.put("include_date_picker", "true");
         String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + "/eadrax-chs/v1/charging-sessions?" + params;
-
         byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
-
-        return JsonStringDeserializer.getChargeSessions(new String(chargeSessionsResponse));
+        String chargeSessionsResponseString = new String(chargeSessionsResponse);
+        return chargeSessionsResponseString;
     }
 
     public ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
@@ -258,7 +273,7 @@ public class MyBMWProxy {
      * @return
      */
     private synchronized byte[] call(final String url, final boolean post, final String brand,
-            final @Nullable String vin, String contentType, @Nullable String body) throws NetworkException {
+            final @Nullable String vin, final String contentType, final @Nullable String body) throws NetworkException {
         byte[] responseByteArray = "".getBytes();
 
         // return in case of unknown brand
@@ -288,7 +303,7 @@ public class MyBMWProxy {
                 NetworkException exception = new NetworkException(url, response.getStatus(),
                         ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()), body);
                 logResponse(ResponseContentAnonymizer.replaceVin(exception.getUrl(), vin), exception.getReason(),
-                        ResponseContentAnonymizer.replaceVin(body, vin));
+                        ResponseContentAnonymizer.anonymizeResponseContent(body));
                 throw exception;
             } else {
                 responseByteArray = response.getContent();
@@ -297,12 +312,12 @@ public class MyBMWProxy {
                 if (!HTTPConstants.CONTENT_TYPE_IMAGE.equals(contentType)) {
                     logResponse(ResponseContentAnonymizer.replaceVin(url, vin),
                             ResponseContentAnonymizer.anonymizeResponseContent(response.getContentAsString()),
-                            ResponseContentAnonymizer.replaceVin(body, vin));
+                            ResponseContentAnonymizer.anonymizeResponseContent(body));
                 }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logResponse(ResponseContentAnonymizer.replaceVin(url, vin), e.getMessage(),
-                    ResponseContentAnonymizer.replaceVin(body, vin));
+                    ResponseContentAnonymizer.anonymizeResponseContent(vin));
             throw new NetworkException(url, -1, null, body, e);
         }
 

@@ -26,8 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -125,7 +125,7 @@ public class MyBMWProxyBackendIT {
             assertNotNull(vehicleState);
 
             // get charge statistics -> only successful for electric vehicles
-            ChargeStatisticsContainer chargeStatisticsContainer = null;
+            ChargingStatisticsContainer chargeStatisticsContainer = null;
             try {
                 chargeStatisticsContainer = myBMWProxy.requestChargeStatistics(vehicleBase.getVin(),
                         vehicleBase.getAttributes().getBrand());
@@ -133,7 +133,7 @@ public class MyBMWProxyBackendIT {
                 logger.trace("error: {}", e.toString());
             }
 
-            ChargeSessionsContainer chargeSessionsContainer = null;
+            ChargingSessionsContainer chargeSessionsContainer = null;
             try {
                 chargeSessionsContainer = myBMWProxy.requestChargeSessions(vehicleBase.getVin(),
                         vehicleBase.getAttributes().getBrand());

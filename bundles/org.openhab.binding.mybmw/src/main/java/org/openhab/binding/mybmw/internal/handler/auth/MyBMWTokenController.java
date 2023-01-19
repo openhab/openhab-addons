@@ -12,41 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.handler.auth;
 
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.API_OAUTH_CONFIG;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTHORIZATION_CODE;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTH_PROVIDER;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.BRAND_BMW;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_LOGIN;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_PUBLIC_KEY;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.EADRAX_SERVER_MAP;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.LOGIN_NONCE;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OAUTH_ENDPOINT;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OCP_APIM_KEYS;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_CHINA;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_NORTH_AMERICA;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_ROW;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.USER_AGENT;
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.X_USER_AGENT;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.AUTHORIZATION;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CLIENT_ID;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLENGE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLENGE_METHOD;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_VERIFIER;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_URL_ENCODED;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.GRANT_TYPE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_ACP_SUBSCRIPTION_KEY;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_BMW_CORRELATION_ID;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_CORRELATION_ID;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_IDENTITY_PROVIDER;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_USER_AGENT;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.NONCE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.PASSWORD;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.REDIRECT_URI;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.RESPONSE_TYPE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.SCOPE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.STATE;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.USERNAME;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.*;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -60,6 +27,7 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -81,11 +49,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * requests the tokens for MyBMW API authorization
- * 
+ *
  * thanks to bimmer_connected https://github.com/bimmerconnected/bimmer_connected
- * 
+ *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - extracted from myBmwProxy
  */
@@ -107,8 +75,7 @@ public class MyBMWTokenController {
      * Gets new token if old one is expired or invalid. In case of error the token
      * remains.
      * So if token refresh fails the corresponding requests will also fail and
-     * update the
-     * Thing status accordingly.
+     * update the Thing status accordingly.
      *
      * @return token
      */
@@ -144,7 +111,6 @@ public class MyBMWTokenController {
      *
      * @return
      */
-    @SuppressWarnings("null")
     private synchronized boolean updateToken() {
         try {
             /*
@@ -178,7 +144,7 @@ public class MyBMWTokenController {
             String codeChallenge = generateCodeChallenge(codeVerifier);
             String state = generateState();
 
-            MultiMap<String> baseParams = new MultiMap<String>();
+            MultiMap<@Nullable String> baseParams = new MultiMap<>();
             baseParams.put(CLIENT_ID, aqr.clientId);
             baseParams.put(RESPONSE_TYPE, CODE);
             baseParams.put(REDIRECT_URI, aqr.returnUrl);
@@ -196,7 +162,7 @@ public class MyBMWTokenController {
 
             loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
 
-            MultiMap<String> loginParams = new MultiMap<String>(baseParams);
+            MultiMap<@Nullable String> loginParams = new MultiMap<>(baseParams);
             loginParams.put(GRANT_TYPE, AUTHORIZATION_CODE);
             loginParams.put(USERNAME, configuration.userName);
             loginParams.put(PASSWORD, configuration.password);
@@ -214,7 +180,7 @@ public class MyBMWTokenController {
              * Step 4) Authorize with code
              */
             Request authRequest = httpClient.POST(loginUrl).followRedirects(false);
-            MultiMap<String> authParams = new MultiMap<String>(baseParams);
+            MultiMap<@Nullable String> authParams = new MultiMap<>(baseParams);
             authParams.put(AUTHORIZATION, authCode);
             authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
             authRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
@@ -235,7 +201,7 @@ public class MyBMWTokenController {
             codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
             codeRequest.header(AUTHORIZATION, basicAuth);
 
-            MultiMap<String> codeParams = new MultiMap<String>();
+            MultiMap<@Nullable String> codeParams = new MultiMap<>();
             codeParams.put(CODE, code);
             codeParams.put(CODE_VERIFIER, codeVerifier);
             codeParams.put(REDIRECT_URI, aqr.returnUrl);
@@ -288,13 +254,13 @@ public class MyBMWTokenController {
     }
 
     private String codeFromUrl(String encodedUrl) {
-        final MultiMap<String> tokenMap = new MultiMap<String>();
+        final MultiMap<@Nullable String> tokenMap = new MultiMap<>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final StringBuilder codeFound = new StringBuilder();
         tokenMap.forEach((key, value) -> {
             if (value.size() > 0) {
                 String val = value.get(0);
-                if (key.endsWith(CODE)) {
+                if (key.endsWith(CODE) && (val != null)) {
                     codeFound.append(val.toString());
                 }
             }
@@ -302,7 +268,6 @@ public class MyBMWTokenController {
         return codeFound.toString();
     }
 
-    @SuppressWarnings("null")
     private synchronized boolean updateTokenChina() {
         try {
             /**

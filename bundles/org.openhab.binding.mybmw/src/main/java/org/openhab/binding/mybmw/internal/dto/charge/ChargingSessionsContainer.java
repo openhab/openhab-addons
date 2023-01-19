@@ -13,14 +13,11 @@
 package org.openhab.binding.mybmw.internal.dto.charge;
 
 /**
- * The {@link ChargeStatistics} Data Transfer Object
+ * The {@link ChargingSessionsContainer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class ChargeStatistics {
-    public int totalEnergyCharged;// ": 173,
-    public String totalEnergyChargedSemantics;// ": "Insgesamt circa 173 Kilowattstunden geladen",
-    public String symbol;// ": "~",
-    public int numberOfChargingSessions;// ": 13,
-    public String numberOfChargingSessionsSemantics;// ": "13 Ladevorgänge"
+public class ChargingSessionsContainer {
+    public Object paginationInfo;
+    public ChargingSessions chargingSessions;
 }

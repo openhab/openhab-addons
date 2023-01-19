@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleBase;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
@@ -62,23 +62,23 @@ public interface JsonStringDeserializer {
         }
     }
 
-    public static ChargeStatisticsContainer getChargeStatistics(String chargeStatisticsJson) {
+    public static ChargingStatisticsContainer getChargeStatistics(String chargeStatisticsJson) {
         try {
-            ChargeStatisticsContainer chargeStatistics = deserializeString(chargeStatisticsJson,
-                    ChargeStatisticsContainer.class);
+            ChargingStatisticsContainer chargeStatistics = deserializeString(chargeStatisticsJson,
+                    ChargingStatisticsContainer.class);
             return chargeStatistics;
         } catch (JsonSyntaxException e) {
             LOGGER.warn("JsonSyntaxException {}", e.getMessage());
-            return new ChargeStatisticsContainer();
+            return new ChargingStatisticsContainer();
         }
     }
 
-    public static ChargeSessionsContainer getChargeSessions(String chargeSessionsJson) {
+    public static ChargingSessionsContainer getChargeSessions(String chargeSessionsJson) {
         try {
-            return deserializeString(chargeSessionsJson, ChargeSessionsContainer.class);
+            return deserializeString(chargeSessionsJson, ChargingSessionsContainer.class);
         } catch (JsonSyntaxException e) {
             LOGGER.warn("JsonSyntaxException {}", e.getMessage());
-            return new ChargeSessionsContainer();
+            return new ChargingSessionsContainer();
         }
     }
 

@@ -176,11 +176,12 @@
             }
         },
         "electricChargingState": {
-            "chargingLevelPercent": 57,
-            "range": 191,
-            "isChargerConnected": false,
+            "chargingLevelPercent": 46,
+            "remainingChargingMinutes": 178,
+            "range": 159,
+            "isChargerConnected": true,
             "chargingConnectionType": "UNKNOWN",
-            "chargingStatus": "INVALID",
+            "chargingStatus": "CHARGING",
             "chargingTarget": 80
         },
         "combustionFuelLevel": {

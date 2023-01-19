@@ -13,10 +13,11 @@
 package org.openhab.binding.mybmw.internal.dto.vehicle;
 
 /**
- * 
+ *
  * derived from the API responses
- * 
+ *
  * @author Martin Grassl - initial contribution
+ * @author Mark Herwege - refactoring, V2 API charging 
  */
 public class ElectricChargingState {
     private String chargingConnectionType = ""; // UNKNOWN,
@@ -24,6 +25,7 @@ public class ElectricChargingState {
     private boolean isChargerConnected = false; // true,
     private int chargingTarget = -1; // 80,
     private int chargingLevelPercent = -1; // 80,
+    private int remainingChargingMinutes = -1; // 178
     private int range = -1; // 286
 
     /**
@@ -97,6 +99,20 @@ public class ElectricChargingState {
     }
 
     /**
+     * @return the remainingChargingMinutes
+     */
+    public int getRemainingChargingMinutes() {
+        return remainingChargingMinutes;
+    }
+
+    /**
+     * @param remainingChargingMinutes the remainingChargingMinutes to set
+     */
+    public void setRemainingChargingMinutes(int remainingChargingMinutes) {
+        this.remainingChargingMinutes = remainingChargingMinutes;
+    }
+
+    /**
      * @return the range
      */
     public int getRange() {
@@ -112,7 +128,7 @@ public class ElectricChargingState {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
 
@@ -120,6 +136,7 @@ public class ElectricChargingState {
     public String toString() {
         return "ElectricChargingState [chargingConnectionType=" + chargingConnectionType + ", chargingStatus="
                 + chargingStatus + ", isChargerConnected=" + isChargerConnected + ", chargingTarget=" + chargingTarget
-                + ", chargingLevelPercent=" + chargingLevelPercent + ", range=" + range + "]";
+                + ", chargingLevelPercent=" + chargingLevelPercent + ", remainingChargingMinutes="
+                + remainingChargingMinutes + ", range=" + range + "]";
     }
 }

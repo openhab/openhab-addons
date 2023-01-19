@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey;
+import org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey;
 
 /**
- * The {@link ChargeProfileUtils} utility functions for charging profiles
+ * The {@link ChargingProfileUtils} utility functions for charging profiles
  *
  * @author Norbert Truchsess - initial contribution
  */
 @NonNullByDefault
-public class ChargeProfileUtils {
+public class ChargingProfileUtils {
 
     // Charging
     public static class TimedChannel {

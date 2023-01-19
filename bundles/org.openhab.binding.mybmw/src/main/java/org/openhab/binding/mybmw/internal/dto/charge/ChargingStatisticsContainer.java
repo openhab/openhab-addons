@@ -13,12 +13,12 @@
 package org.openhab.binding.mybmw.internal.dto.charge;
 
 /**
- * The {@link ChargeStatisticsContainer} Data Transfer Object
+ * The {@link ChargingStatisticsContainer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class ChargeStatisticsContainer {
+public class ChargingStatisticsContainer {
     public String description;// ": "Dezember 2021",
     public String optStateType;// ": "OPT_IN_WITH_SESSIONS",
-    public ChargeStatistics statistics;// ": {
+    public ChargingStatistics statistics;// ": {
 }
