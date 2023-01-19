@@ -458,33 +458,33 @@ All these channels are read only.
 
 **Supported trigger channels for the Home thing:**
 
-| Channel Type ID  | Options            | Description                                                                                                                                                                      |
-| ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| cameraEvent      |                    | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
-|                  | HUMAN              | Triggered when a human (or person) was detected                                                                                                                                  |
-|                  | ANIMAL             | Triggered when an animal was detected                                                                                                                                            |
-|                  | MOVEMENT           | Triggered when an unspecified movement was detected                                                                                                                              |
-|                  | VEHICLE            | Triggered when a vehicle was detected                                                                                                                                            |
-| welcomeHomeEvent |                    | A welcome home event is triggered directly via a configured webhook                                                                                                              |
-|                  | PERSON             | Triggered when a concrete person was detected                                                                                                                                    |
-|                  | PERSON_AWAY        | Triggered when a concrete person leaves                                                                                                                                          |
-|                  | MOVEMENT           | Triggered when a movement was detected                                                                                                                                           |
-|                  | CONNECTION         | Triggered when a camera connection gets created                                                                                                                                  |
-|                  | DISCONNECTION      | Triggered when a camera connection got lost                                                                                                                                      |
-|                  | ON                 | Triggered when camera monitoring is switched on                                                                                                                                  |
-|                  | OFF                | Triggered when camera monitoring is switched off                                                                                                                                 |
-|                  | BOOT               | Triggered when a camera is booting                                                                                                                                               |
-|                  | SD                 | Triggered when a camera SD card status was changed                                                                                                                               |
-|                  | ALIM               | Triggered when a power supply status was changed                                                                                                                                 |
-|                  | NEW_MODULE         | Triggered when a new module was discovered                                                                                                                                       |
-|                  | MODULE_CONNECT     | Triggered when a module gets connected                                                                                                                                           |
-|                  | MODULE_DISCONNECT  | Triggered when a module gets disconnected                                                                                                                                        |
-|                  | MODULE_LOW_BATTERY | Triggered when the battery of a module gets low                                                                                                                                  |
-|                  | MODULE_END_UPDATE  | Triggered when a firmware update of a module is done                                                                                                                             |
-|                  | TAG_BIG_MOVE       | Triggered when a big movement of a tag was detected                                                                                                                              |
-|                  | TAG_SMALL_MOVE     | Triggered when a small movement of a tag was detected                                                                                                                            |
-|                  | TAG_UNINSTALLED    | Triggered when a tag gets uninstalled                                                                                                                                            |
-|                  | TAG_OPEN           | Triggered when an open event of a tag was detected                                                                                                                               |
+| Channel Type ID | Options            | Description                                                         |
+|-----------------|--------------------|---------------------------------------------------------------------|
+| home-event      |                    | A welcome home event is triggered directly via a configured webhook |
+|                 | PERSON             | Triggered when a concrete person was detected                       |
+|                 | PERSON_AWAY        | Triggered when a concrete person leaves                             |
+|                 | PERSON_HOME        | Triggered when a concrete person entered the home                   |
+|                 | OUTDOOR            | Triggered when a event of an outdoor camera was triggered           |
+|                 | MOVEMENT           | Triggered when a movement was detected                              |
+|                 | HUMAN              | Triggered when a human was detected                                 |
+|                 | ANIMAL             | Triggered when an animal was detected                               |
+|                 | VEHICLE            | Triggered when a vehicle was detected                               |
+|                 | NEW_MODULE         | Triggered when a new module was discovered                          |
+|                 | MODULE_CONNECT     | Triggered when a module gets connected                              |
+|                 | MODULE_DISCONNECT  | Triggered when a module gets disconnected                           |
+|                 | MODULE_LOW_BATTERY | Triggered when the battery of a module gets low                     |
+|                 | MODULE_END_UPDATE  | Triggered when a firmware update of a module is done                |
+|                 | CONNECTION         | Triggered when a camera connection gets created                     |
+|                 | DISCONNECTION      | Triggered when a camera connection got lost                         |
+|                 | ON                 | Triggered when camera monitoring is switched on                     |
+|                 | OFF                | Triggered when camera monitoring is switched off                    |
+|                 | BOOT               | Triggered when a camera is booting                                  |
+|                 | SD                 | Triggered when a camera SD card status was changed                  |
+|                 | ALIM               | Triggered when a power supply status was changed                    |
+|                 | ACCEPTED_CALL      | Triggered when a doorbell call was accepted                         |
+|                 | INCOMING_CALL      | Triggered when a doorbell call is incoming                          |
+|                 | RTC                | Triggered when the doorbell button was pressed                      |
+|                 | MISSED_CALL        | Triggered when a doorbell call was missed                           |
 
 ### Welcome, Presence and Doorbell Cameras
 
