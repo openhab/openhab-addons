@@ -75,8 +75,7 @@ public class MyBMWTokenController {
      * Gets new token if old one is expired or invalid. In case of error the token
      * remains.
      * So if token refresh fails the corresponding requests will also fail and
-     * update the
-     * Thing status accordingly.
+     * update the Thing status accordingly.
      *
      * @return token
      */

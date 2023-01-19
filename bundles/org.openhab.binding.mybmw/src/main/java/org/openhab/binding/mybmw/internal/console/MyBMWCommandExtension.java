@@ -115,7 +115,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
 
                             if (args.length == 3) {
                                 Optional<VehicleBase> vehicleOptional = vehicles.stream()
-                                        .filter(v -> v.getVin().equals(args[2])).findAny();
+                                        .filter(v -> v.getVin().toLowerCase().equals(args[2].toLowerCase())).findAny();
                                 if (vehicleOptional.isEmpty()) {
                                     console.println(
                                             "'" + args[2] + "' is not a valid vin on the account bridge with id '"
