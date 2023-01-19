@@ -505,9 +505,8 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL, qtFuelRadius, channelToBeUpdated);
         }
 
-        // TODO: no hybrid model available!
         if (isHybrid) {
-            int rangeCombined = -1;
+            int rangeCombined = vehicleState.getRange();
             QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, lengthUnit);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeCombined),
                     lengthUnit);

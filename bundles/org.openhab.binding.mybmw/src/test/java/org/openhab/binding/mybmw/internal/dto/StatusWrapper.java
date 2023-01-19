@@ -47,8 +47,10 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.NAME;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.PLUG_CONNECTION;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_ELECTRIC;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_HYBRID;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_ELECTRIC;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_HYBRID;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.RAW;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_CURRENT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_TARGET;
@@ -202,6 +204,13 @@ public class StatusWrapper {
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(vehicleState.getElectricChargingState().getRange(), qt.intValue(), "Range Electric");
                 break;
+            case RANGE_HYBRID:
+                assertTrue(isHybrid, "Is hybrid");
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(vehicleState.getRange(), qt.intValue(), "Range combined hybrid");
+                break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
                 assertTrue(state instanceof QuantityType);
@@ -323,6 +332,12 @@ public class StatusWrapper {
                 qt = (QuantityType) state;
                 assertEquals(Converter.guessRangeRadius(vehicleState.getCombustionFuelLevel().getRange()),
                         qt.intValue(), "Range Radius Fuel");
+                break;
+            case RANGE_RADIUS_HYBRID:
+                assertTrue(state instanceof QuantityType);
+                assertTrue(isHybrid);
+                qt = (QuantityType) state;
+                assertEquals(Converter.guessRangeRadius(vehicleState.getRange()), qt.intValue(), "Range Radius Hybrid");
                 break;
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
