@@ -47,5 +47,5 @@ public class OmnikInverterBindingConstants {
 
     public static final String CHANNEL_ENERGY_TOTAL = "energyTotal";
 
-    public static final String CHANNEL_TEMPRATURE = "temprature";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
 }
