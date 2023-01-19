@@ -20,6 +20,8 @@ package org.openhab.binding.mybmw.internal.dto.network;
  */
 public class NetworkException extends Exception {
 
+    private static final long serialVersionUID = 123L;
+
     private String url;
     private int status;
     private String reason;

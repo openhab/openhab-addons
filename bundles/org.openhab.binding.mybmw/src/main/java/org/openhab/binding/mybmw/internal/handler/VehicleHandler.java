@@ -12,7 +12,82 @@
  */
 package org.openhab.binding.mybmw.internal.handler;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ADDRESS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_PROFILE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_SESSION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_STATISTICS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHECK_CONTROL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_DOORS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_LOCATION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_RANGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_REMOTE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_SERVICE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_TIRES;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_VEHICLE_IMAGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_ENABLED;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_CLIMATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_CONTROL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_LIMIT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_MODE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_PREFERENCE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_REMAINING;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHECK_CONTROL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DETAILS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOORS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ENERGY;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.GPS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HEADING;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOME_DISTANCE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_FORMAT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_VIEWPORT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ISSUE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_UPDATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LOCK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.MILEAGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.NAME;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.PLUG_CONNECTION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_ELECTRIC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_HYBRID;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_ELECTRIC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_HYBRID;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RAW;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMAINING_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_COMMAND;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_STATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_DATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_MILEAGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SESSIONS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SEVERITY;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SOC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUBTITLE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUNROOF;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.TITLE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.TRUNK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOWS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_REAR;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -390,8 +465,7 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 Converter.toTitleCase(vehicleState.getOverallCheckControlStatus()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
-                DateTimeType.valueOf(Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt())),
-                channelToBeUpdated);
+                Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, DOORS,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,
@@ -546,13 +620,8 @@ public class VehicleHandler extends BaseThingHandler {
                     channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_SERVICE, DETAILS, StringType.valueOf(serviceEntry.getDescription()),
                     channelToBeUpdated);
-            if (serviceEntry.getDateTime() != null) {
-                updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.getDateTime())),
-                        channelToBeUpdated);
-            } else {
-                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF, channelToBeUpdated);
-            }
+            updateChannel(CHANNEL_GROUP_SERVICE, DATE, Converter.zonedToLocalDateTime(serviceEntry.getDateTime()),
+                    channelToBeUpdated);
 
             // TODO km vs mileage not available anymore in the response, it is set in the
             // request as header

@@ -15,14 +15,9 @@ package org.openhab.binding.mybmw.internal.dto.vehicle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
 import org.openhab.binding.mybmw.internal.util.FileReader;
-import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
 
@@ -61,10 +56,6 @@ public class VehicleStateContainerTest {
                                 .toLocalDateTime().toString(),
                 "Service Date");
 
-        ZonedDateTime zdt = ZonedDateTime.parse("2022-12-21T15:41:23Z").withZoneSameInstant(ZoneId.systemDefault());
-        LocalDateTime ldt = zdt.toLocalDateTime();
-        assertEquals(ldt.format(Converter.DATE_INPUT_PATTERN),
-                Converter.zonedToLocalDateTime(vehicleStateContainer.getState().getLastUpdatedAt()),
-                "Last update time");
+        assertEquals("2022-12-21T15:41:23Z", vehicleStateContainer.getState().getLastUpdatedAt(), "Last update time");
     }
 }

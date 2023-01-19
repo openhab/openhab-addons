@@ -26,8 +26,10 @@ import java.util.TimeZone;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +52,19 @@ public interface Converter {
     static final String SPLIT_HYPHEN = "-";
     static final String SPLIT_BRACKET = "\\(";
 
-    public static String zonedToLocalDateTime(String input) {
-        try {
-            ZonedDateTime d = ZonedDateTime.parse(input).withZoneSameInstant(ZoneId.systemDefault());
-            return d.toLocalDateTime().format(Converter.DATE_INPUT_PATTERN);
-        } catch (Exception e) {
-            LOGGER.debug("Unable to parse date {} - {}", input, e.getMessage());
+    public static State zonedToLocalDateTime(@Nullable String input) {
+        if (input != null && !input.isEmpty()) {
+            try {
+                String dateString = ZonedDateTime.parse(input).withZoneSameInstant(ZoneId.systemDefault())
+                        .toLocalDateTime().format(Converter.DATE_INPUT_PATTERN);
+                return DateTimeType.valueOf(dateString);
+            } catch (Exception e) {
+                LOGGER.debug("Unable to parse date {} - {}", input, e.getMessage());
+                return UnDefType.UNDEF;
+            }
+        } else {
+            return UnDefType.UNDEF;
         }
-        return input;
     }
 
     /**

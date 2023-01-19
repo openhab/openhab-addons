@@ -288,8 +288,7 @@ public class StatusWrapper {
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
-                DateTimeType expected = DateTimeType
-                        .valueOf(Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt()));
+                State expected = Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt());
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
                 break;
             case GPS:
@@ -407,7 +406,7 @@ public class StatusWrapper {
                         }
                     } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
                         String dueDateString = vehicleState.getRequiredServices().get(0).getDateTime();
-                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.zonedToLocalDateTime(dueDateString));
+                        State expectedDTT = Converter.zonedToLocalDateTime(dueDateString);
                         assertEquals(expectedDTT.toString(), dtt.toString(), "First Service Date");
                     }
                 }
@@ -495,8 +494,7 @@ public class StatusWrapper {
                     switch (gUid) {
                         case CHANNEL_GROUP_SERVICE:
                             String dueDateString = vehicleState.getRequiredServices().get(0).getDateTime();
-                            DateTimeType expectedDTT = DateTimeType
-                                    .valueOf(Converter.zonedToLocalDateTime(dueDateString));
+                            State expectedDTT = Converter.zonedToLocalDateTime(dueDateString);
                             assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
                             break;
                         default:
