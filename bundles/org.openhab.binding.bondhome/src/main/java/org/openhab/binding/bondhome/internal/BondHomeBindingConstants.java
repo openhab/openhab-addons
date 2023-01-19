@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,12 +36,13 @@ public class BondHomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_BOND_SHADES = new ThingTypeUID(BINDING_ID, "bondShades");
     public static final ThingTypeUID THING_TYPE_BOND_FIREPLACE = new ThingTypeUID(BINDING_ID, "bondFireplace");
     public static final ThingTypeUID THING_TYPE_BOND_GENERIC = new ThingTypeUID(BINDING_ID, "bondGenericThing");
+    public static final ThingTypeUID THING_TYPE_BOND_LIGHT = new ThingTypeUID(BINDING_ID, "bondLight");
 
     /**
      * The supported thing types.
      */
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BOND_FAN, THING_TYPE_BOND_SHADES,
-            THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC);
+            THING_TYPE_BOND_FIREPLACE, THING_TYPE_BOND_GENERIC, THING_TYPE_BOND_LIGHT);
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Set.of(THING_TYPE_BOND_BRIDGE);
 
@@ -58,6 +59,7 @@ public class BondHomeBindingConstants {
     public static final String CHANNEL_GROUP_FAN = "fan";
     public static final String CHANNEL_FAN_POWER = CHANNEL_GROUP_FAN + "#power";
     public static final String CHANNEL_FAN_SPEED = CHANNEL_GROUP_FAN + "#speed";
+    public static final String CHANNEL_RAW_FAN_SPEED = CHANNEL_GROUP_FAN + "#rawSpeed";
     public static final String CHANNEL_FAN_BREEZE_STATE = CHANNEL_GROUP_FAN + "#breezeState";
     public static final String CHANNEL_FAN_BREEZE_MEAN = CHANNEL_GROUP_FAN + "#breezeMean";
     public static final String CHANNEL_FAN_BREEZE_VAR = CHANNEL_GROUP_FAN + "#breezeVariability";

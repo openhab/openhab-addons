@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,7 +106,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private ItemRegistry itemRegistry;
     private @Nullable DynamoDbEnhancedAsyncClient client;
     private @Nullable DynamoDbAsyncClient lowLevelClient;
-    private final static Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
     private @Nullable DynamoDBConfig dbConfig;
     private @Nullable DynamoDBTableNameResolver tableNameResolver;

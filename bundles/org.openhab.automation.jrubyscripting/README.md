@@ -75,7 +75,7 @@ The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 require 'java'
 java_import org.slf4j.LoggerFactory
 
-LoggerFactory.getLogger("org.openhab.automation.examples").info("Hello world!")
+LoggerFactory.getLogger("org.openhab.automation.examples").info("Hello, World!")
 ```
 
 JRuby can [import Java classes](https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby).
@@ -111,6 +111,7 @@ end
 ```
 
 #### weather.items
+
 ```Xtend
 Number:Angle Exterior_WindDirection "Wind Direction [SCRIPT(rb:compass.script):%s]" <wind>
 ```

@@ -34,7 +34,7 @@ The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 ```python
 from org.slf4j import LoggerFactory
 
-LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello world!")
+LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello, World!")
 ```
 
 Jython can [import Java classes](https://jython.readthedocs.io/en/latest/ModulesPackages/).
@@ -52,5 +52,5 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 to obtain a named logger and then logs a message like:
 
 ```text
-    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello world!
+    ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```

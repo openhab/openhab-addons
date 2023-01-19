@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -662,6 +662,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             return;
         }
         final String weatherGrp = CHGRP_WEATHER + "#";
+
         updateChannel(weatherGrp + CH_WEATHER_TIMESTAMP, EcobeeUtils.undefOrDate(weather.timestamp, timeZoneProvider));
         updateChannel(weatherGrp + CH_WEATHER_WEATHER_STATION, EcobeeUtils.undefOrString(weather.weatherStation));
 

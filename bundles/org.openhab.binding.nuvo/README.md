@@ -5,8 +5,8 @@ Up to 20 keypad zones can be controlled when zone expansion modules are used (if
 
 The binding supports three different kinds of connections:
 
-- serial connection,
-- serial over IP connection,
+- serial port connection
+- serial over IP connection
 - direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a USB to serial adapter.
@@ -26,11 +26,6 @@ It has the `amplifier` id.
 
 Discovery is not supported.
 You have to add all things manually.
-
-## Binding Configuration
-
-There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
 
 ## Thing Configuration
 

@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.deconz</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Dresden Elektronik deCONZ Binding</name>
+  <name>openHAB Add-ons :: Bundles :: deCONZ Binding</name>
 
 </project>

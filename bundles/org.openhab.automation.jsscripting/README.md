@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2021+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -15,6 +15,8 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Console](#console)
   - [Timers](#timers)
   - [Paths](#paths)
+  - [Deinitialization Hook](#deinitialization-hook)
+- [`SCRIPT` Transformation](#script-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
@@ -27,20 +29,22 @@ to common openHAB functionality within rules including items, things, actions, l
   - [JSRule](#jsrule)
   - [Rule Builder](#rule-builder)
   - [Event Object](#event-object)
-  - [Initialization hook: scriptLoaded](#initialization-hook-scriptloaded)
-  - [Deinitialization hook: scriptUnloaded](#deinitialization-hook-scriptunloaded)
 - [Advanced Scripting](#advanced-scripting)
+  - [Libraries](#libraries)
   - [@runtime](#runtime)
 
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
-This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.
+This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
+
+By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
+If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
 
 ![openHAB Rule Configuration](doc/settings.png)
 
-<!-- Paste the copied docs from openhab-js under this comment. -->
+<!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
 ### UI Based Rules
 

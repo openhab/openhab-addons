@@ -8,6 +8,7 @@
 /bundles/org.openhab.automation.groovyscripting/ @wborn
 /bundles/org.openhab.automation.jrubyscripting/ @boc-tothefuture @ccutrer @jimtng
 /bundles/org.openhab.automation.jsscripting/ @jpg0 @florian-h05
+/bundles/org.openhab.automation.jsscriptingnashorn/ @wborn
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.automation.pwm/ @fwolter
@@ -62,7 +63,6 @@
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
-/bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.dbquery/ @lujop
 /bundles/org.openhab.binding.deconz/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
@@ -415,6 +415,7 @@
 /bundles/org.openhab.voice.voicerss/ @JochenHiller @lolodomo
 /bundles/org.openhab.voice.voskstt/ @GiviMAD
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
+/itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @svilenvul
