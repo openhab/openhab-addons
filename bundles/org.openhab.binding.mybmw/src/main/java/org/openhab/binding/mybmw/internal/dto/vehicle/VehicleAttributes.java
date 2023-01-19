@@ -19,7 +19,7 @@ import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
  * derived from the API responses
  *
  * @author Martin Grassl - initial contribution
- * @author Mark Herwege - fix brand BMW_I 
+ * @author Mark Herwege - fix brand BMW_I
  */
 public class VehicleAttributes {
     private String lastFetched = ""; // "2022-12-21T17:30:40.363Z"

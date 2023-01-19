@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - refactoring & extension for any occurrence
- * @author Mark Herwege - extended log anonymization 
+ * @author Mark Herwege - extended log anonymization
  */
 @NonNullByDefault
 public interface ResponseContentAnonymizer {
