@@ -118,7 +118,6 @@
 		<item-type>Number:Frequency</item-type>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>
