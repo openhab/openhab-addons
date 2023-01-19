@@ -456,7 +456,7 @@ All these channels are read only.
 
 All these channels are read only.
 
-**Supported trigger channels for the Home thing:**
+**Supported trigger channels for the Home, Presence and Doorbell thing:**
 
 | Channel Type ID | Options            | Description                                                         |
 |-----------------|--------------------|---------------------------------------------------------------------|
@@ -527,7 +527,8 @@ Warnings:
 - The floodlight auto-mode (auto-mode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
 | Channel Group | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------- |----------------------| ------------ | ---------- |---------------------------------------------------------------------------------------------------------------------------------------------|
+| security      | home-event           |              | Read-only  | Trigger channel which is triggered when the camera sent an event                                                                            |
 | status        | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
 | status        | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
 | status        | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
@@ -554,7 +555,8 @@ Warnings:
 **Supported channels for the Doorbell thing:**
 
 | Channel Group | Channel ID        | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | ----------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------| ----------------- |--------------| ---------- |---------------------------------------------------------------------------------------------------------------------------------------------|
+| security      | home-event        |              | Read-only  | Trigger channel which is triggered when the doorbell sent an event                                                                          |
 | status        | sd-card           | String       | Read-only  | State of the SD card                                                                                                                        |
 | status        | alim              | String       | Read-only  | State of the power connector                                                                                                                |
 | live          | picture           | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
@@ -805,6 +807,26 @@ sitemap netatmo label="Netatmo" {
         }
     }
 }
+```
+
+## Example Rules
+
+```java
+rule "Notification on home web hook event"
+when
+Channel "netatmo:home:mybridgeid:myclientid:home-event" triggered
+then
+logInfo("camera", "Received web hook on home level")
+end
+```
+
+```java
+rule "Notification on camera web hook event"
+when
+Channel "netatmo:presence:mybridgeid:myclientid:mythingid:home-event" triggered
+then
+logInfo("camera", "Received web hook on camera level")
+end
 ```
 
 ## Rule Actions

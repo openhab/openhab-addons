@@ -10,6 +10,12 @@
 			<channel id="person-count" typeId="person-count"/>
 			<channel id="unknown-person-count" typeId="unknown-person-count"/>
 			<channel id="unknown-person-picture" typeId="unknown-person-picture"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="security-event">
+		<label>Home Security</label>
+		<channels>
 			<channel id="home-event" typeId="home-event"/>
 		</channels>
 	</channel-group-type>

@@ -80,7 +80,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
         // the new updated data from the other channels.
-        handler.triggerChannel(CHANNEL_HOME_EVENT, event.getEventType().name());
+        final String eventType = event.getEventType().name();
+        handler.getHomeHandler().ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
+        handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
     }
 
     @Override
