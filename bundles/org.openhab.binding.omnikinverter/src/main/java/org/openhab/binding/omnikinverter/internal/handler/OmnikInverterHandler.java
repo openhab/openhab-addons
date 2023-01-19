@@ -129,7 +129,7 @@ public class OmnikInverterHandler extends BaseThingHandler {
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TOTAL,
                         new QuantityType<>(message.getTotalEnergy(), Units.KILOWATT_HOUR));
 
-                updateState(OmnikInverterBindingConstants.CHANNEL_TEMPRATURE,
+                updateState(OmnikInverterBindingConstants.CHANNEL_TEMPERATURE,
                         new QuantityType<>(message.getTemperature(), SIUnits.CELSIUS));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
