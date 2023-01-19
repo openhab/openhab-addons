@@ -35,7 +35,7 @@ No autodiscovery available
 | voltagePV3      | Number:ElectricPotential | The voltage on input string 3, in volt by default                                                                |
 | energyToday     | Number:Energy  | The amount of energy generated today, in kWh by default                                                          |
 | energyTotal     | Number:Energy  | The total amount of energy generated, in kWh by default                                                          |
-| temprature      | Number:Temperature  | The temprature from the sensor                                                                                   |
+| temperature      | Number:Temperature  | The temperature from the sensor                                                                                   |
 
 ## Full Example
 
