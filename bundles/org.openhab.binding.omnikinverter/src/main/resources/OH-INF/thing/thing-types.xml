@@ -21,7 +21,7 @@
 			<channel id="voltagePV3" typeId="voltagePV3"/>
 			<channel id="energyToday" typeId="energyToday"/>
 			<channel id="energyTotal" typeId="energyTotal"/>
-			<channel id="temprature" typeId="temprature"/>
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 
 		<config-description>
