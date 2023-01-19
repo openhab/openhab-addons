@@ -181,8 +181,8 @@
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Current temperature</description>
+		<label>Current Temperature</label>
+		<description>The temperature from the sensor</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
