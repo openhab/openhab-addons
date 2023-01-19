@@ -12,8 +12,60 @@
  */
 package org.openhab.binding.mybmw.internal.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ADDRESS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHARGE_PROFILE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_CHECK_CONTROL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_RANGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_SERVICE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_REMAINING;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHECK_CONTROL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DETAILS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOORS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.GPS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HEADING;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOME_DISTANCE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_UPDATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LOCK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.MILEAGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.NAME;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.PLUG_CONNECTION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_ELECTRIC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_ELECTRIC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RANGE_RADIUS_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.RAW;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_LEFT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_CURRENT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REAR_RIGHT_TARGET;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMAINING_FUEL;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_DATE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_MILEAGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SEVERITY;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SOC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUNROOF;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.TRUNK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOWS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_DRIVER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_FRONT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.WINDOW_DOOR_PASSENGER_REAR;
 
 import java.util.HashMap;
 import java.util.List;
@@ -208,12 +260,17 @@ public class StatusWrapper {
                 }
                 break;
             case CHARGE_REMAINING:
+                // charge-remaining can be either a number in minutes, or UNDEF
                 assertTrue(isElectric, "Is Electric");
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                assertEquals(Units.MINUTE, qt.getUnit(), "Minute Unit");
-                assertEquals(vehicleState.getElectricChargingState().getRemainingChargingMinutes(), qt.intValue(),
-                        "Charge Time Remaining");
+                if (state instanceof QuantityType) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = ((QuantityType) state);
+                    assertEquals(Units.MINUTE, qt.getUnit(), "Minute Unit");
+                    assertEquals(vehicleState.getElectricChargingState().getRemainingChargingMinutes(), qt.intValue(),
+                            "Charge Time Remaining");
+                } else {
+                    assertTrue(state instanceof UnDefType);
+                }
                 break;
             case CHARGE_STATUS:
                 assertTrue(isElectric, "Is Electric");

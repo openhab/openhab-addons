@@ -12,8 +12,15 @@
  */
 package org.openhab.binding.mybmw.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -415,6 +422,16 @@ public class VehicleHandlerTest {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), "anonymous");
         String content = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
+        // TODO: check real number of calls via different types
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testBevI3() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("src/test/resources/responses/BEV2/vehicles_state.json");
         // TODO: check real number of calls via different types
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
