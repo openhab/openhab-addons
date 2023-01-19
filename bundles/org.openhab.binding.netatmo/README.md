@@ -549,6 +549,13 @@ Warnings:
 | last-event    | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
 | last-event    | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
 | last-event    | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
+| sub-event     | type                 | String       | Read-only  | Type of sub-event                                                                                                                           |
+| sub-event     | time                 | DateTime     | Read-only  | Time of occurrence of sub-event                                                                                                             |
+| sub-event     | message              | String       | Read-only  | Message sent by Netatmo corresponding to given sub-event                                                                                    |
+| sub-event     | snapshot-url         | String       | Read-only  | Depending upon event type in the home, a snapshot picture of the corresponding local video URL will be available here                       |
+| sub-event     | vignette-url         | String       | Read-only  | A vignette representing the snapshot                                                                                                        |
+| sub-event     | snapshot             | Image        | Read-only  | picture of the snapshot                                                                                                                     |
+| sub-event     | vignet               | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
 (*) This channel is configurable : low, poor, high.
 
