@@ -43,9 +43,23 @@ public class OmnikInverterBindingConstants {
     public static final String CHANNEL_POWER_AC2 = "powerAC2";
     public static final String CHANNEL_POWER_AC3 = "powerAC3";
 
+    public static final String CHANNEL_VOLTAGE_AC1 = "voltageAC1";
+    public static final String CHANNEL_VOLTAGE_AC2 = "voltageAC2";
+    public static final String CHANNEL_VOLTAGE_AC3 = "voltageAC3";
+
+    public static final String CHANNEL_CURRENT_AC1 = "currentAC1";
+    public static final String CHANNEL_CURRENT_AC2 = "currentAC2";
+    public static final String CHANNEL_CURRENT_AC3 = "currentAC3";
+
+    public static final String CHANNEL_FREQUENCY_AC1 = "frequencyAC1";
+    public static final String CHANNEL_FREQUENCY_AC2 = "frequencyAC2";
+    public static final String CHANNEL_FREQUENCY_AC3 = "frequencyAC3";
+
     public static final String CHANNEL_ENERGY_TODAY = "energyToday";
 
     public static final String CHANNEL_ENERGY_TOTAL = "energyTotal";
 
     public static final String CHANNEL_TEMPERATURE = "temperature";
+
+    public static final String CHANNEL_HOURS_TOTAL = "hoursTotal";
 }
