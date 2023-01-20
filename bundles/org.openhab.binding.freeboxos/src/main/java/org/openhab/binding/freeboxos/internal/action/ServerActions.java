@@ -52,7 +52,7 @@ public class ServerActions implements ThingActions {
         if (serverHandler != null) {
             serverHandler.reboot();
         } else {
-            logger.warn("Freebox Action service ThingHandler is null!");
+            logger.warn("Freebox Action service ThingHandler is null");
         }
     }
 }

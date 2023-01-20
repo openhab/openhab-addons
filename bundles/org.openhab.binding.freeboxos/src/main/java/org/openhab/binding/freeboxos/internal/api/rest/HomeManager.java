@@ -87,7 +87,6 @@ public class HomeManager extends RestManager {
             DASHBOARD,
             UNKNOWN;
         }
-
     }
 
     public static enum Status {

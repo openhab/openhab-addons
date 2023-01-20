@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Hashtable;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Rece
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
 import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
+import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
@@ -54,6 +56,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import inet.ipaddr.IPAddress;
+import inet.ipaddr.MACAddressString;
+import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
@@ -165,10 +169,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler osHandler) {
+            if (handler instanceof FreeboxOsHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
-                    return osHandler;
+                    return (FreeboxOsHandler) handler;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
@@ -338,5 +342,16 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
     @Override
     public Configuration getConfig() {
         return super.getConfig();
+    }
+
+    @Override
+    public int getClientId() {
+        return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();
+    }
+
+    @Override
+    public MACAddress getMac() {
+        String mac = (String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS);
+        return new MACAddressString(mac).getAddress();
     }
 }

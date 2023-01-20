@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freeboxos.internal.action;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
@@ -33,24 +31,28 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RepeaterActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(RepeaterActions.class);
-    private Optional<RepeaterHandler> handler = Optional.empty();
+    private @Nullable RepeaterHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof RepeaterHandler repeaterHandler) {
-            this.handler = Optional.of(repeaterHandler);
+        if (handler instanceof RepeaterHandler) {
+            this.handler = (RepeaterHandler) handler;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler.orElse(null);
+        return handler;
     }
 
     @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
     public void reboot() {
         logger.debug("Repeater reboot called");
-        handler.ifPresentOrElse(RepeaterHandler::reboot,
-                () -> logger.warn("Repeater Action service ThingHandler is null!"));
+        RepeaterHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.reboot();
+        } else {
+            logger.warn("Repeater Action service ThingHandler is null");
+        }
     }
 }

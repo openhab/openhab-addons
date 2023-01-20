@@ -54,5 +54,4 @@ public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaMana
                 config.logonPassword, config.workgroup, config.smbv2Enabled);
         return setConfig(newConfig).printShareEnabled();
     }
-
 }

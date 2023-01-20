@@ -102,5 +102,4 @@ public class HostHandler extends ApiConsumerHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(HostActions.class);
     }
-
 }

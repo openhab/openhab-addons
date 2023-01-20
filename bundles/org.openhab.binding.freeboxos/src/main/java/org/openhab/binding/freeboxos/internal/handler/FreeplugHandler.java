@@ -99,5 +99,4 @@ public class FreeplugHandler extends ApiConsumerHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(FreeplugActions.class);
     }
-
 }

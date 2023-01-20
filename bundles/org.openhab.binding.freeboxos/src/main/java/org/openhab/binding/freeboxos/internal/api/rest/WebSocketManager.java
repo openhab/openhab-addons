@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
 import java.io.IOException;
@@ -28,6 +40,11 @@ import com.google.gson.JsonElement;
 
 import inet.ipaddr.mac.MACAddress;
 
+/**
+ * The {@link WebSocketManager} is the Java class register to the websocket server and handle notifications
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public class WebSocketManager extends RestManager implements WebSocketListener {
     private static final String HOST_UNREACHABLE = "lan_host_l3addr_unreachable";

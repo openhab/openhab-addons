@@ -52,7 +52,7 @@ public class FreeplugActions implements ThingActions {
         if (plugHandler != null) {
             plugHandler.reset();
         } else {
-            logger.warn("Freeplug Action service ThingHandler is null!");
+            logger.warn("Freeplug Action service ThingHandler is null");
         }
     }
 }

@@ -34,11 +34,11 @@ public class ActivePlayerActions extends PlayerActions {
     @RuleAction(label = "reboot freebox player", description = "Reboots the Freebox Player")
     public void reboot() {
         logger.debug("Player reboot called");
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler instanceof ActivePlayerHandler activeHandler) {
-            activeHandler.reboot();
+        PlayerHandler localHandler = this.handler;
+        if (localHandler instanceof ActivePlayerHandler) {
+            ((ActivePlayerHandler) localHandler).reboot();
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 

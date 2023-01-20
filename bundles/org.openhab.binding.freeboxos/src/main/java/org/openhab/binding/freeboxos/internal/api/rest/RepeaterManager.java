@@ -101,5 +101,4 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
         RepeaterLed result = put(RepeaterLedResponse.class, new RepeaterLed(id, enable), Integer.toString(id));
         return Optional.ofNullable(result);
     }
-
 }

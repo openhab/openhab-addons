@@ -116,5 +116,4 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
     public void triggerChannel(ChannelUID channelUID, String event) {
         super.triggerChannel(channelUID, event);
     }
-
 }

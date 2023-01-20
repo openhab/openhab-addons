@@ -21,6 +21,12 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
+/**
+ * The {@link FreeDeviceIntf} defines some common methods for various devices (server, player, repeater) not belonging
+ * to the same class hierarchy
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public interface FreeDeviceIntf extends ApiConsumerIntf {
     public ChannelUID getEventChannelUID();
@@ -47,5 +53,4 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
         stopRefreshJob();
         getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
     }
-
 }

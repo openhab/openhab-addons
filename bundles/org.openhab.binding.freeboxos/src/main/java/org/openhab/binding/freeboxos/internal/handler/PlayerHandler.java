@@ -111,5 +111,4 @@ public class PlayerHandler extends HostHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(PlayerActions.class);
     }
-
 }

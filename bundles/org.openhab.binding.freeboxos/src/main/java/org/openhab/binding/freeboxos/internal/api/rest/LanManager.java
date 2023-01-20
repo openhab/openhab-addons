@@ -47,5 +47,4 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
         super(session, Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
-
 }

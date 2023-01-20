@@ -52,7 +52,7 @@ public class HostActions implements ThingActions {
         if (hostHandler != null) {
             hostHandler.wol();
         } else {
-            logger.warn("LanHost Action service ThingHandler is null!");
+            logger.warn("LanHost Action service ThingHandler is null");
         }
     }
 }

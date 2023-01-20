@@ -62,5 +62,4 @@ public class LcdManager extends ConfigurableRest<LcdManager.Config, LcdManager.C
             throw new FreeboxException(e, "Error setting brightness");
         }
     }
-
 }

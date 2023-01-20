@@ -130,7 +130,6 @@ public class LoginManager extends RestManager {
         } catch (InvalidKeyException e) {
             throw new IllegalArgumentException(e);
         }
-
     }
 
     public void closeSession() throws FreeboxException {

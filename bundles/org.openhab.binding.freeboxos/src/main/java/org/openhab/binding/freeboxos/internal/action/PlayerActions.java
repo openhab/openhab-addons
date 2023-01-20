@@ -53,7 +53,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, 1);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -64,7 +64,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, true, 1);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -75,7 +75,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendMultipleKeys(keys);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -86,7 +86,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, count);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 }

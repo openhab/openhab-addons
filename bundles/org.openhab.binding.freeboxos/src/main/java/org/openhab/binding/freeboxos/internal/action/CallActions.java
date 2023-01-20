@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freeboxos.internal.action;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.handler.CallHandler;
@@ -33,24 +31,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CallActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CallActions.class);
-    private Optional<CallHandler> handler = Optional.empty();
+    private @Nullable CallHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CallHandler callHandler) {
-            this.handler = Optional.of(callHandler);
+        if (handler instanceof CallHandler) {
+            this.handler = (CallHandler) handler;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler.orElse(null);
+        return handler;
     }
 
     @RuleAction(label = "clear call queue", description = "Delete all call logged in the queue")
     public void reset() {
         logger.debug("Call log clear called");
-        handler.ifPresentOrElse(CallHandler::emptyQueue,
-                () -> logger.warn("Call Action service ThingHandler is null!"));
+        if (handler != null) {
+            handler.emptyQueue();
+        } else {
+            logger.warn("Call Action service ThingHandler is null");
+        }
     }
 }

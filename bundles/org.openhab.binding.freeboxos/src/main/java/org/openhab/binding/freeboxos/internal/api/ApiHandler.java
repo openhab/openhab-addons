@@ -35,7 +35,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ForegroundAppDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ListDeserializer;
-import org.openhab.binding.freeboxos.internal.api.deserialization.OptionalTypeAdapter;
 import org.openhab.binding.freeboxos.internal.api.deserialization.StrictEnumTypeAdapterFactory;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.ForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -88,8 +87,7 @@ public class ApiHandler {
                         (JsonDeserializer<IPAddress>) (json, type,
                                 jsonDeserializationContext) -> new IPAddressString(json.getAsString()).getAddress())
                 .registerTypeAdapter(ForegroundApp.class, new ForegroundAppDeserializer())
-                .registerTypeAdapter(List.class, new ListDeserializer())
-                .registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY).serializeNulls()
+                .registerTypeAdapter(List.class, new ListDeserializer()).serializeNulls()
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
     }
 

@@ -30,5 +30,4 @@ public class NetShareManager extends RestManager {
         session.addManager(SambaManager.class, new SambaManager(session, getUriBuilder()));
         session.addManager(AfpManager.class, new AfpManager(session, getUriBuilder()));
     }
-
 }

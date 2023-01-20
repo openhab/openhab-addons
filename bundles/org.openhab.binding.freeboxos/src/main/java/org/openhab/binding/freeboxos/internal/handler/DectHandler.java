@@ -53,8 +53,8 @@ public class DectHandler extends FxsHandler {
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         PhoneManager phoneManager = getManager(PhoneManager.class);
-        if (command instanceof OnOffType onOffCommand) {
-            boolean status = OnOffType.ON.equals(onOffCommand);
+        if (command instanceof OnOffType) {
+            boolean status = OnOffType.ON.equals(command);
             if (RINGING.equals(channelId)) {
                 phoneManager.ringDect(status);
                 return true;
@@ -66,14 +66,15 @@ public class DectHandler extends FxsHandler {
                 return true;
             }
         }
-        if (command instanceof PercentType percentCommand) {
+        if (command instanceof PercentType) {
+            PercentType percent = (PercentType) command;
             if (GAIN_RX.equals(channelId)) {
-                phoneManager.setGainRx(getClientId(), percentCommand.intValue());
-                updateIfActive(GAIN_RX, percentCommand);
+                phoneManager.setGainRx(getClientId(), percent.intValue());
+                updateIfActive(GAIN_RX, percent);
                 return true;
             } else if (GAIN_TX.equals(channelId)) {
-                phoneManager.setGainTx(getClientId(), percentCommand.intValue());
-                updateIfActive(GAIN_RX, percentCommand);
+                phoneManager.setGainTx(getClientId(), percent.intValue());
+                updateIfActive(GAIN_RX, percent);
                 return true;
             }
         }
