@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="homie-boolean">
+		<item-type>Switch</item-type>
+		<label>Boolean</label>
+	</channel-type>
+
+	<channel-type id="homie-color">
+		<item-type>Color</item-type>
+		<label>Color Value (Red,Green,Blue)</label>
+	</channel-type>
+
+	<channel-type id="homie-datetime">
+		<item-type>DateTime</item-type>
+		<label>Date/Time Value</label>
+		<description>Current date and/or time</description>
+	</channel-type>
+
+	<channel-type id="homie-enum">
+		<item-type>String</item-type>
+		<label>Enum Value</label>
+	</channel-type>
+
+	<channel-type id="homie-integer">
+		<item-type>Number</item-type>
+		<label>Integer Value</label>
+	</channel-type>
+
+	<channel-type id="homie-float">
+		<item-type>Number</item-type>
+		<label>Float Value</label>
+	</channel-type>
+
+	<channel-type id="homie-string">
+		<item-type>String</item-type>
+		<label>Text Value</label>
+	</channel-type>
+
+	<channel-type id="homie-trigger">
+		<kind>trigger</kind>
+		<label>Trigger</label>
+	</channel-type>
+</thing:thing-descriptions>
