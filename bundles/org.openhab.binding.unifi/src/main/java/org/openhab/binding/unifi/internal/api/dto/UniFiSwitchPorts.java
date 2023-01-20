@@ -79,13 +79,13 @@ public class UniFiSwitchPorts {
     }
 
     /**
-     * Returns the override data as list with json objects after calling the updateMethod on the data for the given
+     * Returns the override data as list with JSON objects after calling the updateMethod on the data for the given
      * portIdx.
      * The update method changes the data in the internal structure.
      *
      * @param portIdx port to call updateMethod for
      * @param updateMethod method to call to update data for a specific port
-     * @return Returns a list of json objects of all override data
+     * @return Returns a list of JSON objects of all override data
      */
     public List<JsonObject> updatedList(final int portIdx, final Consumer<UnfiPortOverrideJsonObject> updateMethod) {
         @SuppressWarnings("null")
@@ -103,7 +103,7 @@ public class UniFiSwitchPorts {
      * Set the port override object. If it's for a specific port set bind it to the port data, otherwise store it as
      * generic data.
      *
-     * @param jsonObject json object to set
+     * @param jsonObject JSON object to set
      */
     public void setOverride(final JsonObject jsonObject) {
         if (UnfiPortOverrideJsonObject.hasPortIdx(jsonObject)) {

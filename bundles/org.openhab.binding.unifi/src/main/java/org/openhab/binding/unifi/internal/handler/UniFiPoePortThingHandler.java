@@ -25,9 +25,8 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_P
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_POE_VOLTAGE;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Power;
+import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -126,18 +125,27 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
                 state = StringType.valueOf(port.getPoeMode());
                 break;
             case CHANNEL_PORT_POE_POWER:
-                state = new QuantityType<Power>(Double.valueOf(port.getPoePower()), Units.WATT);
+                state = safeDouble(port.getPoePower(), Units.WATT);
                 break;
             case CHANNEL_PORT_POE_VOLTAGE:
-                state = new QuantityType<ElectricPotential>(Double.valueOf(port.getPoeVoltage()), Units.VOLT);
+                state = safeDouble(port.getPoeVoltage(), Units.VOLT);
                 break;
             case CHANNEL_PORT_POE_CURRENT:
-                state = new QuantityType<ElectricCurrent>(Double.valueOf(port.getPoeCurrent()), MILLI(Units.AMPERE));
+                state = safeDouble(port.getPoeCurrent(), MILLI(Units.AMPERE));
                 break;
             default:
                 state = UnDefType.UNDEF;
         }
         return state;
+    }
+
+    private <Q extends Quantity<Q>> State safeDouble(final String value, final Unit<Q> unit) {
+        try {
+            return value == null ? UnDefType.UNDEF : QuantityType.valueOf(Double.parseDouble(value), unit);
+        } catch (final NumberFormatException e) {
+            logger.debug("Could not parse value '{}' for unit {}", value, unit);
+            return UnDefType.UNDEF;
+        }
     }
 
     private State setOfflineOnNoPoEPortData() {
