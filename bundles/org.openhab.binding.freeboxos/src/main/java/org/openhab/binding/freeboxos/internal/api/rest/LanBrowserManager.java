@@ -333,7 +333,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
         }
 
         public String vendorName() {
-            return vendorName != null ? vendorName : "Unknown";
+            String localVendor = vendorName;
+            return localVendor != null ? localVendor : "Unknown";
         }
 
         public Optional<String> getPrimaryName() {

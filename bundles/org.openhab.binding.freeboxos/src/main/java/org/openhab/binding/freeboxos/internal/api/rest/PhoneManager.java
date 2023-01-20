@@ -104,7 +104,8 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
             @Nullable String vendor, int gainRx, int gainTx) {
 
         public String vendor() {
-            return vendor != null ? vendor : "Unknown";
+            String localVendor = vendor;
+            return localVendor != null ? localVendor : "Unknown";
         }
     }
 
