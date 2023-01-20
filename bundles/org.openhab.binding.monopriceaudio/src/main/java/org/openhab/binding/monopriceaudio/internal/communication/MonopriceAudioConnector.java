@@ -52,7 +52,7 @@ public abstract class MonopriceAudioConnector {
     private boolean connected;
     private boolean pingResponseOnly;
 
-    private AmplifierModel amp = AmplifierModel.MONOPRICE;
+    private @Nullable AmplifierModel amp;
 
     private @Nullable Thread readerThread;
 
@@ -77,7 +77,12 @@ public abstract class MonopriceAudioConnector {
         this.pingResponseOnly = false;
     }
 
-    public void setAmplifierModel(AmplifierModel amp) {
+    /**
+     * Set the AmplifierModel
+     *
+     * @param amp the AmplifierModel being used
+     */
+    protected void setAmplifierModel(AmplifierModel amp) {
         this.amp = amp;
     }
 

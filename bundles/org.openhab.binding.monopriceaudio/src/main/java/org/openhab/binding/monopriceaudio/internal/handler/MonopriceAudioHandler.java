@@ -145,15 +145,14 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         }
 
         if (serialPort != null) {
-            connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort, uid);
+            connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort, uid, amp);
         } else if (port != null) {
-            connector = new MonopriceAudioIpConnector(host, port, uid);
+            connector = new MonopriceAudioIpConnector(host, port, uid, amp);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");
             return;
         }
-        connector.setAmplifierModel(amp);
 
         pollingInterval = config.pollingInterval;
         initialAllVolume = config.initialAllVolume;
