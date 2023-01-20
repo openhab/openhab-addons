@@ -55,10 +55,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
-    private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "@text/error.bridge.offline.communication_error ";
-    private static final String STATUS_DESCRIPTION_SSL_ERROR = "@text/error.bridge.offline.ssl_error ";
-    private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "@text/error.bridge.offline.invalid_credentials ";
-    private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "@text/error.bridge.offline.invalid_hostname ";
+    private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "@text/error.bridge.offline.communication_error";
+    private static final String STATUS_DESCRIPTION_SSL_ERROR = "@text/error.bridge.offline.ssl_error";
+    private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "@text/error.bridge.offline.invalid_credentials";
+    private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "@text/error.bridge.offline.invalid_hostname";
+    private static final String I18N_STATUS_WITH_ARGUMENTS = "%s [\"%s\"]";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerThingHandler.class);
 
@@ -138,14 +139,14 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             uc.start();
             startRefresh = true;
         } catch (final UniFiCommunicationException e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR + e.getMessage());
+            updateStatusOffline(COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR, e.getMessage());
             startRefresh = true;
         } catch (final UniFiInvalidHostException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME + e.getMessage());
+            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME, e.getMessage());
         } catch (final UniFiSSLException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_SSL_ERROR + e.getMessage());
+            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_SSL_ERROR, e.getMessage());
         } catch (final UniFiInvalidCredentialsException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS + e.getMessage());
+            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS, e.getMessage());
         } catch (final UniFiException e) {
             logger.debug("Unknown error while configuring the UniFi Controller", e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, e.getMessage());
@@ -174,13 +175,18 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             refresh();
             updateStatus(ONLINE);
         } catch (final UniFiCommunicationException e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR + e.getMessage());
+            updateStatusOffline(COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR, e.getMessage());
         } catch (final UniFiInvalidCredentialsException e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS + e.getMessage());
+            updateStatusOffline(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS, e.getMessage());
         } catch (final RuntimeException | UniFiException e) {
             logger.debug("Unhandled exception while refreshing the UniFi Controller {}", getThing().getUID(), e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    private void updateStatusOffline(final ThingStatusDetail thingStatusDetail, final String i18nKey,
+            final @Nullable String argument) {
+        updateStatus(OFFLINE, thingStatusDetail, String.format(I18N_STATUS_WITH_ARGUMENTS, i18nKey, argument));
     }
 
     private void refresh() throws UniFiException {

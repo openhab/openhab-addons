@@ -139,7 +139,7 @@ class UniFiControllerRequest<T> {
                 }
             } catch (final JsonParseException e) {
                 logger.debug(
-                        "Could not parse content retreived from the server. Is the configuration poiting to the right server/port?, {}",
+                        "Could not parse content retrieved from the server. Is the configuration poiting to the right server/port?, {}",
                         e.getMessage());
                 if (logger.isTraceEnabled()) {
                     prettyPrintJson(json);
@@ -264,8 +264,8 @@ class UniFiControllerRequest<T> {
 
             return prettyGson.toJson(json);
         } catch (final RuntimeException e) {
-            logger.debug("RuntimeException pretty printing json. Returning the raw content.", e);
-            // If could not parse the string as json, just return the string
+            logger.debug("RuntimeException pretty printing JSON. Returning the raw content.", e);
+            // If could not parse the string as JSON, just return the string
             return content;
         }
     }

@@ -178,7 +178,7 @@ public class UniFiController {
     public boolean poeMode(final UniFiDevice device, final List<JsonObject> data) throws UniFiException {
         // Safety check to make sure no empty data is send to avoid corrupting override data on the device.
         if (data.isEmpty() || data.stream().anyMatch(p -> p.entrySet().isEmpty())) {
-            logger.info("Not overriding port for '{}', because port data contains empty json: {}", device.getName(),
+            logger.info("Not overriding port for '{}', because port data contains empty JSON: {}", device.getName(),
                     poeGson.toJson(data));
             return false;
         } else {
