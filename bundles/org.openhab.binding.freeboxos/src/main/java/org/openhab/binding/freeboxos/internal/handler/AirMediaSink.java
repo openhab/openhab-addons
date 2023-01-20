@@ -263,14 +263,14 @@ public class AirMediaSink implements AudioSink {
                     manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
                 } else {
                     String url = null;
-                    if (audioStream instanceof URLAudioStream urlAudioStream) {
+                    if (audioStream instanceof URLAudioStream) {
                         // it is an external URL, we can access it directly
-                        url = urlAudioStream.getURL();
+                        url = ((URLAudioStream) audioStream).getURL();
                     } else {
                         // we serve it on our own HTTP server
-                        url = callbackUrl
-                                + (audioStream instanceof FixedLengthAudioStream flas ? audioHTTPServer.serve(flas, 20)
-                                        : audioHTTPServer.serve(audioStream));
+                        url = callbackUrl + (audioStream instanceof FixedLengthAudioStream
+                                ? audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20)
+                                : audioHTTPServer.serve(audioStream));
                     }
                     logger.debug("AirPlay audio sink: process url {}", url);
                     manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);

@@ -1,4 +1,7 @@
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 /**
  * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
@@ -35,6 +38,7 @@ import inet.ipaddr.mac.MACAddress;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+<<<<<<< Upstream, based on origin/main
 =======
 package org.openhab.binding.freeboxos.internal.handler;
 
@@ -55,6 +59,8 @@ import inet.ipaddr.MACAddressString;
 import inet.ipaddr.mac.MACAddress;
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 @NonNullByDefault
 public interface ApiConsumerIntf extends ThingHandler {
 

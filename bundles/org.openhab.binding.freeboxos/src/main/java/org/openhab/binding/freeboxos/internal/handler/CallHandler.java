@@ -205,6 +205,9 @@ public class CallHandler extends ApiConsumerHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(CallActions.class);
     }
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

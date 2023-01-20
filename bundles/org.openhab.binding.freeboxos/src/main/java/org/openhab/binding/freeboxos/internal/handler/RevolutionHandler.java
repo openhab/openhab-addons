@@ -184,8 +184,8 @@ public class RevolutionHandler extends ServerHandler {
     }
 
     private void setOrientation(LcdManager manager, Config config, Command command) throws FreeboxException {
-        if (command instanceof DecimalType decimal) {
-            manager.setOrientation(decimal.intValue());
+        if (command instanceof DecimalType) {
+            manager.setOrientation(((DecimalType) command).intValue());
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_ORIENTATION);
         }
@@ -212,6 +212,7 @@ public class RevolutionHandler extends ServerHandler {
             logger.warn("Invalid command {} from channel {}", command, LCD_BRIGHTNESS);
         }
     }
+<<<<<<< Upstream, based on origin/main
 
 <<<<<<< Upstream, based on origin/main
     private void changeLcdBrightness(LcdManager manager, Callable<Integer> function) throws FreeboxException {
@@ -226,4 +227,6 @@ public class RevolutionHandler extends ServerHandler {
     }
 =======
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

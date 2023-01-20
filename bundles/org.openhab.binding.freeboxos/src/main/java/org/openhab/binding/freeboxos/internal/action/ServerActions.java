@@ -112,8 +112,12 @@ public class ServerActions implements ThingActions {
         if (serverHandler != null) {
             serverHandler.reboot();
         } else {
+<<<<<<< Upstream, based on origin/main
             logger.warn("Freebox Action service ThingHandler is null!");
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+            logger.warn("Freebox Action service ThingHandler is null");
+>>>>>>> 089708c Switching to addons.xml, headers updated
         }
     }
 }

@@ -80,6 +80,9 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
         super(session, Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

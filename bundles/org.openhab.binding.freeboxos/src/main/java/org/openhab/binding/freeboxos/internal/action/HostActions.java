@@ -112,8 +112,12 @@ public class HostActions implements ThingActions {
         if (hostHandler != null) {
             hostHandler.wol();
         } else {
+<<<<<<< Upstream, based on origin/main
             logger.warn("LanHost Action service ThingHandler is null!");
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+            logger.warn("LanHost Action service ThingHandler is null");
+>>>>>>> 089708c Switching to addons.xml, headers updated
         }
     }
 }

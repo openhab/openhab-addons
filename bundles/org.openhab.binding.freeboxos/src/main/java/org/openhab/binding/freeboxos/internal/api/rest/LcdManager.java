@@ -109,6 +109,9 @@ public class LcdManager extends ConfigurableRest<LcdManager.Config, LcdManager.C
             throw new FreeboxException(e, "Error setting brightness");
         }
     }
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

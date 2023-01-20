@@ -16,7 +16,7 @@
   <artifactId>org.openhab.binding.freeboxos</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: FreeboxOS Binding</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -24,9 +24,9 @@
       <version>2.10.1</version>
     </dependency>
     <dependency>
-        <groupId>com.github.seancfoley</groupId>
-        <artifactId>ipaddress</artifactId>
-        <version>5.4.0</version>
+      <groupId>com.github.seancfoley</groupId>
+      <artifactId>ipaddress</artifactId>
+      <version>5.4.0</version>
     </dependency>
   </dependencies>
 

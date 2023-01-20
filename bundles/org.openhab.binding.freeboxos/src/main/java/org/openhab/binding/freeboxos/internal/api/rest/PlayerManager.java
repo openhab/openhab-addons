@@ -224,20 +224,10 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.PlaybackState;
+import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.SubtitleTrack;
+import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.VideoTrack;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.AudioTrack;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.MediaState;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata.PlaybackState;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata.SubtitleTrack;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata.SubtitleTrack.Type;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata.VideoTrack;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.PlayerContext.PlayerDetails.Metadata.VideoTrack.Framerate;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Status.PowerState;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.TvContext.Channel;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.TvContext.Channel.BouquetType;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.TvContext.Channel.ChannelType;
-import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.TvContext.Channel.Service;
 import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.ModelInfo;
 
 import com.google.gson.annotations.SerializedName;
@@ -279,13 +269,14 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     private static class StatusResponse extends Response<Status> {
     }
 
+    public static enum PowerState {
+        STANDBY,
+        RUNNING,
+        UNKNOWN;
+    }
+
     public static record Status(PowerState powerState, StatusInformation player,
             @Nullable ForegroundApp foregroundApp) {
-        public static enum PowerState {
-            STANDBY,
-            RUNNING,
-            UNKNOWN;
-        }
 
         public @Nullable ForegroundApp foregroundApp() {
             return foregroundApp;
@@ -306,8 +297,46 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @Nullable ModelInfo modelInfo, String serial, String uptime, long uptimeVal) {
     }
 
-    public static record PlayerContext(@Nullable PlayerDetails player) {
+    public enum MediaState {
+        READY,
+        UNKNOWN;
+    }
 
+    public static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
+            @Nullable String codec, @SerializedName("codecId") @Nullable String codecId, @Nullable String language,
+            @SerializedName("metadataId") @Nullable String metadataId, int pid, int samplerate, long uid) {
+    }
+
+    public static enum Type {
+        NORMAL,
+        HEARINGIMPAIRED,
+        UNKNOWN;
+    }
+
+    public static record Metadata(@Nullable String album, @SerializedName("albumArtist") @Nullable String albumArtist,
+            @Nullable String artist, @Nullable String author, int bpm, @Nullable String comment, boolean compilation,
+            @Nullable String composer, @Nullable String container, @Nullable String copyright, long date,
+            @SerializedName("discId") @Nullable String discId, @SerializedName("discNumber") int discNumber,
+            @SerializedName("discTotal") int discTotal, @Nullable String genre,
+            @SerializedName("musicbrainzDiscId") @Nullable String musicbrainzDiscId, @Nullable String performer,
+            @Nullable String title, @SerializedName("trackNumber") int trackNumber,
+            @SerializedName("trackTotal") int trackTotal, @Nullable String url) {
+
+        public static enum PlaybackState {
+            PLAY,
+            PAUSE,
+            UNKNOWN;
+        }
+
+        public static record SubtitleTrack(@Nullable String codec, @Nullable String language, @Nullable String pid,
+                Type type, @Nullable String uid) {
+        }
+
+        public static record VideoTrack(int bitrate, @Nullable String codec, int height, int pid, int uid, int width) {
+        }
+    }
+
+    public static record PlayerContext(@Nullable PlayerDetails player) {
         public static record PlayerDetails(@SerializedName("audioIndex") int audioIndex,
                 @SerializedName("audioList") List<AudioTrack> audioList, @SerializedName("curPos") long curPos,
                 int duration, @SerializedName("livePos") long livePos, @SerializedName("maxPos") long maxPos,
@@ -316,89 +345,40 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
                 long position, @Nullable String source, @SerializedName("subtitleIndex") int subtitleIndex,
                 @SerializedName("subtitleList") List<SubtitleTrack> subtitleList,
                 @SerializedName("videoIndex") int videoIndex, @SerializedName("videoList") List<VideoTrack> videoList) {
-
-            public static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
-                    @Nullable String codec, @SerializedName("codecId") @Nullable String codecId,
-                    @Nullable String language, @SerializedName("metadataId") @Nullable String metadataId, int pid,
-                    int samplerate, long uid) {
-            }
-
-            public enum MediaState {
-                READY,
-                UNKNOWN;
-            }
-
-            public static record Metadata(@Nullable String album,
-                    @SerializedName("albumArtist") @Nullable String albumArtist, @Nullable String artist,
-                    @Nullable String author, int bpm, @Nullable String comment, boolean compilation,
-                    @Nullable String composer, @Nullable String container, @Nullable String copyright, long date,
-                    @SerializedName("discId") @Nullable String discId, @SerializedName("discNumber") int discNumber,
-                    @SerializedName("discTotal") int discTotal, @Nullable String genre,
-                    @SerializedName("musicbrainzDiscId") @Nullable String musicbrainzDiscId, @Nullable String performer,
-                    @Nullable String title, @SerializedName("trackNumber") int trackNumber,
-                    @SerializedName("trackTotal") int trackTotal, @Nullable String url) {
-
-                public static enum PlaybackState {
-                    PLAY,
-                    PAUSE,
-                    UNKNOWN;
-                }
-
-                public static record SubtitleTrack(@Nullable String codec, @Nullable String language,
-                        @Nullable String pid, Type type, @Nullable String uid) {
-                    public static enum Type {
-                        NORMAL,
-                        HEARINGIMPAIRED,
-                        UNKNOWN;
-                    }
-
-                }
-
-                public static record VideoTrack(int bitrate, @Nullable String codec, @Nullable Framerate framerate,
-                        int height, int pid, int uid, int width) {
-
-                    public static record Framerate(int den, int num) {
-                    }
-                }
-            }
-
         }
+    }
 
+    public static enum BouquetType {
+        ADSL,
+        UNKNOWN;
+    }
+
+    public static enum ChannelType {
+        REGULAR,
+        UNKNOWN;
+    }
+
+    public static record Service(long id, @Nullable String name,
+            @SerializedName("qualityLabel") @Nullable String qualityLabel,
+            @SerializedName("qualityName") @Nullable String qualityName, @SerializedName("sortInfo") int sortInfo,
+            @SerializedName("typeLabel") @Nullable String typeLabel,
+            @SerializedName("typeName") @Nullable String typeName, @Nullable String url) {
+    }
+
+    public static record Channel(@SerializedName("bouquetId") long bouquetId,
+            @SerializedName("bouquetName") @Nullable String bouquetName,
+            @SerializedName("bouquetType") BouquetType bouquetType,
+            @SerializedName("channelName") @Nullable String channelName,
+            @SerializedName("channelNumber") int channelNumber,
+            @SerializedName("channelSubNumber") int channelSubNumber,
+            @SerializedName("channelType") ChannelType channelType,
+            @SerializedName("channelUuid") @Nullable String channelUuid,
+            @SerializedName("currentServiceIndex") int currentServiceIndex,
+            @SerializedName("isTimeShifting") boolean isTimeShifting, List<Service> services,
+            @SerializedName("videoIsVisible") boolean videoIsVisible) {
     }
 
     public static record TvContext(@Nullable Channel channel, @Nullable PlayerDetails player) {
-
-        public static record Channel(@SerializedName("bouquetId") long bouquetId,
-                @SerializedName("bouquetName") @Nullable String bouquetName,
-                @SerializedName("bouquetType") BouquetType bouquetType,
-                @SerializedName("channelName") @Nullable String channelName,
-                @SerializedName("channelNumber") int channelNumber,
-                @SerializedName("channelSubNumber") int channelSubNumber,
-                @SerializedName("channelType") ChannelType channelType,
-                @SerializedName("channelUuid") @Nullable String channelUuid,
-                @SerializedName("currentServiceIndex") int currentServiceIndex,
-                @SerializedName("isTimeShifting") boolean isTimeShifting, List<Service> services,
-                @SerializedName("videoIsVisible") boolean videoIsVisible) {
-
-            public static enum BouquetType {
-                ADSL,
-                UNKNOWN;
-            }
-
-            public static enum ChannelType {
-                REGULAR,
-                UNKNOWN;
-            }
-
-            public static record Service(long id, @Nullable String name,
-                    @SerializedName("qualityLabel") @Nullable String qualityLabel,
-                    @SerializedName("qualityName") @Nullable String qualityName,
-                    @SerializedName("sortInfo") int sortInfo, @SerializedName("typeLabel") @Nullable String typeLabel,
-                    @SerializedName("typeName") @Nullable String typeName, @Nullable String url) {
-            }
-
-        }
-
     }
 
     private final Map<Integer, String> subPaths = new HashMap<>();

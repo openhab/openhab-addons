@@ -232,6 +232,7 @@ public class PlayerHandler extends HostHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(PlayerActions.class);
     }
+<<<<<<< Upstream, based on origin/main
 
 <<<<<<< Upstream, based on origin/main
     @Override
@@ -245,4 +246,6 @@ public class PlayerHandler extends HostHandler {
     }
 =======
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

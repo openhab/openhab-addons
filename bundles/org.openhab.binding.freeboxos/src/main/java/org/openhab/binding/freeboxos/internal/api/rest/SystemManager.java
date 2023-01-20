@@ -170,7 +170,6 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
             ACTIVE,
             UNKNOWN;
         }
-
     }
 
     public SystemManager(FreeboxOsSession session) throws FreeboxException {

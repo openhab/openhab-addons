@@ -195,6 +195,9 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
         RepeaterLed result = put(RepeaterLedResponse.class, new RepeaterLed(id, enable), Integer.toString(id));
         return Optional.ofNullable(result);
     }
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

@@ -147,7 +147,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, 1);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -158,7 +158,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, true, 1);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -169,7 +169,7 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendMultipleKeys(keys);
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
 
@@ -180,8 +180,12 @@ public class PlayerActions implements ThingActions {
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, count);
         } else {
+<<<<<<< Upstream, based on origin/main
             logger.warn("Freebox Player Action service ThingHandler is null!");
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+            logger.warn("Freebox Player Action service ThingHandler is null");
+>>>>>>> 089708c Switching to addons.xml, headers updated
         }
     }
 }

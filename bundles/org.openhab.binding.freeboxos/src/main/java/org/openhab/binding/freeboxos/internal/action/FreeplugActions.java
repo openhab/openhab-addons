@@ -72,8 +72,12 @@ public class FreeplugActions implements ThingActions {
         if (plugHandler != null) {
             plugHandler.reset();
         } else {
+<<<<<<< Upstream, based on origin/main
             logger.warn("Freeplug Action service ThingHandler is null!");
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+            logger.warn("Freeplug Action service ThingHandler is null");
+>>>>>>> 089708c Switching to addons.xml, headers updated
         }
     }
 }

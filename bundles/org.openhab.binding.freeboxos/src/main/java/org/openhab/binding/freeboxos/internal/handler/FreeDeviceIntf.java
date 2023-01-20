@@ -55,6 +55,7 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
         stopRefreshJob();
         getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
     }
+<<<<<<< Upstream, based on origin/main
 =======
 =======
 import java.util.concurrent.TimeUnit;
@@ -97,4 +98,6 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
     }
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

@@ -214,6 +214,7 @@ public class HostHandler extends ApiConsumerHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(HostActions.class);
     }
+<<<<<<< Upstream, based on origin/main
 
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
@@ -228,4 +229,6 @@ public class HostHandler extends ApiConsumerHandler {
     }
 =======
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

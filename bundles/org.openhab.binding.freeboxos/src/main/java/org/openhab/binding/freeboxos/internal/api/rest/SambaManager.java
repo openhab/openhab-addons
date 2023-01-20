@@ -91,6 +91,9 @@ public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaMana
                 config.logonPassword, config.workgroup, config.smbv2Enabled);
         return setConfig(newConfig).printShareEnabled();
     }
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }

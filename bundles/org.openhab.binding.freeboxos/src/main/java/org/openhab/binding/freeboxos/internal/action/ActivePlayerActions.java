@@ -37,6 +37,7 @@ public class ActivePlayerActions extends PlayerActions {
     public void reboot() {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
+<<<<<<< Upstream, based on origin/main
         if (localHandler instanceof ActivePlayerHandler apHandler) {
             apHandler.reboot();
         } else {
@@ -88,8 +89,12 @@ public class ActivePlayerActions extends PlayerActions {
         PlayerHandler playerHandler = this.handler;
         if (playerHandler instanceof ActivePlayerHandler activeHandler) {
             activeHandler.reboot();
+=======
+        if (localHandler instanceof ActivePlayerHandler) {
+            ((ActivePlayerHandler) localHandler).reboot();
+>>>>>>> 089708c Switching to addons.xml, headers updated
         } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
+            logger.warn("Freebox Player Action service ThingHandler is null");
         }
 >>>>>>> 46dadb1 SAT warnings handling
     }

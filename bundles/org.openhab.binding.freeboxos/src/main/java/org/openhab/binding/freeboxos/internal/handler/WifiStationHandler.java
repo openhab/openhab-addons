@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
@@ -89,9 +90,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
 import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
+import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;

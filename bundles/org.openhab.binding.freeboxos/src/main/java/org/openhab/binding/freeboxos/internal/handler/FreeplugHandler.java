@@ -101,6 +101,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(FreeplugActions.class);
     }
+<<<<<<< Upstream, based on origin/main
 =======
 =======
 import java.util.ArrayList;
@@ -190,4 +191,6 @@ public class FreeplugHandler extends ApiConsumerHandler {
     }
 
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+>>>>>>> 089708c Switching to addons.xml, headers updated
 }
