@@ -392,7 +392,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 }
                 break;
             case CHANNEL_COLOR:
-                if (on != null && on == false) {
+                if (on != null && !on) {
                     updateState(channelId, OnOffType.OFF);
                 } else if (bri != null && "xy".equals(newState.colormode)) {
                     final double @Nullable [] xy = newState.xy;

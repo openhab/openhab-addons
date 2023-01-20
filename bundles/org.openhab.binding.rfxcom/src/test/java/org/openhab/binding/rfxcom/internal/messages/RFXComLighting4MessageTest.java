@@ -46,9 +46,9 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class RFXComLighting4MessageTest {
-    static public final ChannelUID contactChannelUID = new ChannelUID(thingUID, CHANNEL_CONTACT);
+    public static final ChannelUID contactChannelUID = new ChannelUID(thingUID, CHANNEL_CONTACT);
 
-    static public void checkDiscoveryResult(RFXComDeviceMessage<RFXComLighting4Message.SubType> msg, String deviceId,
+    public static void checkDiscoveryResult(RFXComDeviceMessage<RFXComLighting4Message.SubType> msg, String deviceId,
             @Nullable Integer pulse, String subType) throws RFXComException {
         String thingUID = "homeduino:rfxcom:fssfsd:thing";
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(new ThingUID(thingUID));

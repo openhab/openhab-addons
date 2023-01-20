@@ -106,7 +106,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
     private ItemRegistry itemRegistry;
     private @Nullable DynamoDbEnhancedAsyncClient client;
     private @Nullable DynamoDbAsyncClient lowLevelClient;
-    private final static Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
     private @Nullable DynamoDBConfig dbConfig;
     private @Nullable DynamoDBTableNameResolver tableNameResolver;

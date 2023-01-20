@@ -299,9 +299,9 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             processNext(currentTimeMillis);
         }
 
-        abstract protected void reset(long currentTimeMillis);
+        protected abstract void reset(long currentTimeMillis);
 
-        abstract protected void processNext(long currentTimeMillis);
+        protected abstract void processNext(long currentTimeMillis);
     }
 
     public static class TriggerButtonConfig {

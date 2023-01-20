@@ -73,6 +73,7 @@ public class Input {
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {

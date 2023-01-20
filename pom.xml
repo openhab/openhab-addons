@@ -343,10 +343,18 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>3.2.0</version>
           <configuration>
             <failOnError>!${quality.skip}</failOnError>
           </configuration>
+          <dependencies>
+            <!-- This newer version fixes issues with resolving tech.units:indriya packages -->
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-java</artifactId>
+              <version>1.0.7</version>
+            </dependency>
+          </dependencies>
         </plugin>
 
         <plugin>
