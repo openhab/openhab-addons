@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 
 /**
  * Exception for errors when using the Freebox API

@@ -14,6 +14,9 @@ package org.openhab.binding.freeboxos.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import inet.ipaddr.MACAddressString;
+import inet.ipaddr.mac.MACAddress;
+
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
@@ -25,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HostConfiguration extends ApiConsumerConfiguration {
     private String macAddress = "";
 
-    public String getMac() {
-        return macAddress.toLowerCase();
+    public MACAddress getMac() {
+        return new MACAddressString(macAddress).getAddress();
     }
 }

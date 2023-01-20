@@ -21,23 +21,18 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaAction;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.Action;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.audio.URLAudioStream;
-import org.openhab.core.audio.UnsupportedAudioFormatException;
-import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.thing.ThingStatus;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,23 +62,21 @@ public class AirMediaSink implements AudioSink {
     private final AudioHTTPServer audioHTTPServer;
     private final String callbackUrl;
     private final String playerName;
+    private final String password;
 
-    public AirMediaSink(ApiConsumerHandler thingHandler, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
-            BundleContext bundleContext, @Nullable String callbackUrl, String playerName) {
+    public AirMediaSink(ApiConsumerHandler thingHandler, AudioHTTPServer audioHTTPServer, String callbackUrl,
+            String playerName, String password, boolean acceptAllMp3) {
         this.thingHandler = thingHandler;
         this.audioHTTPServer = audioHTTPServer;
         this.playerName = playerName;
-        if (callbackUrl != null && !callbackUrl.isEmpty()) {
-            this.callbackUrl = callbackUrl;
-        } else {
-            int port = HttpServiceUtil.getHttpServicePort(bundleContext);
-            if (port != -1 && ipAddress != null) {
-                // we do not use SSL as it can cause certificate validation issues.
-                this.callbackUrl = String.format("http://%s:%d", ipAddress, port);
-            } else {
-                throw new IllegalArgumentException(
-                        "No network interface could be found or cannot find port of the http service.");
-            }
+        this.callbackUrl = callbackUrl;
+        this.password = password;
+
+        supportedFormats.addAll(BASIC_FORMATS);
+        if (acceptAllMp3) {
+            supportedFormats.addAll(ALL_MP3_FORMATS);
+        } else { // Only accept MP3 bitrates >= 96 kbps
+            supportedFormats.add(MP3);
         }
     }
 
@@ -114,31 +107,26 @@ public class AirMediaSink implements AudioSink {
     }
 
     @Override
-    public void process(@Nullable AudioStream audioStream)
-            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
-        String name = this.playerName;
+    public void process(@Nullable AudioStream audioStream) {
         try {
-            AirMediaManager manager = thingHandler.getManager(AirMediaManager.class);
-            MediaReceiverManager receiver = thingHandler.getManager(MediaReceiverManager.class);
             if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-                String password = manager.getConfig().getPassword();
+                MediaReceiverManager manager = thingHandler.getManager(MediaReceiverManager.class);
                 if (audioStream == null) {
-                    receiver.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
+                    manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
                 } else {
                     String url = null;
-                    if (audioStream instanceof URLAudioStream) {
+                    if (audioStream instanceof URLAudioStream urlAudioStream) {
                         // it is an external URL, we can access it directly
-                        URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
                         url = urlAudioStream.getURL();
                     } else {
                         // we serve it on our own HTTP server
-                        url = callbackUrl + (audioStream instanceof FixedLengthAudioStream
-                                ? audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20)
-                                : audioHTTPServer.serve(audioStream));
+                        url = callbackUrl
+                                + (audioStream instanceof FixedLengthAudioStream flas ? audioHTTPServer.serve(flas, 20)
+                                        : audioHTTPServer.serve(audioStream));
                     }
                     logger.debug("AirPlay audio sink: process url {}", url);
-                    receiver.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
-                    receiver.sendToReceiver(name, password, MediaAction.START, MediaType.VIDEO, url);
+                    manager.sendToReceiver(playerName, password, Action.STOP, MediaType.VIDEO);
+                    manager.sendToReceiver(playerName, password, Action.START, MediaType.VIDEO, url);
                 }
             }
         } catch (FreeboxException e) {
@@ -148,14 +136,6 @@ public class AirMediaSink implements AudioSink {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        if (supportedFormats.isEmpty()) {
-            supportedFormats.addAll(BASIC_FORMATS);
-            // if (getConfigAs(PlayerConfiguration.class).acceptAllMp3) {
-            supportedFormats.addAll(ALL_MP3_FORMATS);
-            // } else { // Only accept MP3 bitrates >= 96 kbps
-            // SUPPORTED_FORMATS.add(MP3);
-            // }
-        }
         return supportedFormats;
     }
 }

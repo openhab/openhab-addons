@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
-import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
 
 import javax.ws.rs.core.UriBuilder;
 

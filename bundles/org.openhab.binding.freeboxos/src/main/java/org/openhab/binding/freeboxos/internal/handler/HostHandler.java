@@ -20,13 +20,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.HostNameSource;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.receiver.MediaReceiverManager;
-import org.openhab.binding.freeboxos.internal.api.lan.browser.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
-import org.openhab.binding.freeboxos.internal.api.ws.WebSocketManager;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostIntf;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
+import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
+import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class HostHandler extends ApiConsumerHandler implements NetworkHostIntf {
+public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
 
     // We start in pull mode and switch to push after a first update
@@ -47,6 +47,15 @@ public class HostHandler extends ApiConsumerHandler implements NetworkHostIntf {
 
     public HostHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(result -> {
+            LanHost host = result.host();
+            properties.put(Thing.PROPERTY_VENDOR, host.vendorName());
+            host.getUPnPName().ifPresent(upnpName -> properties.put(Source.UPNP.name(), upnpName));
+        });
     }
 
     @Override
@@ -60,41 +69,30 @@ public class HostHandler extends ApiConsumerHandler implements NetworkHostIntf {
     }
 
     @Override
-    void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(host -> {
-            host.getUPnPName().ifPresent(upnpName -> properties.put(HostNameSource.UPNP.name(), upnpName));
-            host.getVendorName().ifPresent(vendor -> properties.put(Thing.PROPERTY_VENDOR, vendor));
-        });
-        String upnpName = properties.getOrDefault(HostNameSource.UPNP.name(), "");
-        getManager(MediaReceiverManager.class).getDevices().stream().filter(r -> upnpName.equals(r.getName()))
-                .findFirst().ifPresent(receiver -> receiver.getCapabilities().entrySet()
-                        .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString())));
-    }
-
-    public void updateConnectivityChannels(LanHost host) {
-        updateChannelOnOff(CONNECTIVITY, REACHABLE, host.isReachable());
-        updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
-        updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
-        updateStatus(host.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-    }
-
-    @Override
     protected void internalPoll() throws FreeboxException {
         if (pushSubscribed) {
             return;
         }
-        LanHost data = getManager(LanBrowserManager.class).getHost(getMac())
+        HostIntf data = getManager(LanBrowserManager.class).getHost(getMac())
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
-        updateConnectivityChannels(data);
 
+        updateConnectivityChannels(data.host());
         logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-        getManager(WebSocketManager.class).registerListener(getMac(), this);
+        getManager(WebSocketManager.class).registerListener(data.host().getMac(), this);
         pushSubscribed = true;
+    }
+
+    public void updateConnectivityChannels(LanHost host) {
+        updateChannelOnOff(CONNECTIVITY, REACHABLE, host.reachable());
+        updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
+        updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
+        updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     public void wol() {
         try {
-            getManager(LanBrowserManager.class).wakeOnLan(getMac());
+            getManager(LanBrowserManager.class).wakeOnLan(getMac(),
+                    getConfigAs(ApiConsumerConfiguration.class).password);
         } catch (FreeboxException e) {
             logger.warn("Error waking up host : {}", e.getMessage());
         }
@@ -105,8 +103,4 @@ public class HostHandler extends ApiConsumerHandler implements NetworkHostIntf {
         return Collections.singletonList(HostActions.class);
     }
 
-    @Override
-    public Configuration getConfig() {
-        return super.getConfig();
-    }
 }

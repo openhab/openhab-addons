@@ -15,7 +15,15 @@
 		<label>Player Status</label>
 		<channels>
 			<channel id="player-status" typeId="player-status"/>
-		    <channel id="package" typeId="package"/>
+			<channel id="package" typeId="package"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="player-sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="box-event" typeId="box-event"/>
 		</channels>
 	</channel-group-type>
 

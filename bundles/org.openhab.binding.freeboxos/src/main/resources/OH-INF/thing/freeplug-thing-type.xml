@@ -12,9 +12,21 @@
 		<label>Freeplug</label>
 		<description>Ethernet / CPL gateway</description>
 
-		<channel-groups>
-			<channel-group typeId="freeplugstatus" id="connection-status"/>
-		</channel-groups>
+		<channels>
+			<channel id="line-status" typeId="line-status"/>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Activity</label>
+			</channel>
+			<channel id="reachable" typeId="reachable"/>
+			<channel id="rate-up" typeId="transfer-rate">
+				<label>Tx Rate</label>
+				<description>Current TX Rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate">
+				<label>Rx Rate</label>
+				<description>Current RX rate</description>
+			</channel>
+		</channels>
 
 		<representation-property>macAddress</representation-property>
 

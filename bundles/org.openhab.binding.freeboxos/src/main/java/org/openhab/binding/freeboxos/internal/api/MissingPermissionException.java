@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * Exception for errors when Session require missing permission

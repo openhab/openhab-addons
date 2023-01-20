@@ -110,7 +110,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="transfer-rate" advanced="true">
+	<channel-type id="transfer-rate">
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Transfer Rate</label>
 		<description>Current transfer rate</description>
@@ -193,13 +193,13 @@
 		<description>Status of the Freebox TV player</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	
-    <channel-type id="package">
-        <item-type>String</item-type>
-        <label>Active Package</label>
-        <description>Name of the package currently active on the player</description>
-        <state readOnly="true" pattern="%s"/>
-    </channel-type>
+
+	<channel-type id="package">
+		<item-type>String</item-type>
+		<label>Active Package</label>
+		<description>Name of the package currently active on the player</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
 
 	<channel-type id="wifi-status">
 		<item-type>Switch</item-type>
@@ -355,6 +355,7 @@
 				<option value="home">Home</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="ip-address" advanced="true">

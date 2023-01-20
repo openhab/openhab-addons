@@ -19,10 +19,11 @@ import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.openhab.binding.freeboxos.internal.discovery.FreeboxOsDiscoveryService;
-import org.openhab.binding.freeboxos.internal.rest.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.rest.RestManager;
+import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +32,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +45,19 @@ import org.slf4j.LoggerFactory;
 public class FreeboxOsHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsHandler.class);
     private final FreeboxOsSession session;
+    private final String callbackURL;
+    private final BundleContext bundleContext;
+    private final AudioHTTPServer audioHTTPServer;
 
     private Optional<Future<?>> openConnectionJob = Optional.empty();
 
-    public FreeboxOsHandler(Bridge thing, FreeboxOsSession session) {
+    public FreeboxOsHandler(Bridge thing, FreeboxOsSession session, String callbackURL, BundleContext bundleContext,
+            AudioHTTPServer audioHTTPServer) {
         super(thing);
         this.session = session;
+        this.callbackURL = callbackURL;
+        this.bundleContext = bundleContext;
+        this.audioHTTPServer = audioHTTPServer;
     }
 
     @Override
@@ -114,5 +123,17 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
 
     public FreeboxOsConfiguration getConfiguration() {
         return getConfigAs(FreeboxOsConfiguration.class);
+    }
+
+    public String getCallbackURL() {
+        return callbackURL;
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+    public AudioHTTPServer getAudioHTTPServer() {
+        return audioHTTPServer;
     }
 }

@@ -20,5 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiConsumerConfiguration {
+    public static final String PASSWORD = "password";
+    public static final String PORT = "port";
+
     public int refreshInterval = 30;
+    public String password = "";
+    public int port = 24322;
+    public boolean acceptAllMp3 = true;
 }

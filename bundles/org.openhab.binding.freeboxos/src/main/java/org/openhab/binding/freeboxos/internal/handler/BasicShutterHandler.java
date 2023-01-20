@@ -17,10 +17,10 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.ValueType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.home.HomeManager;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpointState;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -47,12 +47,12 @@ public class BasicShutterHandler extends ApiConsumerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         BasicShutterConfiguration config = getConfiguration();
-        HomeNodeEndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
+        EndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
         Double percent = null;
         if (state != null) {
-            if (ValueType.BOOL.equals(state.getValueType())) {
+            if (ValueType.BOOL.equals(state.valueType())) {
                 percent = Boolean.TRUE.equals(state.asBoolean()) ? 1.0 : 0.0;
-            } else if (ValueType.INT.equals(state.getValueType())) {
+            } else if (ValueType.INT.equals(state.valueType())) {
                 Integer inValue = state.asInt();
                 if (inValue != null) {
                     percent = inValue.doubleValue() / 100.0;

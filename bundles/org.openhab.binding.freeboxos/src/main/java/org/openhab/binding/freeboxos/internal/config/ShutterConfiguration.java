@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.EpType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNode;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpoint;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EpType;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.HomeNode;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 
 /**
@@ -41,29 +41,29 @@ public class ShutterConfiguration extends ClientConfiguration {
 
     public static void configure(DiscoveryResultBuilder discoveryResultBuilder, HomeNode homeNode)
             throws FreeboxException {
-        for (HomeNodeEndpoint endPoint : homeNode.getShowEndpoints()) {
-            String name = endPoint.getName();
-            if (EpType.SLOT.equals(endPoint.getEpType()) && name != null) {
+        for (Endpoint endPoint : homeNode.showEndpoints()) {
+            String name = endPoint.name();
+            if (EpType.SLOT.equals(endPoint.epType()) && name != null) {
                 switch (name) {
                     case "position_set":
-                        discoveryResultBuilder.withProperty(POSITION_SLOT_ID, endPoint.getId());
+                        discoveryResultBuilder.withProperty(POSITION_SLOT_ID, endPoint.id());
                         break;
                     case "stop":
-                        discoveryResultBuilder.withProperty(STOP_SLOT_ID, endPoint.getId());
+                        discoveryResultBuilder.withProperty(STOP_SLOT_ID, endPoint.id());
                         break;
                     case "toggle":
-                        discoveryResultBuilder.withProperty(TOGGLE_SLOT_ID, endPoint.getId());
+                        discoveryResultBuilder.withProperty(TOGGLE_SLOT_ID, endPoint.id());
                         break;
                     default:
                         throw new FreeboxException("Unexpected endpoint name :" + name);
                 }
-            } else if (EpType.SIGNAL.equals(endPoint.getEpType()) && name != null) {
+            } else if (EpType.SIGNAL.equals(endPoint.epType()) && name != null) {
                 switch (name) {
                     case "position_set":
-                        discoveryResultBuilder.withProperty(POSITION_SIGNAL_ID, endPoint.getId());
+                        discoveryResultBuilder.withProperty(POSITION_SIGNAL_ID, endPoint.id());
                         break;
                     case "state":
-                        discoveryResultBuilder.withProperty(STATE_SIGNAL_ID, endPoint.getId());
+                        discoveryResultBuilder.withProperty(STATE_SIGNAL_ID, endPoint.id());
                         break;
                     default:
                         throw new FreeboxException("Unexpected endpoint name :" + name);

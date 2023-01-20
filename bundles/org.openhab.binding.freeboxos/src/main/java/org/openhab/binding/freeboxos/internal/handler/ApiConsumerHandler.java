@@ -13,7 +13,9 @@
 package org.openhab.binding.freeboxos.internal.handler;
 
 import java.time.ZonedDateTime;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,8 +24,14 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
+import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
-import org.openhab.binding.freeboxos.internal.rest.RestManager;
+import org.openhab.core.audio.AudioSink;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -41,8 +49,11 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import inet.ipaddr.IPAddress;
 
 /**
  * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
@@ -50,11 +61,11 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-abstract class ApiConsumerHandler extends BaseThingHandler {
+abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsumerIntf {
     private final Logger logger = LoggerFactory.getLogger(ApiConsumerHandler.class);
 
     private @Nullable ScheduledFuture<?> globalJob;
-    private @Nullable FreeboxOsHandler bridgeHandler;
+    private @Nullable ServiceRegistration<?> reg;
 
     ApiConsumerHandler(Thing thing) {
         super(thing);
@@ -63,7 +74,8 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing handler for thing {}", getThing().getUID());
-        if (!checkBridgeHandler()) {
+        FreeboxOsHandler bridgeHandler = checkBridgeHandler();
+        if (bridgeHandler == null) {
             return;
         }
 
@@ -71,17 +83,43 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         if (properties.isEmpty()) {
             try {
                 initializeProperties(properties);
+                checkAirMediaCapabilities(properties);
                 updateProperties(properties);
             } catch (FreeboxException e) {
                 logger.warn("Error getting thing properties : {}", e.getMessage());
             }
         }
 
+        boolean isAudioReceiver = Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()));
+        if (isAudioReceiver) {
+            configureMediaSink(bridgeHandler, properties.getOrDefault(Source.UPNP.name(), ""));
+        }
+
         startRefreshJob();
     }
 
+    private void configureMediaSink(FreeboxOsHandler bridgeHandler, String upnpName) {
+        try {
+            Receiver receiver = getManager(MediaReceiverManager.class).getReceiver(upnpName);
+            if (receiver != null && reg == null) {
+                ApiConsumerConfiguration config = getConfig().as(ApiConsumerConfiguration.class);
+                String callbackURL = bridgeHandler.getCallbackURL();
+                if (!config.password.isEmpty() || !receiver.passwordProtected()) {
+                    reg = bridgeHandler.getBundleContext().registerService(
+                            AudioSink.class.getName(), new AirMediaSink(this, bridgeHandler.getAudioHTTPServer(),
+                                    callbackURL, receiver.name(), config.password, config.acceptAllMp3),
+                            new Hashtable<>());
+                } else {
+                    logger.info("A password needs to be configured to enable Air Media capability.");
+                }
+            }
+        } catch (FreeboxException e) {
+            logger.warn("Unable to retrieve Media Receivers");
+        }
+    }
+
     public <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
-        FreeboxOsHandler handler = bridgeHandler;
+        FreeboxOsHandler handler = checkBridgeHandler();
         if (handler != null) {
             return handler.getManager(clazz);
         }
@@ -93,7 +131,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Thing {}: bridge status changed to {}", getThing().getUID(), bridgeStatusInfo);
-        if (checkBridgeHandler()) {
+        if (checkBridgeHandler() != null) {
             startRefreshJob();
         } else {
             stopRefreshJob();
@@ -106,7 +144,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
             return;
         }
         try {
-            if (bridgeHandler == null || !internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
+            if (checkBridgeHandler() == null || !internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
                 logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
             }
         } catch (FreeboxException e) {
@@ -114,15 +152,23 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
     }
 
-    private boolean checkBridgeHandler() {
+    private void checkAirMediaCapabilities(Map<String, String> properties) throws FreeboxException {
+        String upnpName = properties.getOrDefault(Source.UPNP.name(), "");
+        Receiver receiver = getManager(MediaReceiverManager.class).getReceiver(upnpName);
+        if (receiver != null) {
+            receiver.capabilities().entrySet()
+                    .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString()));
+        }
+    }
+
+    private @Nullable FreeboxOsHandler checkBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsHandler) {
+            if (handler instanceof FreeboxOsHandler osHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    bridgeHandler = (FreeboxOsHandler) handler;
                     updateStatus(ThingStatus.ONLINE);
-                    return true;
+                    return osHandler;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
@@ -131,13 +177,17 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
-        return false;
+        return null;
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         stopRefreshJob();
+        ServiceRegistration<?> localReg = reg;
+        if (localReg != null) {
+            localReg.unregister();
+        }
         super.dispose();
     }
 
@@ -175,7 +225,8 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
     }
 
-    protected void stopRefreshJob() {
+    @Override
+    public void stopRefreshJob() {
         ScheduledFuture<?> job = globalJob;
         if (job != null && !job.isCancelled()) {
             logger.debug("Stop scheduled state update for thing {}", getThing().getUID());
@@ -204,6 +255,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
     }
 
+    protected void updateChannelDateTimeState(String channelId, @Nullable ZonedDateTime timestamp) {
+        updateIfActive(channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
+    }
+
     protected void updateChannelDateTimeState(String group, String channelId, @Nullable ZonedDateTime timestamp) {
         updateIfActive(group, channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
     }
@@ -220,8 +275,16 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         updateIfActive(group, channelId, value != null ? new StringType(value) : UnDefType.NULL);
     }
 
+    protected void updateChannelString(String group, String channelId, @Nullable IPAddress value) {
+        updateIfActive(group, channelId, value != null ? new StringType(value.toCanonicalString()) : UnDefType.NULL);
+    }
+
     protected void updateChannelString(String channelId, @Nullable String value) {
         updateIfActive(channelId, value != null ? new StringType(value) : UnDefType.NULL);
+    }
+
+    protected void updateChannelString(String channelId, Enum<?> value) {
+        updateIfActive(channelId, new StringType(value.name()));
     }
 
     protected void updateChannelString(String group, String channelId, Enum<?> value) {
@@ -230,6 +293,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     protected void updateChannelQuantity(String group, String channelId, double d, Unit<?> unit) {
         updateChannelQuantity(group, channelId, new QuantityType<>(d, unit));
+    }
+
+    protected void updateChannelQuantity(String channelId, @Nullable QuantityType<?> quantity) {
+        updateIfActive(channelId, quantity != null ? quantity : UnDefType.NULL);
     }
 
     protected void updateChannelQuantity(String group, String channelId, @Nullable QuantityType<?> quantity) {
@@ -246,5 +313,30 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     protected void updateChannelQuantity(String group, String channelId, QuantityType<?> qtty, Unit<?> unit) {
         updateChannelQuantity(group, channelId, qtty.toUnit(unit));
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public Map<String, String> editProperties() {
+        return super.editProperties();
+    }
+
+    @Override
+    public void updateProperties(@Nullable Map<String, String> properties) {
+        super.updateProperties(properties);
+    }
+
+    @Override
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    @Override
+    public Configuration getConfig() {
+        return super.getConfig();
     }
 }

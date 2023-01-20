@@ -17,13 +17,13 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
-import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.AccessPointManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.LanAccessPoint;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.WifiDeviceIntf;
-import org.openhab.binding.freeboxos.internal.api.wifi.ap.WifiStation;
+import org.openhab.binding.freeboxos.internal.api.rest.APManager;
+import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
+import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
+import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -49,11 +49,12 @@ public class WifiStationHandler extends HostHandler {
         super.internalPoll();
 
         // Search if the wifi-host is hosted on server access-points
-        Optional<WifiStation> station = getManager(AccessPointManager.class).getStation(getMac());
+        Optional<Station> station = getManager(APManager.class).getStation(getMac());
         if (station.isPresent()) {
-            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, station.get().getLastSeen());
+            Station data = station.get();
+            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, data.getLastSeen());
             updateChannelString(GROUP_WIFI, WIFI_HOST, SERVER_HOST);
-            updateWifiStationChannels(station.get());
+            updateWifiStationChannels(data.signal(), data.getSsid(), data.rxRate(), data.txRate());
             return;
         }
 
@@ -61,10 +62,10 @@ public class WifiStationHandler extends HostHandler {
         Optional<LanHost> wifiHost = getManager(RepeaterManager.class).getHost(getMac());
         if (wifiHost.isPresent()) {
             updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, wifiHost.get().getLastSeen());
-            LanAccessPoint lanAp = wifiHost.get().getAccessPoint();
+            LanAccessPoint lanAp = wifiHost.get().accessPoint();
             if (lanAp != null) {
-                updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.getType(), lanAp.getUid()));
-                updateWifiStationChannels(lanAp);
+                updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.type(), lanAp.uid()));
+                updateWifiStationChannels(lanAp.getSignal(), lanAp.getSsid(), lanAp.rxRate(), lanAp.txRate());
                 return;
             }
         }
@@ -73,13 +74,12 @@ public class WifiStationHandler extends HostHandler {
                 .forEach(uid -> updateState(uid, UnDefType.NULL));
     }
 
-    private void updateWifiStationChannels(WifiDeviceIntf wifidevice) {
-        int rssi = wifidevice.getSignal();
-        updateChannelString(GROUP_WIFI, SSID, wifidevice.getSsid());
+    private void updateWifiStationChannels(int rssi, @Nullable String ssid, long rxRate, long txRate) {
+        updateChannelString(GROUP_WIFI, SSID, ssid);
         updateChannelQuantity(GROUP_WIFI, RSSI, rssi <= 0 ? new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS) : null);
         updateChannelDecimal(GROUP_WIFI, WIFI_QUALITY, rssi <= 0 ? toQoS(rssi) : null);
-        updateRateChannel(RATE_DOWN, wifidevice.getRxRate());
-        updateRateChannel(RATE_UP, wifidevice.getTxRate());
+        updateRateChannel(RATE_DOWN, rxRate);
+        updateRateChannel(RATE_UP, txRate);
     }
 
     private void updateRateChannel(String channel, long rate) {

@@ -19,6 +19,8 @@
 			<channel id="hardware-status" typeId="hardware-status"/>
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
 	</thing-type>
 
@@ -43,6 +45,8 @@
 				<label>Gain TX</label>
 			</channel>
 		</channels>
+
+		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
 	</thing-type>
