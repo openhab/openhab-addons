@@ -139,7 +139,7 @@ class UniFiControllerRequest<T> {
                 }
             } catch (final JsonParseException e) {
                 logger.debug(
-                        "Could not parse content retrieved from the server. Is the configuration poiting to the right server/port?, {}",
+                        "Could not parse content retrieved from the server. Is the configuration pointing to the right server/port?, {}",
                         e.getMessage());
                 if (logger.isTraceEnabled()) {
                     prettyPrintJson(json);
