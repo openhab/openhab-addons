@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+<<<<<<< Upstream, based on origin/main
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.ServerActions;
@@ -247,32 +248,32 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.ServerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.connection.ConnectionManager;
-import org.openhab.binding.freeboxos.internal.api.connection.ConnectionStatus;
-import org.openhab.binding.freeboxos.internal.api.ftp.FtpManager;
-import org.openhab.binding.freeboxos.internal.api.lan.LanConfig;
-import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
-import org.openhab.binding.freeboxos.internal.api.netshare.afp.AfpManager;
-import org.openhab.binding.freeboxos.internal.api.netshare.samba.SambaConfig;
-import org.openhab.binding.freeboxos.internal.api.netshare.samba.SambaManager;
-import org.openhab.binding.freeboxos.internal.api.system.SystemConfig;
-import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
-import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
+import org.openhab.binding.freeboxos.internal.api.rest.AfpManager;
+import org.openhab.binding.freeboxos.internal.api.rest.AirMediaManager;
+import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager;
+import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.Status;
+import org.openhab.binding.freeboxos.internal.api.rest.FtpManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
+import org.openhab.binding.freeboxos.internal.api.rest.LanManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanManager.LanConfig;
+import org.openhab.binding.freeboxos.internal.api.rest.SambaManager;
+import org.openhab.binding.freeboxos.internal.api.rest.SambaManager.Samba;
+import org.openhab.binding.freeboxos.internal.api.rest.SystemManager;
+import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.Config;
+import org.openhab.binding.freeboxos.internal.api.rest.UPnPAVManager;
+import org.openhab.binding.freeboxos.internal.api.rest.WifiManager;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -286,38 +287,38 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf /* was FreeDeviceHandler */ {
+public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf {
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
-    private long uptime = -1;
     private final ChannelUID eventChannelUID;
 
-    public ServerHandler(
-            Thing thing /* , AudioHTTPServer audioHTTPServer, String ipAddress, BundleContext bundleContext */) {
-        super(thing /* , audioHTTPServer, ipAddress, bundleContext */);
+    private long uptime = -1;
+
+    public ServerHandler(Thing thing) {
+        super(thing);
         eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
     }
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
         LanConfig lanConfig = getManager(LanManager.class).getConfig();
-        SystemConfig config = getManager(SystemManager.class).getConfig();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getModelInfo().getPrettyName());
-        properties.put(HOSTNAME, lanConfig.getName());
+        Config config = getManager(SystemManager.class).getConfig();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.serial());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.firmwareVersion());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.modelInfo().prettyName());
+        properties.put(Source.UPNP.name(), lanConfig.name());
 
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        config.getSensors().forEach(sensor -> {
-            ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_SENSORS, sensor.getId());
-            channels.add(ChannelBuilder.create(sensorId).withLabel(sensor.getName())
-                    .withAcceptedItemType("Number:Temperature")
-                    .withType(new ChannelTypeUID(BINDING_ID + ":temperature")).build());
+        config.sensors().forEach(sensor -> {
+            ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_SENSORS, sensor.id());
+            channels.add(
+                    ChannelBuilder.create(sensorId).withLabel(sensor.name()).withAcceptedItemType("Number:Temperature")
+                            .withType(new ChannelTypeUID(BINDING_ID + ":temperature")).build());
         });
-        config.getFans().forEach(sensor -> {
-            ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_FANS, sensor.getId());
-            channels.add(ChannelBuilder.create(sensorId).withLabel(sensor.getName())
+        config.fans().forEach(sensor -> {
+            ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_FANS, sensor.id());
+            channels.add(ChannelBuilder.create(sensorId).withLabel(sensor.name())
                     .withAcceptedItemType(CoreItemFactory.NUMBER).withType(new ChannelTypeUID(BINDING_ID + ":fanspeed"))
                     .build());
         });
@@ -334,54 +335,48 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
         updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
 
-        SambaConfig response = getManager(SambaManager.class).getConfig();
-        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.isFileShareEnabled());
-        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
+        Samba response = getManager(SambaManager.class).getConfig();
+        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
+        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
         updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
         updateChannelOnOff(FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
     }
 
     private void fetchSystemConfig() throws FreeboxException {
-        SystemConfig config = getManager(SystemManager.class).getConfig();
+        Config config = getManager(SystemManager.class).getConfig();
 
-        config.getSensors().forEach(sensor -> {
-            updateChannelDecimal(GROUP_SENSORS, sensor.getId(), sensor.getValue());
-        });
-        config.getFans().forEach(fan -> {
-            updateChannelDecimal(GROUP_FANS, fan.getId(), fan.getValue());
-        });
+        config.sensors().forEach(sensor -> updateChannelDecimal(GROUP_SENSORS, sensor.id(), sensor.value()));
+        config.fans().forEach(fan -> updateChannelDecimal(GROUP_FANS, fan.id(), fan.value()));
 
-        long newUptime = config.getUptimeVal();
-        uptime = controlUptimeAndFirmware(newUptime, uptime, config.getFirmwareVersion());
+        uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
         updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
 
         LanConfig lanConfig = getManager(LanManager.class).getConfig();
-        updateChannelString(SYS_INFO, IP_ADDRESS, lanConfig.getIp());
+        updateChannelString(SYS_INFO, IP_ADDRESS, lanConfig.ip());
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        ConnectionStatus status = getManager(ConnectionManager.class).getConfig();
-        updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.getState());
-        updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.getType());
-        updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.getMedia());
-        updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.getIpv4());
-        updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.getIpv6());
+        Status status = getManager(ConnectionManager.class).getConfig();
+        updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.state());
+        updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.type());
+        updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
+        updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
+        updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
 
-        QuantityType<?> rateUp = new QuantityType<>(status.getRateUp() * 8, Units.BIT_PER_SECOND);
+        QuantityType<?> rateUp = new QuantityType<>(status.rateUp() * 8, Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_UP, rateUp, KILOBIT_PER_SECOND);
 
-        QuantityType<?> rateDown = new QuantityType<>(status.getRateDown() * 8, Units.BIT_PER_SECOND);
+        QuantityType<?> rateDown = new QuantityType<>(status.rateDown() * 8, Units.BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, RATE_DOWN, rateDown, KILOBIT_PER_SECOND);
 
-        QuantityType<?> bandwidthUp = new QuantityType<>(status.getBandwidthUp(), BIT_PER_SECOND);
+        QuantityType<?> bandwidthUp = new QuantityType<>(status.bandwidthUp(), BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, BW_UP, bandwidthUp, KILOBIT_PER_SECOND);
 
-        QuantityType<?> bandwidthDown = new QuantityType<>(status.getBandwidthDown(), BIT_PER_SECOND);
+        QuantityType<?> bandwidthDown = new QuantityType<>(status.bandwidthDown(), BIT_PER_SECOND);
         updateChannelQuantity(CONNECTION_STATUS, BW_DOWN, bandwidthDown, KILOBIT_PER_SECOND);
 
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.getBytesUp(), OCTET), GIBIOCTET);
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.getBytesDown(), OCTET),
-                GIBIOCTET);
+        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
+        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET), GIBIOCTET);
 
         updateChannelQuantity(CONNECTION_STATUS, PCT_BW_UP,
                 !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.multiply(HUNDRED).divide(bandwidthUp)
@@ -406,10 +401,12 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
                     updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).setStatus(enable));
                     return true;
                 case SAMBA_FILE_STATUS:
-                    updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, enableSambaFileShare(enable));
+                    updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS,
+                            getManager(SambaManager.class).setFileShare(enable));
                     return true;
                 case SAMBA_PRINTER_STATUS:
-                    updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
+                    updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS,
+                            getManager(SambaManager.class).setPrintShare(enable));
                     return true;
                 case UPNPAV_STATUS:
                     updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).setStatus(enable));
@@ -427,28 +424,14 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         return super.internalHandleCommand(channelId, command);
     }
 
-    private boolean enableSambaFileShare(boolean enable) throws FreeboxException {
-        SambaConfig config = getManager(SambaManager.class).getConfig();
-        config.setFileShareEnabled(enable);
-        return getManager(SambaManager.class).setConfig(config).isFileShareEnabled();
-    }
-
-    private boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
-        SambaConfig config = getManager(SambaManager.class).getConfig();
-        config.setPrintShareEnabled(enable);
-        return getManager(SambaManager.class).setConfig(config).isPrintShareEnabled();
-    }
-
     public void reboot() {
-        try {
-            getManager(SystemManager.class).reboot();
-            triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "reboot_requested");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting...");
-            stopRefreshJob();
-            scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
-        } catch (FreeboxException e) {
-            logger.warn("Error rebooting device : {}", e.getMessage());
-        }
+        processReboot(() -> {
+            try {
+                getManager(SystemManager.class).reboot();
+            } catch (FreeboxException e) {
+                logger.warn("Error rebooting : {}", e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -471,15 +454,4 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
     public void triggerChannel(ChannelUID channelUID, String event) {
         super.triggerChannel(channelUID, event);
     }
-
-    @Override
-    public Map<String, String> editProperties() {
-        return super.editProperties();
-    }
-
-    @Override
-    public void updateProperties(@Nullable Map<String, String> properties) {
-        super.updateProperties(properties);
-    }
-
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Config;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
@@ -82,6 +83,11 @@ import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
 import org.openhab.core.config.core.Configuration;
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Config;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
+>>>>>>> e4ef5cc Switching to Java 17 records
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -96,7 +102,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FxsHandler extends ApiConsumerHandler implements FreeClientIntf {
+public class FxsHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(FxsHandler.class);
 
     public FxsHandler(Thing thing) {
@@ -105,44 +111,46 @@ public class FxsHandler extends ApiConsumerHandler implements FreeClientIntf {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        // nothing to do here
+        getManager(PhoneManager.class).getStatus(getClientId())
+                .ifPresent(status -> properties.put(Thing.PROPERTY_VENDOR, status.vendor()));
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         logger.debug("Polling landline status...");
 
-        PhoneConfig config = getManager(PhoneManager.class).getConfig();
-        updateConfig(config);
+        Config config = getManager(PhoneManager.class).getConfig();
+        updateConfigChannels(config);
 
-        getManager(PhoneManager.class).getOptStatus(getClientId()).ifPresent(this::updateStatus);
+        getManager(PhoneManager.class).getStatus(getClientId()).ifPresent(this::updateStatusChannels);
     }
 
-    protected void updateConfig(PhoneConfig config) {
-        updateChannelString(TELEPHONY_SERVICE, config.getNetwork().name());
+    protected void updateConfigChannels(Config config) {
+        updateChannelString(TELEPHONY_SERVICE, config.network());
     }
 
-    protected void updateStatus(PhoneStatus status) {
-        updateChannelOnOff(ONHOOK, status.isOnHook());
+    protected void updateStatusChannels(Status status) {
+        updateChannelOnOff(ONHOOK, status.onHook());
         updateChannelOnOff(RINGING, status.isRinging());
-        updateChannelString(HARDWARE_STATUS, status.isHardwareDefect() ? "KO" : "OK");
+        updateChannelString(HARDWARE_STATUS, status.hardwareDefect() ? "KO" : "OK");
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
-        if (RINGING.equals(channelId)) {
-            if (command instanceof OnOffType onOffCommand) {
-                getManager(PhoneManager.class).ringFxs(OnOffType.ON.equals(onOffCommand));
-                return true;
-            }
+        if (RINGING.equals(channelId) && command instanceof OnOffType) {
+            getManager(PhoneManager.class).ringFxs(TRUE_COMMANDS.contains(command));
+            return true;
         }
         return super.internalHandleCommand(channelId, command);
     }
+<<<<<<< Upstream, based on origin/main
 
     @Override
     public Configuration getConfig() {
         return super.getConfig();
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

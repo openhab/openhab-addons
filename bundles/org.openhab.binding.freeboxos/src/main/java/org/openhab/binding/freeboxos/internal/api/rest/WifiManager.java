@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link WifiManager} is the Java class used to handle api requests related to wifi
@@ -34,6 +35,27 @@ public class WifiManager extends ConfigurableRest<WifiManager.Config, WifiManage
     public WifiManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH),
                 CONFIG_PATH);
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link WifiManager} is the Java class used to handle api requests related to wifi
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class WifiManager extends ConfigurableRest<WifiManager.Config, WifiManager.ConfigResponse> {
+    private static final String PATH = "wifi";
+
+    public static class ConfigResponse extends Response<Config> {
+    }
+
+    protected static record Config(boolean enabled) {
+    }
+
+    public WifiManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+>>>>>>> e4ef5cc Switching to Java 17 records
         session.addManager(APManager.class, new APManager(session, getUriBuilder()));
     }
 

@@ -17,6 +17,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+<<<<<<< Upstream, based on origin/main
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LcdManager;
@@ -123,10 +124,12 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.util.concurrent.Callable;
 
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lcd.LcdConfig;
-import org.openhab.binding.freeboxos.internal.api.lcd.LcdManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LcdManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LcdManager.Config;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -146,17 +149,14 @@ import org.slf4j.LoggerFactory;
 public class RevolutionHandler extends ServerHandler {
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
 
-    public RevolutionHandler(Thing thing/*
-                                         * , AudioHTTPServer audioHTTPServer, String ipAddress,
-                                         * BundleContext bundleContext
-                                         */) {
-        super(thing/* , audioHTTPServer, ipAddress, bundleContext */);
+    public RevolutionHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         LcdManager manager = getManager(LcdManager.class);
-        LcdConfig config = manager.getConfig();
+        Config config = manager.getConfig();
         switch (channelId) {
             case LCD_BRIGHTNESS:
                 setBrightness(manager, config, command);
@@ -177,43 +177,43 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        LcdConfig config = getManager(LcdManager.class).getConfig();
-        updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.getBrightness(), PERCENT);
-        updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.getOrientation());
+        Config config = getManager(LcdManager.class).getConfig();
+        updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
+        updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.orientation());
         updateChannelOnOff(DISPLAY, LCD_FORCED, config.orientationForced());
     }
 
-    private void setOrientation(LcdManager manager, LcdConfig config, Command command) throws FreeboxException {
+    private void setOrientation(LcdManager manager, Config config, Command command) throws FreeboxException {
         if (command instanceof DecimalType decimal) {
-            manager.setConfig(config.withOrientation(decimal.intValue()));
+            manager.setOrientation(decimal.intValue());
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_ORIENTATION);
         }
     }
 
-    private void setForced(LcdManager manager, LcdConfig config, Command command) throws FreeboxException {
+    private void setForced(LcdManager manager, Config config, Command command) throws FreeboxException {
         if (ON_OFF_CLASSES.contains(command.getClass())) {
-            manager.setConfig(config.withOrientationForced(TRUE_COMMANDS.contains(command)));
+            manager.setOrientationForced(TRUE_COMMANDS.contains(command));
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_FORCED);
         }
     }
 
-    private void setBrightness(LcdManager manager, LcdConfig config, Command command) throws FreeboxException {
+    private void setBrightness(LcdManager manager, Config config, Command command) throws FreeboxException {
         if (command instanceof IncreaseDecreaseType) {
-            changeLcdBrightness(manager,
-                    () -> config.getBrightness() + (command == IncreaseDecreaseType.INCREASE ? 1 : -1));
+            manager.setBrightness(() -> config.brightness() + (command == IncreaseDecreaseType.INCREASE ? 1 : -1));
         } else if (command instanceof OnOffType) {
-            changeLcdBrightness(manager, () -> command == OnOffType.ON ? 100 : 0);
+            manager.setBrightness(() -> command == OnOffType.ON ? 100 : 0);
         } else if (command instanceof QuantityType) {
-            changeLcdBrightness(manager, () -> ((QuantityType<?>) command).intValue());
+            manager.setBrightness(() -> ((QuantityType<?>) command).intValue());
         } else if (command instanceof DecimalType || command instanceof PercentType) {
-            changeLcdBrightness(manager, () -> ((DecimalType) command).intValue());
+            manager.setBrightness(() -> ((DecimalType) command).intValue());
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_BRIGHTNESS);
         }
     }
 
+<<<<<<< Upstream, based on origin/main
     private void changeLcdBrightness(LcdManager manager, Callable<Integer> function) throws FreeboxException {
         LcdConfig config = manager.getConfig();
         try {
@@ -224,4 +224,6 @@ public class RevolutionHandler extends ServerHandler {
 >>>>>>> 46dadb1 SAT warnings handling
         }
     }
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

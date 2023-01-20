@@ -16,6 +16,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 
 import java.time.ZonedDateTime;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,17 +102,22 @@ public class FreeplugHandler extends ApiConsumerHandler {
         return Collections.singleton(FreeplugActions.class);
     }
 =======
+=======
+import java.util.ArrayList;
+>>>>>>> e4ef5cc Switching to Java 17 records
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.FreeplugActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.freeplug.FreeplugManager;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager.NetRole;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
@@ -124,7 +130,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FreeplugHandler extends ApiConsumerHandler implements NetworkHostIntf {
+public class FreeplugHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeplugHandler.class);
 
     public FreeplugHandler(Thing thing) {
@@ -134,32 +140,39 @@ public class FreeplugHandler extends ApiConsumerHandler implements NetworkHostIn
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
         getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
-            properties.put(Thing.PROPERTY_MODEL_ID, plug.getModel());
-            properties.put(ROLE, plug.getNetRole().name());
-            properties.put(NET_ID, plug.getNetId());
-            properties.put(ETHERNET_SPEED, String.format("%d Mb/s", plug.getEthSpeed()));
-            properties.put(LOCAL, Boolean.valueOf(plug.isLocal()).toString());
-            properties.put(FULL_DUPLEX, Boolean.valueOf(plug.isEthFullDuplex()).toString());
+            NetRole role = plug.netRole();
+            properties.put(Thing.PROPERTY_MODEL_ID, plug.model());
+            properties.put(ROLE, role.name());
+            properties.put(NET_ID, plug.netId());
+            properties.put(ETHERNET_SPEED, String.format("%d Mb/s", plug.ethSpeed()));
+            properties.put(LOCAL, Boolean.valueOf(plug.local()).toString());
+            properties.put(FULL_DUPLEX, Boolean.valueOf(plug.ethFullDuplex()).toString());
+
+            if (role.equals(NetRole.CCO)) { // Coordinator does not provide rate up or down
+                List<Channel> channels = new ArrayList<>(getThing().getChannels());
+                channels.removeIf(channel -> channel.getUID().getId().contains("rate"));
+                updateThing(editThing().withChannels(channels).build());
+            }
         });
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
-            ZonedDateTime lastSeen = ZonedDateTime.now().minusSeconds(plug.getInactive());
-            updateChannelDateTimeState(CONNECTION_STATUS, LAST_SEEN, lastSeen);
+            ZonedDateTime lastSeen = ZonedDateTime.now().minusSeconds(plug.inactive());
+            updateChannelDateTimeState(LAST_SEEN, lastSeen);
 
-            updateChannelString(CONNECTION_STATUS, LINE_STATUS, plug.getEthPortStatus());
-            updateChannelOnOff(CONNECTION_STATUS, REACHABLE, plug.hasNetwork());
+            updateChannelString(LINE_STATUS, plug.ethPortStatus());
+            updateChannelOnOff(REACHABLE, plug.hasNetwork());
 
-            updateRateChannel(RATE_DOWN, plug.getRxRate());
-            updateRateChannel(RATE_UP, plug.getTxRate());
+            updateRateChannel(RATE_DOWN, plug.rxRate());
+            updateRateChannel(RATE_UP, plug.txRate());
         });
     }
 
     private void updateRateChannel(String channel, int rate) {
         QuantityType<?> qtty = rate != -1 ? new QuantityType<>(rate, Units.MEGABIT_PER_SECOND) : null;
-        updateChannelQuantity(CONNECTION_STATUS, channel, qtty);
+        updateChannelQuantity(channel, qtty);
     }
 
     public void reset() {
@@ -169,11 +182,6 @@ public class FreeplugHandler extends ApiConsumerHandler implements NetworkHostIn
         } catch (FreeboxException e) {
             logger.warn("Error restarting freeplug : {}", e.getMessage());
         }
-    }
-
-    @Override
-    public Configuration getConfig() {
-        return super.getConfig();
     }
 
     @Override

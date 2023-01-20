@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests related to calls
@@ -58,6 +59,45 @@ public class CallManager extends RestManager {
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.CALLS, session.getUriBuilder().path(THING_CALL));
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link CallManager} is the Java class used to handle api requests related to calls
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class CallManager extends RestManager {
+    private static final String PATH = THING_CALL.toLowerCase();
+    private static final String LOG_SUB_PATH = "log/";
+    private static final String DELETE_ACTION = "delete_all";
+
+    private static class Calls extends Response<Call> {
+    }
+
+    public static enum Type {
+        ACCEPTED,
+        MISSED,
+        OUTGOING,
+        INCOMING,
+        UNKNOWN;
+    }
+
+    public static record Call(Type type, //
+            ZonedDateTime datetime, // Call creation timestamp.
+            String number, // Calling or called number
+            int duration, // Call duration in seconds.
+            String name) {
+
+        public @Nullable String name() {
+            return name.equals(number) ? null : name;
+        }
+    }
+
+    public CallManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.CALLS, session.getUriBuilder().path(PATH));
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 
     // Retrieves a sorted list of all call entries

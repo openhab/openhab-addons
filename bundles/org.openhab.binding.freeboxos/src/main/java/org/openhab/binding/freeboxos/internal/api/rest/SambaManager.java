@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link SambaManager} is the Java class used to handle api requests related to Samba shares
@@ -53,4 +54,43 @@ public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaMana
                 config.logonPassword, config.workgroup, config.smbv2Enabled);
         return setConfig(newConfig).printShareEnabled();
     }
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link SambaManager} is the Java class used to handle api requests related to Samba shares
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaManager.ConfigResponse> {
+    public static final String PATH = "samba";
+
+    public static class ConfigResponse extends Response<Samba> {
+    }
+
+    public static record Samba(boolean fileShareEnabled, boolean printShareEnabled, boolean logonEnabled,
+            @Nullable String logonUser, @Nullable String logonPassword, @Nullable String workgroup,
+            boolean smbv2Enabled) {
+    }
+
+    public SambaManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(PATH), null);
+    }
+
+    public boolean setFileShare(boolean enable) throws FreeboxException {
+        Samba config = getConfig();
+        Samba newConfig = new Samba(enable, config.printShareEnabled, config.logonEnabled, config.logonUser,
+                config.logonPassword, config.workgroup, config.smbv2Enabled);
+        return setConfig(newConfig).fileShareEnabled();
+    }
+
+    public boolean setPrintShare(boolean enable) throws FreeboxException {
+        Samba config = getConfig();
+        Samba newConfig = new Samba(config.fileShareEnabled, enable, config.logonEnabled, config.logonUser,
+                config.logonPassword, config.workgroup, config.smbv2Enabled);
+        return setConfig(newConfig).printShareEnabled();
+    }
+
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

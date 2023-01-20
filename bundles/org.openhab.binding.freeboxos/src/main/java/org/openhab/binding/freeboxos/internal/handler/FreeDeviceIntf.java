@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.util.Map;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,23 +56,23 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
         getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
     }
 =======
+=======
+import java.util.concurrent.TimeUnit;
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 @NonNullByDefault
-public interface FreeDeviceIntf {
+public interface FreeDeviceIntf extends ApiConsumerIntf {
     public ChannelUID getEventChannelUID();
 
     public void triggerChannel(ChannelUID channelUID, String event);
 
-    public Map<String, String> editProperties();
-
-    public void updateProperties(@Nullable Map<String, String> properties);
-
-    default long controlUptimeAndFirmware(long newUptime, long oldUptime, String firmwareVersion) {
+    default long checkUptimeAndFirmware(long newUptime, long oldUptime, String firmwareVersion) {
         if (newUptime < oldUptime) {
             triggerChannel(getEventChannelUID(), "restarted");
             Map<String, String> properties = editProperties();
@@ -84,5 +85,16 @@ public interface FreeDeviceIntf {
         return newUptime;
     }
 
+<<<<<<< Upstream, based on origin/main
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+    default void processReboot(Runnable actualReboot) {
+        triggerChannel(getEventChannelUID(), "reboot_requested");
+        actualReboot.run();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "System rebooting...");
+        stopRefreshJob();
+        getScheduler().schedule(this::initialize, 30, TimeUnit.SECONDS);
+    }
+
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link AfpManager} is the Java class used to handle api requests related to Afp shares
@@ -51,6 +52,42 @@ public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.Conf
 
     public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, ConfigResponse.class, uriBuilder.path(AFP_PATH), null);
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link AfpManager} is the Java class used to handle api requests related to Afp shares
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.ConfigResponse> {
+    private static final String AFP_PATH = "afp";
+
+    public static class ConfigResponse extends Response<Afp> {
+    }
+
+    public static record Afp(boolean enabled, boolean guestAllow, ServerType serverType, @Nullable String loginName,
+            @Nullable String loginPassword) {
+        private static enum ServerType {
+            POWERBOOK,
+            POWERMAC,
+            MACMINI,
+            IMAC,
+            MACBOOK,
+            MACBOOKPRO,
+            MACBOOKAIR,
+            MACPRO,
+            APPLETV,
+            AIRPORT,
+            XSERVE,
+            UNKNOWN;
+        }
+    }
+
+    public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(AFP_PATH), null);
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 
     public boolean getStatus() throws FreeboxException {

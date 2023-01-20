@@ -14,6 +14,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+<<<<<<< Upstream, based on origin/main
 import java.net.URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,6 +64,9 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
 package org.openhab.binding.freeboxos.internal.api;
 
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
+=======
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import java.net.URL;
 

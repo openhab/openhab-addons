@@ -72,7 +72,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNode;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.HomeNode;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ShutterConfiguration;
@@ -103,16 +103,15 @@ public class NodeConfigurationBuilder {
     public Optional<DiscoveryResultBuilder> configure(ThingUID bridgeUID, HomeNode node) {
         DiscoveryResultBuilder discoveryResultBuilder = null;
         try {
-            switch (node.getCategory()) {
+            switch (node.category()) {
                 case "basic_shutter":
                     ThingUID basicShutterUID = new ThingUID(THING_TYPE_HOME_BASIC_SHUTTER, bridgeUID,
-                            Integer.toString(node.getId()));
+                            Integer.toString(node.id()));
                     discoveryResultBuilder = DiscoveryResultBuilder.create(basicShutterUID);
                     BasicShutterConfiguration.configure(discoveryResultBuilder, node);
                     break;
                 case "shutter":
-                    ThingUID shutterUID = new ThingUID(THING_TYPE_HOME_SHUTTER, bridgeUID,
-                            Integer.toString(node.getId()));
+                    ThingUID shutterUID = new ThingUID(THING_TYPE_HOME_SHUTTER, bridgeUID, Integer.toString(node.id()));
                     discoveryResultBuilder = DiscoveryResultBuilder.create(shutterUID);
                     ShutterConfiguration.configure(discoveryResultBuilder, node);
                     break;
@@ -124,7 +123,7 @@ public class NodeConfigurationBuilder {
             discoveryResultBuilder = null;
         }
         if (discoveryResultBuilder != null) {
-            discoveryResultBuilder.withProperty(ClientConfiguration.ID, node.getId()).withLabel(node.getLabel())
+            discoveryResultBuilder.withProperty(ClientConfiguration.ID, node.id()).withLabel(node.label())
                     .withRepresentationProperty(ClientConfiguration.ID).withBridge(bridgeUID);
         }
 <<<<<<< Upstream, based on origin/main

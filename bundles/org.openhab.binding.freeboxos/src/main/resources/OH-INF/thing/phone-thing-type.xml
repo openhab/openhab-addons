@@ -20,6 +20,9 @@
 		</channels>
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
@@ -48,6 +51,7 @@
 		</channels>
 
 		<representation-property>id</representation-property>
+<<<<<<< Upstream, based on origin/main
 =======
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
 	</thing-type>
@@ -74,6 +78,8 @@
 			</channel>
 		</channels>
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 		<config-description-ref uri="thing-type:freeboxos:phone"/>
 	</thing-type>

@@ -22,12 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiConsumerConfiguration {
+<<<<<<< Upstream, based on origin/main
     // public static final String PASSWORD = "password";
     // public static final String PORT = "port";
     public static final String REFRESH_INTERVAL = "refreshInterval";
+=======
+    public static final String PASSWORD = "password";
+    public static final String PORT = "port";
+>>>>>>> e4ef5cc Switching to Java 17 records
 
     public int refreshInterval = 30;
     public String password = "";
+<<<<<<< Upstream, based on origin/main
     // public int port = 24322;
     public boolean acceptAllMp3 = true;
 =======
@@ -57,4 +63,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ApiConsumerConfiguration {
     public int refreshInterval = 30;
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    public int port = 24322;
+    public boolean acceptAllMp3 = true;
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

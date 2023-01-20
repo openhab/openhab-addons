@@ -14,6 +14,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+<<<<<<< Upstream, based on origin/main
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -163,7 +164,11 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.*;
 
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -182,7 +187,11 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerStatusForegroundApp;
+import org.openhab.binding.freeboxos.internal.api.deserialization.ForegroundAppDeserializer;
+import org.openhab.binding.freeboxos.internal.api.deserialization.ListDeserializer;
+import org.openhab.binding.freeboxos.internal.api.deserialization.OptionalTypeAdapter;
+import org.openhab.binding.freeboxos.internal.api.deserialization.StrictEnumTypeAdapterFactory;
+import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.ForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,6 +203,11 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
+import inet.ipaddr.MACAddressString;
+import inet.ipaddr.mac.MACAddress;
+
 /**
  * The {@link ApiHandler} is responsible for sending requests toward a given url and transform the answer in appropriate
  * DTO.
@@ -202,6 +216,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class ApiHandler {
+    public static final String AUTH_HEADER = "X-Fbx-App-Auth";
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private static final String CONTENT_TYPE = "application/json; charset=" + DEFAULT_CHARSET.name();
+
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
@@ -217,8 +235,15 @@ public class ApiHandler {
                             Instant i = Instant.ofEpochSecond(timestamp);
                             return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
                         })
-                .registerTypeAdapter(PlayerStatusForegroundApp.class, new ForegroundAppDeserializer())
+                .registerTypeAdapter(MACAddress.class,
+                        (JsonDeserializer<MACAddress>) (json, type,
+                                jsonDeserializationContext) -> new MACAddressString(json.getAsString()).getAddress())
+                .registerTypeAdapter(IPAddress.class,
+                        (JsonDeserializer<IPAddress>) (json, type,
+                                jsonDeserializationContext) -> new IPAddressString(json.getAsString()).getAddress())
+                .registerTypeAdapter(ForegroundApp.class, new ForegroundAppDeserializer())
                 .registerTypeAdapter(List.class, new ListDeserializer())
+                .registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY).serializeNulls()
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
     }
 
@@ -283,16 +308,20 @@ public class ApiHandler {
         }
     }
 
+    public String toJson(Object payload) {
+        return gson.toJson(payload);
+    }
+
     private ContentProvider serialize(Object payload) {
-        return new StringContentProvider(gson.toJson(payload), DEFAULT_CHARSET);
+        return new StringContentProvider(toJson(payload), DEFAULT_CHARSET);
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 
     public void setTimeout(long millis) {
         timeoutInMs = millis;
         logger.debug("Timeout set to {} ms", timeoutInMs);
-    }
-
-    public HttpClient getHttpClient() {
-        return httpClient;
     }
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager;
@@ -83,12 +84,13 @@ public class DectHandler extends FxsHandler {
 =======
 import java.util.Map;
 
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Config;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Thing;
@@ -107,28 +109,17 @@ public class DectHandler extends FxsHandler {
     }
 
     @Override
-    void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
-        getManager(PhoneManager.class).getOptStatus(getClientId()).ifPresent(status -> {
-            String vendor = status.getVendor();
-            if (vendor != null) {
-                properties.put(Thing.PROPERTY_VENDOR, vendor);
-            }
-        });
+    protected void updateConfigChannels(Config config) {
+        super.updateConfigChannels(config);
+        updateChannelOnOff(DECT_ACTIVE, config.dectEnabled());
+        updateChannelOnOff(ALTERNATE_RING, config.dectRingOnOff());
     }
 
     @Override
-    protected void updateConfig(PhoneConfig config) {
-        super.updateConfig(config);
-        updateChannelOnOff(DECT_ACTIVE, config.isEnabled());
-        updateChannelOnOff(ALTERNATE_RING, config.isDectRingOnOff());
-    }
-
-    @Override
-    protected void updateStatus(PhoneStatus status) {
-        super.updateStatus(status);
-        updateIfActive(GAIN_RX, new PercentType(status.getGainRx()));
-        updateIfActive(GAIN_TX, new PercentType(status.getGainTx()));
+    protected void updateStatusChannels(Status status) {
+        super.updateStatusChannels(status);
+        updateIfActive(GAIN_RX, new PercentType(status.gainRx()));
+        updateIfActive(GAIN_TX, new PercentType(status.gainTx()));
     }
 
     @Override
@@ -160,10 +151,13 @@ public class DectHandler extends FxsHandler {
         }
         return super.internalHandleCommand(channelId, command);
     }
+<<<<<<< Upstream, based on origin/main
 
     @Override
     public Configuration getConfig() {
         return super.getConfig();
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
     }
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

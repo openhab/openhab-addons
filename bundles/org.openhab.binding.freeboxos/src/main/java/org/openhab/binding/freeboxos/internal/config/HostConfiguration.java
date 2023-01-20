@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import inet.ipaddr.MACAddressString;
 import inet.ipaddr.mac.MACAddress;
 
+<<<<<<< Upstream, based on origin/main
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
@@ -51,6 +52,8 @@ package org.openhab.binding.freeboxos.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
@@ -62,8 +65,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HostConfiguration extends ApiConsumerConfiguration {
     private String macAddress = "";
 
+<<<<<<< Upstream, based on origin/main
     public String getMac() {
         return macAddress.toLowerCase();
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+    public MACAddress getMac() {
+        return new MACAddressString(macAddress).getAddress();
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 }

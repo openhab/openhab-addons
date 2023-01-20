@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+<<<<<<< Upstream, based on origin/main
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.RepeaterActions;
@@ -141,19 +142,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.RepeaterActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.browser.LanHost;
-import org.openhab.binding.freeboxos.internal.api.repeater.Repeater;
-import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
+import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
+import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager.Repeater;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -166,7 +167,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class RepeaterHandler extends HostHandler implements FreeClientIntf, FreeDeviceIntf {
+public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
     private final Logger logger = LoggerFactory.getLogger(RepeaterHandler.class);
     private long uptime = -1;
     private final ChannelUID eventChannelUID;
@@ -181,9 +182,9 @@ public class RepeaterHandler extends HostHandler implements FreeClientIntf, Free
         super.initializeProperties(properties);
 
         Repeater repeater = getManager(RepeaterManager.class).getDevice(getClientId());
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.getSn());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_MODEL_ID, repeater.getModel().name());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.sn());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.firmwareVersion());
+        properties.put(Thing.PROPERTY_MODEL_ID, repeater.model().name());
     }
 
     @Override
@@ -211,31 +212,27 @@ public class RepeaterHandler extends HostHandler implements FreeClientIntf, Free
         RepeaterManager repeaterManager = getManager(RepeaterManager.class);
 
         Repeater repeater = repeaterManager.getDevice(getClientId());
-        updateChannelOnOff(REPEATER_MISC, LED, repeater.isLedActivated());
-        updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.getConnection());
+        updateChannelOnOff(REPEATER_MISC, LED, repeater.ledActivated());
+        updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.connection());
 
         List<LanHost> hosts = repeaterManager.getRepeaterHosts(getClientId());
         updateChannelDecimal(REPEATER_MISC, HOST_COUNT, hosts.size());
 
-        long newUptime = repeater.getUptimeVal();
-        uptime = controlUptimeAndFirmware(newUptime, uptime, repeater.getFirmwareVersion());
+        uptime = checkUptimeAndFirmware(repeater.getUptimeVal(), uptime, repeater.firmwareVersion());
         updateChannelQuantity(REPEATER_MISC, UPTIME, uptime, Units.SECOND);
     }
 
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
-        if (ON_OFF_CLASSES.contains(command.getClass())) {
-            boolean enable = TRUE_COMMANDS.contains(command);
-            if (LED.equals(channelId)) {
-                RepeaterManager repeaterManager = getManager(RepeaterManager.class);
-                repeaterManager.led(getClientId(), enable)
-                        .ifPresent(repeater -> updateChannelOnOff(REPEATER_MISC, LED, repeater.isLedActivated()));
-            }
+        if (ON_OFF_CLASSES.contains(command.getClass()) && LED.equals(channelId)) {
+            getManager(RepeaterManager.class).led(getClientId(), TRUE_COMMANDS.contains(command))
+                    .ifPresent(repeater -> updateChannelOnOff(REPEATER_MISC, LED, repeater.ledActivated()));
         }
         return super.internalHandleCommand(channelId, command);
     }
 
     public void reboot() {
+<<<<<<< Upstream, based on origin/main
         try {
             getManager(RepeaterManager.class).reboot(getClientId());
             triggerChannel(getEventChannelUID(), "reboot_requested");
@@ -247,6 +244,15 @@ public class RepeaterHandler extends HostHandler implements FreeClientIntf, Free
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
         }
 >>>>>>> 68d74f0 Deny polling a device data when its API is needed and it is OFFLINE
+=======
+        processReboot(() -> {
+            try {
+                getManager(RepeaterManager.class).reboot(getClientId());
+            } catch (FreeboxException e) {
+                logger.warn("Error rebooting : {}", e.getMessage());
+            }
+        });
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 
     @Override
@@ -262,16 +268,6 @@ public class RepeaterHandler extends HostHandler implements FreeClientIntf, Free
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
         super.triggerChannel(channelUID, event);
-    }
-
-    @Override
-    public Map<String, String> editProperties() {
-        return super.editProperties();
-    }
-
-    @Override
-    public void updateProperties(@Nullable Map<String, String> properties) {
-        super.updateProperties(properties);
     }
 
 }

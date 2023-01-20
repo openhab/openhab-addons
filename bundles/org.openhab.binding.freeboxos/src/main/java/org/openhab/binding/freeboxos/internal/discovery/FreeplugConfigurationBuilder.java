@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.discovery;
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,14 +58,19 @@ public class FreeplugConfigurationBuilder {
                 .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString());
 =======
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.THING_TYPE_FREEPLUG;
+=======
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.freeplug.Freeplug;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager.Freeplug;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import inet.ipaddr.mac.MACAddress;
 
 /**
  * The {@link FreeplugConfigurationBuilder} is responsible for holding configuration informations associated to a
@@ -86,15 +92,21 @@ public class FreeplugConfigurationBuilder {
     }
 
     public DiscoveryResultBuilder configure(ThingUID bridgeUID, Freeplug plug) {
-        String mac = plug.getId();
-        ThingUID thingUID = new ThingUID(THING_TYPE_FREEPLUG, bridgeUID, macToUid(mac));
-        logger.debug("Adding new Freeplug {} to inbox", thingUID);
-        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel("Freeplug " + macToUid(mac))
-                .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
-    }
+        MACAddress mac = plug.id();
+        String uid = mac.toHexString(false);
+        ThingUID thingUID = new ThingUID(THING_TYPE_FREEPLUG, bridgeUID, uid);
 
+<<<<<<< Upstream, based on origin/main
     private String macToUid(String mac) {
         return mac.replaceAll("[^A-Za-z0-9_]", "");
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+        logger.debug("Adding new {} {} to inbox", THING_FREEPLUG, thingUID);
+
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
+                .withLabel("%s (%s) %s".formatted(THING_FREEPLUG, plug.netRole().name(), uid))
+                .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString());
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 }

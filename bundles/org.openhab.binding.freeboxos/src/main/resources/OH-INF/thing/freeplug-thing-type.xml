@@ -13,6 +13,7 @@
 		<description>Ethernet / CPL gateway</description>
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 		<channels>
 			<channel id="line-status" typeId="line-status"/>
 			<channel id="last-seen" typeId="timestamp">
@@ -33,6 +34,23 @@
 			<channel-group typeId="freeplugstatus" id="connection-status"/>
 		</channel-groups>
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+		<channels>
+			<channel id="line-status" typeId="line-status"/>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Activity</label>
+			</channel>
+			<channel id="reachable" typeId="reachable"/>
+			<channel id="rate-up" typeId="transfer-rate">
+				<label>Tx Rate</label>
+				<description>Current TX Rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate">
+				<label>Rx Rate</label>
+				<description>Current RX rate</description>
+			</channel>
+		</channels>
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 		<representation-property>macAddress</representation-property>
 

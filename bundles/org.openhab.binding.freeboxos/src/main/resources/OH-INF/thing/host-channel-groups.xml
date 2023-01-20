@@ -15,6 +15,7 @@
 				<label>IP Address</label>
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 				<description>IPv4 Address of the host</description>
 =======
 				<description>IP Address of the host.</description>
@@ -22,6 +23,9 @@
 =======
 				<description>IP Address of the host</description>
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+				<description>IPv4 Address of the host</description>
+>>>>>>> e4ef5cc Switching to Java 17 records
 			</channel>
 		</channels>
 	</channel-group-type>

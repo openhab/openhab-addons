@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link UPnPAVManager} is the Java class used to handle api requests related to UPnP AV
@@ -34,6 +35,27 @@ public class UPnPAVManager extends ConfigurableRest<UPnPAVManager.Config, UPnPAV
     public UPnPAVManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH),
                 CONFIG_PATH);
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link UPnPAVManager} is the Java class used to handle api requests related to UPnP AV
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class UPnPAVManager extends ConfigurableRest<UPnPAVManager.Config, UPnPAVManager.ConfigResponse> {
+    public static final String PATH = "upnpav";
+
+    public static class ConfigResponse extends Response<Config> {
+    }
+
+    protected static record Config(boolean enabled) {
+    }
+
+    public UPnPAVManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+>>>>>>> e4ef5cc Switching to Java 17 records
     }
 
     public boolean getStatus() throws FreeboxException {

@@ -16,6 +16,7 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * Exception for errors when using the Freebox API
@@ -60,6 +61,8 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.ApiConstants.ErrorCode;
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 /**
  * Exception for errors when using the Freebox API

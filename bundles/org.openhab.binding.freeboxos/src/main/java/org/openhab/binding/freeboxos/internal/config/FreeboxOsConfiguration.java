@@ -14,6 +14,7 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
+<<<<<<< Upstream, based on origin/main
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -67,6 +68,9 @@ public class FreeboxOsConfiguration {
 package org.openhab.binding.freeboxos.internal.config;
 
 import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FREEBOX_NAME;
+=======
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+>>>>>>> e4ef5cc Switching to Java 17 records
 
 import javax.ws.rs.core.UriBuilder;
 

@@ -17,6 +17,7 @@
 			<channel id="player-status" typeId="player-status"/>
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 			<channel id="package" typeId="package"/>
 		</channels>
 	</channel-group-type>
@@ -31,6 +32,17 @@
 =======
 		    <channel id="package" typeId="package"/>
 >>>>>>> b74f3ab Enhanced deserialization to simplify code
+=======
+			<channel id="package" typeId="package"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="player-sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="box-event" typeId="box-event"/>
+>>>>>>> e4ef5cc Switching to Java 17 records
 		</channels>
 	</channel-group-type>
 

@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link LcdManager} is the Java class used to handle api requests related to lcd screen of the server
@@ -62,4 +63,52 @@ public class LcdManager extends ConfigurableRest<LcdManager.Config, LcdManager.C
             throw new FreeboxException(e, "Error setting brightness");
         }
     }
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+/**
+ * The {@link LcdManager} is the Java class used to handle api requests related to lcd screen of the server
+ *
+ * https://dev.freebox.fr/sdk/os/system/#
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class LcdManager extends ConfigurableRest<LcdManager.Config, LcdManager.ConfigResponse> {
+    private static final String PATH = "lcd";
+
+    public static class ConfigResponse extends Response<Config> {
+    }
+
+    public static record Config(int brightness, int orientation, boolean orientationForced) {
+    }
+
+    public LcdManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+    }
+
+    private void setBrightness(int brightness) throws FreeboxException {
+        Config oldConfig = getConfig();
+        setConfig(new Config(brightness, oldConfig.orientation, oldConfig.orientationForced));
+    }
+
+    public void setOrientation(int orientation) throws FreeboxException {
+        Config oldConfig = getConfig();
+        setConfig(new Config(oldConfig.brightness, orientation, oldConfig.orientationForced));
+    }
+
+    public void setOrientationForced(boolean forced) throws FreeboxException {
+        Config oldConfig = getConfig();
+        setConfig(new Config(oldConfig.brightness, oldConfig.orientation, forced));
+    }
+
+    public void setBrightness(Callable<Integer> function) throws FreeboxException {
+        try {
+            setBrightness(function.call());
+        } catch (Exception e) {
+            throw new FreeboxException(e, "Error setting brightness");
+        }
+    }
+
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

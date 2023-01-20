@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link PlayerConfiguration} is responsible for holding configuration informations needed to access/poll the
  * freebox player
+<<<<<<< Upstream, based on origin/main
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -48,20 +49,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link PlayerConfiguration} is responsible for holding
  * configuration informations needed to access/poll the freebox player
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class PlayerConfiguration extends ClientConfiguration {
-    public static final String PORT = "port";
     public static final String REMOTE_CODE = "remoteCode";
-    public static final String PASSWORD = "password";
-    public static final String CALLBACK_URL = "callBackUrl";
-
-    public int port = 24322;
-    public String password = "";
-    public boolean acceptAllMp3 = true;
     public String remoteCode = "";
+<<<<<<< Upstream, based on origin/main
     public String callBackUrl = "";
 >>>>>>> 46dadb1 SAT warnings handling
+=======
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

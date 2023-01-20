@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 
@@ -46,4 +47,39 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
         super(session, LoginManager.Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
+=======
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+
+import inet.ipaddr.IPAddress;
+
+/**
+ * The {@link LanManager} is the Java class used to handle api requests related to lan
+ *
+ * https://dev.freebox.fr/sdk/os/system/#
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManager.Config> {
+    private static final String PATH = "lan";
+
+    static class Config extends Response<LanConfig> {
+    }
+
+    public static enum Mode {
+        ROUTER,
+        BRIDGE,
+        UNKNOWN;
+    }
+
+    public static record LanConfig(IPAddress ip, String name, String nameDns, String nameMdns, String nameNetbios,
+            Mode mode) {
+    }
+
+    public LanManager(FreeboxOsSession session) throws FreeboxException {
+        super(session, Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+        session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
+    }
+
+>>>>>>> e4ef5cc Switching to Java 17 records
 }

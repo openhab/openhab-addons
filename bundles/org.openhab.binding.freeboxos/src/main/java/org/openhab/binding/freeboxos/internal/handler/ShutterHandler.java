@@ -104,11 +104,12 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiConstants.ValueType;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.home.HomeManager;
-import org.openhab.binding.freeboxos.internal.api.home.HomeNodeEndpointState;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
 import org.openhab.binding.freeboxos.internal.config.ShutterConfiguration;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
@@ -131,14 +132,13 @@ public class ShutterHandler extends BasicShutterHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         ShutterConfiguration config = getConfiguration();
-        HomeNodeEndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
-        HomeNodeEndpointState position = getManager(HomeManager.class).getEndpointsState(config.id,
-                config.positionSignalId);
+        EndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
+        EndpointState position = getManager(HomeManager.class).getEndpointsState(config.id, config.positionSignalId);
         Double percent = null;
-        if (state != null) {
-            if (ValueType.BOOL.equals(position.getValueType())) {
+        if (state != null && position != null) {
+            if (ValueType.BOOL.equals(position.valueType())) {
                 percent = Boolean.TRUE.equals(position.asBoolean()) ? 1.0 : 0.0;
-            } else if (ValueType.INT.equals(position.getValueType())) {
+            } else if (ValueType.INT.equals(position.valueType())) {
                 Integer inValue = position.asInt();
                 if (inValue != null) {
                     percent = inValue.doubleValue() / 100.0;
@@ -156,16 +156,10 @@ public class ShutterHandler extends BasicShutterHandler {
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         if (BASIC_SHUTTER_CMD.equals(channelId)) {
             ShutterConfiguration config = getConfiguration();
-            // if (UpDownType.UP.equals(command)) {
-            // getManager(HomeManager.class).putCommand(config.id, config.upSlotId, true);
-            // return true;
-            // } else if (UpDownType.DOWN.equals(command)) {
-            // getManager(HomeManager.class).putCommand(config.id, config.downSlotId, true);
-            // return true;
-            // } else if (StopMoveType.STOP.equals(command)) {
-            // getManager(HomeManager.class).putCommand(config.id, config.stopSlotId, true);
-            // return true;
-            // }
+            if (StopMoveType.STOP.equals(command)) {
+                getManager(HomeManager.class).putCommand(config.id, config.stopSlotId, true);
+                return true;
+            }
         }
 <<<<<<< Upstream, based on origin/main
         return super.internalHandleCommand(channelUID, command);
