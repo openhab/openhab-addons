@@ -13,7 +13,7 @@
 		<config-description>
 			<parameter name="username" type="text">
 				<label>Username</label>
-				<description>User defined on the IT4Wifi.</description>
+				<description>User defined on the IT4Wifi for openHAB</description>
 			</parameter>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -28,7 +28,7 @@
 			<parameter name="password" type="text">
 				<context>password</context>
 				<label>Pairing Key</label>
-				<description>Pairing Key needed to access the device, provided by the bridge itself.</description>
+				<description>Pairing Key needed to access the device, provided by the bridge itself</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -54,7 +54,7 @@
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>ID</label>
-				<description>ID of the gate on the TP4 bus connected to the bridge.</description>
+				<description>ID of the gate on the TP4 bus connected to the bridge</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -103,7 +103,7 @@
 	<channel-type id="moving">
 		<item-type>Switch</item-type>
 		<label>Moving</label>
-		<description>Indicates if the device is currently operating a command.</description>
+		<description>Indicates if the device is currently operating a command</description>
 		<state readOnly="true"/>
 	</channel-type>
 

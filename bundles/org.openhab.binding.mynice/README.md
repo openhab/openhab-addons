@@ -1,76 +1,126 @@
 # MyNice Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding gives access to the IT4Wifi module produced by Nice. This module is a bridge between the TP4 bus of the motor and your ethernet network.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `it4wifi`: The Bridge between openHAB and your module. 
+- `swing`: A Thing representing a swinging (two rotating doors) gate.
+- `sliding`: A Thing representing a sliding gate.
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+The binding will auto-discover (by MDNS) your module, creating the associated `it4wifi` bridge.
+Once configuration of the bridge is completed, your gate(s) will be auto-discovered and added in the Inbox.
+
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+There is nothing to configure at binding level.
 
-```
-# Configuration for the MyNice Binding
-#
-# Default secret key for the pairing of the MyNice Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+First configuration should be done via UI discovery, this will let you get automatically the password provided by the IT4Wifi module.
+Once done, you can also create your things via *.things file.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### `it4wifi` Bridge Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name       | Type | Description                                                            | Default | Required | Advanced |
+|------------|------|------------------------------------------------------------------------|---------|----------|----------|
+| hostname   | text | Hostname or IP address of the device                                   | N/A     | yes      | no       |
+| password   | text | Password to access the device                                          | N/A     | yes      | no       |
+| macAddress | text | The MAC address of the IT4Wifi                                         | N/A     | yes      | no       |
+| username   | text | Pairing Key needed to access the device, provided by the bridge itself | N/A     | yes      | no       |
+
+
+### Gates Thing Configuration
+
+| Name       | Type | Description                                                            | Default | Required | Advanced |
+|------------|------|------------------------------------------------------------------------|---------|----------|----------|
+| id         | text | ID of the gate on the TP4 bus connected to the bridge                  | N/A     | yes      | no       |
+
+
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+There is no channel associated with the bridge.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Channels available for the gates are :
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel   | Type   | Read/Write | Description                                              |
+|-----------|--------|------------|----------------------------------------------------------|
+| status    | String | R          | Description of the current status of the door *          |
+| obstruct  | Switch | R          | Flags an obstruction, blocking the door                  |
+| moving    | Switch | R          | Indicates if the device is currently operating a command |
+| command   | Switch | W          | Send a given command to the gate **                      |
+| t4command | Switch | W          | Send a T4 Command to the gate                            |
+
+* : can be open, closed, opening, closing, stopped.
+** : must be "stop","open","close"
+
+### T4 Commands
+
+Depending upon your gate model, and motor capabilities, some T4 commands can be used.
+The list of available command for your model will be automatically be discovered by the binding.
+This information is stored in the `allowedT4`property held by the gate Thing.
+
+Complete list of T4 Commands :
+
+| Command | Action                     |
+|---------|----------------------------|
+| MDAx    | Step by Step               |
+| MDAy    | Stop (as remote control)   |
+| MDAz    | Open (as remote control)   |
+| MDA0    | Close (as remote control)  |
+| MDA1    | Partial opening 1          |
+| MDA2    | Partial opening 2          |
+| MDA3    | Partial opening 3          |
+| MDBi    | Apartment Step by Step     |
+| MDBj    | Step by Step high priority |
+| MDBk    | Open and block             |
+| MDBl    | Close and block            |
+| MDBm    | Block                      |
+| MDEw    | Release                    |
+| MDEx    | Courtesy ligh timer on     |
+| MDEy    | Courtesy light on-off      |
+| MDEz    | Step by Step master door   |
+| MDE0    | Open master door           |
+| MDE1    | Close master door          |
+| MDE2    | Step by Step slave door    |
+| MDE3    | Open slave door            |
+| MDE4    | Close slave door           |
+| MDE5    | Release and Open           |
+| MDFh    | Release and Close          |
+
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
-## Any custom content here!
+### things/mynice.things
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+Bridge mynice:it4wifi:83eef09166 "Nice IT4WIFI" @ "portail" [
+            hostname="192.168.0.198",
+            macAddress="00:xx:zz:dd:ff:gg",
+            password="v***************************zU=",
+            username="neo_prod"] {
+      swing 1 "Nice POA3 Moteur Portail" @ "portail" [id="1"]
+}
+```
+
+
+### items/mynice.items
+
+```
+String   NiceIT4WIFI_GateStatus    "Gate Status"   <gate>     (gMyniceSwing83eef091661)   ["Status","Opening"]     {channel="mynice:swing:83eef09166:1:status"}
+String   NiceIT4WIFI_Obstruction   "Obstruction"       <none>     (gMyniceSwing83eef091661)                            {channel="mynice:swing:83eef09166:1:obstruct"}
+Switch   NiceIT4WIFI_Moving        "Moving"            <motion>   (gMyniceSwing83eef091661)   ["Status","Vibration"]   {channel="mynice:swing:83eef09166:1:moving"}
+String   NiceIT4WIFI_Command       "Command"           <none>     (gMyniceSwing83eef091661)                            {channel="mynice:swing:83eef09166:1:command"}
+
+```
