@@ -43,7 +43,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,6 @@ import com.google.gson.JsonObject;
  *
  * @author Laurent ARNAL - Initial contribution
  */
-@Component(immediate = true)
 @NonNullByDefault
 public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensHvacHandler {
 
@@ -238,7 +236,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            logger.info("Start read : {}", dp);
+            logger.debug("Start read : {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
             // logger.debug("siemensHvac:ReadDp:DoRequest():" + request);
@@ -265,7 +263,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End read : {}", dp);
+            logger.debug("End read : {}", dp);
             lockObj.unlock();
 
         }
@@ -279,7 +277,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
         try {
             lockObj.lock();
-            // logger.info("Start write :" + dp);
             String valUpdate = "0";
             String valUpdateEnum = "";
 
@@ -305,20 +302,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + type;
 
             if (lcHvacConnector != null) {
-                logger.info("Write request for : {} ", valUpdate);
+                logger.debug("Write request for : {} ", valUpdate);
                 JsonObject response = lcHvacConnector.DoRequest(request, null);
 
-                logger.info("Write request response : {} ", response);
-                if (response instanceof JsonObject) {
-                    logger.debug("p1");
-                }
+                logger.debug("Write request response : {} ", response);
             }
 
         } catch (Exception e) {
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End write : {}", dp);
+            logger.debug("End write : {}", dp);
             lockObj.unlock();
         }
     }

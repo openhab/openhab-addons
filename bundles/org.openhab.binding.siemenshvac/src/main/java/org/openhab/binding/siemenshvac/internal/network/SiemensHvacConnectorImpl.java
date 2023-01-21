@@ -70,7 +70,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     protected final HttpClientFactory httpClientFactory;
 
     protected HttpClient httpClient;
-    protected HttpClient httpClientInsecure;
 
     private static int startedRequest = 0;
     private static int completedRequest = 0;
@@ -85,15 +84,26 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         this.updateCommand = new Hashtable<String, Type>();
         this.httpClientFactory = httpClientFactory;
 
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.httpClient.setMaxConnectionsPerDestination(15);
-        this.httpClientInsecure = new HttpClient(new SslContextFactory.Client(true));
-        this.httpClientInsecure.setRemoveIdleDestinations(true);
-        this.httpClientInsecure.setMaxConnectionsPerDestination(15);
+        SslContextFactory ctxFactory = new SslContextFactory.Client(true);
+        ctxFactory.setRenegotiationAllowed(false);
+        ctxFactory.setEnableCRLDP(false);
+        ctxFactory.setEnableOCSP(false);
+        ctxFactory.setTrustAll(true);
+        ctxFactory.setValidateCerts(false);
+        ctxFactory.setValidatePeerCerts(false);
+        ctxFactory.setEndpointIdentificationAlgorithm(null);
+
+        this.httpClient = new HttpClient(ctxFactory);
+        this.httpClient.setRemoveIdleDestinations(true);
+        this.httpClient.setMaxConnectionsPerDestination(10);
+        this.httpClient.setMaxRequestsQueuedPerDestination(1000);
+        this.httpClient.setConnectTimeout(10000);
+        this.httpClient.setFollowRedirects(false);
+
         try {
-            this.httpClientInsecure.start();
+            this.httpClient.start();
         } catch (Exception e) {
-            logger.warn("Failed to start insecure http client: {}", e.getMessage());
+            logger.error("Failed to start http client: {}", e.getMessage());
         }
     }
 
@@ -123,6 +133,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void onComplete(@Nullable Request request) {
         lockObj.lock();
         try {
+            logger.debug("OnComplete");
             completedRequest++;
         } finally {
             lockObj.unlock();
@@ -130,18 +141,35 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public void onError(@Nullable Request request) {
+    public void onError(@Nullable Request request, @Nullable SiemensHvacCallback cb) throws Exception {
         lockObj.lock();
         try {
+            logger.debug("OnError");
             completedRequest++;
         } finally {
             lockObj.unlock();
+        }
+
+        if (cb == null || request == null) {
+            return;
+        }
+
+        try {
+            final Request retryRequest = httpClient.newRequest(request.getURI());
+            request.method(HttpMethod.GET);
+
+            if (retryRequest != null) {
+                executeRequest(retryRequest, cb);
+            }
+        } catch (Exception ex) {
+            logger.error("exception");
+            throw ex;
         }
     }
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
             throws Exception {
-        request.timeout(60, TimeUnit.SECONDS);
+        request.timeout(240, TimeUnit.SECONDS);
 
         ContentResponse response = null;
 
@@ -158,6 +186,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 lockObj.lock();
                 try {
                     startedRequest++;
+                    logger.debug("StartedRequest : {}", startedRequest);
+
                 } finally {
                     lockObj.unlock();
                 }
@@ -189,6 +219,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         if (config.containsKey("baseUrl")) {
             baseUrl = (String) config.get("baseUrl");
         }
+        baseUrl = "https://192.168.254.42/";
         if (config.containsKey("userName")) {
             userName = (String) config.get("userName");
         }
@@ -203,7 +234,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         _initConfig();
         String baseUri = baseUrl;
         String uri = "api/auth/login.json?user=" + userName + "&pwd=" + userPassword;
-        final Request request = httpClientInsecure.newRequest(baseUri + uri);
+        final Request request = httpClient.newRequest(baseUri + uri);
         request.method(HttpMethod.GET);
 
         logger.debug("siemensHvac:doAuth:connect()");
@@ -277,9 +308,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 mUri = mUri + "&";
             }
             mUri = mUri + "SessionId=" + sessionId;
-            mUri = mUri + "&user=" + userName + "&pwd=" + userPassword;
 
-            final Request request = httpClientInsecure.newRequest(baseUri + mUri);
+            logger.debug("Execute request: {}", uri);
+            final Request request = httpClient.newRequest(baseUri + mUri);
             request.method(HttpMethod.GET);
 
             ContentResponse response = executeRequest(request, callback);
@@ -358,6 +389,24 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
 
         logger.debug("WaitAllPendingRequest:end WaitAllPendingRequest");
+    }
+
+    @Override
+    public void WaitNoNewRequest() {
+        logger.debug("WaitNoNewRequest:start");
+        try {
+            int lastRequest = startedRequest;
+            Thread.sleep(5000);
+            while (lastRequest != startedRequest) {
+                logger.debug("waitNoNewRequest  {}/{})", startedRequest, lastRequest);
+                Thread.sleep(5000);
+                lastRequest = startedRequest;
+            }
+        } catch (InterruptedException ex) {
+            logger.debug("WaitAllPendingRequest:interrupted in WaitAllRequest");
+        }
+
+        logger.debug("WaitNoNewRequest:end WaitAllStartingRequest");
     }
 
     public static Gson getGson() {

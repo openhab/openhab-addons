@@ -231,7 +231,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     }
                 }
             }
+
         }
+
         return count;
     }
 
@@ -244,7 +246,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     public void ReadMeta() {
         ArrayList<SiemensHvacMetadataDevice> lcDevices = devices;
         SiemensHvacConnector lcHvacConnector = hvacConnector;
-        if (root == null) {
+        if (root == null && lcHvacConnector != null) {
             logger.debug("siemensHvac:InitDptMap():begin");
 
             LoadMetaDataFromCache();
@@ -254,24 +256,21 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             if (root == null) {
                 root = new SiemensHvacMetadataMenu();
                 ReadMetaData(root, -1);
-                if (lcHvacConnector != null) {
-                    lcHvacConnector.WaitAllPendingRequest();
-                }
+                lcHvacConnector.WaitNoNewRequest();
+                lcHvacConnector.WaitAllPendingRequest();
             }
 
             if (root != null) {
                 InitDptMap(root);
             }
 
-            int unresolveCount = Integer.MAX_VALUE;
+            int unresolveCount = UnresolveCount();
+            // unresolveCount = 0;
 
             while (unresolveCount > 0) {
                 ResolveDetails();
-                if (lcHvacConnector != null) {
-                    lcHvacConnector.WaitAllPendingRequest();
-                }
+                lcHvacConnector.WaitAllPendingRequest();
                 unresolveCount = UnresolveCount();
-
             }
 
             SaveMetaDataToCache();
@@ -355,8 +354,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
@@ -676,8 +675,11 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
                     @Override
                     public void execute(URI uri, int status, @Nullable Object response) {
+                        logger.debug("response for {}, status {}:", uri, status);
                         if (response instanceof JsonObject) {
                             DecodeMetaDataResult((JsonObject) response, parent, id);
+                        } else {
+                            logger.debug("error status {}: {}", uri, status);
                         }
                     }
                 });
@@ -748,40 +750,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         ((SiemensHvacMetadataMenu) parent).AddChild(childNode);
                     }
 
-                    // logger.debug(String.format("siemensHvac:ResolveDpt():findMenuItem: %d, %s, %s, %s, %s", itemId,
-                    // subItemId, groupId, catId, longDesc));
-
-                    boolean shouldReadSub = false;
-
-                    shouldReadSub = shouldReadSub || (itemId == 931);
-                    shouldReadSub = shouldReadSub || (itemId == 932);
-                    // shouldReadSub = shouldReadSub || (itemId == 936);
-                    // shouldReadSub = shouldReadSub || (itemId == 947);
-                    // shouldReadSub = shouldReadSub || (itemId == 956);
-                    // shouldReadSub = shouldReadSub || (itemId == 965);
-                    // shouldReadSub = shouldReadSub || (itemId == 974);
-                    // shouldReadSub = shouldReadSub || (itemId == 992);
-                    // shouldReadSub = shouldReadSub || (itemId == 1017);
-                    // shouldReadSub = shouldReadSub || (itemId == 1030);
-                    // shouldReadSub = shouldReadSub || (itemId == 1036);
-                    // shouldReadSub = shouldReadSub || (itemId == 1040);
-                    // shouldReadSub = shouldReadSub || (itemId == 1046);
-                    // shouldReadSub = shouldReadSub || (itemId == 1070);
-                    // shouldReadSub = shouldReadSub || (itemId == 1099);
-                    // shouldReadSub = shouldReadSub || (itemId == 1260);
-                    // shouldReadSub = shouldReadSub || (itemId == 1279);
-                    // shouldReadSub = shouldReadSub || (itemId == 1300);
-                    // shouldReadSub = shouldReadSub || (itemId == 1328);
-                    // shouldReadSub = shouldReadSub || (itemId == 1489);
-                    // shouldReadSub = shouldReadSub || (itemId == 1505);
-                    // shouldReadSub = shouldReadSub || (itemId == 1558);
-
-                    shouldReadSub = shouldReadSub || true;
-
-                    if (shouldReadSub) {
-                        ReadMetaData(childNode, itemId);
-                    }
-
+                    ReadMetaData(childNode, itemId);
                 }
 
             }
@@ -863,9 +832,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     childNode.setGroupId(groupId);
                     childNode.setShortDesc(shortDesc);
                     childNode.setLongDesc(longDesc);
-
-                    // logger.debug(String.format("siemensHvac:ResolveDpt():findDpItem: %d, %s, %s, %s, %s %s", dptId,
-                    // catId, groupId, subItemId, shortDesc, longDesc));
                 }
 
                 if (parent != null) {

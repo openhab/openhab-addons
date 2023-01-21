@@ -14,6 +14,9 @@ package org.openhab.binding.siemenshvac.internal.network;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Request.BeginListener;
+import org.eclipse.jetty.client.api.Request.QueuedListener;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -32,7 +35,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class SiemensHvacRequestListener extends BufferingResponseListener
-        implements SuccessListener, FailureListener, ContentListener, CompleteListener {
+        implements SuccessListener, FailureListener, ContentListener, CompleteListener, QueuedListener, BeginListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacRequestListener.class);
     private SiemensHvacConnector hvacConnector;
@@ -54,7 +57,9 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onSuccess(@Nullable Response response) {
-        // logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
+        if (response != null) {
+            logger.debug("{} response: {}", response.getRequest().getURI(), response.getStatus());
+        }
     }
 
     @Override
@@ -66,12 +71,24 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
     }
 
     @Override
+    public void onQueued(@Nullable Request request) {
+        if (request == null) {
+            return;
+        }
+    }
+
+    @Override
+    public void onBegin(@Nullable Request request) {
+        if (request == null) {
+            return;
+        }
+    }
+
+    @Override
     public void onComplete(@Nullable Result result) {
         if (result == null) {
             return;
         }
-
-        hvacConnector.onComplete(result.getRequest());
 
         try {
             String content = getContentAsString();
@@ -79,6 +96,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
             if (result.getResponse().getStatus() != 200) {
                 logger.debug("bad gateway !!!");
+                hvacConnector.onError(result.getRequest(), callback);
                 return;
             }
 
@@ -106,25 +124,27 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                             }
 
                             if (resultVal) {
-
+                                hvacConnector.onComplete(result.getRequest());
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
+
                                 return;
                             } else if (("datatype not supported").equals(errorMsg)) {
+                                hvacConnector.onComplete(result.getRequest());
                                 callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(),
                                         resultObj);
                             } else {
                                 logger.debug("error : {}", subResultObj);
-                                hvacConnector.onError(result.getRequest());
+                                hvacConnector.onError(result.getRequest(), callback);
                             }
                         } else {
                             logger.debug("error");
-                            hvacConnector.onError(result.getRequest());
+                            hvacConnector.onError(result.getRequest(), callback);
                         }
 
                     } else {
                         logger.debug("error");
-                        hvacConnector.onError(result.getRequest());
+                        hvacConnector.onError(result.getRequest(), callback);
                     }
 
                     return;
@@ -132,6 +152,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
             }
 
             callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), content);
+            hvacConnector.onComplete(result.getRequest());
         } catch (Exception ex) {
             logger.debug("error");
         }
