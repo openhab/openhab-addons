@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
+import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager;
@@ -139,7 +139,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         try {
             homeManager.getHomeNodes().forEach(
                     node -> builder.configure(bridgeUID, node).ifPresent(result -> thingDiscovered(result.build())));
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover Home {}", e.getPermission());
         }
     }
@@ -192,7 +192,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
                 thingDiscovered(builder.build());
             });
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover Hosts {}", e.getPermission());
         }
     }
@@ -211,7 +211,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString()).build();
                 thingDiscovered(discoveryResult);
             });
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover VM {}", e.getPermission());
         }
     }
@@ -232,7 +232,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             });
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover Repeater {}", e.getPermission());
         }
     }
@@ -251,7 +251,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(config.modelInfo().prettyName())
                     .build();
             thingDiscovered(discoveryResult);
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover Server {}", e.getPermission());
         }
     }
@@ -270,7 +270,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             }
-        } catch (MissingPermissionException e) {
+        } catch (PermissionException e) {
             logger.warn("Missing permission to discover Player {}", e.getPermission());
         }
     }

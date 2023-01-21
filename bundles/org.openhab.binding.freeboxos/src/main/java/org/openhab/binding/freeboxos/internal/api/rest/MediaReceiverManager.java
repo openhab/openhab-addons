@@ -79,6 +79,6 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     }
 
     private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
-        post(payload, receiver);
+        post(payload, GenericResponse.class, receiver);
     }
 }

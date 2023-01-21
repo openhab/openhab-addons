@@ -126,7 +126,7 @@ public class LoginManager extends RestManager {
             byte[] rawHmac = mac.doFinal(authorization.challenge().getBytes());
             // Convert raw bytes to Hex
             String password = printHexBinary(rawHmac).toLowerCase();
-            return postSingle(new OpenSessionData(APP_ID, password), SessionResponse.class, SESSION);
+            return post(new OpenSessionData(APP_ID, password), SessionResponse.class, SESSION);
         } catch (InvalidKeyException e) {
             throw new IllegalArgumentException(e);
         }
@@ -141,7 +141,7 @@ public class LoginManager extends RestManager {
     }
 
     public String grant() throws FreeboxException {
-        Authorization authorize = postSingle(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
+        Authorization authorize = post(new AuthorizeData(APP_ID, BUNDLE), AuthResponse.class, AUTHORIZE_ACTION);
         Status track = Status.PENDING;
         try {
             while (Status.PENDING.equals(track)) {

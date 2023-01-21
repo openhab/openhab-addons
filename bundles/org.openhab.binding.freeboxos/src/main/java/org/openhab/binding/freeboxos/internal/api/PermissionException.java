@@ -21,12 +21,12 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
  * @author ben12 - Initial contribution
  */
 @NonNullByDefault
-public class MissingPermissionException extends FreeboxException {
+public class PermissionException extends FreeboxException {
     private static final long serialVersionUID = 3965810786699311126L;
 
     private final Permission permission;
 
-    public MissingPermissionException(Permission permission, String format, Object... args) {
+    public PermissionException(Permission permission, String format, Object... args) {
         super(format, args);
         this.permission = permission;
     }

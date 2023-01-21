@@ -110,7 +110,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         this.wsSession = wsSession;
         logger.info("Websocket connection establisehd");
         try {
-            wsSession.getRemote().sendString(apiHandler.toJson(REGISTRATION));
+            wsSession.getRemote().sendString(apiHandler.serialize(REGISTRATION));
         } catch (IOException e) {
             logger.warn("Error connecting to websocket : {}", e.getMessage());
         }
@@ -123,31 +123,28 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
             localSession.close(StatusCode.NORMAL, "Thanks");
             return;
         }
-        try {
-            WebSocketResponse result = session.getApiHandler().deserialize(WebSocketResponse.class, message);
-            if (result.success) {
-                switch (result.action) {
-                    case REGISTER:
-                        logger.info("Event registration successfull");
-                        break;
-                    case NOTIFICATION:
-                        handleNotification(result);
-                        break;
-                    default:
-                        logger.info("Unhandled notification received : {}", result.action);
-                }
+
+        WebSocketResponse result = apiHandler.deserialize(WebSocketResponse.class, message);
+        if (result.success) {
+            switch (result.action) {
+                case REGISTER:
+                    logger.info("Event registration successfull");
+                    break;
+                case NOTIFICATION:
+                    handleNotification(result);
+                    break;
+                default:
+                    logger.info("Unhandled notification received : {}", result.action);
             }
-        } catch (FreeboxException e) {
-            logger.warn("Error deserializing notification : {} - {}", message, e.getMessage());
         }
     }
 
-    private void handleNotification(WebSocketResponse result) throws FreeboxException {
+    private void handleNotification(WebSocketResponse result) {
         JsonElement json = result.result;
         if (json != null) {
             switch (result.getEvent()) {
                 case VM_CHANGED:
-                    VirtualMachine vm = apiHandler.deserialize(VirtualMachine.class, json);
+                    VirtualMachine vm = apiHandler.deserialize(VirtualMachine.class, json.toString());
                     logger.info("Received notification for VM {}", vm.id());
                     VmHandler vmHandler = vms.get(vm.id());
                     if (vmHandler != null) {
@@ -155,7 +152,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                     }
                     break;
                 case HOST_UNREACHABLE, HOST_REACHABLE:
-                    LanHost host = apiHandler.deserialize(LanHost.class, json);
+                    LanHost host = apiHandler.deserialize(LanHost.class, json.toString());
                     MACAddress mac = host.getMac();
                     logger.info("Received notification for LanHost {}", mac.toColonDelimitedString());
                     HostHandler hostHandler = lanHosts.get(mac);

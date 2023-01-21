@@ -21,7 +21,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
+import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
@@ -45,7 +45,7 @@ public class RestManager {
         this.uriBuilder = uri;
         this.session = session;
         if (required != Permission.NONE && !session.hasPermission(required)) {
-            throw new MissingPermissionException(required, "Permission missing : %s", required.toString());
+            throw new PermissionException(required, "Permission missing : %s", required.toString());
         }
     }
 
@@ -61,13 +61,8 @@ public class RestManager {
         return localBuilder.build();
     }
 
-    protected <F, T extends Response<F>> List<F> get(Class<T> clazz) throws FreeboxException {
-        return session.execute(getUriBuilder().build(), GET, clazz, null);
-    }
-
     // Returns the first and supposed only element from the list. Presence of this element is expected and mandatory
-    protected <F, T extends Response<F>> F getSingle(Class<T> clazz) throws FreeboxException {
-        List<F> result = get(clazz);
+    private <F> F controlSingleton(List<F> result) {
         if (result.size() == 1) {
             return result.get(0);
         }
@@ -79,38 +74,21 @@ public class RestManager {
     }
 
     protected <F, T extends Response<F>> F getSingle(Class<T> clazz, String... pathElements) throws FreeboxException {
-        List<F> result = get(clazz, pathElements);
-        if (result.size() == 1) {
-            return result.get(0);
-        }
-        throw new IllegalArgumentException("Result is empty or not singleton");
+        return controlSingleton(get(clazz, pathElements));
     }
 
-    protected <F, T extends Response<F>> F postSingle(Object payload, Class<T> clazz, String... pathElements)
+    protected <F, T extends Response<F>> F post(Object payload, Class<T> clazz, String... pathElements)
             throws FreeboxException {
-        List<F> result = session.execute(buildUri(pathElements), POST, clazz, payload);
-        if (result.size() == 1) {
-            return result.get(0);
-        }
-        throw new IllegalArgumentException("Result is empty or not singleton");
-    }
-
-    protected void post(Object payload, String... pathElements) throws FreeboxException {
-        postSingle(payload, GenericResponse.class, pathElements);
+        return controlSingleton(session.execute(buildUri(pathElements), POST, clazz, payload));
     }
 
     protected void post(String... pathElements) throws FreeboxException {
         session.execute(buildUri(pathElements), POST, GenericResponse.class, null);
     }
 
-    protected <F, T extends Response<F>> F put(Class<T> clazz, F payload) throws FreeboxException {
-        List<F> result = session.execute(getUriBuilder().build(), PUT, clazz, payload);
-        return result.get(0);
-    }
-
     protected <F, T extends Response<F>> F put(Class<T> clazz, F payload, String... pathElements)
             throws FreeboxException {
-        List<F> result = session.execute(buildUri(pathElements), PUT, clazz, payload);
-        return result.get(0);
+        return controlSingleton(session.execute(buildUri(pathElements), PUT, clazz, payload));
     }
+
 }
