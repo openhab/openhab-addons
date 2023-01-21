@@ -1,6 +1,7 @@
 # MyNice Binding
 
-This binding gives access to the IT4Wifi module produced by Nice. This module is a bridge between the TP4 bus of the motor and your ethernet network.
+This binding implements the support of the IT4Wifi module through the NHK protocol and enables management of Nice gates automatisms.
+IT4Wifi is a bridge between the TP4 bus of your gate and your Ethernet network.
 
 
 ## Supported Things
@@ -14,7 +15,11 @@ This binding gives access to the IT4Wifi module produced by Nice. This module is
 ## Discovery
 
 The binding will auto-discover (by MDNS) your module, creating the associated `it4wifi` bridge.
-Once configuration of the bridge is completed, your gate(s) will be auto-discovered and added in the Inbox.
+
+Once discovered, a user named “org.openhab.binding.mynice” will be created on it. 
+You will have to grant him permissions using the MyNice app (Android or IOS).
+
+Once configuration of the bridge is completed, your gate(s) will also be auto-discovered and added to the Inbox.
 
 
 ## Binding Configuration
@@ -57,8 +62,8 @@ Channels available for the gates are :
 | status    | String | R          | Description of the current status of the door *          |
 | obstruct  | Switch | R          | Flags an obstruction, blocking the door                  |
 | moving    | Switch | R          | Indicates if the device is currently operating a command |
-| command   | Switch | W          | Send a given command to the gate **                      |
-| t4command | Switch | W          | Send a T4 Command to the gate                            |
+| command   | String | W          | Send a given command to the gate **                      |
+| t4command | String | W          | Send a T4 Command to the gate                            |
 
 * : can be open, closed, opening, closing, stopped.
 ** : must be "stop","open","close"
@@ -66,8 +71,8 @@ Channels available for the gates are :
 ### T4 Commands
 
 Depending upon your gate model, and motor capabilities, some T4 commands can be used.
-The list of available command for your model will be automatically be discovered by the binding.
-This information is stored in the `allowedT4`property held by the gate Thing.
+The list of available commands for your model will be automatically be discovered by the binding.
+This information is stored in the `allowedT4`property held by the gate Thing itself.
 
 Complete list of T4 Commands :
 
