@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -139,10 +140,12 @@ public class CloudClient {
 
     /*
      * Delay reconnect scheduler pool
-     * 
+     *
      */
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
+    private ScheduledFuture<?> reconnectFuture;
 
     /**
      * Constructor of CloudClient
@@ -325,7 +328,8 @@ public class CloudClient {
                             logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
-                        scheduler.schedule(new Runnable() {
+                        stopReconnectFuture();
+                        reconnectFuture = scheduler.schedule(new Runnable() {
                             @Override
                             public void run() {
                                 socket.connect();
@@ -671,6 +675,7 @@ public class CloudClient {
      */
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
+        stopReconnectFuture();
         socket.disconnect();
     }
 
@@ -684,6 +689,14 @@ public class CloudClient {
 
     public void setListener(CloudClientListener listener) {
         this.listener = listener;
+    }
+
+    private void stopReconnectFuture() {
+        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
+        if (reconnectFuture != null) {
+            reconnectFuture.cancel(true);
+            this.reconnectFuture = null;
+        }
     }
 
     private JSONObject getJSONHeaders(HttpFields httpFields) {
