@@ -127,8 +127,9 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
         for (final UniFiWlan wlan : cache.getWlans()) {
             final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_WLAN, bridgeUID,
                     stripIdShort(wlan.getId()));
-            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE,
-                    wlan.getSite().getName(), PARAMETER_WIFI_NAME, wlan.getName());
+            final String siteName = wlan.getSite() == null ? "" : wlan.getSite().getName();
+            final Map<String, Object> properties = Map.of(PARAMETER_WID, wlan.getId(), PARAMETER_SITE, siteName,
+                    PARAMETER_WIFI_NAME, wlan.getName());
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(UniFiBindingConstants.THING_TYPE_WLAN)
                     .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_WID).withTTL(TTL_SECONDS)
@@ -157,7 +158,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
      * @return shortened id or if to short the original id
      */
     private static String stripIdShort(final String id) {
-        return id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
+        return id != null && id.length() > THING_ID_LENGTH ? id.substring(id.length() - THING_ID_LENGTH) : id;
     }
 
     private void discoverPoePorts(final UniFiControllerCache cache, final ThingUID bridgeUID) {

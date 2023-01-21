@@ -160,8 +160,8 @@ String nuvo_s1_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s1_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source1#display_line3" }
 String nuvo_s1_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source1#display_line4" }
 String nuvo_s1_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source1#play_mode" }
-Number:Time nuvo_s1_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source1#track_length" }
-Number:Time nuvo_s1_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source1#track_position" }
+Number:Time nuvo_s1_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_length" }
+Number:Time nuvo_s1_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
 // String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
 // Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
@@ -171,8 +171,8 @@ String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s2_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line3" }
 String nuvo_s2_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line4" }
 String nuvo_s2_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source2#play_mode" }
-Number:Time nuvo_s2_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source2#track_length" }
-Number:Time nuvo_s2_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source2#track_position" }
+Number:Time nuvo_s2_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_length" }
+Number:Time nuvo_s2_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
 // String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
 // Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
@@ -182,8 +182,8 @@ String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s3_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line3" }
 String nuvo_s3_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line4" }
 String nuvo_s3_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source3#play_mode" }
-Number:Time nuvo_s3_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source3#track_length" }
-Number:Time nuvo_s3_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source3#track_position" }
+Number:Time nuvo_s3_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_length" }
+Number:Time nuvo_s3_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
 // String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
 // Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
@@ -193,8 +193,8 @@ String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s4_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line3" }
 String nuvo_s4_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line4" }
 String nuvo_s4_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source4#play_mode" }
-Number:Time nuvo_s4_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source4#track_length" }
-Number:Time nuvo_s4_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source4#track_position" }
+Number:Time nuvo_s4_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_length" }
+Number:Time nuvo_s4_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
 // String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
 // Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
@@ -204,8 +204,8 @@ String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s5_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line3" }
 String nuvo_s5_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line4" }
 String nuvo_s5_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source5#play_mode" }
-Number:Time nuvo_s5_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source5#track_length" }
-Number:Time nuvo_s5_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source5#track_position" }
+Number:Time nuvo_s5_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_length" }
+Number:Time nuvo_s5_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
 // String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
 // Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
@@ -215,8 +215,8 @@ String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:sour
 String nuvo_s6_display_line3 "Line 3: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line3" }
 String nuvo_s6_display_line4 "Line 4: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line4" }
 String nuvo_s6_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:source6#play_mode" }
-Number:Time nuvo_s6_track_length "Track Length: [%s s]" { channel="nuvo:amplifier:myamp:source6#track_length" }
-Number:Time nuvo_s6_track_position "Track Position: [%s s]" { channel="nuvo:amplifier:myamp:source6#track_position" }
+Number:Time nuvo_s6_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_length" }
+Number:Time nuvo_s6_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
 // String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
 // Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
@@ -234,7 +234,7 @@ sitemap nuvo label="Audio Control" {
     }
 
     Frame label="Zone 1" {
-        Switch item=nuvo_z1_power visibility=[nuvo_z1_lock!="1"]
+        Switch item=nuvo_z1_power visibility=[nuvo_z1_lock!="OPEN"] // OPEN = Zone Locked //
         Selection item=nuvo_z1_source visibility=[nuvo_z1_power==ON] icon="player"
         // Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
@@ -304,7 +304,7 @@ sitemap nuvo label="Audio Control" {
             Switch item=nuvo_z1_dnd
             Switch item=nuvo_z1_party
         }
-        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
+        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="OPEN"]
 
         // Image item=nuvo_s1_album_art visibility=[nuvo_z1_source=="1"]
         // Image item=nuvo_s2_album_art visibility=[nuvo_z1_source=="2"]
@@ -584,6 +584,10 @@ then
                 } else {
                     sendCommand(music_Music_Repeat, ON)
                 }
+            }
+            // ALLOFF is sent by the amplifier 5 minutes after all zones are switched off
+            case "ALLOFF": {
+                sendCommand(music_Music_Control, PAUSE)
             }
             // Handle menu item selections
             case "Top menu 1|menu1 a": {
