@@ -56,6 +56,7 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
             public @NonNull T read(@NonNullByDefault({}) JsonReader in) throws IOException {
                 String searched = in.nextString().toUpperCase().replace("/", "_").replace("-", "_");
                 JsonReader delegateReader = new JsonReader(new StringReader('"' + searched + '"'));
+                @Nullable
                 T value = delegateAdapter.read(delegateReader);
                 delegateReader.close();
                 if (value == null) {

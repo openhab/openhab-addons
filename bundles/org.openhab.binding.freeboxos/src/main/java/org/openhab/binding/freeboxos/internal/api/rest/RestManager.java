@@ -90,5 +90,4 @@ public class RestManager {
             throws FreeboxException {
         return controlSingleton(session.execute(buildUri(pathElements), PUT, clazz, payload));
     }
-
 }
