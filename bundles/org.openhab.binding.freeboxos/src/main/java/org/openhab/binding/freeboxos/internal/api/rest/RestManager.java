@@ -311,5 +311,4 @@ public class RestManager {
         return controlSingleton(session.execute(buildUri(pathElements), PUT, clazz, payload));
 >>>>>>> 6eeb4fa Some code enhancement for base classes
     }
-
 }

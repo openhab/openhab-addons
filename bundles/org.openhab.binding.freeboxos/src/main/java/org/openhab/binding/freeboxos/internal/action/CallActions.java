@@ -98,12 +98,18 @@ public class CallActions implements ThingActions {
     public void reset() {
         logger.debug("Call log clear called");
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
         handler.ifPresentOrElse(CallHandler::emptyQueue,
                 () -> logger.warn("Call Action service ThingHandler is null!"));
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
 =======
         if (handler != null) {
             handler.emptyQueue();
+=======
+        CallHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.emptyQueue();
+>>>>>>> 38dc673 solving SAT issues
         } else {
             logger.warn("Call Action service ThingHandler is null");
         }
