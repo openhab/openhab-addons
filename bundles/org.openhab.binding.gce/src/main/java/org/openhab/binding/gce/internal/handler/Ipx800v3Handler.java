@@ -94,6 +94,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
 
         @Override
+        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void run() {
             PortData currentData = portDatas.get(port);
             if (currentData != null && currentData.getValue() == 1
