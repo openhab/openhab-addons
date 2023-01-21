@@ -69,6 +69,10 @@ public class ComponentFactory {
                 return Light.create(componentConfiguration);
             case "lock":
                 return new Lock(componentConfiguration);
+            case "number":
+                return new Number(componentConfiguration);
+            case "select":
+                return new Select(componentConfiguration);
             case "sensor":
                 return new Sensor(componentConfiguration);
             case "switch":
