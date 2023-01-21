@@ -315,9 +315,9 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             return new ActivePlayerHandler(thing);
         } else if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             return new PlayerHandler(thing);
-        } else if (THING_TYPE_HOME_BASIC_SHUTTER.equals(thingTypeUID)) {
+        } else if (THING_TYPE_BASIC_SHUTTER.equals(thingTypeUID)) {
             return new BasicShutterHandler(thing);
-        } else if (THING_TYPE_HOME_SHUTTER.equals(thingTypeUID)) {
+        } else if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
             return new ShutterHandler(thing);
         }
 <<<<<<< Upstream, based on origin/main

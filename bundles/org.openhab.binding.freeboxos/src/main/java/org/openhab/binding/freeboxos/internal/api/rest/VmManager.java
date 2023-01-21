@@ -56,7 +56,6 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.VirtualMachineResponse> {
-    private static final String PATH = THING_VM.toLowerCase();
 
     public class VirtualMachineResponse extends Response<VirtualMachine> {
     }
@@ -71,8 +70,12 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
     }
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(PATH));
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(THING_VM));
+>>>>>>> f468f3b Enhance usage of global variables
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {

@@ -103,20 +103,15 @@ public class NodeConfigurationBuilder {
     public Optional<DiscoveryResultBuilder> configure(ThingUID bridgeUID, HomeNode node) {
         DiscoveryResultBuilder discoveryResultBuilder = null;
         try {
-            switch (node.category()) {
-                case "basic_shutter":
-                    ThingUID basicShutterUID = new ThingUID(THING_TYPE_HOME_BASIC_SHUTTER, bridgeUID,
-                            Integer.toString(node.id()));
-                    discoveryResultBuilder = DiscoveryResultBuilder.create(basicShutterUID);
-                    BasicShutterConfiguration.configure(discoveryResultBuilder, node);
-                    break;
-                case "shutter":
-                    ThingUID shutterUID = new ThingUID(THING_TYPE_HOME_SHUTTER, bridgeUID, Integer.toString(node.id()));
-                    discoveryResultBuilder = DiscoveryResultBuilder.create(shutterUID);
-                    ShutterConfiguration.configure(discoveryResultBuilder, node);
-                    break;
-                default:
-                    break;
+            if (THING_BASIC_SHUTTER.equals(node.category())) {
+                ThingUID basicShutterUID = new ThingUID(THING_TYPE_BASIC_SHUTTER, bridgeUID,
+                        Integer.toString(node.id()));
+                discoveryResultBuilder = DiscoveryResultBuilder.create(basicShutterUID);
+                BasicShutterConfiguration.configure(discoveryResultBuilder, node);
+            } else if (THING_SHUTTER.equals(node.category())) {
+                ThingUID shutterUID = new ThingUID(THING_TYPE_SHUTTER, bridgeUID, Integer.toString(node.id()));
+                discoveryResultBuilder = DiscoveryResultBuilder.create(shutterUID);
+                ShutterConfiguration.configure(discoveryResultBuilder, node);
             }
         } catch (FreeboxException e) {
             logger.warn("Error while requesting data for home things discovery : {}", e.getMessage());
