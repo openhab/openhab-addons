@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostsResponse;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 
@@ -121,6 +122,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel;
+=======
+>>>>>>> 6eeb4fa Some code enhancement for base classes
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostsResponse;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
@@ -161,9 +164,14 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
         UNKNOWN;
     }
 
+    public static enum Model {
+        FBXWMR, // Répéteur Wifi
+        UNKNOWN;
+    }
+
     public static record Repeater(int id, boolean ledActivated, boolean enabled, MACAddress mainMac,
             Connection connection, ZonedDateTime bootTime, Status status, String name, String sn, String apiVer,
-            ZonedDateTime lastSeen, BoxModel model, String firmwareVersion) {
+            ZonedDateTime lastSeen, Model model, String firmwareVersion) {
 
         public long getUptimeVal() {
             return Duration.between(bootTime, ZonedDateTime.now()).toSeconds();

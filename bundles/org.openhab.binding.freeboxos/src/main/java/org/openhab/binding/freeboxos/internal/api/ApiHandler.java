@@ -179,7 +179,6 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -199,8 +198,6 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -257,7 +254,7 @@ public class ApiHandler {
         }
 
         if (payload != null) {
-            request.content(serialize(payload), null);
+            request.content(new StringContentProvider(serialize(payload), DEFAULT_CHARSET), null);
         }
 
         try {
@@ -280,38 +277,17 @@ public class ApiHandler {
 >>>>>>> 46dadb1 SAT warnings handling
     }
 
-    public <T> T deserialize(Class<T> clazz, String json) throws FreeboxException {
-        try {
-            @Nullable
-            T result = gson.fromJson(json, clazz);
-            if (result != null) {
-                return result;
-            }
-            throw new FreeboxException("Deserialization of '%s' resulted in null value", json);
-        } catch (JsonSyntaxException e) {
-            throw new FreeboxException(e, "Unexpected error deserializing '%s'", json);
+    public <T> T deserialize(Class<T> clazz, String json) {
+        @Nullable
+        T result = gson.fromJson(json, clazz);
+        if (result != null) {
+            return result;
         }
+        throw new IllegalArgumentException("Null result deserializing '%s', please file a bug report.".formatted(json));
     }
 
-    public <T> T deserialize(Class<T> clazz, JsonElement json) throws FreeboxException {
-        try {
-            @Nullable
-            T result = gson.fromJson(json, clazz);
-            if (result != null) {
-                return result;
-            }
-            throw new FreeboxException("Deserialization of '%s' resulted in null value", json);
-        } catch (JsonSyntaxException e) {
-            throw new FreeboxException(e, "Unexpected error deserializing '%s'", json);
-        }
-    }
-
-    public String toJson(Object payload) {
+    public String serialize(Object payload) {
         return gson.toJson(payload);
-    }
-
-    private ContentProvider serialize(Object payload) {
-        return new StringContentProvider(toJson(payload), DEFAULT_CHARSET);
     }
 
     public HttpClient getHttpClient() {

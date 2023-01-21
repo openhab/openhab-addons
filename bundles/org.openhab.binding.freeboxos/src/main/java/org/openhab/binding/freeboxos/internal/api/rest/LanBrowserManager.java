@@ -418,8 +418,13 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public boolean wakeOnLan(MACAddress mac, String password) throws FreeboxException {
         Optional<HostIntf> target = getHost(mac);
         if (target.isPresent()) {
+<<<<<<< Upstream, based on origin/main
             post(new WakeOnLineData(mac.toColonDelimitedString(), password), WOL_ACTION, target.get().intf.name);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+            post(new WakeOnLineData(mac.toColonDelimitedString(), password), GenericResponse.class, WOL_ACTION,
+                    target.get().intf.name);
+>>>>>>> 6eeb4fa Some code enhancement for base classes
             return true;
         }
         return false;

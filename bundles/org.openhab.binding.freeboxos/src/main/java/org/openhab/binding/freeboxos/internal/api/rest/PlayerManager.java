@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.PlaybackState;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.SubtitleTrack;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.VideoTrack;
@@ -228,6 +229,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel;
+=======
+>>>>>>> 6eeb4fa Some code enhancement for base classes
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.PlaybackState;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.SubtitleTrack;
@@ -251,8 +254,20 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     public static class PlayerResponse extends Response<Player> {
     }
 
+    public static enum DeviceModel {
+        FBX7HD_DELTA, // Freebox Player Devialet
+        TBX8AM, // Player Pop
+        FBX6HD,
+        FBX6LC,
+        FBX6LCV2,
+        FBX7HD,
+        FBX7HD_ONE,
+        FBX8AM,
+        UNKNOWN;
+    }
+
     public static record Player(MACAddress mac, StbType stbType, int id, ZonedDateTime lastTimeReachable,
-            boolean apiAvailable, String deviceName, BoxModel deviceModel, boolean reachable, String uid,
+            boolean apiAvailable, String deviceName, DeviceModel deviceModel, boolean reachable, String uid,
             @Nullable String apiVersion, List<String> lanGids) {
         private static enum StbType {
             STB_ANDROID,
@@ -265,8 +280,9 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         /**
          * @return a string like eg : '17/api/v8'
          */
-        public String baseUrl() {
-            return "%d/api/v%s/".formatted(id, apiVersion.split("\\.")[0]);
+        public @Nullable String baseUrl() {
+            String api = apiVersion;
+            return api != null ? "%d/api/v%s/".formatted(id, api.split("\\.")[0]) : null;
         }
     }
 
@@ -389,8 +405,17 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, Permission.PLAYER, PlayerResponse.class, session.getUriBuilder().path(THING_PLAYER));
+<<<<<<< Upstream, based on origin/main
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> subPaths.put(player.id, player.baseUrl()));
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        getDevices().stream().filter(Player::apiAvailable).forEach(player -> {
+            String baseUrl = player.baseUrl();
+            if (baseUrl != null) {
+                subPaths.put(player.id, baseUrl);
+            }
+        });
+>>>>>>> 6eeb4fa Some code enhancement for base classes
     }
 
     public Status getPlayerStatus(int id) throws FreeboxException {

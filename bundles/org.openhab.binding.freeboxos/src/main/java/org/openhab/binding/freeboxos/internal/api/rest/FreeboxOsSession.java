@@ -406,7 +406,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.MissingPermissionException;
+import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session;
@@ -441,15 +441,6 @@ public class FreeboxOsSession {
         FBXGW_R1_ONE, // Freebox One revision 1
         FBXGW_R2_ONE, // Freebox One revision 2
         FBXGW7_R1_FULL, // Freebox v7 revision 1
-        FBX7HD_DELTA, // Freebox Player Devialet
-        FBXWMR, // Répéteur Wifi
-        TBX8AM, // Player Pop
-        FBX6HD,
-        FBX6LC,
-        FBX6LCV2,
-        FBX7HD,
-        FBX7HD_ONE,
-        FBX8AM,
         UNKNOWN;
     }
 
@@ -480,7 +471,13 @@ public class FreeboxOsSession {
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
         this.appToken = config.appToken;
         String result = initiateConnection();
-        loadBasicManagers();
+
+        getManager(NetShareManager.class);
+        getManager(LanManager.class);
+        getManager(WifiManager.class);
+        getManager(FreeplugManager.class);
+        getManager(AirMediaManager.class);
+
         return result;
     }
 
@@ -517,14 +514,6 @@ public class FreeboxOsSession {
         restManagers.clear();
     }
 
-    private void loadBasicManagers() throws FreeboxException {
-        getManager(NetShareManager.class);
-        getManager(LanManager.class);
-        getManager(WifiManager.class);
-        getManager(FreeplugManager.class);
-        getManager(AirMediaManager.class);
-    }
-
     private synchronized <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz,
             boolean retryAuth, int retryCount, @Nullable Object aPayload) throws FreeboxException {
         try {
@@ -550,8 +539,7 @@ public class FreeboxOsSession {
 
     public <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz,
             @Nullable Object aPayload) throws FreeboxException {
-        boolean retryAuth = getSessionToken() != null;
-        return execute(uri, method, clazz, retryAuth, 3, aPayload);
+        return execute(uri, method, clazz, getSessionToken() != null, 3, aPayload);
     }
 
     @SuppressWarnings("unchecked")
@@ -560,23 +548,23 @@ public class FreeboxOsSession {
         if (manager == null) {
             try {
                 Constructor<T> managerConstructor = clazz.getConstructor(FreeboxOsSession.class);
-                manager = managerConstructor.newInstance(this);
-                restManagers.put(clazz, manager);
+                manager = addManager(clazz, managerConstructor.newInstance(this));
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if (cause instanceof MissingPermissionException) {
-                    throw (MissingPermissionException) cause;
+                if (cause instanceof PermissionException) {
+                    throw (PermissionException) cause;
                 }
                 throw new FreeboxException(e, "Unable to call RestManager constructor for %s", clazz.getName());
-            } catch (SecurityException | ReflectiveOperationException e) {
+            } catch (ReflectiveOperationException e) {
                 throw new FreeboxException(e, "Unable to call RestManager constructor for %s", clazz.getName());
             }
         }
         return (T) manager;
     }
 
-    public <T extends RestManager> void addManager(Class<T> clazz, RestManager manager) {
+    public <T extends RestManager> T addManager(Class<T> clazz, T manager) {
         restManagers.put(clazz, manager);
+        return manager;
     }
 
     boolean hasPermission(Permission required) {

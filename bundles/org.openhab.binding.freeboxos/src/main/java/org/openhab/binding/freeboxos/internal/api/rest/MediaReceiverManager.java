@@ -139,7 +139,11 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     }
 
     private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         post(payload, receiver);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        post(payload, GenericResponse.class, receiver);
+>>>>>>> 6eeb4fa Some code enhancement for base classes
     }
 }
