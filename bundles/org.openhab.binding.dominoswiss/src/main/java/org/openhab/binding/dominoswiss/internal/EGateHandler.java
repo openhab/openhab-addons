@@ -55,7 +55,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
     private int port;
     private @Nullable String host;
-    private static final int SOCKET_TIMEOUT_SEC = 250;
+    private static final int SOCKET_TIMEOUT_MILLISEC = 1000;
     private final Object lock = new Object();
     private @Nullable BufferedWriter writer;
     private @Nullable BufferedReader reader;
@@ -88,7 +88,7 @@ public class EGateHandler extends BaseBridgeHandler {
             InetSocketAddress socketAddress = new InetSocketAddress(host, port);
             Socket localEgateSocket = new Socket();
             try {
-                localEgateSocket.connect(socketAddress, SOCKET_TIMEOUT_SEC);
+                localEgateSocket.connect(socketAddress, SOCKET_TIMEOUT_MILLISEC);
                 writer = new BufferedWriter(new OutputStreamWriter(localEgateSocket.getOutputStream()));
                 egateSocket = localEgateSocket;
                 updateStatus(ThingStatus.ONLINE);
@@ -206,7 +206,7 @@ public class EGateHandler extends BaseBridgeHandler {
      */
 
     private void sendCommand(String command) {
-        sendCommand(command, SOCKET_TIMEOUT_SEC);
+        sendCommand(command, SOCKET_TIMEOUT_MILLISEC);
     }
 
     private synchronized void sendCommand(String command, int timeout) {
@@ -224,7 +224,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
         // Send plain string to eGate Server,
         try {
-            localEGateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
+            localEGateSocket.setSoTimeout(timeout);
             localWriter.write(command);
             localWriter.flush();
         } catch (IOException e) {
@@ -244,7 +244,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
             synchronized (lock) {
                 try {
-                    localEGateSocket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_SEC);
+                    localEGateSocket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MILLISEC);
                     logger.debug("pollingConfig() successsully connected {}", localEGateSocket.isClosed());
                     localWriter.write("SilenceModeSet;Value=0;" + CR);
                     localWriter.flush();
