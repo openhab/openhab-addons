@@ -29,9 +29,11 @@ public interface SiemensHvacConnector {
 
     public void WaitAllPendingRequest();
 
+    public void WaitNoNewRequest();
+
     public void onComplete(Request request);
 
-    public void onError(Request request);
+    public void onError(Request request, SiemensHvacCallback cb) throws Exception;
 
     public void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
 }
