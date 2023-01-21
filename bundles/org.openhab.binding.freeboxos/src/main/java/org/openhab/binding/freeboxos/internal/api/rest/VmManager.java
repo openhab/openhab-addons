@@ -28,7 +28,6 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.VirtualMachineResponse> {
-    private static final String PATH = THING_VM.toLowerCase();
 
     public class VirtualMachineResponse extends Response<VirtualMachine> {
     }
@@ -43,7 +42,7 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
     }
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(PATH));
+        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(THING_VM));
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {

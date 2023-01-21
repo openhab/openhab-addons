@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
+
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -35,8 +37,6 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, RepeaterManager.RepeaterResponse> {
-    public static final String PATH = "repeater";
-    public static final String HOST_PATH = "host";
 
     public static class RepeaterResponse extends Response<Repeater> {
     }
@@ -74,11 +74,11 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
     }
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, RepeaterResponse.class, session.getUriBuilder().path(PATH));
+        super(session, Permission.NONE, RepeaterResponse.class, session.getUriBuilder().path(THING_REPEATER));
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
-        return get(HostsResponse.class, Integer.toString(id), HOST_PATH);
+        return get(HostsResponse.class, Integer.toString(id), THING_HOST);
     }
 
     public synchronized List<LanHost> getHosts() throws FreeboxException {

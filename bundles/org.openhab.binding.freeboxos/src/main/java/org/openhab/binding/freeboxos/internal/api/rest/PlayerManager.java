@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.THING_PLAYER;
+
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +46,6 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerManager.PlayerResponse> {
     public static final String STATUS_PATH = "status";
-    private static final String PATH = "player";
 
     public static class PlayerResponse extends Response<Player> {
     }
@@ -186,7 +187,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.PLAYER, PlayerResponse.class, session.getUriBuilder().path(PATH));
+        super(session, Permission.PLAYER, PlayerResponse.class, session.getUriBuilder().path(THING_PLAYER));
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> subPaths.put(player.id, player.baseUrl()));
     }
 

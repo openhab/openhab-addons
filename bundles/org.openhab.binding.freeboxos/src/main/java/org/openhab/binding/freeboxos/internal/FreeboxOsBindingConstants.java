@@ -37,34 +37,43 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID BRIDGE_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
 
     //
-    public static String THING_FREEPLUG = "Freeplug";
-    public static String THING_VM = "Vm";
-    public static String THING_DECT = "DECT";
-    public static String THING_FXS = "FXS";
-    public static String THING_CALL = "Call";
+    public static String THING_FREEPLUG = "freeplug";
+    public static String THING_VM = "vm";
+    public static String THING_DECT = "dect";
+    public static String THING_FXS = "fxs";
+    public static String THING_CALL = "call";
+    public static String THING_HOST = "host";
+    public static String THING_PLAYER = "player";
+    public static String THING_REPEATER = "repeater";
+    public static String THING_BASIC_SHUTTER = "basic_shutter";
+    public static String THING_SHUTTER = "shutter";
+    public static String THING_REVOLUTION = "revolution";
+    public static String THING_DELTA = "delta";
+    public static String THING_WIFI_HOST = "wifihost";
+    public static String THING_ACTIVE_PLAYER = "active_player";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_REVOLUTION = new ThingTypeUID(BINDING_ID, "revolution");
-    public static final ThingTypeUID THING_TYPE_DELTA = new ThingTypeUID(BINDING_ID, "delta");
-    public static final ThingTypeUID THING_TYPE_FXS = new ThingTypeUID(BINDING_ID, THING_FXS.toLowerCase());
-    public static final ThingTypeUID THING_TYPE_DECT = new ThingTypeUID(BINDING_ID, THING_DECT.toLowerCase());
-    public static final ThingTypeUID THING_TYPE_CALL = new ThingTypeUID(BINDING_ID, THING_CALL.toLowerCase());
-    public static final ThingTypeUID THING_TYPE_FREEPLUG = new ThingTypeUID(BINDING_ID, THING_FREEPLUG.toLowerCase());
-    public static final ThingTypeUID THING_TYPE_HOST = new ThingTypeUID(BINDING_ID, "host");
-    public static final ThingTypeUID THING_TYPE_WIFI_HOST = new ThingTypeUID(BINDING_ID, "wifihost");
-    public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
-    public static final ThingTypeUID THING_TYPE_ACTIVE_PLAYER = new ThingTypeUID(BINDING_ID, "active_player");
-    public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, THING_VM.toLowerCase());
-    public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
-    public static final ThingTypeUID THING_TYPE_HOME_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, "basic_shutter");
-    public static final ThingTypeUID THING_TYPE_HOME_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
+    public static final ThingTypeUID THING_TYPE_REVOLUTION = new ThingTypeUID(BINDING_ID, THING_REVOLUTION);
+    public static final ThingTypeUID THING_TYPE_DELTA = new ThingTypeUID(BINDING_ID, THING_DELTA);
+    public static final ThingTypeUID THING_TYPE_FXS = new ThingTypeUID(BINDING_ID, THING_FXS);
+    public static final ThingTypeUID THING_TYPE_DECT = new ThingTypeUID(BINDING_ID, THING_DECT);
+    public static final ThingTypeUID THING_TYPE_CALL = new ThingTypeUID(BINDING_ID, THING_CALL);
+    public static final ThingTypeUID THING_TYPE_FREEPLUG = new ThingTypeUID(BINDING_ID, THING_FREEPLUG);
+    public static final ThingTypeUID THING_TYPE_HOST = new ThingTypeUID(BINDING_ID, THING_HOST);
+    public static final ThingTypeUID THING_TYPE_WIFI_HOST = new ThingTypeUID(BINDING_ID, THING_WIFI_HOST);
+    public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, THING_PLAYER);
+    public static final ThingTypeUID THING_TYPE_ACTIVE_PLAYER = new ThingTypeUID(BINDING_ID, THING_ACTIVE_PLAYER);
+    public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, THING_VM);
+    public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, THING_REPEATER);
+    public static final ThingTypeUID THING_TYPE_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, THING_BASIC_SHUTTER);
+    public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, THING_SHUTTER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UIDS = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
             THING_TYPE_HOST, THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA,
             THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG,
-            THING_TYPE_HOME_BASIC_SHUTTER, THING_TYPE_HOME_SHUTTER);
+            THING_TYPE_BASIC_SHUTTER, THING_TYPE_SHUTTER);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(BRIDGE_TYPE_UIDS.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());

@@ -32,7 +32,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
  */
 @NonNullByDefault
 public class CallManager extends RestManager {
-    private static final String PATH = THING_CALL.toLowerCase();
     private static final String LOG_SUB_PATH = "log/";
     private static final String DELETE_ACTION = "delete_all";
 
@@ -59,7 +58,7 @@ public class CallManager extends RestManager {
     }
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, session.getUriBuilder().path(PATH));
+        super(session, Permission.CALLS, session.getUriBuilder().path(THING_CALL));
     }
 
     // Retrieves a sorted list of all call entries

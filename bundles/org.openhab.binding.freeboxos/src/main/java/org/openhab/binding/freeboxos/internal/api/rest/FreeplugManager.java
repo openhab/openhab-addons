@@ -32,7 +32,6 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class FreeplugManager extends RestManager {
-    private static final String PATH = THING_FREEPLUG.toLowerCase();
     private static final String RESET_ACTION = "reset";
 
     private static class Networks extends Response<Network> {
@@ -67,7 +66,7 @@ public class FreeplugManager extends RestManager {
     }
 
     public FreeplugManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, session.getUriBuilder().path(PATH));
+        super(session, Permission.NONE, session.getUriBuilder().path(THING_FREEPLUG));
     }
 
     // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
