@@ -41,8 +41,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("command_template")
-        @Nullable
-        protected String commandTemplate;
+        protected @Nullable String commandTemplate;
         @SerializedName("command_topic")
         protected String commandTopic = "";
         @SerializedName("payload_on")
