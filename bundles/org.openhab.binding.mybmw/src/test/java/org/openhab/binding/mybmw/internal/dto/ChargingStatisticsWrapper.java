@@ -37,18 +37,18 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ChargeStatisticWrapper} tests stored fingerprint responses from BMW API
+ * The {@link ChargingStatisticsWrapper} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - small import change
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-public class ChargeStatisticWrapper {
+public class ChargingStatisticsWrapper {
     private ChargingStatisticsContainer chargeStatisticContainer;
 
-    public ChargeStatisticWrapper(String content) {
-        ChargingStatisticsContainer fromJson = JsonStringDeserializer.getChargeStatistics(content);
+    public ChargingStatisticsWrapper(String content) {
+        ChargingStatisticsContainer fromJson = JsonStringDeserializer.getChargingStatistics(content);
         if (fromJson != null) {
             chargeStatisticContainer = fromJson;
         } else {

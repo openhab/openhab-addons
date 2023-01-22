@@ -28,12 +28,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.MyBMWVehicleConfiguration;
-import org.openhab.binding.mybmw.internal.dto.ChargeStatisticWrapper;
+import org.openhab.binding.mybmw.internal.dto.ChargingStatisticsWrapper;
 import org.openhab.binding.mybmw.internal.handler.MyBMWCommandOptionProvider;
 import org.openhab.binding.mybmw.internal.handler.VehicleHandler;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
@@ -49,16 +48,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ChargeStatisticsTest} is responsible for handling commands, which
+ * The {@link ChargingStatisticsTest} is responsible for handling commands, which
  * are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Martin Grassl - just moved to other package
+ * @author Martin Grassl - updated to new vehicles
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-public class ChargeStatisticsTest {
+public class ChargingStatisticsTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private static final int EXPECTED_UPDATE_COUNT = 3;
@@ -111,10 +110,11 @@ public class ChargeStatisticsTest {
         assertNotNull(statusContent);
 
         try {
-            Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargeStatistics",
-                    ChargingStatisticsContainer.class);
+            Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargingStatistics",
+                    ChargingStatisticsContainer.class, String.class);
+            updateChargeStatisticsMethod.setAccessible(true);
             updateChargeStatisticsMethod.invoke(vehicleHandler,
-                    JsonStringDeserializer.getChargeStatistics(statusContent));
+                    JsonStringDeserializer.getChargingStatistics(statusContent), null);
         } catch (Exception e) {
             logger.error("chargeStatistics could not be set", e);
             fail("chargeStatistics could not be set", e);
@@ -125,7 +125,7 @@ public class ChargeStatisticsTest {
         allStates = stateCaptor.getAllValues();
 
         assertNotNull(driveTrain);
-        ChargeStatisticWrapper checker = new ChargeStatisticWrapper(statusContent);
+        ChargingStatisticsWrapper checker = new ChargingStatisticsWrapper(statusContent);
         trace();
         return checker.checkResults(allChannels, allStates);
     }
@@ -137,38 +137,27 @@ public class ChargeStatisticsTest {
     }
 
     @Test
-    @Disabled
-    public void testI01REX() {
+    public void testBevIx() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/I01_REX/charge-statistics-de.json");
+        String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 
     @Test
-    @Disabled
-    public void testG21() {
+    public void testBevIX3() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC_REX.toString(), false);
+        String content = FileReader.fileToString("src/test/resources/responses/BEV3/charging_statistics.json");
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
+    }
+
+    @Test
+    public void testIceX320d() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.PLUGIN_HYBRID.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/G21/charging-statistics_0.json");
+        String content = FileReader.fileToString("src/test/resources/responses/ICE2/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 
-    @Test
-    @Disabled
-    public void testG30() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.PLUGIN_HYBRID.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/G30/charging-statistics_0.json");
-        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
-    }
-
-    @Test
-    @Disabled
-    public void testI01NOREX() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/I01_NOREX/charging-statistics_0.json");
-        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
-    }
 }

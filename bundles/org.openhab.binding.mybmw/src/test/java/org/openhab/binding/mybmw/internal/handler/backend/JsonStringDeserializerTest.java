@@ -42,7 +42,7 @@ public class JsonStringDeserializerTest {
 
     void testGetChargeSessions() {
         String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_sessions.json");
-        ChargingSessionsContainer chargeSessionsContainer = JsonStringDeserializer.getChargeSessions(content);
+        ChargingSessionsContainer chargeSessionsContainer = JsonStringDeserializer.getChargingSessions(content);
         assertNotNull(chargeSessionsContainer);
 
         String jsonString = gson.toJson(chargeSessionsContainer);
@@ -52,7 +52,7 @@ public class JsonStringDeserializerTest {
     @Test
     void testGetChargeStatistics() {
         String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_statistics.json");
-        ChargingStatisticsContainer chargeStatisticsContainer = JsonStringDeserializer.getChargeStatistics(content);
+        ChargingStatisticsContainer chargeStatisticsContainer = JsonStringDeserializer.getChargingStatistics(content);
         assertNotNull(chargeStatisticsContainer);
 
         String jsonString = gson.toJson(chargeStatisticsContainer);

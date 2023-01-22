@@ -176,7 +176,7 @@ public class MyBMWProxy {
      */
     public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException {
         String chargeStatisticsResponseString = requestChargeStatisticsJson(vin, brand);
-        return JsonStringDeserializer.getChargeStatistics(new String(chargeStatisticsResponseString));
+        return JsonStringDeserializer.getChargingStatistics(new String(chargeStatisticsResponseString));
     }
 
     public String requestChargeStatisticsJson(String vin, String brand) throws NetworkException {
@@ -197,7 +197,7 @@ public class MyBMWProxy {
      */
     public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException {
         String chargeSessionsResponseString = requestChargeSessionsJson(vin, brand);
-        return JsonStringDeserializer.getChargeSessions(chargeSessionsResponseString);
+        return JsonStringDeserializer.getChargingSessions(chargeSessionsResponseString);
     }
 
     public String requestChargeSessionsJson(String vin, String brand) throws NetworkException {

@@ -297,9 +297,9 @@ public class VehicleHandler extends BaseThingHandler {
 
                 if (!stateError && isElectric) {
                     try {
-                        updateChargeStatistics(prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()),
+                        updateChargingStatistics(prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()),
                                 null);
-                        updateChargeSessions(prox.requestChargeSessions(config.getVin(), config.getVehicleBrand()),
+                        updateChargingSessions(prox.requestChargeSessions(config.getVin(), config.getVehicleBrand()),
                                 null);
                     } catch (NetworkException e) {
                         logger.debug("{}", e.toString());
@@ -376,13 +376,13 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeStatistics(ChargingStatisticsContainer csc, @Nullable String channelToBeUpdated) {
-        if (!"".equals(csc.description)) {
-            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, csc.description, channelToBeUpdated);
+    private void updateChargingStatistics(ChargingStatisticsContainer chargingStatisticsContainer, @Nullable String channelToBeUpdated) {
+        if (!"".equals(chargingStatisticsContainer.getDescription())) {
+            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, chargingStatisticsContainer.getDescription(), channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
-                    QuantityType.valueOf(csc.statistics.totalEnergyCharged, Units.KILOWATT_HOUR), channelToBeUpdated);
+                    QuantityType.valueOf(chargingStatisticsContainer.getStatistics().getTotalEnergyCharged(), Units.KILOWATT_HOUR), channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, SESSIONS,
-                    DecimalType.valueOf(Integer.toString(csc.statistics.numberOfChargingSessions)), channelToBeUpdated);
+                    DecimalType.valueOf(Integer.toString(chargingStatisticsContainer.getStatistics().getNumberOfChargingSessions())), channelToBeUpdated);
         }
     }
 
@@ -584,6 +584,7 @@ public class VehicleHandler extends BaseThingHandler {
         if (requiredServiceList.isEmpty()) {
             RequiredService requiredService = new RequiredService();
             requiredService.setType(Constants.NO_ENTRIES);
+            requiredService.setDescription(Constants.NO_ENTRIES);
             requiredServiceList.add(requiredService);
         }
 
@@ -622,8 +623,6 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_SERVICE, DATE, Converter.zonedToLocalDateTime(serviceEntry.getDateTime()),
                     channelToBeUpdated);
 
-            // TODO km vs mileage not available anymore in the response, it is set in the
-            // request as header
             if (serviceEntry.getMileage() > 0) {
                 updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
                         QuantityType.valueOf(serviceEntry.getMileage(), Constants.KILOMETRE_UNIT), channelToBeUpdated);
@@ -633,7 +632,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargeSessions(ChargingSessionsContainer chargeSessionsContainer,
+    private void updateChargingSessions(ChargingSessionsContainer chargeSessionsContainer,
             @Nullable String channelToBeUpdated) {
         List<ChargingSession> chargeSessions = new ArrayList<>();
 

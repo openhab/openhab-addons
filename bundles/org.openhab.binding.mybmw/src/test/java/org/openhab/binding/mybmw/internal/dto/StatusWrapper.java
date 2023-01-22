@@ -88,7 +88,6 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -164,8 +163,6 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
-        OnOffType oot;
-        // TODO currently no miles implemented
         Unit<Length> wantedUnit = KILOMETRE;
         switch (cUid) {
             case MILEAGE:
@@ -180,7 +177,7 @@ public class StatusWrapper {
                         }
                         break;
                     case CHANNEL_GROUP_SERVICE:
-                        State wantedMileage = QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT);
+                        State wantedMileage = UnDefType.UNDEF;
                         if (!vehicleState.getRequiredServices().isEmpty()) {
                             if (vehicleState.getRequiredServices().get(0).getMileage() > 0) {
                                 wantedMileage = QuantityType.valueOf(

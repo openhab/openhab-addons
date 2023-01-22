@@ -72,7 +72,6 @@ public class VehicleStatusUtils {
             if (requiredService.getMileage() > 0) {
                 if (requiredService.getMileage() < serviceMileage) {
                     serviceMileage = requiredService.getMileage();
-                    // TODO: currently only km is supported
                 }
             }
         }

@@ -62,7 +62,7 @@ public interface JsonStringDeserializer {
         }
     }
 
-    public static ChargingStatisticsContainer getChargeStatistics(String chargeStatisticsJson) {
+    public static ChargingStatisticsContainer getChargingStatistics(String chargeStatisticsJson) {
         try {
             ChargingStatisticsContainer chargeStatistics = deserializeString(chargeStatisticsJson,
                     ChargingStatisticsContainer.class);
@@ -73,7 +73,7 @@ public interface JsonStringDeserializer {
         }
     }
 
-    public static ChargingSessionsContainer getChargeSessions(String chargeSessionsJson) {
+    public static ChargingSessionsContainer getChargingSessions(String chargeSessionsJson) {
         try {
             return deserializeString(chargeSessionsJson, ChargingSessionsContainer.class);
         } catch (JsonSyntaxException e) {
