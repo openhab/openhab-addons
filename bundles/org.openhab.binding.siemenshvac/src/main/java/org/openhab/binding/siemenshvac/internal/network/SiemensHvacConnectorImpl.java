@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.siemenshvac.internal.network;
 
+import java.net.CookieStore;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +65,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
     private @Nullable String sessionId = null;
+    private @Nullable String sessionIdHttp = null;
     private String baseUrl = "";
     private String userName = "";
     private String userPassword = "";
@@ -219,7 +224,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         if (config.containsKey("baseUrl")) {
             baseUrl = (String) config.get("baseUrl");
         }
-        baseUrl = "https://192.168.254.42/";
+
         if (config.containsKey("userName")) {
             userName = (String) config.get("userName");
         }
@@ -228,14 +233,25 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
-    private void _doAuth() throws Exception {
+    private void _doAuth(boolean http) throws Exception {
         logger.debug("siemensHvac:doAuth()");
 
         _initConfig();
         String baseUri = baseUrl;
-        String uri = "api/auth/login.json?user=" + userName + "&pwd=" + userPassword;
+        String uri = "";
+
+        if (http) {
+            uri = "main.app";
+        } else {
+            uri = "api/auth/login.json?user=" + userName + "&pwd=" + userPassword;
+        }
+
         final Request request = httpClient.newRequest(baseUri + uri);
-        request.method(HttpMethod.GET);
+        if (http) {
+            request.method(HttpMethod.POST).param("user", userName).param("pwd", userPassword);
+        } else {
+            request.method(HttpMethod.GET);
+        }
 
         logger.debug("siemensHvac:doAuth:connect()");
 
@@ -247,41 +263,60 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 if (statusCode == HttpStatus.OK_200) {
                     String result = response.getContentAsString();
 
-                    if (result != null) {
-                        JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
+                    if (http) {
+                        CookieStore cookieStore = httpClient.getCookieStore();
+                        List<HttpCookie> cookies = cookieStore.getCookies();
 
-                        if (resultObj != null && resultObj.has("Result")) {
-                            JsonElement resultVal = resultObj.get("Result");
-                            JsonObject resultObj2 = resultVal.getAsJsonObject();
+                        for (HttpCookie httpCookie : cookies) {
+                            if (httpCookie.getName().equals("SessionId")) {
+                                sessionIdHttp = httpCookie.getValue();
+                            }
 
-                            if (resultObj2.has("Success")) {
-                                boolean successVal = resultObj2.get("Success").getAsBoolean();
+                        }
 
-                                if (successVal) {
+                        if (sessionIdHttp == null) {
+                            logger.debug("Session request auth was unsucessfull in _doAuth()");
+                        }
+                    } else {
+                        if (result != null) {
+                            JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
 
-                                    if (resultObj.has("SessionId")) {
-                                        sessionId = resultObj.get("SessionId").getAsString();
-                                        logger.debug("Have new SessionId : {} ", sessionId);
+                            if (resultObj != null && resultObj.has("Result")) {
+                                JsonElement resultVal = resultObj.get("Result");
+                                JsonObject resultObj2 = resultVal.getAsJsonObject();
+
+                                if (resultObj2.has("Success")) {
+                                    boolean successVal = resultObj2.get("Success").getAsBoolean();
+
+                                    if (successVal) {
+
+                                        if (resultObj.has("SessionId")) {
+                                            sessionId = resultObj.get("SessionId").getAsString();
+                                            logger.debug("Have new SessionId : {} ", sessionId);
+                                        }
+
                                     }
 
                                 }
-
                             }
+
+                            logger.debug("siemensHvac:doAuth:decodeResponse:()");
+
+                            if (sessionId == null) {
+                                logger.debug("Session request auth was unsucessfull in _doAuth()");
+                            }
+
                         }
 
-                        logger.debug("siemensHvac:doAuth:decodeResponse:()");
-
-                    }
-
-                    if (sessionId == null) {
-                        logger.debug("Session request auth was unsucessfull in _doAuth()");
                     }
                 }
             }
 
             logger.debug("siemensHvac:doAuth:connect()");
 
-        } catch (Exception ex) {
+        } catch (
+
+        Exception ex) {
             logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
         } finally {
         }
@@ -296,8 +331,12 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     public @Nullable String DoBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
+        if (sessionIdHttp == null) {
+            _doAuth(true);
+        }
+
         if (sessionId == null) {
-            _doAuth();
+            _doAuth(false);
         }
 
         try {
@@ -307,9 +346,21 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             if (!mUri.endsWith("?")) {
                 mUri = mUri + "&";
             }
-            mUri = mUri + "SessionId=" + sessionId;
+            if (mUri.indexOf("main.app") >= 0) {
+                mUri = mUri + "SessionId=" + sessionIdHttp;
+            } else {
+                mUri = mUri + "SessionId=" + sessionId;
+            }
 
-            logger.debug("Execute request: {}", uri);
+            logger.info("Execute request: {}", uri);
+            CookieStore c = httpClient.getCookieStore();
+            java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
+            cookie.setPath("/");
+            cookie.setVersion(0);
+
+            c.add(new URI(baseUri), cookie);
+
+			logger.debug("Execute request: {}", uri);
             final Request request = httpClient.newRequest(baseUri + mUri);
             request.method(HttpMethod.GET);
 
