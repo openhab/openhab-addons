@@ -263,7 +263,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End read : {}", dp);
+            logger.debug("End read : {}", dp);
             lockObj.unlock();
 
         }
@@ -302,17 +302,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + type;
 
             if (lcHvacConnector != null) {
-                logger.info("Write request for : {} ", valUpdate);
+                logger.debug("Write request for : {} ", valUpdate);
                 JsonObject response = lcHvacConnector.DoRequest(request, null);
 
-                logger.info("Write request response : {} ", response);
+                logger.debug("Write request response : {} ", response);
             }
 
         } catch (Exception e) {
             logger.error("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.info("End write : {}", dp);
+            logger.debug("End write : {}", dp);
             lockObj.unlock();
         }
     }
