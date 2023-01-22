@@ -141,10 +141,6 @@
 		<label>Intended Boiler Temperature</label>
 		<description>Gets the intended temperature of this boiler</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
