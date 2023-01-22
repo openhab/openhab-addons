@@ -360,7 +360,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             c.add(new URI(baseUri), cookie);
 
-			logger.debug("Execute request: {}", uri);
+            logger.debug("Execute request: {}", uri);
             final Request request = httpClient.newRequest(baseUri + mUri);
             request.method(HttpMethod.GET);
 
