@@ -12,6 +12,7 @@
 			<channel id="current_startsAt" typeId="timestamp"/>
 			<channel id="current_level" typeId="level"/>
 			<channel id="tomorrow_prices" typeId="tomorrow_prices"/>
+			<channel id="today_prices" typeId="today_prices"/>
 			<channel id="daily_from" typeId="timestamp"/>
 			<channel id="daily_to" typeId="timestamp"/>
 			<channel id="daily_cost" typeId="cost"/>
@@ -120,6 +121,12 @@
 		<item-type>String</item-type>
 		<label>Prices for tomorrow as a JSON array</label>
 		<description>JSON array of tuples startsAt,total, e.g. {["startsAt": "2022-09-10T00:00:00+02:00", "total": 5.332},
-			{"startsAt": ...}]. See binding documantation for full example.</description>
+			{"startsAt": ...}]. See binding documentation for full example.</description>
+	</channel-type>
+	<channel-type id="today_prices" advanced="true">
+		<item-type>String</item-type>
+		<label>Prices for today as a JSON array</label>
+		<description>JSON array of tuples startsAt,total, e.g. {["startsAt": "2022-09-10T00:00:00+02:00", "total": 5.332},
+			{"startsAt": ...}]. See binding documentation for full example.</description>
 	</channel-type>
 </thing:thing-descriptions>
