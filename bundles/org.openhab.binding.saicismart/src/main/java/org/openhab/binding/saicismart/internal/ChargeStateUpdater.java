@@ -97,7 +97,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
 
             saiCiSMARTHandler.updateState(CHANNEL_SOC, new QuantityType<>(
                     chargingStatusResponseMessage.getApplicationData().getBmsPackSOCDsp() / 10.d, Units.PERCENT));
-            logger.info("Got message: {}",
+            logger.debug("Got message: {}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(chargingStatusResponseMessage));
 
             double power = (chargingStatusResponseMessage.getApplicationData().getBmsPackCrnt() * 0.05d - 1000.0d)

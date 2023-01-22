@@ -117,7 +117,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
                             .decodeResponse(loginResponse);
 
-                    logger.info("Got message: {}",
+                    logger.debug("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(loginResponseMessage));
 
                     uid = loginResponseMessage.getBody().getUid();
@@ -140,7 +140,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     Message<IASN1PreparedElement> alarmSwitchResponseMessage = new MessageCoder<>(
                             IASN1PreparedElement.class).decodeResponse(alarmSwitchResponse);
 
-                    logger.info("Got message: {}",
+                    logger.debug("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(alarmSwitchResponseMessage));
 
                     if (alarmSwitchResponseMessage.getBody().getErrorMessage() != null) {
@@ -181,7 +181,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     Message<MessageListResp> messageListResponseMessage = new MessageCoder<>(MessageListResp.class)
                             .decodeResponse(messageListResponse);
 
-                    logger.info("Got message: {}",
+                    logger.debug("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(messageListResponseMessage));
 
                     if (messageListResponseMessage.getApplicationData() != null) {

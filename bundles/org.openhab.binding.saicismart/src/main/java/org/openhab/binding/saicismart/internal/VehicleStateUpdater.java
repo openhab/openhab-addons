@@ -115,7 +115,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
             }
 
-            logger.info("Got message: {}",
+            logger.debug("Got message: {}",
                     new GsonBuilder().setPrettyPrinting().create().toJson(chargingStatusResponseMessage));
 
             boolean engineRunning = chargingStatusResponseMessage.getApplicationData().getBasicVehicleStatus()

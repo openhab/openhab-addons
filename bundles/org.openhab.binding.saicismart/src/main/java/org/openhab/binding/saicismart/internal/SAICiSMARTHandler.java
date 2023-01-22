@@ -233,7 +233,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                     .GET(new URI("https://api.iternio.com/1/tlm/send?api_key=" + abrpApiKey + "&" + request))
                     .getContentAsString();
 
-            logger.info("ABRP: {}", execute);
+            logger.debug("ABRP: {}", execute);
         }
     }
 
@@ -301,7 +301,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         }
 
-        logger.info("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));
+        logger.debug("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));
     }
 
     public void notifyCarActivity(ZonedDateTime now, boolean force) {
