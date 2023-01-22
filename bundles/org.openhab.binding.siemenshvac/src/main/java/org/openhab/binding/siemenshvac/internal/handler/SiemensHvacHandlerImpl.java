@@ -239,7 +239,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             logger.debug("Start read : {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
-            logger.debug("siemensHvac:ReadDp:DoRequest():" + request);
+            logger.debug("siemensHvac:ReadDp:DoRequest(): {}", request);
 
             if (async) {
                 if (lcHvacConnector != null) {
