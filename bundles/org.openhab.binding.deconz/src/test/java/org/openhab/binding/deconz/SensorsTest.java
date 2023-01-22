@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,6 +138,7 @@ public class SensorsTest {
         ChannelUID channelModeUID = new ChannelUID(thingUID, "mode");
         ChannelUID channelTemperatureUID = new ChannelUID(thingUID, "temperature");
         Thing sensor = ThingBuilder.create(THING_TYPE_THERMOSTAT, thingUID)
+                .withProperties(Map.of(Thing.PROPERTY_VENDOR, "Eurotronic"))
                 .withChannel(ChannelBuilder.create(channelValveUID, "Number").build())
                 .withChannel(ChannelBuilder.create(channelHeatSetPointUID, "Number").build())
                 .withChannel(ChannelBuilder.create(channelModeUID, "String").build())
@@ -151,6 +153,37 @@ public class SensorsTest {
                 eq(new QuantityType<>(25, SIUnits.CELSIUS)));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID),
                 eq(new StringType(ThermostatMode.AUTO.name())));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelTemperatureUID),
+                eq(new QuantityType<>(16.5, SIUnits.CELSIUS)));
+    }
+
+    @Test
+    public void thermostatDanfossSensorUpdateTest() throws IOException {
+        SensorMessage sensorMessage = DeconzTest.getObjectFromJson("thermostat_danfoss.json", SensorMessage.class,
+                gson);
+        assertNotNull(sensorMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "sensor");
+        ChannelUID channelValveUID = new ChannelUID(thingUID, "valve");
+        ChannelUID channelHeatSetPointUID = new ChannelUID(thingUID, "heatsetpoint");
+        ChannelUID channelModeUID = new ChannelUID(thingUID, "mode");
+        ChannelUID channelTemperatureUID = new ChannelUID(thingUID, "temperature");
+        Thing sensor = ThingBuilder.create(THING_TYPE_THERMOSTAT, thingUID)
+                .withProperties(Map.of(Thing.PROPERTY_VENDOR, "Danfoss"))
+                .withChannel(ChannelBuilder.create(channelValveUID, "Number").build())
+                .withChannel(ChannelBuilder.create(channelHeatSetPointUID, "Number").build())
+                .withChannel(ChannelBuilder.create(channelModeUID, "String").build())
+                .withChannel(ChannelBuilder.create(channelTemperatureUID, "Number").build()).build();
+        SensorThermostatThingHandler sensorThingHandler = new SensorThermostatThingHandler(sensor, gson);
+        sensorThingHandler.setCallback(thingHandlerCallback);
+
+        sensorThingHandler.messageReceived("", sensorMessage);
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelValveUID),
+                eq(new QuantityType<>(26.0, Units.PERCENT)));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelHeatSetPointUID),
+                eq(new QuantityType<>(17, SIUnits.CELSIUS)));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID),
+                eq(new StringType(ThermostatMode.UNKNOWN.name())));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelTemperatureUID),
                 eq(new QuantityType<>(16.5, SIUnits.CELSIUS)));
     }

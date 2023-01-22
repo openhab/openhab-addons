@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.measure.quantity.Temperature;
@@ -73,6 +74,9 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     public SensorThermostatThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
     }
+
+    @Nullable
+    private Double percentScale = null;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -153,7 +157,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_VALVE_POSITION:
-                updateQuantityTypeChannel(channelUID, newState.valve, PERCENT, 100.0 / 255);
+                updateQuantityTypeChannel(channelUID, newState.valve, PERCENT, getValveScalingFactor());
                 break;
             case CHANNEL_WINDOWOPEN:
                 String open = newState.windowopen;
@@ -204,5 +208,23 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         }
 
         super.processStateResponse(stateResponse);
+    }
+
+    private double getValveScalingFactor() {
+        if (percentScale == null) {
+            Optional<Double> val;
+            String vendor = thing.getProperties().get(Thing.PROPERTY_VENDOR);
+            val = Optional.ofNullable(vendor != null && VALVE_PERCENT_SCALING_BY_VENDOR.containsKey(vendor)
+                    ? VALVE_PERCENT_SCALING_BY_VENDOR.get(vendor)
+                    : null);
+            if (val.isEmpty()) {
+                String modelId = thing.getProperties().get(Thing.PROPERTY_MODEL_ID);
+                val = Optional.ofNullable(modelId != null && VALVE_PERCENT_SCALING_BY_MODEL_ID.containsKey(modelId)
+                        ? VALVE_PERCENT_SCALING_BY_MODEL_ID.get(modelId)
+                        : null);
+            }
+            percentScale = val.orElse(1d);
+        }
+        return percentScale;
     }
 }

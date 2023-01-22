@@ -1,0 +1,35 @@
+{
+    "config": {
+        "battery": 66,
+        "displayflipped": false,
+        "externalsensortemp": -8000,
+        "externalwindowopen": false,
+        "heatsetpoint": 1700,
+        "locked": false,
+        "mountingmode": false,
+        "offset": 0,
+        "on": true,
+        "reachable": true,
+        "schedule": {},
+        "schedule_on": false
+    },
+    "ep": 1,
+    "etag": "c8f30aa4bfa1b25ee982fbff2941ee01",
+    "lastannounced": null,
+    "lastseen": "2023-01-01T21:12Z",
+    "manufacturername": "Danfoss",
+    "modelid": "eTRV0100",
+    "name": "Test Danfoss Thermostat",
+    "state": {
+        "errorcode": "0",
+        "lastupdated": "2023-01-01T21:12:18.529",
+        "mountingmodeactive": false,
+        "on": false,
+        "temperature": 1650,
+        "valve": 26,
+        "windowopen": "Closed"
+    },
+    "swversion": "01.18.0008 01.18",
+    "type": "ZHAThermostat",
+    "uniqueid": "0c:43:14:ff:fe:c7:1c:26-01-0201"
+}

@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import static java.util.Map.entry;
+
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
@@ -143,4 +147,9 @@ public class BindingConstants {
     public static final int BRIGHTNESS_MIN = 0;
     public static final int BRIGHTNESS_MAX = 254;
     public static final double BRIGHTNESS_FACTOR = BRIGHTNESS_MAX / PercentType.HUNDRED.doubleValue();
+
+    public static final Map<String, Double> VALVE_PERCENT_SCALING_BY_VENDOR = Map
+            .ofEntries(entry("Eurotronic", 100d / 255));
+
+    public static final Map<String, Double> VALVE_PERCENT_SCALING_BY_MODEL_ID = Map.ofEntries();
 }
