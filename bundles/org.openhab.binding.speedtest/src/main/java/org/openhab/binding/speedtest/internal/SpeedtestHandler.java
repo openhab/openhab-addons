@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.speedtest.internal.dto.ResultContainer;
 import org.openhab.binding.speedtest.internal.dto.ResultsContainerServerList;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -109,7 +110,12 @@ public class SpeedtestHandler extends BaseThingHandler {
             return;
         }
         if (ch.equals(SpeedtestBindingConstants.TRIGGER_TEST)) {
-            getSpeed();
+            if (command instanceof OnOffType) {
+                if (command == OnOffType.ON) {
+                    getSpeed();
+                    updateState(channelUID, OnOffType.OFF);
+                }
+            }
         }
     }
 
