@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
 			<channel id="batteryavailableenergy" typeId="batteryavailableenergy"/>
+			<channel id="batterystatusupdated" typeId="batterystatusupdated"/>
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
@@ -24,6 +25,7 @@
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
 		<config-description>
 
@@ -94,7 +96,15 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
+		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batterystatusupdated">
+		<item-type>DateTime</item-type>
+		<label>Battery Status Updated</label>
+		<description>Timestamp of the last battery status update</description>
+		<category>Time</category>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
@@ -189,9 +199,17 @@
 	</channel-type>
 	<channel-type id="locationupdated">
 		<item-type>DateTime</item-type>
-		<label>Location Update</label>
+		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Locked status of the car</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

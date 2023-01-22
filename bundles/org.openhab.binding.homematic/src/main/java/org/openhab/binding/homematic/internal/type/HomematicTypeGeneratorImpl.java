@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -335,7 +335,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                     ParameterOption defaultOption = options.get(offset);
                                     logger.trace("Changing default option to {} (offset {})", defaultOption, offset);
                                     builder.withDefault(defaultOption.getValue());
-                                } else if (options.size() > 0) {
+                                } else if (!options.isEmpty()) {
                                     ParameterOption defaultOption = options.get(0);
                                     logger.trace("Changing default option to {} (first value)", defaultOption);
                                     builder.withDefault(defaultOption.getValue());

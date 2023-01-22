@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -903,8 +903,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 break;
             case CHANNEL_COLOR_TEMPERATURE_ABS:
                 // Color temperature (absolute)
-                int colorTempKelvin;
-
                 IntegerState state = new Ct();
                 if (command instanceof DecimalType) {
                     state.setValue(((DecimalType) command).intValue());

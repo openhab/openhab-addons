@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,6 @@ public class OpenhabGraalJSScriptEngine
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static Source GLOBAL_SOURCE;
-
     static {
         try {
             GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
@@ -82,7 +81,6 @@ public class OpenhabGraalJSScriptEngine
     }
 
     private static Source OPENHAB_JS_SOURCE;
-
     static {
         try {
             OPENHAB_JS_SOURCE = Source
@@ -92,7 +90,7 @@ public class OpenhabGraalJSScriptEngine
             throw new RuntimeException("Failed to load @openhab-globals.js", e);
         }
     }
-    private static String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
+    private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Final CommonJS search path for our library */

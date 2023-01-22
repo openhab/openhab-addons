@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,10 +63,10 @@ import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 @NonNullByDefault
 public class HomekitAccessoryFactory {
     private static final Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
-    public final static String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
+    public static final String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
 
     /** List of mandatory attributes for each accessory type. **/
-    private final static Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
+    private static final Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
         {
             put(ACCESSORY_GROUP, new HomekitCharacteristicType[] {});
             put(LEAK_SENSOR, new HomekitCharacteristicType[] { LEAK_DETECTED_STATE });
@@ -105,11 +105,15 @@ public class HomekitAccessoryFactory {
             put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
+            put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
+            put(INPUT_SOURCE, new HomekitCharacteristicType[] {});
+            put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(IRRIGATION_SYSTEM, new HomekitCharacteristicType[] { ACTIVE, INUSE_STATUS, PROGRAM_MODE });
         }
     };
 
     /** List of service implementation for each accessory type. **/
-    private final static Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>>() {
+    private static final Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>>() {
         {
             put(ACCESSORY_GROUP, HomekitAccessoryGroupImpl.class);
             put(LEAK_SENSOR, HomekitLeakSensorImpl.class);
@@ -144,6 +148,10 @@ public class HomekitAccessoryFactory {
             put(SLAT, HomekitSlatImpl.class);
             put(FAUCET, HomekitFaucetImpl.class);
             put(MICROPHONE, HomekitMicrophoneImpl.class);
+            put(TELEVISION, HomekitTelevisionImpl.class);
+            put(INPUT_SOURCE, HomekitInputSourceImpl.class);
+            put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);
+            put(IRRIGATION_SYSTEM, HomekitIrrigationSystemImpl.class);
         }
     };
 
@@ -208,6 +216,8 @@ public class HomekitAccessoryFactory {
                         HomekitAccessoryUpdater.class, HomekitSettings.class)
                         .newInstance(taggedItem, foundCharacteristics, updater, settings);
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
+                addOptionalMetadataCharacteristics(taggedItem, accessoryImpl);
+                accessoryImpl.init();
                 addLinkedServices(taggedItem, accessoryImpl, metadataRegistry, updater, settings, ancestorServices);
                 return accessoryImpl;
             } else {
@@ -388,6 +398,30 @@ public class HomekitAccessoryFactory {
     }
 
     /**
+     * add optional characteristics for given accessory from metadata
+     *
+     * @param taggedItem main item
+     * @param accessory accessory
+     */
+    private static void addOptionalMetadataCharacteristics(HomekitTaggedItem taggedItem,
+            AbstractHomekitAccessoryImpl accessory)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, HomekitException {
+        // Check every metadata key looking for a characteristics we can create
+        var config = taggedItem.getConfiguration();
+        if (config == null) {
+            return;
+        }
+        for (var entry : config.entrySet().stream().sorted((lhs, rhs) -> lhs.getKey().compareTo(rhs.getKey()))
+                .collect(Collectors.toList())) {
+            var characteristic = HomekitMetadataCharacteristicFactory.createCharacteristic(entry.getKey(),
+                    entry.getValue());
+            if (characteristic.isPresent()) {
+                accessory.addCharacteristic(characteristic.get());
+            }
+        }
+    }
+
+    /**
      * creates HomeKit services for an openhab item that are members of this group item.
      *
      * @param taggedItem openhab item tagged as HomeKit item
@@ -405,18 +439,20 @@ public class HomekitAccessoryFactory {
             MetadataRegistry metadataRegistry, HomekitAccessoryUpdater updater, HomekitSettings settings,
             Set<HomekitTaggedItem> ancestorServices) throws HomekitException {
         final var item = taggedItem.getItem();
-        if (!(item instanceof GroupItem))
+        if (!(item instanceof GroupItem)) {
             return;
+        }
 
         for (var groupMember : ((GroupItem) item).getMembers().stream()
                 .sorted((lhs, rhs) -> lhs.getName().compareTo(rhs.getName())).collect(Collectors.toList())) {
             final var characteristicTypes = getAccessoryTypes(groupMember, metadataRegistry);
-            var accessoryTypes = characteristicTypes.stream().filter(c -> c.getValue() == EMPTY)
+            var accessoryTypes = characteristicTypes.stream().filter(HomekitAccessoryFactory::isRootAccessory)
                     .collect(Collectors.toList());
 
             logger.trace("accessory types for {} are {}", groupMember.getName(), accessoryTypes);
-            if (accessoryTypes.isEmpty())
+            if (accessoryTypes.isEmpty()) {
                 continue;
+            }
 
             if (accessoryTypes.size() > 1) {
                 logger.warn("Item {} is a HomeKit sub-accessory, but multiple accessory types are not allowed.",
