@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -138,8 +138,8 @@ public class UniFiControllerCache {
         return clientsCache.values();
     }
 
-    public long countClients(final UniFiSite site, final Function<UniFiClient, Boolean> filter) {
-        return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::apply).count();
+    public long countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
+        return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::test).count();
     }
 
     public @Nullable UniFiClient getClient(@Nullable final String cid) {

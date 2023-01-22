@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="coronastats" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
-
-	<name>CoronaStats Binding</name>
-	<description>This is a binding for accessing data from https://corona-stats.online/ website.</description>
-
-</binding:binding>
