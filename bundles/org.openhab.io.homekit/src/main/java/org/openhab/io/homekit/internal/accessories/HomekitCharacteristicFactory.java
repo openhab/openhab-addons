@@ -274,6 +274,13 @@ public class HomekitCharacteristicFactory {
      * @param item
      * @param klazz The HAP-Java Enum for the characteristic.
      * @param customEnumList Optional output list of which enums are explicitly mentioned.
+     * @param inverted Default-invert the 0/1 values of the HAP enum when linked to a Switch or Contact item.
+     *        This is set by the addon when creating mappings for specific characteristics where the 0 and 1
+     *        values for the enum do not map naturally to 0/OFF/CLOSED and 1/ON/OPEN of openHAB items.
+     *        Note that this is separate from the inverted item-level metadata configuration, which can be
+     *        thought of independently as applying on top of this setting. It essentially "multiplies" out,
+     *        but can also be thought of as simply swapping whichever value OFF/CLOSED and ON/OPEN are
+     *        associated with, which has already been set.
      * @return
      */
     public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,

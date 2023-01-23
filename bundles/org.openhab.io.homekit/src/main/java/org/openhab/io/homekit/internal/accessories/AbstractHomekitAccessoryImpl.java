@@ -277,7 +277,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     @NonNullByDefault
     protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
-        return createMapping(characteristicType, klazz, null, true);
+        return createMapping(characteristicType, klazz, null, inverted);
     }
 
     @NonNullByDefault
