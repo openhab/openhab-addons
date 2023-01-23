@@ -74,8 +74,8 @@ public class MyBMWProxyTest {
     @Test
     void testWrongBrand() {
         // test successful GET for vehicle state
-        String responseContent = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
+        String responseContent = FileReader.fileToString("responses/BEV/vehicles_state.json");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
 
         try {
             myBMWProxy.requestVehicleState("testVin", "WRONG_BRAND");
@@ -87,8 +87,8 @@ public class MyBMWProxyTest {
     @Test
     void testSuccessfulGet() {
         // test successful GET for vehicle state
-        String responseContent = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
+        String responseContent = FileReader.fileToString("responses/BEV/vehicles_state.json");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
 
         try {
             VehicleStateContainer vehicleStateContainer = myBMWProxy.requestVehicleState("testVin",
@@ -102,8 +102,8 @@ public class MyBMWProxyTest {
     @Test
     void testErrorGet() {
         // test successful GET for vehicle state
-        String responseContent = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(400, responseContent);
+        String responseContent = FileReader.fileToString("responses/BEV/vehicles_state.json");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(400, responseContent);
 
         try {
             myBMWProxy.requestVehicleState("testVin", BimmerConstants.BRAND_BMW);
@@ -118,8 +118,8 @@ public class MyBMWProxyTest {
     void testSuccessfulPost() {
         // test successful POST for remote service execution
         String responseContent = FileReader
-                .fileToString("src/test/resources/responses/MILD_HYBRID/remote_service_call.json");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
+                .fileToString("responses/MILD_HYBRID/remote_service_call.json");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
 
         try {
             ExecutionStatusContainer executionStatusContainer = myBMWProxy.executeRemoteServiceCall("testVin",
@@ -136,8 +136,8 @@ public class MyBMWProxyTest {
     void testErrorPost() {
         // test successful POST for remote service execution
         String responseContent = FileReader
-                .fileToString("src/test/resources/responses/MILD_HYBRID/remote_service_call.json");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(400, responseContent);
+                .fileToString("responses/MILD_HYBRID/remote_service_call.json");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(400, responseContent);
 
         try {
             myBMWProxy.executeRemoteServiceCall("testVin", BimmerConstants.BRAND_BMW, RemoteService.LIGHT_FLASH);
@@ -151,8 +151,8 @@ public class MyBMWProxyTest {
     void testSuccessfulImage() {
         // test successful POST for remote service execution
         byte[] responseContent = FileReader
-                .fileToByteArray("src/test/resources/responses/MILD_HYBRID/340i_frontView.png");
-        MyBMWProxy myBMWProxy = generateMyBmwProxy(200, new String(responseContent));
+                .fileToByteArray("responses/MILD_HYBRID/340i_frontView.png");
+        MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, new String(responseContent));
 
         try {
             ExecutionStatusContainer executionStatusContainer = myBMWProxy.executeRemoteServiceCall("testVin",
@@ -173,12 +173,12 @@ public class MyBMWProxyTest {
 
         MyBMWBridgeConfiguration myBMWBridgeConfiguration = new MyBMWBridgeConfiguration();
 
-        MyBMWProxy myBMWProxyMock = Mockito.spy(new MyBMWProxy(httpClientFactoryMock, myBMWBridgeConfiguration));
+        MyBMWHttpProxy myBMWProxyMock = Mockito.spy(new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration));
 
-        String vehiclesBaseString = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_base.json");
+        String vehiclesBaseString = FileReader.fileToString("responses/BEV/vehicles_base.json");
         List<VehicleBase> baseVehicles = JsonStringDeserializer.getVehicleBaseList(vehiclesBaseString);
 
-        String vehicleStateString = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
+        String vehicleStateString = FileReader.fileToString("responses/BEV/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(vehicleStateString);
 
         try {
@@ -198,7 +198,7 @@ public class MyBMWProxyTest {
         }
     }
 
-    MyBMWProxy generateMyBmwProxy(int statuscode, String responseContent) {
+    MyBMWHttpProxy generateMyBmwProxy(int statuscode, String responseContent) {
         HttpClientFactory httpClientFactoryMock = Mockito.mock(HttpClientFactory.class);
         HttpClient httpClientMock = Mockito.mock(HttpClient.class);
         Request requestMock = Mockito.mock(Request.class);
@@ -222,6 +222,6 @@ public class MyBMWProxyTest {
             logger.error(e1.getMessage(), e1);
         }
 
-        return new MyBMWProxy(httpClientFactoryMock, myBMWBridgeConfiguration);
+        return new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration);
     }
 }

@@ -124,6 +124,7 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleState;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleTireStates;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleWindowsState;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils.TimedChannel;
@@ -239,7 +240,7 @@ public class VehicleHandler extends BaseThingHandler {
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
-                proxy = ((MyBMWBridgeHandler) handler).getProxy();
+                proxy = ((MyBMWBridgeHandler) handler).getMyBmwProxy();
                 remote = Optional.of(new RemoteServiceExecutor(this, proxy.get()));
             } else {
                 logger.debug("Bridge Handler null");

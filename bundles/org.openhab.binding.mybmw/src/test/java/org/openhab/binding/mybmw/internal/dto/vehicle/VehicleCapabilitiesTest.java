@@ -28,7 +28,7 @@ import org.openhab.binding.mybmw.internal.util.FileReader;
 public class VehicleCapabilitiesTest {
     @Test
     void testGetCapabilitiesAsString() {
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
+        String content = FileReader.fileToString("responses/BEV/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
 
         String servicesSupportedReference = "BmwCharging;ChargingHistory;ChargingPlan;CustomerEsim;DCSContractManagement;RemoteHistory;ScanAndCharge";

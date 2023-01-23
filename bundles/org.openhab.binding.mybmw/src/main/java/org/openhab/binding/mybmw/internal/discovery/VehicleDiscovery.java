@@ -26,6 +26,7 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleAttributes;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleCapabilities;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.Constants;
@@ -94,7 +95,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
         logger.trace("xxxVehicleDiscovery.discoverVehicles");
 
         if (!myBMWProxy.isPresent()) {
-            myBMWProxy = bridgeHandler.get().getProxy();
+            myBMWProxy = bridgeHandler.get().getMyBmwProxy();
         }
 
         try {

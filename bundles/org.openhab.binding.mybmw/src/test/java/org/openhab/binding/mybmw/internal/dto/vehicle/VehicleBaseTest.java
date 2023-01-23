@@ -56,7 +56,7 @@ public class VehicleBaseTest {
 
     @Test
     public void testVehicleBaseDeserializationByGson() {
-        String vehicleBaseJson = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_base.json");
+        String vehicleBaseJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_base.json");
         Gson gson = new Gson();
 
         VehicleBase[] vehicleBaseArray = gson.fromJson(vehicleBaseJson, VehicleBase[].class);
@@ -66,7 +66,7 @@ public class VehicleBaseTest {
 
     @Test
     public void testVehicleBaseDeserializationByConverter() {
-        String vehicleBaseJson = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_base.json");
+        String vehicleBaseJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_base.json");
 
         List<VehicleBase> vehicleBaseList = JsonStringDeserializer.getVehicleBaseList(vehicleBaseJson);
 

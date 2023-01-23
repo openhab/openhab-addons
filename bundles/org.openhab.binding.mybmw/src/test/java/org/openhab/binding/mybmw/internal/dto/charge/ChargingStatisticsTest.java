@@ -140,7 +140,7 @@ public class ChargingStatisticsTest {
     public void testBevIx() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_statistics.json");
+        String content = FileReader.fileToString("responses/BEV/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 
@@ -148,7 +148,7 @@ public class ChargingStatisticsTest {
     public void testBevIX3() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/BEV3/charging_statistics.json");
+        String content = FileReader.fileToString("responses/BEV3/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 
@@ -156,7 +156,7 @@ public class ChargingStatisticsTest {
     public void testIceX320d() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.PLUGIN_HYBRID.toString(), false);
-        String content = FileReader.fileToString("src/test/resources/responses/ICE2/charging_statistics.json");
+        String content = FileReader.fileToString("responses/ICE2/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 

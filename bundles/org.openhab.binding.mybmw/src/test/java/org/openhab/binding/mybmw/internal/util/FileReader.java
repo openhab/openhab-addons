@@ -39,7 +39,7 @@ public class FileReader {
      * @return
      */
     public static String fileToString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(FileReader.class.getClassLoader().getResourceAsStream(filename), "UTF-8"))) {
             StringBuilder buf = new StringBuilder();
             String sCurrentLine;
 

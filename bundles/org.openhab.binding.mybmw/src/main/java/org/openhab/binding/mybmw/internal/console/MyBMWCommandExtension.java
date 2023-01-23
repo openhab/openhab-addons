@@ -101,7 +101,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                 if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
                     console.println("MyBMW bridge for account not online, cannot create fingerprint");
                 } else {
-                    handler.getProxy().ifPresentOrElse(prox -> {
+                    handler.getMyBmwProxy().ifPresentOrElse(prox -> {
                         // get list of vehicles
                         List<@NonNull VehicleBase> vehicles = null;
                         try {
