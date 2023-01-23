@@ -15,16 +15,24 @@ package org.openhab.binding.mybmw.internal.console;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.BINDING_ID;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -108,9 +116,9 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
             handlers = bridgeHandlers;
         }
 
-        String path = nextPath(
-                FINGERPRINT_ROOT_PATH + File.separator + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE),
-                null);
+        String basePath = FINGERPRINT_ROOT_PATH + File.separator
+                + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        String path = nextPath(basePath, null);
 
         console.println("# Start fingerprint");
         int accountNdx = 0;
@@ -178,7 +186,17 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                 });
             }
         }
-        console.println("### Fingerprint has been written to files in directory: " + path);
+
+        try {
+            String zipfile = nextPath(basePath, "zip");
+            zipDirectory(Paths.get(path), Paths.get(zipfile));
+            deleteDirectory(path);
+            console.println("### Fingerprint has been written to zipfile: " + zipfile);
+        } catch (IOException e) {
+            console.println("### Exception zipping fingerprint");
+            console.println("### Fingerprint has been written to files in directory: " + path);
+        }
+
         console.println("# End fingerprint");
     }
 
@@ -207,6 +225,27 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
 
         final byte[] contents = GSON.toJson(element).getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), contents);
+    }
+
+    // Stackoverflow:
+    // https://stackoverflow.com/questions/57997257/how-can-i-zip-a-complete-directory-with-all-subfolders-in-java
+    private void zipDirectory(Path sourceDirectoryPath, Path zipPath) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
+        Files.walkFileTree(sourceDirectoryPath, new SimpleFileVisitor<@Nullable Path>() {
+            @Override
+            public FileVisitResult visitFile(@Nullable Path file, @Nullable BasicFileAttributes attrs)
+                    throws IOException {
+                zos.putNextEntry(new ZipEntry(sourceDirectoryPath.relativize(file).toString()));
+                Files.copy(file, zos);
+                zos.closeEntry();
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        zos.close();
+    }
+
+    private void deleteDirectory(String path) throws IOException {
+        Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
     }
 
     @Override
