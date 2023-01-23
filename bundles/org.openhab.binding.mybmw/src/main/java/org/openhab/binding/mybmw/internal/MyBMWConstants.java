@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MyBMWConstants {
 
-    private static final String BINDING_ID = "mybmw";
+    public static final String BINDING_ID = "mybmw";
 
     public static final String VIN = "vin";
 
