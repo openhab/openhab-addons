@@ -55,6 +55,7 @@ public class TransitionState {
         return previousState.map(this::hasFinishedChangedFromPreviousState).orElse(true);
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean hasFinishedChangedFromPreviousState(DeviceState previous) {
         if (previous.getStateType().equals(nextState.getStateType())) {
             return false;

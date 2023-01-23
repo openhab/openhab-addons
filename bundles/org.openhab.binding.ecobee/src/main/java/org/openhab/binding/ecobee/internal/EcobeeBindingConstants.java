@@ -409,4 +409,5 @@ public class EcobeeBindingConstants {
     public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";
     public static final String ECOBEE_TOKEN_URL = ECOBEE_BASE_URL + "token";
     public static final String ECOBEE_SCOPE = "smartWrite";
+    public static final String ECOBEE_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

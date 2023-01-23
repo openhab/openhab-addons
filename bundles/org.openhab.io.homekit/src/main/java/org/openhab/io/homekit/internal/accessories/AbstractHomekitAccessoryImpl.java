@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -33,10 +32,10 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -71,6 +70,21 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.services = new ArrayList<>();
         this.settings = settings;
         this.rawCharacteristics = new HashMap<>();
+        // create raw characteristics for mandatory characteristics
+        characteristics.forEach(c -> {
+            var rawCharacteristic = HomekitCharacteristicFactory.createNullableCharacteristic(c, updater);
+            // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
+            if (rawCharacteristic != null) {
+                rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
+    }
+
+    /**
+     * Gives an accessory an opportunity to populate additional characteristics after all optional
+     * charactericteristics have been added.
+     */
+    public void init() throws HomekitException {
     }
 
     /**
@@ -263,26 +277,18 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param customEnumList list to store custom state enumeration
      */
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
+    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
             @Nullable List<T> customEnumList) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
             if (configuration != null) {
-                map.forEach((k, current_value) -> {
-                    final Object new_value = configuration.get(k.toString());
-                    if (new_value instanceof String) {
-                        map.put(k, (String) new_value);
-                        if (customEnumList != null) {
-                            customEnumList.add(k);
-                        }
-                    }
-                });
+                HomekitCharacteristicFactory.updateMapping(configuration, map, customEnumList);
             }
         });
     }
 
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
+    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
         updateMapping(characteristicType, map, null);
     }
 
@@ -297,23 +303,11 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     @NonNullByDefault
-    protected <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            final State state = c.get().getItem().getState();
-            logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", characteristicType.getTag(),
-                    state, mapping);
-            if (state instanceof StringType) {
-                return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
-                        .findAny().map(Entry::getKey).orElseGet(() -> {
-                            logger.warn(
-                                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
-                                    state.toString(), characteristicType.getTag(), c.get().getName(), mapping.values(),
-                                    defaultValue);
-                            return defaultValue;
-                        });
-            }
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
         }
         return defaultValue;
     }
@@ -326,6 +320,9 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     /**
+     * If the primary service does not yet exist, it won't be added to it. It's the resposibility
+     * of the caller to add characteristics when the primary service is created.
+     *
      * @param type
      * @param characteristic
      */
@@ -339,9 +336,11 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
         var service = getPrimaryService();
-        // find the corresponding add method at service and call it.
-        service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
-                characteristic);
+        if (service != null) {
+            // find the corresponding add method at service and call it.
+            service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                    characteristic);
+        }
     }
 
     @NonNullByDefault

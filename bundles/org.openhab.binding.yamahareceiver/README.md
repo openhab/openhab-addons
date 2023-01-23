@@ -205,6 +205,7 @@ String      Yamaha_Input_Ex
 The synthetic `Yamaha_Input_Ex` will be calculated by a rule (see below) and will drive sitemap visibility (see below).
 
 Rules:
+
 ```
 rule "Yamaha_Input_Ex"
 when
@@ -237,6 +238,7 @@ Notice how we have two preset mappings that each is meant for FM and DAB+ bands 
 Enabling detailed logging may help troubleshoot your configuration (or trace bugs in the binding itself). 
 
 Add the following lines to the logger configuration file (`userdata\etc\org.ops4j.pax.logging.cfg`):
+
 ```
 log4j2.logger.yamaha.name = org.openhab.binding.yamahareceiver
 log4j2.logger.yamaha.level = TRACE

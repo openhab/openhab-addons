@@ -43,7 +43,6 @@ public class HeosChannelHandlerGrouping extends BaseHeosChannelHandler {
     @Override
     public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
             HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
-
         if (command instanceof RefreshType) {
             return;
         }
