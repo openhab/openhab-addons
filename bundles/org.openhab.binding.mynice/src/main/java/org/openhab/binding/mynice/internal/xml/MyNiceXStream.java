@@ -14,6 +14,7 @@ package org.openhab.binding.mynice.internal.xml;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.Authentication;
+import org.openhab.binding.mynice.internal.xml.dto.Authentication.UserPerm;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.Device;
 import org.openhab.binding.mynice.internal.xml.dto.Device.DeviceType;
@@ -22,7 +23,6 @@ import org.openhab.binding.mynice.internal.xml.dto.Event;
 import org.openhab.binding.mynice.internal.xml.dto.Interface;
 import org.openhab.binding.mynice.internal.xml.dto.Properties;
 import org.openhab.binding.mynice.internal.xml.dto.Response;
-import org.openhab.binding.mynice.internal.xml.dto.UserPerm;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;

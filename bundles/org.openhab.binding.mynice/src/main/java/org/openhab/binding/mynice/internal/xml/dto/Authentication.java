@@ -19,6 +19,12 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  * @author Gaël L'hopital - Initial contribution
  */
 public class Authentication {
+    public enum UserPerm {
+        wait,
+        user,
+        admin;
+    }
+
     @XStreamAsAttribute
     public int id;
     @XStreamAsAttribute
