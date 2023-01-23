@@ -346,7 +346,7 @@ public class Clip2Bridge implements Closeable {
     private static final int CLIP2_MINIMUM_VERSION = 1948086000;
     private static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
-    private static final int REQUEST_INTERVAL_MILLISECS = 50;
+    private static final int REQUEST_INTERVAL_MILLISECS = 100;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
@@ -696,6 +696,7 @@ public class Clip2Bridge implements Closeable {
         synchronized (this) {
             closing = false;
             online = false;
+            sessionExpireTime = Instant.now().plusSeconds(CHECK_ALIVE_SECONDS);
             openClient();
             openSession();
             openEventStream();
