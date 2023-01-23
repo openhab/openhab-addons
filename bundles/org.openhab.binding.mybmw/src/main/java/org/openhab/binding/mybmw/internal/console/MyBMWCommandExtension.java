@@ -56,6 +56,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MyBMWCommandExtension} is responsible for handling console commands
@@ -123,11 +124,11 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
         console.println("# Start fingerprint");
         int accountNdx = 0;
         for (MyBMWBridgeHandler handler : handlers) {
-            console.println("### Account '" + handler.getThing().getConfiguration().get("userName") + "'");
+            accountNdx++;
+            console.println("### Account " + String.valueOf(accountNdx));
             if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
                 console.println("MyBMW bridge for account not online, cannot create fingerprint");
             } else {
-                accountNdx++;
                 String accountPath = path + File.separator + "Account-" + String.valueOf(accountNdx);
                 handler.getProxy().ifPresentOrElse(prox -> {
                     // get list of vehicles
@@ -137,8 +138,10 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
 
                         for (String brand : BimmerConstants.REQUESTED_BRANDS) {
                             console.println("###### Vehicles base for brand " + brand);
-                            writeJsonToFile(accountPath, "VehicleBase_" + brand, ResponseContentAnonymizer
+                            String json = prettyJson(ResponseContentAnonymizer
                                     .anonymizeResponseContent(prox.requestVehiclesBaseJson(brand)));
+                            console.println(json);
+                            writeJsonToFile(accountPath, "VehicleBase_" + brand, json);
                         }
 
                         if (args.length == 3) {
@@ -157,23 +160,30 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                         for (VehicleBase vehicleBase : vehicles) {
                             vinNdx++;
                             String vinPath = accountPath + File.separator + "Vin-" + String.valueOf(vinNdx);
-                            console.println("###### Vehicle '" + vehicleBase.getVin() + "'");
+                            console.println("###### Vehicle " + String.valueOf(vinNdx));
                             // get state
                             console.println("######## Vehicle state");
-                            writeJsonToFile(vinPath, "VehicleState",
+                            String json = prettyJson(
                                     ResponseContentAnonymizer.anonymizeResponseContent(prox.requestVehicleStateJson(
                                             vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
+                            console.println(json);
+                            writeJsonToFile(vinPath, "VehicleState", json);
 
                             // get charge statistics -> only successful for electric vehicles
                             console.println("######### Vehicle charging statistics");
-                            writeJsonToFile(vinPath, "VehicleChargingStatistics",
+                            json = prettyJson(
                                     ResponseContentAnonymizer.anonymizeResponseContent(prox.requestChargeStatisticsJson(
                                             vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
+                            console.println(json);
+                            writeJsonToFile(vinPath, "VehicleChargingStatistics", json);
 
                             console.println("######### Vehicle charging sessions");
-                            writeJsonToFile(vinPath, "VehicleChargingSessions",
+                            json = prettyJson(
                                     ResponseContentAnonymizer.anonymizeResponseContent(prox.requestChargeSessionsJson(
                                             vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
+                            console.println(json);
+                            writeJsonToFile(vinPath, "VehicleChargingSessions", json);
+                            console.println("###### End vehicle " + String.valueOf(vinNdx));
                         }
                     } catch (NetworkException e) {
                         console.println("Fingerprint failed, network exception: " + e.getReason());
@@ -185,6 +195,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                             + "', communication not started, cannot retrieve fingerprint");
                 });
             }
+            console.println("### End account " + String.valueOf(accountNdx));
         }
 
         try {
@@ -210,11 +221,24 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
         return path;
     }
 
+    private String prettyJson(String json) {
+        try {
+            return GSON.toJson(JsonParser.parseString(json));
+        } catch (JsonSyntaxException e) {
+            // Keep the unformatted json if there is a syntax exception
+            return json;
+        }
+    }
+
     private void writeJsonToFile(String pathString, String filename, String json) throws IOException {
-        JsonElement element = JsonParser.parseString(json);
-        if (element.isJsonNull() || (element.isJsonArray() && ((JsonArray) element).isEmpty())) {
-            // Don't write a file if empty
-            return;
+        try {
+            JsonElement element = JsonParser.parseString(json);
+            if (element.isJsonNull() || (element.isJsonArray() && ((JsonArray) element).isEmpty())) {
+                // Don't write a file if empty
+                return;
+            }
+        } catch (JsonSyntaxException e) {
+            // Just continue and write the file with non-valid json anyway
         }
 
         String path = nextPath(pathString + File.separator + filename, "json");
@@ -223,7 +247,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
         File file = new File(path);
         file.getParentFile().mkdirs();
 
-        final byte[] contents = GSON.toJson(element).getBytes(StandardCharsets.UTF_8);
+        final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
         Files.write(file.toPath(), contents);
     }
 

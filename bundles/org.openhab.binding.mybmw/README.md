@@ -529,7 +529,8 @@ If these preconditions are fulfilled proceed with the fingerprint generation.
 
 Login to the openHAB console and use the `mybmw fingerprint` command.
 
-A zip file with fingerprint information for your vehicle(s) will be generated and put in the `mybmw` folder in your home directory.
+Fingerprint information on your account and vehicle(s) will show in the console and can be copied from there.
+A zip file with fingerprint information for your vehicle(s) will also be generated and put in the `mybmw` folder in your home directory.
 This fingerprint information is valuable for the developers to better support your vehicle in the software.
 
 You can restrict the accounts and vehicles for the fingerprint generation.
