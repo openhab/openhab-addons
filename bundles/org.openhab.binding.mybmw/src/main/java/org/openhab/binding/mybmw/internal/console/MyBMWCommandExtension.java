@@ -138,10 +138,8 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
 
                         for (String brand : BimmerConstants.REQUESTED_BRANDS) {
                             console.println("###### Vehicles base for brand " + brand);
-                            String json = prettyJson(ResponseContentAnonymizer
-                                    .anonymizeResponseContent(prox.requestVehiclesBaseJson(brand)));
-                            console.println(json);
-                            writeJsonToFile(accountPath, "VehicleBase_" + brand, json);
+                            printAndSave(console, accountPath, "VehicleBase_" + brand,
+                                    prox.requestVehiclesBaseJson(brand));
                         }
 
                         if (args.length == 3) {
@@ -161,34 +159,27 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                             vinNdx++;
                             String vinPath = accountPath + File.separator + "Vin-" + String.valueOf(vinNdx);
                             console.println("###### Vehicle " + String.valueOf(vinNdx));
+
                             // get state
                             console.println("######## Vehicle state");
-                            String json = prettyJson(
-                                    ResponseContentAnonymizer.anonymizeResponseContent(prox.requestVehicleStateJson(
-                                            vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
-                            console.println(json);
-                            writeJsonToFile(vinPath, "VehicleState", json);
+                            printAndSave(console, vinPath, "VehicleState", prox.requestVehicleStateJson(
+                                    vehicleBase.getVin(), vehicleBase.getAttributes().getBrand()));
 
                             // get charge statistics -> only successful for electric vehicles
                             console.println("######### Vehicle charging statistics");
-                            json = prettyJson(
-                                    ResponseContentAnonymizer.anonymizeResponseContent(prox.requestChargeStatisticsJson(
-                                            vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
-                            console.println(json);
-                            writeJsonToFile(vinPath, "VehicleChargingStatistics", json);
+                            printAndSave(console, vinPath, "VehicleChargingStatistics",
+                                    prox.requestChargeStatisticsJson(vehicleBase.getVin(),
+                                            vehicleBase.getAttributes().getBrand()));
 
+                            // get charge sessions -> only successful for electric vehicles
                             console.println("######### Vehicle charging sessions");
-                            json = prettyJson(
-                                    ResponseContentAnonymizer.anonymizeResponseContent(prox.requestChargeSessionsJson(
-                                            vehicleBase.getVin(), vehicleBase.getAttributes().getBrand())));
-                            console.println(json);
-                            writeJsonToFile(vinPath, "VehicleChargingSessions", json);
+                            printAndSave(console, vinPath, "VehicleChargingSessions", prox.requestChargeSessionsJson(
+                                    vehicleBase.getVin(), vehicleBase.getAttributes().getBrand()));
+
                             console.println("###### End vehicle " + String.valueOf(vinNdx));
                         }
                     } catch (NetworkException e) {
                         console.println("Fingerprint failed, network exception: " + e.getReason());
-                    } catch (IOException e) {
-                        console.println("Fingerprint failed, could not write to file");
                     }
                 }, () -> {
                     console.println("MyBMW bridge with id '" + handler.getThing().getUID().getId()
@@ -204,11 +195,21 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
             deleteDirectory(path);
             console.println("### Fingerprint has been written to zipfile: " + zipfile);
         } catch (IOException e) {
-            console.println("### Exception zipping fingerprint");
+            console.println("Exception zipping fingerprint");
             console.println("### Fingerprint has been written to files in directory: " + path);
         }
 
         console.println("# End fingerprint");
+    }
+
+    private void printAndSave(Console console, String path, String filename, String content) throws NetworkException {
+        String json = prettyJson(ResponseContentAnonymizer.anonymizeResponseContent(content));
+        console.println(json);
+        try {
+            writeJsonToFile(path, filename, json);
+        } catch (IOException e) {
+            console.println("Exception writing to file");
+        }
     }
 
     private String nextPath(String pathString, @Nullable String extension) {
@@ -254,18 +255,21 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
     // Stackoverflow:
     // https://stackoverflow.com/questions/57997257/how-can-i-zip-a-complete-directory-with-all-subfolders-in-java
     private void zipDirectory(Path sourceDirectoryPath, Path zipPath) throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
-        Files.walkFileTree(sourceDirectoryPath, new SimpleFileVisitor<@Nullable Path>() {
-            @Override
-            public FileVisitResult visitFile(@Nullable Path file, @Nullable BasicFileAttributes attrs)
-                    throws IOException {
-                zos.putNextEntry(new ZipEntry(sourceDirectoryPath.relativize(file).toString()));
-                Files.copy(file, zos);
-                zos.closeEntry();
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        zos.close();
+        try (FileOutputStream fos = new FileOutputStream(zipPath.toFile());
+                ZipOutputStream zos = new ZipOutputStream(fos)) {
+            Files.walkFileTree(sourceDirectoryPath, new SimpleFileVisitor<@Nullable Path>() {
+                @Override
+                public FileVisitResult visitFile(@Nullable Path file, @Nullable BasicFileAttributes attrs)
+                        throws IOException {
+                    zos.putNextEntry(new ZipEntry(sourceDirectoryPath.relativize(file).toString()));
+                    Files.copy(file, zos);
+                    zos.closeEntry();
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw e;
+        }
     }
 
     private void deleteDirectory(String path) throws IOException {
