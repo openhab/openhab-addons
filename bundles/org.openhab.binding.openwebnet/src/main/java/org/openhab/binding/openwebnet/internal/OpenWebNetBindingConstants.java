@@ -157,6 +157,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL = "atLeastOneProbeManual";
     // energy management
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_POWER_TOTALIZER_DAY = "totalizerDay";
+    public static final String CHANNEL_POWER_TOTALIZER_MONTH = "totalizerMonth";
     // scenario button channels
     public static final String CHANNEL_SCENARIO_BUTTON = "button#";
     public static final String CHANNEL_TYPE_CEN_BUTTON_EVENT = "cenButtonEvent";
@@ -180,6 +182,7 @@ public class OpenWebNetBindingConstants {
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
     public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
     public static final String CONFIG_PROPERTY_STANDALONE = "standAlone";
+    public static final String CONFIG_PROPERTY_REFRESH_PERIOD = "refreshPeriod";
 
     // gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";

@@ -13,11 +13,14 @@
 package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER_TOTALIZER_DAY;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_POWER_TOTALIZER_MONTH;
 
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,8 +60,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetEnergyHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES;
-    public static final int ENERGY_SUBSCRIPTION_PERIOD = 10; // minutes
-    private @Nullable ScheduledFuture<?> notificationSchedule;
+    private static final int POWER_SUBSCRIPTION_PERIOD = 10; // MINUTES
+    private static int ENERGY_REFRESH_PERIOD = 30; // MINUTES
+
+    private @Nullable ScheduledFuture<?> powerSchedule;
+    private @Nullable ScheduledFuture<?> energySchedule;
 
     public OpenWebNetEnergyHandler(Thing thing) {
         super(thing);
@@ -66,9 +72,16 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     public Boolean isFirstSchedulerLaunch = true;
 
+    private Boolean channelExists(String channelID) {
+        return thing.getChannel("openwebnet:" + channelID) != null;
+    }
+
     @Override
     public void initialize() {
         super.initialize();
+
+        Object refreshPeriodConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_REFRESH_PERIOD);
+        ENERGY_REFRESH_PERIOD = Integer.parseInt(refreshPeriodConfig.toString());
 
         // In order to get data from the probe we must send a command over the bus, this could be done only when the
         // bridge is online.
@@ -83,6 +96,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             if (gw != null && gw.isConnected()) {
                 // bridge is online
                 subscribeToActivePowerChanges();
+                subscribeToEnergyTotalizer();
             }
         }
     }
@@ -94,26 +108,27 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         // subscribe the scheduler only after the bridge is online
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             subscribeToActivePowerChanges();
+            subscribeToEnergyTotalizer();
         }
     }
 
     private void subscribeToActivePowerChanges() {
-        notificationSchedule = scheduler.scheduleWithFixedDelay(() -> {
+        powerSchedule = scheduler.scheduleWithFixedDelay(() -> {
             if (isFirstSchedulerLaunch) {
                 logger.debug(
                         "subscribeToActivePowerChanges() For WHERE={} subscribing to active power changes notification for the next {}min",
-                        deviceWhere, ENERGY_SUBSCRIPTION_PERIOD);
+                        deviceWhere, POWER_SUBSCRIPTION_PERIOD);
             } else {
                 logger.debug(
                         "subscribeToActivePowerChanges() Refreshing subscription for the next {}min for WHERE={} to active power changes notification",
-                        ENERGY_SUBSCRIPTION_PERIOD, deviceWhere);
+                        POWER_SUBSCRIPTION_PERIOD, deviceWhere);
             }
             Where w = deviceWhere;
             if (w == null) {
                 logger.warn("subscribeToActivePowerChanges() WHERE=null. Skipping");
             } else {
                 try {
-                    send(EnergyManagement.setActivePowerNotificationsTime(w.value(), ENERGY_SUBSCRIPTION_PERIOD));
+                    send(EnergyManagement.setActivePowerNotificationsTime(w.value(), POWER_SUBSCRIPTION_PERIOD));
                     isFirstSchedulerLaunch = false;
                 } catch (Exception e) {
                     if (isFirstSchedulerLaunch) {
@@ -127,13 +142,41 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                     }
                 }
             }
-        }, 0, ENERGY_SUBSCRIPTION_PERIOD - 1, TimeUnit.MINUTES);
+        }, 0, POWER_SUBSCRIPTION_PERIOD - 1, TimeUnit.MINUTES);
+    }
+
+    private void subscribeToEnergyTotalizer() {
+
+        if (!channelExists(CHANNEL_POWER_TOTALIZER_DAY) && !channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
+            logger.info("subscribeToEnergyTotalizer() No totalizers channels active. Skipping");
+            return;
+        }
+
+        energySchedule = scheduler.scheduleWithFixedDelay(() -> {
+            Where w = deviceWhere;
+            if (w == null) {
+                logger.warn("subscribeToEnergyTotalizer() WHERE=null. Skipping");
+            } else {
+                try {
+                    if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
+                        send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
+                    }
+                    if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
+                        send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
+                    }
+                } catch (Exception e) {
+                    logger.warn(
+                            "subscribeToEnergyTotalizer() Could not subscribe to totalizers scheduler for WHERE={}. Exception={}",
+                            w, e.getMessage());
+                }
+            }
+        }, 0, ENERGY_REFRESH_PERIOD, TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
-        if (notificationSchedule != null) {
-            ScheduledFuture<?> ns = notificationSchedule;
+        if (powerSchedule != null) {
+            ScheduledFuture<?> ns = powerSchedule;
             ns.cancel(false);
             logger.debug("dispose() scheduler stopped.");
         }
@@ -152,6 +195,15 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         if (w != null) {
             try {
                 send(EnergyManagement.requestActivePower(w.value()));
+
+                // refresh ONLY subscribed channels
+                if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
+                    send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
+                }
+                if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
+                    send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
+                }
+
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -163,6 +215,14 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
         requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER));
+
+        // refresh ONLY subscribed channels
+        if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
+            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_DAY));
+        }
+        if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
+            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_MONTH));
+        }
     }
 
     @Override
@@ -187,6 +247,10 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             // fix: check for correct DIM (ActivePower / 113)
             if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.ACTIVE_POWER)) {
                 updateActivePower(msg);
+            } else if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_DAY)) {
+                updateCurrentDayTotalizer(msg);
+            } else if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_MONTH)) {
+                updateCurrentMonthTotalizer(msg);
             } else {
                 logger.debug("handleMessage() Ignoring message {} because it's not related to active power value.",
                         msg);
@@ -208,6 +272,45 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
+        }
+    }
+
+    /**
+     * Updates current month totalizer
+     *
+     * @param msg the EnergyManagement message received
+     * @throws FrameException
+     */
+    private void updateCurrentDayTotalizer(BaseOpenMessage msg) {
+        double currentDayEnergy;
+        try {
+            // TODO remove
+            logger.debug("AC Wh: {}", Double.parseDouble(msg.getDimValues()[0]));
+            logger.debug("AC KWh: {}", Double.parseDouble(msg.getDimValues()[0]) / 1000d);
+
+            currentDayEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
+            updateState(CHANNEL_POWER_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
+        } catch (FrameException e) {
+            logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
+            updateState(CHANNEL_POWER_TOTALIZER_DAY, UnDefType.UNDEF);
+        }
+    }
+
+    /**
+     * Updates current month totalizer
+     *
+     * @param msg the EnergyManagement message received
+     * @throws FrameException
+     */
+    private void updateCurrentMonthTotalizer(BaseOpenMessage msg) {
+        double currentMonthEnergy;
+        try {
+            currentMonthEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
+            updateState(CHANNEL_POWER_TOTALIZER_MONTH,
+                    new QuantityType<Energy>(currentMonthEnergy, Units.KILOWATT_HOUR));
+        } catch (FrameException e) {
+            logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
+            updateState(CHANNEL_POWER_TOTALIZER_MONTH, UnDefType.UNDEF);
         }
     }
 }

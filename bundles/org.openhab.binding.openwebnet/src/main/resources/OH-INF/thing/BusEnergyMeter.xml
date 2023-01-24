@@ -15,6 +15,8 @@
 
 		<channels>
 			<channel id="power" typeId="power"/>
+			<channel id="totalizerDay" typeId="totalizerDay"/>
+			<channel id="totalizerMonth" typeId="totalizerMonth"/>
 		</channels>
 
 		<properties>
@@ -30,6 +32,12 @@
 				<label>OpenWebNet Address (where)</label>
 				<description>A "5" must be added before the energy meter address: 5N with N=[1-255]. Example energy meter "42" -->
 					where="542"</description>
+			</parameter>
+
+			<parameter name="refreshPeriod" type="integer" min="1" max="1440" required="true">
+				<label>Totalizers Refresh Period</label>
+				<description> Sets the number of minutes between refreshes (default: 30 minutes)</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 
