@@ -15,6 +15,8 @@ package org.openhab.binding.siemenshvac.internal.Metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
@@ -44,7 +46,9 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     private @Nullable String address = null;
     private int dptSubKey = -1;
     private boolean writeAccess = false;
-    private List<SiemensHvacMetadataPointChild> child;
+
+    @NotNull
+    private List<SiemensHvacMetadataPointChild> child = List.of();
 
     public SiemensHvacMetadataDataPoint() {
         child = new ArrayList<SiemensHvacMetadataPointChild>();
