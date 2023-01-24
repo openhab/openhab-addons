@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommand;
 import org.openhab.binding.paradoxalarm.internal.handlers.Commandable;
@@ -25,17 +27,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class Zone extends Entity implements Commandable {
 
     private final Logger logger = LoggerFactory.getLogger(Zone.class);
 
-    private ZoneState zoneState;
+    private @Nullable ZoneState zoneState;
 
     public Zone(ParadoxPanel panel, int id, String label) {
         super(panel, id, label);
     }
 
-    public ZoneState getZoneState() {
+    public @Nullable ZoneState getZoneState() {
         return zoneState;
     }
 
@@ -46,7 +49,7 @@ public class Zone extends Entity implements Commandable {
     }
 
     @Override
-    public void handleCommand(String command) {
+    public void handleCommand(@Nullable String command) {
         ZoneCommand zoneCommand = ZoneCommand.parse(command);
         if (zoneCommand == null) {
             logger.debug("Command {} is parsed to null. Skipping it", command);

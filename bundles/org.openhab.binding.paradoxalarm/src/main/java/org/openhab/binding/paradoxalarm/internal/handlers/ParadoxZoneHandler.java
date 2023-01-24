@@ -22,7 +22,9 @@ import org.openhab.binding.paradoxalarm.internal.model.Zone;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,5 +73,37 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
 
     private OnOffType booleanToSwitchState(boolean value) {
         return value ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    @Override
+    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+        if (command instanceof StringType) {
+            Zone zone = getZone();
+            if (zone != null) {
+                zone.handleCommand(command.toString());
+            }
+        } else {
+            super.handleCommand(channelUID, command);
+        }
+    }
+
+    protected Zone getZone() {
+        int index = calculateEntityIndex();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
+        List<Zone> zones = panel.getZones();
+        if (zones == null) {
+            logger.debug(
+                    "Zones collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
+            return null;
+        }
+        if (zones.size() <= index) {
+            logger.debug("Attempted to access a zone out of bounds of current zone list. Index: {}, List: {}", index,
+                    zones);
+            return null;
+        }
+
+        Zone zone = zones.get(index);
+        return zone;
     }
 }

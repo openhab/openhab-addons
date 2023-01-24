@@ -43,7 +43,11 @@ public enum ZoneCommand implements Command {
         return command;
     }
 
-    public static @Nullable ZoneCommand parse(String command) {
+    public static @Nullable ZoneCommand parse(@Nullable String command) {
+        if (command == null) {
+            return null;
+        }
+
         try {
             return ZoneCommand.valueOf(command);
         } catch (IllegalArgumentException e) {
