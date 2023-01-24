@@ -43,9 +43,8 @@ public class SiemensHvacThingTypeProviderImpl implements SiemensHvacThingTypePro
         thingTypesByUID.put(thingType.getUID(), thingType);
     }
 
-    @Nullable
     @Override
-    public ThingType getInternalThingType(ThingTypeUID thingTypeUID) {
+    public @Nullable ThingType getInternalThingType(ThingTypeUID thingTypeUID) {
         return thingTypesByUID.get(thingTypeUID);
     }
 
