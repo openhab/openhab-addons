@@ -72,16 +72,10 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
     @Override
     public void onQueued(@Nullable Request request) {
-        if (request == null) {
-            return;
-        }
     }
 
     @Override
     public void onBegin(@Nullable Request request) {
-        if (request == null) {
-            return;
-        }
     }
 
     @Override

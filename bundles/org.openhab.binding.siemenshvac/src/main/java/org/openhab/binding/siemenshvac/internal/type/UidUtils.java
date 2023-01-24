@@ -40,63 +40,35 @@ public class UidUtils {
             char c = st.charAt(i);
             if (c == 130) {
 
-            } else if (c == 131) {
+            } else if (c >= 232 && c <= 234) {
                 c = 'e';
-            } else if (c == 136) {
-                c = 'e';
-            } else if (c == 137) {
-                c = 'e';
-            } else if (c == 144) {
-                c = 'E';
-            } else if (c == 212) {
+            } else if (c >= 200 && c <= 202) {
                 c = 'E';
             }
 
-            else if (c == 140) {
+            else if (c >= 236 && c <= 239) {
                 c = 'i';
-            } else if (c == 139) {
-                c = 'i';
-            } else if (c == 161) {
-                c = 'i';
-            } else if (c == 141) {
-                c = 'i';
+            } else if (c >= 204 && c <= 207) {
+                c = 'I';
             }
 
-            else if (c == 147) {
+            else if (c >= 242 && c <= 246) {
                 c = 'o';
-            } else if (c == 162) {
-                c = 'o';
-            } else if (c == 149) {
-                c = 'o';
-            } else if (c == 148) {
-                c = 'o';
-            }
-
-            else if (c == 163) {
+            } else if (c >= 249 && c <= 252) {
                 c = 'u';
-            } else if (c == 151) {
-                c = 'u';
-            } else if (c == 150) {
-                c = 'u';
-            } else if (c == 129) {
-                c = 'u';
-            } else if (c == 233) {
+            } else if (c >= 217 && c <= 220) {
                 c = 'U';
             }
 
-            else if (c == 133) {
+            else if (c >= 224 && c <= 229) {
                 c = 'a';
-            } else if (c == 132) {
-                c = 'a';
-            } else if (c == 131) {
-                c = 'a';
-            } else if (c == 160) {
-                c = 'a';
+            } else if (c == 192 && c <= 197) {
+                c = 'A';
             }
 
-            else if (c == 135) {
+            else if (c == 199) {
                 c = 'c';
-            } else if (c == 128) {
+            } else if (c == 231) {
                 c = 'C';
             }
 
