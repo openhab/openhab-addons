@@ -13,6 +13,13 @@
 package org.openhab.binding.paradoxalarm.internal.communication.messages.partition;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
+import org.openhab.binding.paradoxalarm.internal.communication.PartitionCommandRequest;
+import org.openhab.binding.paradoxalarm.internal.communication.RequestType;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.Command;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public enum PartitionCommand {
-    UNKNOWN(0),
+public enum PartitionCommand implements Command {
     ARM(2),
     STAY_ARM(3),
     INSTANT_ARM(4),
@@ -44,12 +50,20 @@ public enum PartitionCommand {
         return command;
     }
 
-    public static PartitionCommand parse(String command) {
+    public static @Nullable PartitionCommand parse(String command) {
         try {
             return PartitionCommand.valueOf(command);
         } catch (IllegalArgumentException e) {
             LOGGER.debug("Unable to parse command={}. Fallback to UNKNOWN.", command);
-            return PartitionCommand.UNKNOWN;
+            return null;
         }
+    }
+
+    @Override
+    public IRequest getRequest(int partitionId) {
+        PartitionCommandPayload payload = new PartitionCommandPayload(partitionId, this);
+        ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes())
+                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
+        return new PartitionCommandRequest(RequestType.PARTITION_COMMAND, packet, null);
     }
 }

@@ -65,5 +65,4 @@ public class ZoneCommandPayload implements IPayload {
         int residual = zoneNumber % 8;
         return residual != 0 ? residual : 8;
     }
-
 }

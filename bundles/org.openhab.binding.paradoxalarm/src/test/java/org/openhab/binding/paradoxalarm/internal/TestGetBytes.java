@@ -122,5 +122,4 @@ public class TestGetBytes {
 
         assertTrue(Arrays.equals(packetBytes, expected));
     }
-
 }

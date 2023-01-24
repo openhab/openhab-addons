@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import org.openhab.binding.paradoxalarm.internal.communication.IRequest;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommand;
+import org.openhab.binding.paradoxalarm.internal.handlers.Commandable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class Zone extends Entity {
+public class Zone extends Entity implements Commandable {
 
     private final Logger logger = LoggerFactory.getLogger(Zone.class);
 
@@ -40,5 +43,18 @@ public class Zone extends Entity {
         this.zoneState = zoneState;
         logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
                 zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
+    }
+
+    @Override
+    public void handleCommand(String command) {
+        ZoneCommand zoneCommand = ZoneCommand.parse(command);
+        if (zoneCommand == null) {
+            logger.debug("Command {} is parsed to null. Skipping it", command);
+            return;
+        }
+
+        logger.debug("Submitting command={} for partition=[{}]", zoneCommand, this);
+        IRequest request = zoneCommand.getRequest(getId());
+        getPanel().getCommunicator().submitRequest(request);
     }
 }
