@@ -20,6 +20,7 @@ You will find some information about the OZW672.01 gateway on siemens web site :
 ([https://hit.sbt.siemens.com/RWD/app.aspx?rc=FR&lang=fr&module=Catalog&action=ShowProduct&key=BPZ:OZW672.01)
 
 With this binding, you will be able :
+
 - To consult the different parameters of your system like temperature, current heating mode, water temperature, and many more.
 - Modify the functionning mode of your device : temperature set point, heating mode, and others.
 
