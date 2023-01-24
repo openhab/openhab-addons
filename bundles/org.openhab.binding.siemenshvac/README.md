@@ -1,56 +1,70 @@
 # SiemensHvac Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding is to support Siemens Hvac controller ecosystem, and the Web Gateway interface OZW672.
+A typical system is composed of:
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+                                                    
+<=== Ethernet ===>   | OZW672 | <====== ¨BSB/LPB BUS ======> | Hvac Controler (RVS41.813/327) | ====== | Internal device in your system : sensors, boiler, external pac unit, ... |
+
+There's a lot of different Hvac controler depending on model in lot of different PAC constructor.
+Mine is a Atlantic Hybrid duo whith a Siemens RVS41.813/327 inside.
+
+Siemens have a complete set of controler reference under the name "Siemens Albatros".
+Here some picture of such device.
+You can also find this device in other type of heating system : boiler or solar based.
+
+![](doc/Albatros.jpg)
+
+You will find some information about the OZW672.01 gateway on siemens web site : 
+[OZW 672 Page]
+([https://hit.sbt.siemens.com/RWD/app.aspx?rc=FR&lang=fr&module=Catalog&action=ShowProduct&key=BPZ:OZW672.01)
+
+With this binding, you will be able :
+- To consult the different parameters of your system like temperature, current heating mode, water temperature, and many more.
+- Modify the functionning mode of your device : temperature set point, heating mode, and others.
+
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Support many different things as the thing type is handle by autodiscovery.
+
+Mainly, it will first discover the gateway.
+Currently test and support is the OZW672.x series.
+No test done with OZW772.x series, but it should work as well.
+
+After, it will discover thing inside your PAC, mainly main controller of type RVS...
+Only test in real condition with RVS41.813/327 but should work with all other type as the access interface is standard.
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Discovery of Gateway can be done using Upnp.
+Just switch off/on your gateway to make it annonce itself on the network.
+The gateway should appears in the Inbox a few minutes after.
+Be aware what you will have to modifity the password in Gateway parameters just after the discovering to make it work properly.
+Be also aware that first initialization is a little long because we need to read all the metadata from the device.
+
+Discovery of Hvac device have to be done through the Scan button inside the binding.
+Go to the thing page, click on the "+" button, select the siemensHvac binding, and then click Scan.
+Your device should appears on the page after a few seconds.
+
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+There is no particular configuration to be done.
+The only revelant parameters is on the OZW672 thing for the user and password to use to connect to the gateway.
+IP should have be discovered automatically via UPNP.
 
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Channels are autodiscovered, you will find them on the RVS things.
+They are organized the same way as the LCD screen of your PAC device, by top level menu functionnality, and sub-functionnalities.
+Each channel are strongly typed, so for exemple, for heating mode, openhab will provide you with a list of choice supported by the device.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
