@@ -187,6 +187,10 @@ public class TibberHandler extends BaseThingHandler {
                             .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
                             .getAsJsonArray("tomorrow");
                     updateState(TOMORROW_PRICES, new StringType(tomorrow.toString()));
+                    JsonArray today = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
+                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
+                            .getAsJsonArray("today");
+                    updateState(TODAY_PRICES, new StringType(today.toString()));
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
