@@ -39,8 +39,7 @@ public class SiemensHvacChannelGroupTypeProviderImpl implements SiemensHvacChann
     //
 
     @Override
-    @Nullable
-    public ChannelGroupType getInternalChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID) {
+    public @Nullable ChannelGroupType getInternalChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID) {
         return channelGroupTypesByUID.get(channelGroupTypeUID);
     }
 
@@ -49,9 +48,9 @@ public class SiemensHvacChannelGroupTypeProviderImpl implements SiemensHvacChann
         channelGroupTypesByUID.put(channelGroupType.getUID(), channelGroupType);
     }
 
-    @Nullable
     @Override
-    public ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID, @Nullable Locale locale) {
+    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
+            @Nullable Locale locale) {
         return channelGroupTypesByUID.get(channelGroupTypeUID);
     }
 

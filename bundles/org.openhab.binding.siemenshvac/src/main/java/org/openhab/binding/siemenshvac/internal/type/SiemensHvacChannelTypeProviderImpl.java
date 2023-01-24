@@ -59,9 +59,8 @@ public class SiemensHvacChannelTypeProviderImpl implements SiemensHvacChannelTyp
     /**
      * @see ChannelTypeRegistr#getChannelType(ChannelTypeUID, Locale)
      */
-    @Nullable
     @Override
-    public ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
+    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         return channelTypesByUID.get(channelTypeUID);
     }
 

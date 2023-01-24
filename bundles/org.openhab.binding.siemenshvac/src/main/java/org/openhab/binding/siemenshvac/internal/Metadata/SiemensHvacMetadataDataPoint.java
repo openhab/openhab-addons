@@ -36,9 +36,9 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     private @Nullable String resolution = null;
     private @Nullable String fieldWitdh = null;
     private @Nullable String decimalDigits = null;
-    private Boolean detailsResolved = false;
+    private boolean detailsResolved = false;
     @SuppressWarnings("unused")
-    private Boolean unresolvableDetails = false;
+    private boolean unresolvableDetails = false;
     private @Nullable String dialogType = null;
     private @Nullable String maxLength = null;
     private @Nullable String address = null;
@@ -192,7 +192,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         if (desc != null) {
             this.dptType = desc.get("Type").getAsString();
 
-            if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
+            if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(dptType)) {
 
                 JsonArray enums = desc.getAsJsonArray("Enums");
 
@@ -205,17 +205,17 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
                     ch.setIsActive(entry.get("IsCurrentValue").getAsString());
                     child.add(ch);
                 }
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_NUMERIC.equals(dptType)) {
                 this.dptUnit = desc.get("Unit").getAsString();
                 this.min = desc.get("Min").getAsString();
                 this.max = desc.get("Max").getAsString();
                 this.resolution = desc.get("Resolution").getAsString();
                 this.fieldWitdh = desc.get("FieldWitdh").getAsString();
                 this.decimalDigits = desc.get("DecimalDigits").getAsString();
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_STRING)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_STRING.equals(dptType)) {
                 this.dialogType = desc.get("DialogType").getAsString();
                 this.maxLength = desc.get("MaxLength").getAsString();
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_RADIO.equals(dptType)) {
                 JsonArray buttons = desc.getAsJsonArray("Buttons");
 
                 child = new ArrayList<SiemensHvacMetadataPointChild>();
@@ -229,10 +229,10 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
                     ch.setIsActive(button.get("IsActive").getAsString());
                     child.add(ch);
                 }
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_DATE)) {
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER)) {
-            } else if (dptType.equals(SiemensHvacBindingConstants.DPT_TYPE_CALENDAR)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_DATE.equals(dptType)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_TIME.equals(dptType)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER.equals(dptType)) {
+            } else if (SiemensHvacBindingConstants.DPT_TYPE_CALENDAR.equals(dptType)) {
             } else {
             }
             detailsResolved = true;
