@@ -31,8 +31,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SiemensHvacHandlerFactory} is responsible for creating things and thing
@@ -44,9 +42,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.siemenshvac")
 public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
 
-    @SuppressWarnings("unused")
-    private final Logger logger = LoggerFactory.getLogger(SiemensHvacHandlerFactory.class);
-
     private @Nullable NetworkAddressService networkAddressService;
     private @Nullable HttpClientFactory httpClientFactory;
     private SiemensHvacMetadataRegistry metaDataRegistry;
@@ -55,9 +50,11 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public SiemensHvacHandlerFactory(@Nullable final @Reference HttpClientFactory httpClientFactory,
-            final @Reference SiemensHvacMetadataRegistry metaDataRegistry) {
+            final @Reference SiemensHvacMetadataRegistry metaDataRegistry,
+            final @Reference NetworkAddressService networkAddressService) {
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
+        this.networkAddressService = networkAddressService;
     }
 
     @Override
@@ -102,11 +99,6 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         }
         String ipAddress = (String) configuration.get(SiemensHvacBindingConstants.IP_ADDRESS);
         return new ThingUID(thingTypeUID, ipAddress);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
     }
 
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {

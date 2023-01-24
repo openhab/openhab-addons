@@ -14,7 +14,6 @@ package org.openhab.binding.siemenshvac.internal.discovery;
 
 import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +53,7 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(SiemensHvacBindingConstants.THING_TYPE_BRIDGE);
+        return Set.of(SiemensHvacBindingConstants.THING_TYPE_BRIDGE);
     }
 
     @Override

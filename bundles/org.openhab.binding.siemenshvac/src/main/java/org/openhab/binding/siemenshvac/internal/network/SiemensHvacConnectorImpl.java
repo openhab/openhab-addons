@@ -15,7 +15,6 @@ package org.openhab.binding.siemenshvac.internal.network;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +68,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private String baseUrl = "";
     private String userName = "";
     private String userPassword = "";
-    @SuppressWarnings("unused")
-    private @Nullable Date lastUpdate;
 
     protected final HttpClientFactory httpClientFactory;
 
@@ -479,7 +476,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void AddDpUpdate(String itemName, Type dp) {
         synchronized (updateCommand) {
             updateCommand.put(itemName, dp);
-            lastUpdate = new java.util.Date();
         }
     }
 }
