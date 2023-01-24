@@ -48,11 +48,15 @@ class UniFiClientCache extends UniFiCache<UniFiClient> {
             case IP:
                 return client.getIp();
             case HOSTNAME:
-                return client.getHostname();
+                return safeTidy(client.getHostname());
             case ALIAS:
-                return client.getAlias();
+                return safeTidy(client.getName());
             default:
                 return null;
         }
+    }
+
+    private static @Nullable String safeTidy(final @Nullable String value) {
+        return value == null ? null : value.trim().toLowerCase();
     }
 }
