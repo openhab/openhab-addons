@@ -103,6 +103,9 @@ public class TestGetBytes {
     private static final byte[] EXPECTED_ZONE_23_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x08, 0x00, 0x00, 0x00,
             0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x3f };
+    private static final byte[] EXPECTED_ZONE_23_CLEAR_BYPASS_COMMAND = { (byte) 0xd0, 0x1f, 0x08, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37 };
 
     @Test
     public void testZoneCommandPayload() {
@@ -110,7 +113,7 @@ public class TestGetBytes {
         testZoneCommandPayload(5, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_5_CLEAR_BYPASS_COMMAND);
         testZoneCommandPayload(20, ZoneCommand.BYPASS, EXPECTED_ZONE_20_BYPASS_COMMAND);
         testZoneCommandPayload(23, ZoneCommand.BYPASS, EXPECTED_ZONE_23_BYPASS_COMMAND);
-        testZoneCommandPayload(23, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_23_BYPASS_COMMAND);
+        testZoneCommandPayload(23, ZoneCommand.CLEAR_BYPASS, EXPECTED_ZONE_23_CLEAR_BYPASS_COMMAND);
     }
 
     private void testZoneCommandPayload(int zoneNumber, ZoneCommand command, byte[] expected) {
