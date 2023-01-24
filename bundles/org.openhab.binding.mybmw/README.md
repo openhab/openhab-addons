@@ -356,7 +356,7 @@ The channel _command_ provides options
 - _vehicle-finder_
 - _door-lock_
 - _door-unlock_
-- _horn-low_
+- _horn-blow_
 - _climate-now-start_
 - _climate-now-stop_
 
