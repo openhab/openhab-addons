@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -60,8 +59,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     private @Nullable String host;
     private Map<String, Instant> subscriptions = new ConcurrentHashMap<String, Instant>();
 
-    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpCaller) {
+    public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
         this.service = upnpIOService;
         this.wemoHttpCaller = wemoHttpCaller;
