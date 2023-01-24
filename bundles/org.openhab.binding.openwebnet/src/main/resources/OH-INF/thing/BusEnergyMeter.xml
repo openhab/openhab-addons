@@ -34,7 +34,7 @@
 					where="542"</description>
 			</parameter>
 
-			<parameter name="refreshPeriod" type="integer" min="1" max="1440" required="true">
+			<parameter name="refreshPeriod" type="integer" min="30" max="1440" required="true">
 				<label>Totalizers Refresh Period</label>
 				<description> Sets the number of minutes between refreshes (default: 30 minutes)</description>
 				<default>30</default>

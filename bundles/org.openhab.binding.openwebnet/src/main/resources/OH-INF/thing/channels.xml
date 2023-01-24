@@ -344,7 +344,7 @@
 	</channel-type>
 
 	<channel-type id="totalizerMonth">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Current month totalizer</label>
 		<description>Current month totalizer</description>
 		<category>Energy</category>
@@ -352,7 +352,7 @@
 	</channel-type>
 
 	<channel-type id="totalizerDay">
-		<item-type>Number:Power</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Current day totalizer</label>
 		<description>Current day totalizer</description>
 		<category>Energy</category>

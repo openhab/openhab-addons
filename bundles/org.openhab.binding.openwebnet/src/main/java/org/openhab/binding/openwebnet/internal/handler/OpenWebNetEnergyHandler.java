@@ -72,10 +72,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     public Boolean isFirstSchedulerLaunch = true;
 
-    private Boolean channelExists(String channelID) {
-        return thing.getChannel("openwebnet:" + channelID) != null;
-    }
-
     @Override
     public void initialize() {
         super.initialize();
@@ -146,29 +142,21 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     private void subscribeToEnergyTotalizer() {
-
-        if (!channelExists(CHANNEL_POWER_TOTALIZER_DAY) && !channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
-            logger.info("subscribeToEnergyTotalizer() No totalizers channels active. Skipping");
+        Where w = deviceWhere;
+        if (w == null) {
+            logger.warn("subscribeToEnergyTotalizer() WHERE=null. Skipping");
             return;
         }
 
         energySchedule = scheduler.scheduleWithFixedDelay(() -> {
-            Where w = deviceWhere;
-            if (w == null) {
-                logger.warn("subscribeToEnergyTotalizer() WHERE=null. Skipping");
-            } else {
-                try {
-                    if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
-                        send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
-                    }
-                    if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
-                        send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
-                    }
-                } catch (Exception e) {
-                    logger.warn(
-                            "subscribeToEnergyTotalizer() Could not subscribe to totalizers scheduler for WHERE={}. Exception={}",
-                            w, e.getMessage());
-                }
+            try {
+                send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
+                send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
+
+            } catch (Exception e) {
+                logger.warn(
+                        "subscribeToEnergyTotalizer() Could not subscribe to totalizers scheduler for WHERE={}. Exception={}",
+                        w, e.getMessage());
             }
         }, 0, ENERGY_REFRESH_PERIOD, TimeUnit.MINUTES);
     }
@@ -195,15 +183,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         if (w != null) {
             try {
                 send(EnergyManagement.requestActivePower(w.value()));
-
-                // refresh ONLY subscribed channels
-                if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
-                    send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
-                }
-                if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
-                    send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
-                }
-
+                send(EnergyManagement.requestCurrentDayTotalizer(w.value()));
+                send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -215,14 +196,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
         requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER));
-
-        // refresh ONLY subscribed channels
-        if (channelExists(CHANNEL_POWER_TOTALIZER_DAY)) {
-            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_DAY));
-        }
-        if (channelExists(CHANNEL_POWER_TOTALIZER_MONTH)) {
-            requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_MONTH));
-        }
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_DAY));
+        requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_POWER_TOTALIZER_MONTH));
     }
 
     @Override
@@ -284,10 +259,6 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     private void updateCurrentDayTotalizer(BaseOpenMessage msg) {
         double currentDayEnergy;
         try {
-            // TODO remove
-            logger.debug("AC Wh: {}", Double.parseDouble(msg.getDimValues()[0]));
-            logger.debug("AC KWh: {}", Double.parseDouble(msg.getDimValues()[0]) / 1000d);
-
             currentDayEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
             updateState(CHANNEL_POWER_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
