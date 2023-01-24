@@ -61,18 +61,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do here
     }
-
-    /*
-     * public ScheduledExecutorService getScheduler() {
-     * return knxScheduler;
-     * }
-     *
-     * public ScheduledExecutorService getBackgroundScheduler() {
-     * return backgroundScheduler;
-     * }
-     */
 
     @Override
     public void initialize() {

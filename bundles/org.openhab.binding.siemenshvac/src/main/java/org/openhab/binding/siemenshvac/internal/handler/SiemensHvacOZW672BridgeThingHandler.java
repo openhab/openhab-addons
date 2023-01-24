@@ -59,23 +59,7 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
     @Override
     public void dispose() {
         super.dispose();
-        /*
-         * if (client != null) {
-         * client.dispose();
-         * client = null;
-         * }
-         */
     }
-    /*
-     * @Override
-     * protected KNXClient getClient() {
-     * KNXClient ret = client;
-     * if (ret == null) {
-     * return new NoOpClient();
-     * }
-     * return ret;
-     * }
-     */
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
