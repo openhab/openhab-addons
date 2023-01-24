@@ -34,7 +34,7 @@ public class Zone extends Entity implements Commandable {
 
     private @Nullable ZoneState zoneState;
 
-    public Zone(ParadoxPanel panel, int id, String label) {
+    public Zone(ParadoxPanel panel, int id, @Nullable String label) {
         super(panel, id, label);
     }
 
