@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.console;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.BINDING_ID;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -43,6 +45,8 @@ import org.openhab.binding.mybmw.internal.handler.backend.NetworkException;
 import org.openhab.binding.mybmw.internal.handler.backend.ResponseContentAnonymizer;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.ThingRegistry;
@@ -66,12 +70,14 @@ import com.google.gson.JsonSyntaxException;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
+public class MyBMWCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static final String FINGERPRINT_ROOT_PATH = System.getProperty("user.home") + File.separator + BINDING_ID;
+
     private static final String FINGERPRINT = "fingerprint";
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(FINGERPRINT), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -89,15 +95,15 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
             return;
         }
 
-        List<MyBMWBridgeHandler> bridgeHandlers = thingRegistry.getAll().stream()
-                .filter(t -> t.getHandler() instanceof MyBMWBridgeHandler)
-                .map(b -> ((MyBMWBridgeHandler) b.getHandler())).collect(Collectors.toList());
+        List<MyBMWBridgeHandler> bridgeHandlers = thingRegistry.stream()
+                .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID()))
+                .map(b -> ((MyBMWBridgeHandler) b.getHandler())).filter(Objects::nonNull).collect(Collectors.toList());
         if (bridgeHandlers.isEmpty()) {
             console.println("No account bridges configured");
             return;
         }
 
-        if (!FINGERPRINT.equals(args[0])) {
+        if (!FINGERPRINT.equalsIgnoreCase(args[0])) {
             console.println("Unsupported command '" + args[0] + "'");
             printUsage(console);
             return;
@@ -107,7 +113,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
         if (args.length > 1) {
             handlers = bridgeHandlers.stream()
                     .filter(b -> args[1].equals(b.getThing().getConfiguration().get("userName")))
-                    .collect(Collectors.toList());
+                    .filter(Objects::nonNull).collect(Collectors.toList());
             if (handlers.isEmpty()) {
                 console.println("No myBMW account bridge for user '" + args[1] + "'");
                 printUsage(console);
@@ -144,7 +150,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
 
                         if (args.length == 3) {
                             Optional<VehicleBase> vehicleOptional = vehicles.stream()
-                                    .filter(v -> v.getVin().toLowerCase().equals(args[2].toLowerCase())).findAny();
+                                    .filter(v -> v.getVin().equalsIgnoreCase(args[2])).findAny();
                             if (vehicleOptional.isEmpty()) {
                                 console.println("'" + args[2] + "' is not a valid vin on the account bridge with id '"
                                         + handler.getThing().getUID().getId() + "'");
@@ -283,5 +289,37 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                         buildCommandUsage(FINGERPRINT + " <userName>", "generate fingerprint for vehicles on account"),
                         buildCommandUsage(FINGERPRINT + " <userName> <vin>",
                                 "generate fingerprint for vehicle with vin on account") });
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        try {
+            if (cursorArgumentIndex <= 0) {
+                return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            } else if (cursorArgumentIndex == 1) {
+                return new StringsCompleter(
+                        thingRegistry.stream()
+                                .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID()))
+                                .map(t -> t.getConfiguration().get("userName").toString()).collect(Collectors.toList()),
+                        true).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            } else if (cursorArgumentIndex == 2) {
+                MyBMWBridgeHandler handler = (MyBMWBridgeHandler) thingRegistry.stream()
+                        .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID())
+                                && args[1].equals(t.getConfiguration().get("userName")))
+                        .map(t -> t.getHandler()).findAny().get();
+                List<VehicleBase> vehicles = handler.getMyBmwProxy().get().requestVehiclesBase();
+                return new StringsCompleter(
+                        vehicles.stream().map(v -> v.getVin()).filter(Objects::nonNull).collect(Collectors.toList()),
+                        true).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        } catch (NoSuchElementException | NetworkException e) {
+            return false;
+        }
+        return false;
     }
 }
