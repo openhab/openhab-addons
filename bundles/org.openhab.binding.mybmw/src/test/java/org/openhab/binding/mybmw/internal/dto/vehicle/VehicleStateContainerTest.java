@@ -33,8 +33,7 @@ import com.google.gson.Gson;
 public class VehicleStateContainerTest {
     @Test
     public void testVehicleStateDeserializationByGson() {
-        String vehicleStateJson = FileReader
-                .fileToString("responses/MILD_HYBRID/vehicles_state.json");
+        String vehicleStateJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_state.json");
         Gson gson = new Gson();
 
         VehicleStateContainer vehicle = gson.fromJson(vehicleStateJson, VehicleStateContainer.class);
@@ -44,8 +43,7 @@ public class VehicleStateContainerTest {
 
     @Test
     public void testVehicleStateDeserializationByConverter() {
-        String vehicleStateJson = FileReader
-                .fileToString("responses/MILD_HYBRID/vehicles_state.json");
+        String vehicleStateJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_state.json");
 
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(vehicleStateJson);
 

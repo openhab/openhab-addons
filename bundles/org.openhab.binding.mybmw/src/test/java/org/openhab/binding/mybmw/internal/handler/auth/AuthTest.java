@@ -336,8 +336,7 @@ class AuthTest {
 
     @Test
     public void testJWTDeserialze() {
-        String accessTokenResponseStr = FileReader
-                .fileToString("responses/auth/auth_cn_login_pwd.json");
+        String accessTokenResponseStr = FileReader.fileToString("responses/auth/auth_cn_login_pwd.json");
         ChinaTokenResponse cat = JsonStringDeserializer.deserializeString(accessTokenResponseStr,
                 ChinaTokenResponse.class);
 

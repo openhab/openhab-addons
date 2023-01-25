@@ -1,42 +1,42 @@
 [
     {
-        "vin": "anonymousMILD_HYBRID",
+        "vin": "anonymousICE4",
         "mappingInfo": {
-            "isAssociated": true,
+            "isAssociated": false,
             "isLmmEnabled": false,
             "mappingStatus": "CONFIRMED",
             "isPrimaryUser": true
         },
         "appVehicleType": "CONNECTED",
         "attributes": {
-            "lastFetched": "2022-12-21T17:30:40.363Z",
-            "model": "M340i xDrive",
-            "year": 2022,
+            "lastFetched": "2023-01-16T15:33:53.940Z",
+            "model": "435i",
+            "year": 2014,
             "color": 4284572001,
             "brand": "BMW",
-            "driveTrain": "MILD_HYBRID",
-            "headUnitType": "MGU",
-            "headUnitRaw": "HU_MGU",
-            "hmiVersion": "ID7",
+            "driveTrain": "COMBUSTION",
+            "headUnitType": "NBT",
+            "headUnitRaw": "NBT",
+            "hmiVersion": "ID4",
             "softwareVersionCurrent": {
                 "puStep": {
                     "month": 7,
-                    "year": 22
+                    "year": 19
                 },
-                "iStep": 558,
-                "seriesCluster": "S18A"
+                "iStep": 539,
+                "seriesCluster": "F020"
             },
             "softwareVersionExFactory": {
                 "puStep": {
                     "month": 3,
-                    "year": 22
+                    "year": 14
                 },
-                "iStep": 560,
-                "seriesCluster": "S18A"
+                "iStep": 502,
+                "seriesCluster": "F020"
             },
-            "telematicsUnit": "ATM2",
-            "bodyType": "G21",
+            "bodyType": "F33",
             "countryOfOrigin": "DE",
+            "a4aType": "USB_ONLY",
             "driverGuideInfo": {
                 "androidAppScheme": "com.bmwgroup.driversguide.row",
                 "iosAppScheme": "bmwdriversguide:///open",

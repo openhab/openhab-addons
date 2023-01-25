@@ -26,7 +26,6 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleAttributes;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleCapabilities;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
-import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.Constants;

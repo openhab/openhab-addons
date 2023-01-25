@@ -77,6 +77,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     private final String remoteStatusUrl;
 
     public MyBMWHttpProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration config) {
+        logger.trace("MyBMWHttpProxy - initialize");
         httpClient = httpClientFactory.getCommonHttpClient();
 
         myBMWTokenHandler = new MyBMWTokenController(config, httpClient);

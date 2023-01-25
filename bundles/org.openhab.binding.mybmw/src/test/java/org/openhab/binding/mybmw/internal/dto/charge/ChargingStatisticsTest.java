@@ -159,5 +159,4 @@ public class ChargingStatisticsTest {
         String content = FileReader.fileToString("responses/ICE2/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
-
 }

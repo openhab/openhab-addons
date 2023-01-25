@@ -50,6 +50,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
     private static final String ENVIRONMENT = "ENVIRONMENT";
     private static final String TEST = "test";
+    private static final String TESTUSER = "testuser";
 
     private final Logger logger = LoggerFactory.getLogger(MyBMWBridgeHandler.class);
 
@@ -90,7 +91,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
             String environment = System.getenv(ENVIRONMENT);
 
-            if (!TEST.equals(environment)) {
+            if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {
                 myBmwProxy = Optional.of(new MyBMWHttpProxy(httpClientFactory, config));
             } else {
                 myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));

@@ -98,7 +98,8 @@ public class ChargingStatisticsWrapper {
                 assertTrue(state instanceof QuantityType);
                 qte = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qte.getUnit(), "kwh");
-                assertEquals(chargeStatisticContainer.getStatistics().getTotalEnergyCharged(), qte.intValue(), "Energy");
+                assertEquals(chargeStatisticContainer.getStatistics().getTotalEnergyCharged(), qte.intValue(),
+                        "Energy");
                 break;
             default:
                 // fail in case of unknown update

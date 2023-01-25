@@ -124,7 +124,6 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleState;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleTireStates;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleWindowsState;
-import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils.TimedChannel;
@@ -298,8 +297,8 @@ public class VehicleHandler extends BaseThingHandler {
 
                 if (!stateError && isElectric) {
                     try {
-                        updateChargingStatistics(prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()),
-                                null);
+                        updateChargingStatistics(
+                                prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()), null);
                         updateChargingSessions(prox.requestChargeSessions(config.getVin(), config.getVehicleBrand()),
                                 null);
                     } catch (NetworkException e) {
@@ -377,13 +376,18 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChargingStatistics(ChargingStatisticsContainer chargingStatisticsContainer, @Nullable String channelToBeUpdated) {
+    private void updateChargingStatistics(ChargingStatisticsContainer chargingStatisticsContainer,
+            @Nullable String channelToBeUpdated) {
         if (!"".equals(chargingStatisticsContainer.getDescription())) {
-            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, chargingStatisticsContainer.getDescription(), channelToBeUpdated);
-            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
-                    QuantityType.valueOf(chargingStatisticsContainer.getStatistics().getTotalEnergyCharged(), Units.KILOWATT_HOUR), channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, chargingStatisticsContainer.getDescription(),
+                    channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY, QuantityType
+                    .valueOf(chargingStatisticsContainer.getStatistics().getTotalEnergyCharged(), Units.KILOWATT_HOUR),
+                    channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, SESSIONS,
-                    DecimalType.valueOf(Integer.toString(chargingStatisticsContainer.getStatistics().getNumberOfChargingSessions())), channelToBeUpdated);
+                    DecimalType.valueOf(Integer
+                            .toString(chargingStatisticsContainer.getStatistics().getNumberOfChargingSessions())),
+                    channelToBeUpdated);
         }
     }
 
@@ -479,6 +483,7 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
                     Converter.toTitleCase(vehicleState.getElectricChargingState().getChargingStatus()),
                     channelToBeUpdated);
+                    
             int remainingTime = vehicleState.getElectricChargingState().getRemainingChargingMinutes();
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_REMAINING,
                     remainingTime >= 0 ? QuantityType.valueOf(remainingTime, Units.MINUTE) : UnDefType.UNDEF,

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
-import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.handler.enums.ExecutionState;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;

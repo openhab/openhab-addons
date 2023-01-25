@@ -270,61 +270,61 @@ public class VehicleHandlerTest {
      * Channel testbinding::test:profile#timer4-day-sun ON
      */
 
-     @Test
-     public void testBevIx() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.ELECTRIC.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/BEV/vehicles_state.json");
-         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
-                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
-     }
- 
-     @Test
-     public void testBevI3() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.ELECTRIC.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/BEV2/vehicles_state.json");
-         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
-                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
-     }
- 
-     @Test
-     public void testBevIX3() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.ELECTRIC.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/BEV3/vehicles_state.json");
-         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
-                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
-     }
- 
-     @Test
-     public void testIceMiniCooper() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/ICE/vehicles_state.json");
-         assertTrue(testVehicle(content,
-                 STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
-     }
- 
-     @Test
-     public void testIceX320d() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/ICE2/vehicles_state.json");
-         assertTrue(testVehicle(content,
-                 STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
-     }
- 
-     @Test
-     public void testIce530d() {
-         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-         setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
-         String content = FileReader.fileToString("responses/ICE3/vehicles_state.json");
-         assertTrue(testVehicle(content,
-                 STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
-     }
- 
-     @Test
+    @Test
+    public void testBevIx() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/BEV/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testBevI3() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/BEV2/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testBevIX3() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/BEV3/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testIceMiniCooper() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/ICE/vehicles_state.json");
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testIceX320d() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/ICE2/vehicles_state.json");
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testIce530d() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/ICE3/vehicles_state.json");
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
+    }
+
+    @Test
     public void testMildHybrid340i() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.MILD_HYBRID.toString(), "anonymous");
@@ -332,7 +332,6 @@ public class VehicleHandlerTest {
         assertTrue(testVehicle(content,
                 STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
     }
-
 
     @Test
     public void testPhev530e() {

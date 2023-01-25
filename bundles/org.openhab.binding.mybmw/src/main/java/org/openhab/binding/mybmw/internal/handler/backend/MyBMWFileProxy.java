@@ -37,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is for local testing. You have to configure a connected account with username = "testuser" and password = vehicle to be tested (e.g. BEV, ICE, BEV2, MILD_HYBRID,...)
+ * This class is for local testing. You have to configure a connected account with username = "testuser" and password =
+ * vehicle to be tested (e.g. BEV, ICE, BEV2, MILD_HYBRID,...)
  * The respective files are loaded from the resources folder
  * 
  * You have to set the environment variable "ENVIRONMENT" to the value "test"
@@ -59,6 +60,7 @@ public class MyBMWFileProxy implements MyBMWProxy {
     private final String REMOTE_SERVICES_STATE = File.separator + "remote_service_status.json";
 
     public MyBMWFileProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration config) {
+        logger.trace("MyBMWFileProxy - initialize");
         vehicleToBeTested = config.password;
     }
 
@@ -176,18 +178,20 @@ public class MyBMWFileProxy implements MyBMWProxy {
     }
 
     private String fileToString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(RESPONSES + vehicleToBeTested + filename), "UTF-8"))) {
+        logger.trace("reading file {}", filename);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                getClass().getClassLoader().getResourceAsStream(RESPONSES + vehicleToBeTested + filename), "UTF-8"))) {
             StringBuilder buf = new StringBuilder();
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
                 buf.append(sCurrentLine);
             }
+            logger.trace("successful");
             return buf != null ? buf.toString() : "";
         } catch (IOException e) {
             logger.error("file {} could not be loaded: {}", filename, e.getMessage());
             return "";
         }
     }
-
 }

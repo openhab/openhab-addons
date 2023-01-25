@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +39,8 @@ public class FileReader {
      * @return
      */
     public static String fileToString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(FileReader.class.getClassLoader().getResourceAsStream(filename), "UTF-8"))) {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(FileReader.class.getClassLoader().getResourceAsStream(filename), "UTF-8"))) {
             StringBuilder buf = new StringBuilder();
             String sCurrentLine;
 
@@ -63,8 +64,8 @@ public class FileReader {
         File file = new File(filename);
         byte[] bytes = new byte[(int) file.length()];
 
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(bytes);
+        try (InputStream is = (FileReader.class.getClassLoader().getResourceAsStream(filename))) {
+            is.read(bytes);
         } catch (IOException e) {
             fail("Read failure " + filename, e);
         }

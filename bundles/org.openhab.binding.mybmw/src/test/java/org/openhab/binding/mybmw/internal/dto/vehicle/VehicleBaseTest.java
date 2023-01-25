@@ -74,7 +74,7 @@ public class VehicleBaseTest {
 
         assertEquals(1, vehicleBaseList.size(), "Number of Vehicles");
         VehicleBase vehicle = vehicleBaseList.get(0);
-        assertEquals(Constants.ANONYMOUS, vehicle.getVin(), "VIN");
+        assertEquals(Constants.ANONYMOUS + "MILD_HYBRID", vehicle.getVin(), "VIN");
         assertEquals("M340i xDrive", vehicle.getAttributes().getModel(), "Model");
         assertEquals(Constants.DRIVETRAIN_MILD_HYBRID, vehicle.getAttributes().getDriveTrain(), "DriveTrain");
         assertEquals("bmw", vehicle.getAttributes().getBrand(), "Brand");

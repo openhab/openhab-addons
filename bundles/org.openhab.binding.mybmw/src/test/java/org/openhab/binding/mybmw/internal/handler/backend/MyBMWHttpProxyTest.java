@@ -40,6 +40,7 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
 import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
+import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +53,9 @@ import ch.qos.logback.classic.Level;
  * @author Martin Grassl - initial contribution
  */
 @NonNullByDefault
-public class MyBMWProxyTest {
+public class MyBMWHttpProxyTest {
 
-    private final Logger logger = LoggerFactory.getLogger(MyBMWProxyTest.class);
+    private final Logger logger = LoggerFactory.getLogger(MyBMWHttpProxyTest.class);
 
     @BeforeEach
     public void setupLogger() {
@@ -117,8 +118,7 @@ public class MyBMWProxyTest {
     @Test
     void testSuccessfulPost() {
         // test successful POST for remote service execution
-        String responseContent = FileReader
-                .fileToString("responses/MILD_HYBRID/remote_service_call.json");
+        String responseContent = FileReader.fileToString("responses/MILD_HYBRID/remote_service_call.json");
         MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, responseContent);
 
         try {
@@ -135,8 +135,7 @@ public class MyBMWProxyTest {
     @Test
     void testErrorPost() {
         // test successful POST for remote service execution
-        String responseContent = FileReader
-                .fileToString("responses/MILD_HYBRID/remote_service_call.json");
+        String responseContent = FileReader.fileToString("responses/MILD_HYBRID/remote_service_call.json");
         MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(400, responseContent);
 
         try {
@@ -150,16 +149,12 @@ public class MyBMWProxyTest {
     @Test
     void testSuccessfulImage() {
         // test successful POST for remote service execution
-        byte[] responseContent = FileReader
-                .fileToByteArray("responses/MILD_HYBRID/340i_frontView.png");
+        byte[] responseContent = FileReader.fileToByteArray("responses/MILD_HYBRID/340i_frontView.png");
         MyBMWHttpProxy myBMWProxy = generateMyBmwProxy(200, new String(responseContent));
 
         try {
-            ExecutionStatusContainer executionStatusContainer = myBMWProxy.executeRemoteServiceCall("testVin",
-                    BimmerConstants.BRAND_BMW, RemoteService.LIGHT_FLASH);
-            assertNotNull(executionStatusContainer.getCreationTime());
-            assertNotNull(executionStatusContainer.getEventId());
-            assertEquals("", executionStatusContainer.getEventStatus());
+            byte[] image = myBMWProxy.requestImage("testVin", BimmerConstants.BRAND_BMW, new ImageProperties());
+            assertNotNull(image);
         } catch (NetworkException e) {
             fail(e.toString());
         }
@@ -173,7 +168,8 @@ public class MyBMWProxyTest {
 
         MyBMWBridgeConfiguration myBMWBridgeConfiguration = new MyBMWBridgeConfiguration();
 
-        MyBMWHttpProxy myBMWProxyMock = Mockito.spy(new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration));
+        MyBMWHttpProxy myBMWProxyMock = Mockito
+                .spy(new MyBMWHttpProxy(httpClientFactoryMock, myBMWBridgeConfiguration));
 
         String vehiclesBaseString = FileReader.fileToString("responses/BEV/vehicles_base.json");
         List<VehicleBase> baseVehicles = JsonStringDeserializer.getVehicleBaseList(vehiclesBaseString);
