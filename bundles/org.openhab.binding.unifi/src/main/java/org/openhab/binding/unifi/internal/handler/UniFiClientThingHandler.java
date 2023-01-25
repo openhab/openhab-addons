@@ -165,7 +165,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     protected State getChannelState(final UniFiClient client, final String channelId) {
         final boolean clientHome = isClientHome(client);
         final UniFiDevice device = client.getDevice();
-        final UniFiSite site = (device == null ? null : device.getSite());
+        final UniFiSite site = device == null ? null : device.getSite();
         State state = getDefaultState(channelId);
 
         switch (channelId) {

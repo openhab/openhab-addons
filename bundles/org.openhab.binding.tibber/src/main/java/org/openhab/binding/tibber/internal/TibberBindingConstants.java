@@ -45,6 +45,7 @@ public class TibberBindingConstants {
     public static final String CURRENT_STARTSAT = "current_startsAt";
     public static final String CURRENT_LEVEL = "current_level";
 
+    public static final String TODAY_PRICES = "today_prices";
     public static final String TOMORROW_PRICES = "tomorrow_prices";
     public static final String DAILY_FROM = "daily_from";
     public static final String DAILY_TO = "daily_to";

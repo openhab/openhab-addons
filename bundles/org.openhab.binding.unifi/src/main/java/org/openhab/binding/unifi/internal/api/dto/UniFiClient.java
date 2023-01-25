@@ -101,10 +101,10 @@ public abstract class UniFiClient implements HasId {
         return blocked;
     }
 
-    public abstract Boolean isWired();
+    public abstract boolean isWired();
 
-    public final Boolean isWireless() {
-        return isWired() == null ? null : Boolean.FALSE.equals(isWired());
+    public final boolean isWireless() {
+        return !isWired();
     }
 
     protected abstract String getDeviceMac();
