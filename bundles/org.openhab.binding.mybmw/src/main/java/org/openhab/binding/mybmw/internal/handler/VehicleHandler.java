@@ -483,7 +483,7 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
                     Converter.toTitleCase(vehicleState.getElectricChargingState().getChargingStatus()),
                     channelToBeUpdated);
-                    
+
             int remainingTime = vehicleState.getElectricChargingState().getRemainingChargingMinutes();
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_REMAINING,
                     remainingTime >= 0 ? QuantityType.valueOf(remainingTime, Units.MINUTE) : UnDefType.UNDEF,

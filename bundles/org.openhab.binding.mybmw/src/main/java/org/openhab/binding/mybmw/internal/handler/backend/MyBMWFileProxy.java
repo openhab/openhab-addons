@@ -178,7 +178,7 @@ public class MyBMWFileProxy implements MyBMWProxy {
     }
 
     private String fileToString(String filename) {
-        logger.trace("reading file {}", filename);
+        logger.trace("reading file {}", RESPONSES + vehicleToBeTested + filename);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
                 getClass().getClassLoader().getResourceAsStream(RESPONSES + vehicleToBeTested + filename), "UTF-8"))) {
             StringBuilder buf = new StringBuilder();
