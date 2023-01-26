@@ -46,7 +46,7 @@ public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImp
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new CarbonMonoxideSensorService(this));
+        addService(new CarbonMonoxideSensorService(this));
     }
 
     @Override

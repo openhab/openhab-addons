@@ -41,7 +41,7 @@ public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl implem
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new MotionSensorService(this));
+        addService(new MotionSensorService(this));
     }
 
     @Override

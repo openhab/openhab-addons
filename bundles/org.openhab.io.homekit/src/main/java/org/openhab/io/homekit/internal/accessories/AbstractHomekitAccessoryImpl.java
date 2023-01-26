@@ -228,6 +228,25 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return this.services;
     }
 
+    public void addService(Service service) {
+        services.add(service);
+
+        var serviceClass = service.getClass();
+        rawCharacteristics.values().forEach(characteristic -> {
+            // belongs on the accessory information service
+            if (characteristic.getClass() == NameCharacteristic.class) {
+                return;
+            }
+            try {
+                // if the service supports adding this characteristic as optional, add it!
+                serviceClass.getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                        characteristic);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // the service doesn't support this optional characteristic; ignore it
+            }
+        });
+    }
+
     protected HomekitAccessoryUpdater getUpdater() {
         return updater;
     }

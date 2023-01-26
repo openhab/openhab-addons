@@ -73,7 +73,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
         final var finalEnum = serviceLabelEnum;
         var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class).orElseGet(
                 () -> new ServiceLabelNamespaceCharacteristic(() -> CompletableFuture.completedFuture(finalEnum)));
-        getServices().add(new ServiceLabelService(serviceLabelNamespace));
+        addService(new ServiceLabelService(serviceLabelNamespace));
     }
 
     @Override

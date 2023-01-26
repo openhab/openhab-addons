@@ -46,7 +46,7 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LightSensorService(this));
+        addService(new LightSensorService(this));
     }
 
     @Override

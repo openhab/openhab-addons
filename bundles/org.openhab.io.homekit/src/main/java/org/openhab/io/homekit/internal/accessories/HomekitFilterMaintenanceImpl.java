@@ -45,7 +45,7 @@ public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl i
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new FilterMaintenanceService(this));
+        addService(new FilterMaintenanceService(this));
     }
 
     @Override

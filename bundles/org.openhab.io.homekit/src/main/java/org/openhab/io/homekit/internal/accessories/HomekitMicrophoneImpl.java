@@ -42,7 +42,7 @@ public class HomekitMicrophoneImpl extends AbstractHomekitAccessoryImpl implemen
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new MicrophoneService(this));
+        addService(new MicrophoneService(this));
     }
 
     @Override

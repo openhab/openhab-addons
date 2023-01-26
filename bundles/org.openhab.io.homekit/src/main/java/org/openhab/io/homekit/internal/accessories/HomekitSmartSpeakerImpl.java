@@ -48,7 +48,7 @@ public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implem
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new SmartSpeakerService(this));
+        addService(new SmartSpeakerService(this));
     }
 
     @Override

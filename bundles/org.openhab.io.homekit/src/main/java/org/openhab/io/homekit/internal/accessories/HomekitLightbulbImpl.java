@@ -44,7 +44,7 @@ class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements Light
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LightbulbService(this));
+        addService(new LightbulbService(this));
     }
 
     @Override

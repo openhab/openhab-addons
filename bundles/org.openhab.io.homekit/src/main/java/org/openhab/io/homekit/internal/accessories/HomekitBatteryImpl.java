@@ -62,7 +62,7 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new BatteryService(this));
+        addService(new BatteryService(this));
     }
 
     @Override
