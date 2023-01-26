@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -75,14 +76,11 @@ public class ShieldTVConnectionManager {
     private static final String DEFAULT_KEYSTORE_PASSWORD = "secret";
     private static final int DEFAULT_PORT = 8987;
 
-    private int port;
-    private int reconnectInterval;
-    private int heartbeatInterval;
-    private int sendDelay;
-
     private static final String STATUS_INITIALIZING = "Initializing";
 
     private final Logger logger = LoggerFactory.getLogger(ShieldTVConnectionManager.class);
+
+    private ScheduledExecutorService scheduler;
 
     private final ShieldTVHandler handler;
     private ShieldTVConfiguration config;
@@ -127,6 +125,7 @@ public class ShieldTVConnectionManager {
         messageParser = new ShieldTVMessageParser(this);
         this.config = config;
         this.handler = handler;
+        this.scheduler = handler.getScheduler();
         initalize();
     }
 
@@ -182,6 +181,12 @@ public class ShieldTVConnectionManager {
 
     public void setLoggedIn(boolean isLoggedIn) {
         this.isLoggedIn = isLoggedIn;
+        if (isLoggedIn) {
+            handler.updateThingStatus(ThingStatus.ONLINE);
+            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
+            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
+            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
+        }
     }
 
     public boolean getLoggedIn() {
@@ -236,7 +241,7 @@ public class ShieldTVConnectionManager {
     private void initalize() {
         SSLContext sslContext;
 
-        String folderName = OpenHAB.getUserDataFolder() + "/googletv";
+        String folderName = OpenHAB.getUserDataFolder() + "/androidtv";
         File folder = new File(folderName);
 
         if (!folder.exists()) {
@@ -244,10 +249,10 @@ public class ShieldTVConnectionManager {
             folder.mkdirs();
         }
 
-        port = (config.port > 0) ? config.port : DEFAULT_PORT;
-        reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
-        heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
-        sendDelay = (config.delay < 0) ? 0 : config.delay;
+        config.port = (config.port > 0) ? config.port : DEFAULT_PORT;
+        config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
+        config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
+        config.delay = (config.delay < 0) ? 0 : config.delay;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
                 : folderName + "/shieldtv." + handler.getThing().getUID().getId() + ".keystore";
@@ -299,6 +304,7 @@ public class ShieldTVConnectionManager {
             logger.debug("Error initializing keystore", e);
             return;
         }
+        asyncInitializeTask = scheduler.submit(this::connect);
     }
 
     public synchronized void connect() {
@@ -345,8 +351,8 @@ public class ShieldTVConnectionManager {
         this.senderThread = senderThread;
 
         logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
-        keepAliveJob = handler.getScheduler().scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat,
-                config.heartbeat, TimeUnit.SECONDS);
+        keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
+                TimeUnit.SECONDS);
 
         String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
         sendCommand(new ShieldTVCommand(login));
@@ -354,7 +360,7 @@ public class ShieldTVConnectionManager {
 
     private void scheduleConnectRetry(long waitMinutes) {
         logger.debug("Scheduling ShieldTV connection retry in {} minutes", waitMinutes);
-        connectRetryJob = handler.getScheduler().schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+        connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
     }
 
     /**
@@ -582,8 +588,8 @@ public class ShieldTVConnectionManager {
      */
     private void reconnectTaskSchedule() {
         synchronized (keepAliveReconnectLock) {
-            keepAliveReconnectJob = handler.getScheduler().schedule(this::keepAliveTimeoutExpired,
-                    KEEPALIVE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            keepAliveReconnectJob = scheduler.schedule(this::keepAliveTimeoutExpired, KEEPALIVE_TIMEOUT_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 

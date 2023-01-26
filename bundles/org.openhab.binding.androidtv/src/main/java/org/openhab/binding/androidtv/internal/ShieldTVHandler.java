@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.androidtv.internal;
 
-import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
-
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,13 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShieldTVHandler extends BaseThingHandler {
 
-    private static final int DEFAULT_RECONNECT_MINUTES = 5;
-    private static final int DEFAULT_HEARTBEAT_SECONDS = 5;
-    private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
-    private static final String DEFAULT_KEYSTORE_PASSWORD = "secret";
-
-    private static final String STATUS_INITIALIZING = "Initializing";
-
     private final Logger logger = LoggerFactory.getLogger(ShieldTVHandler.class);
 
     private @Nullable ShieldTVConnectionManager shieldtvConnectionManager;
@@ -57,8 +47,6 @@ public class ShieldTVHandler extends BaseThingHandler {
     private String currentApp = "";
     private String deviceId = "";
     private String arch = "";
-
-    private @Nullable Future<?> asyncInitializeTask;
 
     public ShieldTVHandler(Thing thing) {
         super(thing);
@@ -91,6 +79,10 @@ public class ShieldTVHandler extends BaseThingHandler {
         return this.arch;
     }
 
+    public void updateThingStatus(ThingStatus thingStatus) {
+        updateStatus(thingStatus);
+    }
+
     public void updateThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
         updateStatus(thingStatus, thingStatusDetail);
     }
@@ -119,12 +111,11 @@ public class ShieldTVHandler extends BaseThingHandler {
         shieldtvConnectionManager = new ShieldTVConnectionManager(this, config);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
-        asyncInitializeTask = scheduler.submit(shieldtvConnectionManager::connect); // start the async connect
-                                                                                    // task
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Command received at handler: {} {}", channelUID.getId().toString(), command.toString());
         shieldtvConnectionManager.handleCommand(channelUID, command);
     }
 
