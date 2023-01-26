@@ -89,5 +89,4 @@ public class HaperoBindingConstants {
     public static final String BOILER_LABEL = "Boiler Tank";
     public static final String HEATING_LABEL = "Heating Circuit";
     public static final String FURNACE_LABEL = "Hapero HP02 Furnace";
-
 }
