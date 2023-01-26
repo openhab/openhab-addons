@@ -37,6 +37,8 @@ import org.osgi.service.component.annotations.Component;
 public class HaperoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
+    private static final String DEVICEID = "deviceID";
+
     private @NonNullByDefault({}) HaperoBridgeHandler bridgeHandler;
 
     /**
@@ -97,22 +99,22 @@ public class HaperoDiscoveryService extends AbstractDiscoveryService implements 
         // Check if the device is supported
         if (deviceId.startsWith(HaperoBindingConstants.BUFFER_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_BUFFER, bridgeUID, deviceId);
-            label = "Buffer Tank";
+            label = HaperoBindingConstants.BUFFER_LABEL;
         } else if (deviceId.startsWith(HaperoBindingConstants.BOILER_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_BOILER, bridgeUID, deviceId);
-            label = "Boiler Tank";
+            label = HaperoBindingConstants.BOILER_LABEL;
         } else if (deviceId.startsWith(HaperoBindingConstants.HEATING_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_HEATING, bridgeUID, deviceId);
-            label = "Heating Circuit";
+            label = HaperoBindingConstants.HEATING_LABEL;
         } else if (deviceId.startsWith(HaperoBindingConstants.FURNACE_ID)) {
             thingUID = new ThingUID(HaperoBindingConstants.THING_TYPE_FURNACE, bridgeUID, deviceId);
-            label = "Hapero HP02 Furnace";
+            label = HaperoBindingConstants.FURNACE_LABEL;
         }
 
         // If device is supported, create discovery result and inform openHAB
         if (thingUID != null) {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).withProperty("deviceID", deviceId).withRepresentationProperty("deviceID").build();
+                    .withLabel(label).withProperty(DEVICEID, deviceId).withRepresentationProperty(DEVICEID).build();
             thingDiscovered(discoveryResult);
         }
     }

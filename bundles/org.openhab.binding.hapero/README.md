@@ -1,27 +1,27 @@
 # hapero Binding
 
-This Binding is intended for [Spanner Re²/Hapero](https://www.holz-kraft.com/) Central Heating Systems
-It collects data from the FTP upload feature of the furnace control system. (The "Upload.hld" file).
+This Binding is intended for [Spanner Re²/Hapero](https://www.holz-kraft.com/) Central Heating Systems.
+It collects data from the FTP upload feature of the furnace control system (The "Upload.hld" file).
 The file needs to be either on a path visible to this openHAB instance or on an FTP Server that can be accessed from this openHAB instance.
 
 It is not possible to control the furnace through the binding as this is not supported by the control system.
 
-FTP upload is only supported for "myTouch" control panels. (Check if the FTP configuration option is present in the internet settings of the control panel)
+FTP upload is only supported for "myTouch" control panels. (Check if the FTP configuration option is present in the internet settings of the control panel).
 
 ## Supported Things
 
-- `haperoBridge`: The bridge receives updates of the "Upload.hld" file delivered by the furnace control system and distributes it to the Things
-- `furnace`: Provides data from the furnace itself `furnace`
-- `buffer`: Provides data from the installed buffer tank(s) `buffer`
-- `boiler`: Provides data from the installed hot water boiler tank(s) `boiler`
-- `heatingCircuit`: Provides data from the installed heating circuit(s) `heatingCircuit`
+- `haperoBridge`: The bridge receives updates of the "Upload.hld" file delivered by the furnace control system and distributes it to the Things.
+- `furnace`: Provides data from the furnace itself `furnace`.
+- `buffer`: Provides data from the installed buffer tank(s) `buffer`.
+- `boiler`: Provides data from the installed hot water boiler tank(s) `boiler`.
+- `heatingCircuit`: Provides data from the installed heating circuit(s) `heatingCircuit`.
 
 ## Discovery
 
 The Bridge will automatically discover the furnace and all Buffer/Boiler Tanks and Heating Circuits as configured in the furnace control system.
-Only one furnace can be present in the system
-Buffer Tanks are numbered from 1..4
-Heating Circuits are numbered from 1..6
+Only one furnace can be present in the system.
+Buffer Tanks are numbered from 1..4.
+Heating Circuits are numbered from 1..6.
 
 ## Thing Configuration
 
@@ -142,5 +142,5 @@ Number:Temperature Buffer_Top_Temperature "Buffer Top [%.1f °C]" {channel="Hape
 
 ## Warning!
 
-The Upload.hld file contains the VNC Password and serial number of your heating control system. With these, anyone can log into your control system!
+The Upload.hld file contains the VNC Password and serial number of your heating control system. With these, anyone can log into your control system.
 Make sure you configure your heating control system and openHAB so that this file is never visible to anyone outside your home network!

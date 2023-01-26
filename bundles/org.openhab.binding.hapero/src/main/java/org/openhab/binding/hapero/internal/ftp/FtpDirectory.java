@@ -20,6 +20,7 @@ import java.util.Set;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.openhab.binding.hapero.internal.handler.HaperoBridgeHandler;
 
 import com.github.drapostolos.rdp4j.spi.FileElement;
 import com.github.drapostolos.rdp4j.spi.PolledDirectory;
@@ -31,10 +32,10 @@ import com.github.drapostolos.rdp4j.spi.PolledDirectory;
  * @author Daniel Walter - Initial contribution
  */
 public class FtpDirectory implements PolledDirectory {
-    private String host;
-    private String workingDirectory;
-    private String username;
-    private String password;
+    private final String host;
+    private final String workingDirectory;
+    private final String username;
+    private final String password;
 
     /**
      * Constructor

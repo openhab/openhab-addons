@@ -83,4 +83,11 @@ public class HaperoBindingConstants {
     public static final String CONFIG_ACCESS_FILESYSTEM = "file";
     public static final String CONFIG_ACCESS_FTP = "ftp";
     public static final String DATA_FILENAME = "Upload.hld";
+
+    // Labels used in device discovery
+    public static final String BUFFER_LABEL = "Buffer Tank";
+    public static final String BOILER_LABEL = "Boiler Tank";
+    public static final String HEATING_LABEL = "Heating Circuit";
+    public static final String FURNACE_LABEL = "Hapero HP02 Furnace";
+
 }
