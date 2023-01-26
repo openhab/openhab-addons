@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shieldtv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shieldtv">
+
+		<label>ShieldTV</label>
+		<description>Nvidia ShieldTV</description>
+
+		<channels>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="pincode" typeId="pincode"/>
+			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appurl" typeId="appurl"/>
+			<channel id="raw" typeId="raw"/>
+			<channel id="rawmsg" typeId="rawmsg"/>
+
+		</channels>
+
+		<properties>
+			<property name="Device Name">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Architectures">unknown</property>
+		</properties>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="keystore" type="text">
+				<label>Keystore File</label>
+				<description>Java keystore containing key and certs</description>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="raw" advanced="true">
+		<item-type>String</item-type>
+		<label>RAW Command</label>
+		<description>RAW command to send (for debugging)</description>
+	</channel-type>
+
+	<channel-type id="rawmsg" advanced="true">
+		<item-type>String</item-type>
+		<label>RAW Message</label>
+		<description>RAW message to handle (for debugging)</description>
+	</channel-type>
+
+	<channel-type id="app">
+		<item-type>String</item-type>
+		<label>App</label>
+		<description>App Control</description>
+	</channel-type>
+
+	<channel-type id="appname">
+		<item-type>String</item-type>
+		<label>App Name</label>
+		<description>App Name</description>
+	</channel-type>
+
+	<channel-type id="appurl">
+		<item-type>String</item-type>
+		<label>App URL</label>
+		<description>App URL</description>
+	</channel-type>
+
+	<channel-type id="keypress">
+		<item-type>String</item-type>
+		<label>Key Press</label>
+		<description>Send key press</description>
+	</channel-type>
+
+	<channel-type id="pincode">
+		<item-type>String</item-type>
+		<label>Pin Code</label>
+		<description>Send Pin Code</description>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -114,6 +114,7 @@
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.goecharger/ @SamuelBrucksch
+/bundles/org.openhab.binding.googletv/ @morph166955
 /bundles/org.openhab.binding.gpio/ @nils-bauer
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
