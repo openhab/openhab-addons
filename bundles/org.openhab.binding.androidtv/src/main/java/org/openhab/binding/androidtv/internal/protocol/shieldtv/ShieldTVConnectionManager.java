@@ -131,7 +131,7 @@ public class ShieldTVConnectionManager {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        handler.setHostName(hostName);
+        handler.setThingProperty("Device Name", hostName);
     }
 
     public String getHostName() {
@@ -140,7 +140,7 @@ public class ShieldTVConnectionManager {
 
     public void setDeviceID(String deviceId) {
         this.deviceId = deviceId;
-        handler.setDeviceID(deviceId);
+        handler.setThingProperty("Device ID", deviceId);
     }
 
     public String getDeviceID() {
@@ -149,7 +149,7 @@ public class ShieldTVConnectionManager {
 
     public void setArch(String arch) {
         this.arch = arch;
-        handler.setArch(arch);
+        handler.setThingProperty("Architectures", arch);
     }
 
     public String getArch() {
@@ -182,7 +182,7 @@ public class ShieldTVConnectionManager {
     public void setLoggedIn(boolean isLoggedIn) {
         this.isLoggedIn = isLoggedIn;
         if (isLoggedIn) {
-            handler.updateThingStatus(ThingStatus.ONLINE);
+            handler.checkThingStatus();
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB

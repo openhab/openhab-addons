@@ -43,40 +43,12 @@ public class ShieldTVHandler extends BaseThingHandler {
 
     private @Nullable ShieldTVConnectionManager shieldtvConnectionManager;
 
-    private String hostName = "";
-    private String currentApp = "";
-    private String deviceId = "";
-    private String arch = "";
-
     public ShieldTVHandler(Thing thing) {
         super(thing);
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-        thing.setProperty("Device Name", hostName);
-    }
-
-    public String getHostName() {
-        return this.hostName;
-    }
-
-    public void setDeviceID(String deviceId) {
-        this.deviceId = deviceId;
-        thing.setProperty("Device ID", deviceId);
-    }
-
-    public String getDeviceID() {
-        return this.deviceId;
-    }
-
-    public void setArch(String arch) {
-        this.arch = arch;
-        thing.setProperty("Architectures", arch);
-    }
-
-    public String getArch() {
-        return this.arch;
+    public void setThingProperty(String property, String value) {
+        thing.setProperty(property, value);
     }
 
     public void updateThingStatus(ThingStatus thingStatus) {
@@ -97,6 +69,12 @@ public class ShieldTVHandler extends BaseThingHandler {
 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    public void checkThingStatus() {
+        if (shieldtvConnectionManager.getLoggedIn()) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override

@@ -231,7 +231,11 @@ public class ShieldTVMessageParser {
                             i += 2;
                         } while (!st.toString().equals("0a"));
                         st = "" + charArray[i] + "" + charArray[i + 1];
-                        if (st.toString().equals("0a")) {
+
+                        // Look for a third 0a, but only if 12 is not down the line
+                        // If 12 is exactly 20 away from 0a that means that the DN was actually 10 long
+                        String st2 = "" + charArray[i + 22] + "" + charArray[i + 23];
+                        if (st.toString().equals("0a") && !st2.equals("12")) {
                             appSBPrepend.append(st);
                             i += 2;
                             st = "" + charArray[i] + "" + charArray[i + 1];
@@ -282,7 +286,7 @@ public class ShieldTVMessageParser {
                     }
                     st = "" + charArray[i] + "" + charArray[i + 1];
                     if (!st.toString().equals("12")) {
-                        i += 4;
+                        i += 4; // terminates 2801
                     }
                     String appPrepend = appSBPrepend.toString();
                     String appDN = ShieldTVRequest.encodeMessage(appSBDN.toString());
