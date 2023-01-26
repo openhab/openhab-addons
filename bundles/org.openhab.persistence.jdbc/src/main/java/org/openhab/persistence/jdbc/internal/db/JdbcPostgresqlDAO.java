@@ -26,6 +26,7 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
+import org.openhab.persistence.jdbc.internal.utils.DbMetaData;
 import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,12 +64,24 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema "
                 + "FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'";
-        // http://stackoverflow.com/questions/17267417/how-do-i-do-an-upsert-merge-insert-on-duplicate-update-in-postgresql
-        // for later use, PostgreSql > 9.5 to prevent PRIMARY key violation use:
-        // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) ) ON
-        // CONFLICT DO NOTHING";
+        // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue is extended to do an "upsert" (overwrite existing value)
+        // The version check and query change is performed at initAfterFirstDbConnection()
         sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
         sqlAlterTableColumn = "ALTER TABLE #tableName# ALTER COLUMN #columnName# TYPE #columnType#";
+    }
+
+    @Override
+    public void initAfterFirstDbConnection() {
+        logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
+        DbMetaData dbMeta = new DbMetaData();
+        this.dbMeta = dbMeta;
+        // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same TIME (Primary Key) is provided
+        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE
+        // see: https://www.postgresql.org/docs/9.5/sql-insert.html
+        if (dbMeta.isDbVersionGreater(9, 4)) {
+            logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
+            sqlInsertItemValue += " ON CONFLICT (TIME) DO UPDATE SET VALUE=EXCLUDED.VALUE";
+        }
     }
 
     /**
