@@ -26,6 +26,7 @@
 			<channel id="live_lastMeterConsumption" typeId="consumption"/>
 			<channel id="live_accumulatedConsumption" typeId="consumption"/>
 			<channel id="live_accumulatedCost" typeId="cost"/>
+			<channel id="live_accumulatedReward" typeId="reward"/>
 			<channel id="live_currency" typeId="currency"/>
 			<channel id="live_minPower" typeId="power"/>
 			<channel id="live_averagePower" typeId="power"/>
@@ -80,6 +81,12 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Total Cost</label>
 		<description>Cost at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
+		<state pattern="%.3f"></state>
+	</channel-type>
+	<channel-type id="reward">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Reward</label>
+		<description>Reward at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
 		<state pattern="%.3f"></state>
 	</channel-type>
 	<channel-type id="consumption">
