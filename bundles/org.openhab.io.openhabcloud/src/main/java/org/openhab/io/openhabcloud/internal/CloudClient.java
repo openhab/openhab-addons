@@ -72,6 +72,15 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
 public class CloudClient {
+
+    private static final long RECONNECT_MIN = 1_000;
+
+    private static final long RECONNECT_MAX = 60_000;
+
+    private static final double RECONNECT_JITTER = 0.5;
+
+    private static final long READ_TIMEOUT = 60_0000;
+
     /*
      * Logger for this class
      */
@@ -164,9 +173,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
-        reconnectBackoff.setMin(1000);
-        reconnectBackoff.setMax(30_000);
-        reconnectBackoff.setJitter(0.5);
+        reconnectBackoff.setMin(RECONNECT_MIN);
+        reconnectBackoff.setMax(RECONNECT_MAX);
+        reconnectBackoff.setJitter(RECONNECT_JITTER);
     }
 
     /**
@@ -176,20 +185,25 @@ public class CloudClient {
     public void connect() {
         try {
             Options options = new Options();
-            // we always use websockets, this prevents unnecessary polling requests
             options.transports = new String[] { WebSocket.NAME };
-
+            options.reconnection = true; // default value true
+            options.reconnectionAttempts = Integer.MAX_VALUE;
+            options.reconnectionDelay = RECONNECT_MIN; // default value 1_000
+            options.reconnectionDelayMax = RECONNECT_MAX; // default value 5_000
+            options.randomizationFactor = RECONNECT_JITTER; // default value 0.5
+            options.timeout = READ_TIMEOUT; // default value 20_000
+            Builder okHttpBuilder = new Builder();
+            okHttpBuilder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS); // default 10_000
             if (logger.isTraceEnabled()) {
                 // When trace level logging is enabled, we activate further logging of HTTP calls
                 // of the Socket.IO library
-                Builder okHttpBuilder = new Builder();
                 HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
                 loggingInterceptor.setLevel(Level.BASIC);
                 okHttpBuilder.addInterceptor(loggingInterceptor);
                 okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
-                options.callFactory = okHttpBuilder.build();
-                options.webSocketFactory = okHttpBuilder.build();
             }
+            options.callFactory = okHttpBuilder.build();
+            options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
             URL parsed = new URL(baseURL);
             protocol = parsed.getProtocol();
