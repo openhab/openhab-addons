@@ -14,7 +14,7 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,8 +101,8 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
         return state;
     }
 
-    private static State countClients(final UniFiSite site, final Function<UniFiClient, Boolean> filter) {
-        return new DecimalType(site.getCache().countClients(site, c -> c instanceof UniFiClient && filter.apply(c)));
+    private static State countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
+        return new DecimalType(site.getCache().countClients(site, filter));
     }
 
     @Override

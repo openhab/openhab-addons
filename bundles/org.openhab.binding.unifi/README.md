@@ -125,12 +125,14 @@ The `site` information that is retrieved is available as these channels:
 The `guestVouchersGenerate` string channel is a command only channel that will trigger voucher creation.
 It has configuration parameters to tailor the vouchers created:
 
-* `voucherCount`: Number of vouchers to create (default 1)
-* `voucherExpiration`: Minutes a voucher is valid after activation (default 1440 min = 1 day)
-* `voucherUsers`: Number of users for voucher, 0 if no limit (default 1)
-* `voucherUpLimit`: Upload speed limit in kbps, no limit if not set
-* `voucherDownLimit`: Download speed limit in kbps, no limit if not set
-* `voucherDataQuota`: Data transfer quota in MB per user, no limit if not set
+| Parameter                | Description                                                                 | Config   | Default |
+| ------------------------ | --------------------------------------------------------------------------- |--------- | ------- |
+| voucherCount             | Number of vouchers to create                                                | Optional |    1    |
+| voucherExpiration        | Minutes a voucher is valid after activation (default is 1 day)              | Optional |  1440   |
+| voucherUsers             | Number of users for voucher, 0 for no limit                                 | Optional |    1    |
+| voucherUpLimit           | Upload speed limit in kbps, no limit if not set                             | Optional |         |
+| voucherDownLimit         | Download speed limit in kbps, no limit if not set                           | Optional |         |
+| voucherDataQuota         | Data transfer quota in MB per user, no limit if not set                     | Optional |         |
 
 ### `wlan`
 
