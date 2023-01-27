@@ -30,7 +30,7 @@ import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
-import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
@@ -53,7 +53,7 @@ public class VehicleDiscoveryTest {
 
     @Test
     public void testDiscovery() {
-        String content = FileReader.fileToString("src/test/resources/responses/vehicles.json");
+        String content = FileReader.fileToString("responses/vehicles.json");
         List<Vehicle> vehicleList = Arrays.asList(new Gson().fromJson(content, Vehicle[].class));
 
         VehicleDiscovery vehicleDiscovery = new VehicleDiscovery();
@@ -74,13 +74,13 @@ public class VehicleDiscoveryTest {
 
         when(bridgeHandler.getThing()).thenReturn(bridge);
 
-        MyBMWProxy myBMWProxy = mock(MyBMWProxy.class);
+        MyBMWHttpProxy myBMWProxy = mock(MyBMWHttpProxy.class);
         try {
             when(myBMWProxy.requestVehicles()).thenReturn(vehicleList);
         } catch (NetworkException e) {
         }
 
-        when(bridgeHandler.getProxy()).thenReturn(Optional.of(myBMWProxy));
+        when(bridgeHandler.getMyBmwProxy()).thenReturn(Optional.of(myBMWProxy));
 
         vehicleDiscovery.setThingHandler(bridgeHandler);
         assertNotNull(vehicleDiscovery.getThingHandler());

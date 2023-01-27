@@ -56,7 +56,7 @@ public class VehicleBaseTest {
 
     @Test
     public void testVehicleBaseDeserializationByGson() {
-        String vehicleBaseJson = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_base.json");
+        String vehicleBaseJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_base.json");
         Gson gson = new Gson();
 
         VehicleBase[] vehicleBaseArray = gson.fromJson(vehicleBaseJson, VehicleBase[].class);
@@ -66,7 +66,7 @@ public class VehicleBaseTest {
 
     @Test
     public void testVehicleBaseDeserializationByConverter() {
-        String vehicleBaseJson = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_base.json");
+        String vehicleBaseJson = FileReader.fileToString("responses/MILD_HYBRID/vehicles_base.json");
 
         List<VehicleBase> vehicleBaseList = JsonStringDeserializer.getVehicleBaseList(vehicleBaseJson);
 
@@ -74,7 +74,7 @@ public class VehicleBaseTest {
 
         assertEquals(1, vehicleBaseList.size(), "Number of Vehicles");
         VehicleBase vehicle = vehicleBaseList.get(0);
-        assertEquals(Constants.ANONYMOUS, vehicle.getVin(), "VIN");
+        assertEquals(Constants.ANONYMOUS + "MILD_HYBRID", vehicle.getVin(), "VIN");
         assertEquals("M340i xDrive", vehicle.getAttributes().getModel(), "Model");
         assertEquals(Constants.DRIVETRAIN_MILD_HYBRID, vehicle.getAttributes().getDriveTrain(), "DriveTrain");
         assertEquals("bmw", vehicle.getAttributes().getBrand(), "Brand");

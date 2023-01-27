@@ -41,7 +41,7 @@ public class JsonStringDeserializerTest {
     Gson gson = new Gson();
 
     void testGetChargeSessions() {
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_sessions.json");
+        String content = FileReader.fileToString("responses/BEV/charging_sessions.json");
         ChargingSessionsContainer chargeSessionsContainer = JsonStringDeserializer.getChargingSessions(content);
         assertNotNull(chargeSessionsContainer);
 
@@ -51,7 +51,7 @@ public class JsonStringDeserializerTest {
 
     @Test
     void testGetChargeStatistics() {
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/charging_statistics.json");
+        String content = FileReader.fileToString("responses/BEV/charging_statistics.json");
         ChargingStatisticsContainer chargeStatisticsContainer = JsonStringDeserializer.getChargingStatistics(content);
         assertNotNull(chargeStatisticsContainer);
 
@@ -61,7 +61,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetExecutionStatus() {
-        String content = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/remote_service_status.json");
+        String content = FileReader.fileToString("responses/MILD_HYBRID/remote_service_status.json");
         ExecutionStatusContainer executionStatusContainer = JsonStringDeserializer.getExecutionStatus(content);
         assertNotNull(executionStatusContainer);
 
@@ -71,7 +71,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetVehicleBaseList() {
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_base.json");
+        String content = FileReader.fileToString("responses/BEV/vehicles_base.json");
         List<VehicleBase> vehicleBases = JsonStringDeserializer.getVehicleBaseList(content);
         assertNotNull(vehicleBases);
         assertFalse(vehicleBases.isEmpty());
@@ -83,7 +83,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetVehicleStateBEV() {
-        String content = FileReader.fileToString("src/test/resources/responses/BEV/vehicles_state.json");
+        String content = FileReader.fileToString("responses/BEV/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
 
@@ -94,7 +94,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetVehicleStateMILD_HYBRID() {
-        String content = FileReader.fileToString("src/test/resources/responses/MILD_HYBRID/vehicles_state.json");
+        String content = FileReader.fileToString("responses/MILD_HYBRID/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
 
@@ -104,7 +104,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetVehicleStatePHEV() {
-        String content = FileReader.fileToString("src/test/resources/responses/PHEV/vehicles_state.json");
+        String content = FileReader.fileToString("responses/PHEV/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
 
@@ -114,7 +114,7 @@ public class JsonStringDeserializerTest {
 
     // @Test
     void testGetVehicleStateICE() {
-        String content = FileReader.fileToString("src/test/resources/responses/ICE/vehicles_state.json");
+        String content = FileReader.fileToString("responses/ICE/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);
 

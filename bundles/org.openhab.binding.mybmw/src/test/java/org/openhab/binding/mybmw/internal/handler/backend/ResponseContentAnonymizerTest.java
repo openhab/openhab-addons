@@ -29,7 +29,7 @@ import org.openhab.binding.mybmw.internal.util.FileReader;
 public class ResponseContentAnonymizerTest {
     @Test
     void testAnonymizeResponseContent() {
-        String content = FileReader.fileToString("src/test/resources/responses/vehicles.json");
+        String content = FileReader.fileToString("responses/vehicles.json");
         String anonymous = ResponseContentAnonymizer.anonymizeResponseContent(content);
         assertFalse(anonymous.contains("VIN1234567"), "VIN not deleted!");
         assertFalse(anonymous.contains("Testort"), "Location not deleted!");

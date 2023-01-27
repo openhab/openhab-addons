@@ -59,7 +59,7 @@ public class MyBMWProxyBackendIT {
 
     private final Logger logger = LoggerFactory.getLogger(MyBMWProxyBackendIT.class);
 
-    public MyBMWProxy initializeProxy() {
+    public MyBMWHttpProxy initializeProxy() {
         String connectedUser = System.getenv("CONNECTED_USER");
         String connectedPassword = System.getenv("CONNECTED_PASSWORD");
         assertNotNull(connectedUser);
@@ -71,7 +71,7 @@ public class MyBMWProxyBackendIT {
         configuration.userName = connectedUser;
         configuration.password = connectedPassword;
 
-        return new MyBMWProxy(new MyHttpClientFactory(), configuration);
+        return new MyBMWHttpProxy(new MyHttpClientFactory(), configuration);
     }
 
     @BeforeEach
@@ -87,7 +87,7 @@ public class MyBMWProxyBackendIT {
 
     @Test
     public void testSequence() {
-        MyBMWProxy myBMWProxy = initializeProxy();
+        MyBMWHttpProxy myBMWProxy = initializeProxy();
 
         // get list of vehicles
         List<@NonNull VehicleBase> vehicles = null;
@@ -180,7 +180,7 @@ public class MyBMWProxyBackendIT {
     @Test
     @Disabled
     public void testGetVehicles() {
-        MyBMWProxy myBMWProxy = initializeProxy();
+        MyBMWHttpProxy myBMWProxy = initializeProxy();
 
         try {
             List<@NonNull Vehicle> vehicles = myBMWProxy.requestVehicles();

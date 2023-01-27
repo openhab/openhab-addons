@@ -283,7 +283,7 @@ class AuthTest {
             chargingControlRequest.header("accept-language", "de");
             chargingControlRequest.header("Content-Type", CONTENT_TYPE_JSON);
 
-            // String content = FileReader.readFileInString("src/test/resources/responses/charging-profile.json");
+            // String content = FileReader.readFileInString("responses/charging-profile.json");
             // logger.info("{}", content);
             // ChargeProfile cpc = JsonStringDeserializer.deserializeString(content, ChargeProfile.class);
             // String contentTranfsorm = Converter.getGson().toJson(cpc);
@@ -336,8 +336,7 @@ class AuthTest {
 
     @Test
     public void testJWTDeserialze() {
-        String accessTokenResponseStr = FileReader
-                .fileToString("src/test/resources/responses/auth/auth_cn_login_pwd.json");
+        String accessTokenResponseStr = FileReader.fileToString("responses/auth/auth_cn_login_pwd.json");
         ChinaTokenResponse cat = JsonStringDeserializer.deserializeString(accessTokenResponseStr,
                 ChinaTokenResponse.class);
 
@@ -378,7 +377,7 @@ class AuthTest {
 
     @Test
     public void testPublicKey() {
-        String publicKeyResponseStr = FileReader.fileToString("src/test/resources/responses/auth/china-key.json");
+        String publicKeyResponseStr = FileReader.fileToString("responses/auth/china-key.json");
         ChinaPublicKeyResponse pkr = JsonStringDeserializer.deserializeString(publicKeyResponseStr,
                 ChinaPublicKeyResponse.class);
         String publicKeyStr = pkr.data.value;

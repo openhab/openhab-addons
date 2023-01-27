@@ -1,6 +1,6 @@
 [
     {
-        "vin": "anonymous",
+        "vin": "anonymousBEV",
         "mappingInfo": {
             "isAssociated": true,
             "isLmmEnabled": true,

@@ -48,12 +48,7 @@ public class ChargingStatisticsWrapper {
     private ChargingStatisticsContainer chargeStatisticContainer;
 
     public ChargingStatisticsWrapper(String content) {
-        ChargingStatisticsContainer fromJson = JsonStringDeserializer.getChargingStatistics(content);
-        if (fromJson != null) {
-            chargeStatisticContainer = fromJson;
-        } else {
-            chargeStatisticContainer = new ChargingStatisticsContainer();
-        }
+        chargeStatisticContainer = JsonStringDeserializer.getChargingStatistics(content);
     }
 
     /**
@@ -86,7 +81,7 @@ public class ChargingStatisticsWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_CHARGE_STATISTICS:
-                        assertEquals(chargeStatisticContainer.description, st.toString(), "Statistics name");
+                        assertEquals(chargeStatisticContainer.getDescription(), st.toString(), "Statistics name");
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
@@ -96,14 +91,15 @@ public class ChargingStatisticsWrapper {
             case SESSIONS:
                 assertTrue(state instanceof DecimalType);
                 dt = ((DecimalType) state);
-                assertEquals(chargeStatisticContainer.statistics.numberOfChargingSessions, dt.intValue(),
+                assertEquals(chargeStatisticContainer.getStatistics().getNumberOfChargingSessions(), dt.intValue(),
                         "Charge Sessions");
                 break;
             case ENERGY:
                 assertTrue(state instanceof QuantityType);
                 qte = ((QuantityType) state);
                 assertEquals(Units.KILOWATT_HOUR, qte.getUnit(), "kwh");
-                assertEquals(chargeStatisticContainer.statistics.totalEnergyCharged, qte.intValue(), "Energy");
+                assertEquals(chargeStatisticContainer.getStatistics().getTotalEnergyCharged(), qte.intValue(),
+                        "Energy");
                 break;
             default:
                 // fail in case of unknown update

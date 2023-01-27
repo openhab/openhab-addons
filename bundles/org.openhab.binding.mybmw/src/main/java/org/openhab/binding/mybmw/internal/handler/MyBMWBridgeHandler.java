@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.discovery.VehicleDiscovery;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWFileProxy;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.MyBMWConfigurationChecker;
@@ -46,10 +48,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
+    private static final String ENVIRONMENT = "ENVIRONMENT";
+    private static final String TEST = "test";
+    private static final String TESTUSER = "testuser";
+
     private final Logger logger = LoggerFactory.getLogger(MyBMWBridgeHandler.class);
 
     private HttpClientFactory httpClientFactory;
-    private Optional<MyBMWProxy> proxy = Optional.empty();
+    private Optional<MyBMWProxy> myBmwProxy = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<VehicleDiscovery> vehicleDiscovery = Optional.empty();
     private String localeLanguage;
@@ -82,7 +88,14 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
         if (!MyBMWConfigurationChecker.checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
-            proxy = Optional.of(new MyBMWProxy(httpClientFactory, config));
+
+            String environment = System.getenv(ENVIRONMENT);
+
+            if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {
+                myBmwProxy = Optional.of(new MyBMWHttpProxy(httpClientFactory, config));
+            } else {
+                myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));
+            }
             initializerJob = Optional.of(scheduler.schedule(this::discoverVehicles, 2, TimeUnit.SECONDS));
         }
     }
@@ -115,8 +128,8 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(VehicleDiscovery.class);
     }
 
-    public Optional<MyBMWProxy> getProxy() {
+    public Optional<MyBMWProxy> getMyBmwProxy() {
         logger.trace("xxxMyBMWBridgeHandler.getProxy");
-        return proxy;
+        return myBmwProxy;
     }
 }

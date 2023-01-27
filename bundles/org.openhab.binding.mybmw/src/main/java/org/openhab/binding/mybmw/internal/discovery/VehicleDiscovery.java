@@ -94,7 +94,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
         logger.trace("xxxVehicleDiscovery.discoverVehicles");
 
         if (!myBMWProxy.isPresent()) {
-            myBMWProxy = bridgeHandler.get().getProxy();
+            myBMWProxy = bridgeHandler.get().getMyBmwProxy();
         }
 
         try {

@@ -130,7 +130,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension {
                 console.println("MyBMW bridge for account not online, cannot create fingerprint");
             } else {
                 String accountPath = path + File.separator + "Account-" + String.valueOf(accountNdx);
-                handler.getProxy().ifPresentOrElse(prox -> {
+                handler.getMyBmwProxy().ifPresentOrElse(prox -> {
                     // get list of vehicles
                     List<@NonNull VehicleBase> vehicles = null;
                     try {
