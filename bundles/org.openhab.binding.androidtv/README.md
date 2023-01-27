@@ -1,6 +1,7 @@
-# ShieldTV Binding
+# AndroidTV Binding
 
-This binding emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
+This binding is designed to emulate different protocols to interact with the AndroidTV platform.
+Currently it emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
 
 ## Supported Things
 
@@ -29,7 +30,7 @@ There are three required fields to connect successfully to a ShieldTV.
 | keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
 
 ```java
-Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
+Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 ```
 
 ## Channels
@@ -44,11 +45,11 @@ Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 
 
 ```java
-String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
-String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
-String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
-String ShieldTV_APPNAME "APPNAME [%s]" { channel = "shieldtv:shieldtv:livingroom:appname" }
-String ShieldTV_APPURL "APPURL [%s]" { channel = "shieldtv:shieldtv:livingroom:appurl" }
+String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
+String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
+String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
+String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
+String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
 ```
 
 KEYPRESS will accept the following commands as strings (case sensitive):
@@ -89,14 +90,14 @@ This completes the PIN process.  Upon reconnection (either from reconfiguration 
 ## Full Example
 
 ```java
-Thing shieldtv:shieldtv:livingroom [ ipAddress="192.168.1.2", ]
+Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 ```
 
 ```java
-String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "shieldtv:shieldtv:livingroom:keypress" }
-String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "shieldtv:shieldtv:livingroom:pincode" }
-String ShieldTV_APP "APP [%s]" { channel = "shieldtv:shieldtv:livingroom:app" }
-String ShieldTV_APPNAME "APPNAME [%s]" { channel = "shieldtv:shieldtv:livingroom:appname" }
-String ShieldTV_APPURL "APPURL [%s]" { channel = "shieldtv:shieldtv:livingroom:appurl" }
+String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
+String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
+String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
+String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
+String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
 ```
 
