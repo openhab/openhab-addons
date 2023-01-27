@@ -43,6 +43,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.ENERGY;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_CONSUMPTION;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
@@ -535,6 +536,11 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_RANGE, REMAINING_FUEL,
                     QuantityType.valueOf(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), Units.LITRE),
                     channelToBeUpdated);
+
+            double estimatedFuelConsumption = vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
+                    / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
+            updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_CONSUMPTION,
+                    DecimalType.valueOf(estimatedFuelConsumption + ""), channelToBeUpdated);
         }
     }
 

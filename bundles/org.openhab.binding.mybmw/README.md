@@ -246,17 +246,18 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 * Availability according to table
 * Read-only values
 
-| Channel Label             | Channel ID              | Type                 | conv | phev | bev_rex | bev |
-|---------------------------|-------------------------|----------------------|------|------|---------|-----|
-| Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range            | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     | 
-| Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     | 
-| Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     | 
-| Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
+| Channel Label              | Channel ID                 | Type                 | conv | phev | bev_rex | bev |
+|----------------------------|----------------------------|----------------------|------|------|---------|-----|
+| Mileage                    | mileage                    | Number:Length        |  X   |  X   |    X    |  X  |
+| Fuel Range                 | range-fuel                 | Number:Length        |  X   |  X   |    X    |     |
+| Electric Range             | range-electric             | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range               | range-hybrid               | Number:Length        |      |  X   |    X    |     | 
+| Battery Charge Level       | soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
+| Remaining Fuel             | remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     | 
+| Estimated Fuel Consumption | estimated-fuel-consumption | Number:Dimensionless |  X   |  X   |    X    |     | 
+| Fuel Range Radius          | range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     | 
+| Electric Range Radius      | range-radius-electric      | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range Radius        | range-radius-hybrid        | Number:Length        |      |  X   |    X    |     | 
 
 
 #### Doors Details

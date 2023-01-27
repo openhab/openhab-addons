@@ -33,6 +33,11 @@
 		<label>Remaining Fuel</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="estimated-fuel-consumption-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Estimated Fuel Consumption l/100km</label>
+		<state pattern="%.2f l/100km" readOnly="true"/>
+	</channel-type>
 	<channel-type id="range-radius-electric-channel">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range Radius</label>

@@ -32,6 +32,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_FRON
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_CONSUMPTION;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
@@ -88,6 +89,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -163,6 +165,7 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
+        DecimalType dt;
         Unit<Length> wantedUnit = KILOMETRE;
         switch (cUid) {
             case MILEAGE:
@@ -221,6 +224,14 @@ public class StatusWrapper {
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter Unit");
                 assertEquals(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), qt.intValue(),
                         "Fuel Level");
+                break;
+            case ESTIMATED_FUEL_CONSUMPTION:
+                assertTrue(hasFuel, "Has Fuel");
+                assertTrue(state instanceof DecimalType);
+                dt = ((DecimalType) state);
+                double estimatedFuelConsumption = vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
+                        / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
+                assertEquals(estimatedFuelConsumption, dt.doubleValue(), "Estimated Fuel Consumption");
                 break;
             case SOC:
                 assertTrue(isElectric, "Is Electric");
