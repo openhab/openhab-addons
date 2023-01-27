@@ -22,11 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -52,6 +54,7 @@ import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
+import io.socket.engineio.client.transports.WebSocket;
 import io.socket.parser.Packet;
 import io.socket.parser.Parser;
 import okhttp3.OkHttpClient.Builder;
@@ -110,11 +113,6 @@ public class CloudClient {
     private boolean isConnected;
 
     /*
-     * This variable holds version of local openHAB
-     */
-    private String openHABVersion;
-
-    /*
      * This variable holds instance of Socket.IO client class which provides communication
      * with the openHAB Cloud
      */
@@ -145,7 +143,9 @@ public class CloudClient {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
-    private ScheduledFuture<?> reconnectFuture;
+    @SuppressWarnings("null")
+    private final AtomicReference<Optional<ScheduledFuture<?>>> reconnectFuture = new AtomicReference<>(
+            Optional.empty());
 
     /**
      * Constructor of CloudClient
@@ -176,6 +176,9 @@ public class CloudClient {
     public void connect() {
         try {
             Options options = new Options();
+            // we always use websockets, this prevents unnecessary polling requests
+            options.transports = new String[] { WebSocket.NAME };
+
             if (logger.isTraceEnabled()) {
                 // When trace level logging is enabled, we activate further logging of HTTP calls
                 // of the Socket.IO library
@@ -328,13 +331,12 @@ public class CloudClient {
                             logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
-                        stopReconnectFuture();
-                        reconnectFuture = scheduler.schedule(new Runnable() {
+                        reconnectFuture.getAndSet(Optional.of(scheduler.schedule(new Runnable() {
                             @Override
                             public void run() {
                                 socket.connect();
                             }
-                        }, delay, TimeUnit.MILLISECONDS);
+                        }, delay, TimeUnit.MILLISECONDS))).ifPresent(future -> future.cancel(true));
                     }
                 })//
 
@@ -675,28 +677,12 @@ public class CloudClient {
      */
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
-        stopReconnectFuture();
+        reconnectFuture.get().ifPresent(future -> future.cancel(true));
         socket.disconnect();
-    }
-
-    public String getOpenHABVersion() {
-        return openHABVersion;
-    }
-
-    public void setOpenHABVersion(String openHABVersion) {
-        this.openHABVersion = openHABVersion;
     }
 
     public void setListener(CloudClientListener listener) {
         this.listener = listener;
-    }
-
-    private void stopReconnectFuture() {
-        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-        if (reconnectFuture != null) {
-            reconnectFuture.cancel(true);
-            this.reconnectFuture = null;
-        }
     }
 
     private JSONObject getJSONHeaders(HttpFields httpFields) {
