@@ -136,9 +136,9 @@ public class TibberHandler extends BaseThingHandler {
                     if (viewerObject != null) {
                         JsonObject homeObject = viewerObject.getAsJsonObject("home");
                         if (homeObject != null) {
-                            JsonObject featuresObject = viewerObject.getAsJsonObject("features");
+                            JsonObject featuresObject = homeObject.getAsJsonObject("features");
                             if (featuresObject != null) {
-                                rtEnabled = viewerObject.get("realTimeConsumptionEnabled").toString();
+                                rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
                             }
                         }
                     }
