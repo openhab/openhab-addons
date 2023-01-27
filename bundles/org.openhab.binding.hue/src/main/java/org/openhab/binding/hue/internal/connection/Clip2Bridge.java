@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.connection;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -45,6 +46,7 @@ import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http.MetaData.Response;
+import org.eclipse.jetty.http.PreEncodedHttpField;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
 import org.eclipse.jetty.http2.client.HTTP2Client;
@@ -81,8 +83,8 @@ import com.google.gson.JsonParser;
  *
  * It uses the following connection mechanisms..
  *
- * <li>The primary communication uses HTTP 2.0 streams over a shared permanent HTTP 2.0 session.</li>
- * <li>The 'putResource()' method uses HTTP/1.1 over the OH common Jetty client (may change in future).</li>
+ * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
+ * <li>The 'putResource()' method uses HTTP/1.1 over the OH common Jetty client if the HPACK jar is missing.</li>
  * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
  * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
  *
@@ -99,7 +101,7 @@ public class Clip2Bridge implements Closeable {
     private static interface AdapterErrorHandler {
 
         /**
-         * Enum of potential fatal HTTP 2.0 session/stream errors.
+         * Enum of potential fatal HTTP 2 session/stream errors.
          *
          * @author Andrew Fiddian-Green - Initial Contribution
          */
@@ -118,7 +120,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Base (abstract) adapter for HTTP 2.0 stream events.
+     * Base (abstract) adapter for HTTP 2 stream events.
      *
      * It implements a CompletableFuture by means of which the caller can wait for the response data to come in. And
      * which, in the case of fatal errors, gets completed exceptionally.
@@ -143,9 +145,9 @@ public class Clip2Bridge implements Closeable {
         public void fatalError(Error error) {
             Exception e;
             if (Error.UNAUTHORIZED.equals(error)) {
-                e = new HttpUnAuthorizedException("HTTP 2.0 request not authorized");
+                e = new HttpUnAuthorizedException("HTTP 2 request not authorized");
             } else {
-                e = new ApiException("HTTP 2.0 stream " + error.toString().toLowerCase());
+                e = new ApiException("HTTP 2 stream " + error.toString().toLowerCase());
             }
             completable.completeExceptionally(e);
             owner.fatalError(this, error);
@@ -276,7 +278,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Adapter for HTTP 2.0 session status events.
+     * Adapter for HTTP 2 session status events.
      *
      * The session must be permanently connected, so it ignores onIdleTimeout() events.
      * It also handles the following fatal events by notifying the owner.
@@ -387,13 +389,13 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
+    private final boolean cannotEncodePutMethod;
 
     private boolean closing = false;
     private boolean online = false;
     private Instant lastRequestTime = Instant.MIN;
     private Instant sessionExpireTime = Instant.MAX;
     private @Nullable Session http2Session;
-
     private @Nullable Stream eventStream;
     private @Nullable ScheduledFuture<?> checkAliveTask;
 
@@ -418,6 +420,17 @@ public class Clip2Bridge implements Closeable {
         http2Client = new HTTP2Client();
         http2Client.setConnectTimeout(TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
+        boolean cannotEncodePutMethod;
+        try {
+            PreEncodedHttpField field = new PreEncodedHttpField(HttpHeader.C_METHOD, "PUT");
+            ByteBuffer bytes = ByteBuffer.allocate(32);
+            field.putTo(bytes, HttpVersion.HTTP_2);
+            cannotEncodePutMethod = false;
+        } catch (Exception e) {
+            cannotEncodePutMethod = true;
+        }
+        this.cannotEncodePutMethod = cannotEncodePutMethod;
+        logger.trace("cannotEncodePutMethod:{}", cannotEncodePutMethod);
     }
 
     /**
@@ -490,7 +503,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Close the HTTP 2.0 SSE event stream if necessary.
+     * Close the HTTP 2 SSE event stream if necessary.
      */
     private void closeEventStream() {
         logger.debug("closeEventStream () called");
@@ -502,7 +515,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Close the HTTP 2.0 session if necessary.
+     * Close the HTTP 2 session if necessary.
      */
     private void closeSession() {
         logger.debug("closeSession() called");
@@ -545,7 +558,6 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if anything fails.
      */
     public Resources getResources(ResourceReference reference) throws ApiException {
-        logger.debug("getResources() called");
         try {
             return getResourcesImpl(reference);
         } catch (HttpUnAuthorizedException e) {
@@ -554,7 +566,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Internal method to send an HTTP 2.0 GET request to the Hue Bridge and process its response.
+     * Internal method to send an HTTP 2 GET request to the Hue Bridge and process its response.
      *
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
@@ -563,27 +575,26 @@ public class Clip2Bridge implements Closeable {
      */
     private Resources getResourcesImpl(ResourceReference reference) throws ApiException, HttpUnAuthorizedException {
         throttle();
-        logger.debug("getResourcesImpl() called");
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
-            throw new ApiException("HTTP 2.0 session is null or closed");
+            throw new ApiException("HTTP 2 session is null or closed");
         }
+        String url = getUrl(reference);
         HttpFields fields = new HttpFields();
         fields.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
         fields.put(HttpHeader.USER_AGENT, APPLICATION_ID);
         fields.put(APPLICATION_KEY, applicationKey);
-        String url = getUrl(reference);
         HeadersFrame headers = new HeadersFrame(
                 new MetaData.Request("GET", new HttpURI(url), HttpVersion.HTTP_2, fields), null, true);
         ContentAdapter adapter = new ContentAdapter(this);
         Completable<@Nullable Stream> completable = new Completable<>();
-        logger.trace("GET {} HTTP/2.0", url);
+        logger.trace("GET {} HTTP/2", url);
         Stream stream = null;
         try {
             session.newStream(headers, completable, adapter);
             stream = Objects.requireNonNull(completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
             String json = adapter.completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).trim();
-            logger.trace("HTTP/2.0 200 OK << {}", json);
+            logger.trace("HTTP/2 200 OK << {}", json);
             Resources resources = Objects.requireNonNull(jsonParser.fromJson(json, Resources.class));
             if (logger.isDebugEnabled()) {
                 resources.getErrors().forEach(error -> logger.debug("Resources error:{}", error));
@@ -674,7 +685,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Open the HTTP 2.0 session and the event stream.
+     * Open the HTTP 2 session and the event stream.
      *
      * @throws ApiException if there was a communication error.
      * @throws HttpUnAuthorizedException if the application key is not authenticated
@@ -685,7 +696,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Open the HTTP 2.0 session and the event stream.
+     * Open the HTTP 2 session and the event stream.
      *
      * @param notifyHandler indicates whether to notify the handler.
      * @throws ApiException if there was a communication error.
@@ -737,16 +748,15 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Open an HTTP 2.0 SSE event stream if necessary.
+     * Open an HTTP 2 SSE event stream if necessary.
      *
      * @throws ApiException if an error was encountered.
      */
     private void openEventStream() throws ApiException, HttpUnAuthorizedException {
         throttle();
-        logger.debug("openEventStream() called");
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
-            throw new ApiException("HTTP 2.0 session is null or in an illegal state");
+            throw new ApiException("HTTP 2 session is null or in an illegal state");
         }
         Stream stream = eventStream;
         if (Objects.nonNull(stream) && !stream.isClosed() && !stream.isReset()) {
@@ -760,7 +770,7 @@ public class Clip2Bridge implements Closeable {
         HeadersFrame headers = new HeadersFrame(request, null, true);
         EventAdapter adapter = new EventAdapter(this);
         Completable<@Nullable Stream> completable = new Completable<>();
-        logger.trace("GET {} HTTP/2.0", eventUrl);
+        logger.trace("GET {} HTTP/2", eventUrl);
         try {
             session.newStream(headers, completable, adapter);
             stream = Objects.requireNonNull(completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
@@ -773,7 +783,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Open the HTTP 2.0 session if necessary.
+     * Open the HTTP 2 session if necessary.
      *
      * @throws ApiException if it was not possible to create and connect the session.
      */
@@ -790,26 +800,40 @@ public class Clip2Bridge implements Closeable {
             http2Client.connect(httpClient.getSslContextFactory(), address, adapter, completable);
             http2Session = Objects.requireNonNull(completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new ApiException("Error opening HTTP 2.0 session", e);
+            throw new ApiException("Error opening HTTP 2 session", e);
         }
     }
 
     /**
-     * Use an HTTP PUT to send a Resource to the server.
+     * Use an HTTP/1.1 or HTTP/2 PUT command to send a resource to the server.
+     *
      * <p>
      * <b>Developer Note:</b>
-     * For best performance this method should use a new stream on the existing HTTP/2.0 session. However the Jetty
-     * HTTP2 library version currently used by OH [v9.4.46.v20220331] fails with an 'hpack' (header compression) error
+     * For best performance this method should use a new stream on the existing HTTP/2 session. However the Jetty HTTP2
+     * library version currently used by OH [v9.4.46.v20220331] fails with an 'hpack' (header compression) error
      * <a href="https://github.com/eclipse/jetty.project/issues/9168">(Jetty Issue 9168)</a> when attempting to encode
-     * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, but in the meantime
-     * we use a regular HTTP/1.1 call instead.
-     *
+     * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, or when Jetty
+     * HTTP/2 is included in the OH core, but in the meantime we fall back to using a regular HTTP/1.1 call.
      * </p>
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      */
     public void putResource(Resource resource) throws ApiException {
+        if (cannotEncodePutMethod) {
+            putResourceHttp1(resource);
+        } else {
+            putResourceHttp2(resource);
+        }
+    }
+
+    /**
+     * Use an HTTP/1.1 PUT to send a Resource to the server.
+     *
+     * @param resource the resource to put.
+     * @throws ApiException if something fails.
+     */
+    private void putResourceHttp1(Resource resource) throws ApiException {
         throttle();
         String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
         String json = jsonParser.toJson(resource);
@@ -828,6 +852,54 @@ public class Clip2Bridge implements Closeable {
             throw new ApiException("Error sending request", e);
         } catch (JsonParseException e) {
             throw new ApiException("Parsing error", e);
+        }
+    }
+
+    /**
+     * Use an HTTP/2 PUT to send a Resource to the server.
+     *
+     * @param resource the resource to put.
+     * @throws ApiException if something fails.
+     */
+    private void putResourceHttp2(Resource resource) throws ApiException {
+        throttle();
+        Session session = http2Session;
+        if (Objects.isNull(session) || session.isClosed()) {
+            throw new ApiException("HTTP 2 session is null or closed");
+        }
+        String jsonSend = jsonParser.toJson(resource);
+        ByteBuffer jsonBytes = ByteBuffer.wrap(jsonSend.getBytes(StandardCharsets.UTF_8));
+        String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
+        HttpFields fields = new HttpFields();
+        fields.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+        fields.put(HttpHeader.USER_AGENT, APPLICATION_ID);
+        fields.put(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+        fields.putLongField(HttpHeader.CONTENT_LENGTH, jsonBytes.capacity());
+        fields.put(APPLICATION_KEY, applicationKey);
+        HeadersFrame headers = new HeadersFrame(
+                new MetaData.Request("PUT", new HttpURI(url), HttpVersion.HTTP_2, fields), null, false);
+        ContentAdapter adapter = new ContentAdapter(this);
+        Completable<@Nullable Stream> completable = new Completable<>();
+        logger.trace("PUT {} HTTP/2 >> {}", url, jsonSend);
+        Stream stream = null;
+        try {
+            session.newStream(headers, completable, adapter);
+            stream = Objects.requireNonNull(completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+            stream.data(new DataFrame(stream.getId(), jsonBytes, true), Callback.NOOP);
+            String jsonRead = adapter.completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).trim();
+            logger.trace("HTTP/2 200 OK << {}", jsonRead);
+            Resources resources = Objects.requireNonNull(jsonParser.fromJson(jsonRead, Resources.class));
+            if (logger.isDebugEnabled()) {
+                resources.getErrors().forEach(error -> logger.debug("Resources error:{}", error));
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new ApiException("Error sending request", e);
+        } catch (JsonParseException e) {
+            throw new ApiException("Parsing error", e);
+        } finally {
+            if (Objects.nonNull(stream)) {
+                stream.reset(new ResetFrame(stream.getId(), 0), Callback.NOOP);
+            }
         }
     }
 
