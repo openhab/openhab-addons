@@ -193,6 +193,13 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
                 }
                 break;
+            case CHANNEL_AUDYSSEYEQ:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommand.AUDYSSEYEQ_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.AUDYSSEYEQ_QUERY);
+                }
+                break;
 
             /*
              * ZONE 2
@@ -419,6 +426,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case LISTEN_MODE:
                     updateState(CHANNEL_LISTENMODE,
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
+                case AUDYSSEYEQ:
+                    updateState(CHANNEL_AUDYSSEYEQ,
                             convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     break;
 
@@ -828,6 +839,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             sendCommand(EiscpCommand.INFO_QUERY);
             sendCommand(EiscpCommand.AUDIOINFO_QUERY);
             sendCommand(EiscpCommand.VIDEOINFO_QUERY);
+            sendCommand(EiscpCommand.AUDYSSEYEQ_QUERY);
 
             if (isChannelAvailable(CHANNEL_POWERZONE2)) {
                 sendCommand(EiscpCommand.ZONE2_POWER_QUERY);
