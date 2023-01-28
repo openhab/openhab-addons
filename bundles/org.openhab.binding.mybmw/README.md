@@ -352,7 +352,7 @@ Parallel execution isn't supported.
 
 The channel _command_ provides options
 
-- _flash-lights_
+- _light-flash_
 - _vehicle-finder_
 - _door-lock_
 - _door-unlock_
