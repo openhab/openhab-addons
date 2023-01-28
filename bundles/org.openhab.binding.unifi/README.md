@@ -113,12 +113,26 @@ The following table describes the `poePort` configuration parameters:
 
 The `site` information that is retrieved is available as these channels:
 
-| Channel ID      | Item Type | Description                          | Permissions |
-|-----------------|-----------|--------------------------------------|-------------|
-| totalClients    | Number    | Total number of clients connected    | Read        |
-| wirelessClients | Number    | Number of wireless clients connected | Read        |
-| wiredClients    | Number    | Number of wired clients connected    | Read        |
-| guestClients    | Number    | Number of guest clients connected    | Read        |
+| Channel ID            | Item Type | Description                                                            | Permissions |
+|-----------------------|-----------|------------------------------------------------------------------------|-------------|
+| totalClients          | Number    | Total number of clients connected                                      | Read        |
+| wirelessClients       | Number    | Number of wireless clients connected                                   | Read        |
+| wiredClients          | Number    | Number of wired clients connected                                      | Read        |
+| guestClients          | Number    | Number of guest clients connected                                      | Read        |
+| guestVoucher          | String    | Guest voucher for access through the guest portal                      | Read        |
+| guestVouchersGenerate | String    | Generate additional guest vouchers for access through the guest portal | Write       |
+
+The `guestVouchersGenerate` string channel is a command only channel that will trigger voucher creation.
+It has configuration parameters to tailor the vouchers created:
+
+| Parameter                | Description                                                                 | Config   | Default |
+| ------------------------ | --------------------------------------------------------------------------- |--------- | ------- |
+| voucherCount             | Number of vouchers to create                                                | Optional |    1    |
+| voucherExpiration        | Minutes a voucher is valid after activation (default is 1 day)              | Optional |  1440   |
+| voucherUsers             | Number of users for voucher, 0 for no limit                                 | Optional |    1    |
+| voucherUpLimit           | Upload speed limit in kbps, no limit if not set                             | Optional |         |
+| voucherDownLimit         | Download speed limit in kbps, no limit if not set                           | Optional |         |
+| voucherDataQuota         | Data transfer quota in MB per user, no limit if not set                     | Optional |         |
 
 ### `wlan`
 
