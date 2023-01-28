@@ -41,6 +41,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -105,8 +106,14 @@ public class ThermostatHandler extends BaseThingHandler {
         } else {
             synchronized (this) {
                 updatedValues.add(new AbstractMap.SimpleImmutableEntry<String, Command>(channelUID.getId(), command));
-                ((OJCloudHandler) Objects.requireNonNull(Objects.requireNonNull(getBridge()).getHandler()))
-                        .updateThinksChannelValuesToCloud();
+
+                BridgeHandler bridgeHandler = Objects.requireNonNull(getBridge()).getHandler();
+                if (bridgeHandler != null) {
+                    ((OJCloudHandler) (bridgeHandler)).updateThinksChannelValuesToCloud();
+                } else {
+                    currentThermostat = null;
+                    updateStatus(ThingStatus.OFFLINE);
+                }
             }
         }
     }
@@ -116,7 +123,6 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -125,6 +131,9 @@ public class ThermostatHandler extends BaseThingHandler {
      * @param thermostat thermostat values
      */
     public void handleThermostatRefresh(ThermostatModel thermostat) {
+        if (currentThermostat == null) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         currentThermostat = thermostat;
         channelRefreshActions.forEach((channelUID, action) -> action.accept(thermostat));
     }
