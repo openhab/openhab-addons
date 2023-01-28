@@ -49,7 +49,12 @@
 	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
-		<label>Last Status Timestamp</label>
+		<label>Last Car Status Timestamp</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-fetched-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Openhab Update Timestamp</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel" advanced="true">

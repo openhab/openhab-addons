@@ -15,6 +15,7 @@ package org.openhab.binding.mybmw.internal.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
@@ -23,6 +24,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * @author Martin Grassl - initial contribution
  */
+@NonNullByDefault
 public class ConverterTest {
     @Test
     void testToTitleCase() {

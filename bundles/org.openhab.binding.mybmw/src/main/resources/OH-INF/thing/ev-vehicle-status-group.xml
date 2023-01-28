@@ -17,6 +17,7 @@
 			<channel id="charge" typeId="charging-status-channel"/>
 			<channel id="charge-remaining" typeId="charging-remaining-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="last-fetched" typeId="last-fetched-channel"/>
 			<channel id="raw" typeId="raw-channel"/>
 		</channels>
 	</channel-group-type>

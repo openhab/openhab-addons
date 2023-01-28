@@ -125,6 +125,7 @@ public interface MyBMWConstants {
     static final String CHARGE_STATUS = "charge";
     static final String CHARGE_REMAINING = "charge-remaining";
     static final String LAST_UPDATE = "last-update";
+    static final String LAST_FETCHED = "last-fetched";
     static final String RAW = "raw";
 
     // Door Details
@@ -172,7 +173,8 @@ public interface MyBMWConstants {
     static final String RANGE_HYBRID = "hybrid";
     static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
     static final String REMAINING_FUEL = "remaining-fuel";
-    static final String ESTIMATED_FUEL_CONSUMPTION = "estimated-fuel-consumption";
+    static final String ESTIMATED_FUEL_L_100KM = "estimated-fuel-l-100km";
+    static final String ESTIMATED_FUEL_MPG = "estimated-fuel-mpg";
     static final String SOC = "soc";
 
     // Image

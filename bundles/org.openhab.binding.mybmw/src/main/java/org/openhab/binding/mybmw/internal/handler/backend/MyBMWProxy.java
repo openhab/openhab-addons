@@ -29,7 +29,7 @@ import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 /**
  * this is the interface for requesting the myBMW responses
  * 
- * @author Martin Grassl - extract interface
+ * @author Martin Grassl - Initial Contribution
  */
 @NonNullByDefault
 public interface MyBMWProxy {

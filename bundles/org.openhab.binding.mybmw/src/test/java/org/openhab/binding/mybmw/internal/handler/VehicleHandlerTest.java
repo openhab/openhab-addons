@@ -63,10 +63,10 @@ public class VehicleHandlerTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     // counters for the number of properties per section
-    private static final int STATUS_ELECTRIC = 11;
-    private static final int STATUS_CONV = 8;
-    private static final int RANGE_HYBRID = 10;
-    private static final int RANGE_CONV = 5;
+    private static final int STATUS_ELECTRIC = 12;
+    private static final int STATUS_CONV = 9;
+    private static final int RANGE_HYBRID = 11;
+    private static final int RANGE_CONV = 6;
     private static final int RANGE_ELECTRIC = 4;
     private static final int DOORS = 11;
     private static final int CHECK_EMPTY = 3;

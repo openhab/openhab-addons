@@ -172,7 +172,8 @@ Reflects overall status of the vehicle.
 | Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
 | Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
 | Remaining Charging Time   | charge-remaining    | Number:Time   | Remainining time for current charging session  |      |  X   |    X    |  X  |
-| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
+| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update of the car |  X   |  X   |    X    |  X  |
+| Last Fetched Timestamp    | last-fetched        | DateTime      | Date and time of last time status fetched      |  X   |  X   |    X    |  X  |
 
 Overall Door Status values
 
@@ -246,18 +247,19 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 * Availability according to table
 * Read-only values
 
-| Channel Label              | Channel ID                 | Type                 | conv | phev | bev_rex | bev |
-|----------------------------|----------------------------|----------------------|------|------|---------|-----|
-| Mileage                    | mileage                    | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range                 | range-fuel                 | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range             | range-electric             | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range               | range-hybrid               | Number:Length        |      |  X   |    X    |     | 
-| Battery Charge Level       | soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel             | remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     | 
-| Estimated Fuel Consumption | estimated-fuel-consumption | Number:Dimensionless |  X   |  X   |    X    |     | 
-| Fuel Range Radius          | range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     | 
-| Electric Range Radius      | range-radius-electric      | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range Radius        | range-radius-hybrid        | Number:Length        |      |  X   |    X    |     | 
+| Channel Label                      | Channel ID                 | Type                 | conv | phev | bev_rex | bev |
+|------------------------------------|----------------------------|----------------------|------|------|---------|-----|
+| Mileage                            | mileage                    | Number:Length        |  X   |  X   |    X    |  X  |
+| Fuel Range                         | range-fuel                 | Number:Length        |  X   |  X   |    X    |     |
+| Electric Range                     | range-electric             | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range                       | range-hybrid               | Number:Length        |      |  X   |    X    |     | 
+| Battery Charge Level               | soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
+| Remaining Fuel                     | remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     | 
+| Estimated Fuel Consumption l/100km | estimated-fuel-l-100km     | Number:Dimensionless |  X   |  X   |    X    |     | 
+| Estimated Fuel Consumption mpg     | estimated-fuel-mpg         | Number:Dimensionless |  X   |  X   |    X    |     | 
+| Fuel Range Radius                  | range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     | 
+| Electric Range Radius              | range-radius-electric      | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range Radius                | range-radius-hybrid        | Number:Length        |      |  X   |    X    |     | 
 
 
 #### Doors Details

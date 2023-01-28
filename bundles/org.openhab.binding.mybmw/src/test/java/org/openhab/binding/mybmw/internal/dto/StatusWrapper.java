@@ -32,7 +32,8 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_FRON
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_CONSUMPTION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_L_100KM;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_MPG;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
@@ -41,6 +42,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.GPS;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.HEADING;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOME_DISTANCE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_FETCHED;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.LOCK;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.MILEAGE;
@@ -225,13 +227,35 @@ public class StatusWrapper {
                 assertEquals(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), qt.intValue(),
                         "Fuel Level");
                 break;
-            case ESTIMATED_FUEL_CONSUMPTION:
+            case ESTIMATED_FUEL_L_100KM:
                 assertTrue(hasFuel, "Has Fuel");
-                assertTrue(state instanceof DecimalType);
-                dt = ((DecimalType) state);
-                double estimatedFuelConsumption = vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
-                        / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
-                assertEquals(estimatedFuelConsumption, dt.doubleValue(), "Estimated Fuel Consumption");
+
+                if (vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() > 0
+                        && vehicleState.getCombustionFuelLevel().getRange() > 0) {
+                    assertTrue(state instanceof DecimalType);
+                    dt = ((DecimalType) state);
+                    double estimatedFuelConsumptionL100km = vehicleState.getCombustionFuelLevel()
+                            .getRemainingFuelLiters() * 1.0 / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
+                    assertEquals(estimatedFuelConsumptionL100km, dt.doubleValue(),
+                            "Estimated Fuel Consumption l/100km");
+                } else {
+                    assertTrue(state instanceof UnDefType);
+                }
+                break;
+            case ESTIMATED_FUEL_MPG:
+                assertTrue(hasFuel, "Has Fuel");
+
+                if (vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() > 0
+                        && vehicleState.getCombustionFuelLevel().getRange() > 0) {
+                    assertTrue(state instanceof DecimalType);
+                    dt = ((DecimalType) state);
+                    double estimatedFuelConsumptionMpg = 235.214583
+                            / (vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
+                                    / vehicleState.getCombustionFuelLevel().getRange() * 100.0);
+                    assertEquals(estimatedFuelConsumptionMpg, dt.doubleValue(), "Estimated Fuel Consumption mpg");
+                } else {
+                    assertTrue(state instanceof UnDefType);
+                }
                 break;
             case SOC:
                 assertTrue(isElectric, "Is Electric");
@@ -305,8 +329,14 @@ public class StatusWrapper {
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
-                State expected = Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt());
-                assertEquals(expected.toString(), dtt.toString(), "Last Update");
+                State expectedUpdateDate = Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt());
+                assertEquals(expectedUpdateDate.toString(), dtt.toString(), "Last Update");
+                break;
+            case LAST_FETCHED:
+                assertTrue(state instanceof DateTimeType);
+                dtt = (DateTimeType) state;
+                State expectedFetchedDate = Converter.zonedToLocalDateTime(vehicleState.getLastFetched());
+                assertEquals(expectedFetchedDate.toString(), dtt.toString(), "Last Fetched");
                 break;
             case GPS:
                 if (state instanceof PointType) {

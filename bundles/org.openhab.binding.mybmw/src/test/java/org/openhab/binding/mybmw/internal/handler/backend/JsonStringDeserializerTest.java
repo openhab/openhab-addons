@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
@@ -36,6 +37,7 @@ import com.google.gson.Gson;
  *
  * @author Martin Grassl - Initial contribution
  */
+@NonNullByDefault
 public class JsonStringDeserializerTest {
 
     Gson gson = new Gson();

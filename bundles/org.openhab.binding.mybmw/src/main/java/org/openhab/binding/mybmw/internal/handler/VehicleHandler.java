@@ -43,7 +43,8 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_DRIVER_REAR
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_FRONT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DOOR_PASSENGER_REAR;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.ENERGY;
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_CONSUMPTION;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_L_100KM;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.ESTIMATED_FUEL_MPG;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_CURRENT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_LEFT_TARGET;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.FRONT_RIGHT_CURRENT;
@@ -55,6 +56,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_FORMAT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_VIEWPORT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.ISSUE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_FETCHED;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.LOCK;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.MILEAGE;
@@ -180,8 +182,6 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean isElectric = false;
     private boolean isHybrid = false;
 
-    private boolean isLeftSteering = false;
-
     // List Interfaces
     private volatile List<RequiredService> serviceList = List.of();
     private volatile String selectedService = Constants.UNDEF;
@@ -286,7 +286,6 @@ public class VehicleHandler extends BaseThingHandler {
                 try {
                     VehicleStateContainer vehicleState = prox.requestVehicleState(config.getVin(),
                             config.getVehicleBrand());
-                    isLeftSteering = vehicleState.getState().isLeftSteering();
                     triggerVehicleStatusUpdate(vehicleState, null);
                     stateError = false;
                 } catch (NetworkException e) {
@@ -398,10 +397,13 @@ public class VehicleHandler extends BaseThingHandler {
      * @param vehicleStateState
      */
     private void updateVehicleStatus(VehicleState vehicleStateState, @Nullable String channelToBeUpdated) {
+        boolean isLeftSteering = vehicleStateState.isLeftSteering();
+
+
         updateVehicleOverallStatus(vehicleStateState, channelToBeUpdated);
         updateRange(vehicleStateState, channelToBeUpdated);
-        updateDoors(vehicleStateState.getDoorsState(), channelToBeUpdated);
-        updateWindows(vehicleStateState.getWindowsState(), channelToBeUpdated);
+        updateDoors(vehicleStateState.getDoorsState(), isLeftSteering, channelToBeUpdated);
+        updateWindows(vehicleStateState.getWindowsState(), isLeftSteering, channelToBeUpdated);
         updateRoof(vehicleStateState.getRoofState(), channelToBeUpdated);
         updatePosition(vehicleStateState.getLocation(), channelToBeUpdated);
         updateServices(vehicleStateState.getRequiredServices(), channelToBeUpdated);
@@ -472,6 +474,8 @@ public class VehicleHandler extends BaseThingHandler {
                 Converter.toTitleCase(vehicleState.getOverallCheckControlStatus()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 Converter.zonedToLocalDateTime(vehicleState.getLastUpdatedAt()), channelToBeUpdated);
+        updateChannel(CHANNEL_GROUP_STATUS, LAST_FETCHED, Converter.zonedToLocalDateTime(vehicleState.getLastFetched()),
+                channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, DOORS,
                 Converter.toTitleCase(vehicleState.getDoorsState().getCombinedState()), channelToBeUpdated);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS,
@@ -537,10 +541,18 @@ public class VehicleHandler extends BaseThingHandler {
                     QuantityType.valueOf(vehicleState.getCombustionFuelLevel().getRemainingFuelLiters(), Units.LITRE),
                     channelToBeUpdated);
 
-            double estimatedFuelConsumption = vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
-                    / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
-            updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_CONSUMPTION,
-                    DecimalType.valueOf(estimatedFuelConsumption + ""), channelToBeUpdated);
+            if (vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() > 0
+                    && vehicleState.getCombustionFuelLevel().getRange() > 1) {
+                double estimatedFuelConsumption = vehicleState.getCombustionFuelLevel().getRemainingFuelLiters() * 1.0
+                        / vehicleState.getCombustionFuelLevel().getRange() * 100.0;
+                updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_L_100KM,
+                        DecimalType.valueOf(estimatedFuelConsumption + ""), channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_MPG,
+                        DecimalType.valueOf((235.214583 / estimatedFuelConsumption) + ""), channelToBeUpdated);
+            } else {
+                updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_L_100KM, UnDefType.UNDEF, channelToBeUpdated);
+                updateChannel(CHANNEL_GROUP_RANGE, ESTIMATED_FUEL_MPG, UnDefType.UNDEF, channelToBeUpdated);
+            }
         }
     }
 
@@ -760,7 +772,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateDoors(VehicleDoorsState vehicleDoorsState, @Nullable String channelToBeUpdated) {
+    private void updateDoors(VehicleDoorsState vehicleDoorsState, boolean isLeftSteering, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(
                         isLeftSteering ? vehicleDoorsState.getLeftFront() : vehicleDoorsState.getRightFront())),
@@ -783,7 +795,7 @@ public class VehicleHandler extends BaseThingHandler {
                 channelToBeUpdated);
     }
 
-    private void updateWindows(VehicleWindowsState vehicleWindowState, @Nullable String channelToBeUpdated) {
+    private void updateWindows(VehicleWindowsState vehicleWindowState, boolean isLeftSteering, @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(
                         isLeftSteering ? vehicleWindowState.getLeftFront() : vehicleWindowState.getRightFront())),
