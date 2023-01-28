@@ -73,7 +73,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  */
 public class CloudClient {
 
-    private static final long RECONNECT_MIN = 1_000;
+    private static final long RECONNECT_MIN = 5_000;
 
     private static final long RECONNECT_MAX = 60_000;
 
