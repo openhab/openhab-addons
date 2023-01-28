@@ -428,7 +428,6 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     @WebSocket
-    @NonNullByDefault
     public class TibberWebSocketListener {
 
         @OnWebSocketConnect
@@ -498,6 +497,9 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedCost")) {
                     updateChannel(LIVE_ACCUMULATEDCOST, myObject.get("accumulatedCost").toString());
                 }
+                if (myObject.has("accumulatedReward")) {
+                    updateChannel(LIVE_ACCUMULATEREWARD, myObject.get("accumulatedReward").toString());
+                }
                 if (myObject.has("currency")) {
                     updateState(LIVE_CURRENCY, new StringType(myObject.get("currency").toString()));
                 }
@@ -556,7 +558,7 @@ public class TibberHandler extends BaseThingHandler {
         public void startSubscription() {
             String query = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\""
                     + tibberConfig.getHomeid()
-                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n accumulatedConsumption\\n accumulatedCost\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
+                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n accumulatedConsumption\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
                     + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
             try {
                 TibberWebSocketListener socket = TibberHandler.this.socket;

@@ -239,4 +239,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     public TransformationServiceProvider getTransformationServiceProvider() {
         return componentConfiguration.getTransformationServiceProvider();
     }
+
+    public boolean isEnabledByDefault() {
+        return channelConfiguration.isEnabledByDefault();
+    }
 }
