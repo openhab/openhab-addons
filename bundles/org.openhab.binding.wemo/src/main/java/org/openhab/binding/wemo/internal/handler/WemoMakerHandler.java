@@ -26,7 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -63,9 +62,8 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpcaller) {
-        super(thing, upnpIOService, upnpService, wemoHttpcaller);
+    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
+        super(thing, upnpIOService, wemoHttpcaller);
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
