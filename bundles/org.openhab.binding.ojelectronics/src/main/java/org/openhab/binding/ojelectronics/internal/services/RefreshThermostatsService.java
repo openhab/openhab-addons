@@ -34,10 +34,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RefreshThermostatsService {
 
-    private final ArrayList<ThermostatModel> thermostats;
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshThermostatsService.class));
+    private final List<ThermostatModel> thermostats;
+    private final Logger logger = LoggerFactory.getLogger(RefreshThermostatsService.class);
     private final List<Thing> things;
-    private final ArrayList<ThermostatRealTimeValuesModel> realTimeValues;
+    private final List<ThermostatRealTimeValuesModel> realTimeValues;
 
     /**
      * Creates a new instance of {@link RefreshThermostatsService}
@@ -45,7 +45,7 @@ public class RefreshThermostatsService {
      * @param thermostats {@link ThermostatModel}
      * @param things Things
      */
-    public RefreshThermostatsService(ArrayList<ThermostatModel> thermostats, List<Thing> things) {
+    public RefreshThermostatsService(List<ThermostatModel> thermostats, List<Thing> things) {
         this(thermostats, new ArrayList<>(), things);
     }
 
@@ -56,8 +56,8 @@ public class RefreshThermostatsService {
      * @param realTimeValues {@link ThermostatRealTimeValuesModel}
      * @param things Things
      */
-    public RefreshThermostatsService(ArrayList<ThermostatModel> thermostats,
-            ArrayList<ThermostatRealTimeValuesModel> realTimeValues, List<Thing> things) {
+    public RefreshThermostatsService(List<ThermostatModel> thermostats,
+            List<ThermostatRealTimeValuesModel> realTimeValues, List<Thing> things) {
         this.thermostats = thermostats;
         this.things = things;
         this.realTimeValues = realTimeValues;

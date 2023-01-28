@@ -102,10 +102,10 @@ public final class RefreshService implements AutoCloseable {
      */
     public void stop() {
         destroyed = true;
-        final Connection signalRConnection = this.signalRConnection;
-        if (signalRConnection != null) {
-            signalRConnection.disconnect();
-            signalRConnection.stop();
+        final Connection localSignalRConnection = this.signalRConnection;
+        if (localSignalRConnection != null) {
+            localSignalRConnection.disconnect();
+            localSignalRConnection.stop();
         }
     }
 

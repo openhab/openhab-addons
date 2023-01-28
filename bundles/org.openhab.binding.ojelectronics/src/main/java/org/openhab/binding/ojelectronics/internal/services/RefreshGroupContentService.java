@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class RefreshGroupContentService {
 
     private final List<GroupContentModel> groupContentList;
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshGroupContentService.class));
+    private final Logger logger = LoggerFactory.getLogger(RefreshGroupContentService.class);
     private List<Thing> things;
 
     /**

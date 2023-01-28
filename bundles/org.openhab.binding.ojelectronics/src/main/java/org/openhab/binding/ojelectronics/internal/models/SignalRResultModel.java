@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.ojelectronics.internal.models;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatModel;
 import org.openhab.binding.ojelectronics.internal.models.thermostat.ThermostatRealTimeValuesModel;
@@ -30,17 +29,17 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class SignalRResultModel {
     @SerializedName("Groups")
-    private @Nullable ArrayList<GroupContentModel> mGroups;
+    private List<GroupContentModel> mGroups = List.of();
     @SerializedName("SequenceNr")
     private int mSequenceNr;
 
     @SerializedName("ThermostatRealTimes")
-    private @Nullable ArrayList<ThermostatRealTimeValuesModel> mThermostatRealTimes;
+    private List<ThermostatRealTimeValuesModel> mThermostatRealTimes = List.of();
 
     @SerializedName("Thermostats")
-    private @Nullable ArrayList<ThermostatModel> mThermostats;
+    private List<ThermostatModel> mThermostats = List.of();
 
-    public @Nullable ArrayList<GroupContentModel> getGroups() {
+    public List<GroupContentModel> getGroups() {
         return this.mGroups;
     }
 
@@ -48,15 +47,15 @@ public class SignalRResultModel {
         return this.mSequenceNr;
     }
 
-    public @Nullable ArrayList<ThermostatRealTimeValuesModel> getThermostatRealTimes() {
+    public List<ThermostatRealTimeValuesModel> getThermostatRealTimes() {
         return this.mThermostatRealTimes;
     }
 
-    public @Nullable ArrayList<ThermostatModel> getThermostats() {
+    public List<ThermostatModel> getThermostats() {
         return this.mThermostats;
     }
 
-    public void setGroups(ArrayList<GroupContentModel> paramArrayList) {
+    public void setGroups(List<GroupContentModel> paramArrayList) {
         this.mGroups = paramArrayList;
     }
 
@@ -64,11 +63,11 @@ public class SignalRResultModel {
         this.mSequenceNr = paramInt;
     }
 
-    public void setThermostatRealTimes(ArrayList<ThermostatRealTimeValuesModel> paramArrayList) {
+    public void setThermostatRealTimes(List<ThermostatRealTimeValuesModel> paramArrayList) {
         this.mThermostatRealTimes = paramArrayList;
     }
 
-    public void setThermostats(ArrayList<ThermostatModel> paramArrayList) {
+    public void setThermostats(List<ThermostatModel> paramArrayList) {
         this.mThermostats = paramArrayList;
     }
 }

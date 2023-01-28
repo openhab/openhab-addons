@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 public final class UpdateService {
 
     private final Gson gson = OJGSonBuilder.getGSon();
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(UpdateService.class));
+    private final Logger logger = LoggerFactory.getLogger(UpdateService.class);
 
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration configuration;
