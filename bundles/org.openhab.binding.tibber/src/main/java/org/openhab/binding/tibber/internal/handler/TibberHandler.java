@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -129,8 +130,19 @@ public class TibberHandler extends BaseThingHandler {
                         REQUEST_TIMEOUT);
 
                 JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
-                rtEnabled = object.getAsJsonObject("data").getAsJsonObject("viewer").getAsJsonObject("home")
-                        .getAsJsonObject("features").get("realTimeConsumptionEnabled").toString();
+                JsonObject dObject = object.getAsJsonObject("data");
+                if (dObject != null) {
+                    JsonObject viewerObject = dObject.getAsJsonObject("viewer");
+                    if (viewerObject != null) {
+                        JsonObject homeObject = viewerObject.getAsJsonObject("home");
+                        if (homeObject != null) {
+                            JsonObject featuresObject = homeObject.getAsJsonObject("features");
+                            if (featuresObject != null) {
+                                rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
+                            }
+                        }
+                    }
+                }
 
                 if ("true".equals(rtEnabled)) {
                     logger.debug("Pulse associated with HomeId: Live stream will be started");
@@ -139,11 +151,25 @@ public class TibberHandler extends BaseThingHandler {
                     String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
 
                     JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
-                    subscriptionURL = wsobject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .get("websocketSubscriptionUrl").toString().replaceAll("^\"|\"$", "");
-                    logger.debug("Subscribing to: {}", subscriptionURL);
-
-                    open();
+                    JsonObject dataObject = wsobject.getAsJsonObject("data");
+                    if (dataObject != null) {
+                        JsonObject viewerObject = dataObject.getAsJsonObject("viewer");
+                        if (viewerObject != null) {
+                            JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
+                            if (subscriptionElement != null) {
+                                subscriptionURL = subscriptionElement.toString().replaceAll("^\"|\"$", "");
+                            }
+                        }
+                    }
+                    String url = subscriptionURL;
+                    if (url == null || url.isBlank()) {
+                        logger.trace("Unexpected result from the server: {}", jsonResponse);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Unexpected result from the server");
+                    } else {
+                        logger.debug("Subscribing to: {}", subscriptionURL);
+                        open();
+                    }
                 } else {
                     logger.debug("No Pulse associated with HomeId: No live stream will be started");
                 }
