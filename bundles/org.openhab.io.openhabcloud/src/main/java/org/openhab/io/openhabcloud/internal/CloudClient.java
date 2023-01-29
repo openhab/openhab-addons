@@ -293,13 +293,17 @@ public class CloudClient {
                 .on(Socket.EVENT_RECONNECT_FAILED,
                         args -> logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection."))//
                 .on(Socket.EVENT_DISCONNECT, args -> {
-                    if (args.length > 0) {
-                        logger.warn("Socket.IO disconnected: {}", args[0]);
-                    } else {
-                        logger.warn("Socket.IO disconnected");
-                    }
+                    String message = args.length > 0 ? args[0].toString() : "";
+                    logger.warn("Socket.IO disconnected: {}", message);
                     isConnected = false;
                     onDisconnect();
+                    // https://github.com/socketio/socket.io-client/commit/afb952d854e1d8728ce07b7c3a9f0dee2a61ef4e
+                    if ("io server disconnect".equals(message)) {
+                        socket.close();
+                        long delay = reconnectBackoff.duration();
+                        logger.warn("Reconnecting after {} ms.", delay);
+                        scheduleReconnect(delay);
+                    }
                 })//
                 .on(Socket.EVENT_ERROR, args -> {
                     if (CloudClient.this.socket.connected()) {
@@ -345,12 +349,7 @@ public class CloudClient {
                             logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
-                        reconnectFuture.getAndSet(Optional.of(scheduler.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                socket.connect();
-                            }
-                        }, delay, TimeUnit.MILLISECONDS))).ifPresent(future -> future.cancel(true));
+                        scheduleReconnect(delay);
                     }
                 })//
 
@@ -697,6 +696,15 @@ public class CloudClient {
 
     public void setListener(CloudClientListener listener) {
         this.listener = listener;
+    }
+
+    private void scheduleReconnect(long delay) {
+        reconnectFuture.getAndSet(Optional.of(scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                socket.connect();
+            }
+        }, delay, TimeUnit.MILLISECONDS))).ifPresent(future -> future.cancel(true));
     }
 
     private JSONObject getJSONHeaders(HttpFields httpFields) {
