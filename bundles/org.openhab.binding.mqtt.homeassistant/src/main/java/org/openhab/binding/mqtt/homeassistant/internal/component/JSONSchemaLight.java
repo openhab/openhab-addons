@@ -27,6 +27,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -132,8 +133,33 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         String command = getGson().toJson(json);
-        logger.debug("Publishing new state '{}'' of light {} to MQTT.", command, getName());
-        rawChannel.getState().publishValue(new StringType(getGson().toJson(json)));
+        logger.debug("Publishing new state '{}' of light {} to MQTT.", command, getName());
+        rawChannel.getState().publishValue(new StringType(command));
+    }
+
+    protected boolean handleCommand(Command command) {
+        JSONState json = new JSONState();
+        if (command.getClass().equals(OnOffType.class)) {
+            json.state = command.toString();
+        } else if (command.getClass().equals(PercentType.class)) {
+            if (command.equals(PercentType.ZERO)) {
+                json.state = "OFF";
+            } else {
+                json.state = "ON";
+                if (channelConfiguration.brightness) {
+                    json.brightness = ((PercentType) command).toBigDecimal()
+                            .multiply(new BigDecimal(channelConfiguration.brightnessScale))
+                            .divide(new BigDecimal(100), MathContext.DECIMAL128).intValue();
+                }
+            }
+        } else {
+            return super.handleCommand(command);
+        }
+
+        String jsonCommand = getGson().toJson(json);
+        logger.warn("Publishing new state '{}' of light {} to MQTT.", jsonCommand, getName());
+        rawChannel.getState().publishValue(new StringType(jsonCommand));
+        return false;
     }
 
     @Override

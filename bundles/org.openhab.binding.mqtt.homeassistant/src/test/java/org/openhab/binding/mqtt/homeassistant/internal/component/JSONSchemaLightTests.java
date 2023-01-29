@@ -85,6 +85,12 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         // OnOff commands should route to the correct topic
         sendCommand(component, Light.COLOR_CHANNEL_ID, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"OFF\"}");
+
+        sendCommand(component, Light.COLOR_CHANNEL_ID, OnOffType.ON);
+        assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\"}");
+
+        sendCommand(component, Light.COLOR_CHANNEL_ID, new PercentType(50));
+        assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\",\"brightness\":127}");
     }
 
     @Test
