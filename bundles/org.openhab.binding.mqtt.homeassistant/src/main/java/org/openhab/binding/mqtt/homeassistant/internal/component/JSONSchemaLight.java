@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -71,15 +72,19 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
     @Override
     protected void buildChannels() {
-        if (channelConfiguration.colorMode && (channelConfiguration.supportedColorModes == null
-                || channelConfiguration.supportedColorModes.isEmpty())) {
-            throw new UnsupportedComponentException(
-                    "JSON schema light with color modes '" + getHaID() + "' does not define supported_color_modes!");
+        if (channelConfiguration.colorMode) {
+            List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
+            if (supportedColorModes == null || channelConfiguration.supportedColorModes.isEmpty()) {
+                throw new UnsupportedComponentException("JSON schema light with color modes '" + getHaID()
+                        + "' does not define supported_color_modes!");
+            }
+
+            if (LightColorMode.hasColorChannel(supportedColorModes)) {
+                hasColorChannel = true;
+            }
         }
 
-        if (channelConfiguration.colorMode
-                && LightColorMode.hasColorChannel(channelConfiguration.supportedColorModes)) {
-            hasColorChannel = true;
+        if (hasColorChannel) {
             buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this).commandTopic(DUMMY_TOPIC, true, 1)
                     .commandFilter(command -> handleCommand(command)).build();
         } else if (channelConfiguration.brightness) {
@@ -113,7 +118,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                 if (channelConfiguration.supportedColorModes.contains(COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
                     json.color.s = state.getSaturation().toBigDecimal();
-                } else if (LightColorMode.hasRGB(channelConfiguration.supportedColorModes)) {
+                } else if (LightColorMode.hasRGB(Objects.requireNonNull(channelConfiguration.supportedColorModes))) {
                     var rgb = state.toRGB();
                     json.color.r = rgb[0].toBigDecimal().multiply(SCALE_FACTOR).intValue();
                     json.color.g = rgb[1].toBigDecimal().multiply(SCALE_FACTOR).intValue();
