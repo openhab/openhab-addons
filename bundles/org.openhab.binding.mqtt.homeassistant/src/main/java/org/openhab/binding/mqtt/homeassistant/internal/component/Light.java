@@ -102,7 +102,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         @SerializedName("color_mode")
         protected boolean colorMode = false; // JSON schema only
         @SerializedName("supported_color_modes")
-        protected @Nullable List<String> supportedColorModes; // JSON schema only
+        protected @Nullable List<LightColorMode> supportedColorModes; // JSON schema only
         // Defines when on the payload_on is sent. Using last (the default) will send
         // any style (brightness, color, etc)
         // topics first and then a payload_on to the command_topic. Using first will

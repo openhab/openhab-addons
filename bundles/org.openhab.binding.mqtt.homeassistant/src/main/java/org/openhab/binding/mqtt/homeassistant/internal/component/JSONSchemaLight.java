@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class JSONSchemaLight extends AbstractRawSchemaLight {
+    private static final BigDecimal SCALE_FACTOR = new BigDecimal("2.55"); // string to not lose precision
+
     private final Logger logger = LoggerFactory.getLogger(JSONSchemaLight.class);
 
     private static class JSONState {
@@ -75,11 +77,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                     "JSON schema light with color modes '" + getHaID() + "' does not define supported_color_modes!");
         }
 
-        if (channelConfiguration.colorMode && (channelConfiguration.supportedColorModes.contains(COLOR_MODE_HS)
-                || channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGB)
-                || channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGBW)
-                || channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGBWW)
-                || channelConfiguration.supportedColorModes.contains(COLOR_MODE_XY))) {
+        if (channelConfiguration.colorMode
+                && LightColorMode.hasColorChannel(channelConfiguration.supportedColorModes)) {
             hasColorChannel = true;
             buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this).commandTopic(DUMMY_TOPIC, true, 1)
                     .commandFilter(command -> handleCommand(command)).build();
@@ -91,8 +90,6 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
         }
     }
-
-    private static BigDecimal factor = new BigDecimal("2.55"); // string to not lose precision
 
     @Override
     protected void publishState(HSBType state) {
@@ -116,13 +113,11 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                 if (channelConfiguration.supportedColorModes.contains(COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
                     json.color.s = state.getSaturation().toBigDecimal();
-                } else if (channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGB)
-                        || channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGBW)
-                        || channelConfiguration.supportedColorModes.contains(COLOR_MODE_RGBWW)) {
+                } else if (LightColorMode.hasRGB(channelConfiguration.supportedColorModes)) {
                     var rgb = state.toRGB();
-                    json.color.r = rgb[0].toBigDecimal().multiply(factor).intValue();
-                    json.color.g = rgb[1].toBigDecimal().multiply(factor).intValue();
-                    json.color.b = rgb[2].toBigDecimal().multiply(factor).intValue();
+                    json.color.r = rgb[0].toBigDecimal().multiply(SCALE_FACTOR).intValue();
+                    json.color.g = rgb[1].toBigDecimal().multiply(SCALE_FACTOR).intValue();
+                    json.color.b = rgb[2].toBigDecimal().multiply(SCALE_FACTOR).intValue();
                 } else { // if (channelConfiguration.supportedColorModes.contains(COLOR_MODE_XY))
                     var xy = state.toXY();
                     json.color.x = xy[0].toBigDecimal();
@@ -180,14 +175,19 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             PercentType brightness = brightnessValue.getChannelState() instanceof PercentType
                     ? (PercentType) brightnessValue.getChannelState()
                     : PercentType.HUNDRED;
+            // This corresponds to "deprecated" color mode handling, since we're not checking which color
+            // mode is currently active.
+            // HS is highest priority, then XY, then RGB
+            // See
+            // https://github.com/home-assistant/core/blob/4f965f0eca09f0d12ae1c98c6786054063a36b44/homeassistant/components/mqtt/light/schema_json.py#L258
             if (jsonState.color.h != null && jsonState.color.s != null) {
                 colorValue.update(new HSBType(new DecimalType(Objects.requireNonNull(jsonState.color.h)),
                         new PercentType(Objects.requireNonNull(jsonState.color.s)), brightness));
-            } else if (jsonState.color.r != null && jsonState.color.g != null && jsonState.color.b != null) {
-                colorValue.update(HSBType.fromRGB(jsonState.color.r, jsonState.color.g, jsonState.color.b));
             } else if (jsonState.color.x != null && jsonState.color.y != null) {
                 HSBType newColor = HSBType.fromXY(jsonState.color.x.floatValue(), jsonState.color.y.floatValue());
                 colorValue.update(new HSBType(newColor.getHue(), newColor.getSaturation(), brightness));
+            } else if (jsonState.color.r != null && jsonState.color.g != null && jsonState.color.b != null) {
+                colorValue.update(HSBType.fromRGB(jsonState.color.r, jsonState.color.g, jsonState.color.b));
             }
         }
 
