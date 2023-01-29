@@ -325,6 +325,15 @@ public class VehicleHandlerTest {
     }
 
     @Test
+    public void testIce435i() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/ICE4/vehicles_state.json");
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + LOCATION + SERVICE_EMPTY + CHECK_EMPTY + TIRES, Optional.empty()));
+    }
+
+    @Test
     public void testMildHybrid340i() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.MILD_HYBRID.toString(), "anonymous");
