@@ -45,7 +45,7 @@ import com.google.gson.JsonSyntaxException;
 public final class RefreshService implements AutoCloseable {
 
     private final OJElectronicsBridgeConfiguration config;
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(RefreshService.class));
+    private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
     private final HttpClient httpClient;
     private final Gson gson = OJGSonBuilder.getGSon();
 

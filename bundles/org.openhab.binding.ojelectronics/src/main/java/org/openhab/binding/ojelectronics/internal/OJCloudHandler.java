@@ -130,7 +130,7 @@ public class OJCloudHandler extends BaseBridgeHandler {
             @Nullable String errorMessage) {
         logger.trace("OJElectronicsCloudHandler.initializationDone({})", groupContentResponse);
         if (groupContentResponse != null && groupContentResponse.errorCode == 0) {
-            internalinitializationDone(groupContentResponse);
+            internalInitializationDone(groupContentResponse);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     (errorMessage == null) ? "Wrong or no result model; Refreshing stoppped" : errorMessage);
@@ -156,7 +156,7 @@ public class OJCloudHandler extends BaseBridgeHandler {
         }
     }
 
-    private void internalinitializationDone(GroupContentResponseModel groupContentResponse) {
+    private void internalInitializationDone(GroupContentResponseModel groupContentResponse) {
         new RefreshGroupContentService(groupContentResponse.groupContents, getThing().getThings()).handle();
         final OJDiscoveryService localDiscoveryService = this.discoveryService;
         if (localDiscoveryService != null) {
