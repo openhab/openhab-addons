@@ -106,8 +106,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         } else {
             json.state = "ON";
             if (channelConfiguration.brightness || (channelConfiguration.supportedColorModes != null
-                    && (channelConfiguration.supportedColorModes.contains(COLOR_MODE_HS)
-                            || channelConfiguration.supportedColorModes.contains(COLOR_MODE_XY)))) {
+                    && (channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_HS)
+                            || channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_XY)))) {
                 json.brightness = state.getBrightness().toBigDecimal()
                         .multiply(new BigDecimal(channelConfiguration.brightnessScale))
                         .divide(new BigDecimal(100), MathContext.DECIMAL128).intValue();
@@ -115,7 +115,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
             if (hasColorChannel) {
                 json.color = new JSONState.Color();
-                if (channelConfiguration.supportedColorModes.contains(COLOR_MODE_HS)) {
+                if (channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
                     json.color.s = state.getSaturation().toBigDecimal();
                 } else if (LightColorMode.hasRGB(Objects.requireNonNull(channelConfiguration.supportedColorModes))) {

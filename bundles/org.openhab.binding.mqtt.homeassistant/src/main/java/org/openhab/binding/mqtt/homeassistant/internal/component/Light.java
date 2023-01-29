@@ -76,16 +76,6 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected static final String ON_COMMAND_TYPE_BRIGHTNESS = "brightness";
     protected static final String ON_COMMAND_TYPE_LAST = "last";
 
-    protected static final String COLOR_MODE_ONOFF = "onoff";
-    protected static final String COLOR_MODE_BRIGHTNESS = "brightness";
-    protected static final String COLOR_MODE_COLOR_TEMP = "color_temp";
-    protected static final String COLOR_MODE_HS = "hs";
-    protected static final String COLOR_MODE_XY = "xy";
-    protected static final String COLOR_MODE_RGB = "rgb";
-    protected static final String COLOR_MODE_RGBW = "rgbw";
-    protected static final String COLOR_MODE_RGBWW = "rgbww";
-    protected static final String COLOR_MODE_WHITE = "white";
-
     /**
      * Configuration class for MQTT component
      */
