@@ -86,13 +86,13 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
         if (hasColorChannel) {
             buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(command -> handleCommand(command)).build();
+                    .commandFilter(this::handleCommand).build();
         } else if (channelConfiguration.brightness) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, brightnessValue, "Brightness", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         } else {
             onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, onOffValue, "On/Off State", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         }
     }
 
