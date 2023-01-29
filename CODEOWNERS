@@ -24,6 +24,7 @@
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
 /bundles/org.openhab.binding.amplipi/ @kaikreuzer
 /bundles/org.openhab.binding.androiddebugbridge/ @GiviMAD
+/bundles/org.openhab.binding.androidtv/ @morph166955
 /bundles/org.openhab.binding.anel/ @paphko
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8 @mlobstein
@@ -114,7 +115,6 @@
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.goecharger/ @SamuelBrucksch
-/bundles/org.openhab.binding.googletv/ @morph166955
 /bundles/org.openhab.binding.gpio/ @nils-bauer
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
