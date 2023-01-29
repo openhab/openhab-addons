@@ -58,7 +58,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         protected @Nullable String state;
         protected @Nullable Integer brightness;
         @SerializedName("color_mode")
-        protected @Nullable String colorMode;
+        protected @Nullable LightColorMode colorMode;
         @SerializedName("color_temp")
         protected @Nullable Integer colorTemp;
         protected @Nullable Color color;
