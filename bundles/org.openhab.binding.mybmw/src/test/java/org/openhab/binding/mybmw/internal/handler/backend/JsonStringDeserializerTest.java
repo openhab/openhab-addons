@@ -95,7 +95,7 @@ public class JsonStringDeserializerTest {
     }
 
     // @Test
-    void testGetVehicleStateMILD_HYBRID() {
+    void testGetVehicleStateMILDHYBRID() {
         String content = FileReader.fileToString("responses/MILD_HYBRID/vehicles_state.json");
         VehicleStateContainer vehicleStateContainer = JsonStringDeserializer.getVehicleState(content);
         assertNotNull(vehicleStateContainer);

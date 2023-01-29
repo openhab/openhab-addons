@@ -51,13 +51,13 @@ public class MyBMWFileProxy implements MyBMWProxy {
     private final Logger logger = LoggerFactory.getLogger(MyBMWFileProxy.class);
     private final String vehicleToBeTested;
 
-    private final String RESPONSES = "responses" + File.separator;
-    private final String VEHICLES_BASE = File.separator + "vehicles_base.json";
-    private final String VEHICLES_STATE = File.separator + "vehicles_state.json";
-    private final String CHARGING_SESSIONS = File.separator + "charging_sessions.json";
-    private final String CHARGING_STATISTICS = File.separator + "charging_statistics.json";
-    private final String REMOTE_SERVICES_CALL = File.separator + "remote_service_call.json";
-    private final String REMOTE_SERVICES_STATE = File.separator + "remote_service_status.json";
+    private static final String RESPONSES = "responses" + File.separator;
+    private static final String VEHICLES_BASE = File.separator + "vehicles_base.json";
+    private static final String VEHICLES_STATE = File.separator + "vehicles_state.json";
+    private static final String CHARGING_SESSIONS = File.separator + "charging_sessions.json";
+    private static final String CHARGING_STATISTICS = File.separator + "charging_statistics.json";
+    private static final String REMOTE_SERVICES_CALL = File.separator + "remote_service_call.json";
+    private static final String REMOTE_SERVICES_STATE = File.separator + "remote_service_status.json";
 
     public MyBMWFileProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration config) {
         logger.trace("MyBMWFileProxy - initialize");
@@ -168,7 +168,6 @@ public class MyBMWFileProxy implements MyBMWProxy {
 
     public ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
             throws NetworkException {
-
         return JsonStringDeserializer.getExecutionStatus(fileToString(REMOTE_SERVICES_CALL));
     }
 
@@ -188,8 +187,11 @@ public class MyBMWFileProxy implements MyBMWProxy {
                 buf.append(sCurrentLine);
             }
             logger.trace("successful");
-            return buf != null ? buf.toString() : "";
+            return buf.toString();
         } catch (IOException e) {
+            logger.error("file {} could not be loaded: {}", filename, e.getMessage());
+            return "";
+        } catch (NullPointerException e) {
             logger.error("file {} could not be loaded: {}", filename, e.getMessage());
             return "";
         }

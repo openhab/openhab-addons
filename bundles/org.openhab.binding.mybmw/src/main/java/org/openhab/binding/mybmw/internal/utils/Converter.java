@@ -43,16 +43,16 @@ import org.slf4j.LoggerFactory;
 public interface Converter {
     static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
 
-    public static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
-    public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
-    public static final DateTimeFormatter LOCALE_ENGLISH_TIMEFORMATTER = DateTimeFormatter.ofPattern("hh:mm a",
+    static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
+    static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
+    static final DateTimeFormatter LOCALE_ENGLISH_TIMEFORMATTER = DateTimeFormatter.ofPattern("hh:mm a",
             Locale.ENGLISH);
-    public static final SimpleDateFormat ISO_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+    static final SimpleDateFormat ISO_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
     static final String SPLIT_HYPHEN = "-";
     static final String SPLIT_BRACKET = "\\(";
 
-    public static State zonedToLocalDateTime(@Nullable String input) {
+    static State zonedToLocalDateTime(@Nullable String input) {
         if (input != null && !input.isEmpty()) {
             try {
                 String dateString = ZonedDateTime.parse(input).withZoneSameInstant(ZoneId.systemDefault())
@@ -76,7 +76,7 @@ public interface Converter {
      * @param input
      * @return
      */
-    public static String toTitleCase(@Nullable String input) {
+    static String toTitleCase(@Nullable String input) {
         if (input == null || input.isEmpty()) {
             return toTitleCase(Constants.UNDEF);
         } else if (input.length() == 1) {
@@ -116,7 +116,7 @@ public interface Converter {
      * @param destinationLongitude
      * @return distance
      */
-    public static double measureDistance(double sourceLatitude, double sourceLongitude, double destinationLatitude,
+    static double measureDistance(double sourceLatitude, double sourceLongitude, double destinationLatitude,
             double destinationLongitude) {
         double earthRadius = 6378.137; // Radius of earth in KM
         double dLat = destinationLatitude * Math.PI / 180 - sourceLatitude * Math.PI / 180;
@@ -150,7 +150,7 @@ public interface Converter {
      * @param range
      * @return mapping from air-line distance to "real road" distance
      */
-    public static int guessRangeRadius(double range) {
+    static int guessRangeRadius(double range) {
         return (int) (range * 0.8);
     }
 
@@ -160,7 +160,7 @@ public interface Converter {
      * @param fullString
      * @return
      */
-    public static int parseIntegerString(String fullString) {
+    static int parseIntegerString(String fullString) {
         int index = -1;
         try {
             index = Integer.parseInt(fullString);
@@ -169,7 +169,7 @@ public interface Converter {
         return index;
     }
 
-    public static String getRandomString(int size) {
+    static String getRandomString(int size) {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
         Random random = new Random();
@@ -180,7 +180,7 @@ public interface Converter {
         return generatedString;
     }
 
-    public static State getConnectionState(boolean connected) {
+    static State getConnectionState(boolean connected) {
         if (connected) {
             return StringType.valueOf(Constants.CONNECTED);
         } else {
@@ -188,7 +188,7 @@ public interface Converter {
         }
     }
 
-    public static String getCurrentISOTime() {
+    static String getCurrentISOTime() {
         Date date = new Date(System.currentTimeMillis());
         synchronized (ISO_FORMATTER) {
             ISO_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -196,7 +196,7 @@ public interface Converter {
         }
     }
 
-    public static String getTime(Time t) {
+    static String getTime(Time t) {
         StringBuffer time = new StringBuffer();
         if (t.getHour() < 10) {
             time.append("0");
@@ -209,12 +209,12 @@ public interface Converter {
         return time.toString();
     }
 
-    public static int getOffsetMinutes() {
+    static int getOffsetMinutes() {
         ZoneOffset zo = ZonedDateTime.now().getOffset();
         return zo.getTotalSeconds() / 60;
     }
 
-    public static int stringToInt(String intStr) {
+    static int stringToInt(String intStr) {
         int integer = Constants.INT_UNDEF;
         try {
             integer = Integer.parseInt(intStr);
@@ -225,7 +225,7 @@ public interface Converter {
         return integer;
     }
 
-    public static String getLocalTime(String chrageInfoLabel) {
+    static String getLocalTime(String chrageInfoLabel) {
         String[] timeSplit = chrageInfoLabel.split(Constants.TILDE);
         if (timeSplit.length == 2) {
             try {

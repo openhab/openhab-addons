@@ -129,6 +129,7 @@ public class MyBMWProxyBackendIT {
             try {
                 chargeStatisticsContainer = myBMWProxy.requestChargeStatistics(vehicleBase.getVin(),
                         vehicleBase.getAttributes().getBrand());
+                assertNotNull(chargeStatisticsContainer);
             } catch (NetworkException e) {
                 logger.trace("error: {}", e.toString());
             }
@@ -137,6 +138,7 @@ public class MyBMWProxyBackendIT {
             try {
                 chargeSessionsContainer = myBMWProxy.requestChargeSessions(vehicleBase.getVin(),
                         vehicleBase.getAttributes().getBrand());
+                assertNotNull(chargeSessionsContainer);
             } catch (NetworkException e) {
                 logger.trace("error: {}", e.toString());
             }

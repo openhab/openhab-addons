@@ -364,7 +364,6 @@ public class VehicleHandler extends BaseThingHandler {
      */
     private void updateChannel(final String group, final String id, final State state,
             @Nullable final String channelToBeUpdated) {
-
         if (channelToBeUpdated == null || id.equals(channelToBeUpdated)) {
             if (!"png".equals(id)) {
                 logger.trace("updating channel {}, {}, {}", group, id, state.toFullString());

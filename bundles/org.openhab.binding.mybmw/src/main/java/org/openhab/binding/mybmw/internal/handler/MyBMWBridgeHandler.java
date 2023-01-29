@@ -88,7 +88,6 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
         if (!MyBMWConfigurationChecker.checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
-
             // there is no risk in this functionality as several steps have to happen to get the file proxy working:
             // 1. environment variable ENVIRONMENT has to be available
             // 2. username of the myBMW account must be set to "testuser" which is anyhow no valid username
