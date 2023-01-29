@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ForecastRequest extends Request {
 
-    public static final String STORED_QUERY_ID = "fmi::forecast::hirlam::surface::point::multipointcoverage";
+    public static final String STORED_QUERY_ID = "fmi::forecast::harmonie::surface::point::multipointcoverage";
 
     // For description of variables: http://opendata.fmi.fi/meta?observableProperty=forecast
     public static final String PARAM_TEMPERATURE = "Temperature";
