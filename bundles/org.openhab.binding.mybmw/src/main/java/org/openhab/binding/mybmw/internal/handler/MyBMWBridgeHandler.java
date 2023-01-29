@@ -89,6 +89,11 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
 
+            // there is no risk in this functionality as several steps have to happen to get the file proxy working:
+            // 1. environment variable ENVIRONMENT has to be available
+            // 2. username of the myBMW account must be set to "testuser" which is anyhow no valid username
+            // 3. the jar file must contain the fingerprints which will only happen if it has been built with the
+            // test-jar profile
             String environment = System.getenv(ENVIRONMENT);
 
             if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {

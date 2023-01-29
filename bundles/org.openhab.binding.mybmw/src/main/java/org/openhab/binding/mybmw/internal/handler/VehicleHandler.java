@@ -399,7 +399,6 @@ public class VehicleHandler extends BaseThingHandler {
     private void updateVehicleStatus(VehicleState vehicleStateState, @Nullable String channelToBeUpdated) {
         boolean isLeftSteering = vehicleStateState.isLeftSteering();
 
-
         updateVehicleOverallStatus(vehicleStateState, channelToBeUpdated);
         updateRange(vehicleStateState, channelToBeUpdated);
         updateDoors(vehicleStateState.getDoorsState(), isLeftSteering, channelToBeUpdated);
@@ -772,7 +771,8 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateDoors(VehicleDoorsState vehicleDoorsState, boolean isLeftSteering, @Nullable String channelToBeUpdated) {
+    private void updateDoors(VehicleDoorsState vehicleDoorsState, boolean isLeftSteering,
+            @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(
                         isLeftSteering ? vehicleDoorsState.getLeftFront() : vehicleDoorsState.getRightFront())),
@@ -795,7 +795,8 @@ public class VehicleHandler extends BaseThingHandler {
                 channelToBeUpdated);
     }
 
-    private void updateWindows(VehicleWindowsState vehicleWindowState, boolean isLeftSteering, @Nullable String channelToBeUpdated) {
+    private void updateWindows(VehicleWindowsState vehicleWindowState, boolean isLeftSteering,
+            @Nullable String channelToBeUpdated) {
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FRONT,
                 StringType.valueOf(Converter.toTitleCase(
                         isLeftSteering ? vehicleWindowState.getLeftFront() : vehicleWindowState.getRightFront())),
