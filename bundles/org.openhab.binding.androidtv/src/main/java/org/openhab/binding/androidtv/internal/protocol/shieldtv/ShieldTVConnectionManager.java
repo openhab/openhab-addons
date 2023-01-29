@@ -17,20 +17,15 @@ import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,6 +112,7 @@ public class ShieldTVConnectionManager {
     private String arch = "";
 
     private AndroidTVPKI androidtvPKI = new AndroidTVPKI();
+    private byte[] encryptionKey;
 
     private Map<String, String> appNameDB = new HashMap<>();
     private Map<String, String> appURLDB = new HashMap<>();
@@ -126,6 +122,7 @@ public class ShieldTVConnectionManager {
         this.config = config;
         this.handler = handler;
         this.scheduler = handler.getScheduler();
+        this.encryptionKey = androidtvPKI.generateEncryptionKey();
         initalize();
     }
 
@@ -194,8 +191,17 @@ public class ShieldTVConnectionManager {
     }
 
     public void setKeys(String privKey, String cert) {
-        androidtvPKI.setKeys(privKey, cert);
-        androidtvPKI.saveKeys();
+        try {
+            androidtvPKI.setKeys(privKey, encryptionKey, cert);
+            androidtvPKI.saveKeyStore(config.keystorePassword, encryptionKey);
+        } catch (GeneralSecurityException e) {
+            logger.debug("General security exception", e);
+        } catch (IOException e) {
+            logger.debug("IO Exception", e);
+        } catch (Exception e) {
+            logger.debug("General Exception", e);
+
+        }
     }
 
     public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB) {
@@ -212,8 +218,8 @@ public class ShieldTVConnectionManager {
                 logger.debug("Assuming client certificate is valid");
                 if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
                         logger.trace("Serial number {}:", chain[cert].getSerialNumber());
                     }
                 }
@@ -224,8 +230,8 @@ public class ShieldTVConnectionManager {
                 logger.debug("Assuming server certificate is valid");
                 if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
                         logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
@@ -259,23 +265,23 @@ public class ShieldTVConnectionManager {
         config.keystorePassword = (!config.keystorePassword.equals("")) ? config.keystorePassword
                 : DEFAULT_KEYSTORE_PASSWORD;
 
-        androidtvPKI.setKeystore(config.keystoreFileName, config.keystorePassword);
+        androidtvPKI.setKeystoreFileName(config.keystoreFileName);
+        androidtvPKI.setAlias("nvidia");
 
-        File keystoreFile = new File(config.keystoreFileName);
+        try {
+            File keystoreFile = new File(config.keystoreFileName);
 
-        if (!keystoreFile.exists()) {
-            androidtvPKI.createKeystore();
-        }
-
-        try (FileInputStream keystoreInputStream = new FileInputStream(androidtvPKI.getKeystoreFileName())) {
-            logger.trace("Initializing keystore");
-            KeyStore keystore = KeyStore.getInstance("JKS");
-
-            keystore.load(keystoreInputStream, androidtvPKI.getKeystorePassword().toCharArray());
+            if (!keystoreFile.exists()) {
+                androidtvPKI.generateNewKeyPair(encryptionKey);
+                androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
+            } else {
+                androidtvPKI.loadFromKeyStore(config.keystorePassword, this.encryptionKey);
+            }
 
             logger.trace("Initializing SSL Context");
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keystore, androidtvPKI.getKeystorePassword().toCharArray());
+            kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
+                    config.keystorePassword.toCharArray());
 
             TrustManager[] trustManagers = defineNoOpTrustManager();
 
@@ -283,28 +289,20 @@ public class ShieldTVConnectionManager {
             sslContext.init(kmf.getKeyManagers(), trustManagers, null);
 
             sslSocketFactory = sslContext.getSocketFactory();
-        } catch (FileNotFoundException e) {
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Keystore file not found");
-            return;
-        } catch (CertificateException e) {
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Certificate exception");
-            return;
+
+            asyncInitializeTask = scheduler.submit(this::connect);
+
+        } catch (NoSuchAlgorithmException | IOException e) {
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+            logger.debug("Error initializing keystore", e);
         } catch (UnrecoverableKeyException e) {
             handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Key unrecoverable with supplied password");
-            return;
-        } catch (KeyManagementException e) {
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
-            logger.debug("Key management exception", e);
-            return;
-        } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
-            logger.debug("Error initializing keystore", e);
-            return;
+        } catch (GeneralSecurityException e) {
+            logger.debug("General security exception", e);
+        } catch (Exception e) {
+            logger.debug("General exception", e);
         }
-        asyncInitializeTask = scheduler.submit(this::connect);
     }
 
     public synchronized void connect() {
@@ -500,8 +498,8 @@ public class ShieldTVConnectionManager {
         logger.debug("Message reader thread started");
         try {
             BufferedReader reader = this.reader;
-            while (!Thread.interrupted() && reader != null
-                    && (thisMsg = fixMessage(Integer.toHexString(reader.read()))) != null) {
+            while (!Thread.interrupted() && reader != null) {
+                thisMsg = fixMessage(Integer.toHexString(reader.read()));
                 if (lastMsg.equals("08") && thisMsg.equals("0a") && inMessage == 0) {
                     flushReader();
                     inMessage = 1;
@@ -554,11 +552,6 @@ public class ShieldTVConnectionManager {
                     sbReader.append(thisMsg.toString());
                     lastMsg = thisMsg;
                 }
-            }
-            if (thisMsg == null) {
-                logger.debug("End of input stream detected");
-                handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection lost");
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");

@@ -391,8 +391,6 @@ public class ShieldTVMessageParser {
             }
         } catch (Exception e) {
             logger.debug("Message Parser Caught Exception", e);
-        } finally {
-            return;
         }
     }
 }
