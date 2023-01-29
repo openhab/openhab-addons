@@ -186,14 +186,14 @@ public class CloudClient {
         try {
             Options options = new Options();
             options.transports = new String[] { WebSocket.NAME };
-            options.reconnection = true; // default value true
+            options.reconnection = true;
             options.reconnectionAttempts = Integer.MAX_VALUE;
-            options.reconnectionDelay = RECONNECT_MIN; // default value 1_000
-            options.reconnectionDelayMax = RECONNECT_MAX; // default value 5_000
-            options.randomizationFactor = RECONNECT_JITTER; // default value 0.5
-            options.timeout = READ_TIMEOUT; // default value 20_000
+            options.reconnectionDelay = RECONNECT_MIN;
+            options.reconnectionDelayMax = RECONNECT_MAX;
+            options.randomizationFactor = RECONNECT_JITTER;
+            options.timeout = READ_TIMEOUT;
             Builder okHttpBuilder = new Builder();
-            okHttpBuilder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS); // default 10_000
+            okHttpBuilder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
             if (logger.isTraceEnabled()) {
                 // When trace level logging is enabled, we activate further logging of HTTP calls
                 // of the Socket.IO library
