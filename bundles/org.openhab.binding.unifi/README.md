@@ -168,6 +168,8 @@ The `wirelessClient` information that is retrieved is available as these channel
 | Channel ID | Item Type            | Description                                                          | Permissions |
 |------------|----------------------|----------------------------------------------------------------------|-------------|
 | online     | Switch               | Online status of the client                                          | Read        |
+| name       | String               | Name of device (from the controller web UI)                          | Read        |
+| hostname   | String               | Hostname of device (from the controller web UI)                      | Read        |
 | site       | String               | Site name (from the controller web UI) the client is associated with | Read        |
 | macAddress | String               | MAC address of the client                                            | Read        |
 | ipAddress  | String               | IP address of the client                                             | Read        |
@@ -192,6 +194,8 @@ The `wiredClient` information that is retrieved is available as these channels:
 | Channel ID | Item Type            | Description                                                          | Permissions |
 |------------|----------------------|----------------------------------------------------------------------|-------------|
 | online     | Switch               | Online status of the client                                          | Read        |
+| name       | String               | Name of device (from the controller web UI)                          | Read        |
+| hostname   | String               | Hostname of device (from the controller web UI)                      | Read        |
 | site       | String               | Site name (from the controller web UI) the client is associated with | Read        |
 | macAddress | String               | MAC address of the client                                            | Read        |
 | ipAddress  | String               | IP address of the client                                             | Read        |

@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_VOUCHER;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_VOUCHERS_GENERATE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_TOTAL_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRED_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRELESS_CLIENTS;
 
 import java.util.function.Predicate;
 
@@ -88,7 +93,7 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
                 state = countClients(site, c -> c.isGuest());
                 break;
             case CHANNEL_GUEST_VOUCHER:
-                String voucher = site.getVoucher();
+                final String voucher = site.getVoucher();
                 state = (voucher != null) ? StringType.valueOf(voucher) : UnDefType.UNDEF;
                 break;
             case CHANNEL_GUEST_VOUCHERS_GENERATE:
@@ -111,11 +116,11 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
         final String channelID = channelUID.getId();
 
         if (CHANNEL_GUEST_VOUCHERS_GENERATE.equals(channelID)) {
-            Channel channel = getThing().getChannel(CHANNEL_GUEST_VOUCHERS_GENERATE);
+            final Channel channel = getThing().getChannel(CHANNEL_GUEST_VOUCHERS_GENERATE);
             if (channel == null) {
                 return false;
             }
-            UniFiVoucherChannelConfig config = channel.getConfiguration().as(UniFiVoucherChannelConfig.class);
+            final UniFiVoucherChannelConfig config = channel.getConfiguration().as(UniFiVoucherChannelConfig.class);
             final int count = config.getCount();
             final int expire = config.getExpiration();
             final int users = config.getVoucherUsers();

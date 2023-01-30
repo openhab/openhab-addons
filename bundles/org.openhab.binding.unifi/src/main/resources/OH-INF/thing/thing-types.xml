@@ -71,6 +71,8 @@
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
+			<channel id="name" typeId="name"/>
+			<channel id="hostname" typeId="hostname"/>
 			<channel id="site" typeId="site"/>
 			<channel id="macAddress" typeId="macAddress"/>
 			<channel id="ipAddress" typeId="ipAddress"/>
@@ -95,6 +97,8 @@
 		<channels>
 			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online"/>
+			<channel id="name" typeId="name"/>
+			<channel id="hostname" typeId="hostname"/>
 			<channel id="site" typeId="site"/>
 			<channel id="macAddress" typeId="macAddress"/>
 			<channel id="ipAddress" typeId="ipAddress"/>
@@ -245,6 +249,20 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Online status of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="hostname">
+		<item-type>String</item-type>
+		<label>Hostname</label>
+		<description>Hostname of the client</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
