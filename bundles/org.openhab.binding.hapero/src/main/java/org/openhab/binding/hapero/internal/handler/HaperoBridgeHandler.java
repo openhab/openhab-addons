@@ -72,9 +72,9 @@ import com.github.drapostolos.rdp4j.IoErrorRaisedEvent;
 @NonNullByDefault
 public class HaperoBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(HaperoBridgeHandler.class);
-    private @Nullable HaperoDiscoveryService discoveryService;
-    private Map<String, Device> deviceList = new ConcurrentHashMap<String, Device>();
+    private final Map<String, Device> deviceList = new ConcurrentHashMap<String, Device>();
     private final Set<HaperoThingHandler> devicesToNotify = ConcurrentHashMap.newKeySet();
+    private @Nullable HaperoDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> fileWatcherJob;
     private @Nullable ScheduledFuture<?> ftpTimeoutJob;
     private @Nullable WatchService watchService = null;

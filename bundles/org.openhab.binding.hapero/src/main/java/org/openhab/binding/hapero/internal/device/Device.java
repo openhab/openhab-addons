@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Device {
+    private final Logger logger = LoggerFactory.getLogger(Device.class);
     /** Raw data stream from the device */
     protected String[] dataItems = {};
-    private final Logger logger = LoggerFactory.getLogger(Device.class);
 
     /**
      * Constructor
