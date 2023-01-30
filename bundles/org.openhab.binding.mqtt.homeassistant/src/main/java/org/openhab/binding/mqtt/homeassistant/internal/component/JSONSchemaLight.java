@@ -157,7 +157,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         String jsonCommand = getGson().toJson(json);
-        logger.warn("Publishing new state '{}' of light {} to MQTT.", jsonCommand, getName());
+        logger.debug("Publishing new state '{}' of light {} to MQTT.", jsonCommand, getName());
         rawChannel.getState().publishValue(new StringType(jsonCommand));
         return false;
     }
