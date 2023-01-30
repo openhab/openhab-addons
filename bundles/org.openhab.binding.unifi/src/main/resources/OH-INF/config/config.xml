@@ -54,7 +54,7 @@
 	<config-description uri="thing-type:unifi:client">
 		<parameter name="cid" type="text" required="true">
 			<label>Client ID</label>
-			<description>The MAC address, IP address, hostname or alias of the client</description>
+			<description>The MAC address, IP address, hostname or name of the client</description>
 		</parameter>
 		<parameter name="site" type="text" required="false">
 			<label>Site</label>
