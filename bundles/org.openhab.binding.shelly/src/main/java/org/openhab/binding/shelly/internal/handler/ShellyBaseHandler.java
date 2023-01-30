@@ -119,6 +119,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
     private @Nullable ScheduledFuture<?> statusJob;
+    private @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -171,7 +172,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void initialize() {
         // start background initialization:
-        scheduler.schedule(() -> {
+        initJob = scheduler.schedule(() -> {
             boolean start = true;
             try {
                 initializeThingConfig();
@@ -1473,7 +1474,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
-        ScheduledFuture<?> job = this.statusJob;
+        ScheduledFuture<?> job = this.initJob;
+        if (job != null) {
+            job.cancel(true);
+            initJob = null;
+        }
+        job = this.statusJob;
         if (job != null) {
             job.cancel(true);
             statusJob = null;
