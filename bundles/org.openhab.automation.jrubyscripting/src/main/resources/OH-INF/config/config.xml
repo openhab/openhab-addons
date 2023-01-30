@@ -41,10 +41,6 @@
 			<description>Check RubyGems for updates to the above gems when OpenHAB starts or JRuby settings are changed.
 				Otherwise it will try to fulfill the requirements with locally installed gems, and you can manage them yourself with
 				an external Ruby by setting the same GEM_HOME.</description>
-			<options>
-				<option value="true">Check For Updates</option>
-				<option value="false">Do Not Check For Updates</option>
-			</options>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
