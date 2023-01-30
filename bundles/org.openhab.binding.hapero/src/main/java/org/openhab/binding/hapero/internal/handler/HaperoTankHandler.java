@@ -62,7 +62,7 @@ public class HaperoTankHandler extends HaperoThingHandler {
         State state = null;
         Float value;
         Boolean valueBoolean;
-        String channelId = channel.getUID().getId();
+        String channelId = channel.getUID().getIdWithoutGroup();
 
         switch (channelId) {
             case HaperoBindingConstants.CHANNEL_TEMPERATURETOP:

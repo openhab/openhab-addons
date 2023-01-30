@@ -164,7 +164,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                     break;
                 }
             } catch (InterruptedException e) {
-                logger.warn("Exception in FileWatcherTask: {}", e.getLocalizedMessage());
+                logger.warn("Exception in FileWatcherTask: {}", e.getMessage());
                 faultOccurred = true;
                 break;
             }
@@ -211,7 +211,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 watchService.close();
             }
         } catch (IOException e) {
-            logger.warn("Exception in FileWatcherTask: {}", e.getLocalizedMessage());
+            logger.warn("Exception in FileWatcherTask: {}", e.getMessage());
         }
 
         if (faultOccurred) {
@@ -324,7 +324,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 try {
                     watchPath = Path.of(config.fileStoragePath);
                 } catch (InvalidPathException e) {
-                    logger.warn("Exception in Init: {}", e.getLocalizedMessage());
+                    logger.warn("Exception in Init: {}", e.getMessage());
                     faultOcurred = true;
                     watchPath = null;
                     errorMsg = "@text/offline.monitoring.failed";
@@ -335,7 +335,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                         watchService = FileSystems.getDefault().newWatchService();
                         watchPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     } catch (Exception e) {
-                        logger.warn("Exception in Init: {}", e.getLocalizedMessage());
+                        logger.warn("Exception in Init: {}", e.getMessage());
                         faultOcurred = true;
                         errorMsg = "@text/offline.monitoring.failed";
                     }
@@ -422,7 +422,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             result = reader.readLine();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.ftp.read.error");
-            logger.warn("Exception in updateDeviceTree: {}", e.getLocalizedMessage());
+            logger.warn("Exception in updateDeviceTree: {}", e.getMessage());
             return;
         } finally {
             try {
@@ -451,7 +451,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             result = Files.readString(path);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.file.read.error");
-            logger.warn("Exception in updateDeviceTree: {}", e.getLocalizedMessage());
+            logger.warn("Exception in updateDeviceTree: {}", e.getMessage());
             return;
         }
 
@@ -552,7 +552,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             try {
                 filePath = Path.of(config.fileStoragePath, HaperoBindingConstants.DATA_FILENAME);
             } catch (Exception e) {
-                logger.warn("Exception in updateThings: {}", e.getLocalizedMessage());
+                logger.warn("Exception in updateThings: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.file.read.error");
                 return;
@@ -566,7 +566,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
                 try {
                     stream = polledDirectory.getFileStream(HaperoBindingConstants.DATA_FILENAME);
                 } catch (IOException e) {
-                    logger.warn("Exception in updateThings: {}", e.getLocalizedMessage());
+                    logger.warn("Exception in updateThings: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.ftp.read.error");
                     return;
@@ -627,7 +627,7 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
             try {
                 watchService.close();
             } catch (IOException e) {
-                logger.warn("Exception in cancelAllJobs: {}", e.getLocalizedMessage());
+                logger.warn("Exception in cancelAllJobs: {}", e.getMessage());
             }
             watchService = null;
         }

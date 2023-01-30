@@ -63,7 +63,7 @@ public class HaperoHeatingHandler extends HaperoThingHandler {
         Float valueFloat;
         Integer valueInt;
         Boolean valueBoolean;
-        String channelId = channel.getUID().getId();
+        String channelId = channel.getUID().getIdWithoutGroup();
 
         switch (channelId) {
             case HaperoBindingConstants.CHANNEL_FLOWTEMPERATURE:

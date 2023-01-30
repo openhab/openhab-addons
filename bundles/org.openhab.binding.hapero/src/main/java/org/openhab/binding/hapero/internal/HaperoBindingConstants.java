@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class HaperoBindingConstants {
-    public static final String BINDING_ID = "Hapero";
+    public static final String BINDING_ID = "hapero";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "haperoBridge");
@@ -39,25 +39,25 @@ public class HaperoBindingConstants {
     public static final String GROUP_AIR = "air";
 
     // List of all Channel ids
-    public static final String CHANNEL_COMBUSTIONTEMPERATURE = "temperatures#combustionTemp";
-    public static final String CHANNEL_PELLETCHANNELTEMPERATURE = "temperatures#pelletChannelTemp";
-    public static final String CHANNEL_BOILERTEMPERATURE = "temperatures#boilerTemp";
-    public static final String CHANNEL_BOILERTEMPERATURESET = "temperatures#boilerSetTemp";
-    public static final String CHANNEL_OUTSIDETEMPERATURE = "temperatures#outsideTemp";
-    public static final String CHANNEL_FURNACESTATUS = "status#furnaceStatus";
-    public static final String CHANNEL_BURNERSTATUS = "status#burnerStatus";
-    public static final String CHANNEL_MATERIALSTATUS = "status#materialStatus";
-    public static final String CHANNEL_AIRSTATUS = "status#airStatus";
-    public static final String CHANNEL_GRATESTATUS = "status#grateStatus";
-    public static final String CHANNEL_ERRORSTATUS = "status#errorStatus";
-    public static final String CHANNEL_MULTIFUNCTIONMOTORMODE = "status#multifunctionMotorMode";
-    public static final String CHANNEL_MULTIFUNCTIONMOTORSTATUS = "status#multifunctionMotorStatus";
-    public static final String CHANNEL_FURNACEPOWER = "power#power";
-    public static final String CHANNEL_FURNACEAIRFLOW = "air#airFlow";
-    public static final String CHANNEL_FURNACEAIRFLOWSET = "air#airFlowSet";
-    public static final String CHANNEL_FURNACEAIRPOWER = "air#airPower";
-    public static final String CHANNEL_FURNACEAIRDRIVE = "air#airDrive";
-    public static final String CHANNEL_FURNACEAIRO2 = "air#airO2";
+    public static final String CHANNEL_COMBUSTIONTEMPERATURE = "combustionTemp";
+    public static final String CHANNEL_PELLETCHANNELTEMPERATURE = "pelletChannelTemp";
+    public static final String CHANNEL_BOILERTEMPERATURE = "boilerTemp";
+    public static final String CHANNEL_BOILERTEMPERATURESET = "boilerSetTemp";
+    public static final String CHANNEL_OUTSIDETEMPERATURE = "outsideTemp";
+    public static final String CHANNEL_FURNACESTATUS = "furnaceStatus";
+    public static final String CHANNEL_BURNERSTATUS = "burnerStatus";
+    public static final String CHANNEL_MATERIALSTATUS = "materialStatus";
+    public static final String CHANNEL_AIRSTATUS = "airStatus";
+    public static final String CHANNEL_GRATESTATUS = "grateStatus";
+    public static final String CHANNEL_ERRORSTATUS = "errorStatus";
+    public static final String CHANNEL_MULTIFUNCTIONMOTORMODE = "multifunctionMotorMode";
+    public static final String CHANNEL_MULTIFUNCTIONMOTORSTATUS = "multifunctionMotorStatus";
+    public static final String CHANNEL_FURNACEPOWER = "power";
+    public static final String CHANNEL_FURNACEAIRFLOW = "airFlow";
+    public static final String CHANNEL_FURNACEAIRFLOWSET = "airFlowSet";
+    public static final String CHANNEL_FURNACEAIRPOWER = "airPower";
+    public static final String CHANNEL_FURNACEAIRDRIVE = "airDrive";
+    public static final String CHANNEL_FURNACEAIRO2 = "airO2";
     public static final String CHANNEL_TEMPERATURETOP = "temperatureTop";
     public static final String CHANNEL_TEMPERATUREBOTTOM = "temperatureBottom";
     public static final String CHANNEL_ONTEMPERATURE = "onTemperature";

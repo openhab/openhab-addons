@@ -90,7 +90,7 @@ public class HaperoFurnaceHandler extends HaperoThingHandler {
         Float value;
         String stringValue;
         Integer intValue;
-        String channelId = channel.getUID().getId();
+        String channelId = channel.getUID().getIdWithoutGroup();
         HaperoBridgeHandler bridgeHandler = null;
         Bridge bridge = getBridge();
 

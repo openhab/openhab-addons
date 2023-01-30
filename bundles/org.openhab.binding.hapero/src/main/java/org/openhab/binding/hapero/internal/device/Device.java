@@ -48,7 +48,7 @@ public class Device {
         if (index >= 0 && index < dataItems.length) {
             return dataItems[index];
         } else {
-            logger.warn("getDataItem: Invalid Index {}.", String.valueOf(index));
+            logger.warn("getDataItem: Invalid Index {}.", index);
             return "";
         }
     }
@@ -76,7 +76,7 @@ public class Device {
                 logger.warn("getFloat: {}.", e.getMessage());
             }
         } else {
-            logger.warn("getFloat: Invalid Index {}.", String.valueOf(index));
+            logger.warn("getFloat: Invalid Index {}.", index);
         }
 
         return result;
@@ -90,7 +90,7 @@ public class Device {
      */
     public @Nullable String getString(int index) {
         if (index >= 0 && index >= dataItems.length) {
-            logger.warn("getString: Invalid Index {}.", String.valueOf(index));
+            logger.warn("getString: Invalid Index {}.", index);
             return null;
         }
 
@@ -113,7 +113,7 @@ public class Device {
                 logger.warn("getInteger: {}.", e.getMessage());
             }
         } else {
-            logger.warn("getInteger: Invalid Index {}.", String.valueOf(index));
+            logger.warn("getInteger: Invalid Index {}.", index);
         }
 
         return result;
@@ -143,7 +143,7 @@ public class Device {
                 logger.warn("getBoolean: {}.", e.getMessage());
             }
         } else {
-            logger.warn("getBoolean: Invalid Index {}.", String.valueOf(index));
+            logger.warn("getBoolean: Invalid Index {}.", index);
         }
 
         return result;
