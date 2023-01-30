@@ -32,10 +32,10 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-                        <parameter name="port" type="text">
-                                <label>Port</label>
-                                <description>Port to connect to</description>
-                        </parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port to connect to</description>
+			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
 				<description>Java keystore containing key and certs</description>
@@ -45,18 +45,18 @@
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
 			</parameter>
-                        <parameter name="reconnect" type="text">
-                                <label>Reconnect Delay</label>
-                                <description>Delay between reconnection attempts</description>
-                        </parameter>
-                        <parameter name="heartbeat" type="text">
-                                <label>Hearbeat Frequency</label>
-                                <description>Frequency of heartbeats</description>
-                        </parameter>
-                        <parameter name="delay" type="text">
-                                <label>Delay</label>
-                                <description>Delay between messages</description>
-                        </parameter>
+			<parameter name="reconnect" type="integer">
+				<label>Reconnect Delay</label>
+				<description>Delay between reconnection attempts</description>
+			</parameter>
+			<parameter name="heartbeat" type="integer">
+				<label>Hearbeat Frequency</label>
+				<description>Frequency of heartbeats</description>
+			</parameter>
+			<parameter name="delay" type="integer">
+				<label>Delay</label>
+				<description>Delay between messages</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
