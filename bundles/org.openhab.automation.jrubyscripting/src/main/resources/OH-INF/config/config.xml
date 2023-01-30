@@ -71,10 +71,6 @@
 			<description>Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
 				You may want to disable dependency tracking if you plan on editing or updating a shared library, but don't want all
 				your scripts to reload until you can test it.</description>
-			<options>
-				<option value="true">Enable Dependency Tracking</option>
-				<option value="false">Disable Dependency Tracking</option>
-			</options>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
