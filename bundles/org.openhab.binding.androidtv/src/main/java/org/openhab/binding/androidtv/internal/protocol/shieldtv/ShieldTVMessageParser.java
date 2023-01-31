@@ -310,11 +310,13 @@ public class ShieldTVMessageParser {
                 // This seems to be 20**** when observed. It is unclear what this does.
                 // This seems to send immediately before the certificate reply and as a reply to the pin being sent
             } else if (msg.startsWith("08f007")) {
-                // Login successful???
-                // This seems to happen after a successful PIN/Cert as well as on login with a valid cert
-                // Maybe this should be what we use to set the shield online?
-                // 08f007 12 0c0804 12 08 0a060804100e200f 18f007
-                // 08f007 12 0c0804 12 LEN 0a060804100e200f 18f007
+                // Successful command received
+                // 08f007 12 0c 0804 12 08 0a0608 01100c200f 18f007 - GOOD LOGIN
+                // 08f007 12 LEN 0804 12 LEN 0a0608 01100c200f 18f007
+                //
+                // 08f00712 0c 0804 12 08 0a0608 01100e200f 18f007 KEY_VOLDOWN
+                // 08f00712 0c 0804 12 08 0a0608 01100f200f 18f007 KEY_VOLUP
+                // 08f00712 0c 0804 12 08 0a0608 01200f2801 18f007 KEY_MUTE
                 logger.info("Login Successful to {}", callback.getHostName());
                 callback.setLoggedIn(true);
             } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {

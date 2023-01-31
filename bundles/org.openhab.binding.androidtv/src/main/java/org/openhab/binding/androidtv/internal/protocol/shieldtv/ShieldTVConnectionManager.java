@@ -194,13 +194,14 @@ public class ShieldTVConnectionManager {
     }
 
     public void setLoggedIn(boolean isLoggedIn) {
-        this.isLoggedIn = isLoggedIn;
-        if (isLoggedIn) {
+        if (!this.isLoggedIn) {
+            // Only run this if we aren't already logged in
             handler.checkThingStatus();
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
         }
+        this.isLoggedIn = isLoggedIn;
     }
 
     public boolean getLoggedIn() {
