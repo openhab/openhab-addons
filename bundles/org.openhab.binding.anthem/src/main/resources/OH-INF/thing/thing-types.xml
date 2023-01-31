@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="anthem"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="anthem">
+		<label>@text/thing-type.anthem.label</label>
+		<description>@text/thing-type.anthem.description</description>
+
+		<channel-groups>
+			<channel-group id="1" typeId="zone">
+				<label>@text/channel-group-type.anthem.zone1.label</label>
+				<description>@text/channel-group-type.anthem.zone1.description</description>
+			</channel-group>
+
+			<channel-group id="2" typeId="zone">
+				<label>@text/channel-group-type.anthem.zone2.label</label>
+				<description>@text/channel-group-type.anthem.zone2.description</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>@text/thing-type.config.anthem.host.label</label>
+				<description>@text/thing-type.config.anthem.host.description</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
+				<label>@text/thing-type.config.anthem.port.label</label>
+				<description>@text/thing-type.config.anthem.port.description</description>
+				<default>14999</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="reconnectIntervalMinutes" type="integer" required="true">
+				<label>@text/thing-type.config.anthem.reconnectintervalminutes.label</label>
+				<description>@text/thing-type.config.anthem.reconnectintervalminutes.description</description>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="comandDelayMsec" type="integer" required="true">
+				<label>@text/thing-type.config.anthem.comanddelaymsec.label</label>
+				<description>@text/thing-type.config.anthem.comanddelaymsec.description</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Control</label>
+		<description>Channels for a zone of this processor</description>
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="volumeDB" typeId="volumeDB"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="muteToggle" typeId="muteToggle"/>
+			<channel id="activeInput" typeId="activeInput"/>
+			<channel id="activeInputShortName" typeId="activeInputShortName"/>
+			<channel id="activeInputLongName" typeId="activeInputLongName"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel types -->
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.anthem.power.label</label>
+		<description>@text/channel-type.anthem.power.description</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>@text/channel-type.anthem.volume.label</label>
+		<description>@text/channel-type.anthem.volume.description</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="volumeDB" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.anthem.volumedb.label</label>
+		<description>@text/channel-type.anthem.volumedb.description</description>
+		<category>SoundVolume</category>
+		<state min="-90" max="0" step="1" pattern="%.0f dB"/>
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.anthem.mute.label</label>
+		<description>@text/channel-type.anthem.mute.description</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="muteToggle" advanced="true">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.anthem.mutetoggle.label</label>
+		<description>@text/channel-type.anthem.mutetoggle.description</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="activeInput">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.anthem.activeinput.label</label>
+		<description>@text/channel-type.anthem.activeinput.description</description>
+	</channel-type>
+
+	<channel-type id="activeInputShortName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.anthem.activeinputshortname.label</label>
+		<description>@text/channel-type.anthem.activeinputshortname.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="activeInputLongName" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.anthem.activeinputlongname.label</label>
+		<description>@text/channel-type.anthem.longname.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
