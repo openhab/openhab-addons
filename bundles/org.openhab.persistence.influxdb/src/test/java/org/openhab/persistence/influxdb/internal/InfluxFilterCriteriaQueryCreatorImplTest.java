@@ -73,21 +73,22 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testSimpleItemQueryWithoutParams() throws UnexpectedConditionException {
+    public void testSimpleItemQueryWithoutParams() {
         FilterCriteria criteria = createBaseCriteria();
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     @Test
-    public void testSimpleUnboundedItemWithoutParams() throws UnexpectedConditionException {
+    public void testSimpleUnboundedItemWithoutParams() {
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(null);
 
@@ -99,7 +100,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testRangeCriteria() throws UnexpectedConditionException {
+    public void testRangeCriteria() {
         FilterCriteria criteria = createBaseCriteria();
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tomorrow = now.plus(1, ChronoUnit.DAYS);
@@ -113,16 +114,17 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         assertThat(queryV1, equalTo(expectedQueryV1));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        String expectedQueryV2 = String.format(
-                "from(bucket:\"origin\")\n\t" + "|> range(start:%s, stop:%s)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])",
+        String expectedQueryV2 = String.format("""
+                from(bucket:"origin")
+                \t|> range(start:%s, stop:%s)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])""",
                 INFLUX2_DATE_FORMATTER.format(now.toInstant()), INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
         assertThat(queryV2, equalTo(expectedQueryV2));
     }
 
     @Test
-    public void testValueOperator() throws UnexpectedConditionException {
+    public void testValueOperator() {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOperator(FilterCriteria.Operator.LTE);
         criteria.setState(new PercentType(90));
@@ -132,15 +134,16 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" WHERE value <= 90;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t"
-                        + "|> filter(fn: (r) => (r[\"_field\"] == \"value\" and r[\"_value\"] <= 90))"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])
+                \t|> filter(fn: (r) => (r["_field"] == "value" and r["_value"] <= 90))"""));
     }
 
     @Test
-    public void testPagination() throws UnexpectedConditionException {
+    public void testPagination() {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setPageNumber(2);
         criteria.setPageSize(10);
@@ -150,13 +153,16 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" LIMIT 10 OFFSET 20;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t" + "|> limit(n:10, offset:20)"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])
+                \t|> limit(n:10, offset:20)"""));
     }
 
     @Test
-    public void testOrdering() throws UnexpectedConditionException {
+    public void testOrdering() {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
 
@@ -165,39 +171,37 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\" ORDER BY time ASC;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t"
-
-                        + "|> sort(desc:false, columns:[\"_time\"])"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])
+                \t|> sort(desc:false, columns:["_time"])"""));
     }
 
     @Test
-    public void testPreviousState() throws UnexpectedConditionException {
+    public void testPreviousState() {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t" + "|> last()"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])
+                \t|> last()"""));
     }
 
     private FilterCriteria createBaseCriteria() {
-        return createBaseCriteria(ITEM_NAME);
-    }
-
-    private FilterCriteria createBaseCriteria(String sampleItem) {
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName(sampleItem);
+        criteria.setItemName(ITEM_NAME);
         criteria.setOrdering(null);
         return criteria;
     }
 
     @Test
-    public void testMeasurementNameFromMetadata() throws UnexpectedConditionException {
+    public void testMeasurementNameFromMetadata() {
         FilterCriteria criteria = createBaseCriteria();
         MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, "sampleItem");
 
@@ -209,11 +213,12 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 "SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"measurementName\" WHERE item = 'sampleItem';"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
-                        + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\", \"item\"])"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
+                \t|> filter(fn: (r) => r["item"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
@@ -221,9 +226,10 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"sampleItem\";"));
 
         queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2,
-                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
-                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])"));
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 }

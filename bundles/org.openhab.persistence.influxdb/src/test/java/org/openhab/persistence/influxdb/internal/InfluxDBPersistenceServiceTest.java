@@ -24,7 +24,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.US
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.VERSION_PARAM;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -41,23 +40,34 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class InfluxDBPersistenceServiceTest {
-    private static final Map<String, Object> VALID_V1_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8086",
-            VERSION_PARAM, InfluxDBVersion.V1.name(), USER_PARAM, "user", PASSWORD_PARAM, "password", DATABASE_PARAM,
-            "openhab", RETENTION_POLICY_PARAM, "default");
-
-    private static final Map<String, Object> VALID_V2_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8086",
-            VERSION_PARAM, InfluxDBVersion.V2.name(), TOKEN_PARAM, "sampletoken", DATABASE_PARAM, "openhab",
+    private static final Map<String, Object> VALID_V1_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8086", //
+            VERSION_PARAM, InfluxDBVersion.V1.name(), //
+            USER_PARAM, "user", PASSWORD_PARAM, "password", //
+            DATABASE_PARAM, "openhab", //
             RETENTION_POLICY_PARAM, "default");
 
-    private static final Map<String, Object> INVALID_V1_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8086",
-            VERSION_PARAM, InfluxDBVersion.V1.name(), USER_PARAM, "user", DATABASE_PARAM, "openhab",
+    private static final Map<String, Object> VALID_V2_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8086", //
+            VERSION_PARAM, InfluxDBVersion.V2.name(), //
+            TOKEN_PARAM, "sampletoken", //
+            DATABASE_PARAM, "openhab", //
             RETENTION_POLICY_PARAM, "default");
 
-    private static final Map<String, Object> INVALID_V2_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8086",
-            VERSION_PARAM, InfluxDBVersion.V2.name(), DATABASE_PARAM, "openhab", RETENTION_POLICY_PARAM, "default");
+    private static final Map<String, Object> INVALID_V1_CONFIGURATION = Map.of(//
+            URL_PARAM, "http://localhost:8086", //
+            VERSION_PARAM, InfluxDBVersion.V1.name(), //
+            USER_PARAM, "user", //
+            DATABASE_PARAM, "openhab", //
+            RETENTION_POLICY_PARAM, "default");
 
-    @Mock
-    private @NonNullByDefault({}) InfluxDBRepository influxDBRepository;
+    private static final Map<String, Object> INVALID_V2_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8086", //
+            VERSION_PARAM, InfluxDBVersion.V2.name(), //
+            DATABASE_PARAM, "openhab", //
+            RETENTION_POLICY_PARAM, "default");
+
+    private @Mock @NonNullByDefault({}) InfluxDBRepository influxDBRepositoryMock;
 
     private final InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(
             mock(MetadataRegistry.class));
@@ -65,13 +75,13 @@ public class InfluxDBPersistenceServiceTest {
     @Test
     public void activateWithValidV1ConfigShouldConnectRepository() {
         getService(VALID_V1_CONFIGURATION);
-        verify(influxDBRepository).connect();
+        verify(influxDBRepositoryMock).connect();
     }
 
     @Test
     public void activateWithValidV2ConfigShouldConnectRepository() {
         getService(VALID_V2_CONFIGURATION);
-        verify(influxDBRepository).connect();
+        verify(influxDBRepositoryMock).connect();
     }
 
     @Test
@@ -88,30 +98,30 @@ public class InfluxDBPersistenceServiceTest {
     public void deactivateShouldDisconnectRepository() {
         InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
         instance.deactivate();
-        verify(influxDBRepository).disconnect();
+        verify(influxDBRepositoryMock).disconnect();
     }
 
     @Test
     public void storeItemWithConnectedRepository() throws UnexpectedConditionException {
         InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
-        when(influxDBRepository.isConnected()).thenReturn(true);
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
-        verify(influxDBRepository).write(any());
+        verify(influxDBRepositoryMock).write(any());
     }
 
     @Test
     public void storeItemWithDisconnectedRepositoryIsIgnored() throws UnexpectedConditionException {
         InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
-        when(influxDBRepository.isConnected()).thenReturn(false);
+        when(influxDBRepositoryMock.isConnected()).thenReturn(false);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
-        verify(influxDBRepository, never()).write(any());
+        verify(influxDBRepositoryMock, never()).write(any());
     }
 
     private InfluxDBPersistenceService getService(Map<String, Object> config) {
         return new InfluxDBPersistenceService(mock(ItemRegistry.class), influxDBMetadataService, config) {
             @Override
-            protected Optional<InfluxDBRepository> createInfluxDBRepository() {
-                return Optional.of(influxDBRepository);
+            protected InfluxDBRepository createInfluxDBRepository() {
+                return influxDBRepositoryMock;
             }
         };
     }

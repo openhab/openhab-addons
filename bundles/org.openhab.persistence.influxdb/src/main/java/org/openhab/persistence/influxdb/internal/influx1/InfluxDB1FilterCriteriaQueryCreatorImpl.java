@@ -28,7 +28,6 @@ import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
-import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
@@ -48,7 +47,7 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
     }
 
     @Override
-    public String createQuery(FilterCriteria criteria, String retentionPolicy) throws UnexpectedConditionException {
+    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
         final String itemName = criteria.getItemName();
         final String tableName = getTableName(itemName);
         final boolean hasCriteriaName = itemName != null;
@@ -83,7 +82,7 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
 
         if (criteria.getPageSize() != Integer.MAX_VALUE) {
             if (criteria.getPageNumber() != 0) {
-                select = select.limit(criteria.getPageSize(), criteria.getPageSize() * criteria.getPageNumber());
+                select = select.limit(criteria.getPageSize(), (long) criteria.getPageSize() * criteria.getPageNumber());
             } else {
                 select = select.limit(criteria.getPageSize());
             }

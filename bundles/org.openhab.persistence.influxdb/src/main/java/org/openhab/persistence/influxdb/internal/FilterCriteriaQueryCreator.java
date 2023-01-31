@@ -28,9 +28,8 @@ public interface FilterCriteriaQueryCreator {
      * @param criteria Criteria to create query from
      * @param retentionPolicy Name of the retentionPolicy/bucket to use in query
      * @return Created query as a String
-     * @throws UnexpectedConditionException when an error occurs during query creation
      */
-    String createQuery(FilterCriteria criteria, String retentionPolicy) throws UnexpectedConditionException;
+    String createQuery(FilterCriteria criteria, String retentionPolicy);
 
     default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
         return switch (operator) {

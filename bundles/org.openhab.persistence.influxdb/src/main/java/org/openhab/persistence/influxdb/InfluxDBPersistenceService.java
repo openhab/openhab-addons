@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -101,8 +100,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         this.influxDBMetadataService = influxDBMetadataService;
         this.configuration = new InfluxDBConfiguration(config);
         if (configuration.isValid()) {
-            this.influxDBRepository = createInfluxDBRepository()
-                    .orElseThrow(() -> new IllegalArgumentException("Failed to instantiate repository."));
+            this.influxDBRepository = createInfluxDBRepository();
             this.influxDBRepository.connect();
             this.itemToStorePointCreator = new ItemToStorePointCreator(configuration, influxDBMetadataService);
             tryReconnection = true;
@@ -114,15 +112,12 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     }
 
     // Visible for testing
-    protected Optional<InfluxDBRepository> createInfluxDBRepository() {
-        InfluxDBRepository influxDBRepository = null;
-        switch (configuration.getVersion()) {
-            case V1 -> influxDBRepository = new InfluxDB1RepositoryImpl(configuration, influxDBMetadataService);
-            case V2 -> influxDBRepository = new InfluxDB2RepositoryImpl(configuration, influxDBMetadataService);
-            default -> {
-            }
-        }
-        return Optional.ofNullable(influxDBRepository);
+    protected InfluxDBRepository createInfluxDBRepository() throws IllegalArgumentException {
+        return switch (configuration.getVersion()) {
+            case V1 -> new InfluxDB1RepositoryImpl(configuration, influxDBMetadataService);
+            case V2 -> new InfluxDB2RepositoryImpl(configuration, influxDBMetadataService);
+            default -> throw new IllegalArgumentException("Failed to instantiate repository.");
+        };
     }
 
     /**
@@ -176,32 +171,24 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                 logger.trace("Ignoring item {}, conversion to a InfluxDB point failed.", item);
             }
         } else {
-            logger.debug("store ignored, InfluxDB is not yet connected");
+            logger.debug("store ignored, InfluxDB is not connected");
         }
     }
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-        logger.debug("Got a query for historic points!");
-
         if (checkConnection()) {
             logger.trace(
-                    "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
+                    "Query-Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
-            try {
-                String query = influxDBRepository.createQueryCreator().createQuery(filter,
-                        configuration.getRetentionPolicy());
-
-                logger.trace("Query {}", query);
-                List<InfluxRow> results = influxDBRepository.query(query);
-                return results.stream().map(this::mapRowToHistoricItem).collect(Collectors.toList());
-            } catch (UnexpectedConditionException e) {
-                logger.warn("Failed to create query:{}", e.getMessage());
-                return List.of();
-            }
+            String query = influxDBRepository.createQueryCreator().createQuery(filter,
+                    configuration.getRetentionPolicy());
+            logger.trace("Query {}", query);
+            List<InfluxRow> results = influxDBRepository.query(query);
+            return results.stream().map(this::mapRowToHistoricItem).collect(Collectors.toList());
         } else {
-            logger.debug("query ignored, InfluxDB is not yet connected");
+            logger.debug("Query for persisted data ignored, InfluxDB is not connected");
             return List.of();
         }
     }
