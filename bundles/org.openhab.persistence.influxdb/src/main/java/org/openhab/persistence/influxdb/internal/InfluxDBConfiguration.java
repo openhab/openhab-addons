@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -40,7 +39,6 @@ public class InfluxDBConfiguration {
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
-    public static InfluxDBConfiguration NO_CONFIGURATION = new InfluxDBConfiguration(Collections.emptyMap());
     private final Logger logger = LoggerFactory.getLogger(InfluxDBConfiguration.class);
     private final String url;
     private final String user;
@@ -49,7 +47,6 @@ public class InfluxDBConfiguration {
     private final String databaseName;
     private final String retentionPolicy;
     private final InfluxDBVersion version;
-
     private final boolean replaceUnderscore;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
@@ -63,7 +60,6 @@ public class InfluxDBConfiguration {
         databaseName = (String) config.getOrDefault(DATABASE_PARAM, "openhab");
         retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
         version = parseInfluxVersion((String) config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
-
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
         addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
         addLabelTag = getConfigBooleanValue(config, ADD_LABEL_TAG_PARAM, false);
@@ -177,13 +173,5 @@ public class InfluxDBConfiguration {
                 + ", version=" + version + ", replaceUnderscore=" + replaceUnderscore + ", addCategoryTag="
                 + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + '}';
         return sb;
-    }
-
-    public int getTokenLength() {
-        return token.length();
-    }
-
-    public char[] getTokenAsCharArray() {
-        return token.toCharArray();
     }
 }

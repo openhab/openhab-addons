@@ -34,7 +34,7 @@ public interface InfluxDBRepository {
     /**
      * Connect to InfluxDB server
      *
-     * @return True if successful, otherwise false
+     * @return <code>true</code> if successful, otherwise <code>false</code>
      */
     boolean connect();
 
@@ -46,7 +46,7 @@ public interface InfluxDBRepository {
     /**
      * Check if connection is currently ready
      *
-     * @return True if its ready, otherwise false
+     * @return True if it's ready, otherwise false
      */
     boolean checkConnectionStatus();
 
@@ -62,6 +62,7 @@ public interface InfluxDBRepository {
      *
      * @param query Query
      * @return Query results
+     * 
      */
     List<InfluxRow> query(String query);
 
@@ -69,6 +70,14 @@ public interface InfluxDBRepository {
      * Write point to database
      *
      * @param influxPoint Point to write
+     * @throws UnexpectedConditionException when an error occurs
      */
-    void write(InfluxPoint influxPoint);
+    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
+
+    /**
+     * create a query creator on this repository
+     *
+     * @return the query creator for this repository
+     */
+    FilterCriteriaQueryCreator createQueryCreator();
 }

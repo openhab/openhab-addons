@@ -36,8 +36,8 @@ import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
-import org.openhab.persistence.influxdb.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
-import org.openhab.persistence.influxdb.internal.influx2.Influx2FilterCriteriaQueryCreatorImpl;
+import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1FilterCriteriaQueryCreatorImpl;
+import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2FilterCriteriaQueryCreatorImpl;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
@@ -54,13 +54,14 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     private @Mock InfluxDBConfiguration influxDBConfiguration;
     private @Mock MetadataRegistry metadataRegistry;
 
-    private Influx1FilterCriteriaQueryCreatorImpl instanceV1;
-    private Influx2FilterCriteriaQueryCreatorImpl instanceV2;
+    private InfluxDB1FilterCriteriaQueryCreatorImpl instanceV1;
+    private InfluxDB2FilterCriteriaQueryCreatorImpl instanceV2;
 
     @BeforeEach
     public void before() {
-        instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
-        instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
+        InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(metadataRegistry);
+        instanceV1 = new InfluxDB1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, influxDBMetadataService);
+        instanceV2 = new InfluxDB2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, influxDBMetadataService);
     }
 
     @AfterEach
@@ -72,7 +73,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testSimpleItemQueryWithoutParams() {
+    public void testSimpleItemQueryWithoutParams() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
@@ -86,7 +87,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testSimpleUnboundedItemWithoutParams() {
+    public void testSimpleUnboundedItemWithoutParams() throws UnexpectedConditionException {
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOrdering(null);
 
@@ -98,7 +99,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testRangeCriteria() {
+    public void testRangeCriteria() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tomorrow = now.plus(1, ChronoUnit.DAYS);
@@ -121,7 +122,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testValueOperator() {
+    public void testValueOperator() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOperator(FilterCriteria.Operator.LTE);
         criteria.setState(new PercentType(90));
@@ -139,7 +140,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testPagination() {
+    public void testPagination() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setPageNumber(2);
         criteria.setPageSize(10);
@@ -155,7 +156,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testOrdering() {
+    public void testOrdering() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
 
@@ -168,11 +169,12 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
                         + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
                         + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t"
+
                         + "|> sort(desc:false, columns:[\"_time\"])"));
     }
 
     @Test
-    public void testPreviousState() {
+    public void testPreviousState() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
@@ -195,7 +197,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     }
 
     @Test
-    public void testMeasurementNameFromMetadata() {
+    public void testMeasurementNameFromMetadata() throws UnexpectedConditionException {
         FilterCriteria criteria = createBaseCriteria();
         MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, "sampleItem");
 
@@ -212,7 +214,6 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                         + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
                         + "|> filter(fn: (r) => r[\"item\"] == \"sampleItem\")\n\t"
                         + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\", \"item\"])"));
-
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 

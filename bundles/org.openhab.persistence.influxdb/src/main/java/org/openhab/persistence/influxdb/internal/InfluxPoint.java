@@ -79,8 +79,8 @@ public class InfluxPoint {
             return this;
         }
 
-        public Builder withTag(String name, String value) {
-            tags.put(name, value);
+        public Builder withTag(String name, Object value) {
+            tags.put(name, value.toString());
             return this;
         }
 

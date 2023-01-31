@@ -15,7 +15,6 @@ package org.openhab.persistence.influxdb.internal;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Row data returned from database query
@@ -26,9 +25,9 @@ import org.eclipse.jdt.annotation.Nullable;
 public class InfluxRow {
     private final String itemName;
     private final Instant time;
-    private final @Nullable Object value;
+    private final Object value;
 
-    public InfluxRow(Instant time, String itemName, @Nullable Object value) {
+    public InfluxRow(Instant time, String itemName, Object value) {
         this.time = time;
         this.itemName = itemName;
         this.value = value;
@@ -42,7 +41,7 @@ public class InfluxRow {
         return itemName;
     }
 
-    public @Nullable Object getValue() {
+    public Object getValue() {
         return value;
     }
 }

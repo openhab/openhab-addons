@@ -23,12 +23,12 @@ import org.influxdb.querybuilder.BuiltQuery;
 import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
 import org.influxdb.querybuilder.clauses.SimpleClause;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
-import org.openhab.persistence.influxdb.internal.InfluxDBMetadataUtils;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
@@ -36,24 +36,22 @@ import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
  * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
-public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
+public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
 
-    private InfluxDBConfiguration configuration;
-    private MetadataRegistry metadataRegistry;
+    private final InfluxDBConfiguration configuration;
+    private final InfluxDBMetadataService influxDBMetadataService;
 
-    public Influx1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
-            MetadataRegistry metadataRegistry) {
+    public InfluxDB1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
+            InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
-        this.metadataRegistry = metadataRegistry;
+        this.influxDBMetadataService = influxDBMetadataService;
     }
 
     @Override
-    public String createQuery(FilterCriteria criteria, String retentionPolicy) {
-        final String tableName;
+    public String createQuery(FilterCriteria criteria, String retentionPolicy) throws UnexpectedConditionException {
         final String itemName = criteria.getItemName();
-        boolean hasCriteriaName = itemName != null;
-
-        tableName = calculateTableName(itemName);
+        final String tableName = getTableName(itemName);
+        final boolean hasCriteriaName = itemName != null;
 
         Select select = select().column("\"" + COLUMN_VALUE_NAME_V1 + "\"::field")
                 .column("\"" + TAG_ITEM_NAME + "\"::tag")
@@ -62,20 +60,17 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         Where where = select.where();
 
         if (itemName != null && !tableName.equals(itemName)) {
-            where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
+            where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
         }
-
         if (criteria.getBeginDate() != null) {
-            where = where.and(
-                    BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1, criteria.getBeginDate().toInstant().toString()));
+            where.and(BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1, criteria.getBeginDate().toInstant().toString()));
         }
         if (criteria.getEndDate() != null) {
-            where = where.and(
-                    BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1, criteria.getEndDate().toInstant().toString()));
+            where.and(BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1, criteria.getEndDate().toInstant().toString()));
         }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {
-            where = where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
+            where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
                     getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1),
                     stateToObject(criteria.getState())));
         }
@@ -94,18 +89,15 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
             }
         }
 
-        final Query query = (Query) select;
-        return query.getCommand();
+        return ((Query) select).getCommand();
     }
 
-    private String calculateTableName(@Nullable String itemName) {
+    private String getTableName(@Nullable String itemName) {
         if (itemName == null) {
             return "/.*/";
         }
 
-        String name = itemName;
-
-        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name, itemName);
+        String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');
