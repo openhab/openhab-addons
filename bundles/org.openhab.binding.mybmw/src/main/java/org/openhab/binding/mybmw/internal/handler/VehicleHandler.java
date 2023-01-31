@@ -117,7 +117,6 @@ import org.openhab.binding.mybmw.internal.dto.charge.ChargingSession;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
-import org.openhab.binding.mybmw.internal.dto.network.NetworkException;
 import org.openhab.binding.mybmw.internal.dto.vehicle.CheckControlMessage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.RequiredService;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleDoorsState;
@@ -128,6 +127,7 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleStateContainer;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleTireStates;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleWindowsState;
 import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
+import org.openhab.binding.mybmw.internal.handler.backend.NetworkException;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileUtils.TimedChannel;
 import org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper;
@@ -659,13 +659,13 @@ public class VehicleHandler extends BaseThingHandler {
         List<ChargingSession> chargeSessions = new ArrayList<>();
 
         if (chargeSessionsContainer.chargingSessions != null
-                && chargeSessionsContainer.chargingSessions.sessions != null
-                && !chargeSessionsContainer.chargingSessions.sessions.isEmpty()) {
-            chargeSessions.addAll(chargeSessionsContainer.chargingSessions.sessions);
+                && chargeSessionsContainer.chargingSessions.getSessions() != null
+                && !chargeSessionsContainer.chargingSessions.getSessions().isEmpty()) {
+            chargeSessions.addAll(chargeSessionsContainer.chargingSessions.getSessions());
         } else {
             // if list is empty add "undefined" element
             ChargingSession cs = new ChargingSession();
-            cs.title = Constants.NO_ENTRIES;
+            cs.setTitle(Constants.NO_ENTRIES);
             chargeSessions.add(cs);
         }
 
@@ -677,8 +677,8 @@ public class VehicleHandler extends BaseThingHandler {
         for (ChargingSession session : sessionList) {
             // create StateOption with "value = list index" and "label = human readable
             // string"
-            sessionNameOptions.add(new CommandOption(Integer.toString(index), session.title));
-            if (selectedSession.equals(session.title)) {
+            sessionNameOptions.add(new CommandOption(Integer.toString(index), session.getTitle()));
+            if (selectedSession.equals(session.getTitle())) {
                 isSelectedElementIn = true;
             }
             index++;
@@ -694,26 +694,26 @@ public class VehicleHandler extends BaseThingHandler {
     private void selectSession(int index, @Nullable String channelToBeUpdated) {
         if (index >= 0 && index < sessionList.size()) {
             ChargingSession sessionEntry = sessionList.get(index);
-            selectedSession = sessionEntry.title;
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title),
+            selectedSession = sessionEntry.getTitle();
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.getTitle()),
                     channelToBeUpdated);
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.subtitle),
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.getSubtitle()),
                     channelToBeUpdated);
-            if (sessionEntry.energyCharged != null) {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(sessionEntry.energyCharged),
+            if (sessionEntry.getEnergyCharged() != null) {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(sessionEntry.getEnergyCharged()),
                         channelToBeUpdated);
             } else {
                 updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(Constants.UNDEF),
                         channelToBeUpdated);
             }
-            if (sessionEntry.issues != null) {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.issues),
+            if (sessionEntry.getIssues() != null) {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.getIssues()),
                         channelToBeUpdated);
             } else {
                 updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.HYPHEN),
                         channelToBeUpdated);
             }
-            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.sessionStatus),
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.getSessionStatus()),
                     channelToBeUpdated);
         }
     }

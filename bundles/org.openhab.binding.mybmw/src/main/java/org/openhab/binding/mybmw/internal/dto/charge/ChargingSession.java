@@ -18,11 +18,79 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * @author Bernd Weymann - Initial contribution
  */
 public class ChargingSession {
-    public String id;// ": "2021-12-26T16:57:20Z_128fa4af",
-    public String title;// ": "Gestern 17:57",
-    public String subtitle;// ": "Uferstraße 4B • 7h 45min • -- EUR",
-    public String energyCharged;// ": "~ 31 kWh",
-    public String sessionStatus;// ": "FINISHED",
-    public String issues;// ": "2 Probleme",
-    public String isPublic;// ": false
+    private String id;// ": "2021-12-26T16:57:20Z_128fa4af",
+    private String title;// ": "Gestern 17:57",
+    private String subtitle;// ": "Uferstraße 4B • 7h 45min • -- EUR",
+    private String energyCharged;// ": "~ 31 kWh",
+    private String sessionStatus;// ": "FINISHED",
+    private String issues;// ": "2 Probleme",
+    private String isPublic;// ": false
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * @return the subtitle
+     */
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    /**
+     * @return the energyCharged
+     */
+    public String getEnergyCharged() {
+        return energyCharged;
+    }
+
+    /**
+     * @return the sessionStatus
+     */
+    public String getSessionStatus() {
+        return sessionStatus;
+    }
+
+    /**
+     * @return the issues
+     */
+    public String getIssues() {
+        return issues;
+    }
+
+    /**
+     * @return the isPublic
+     */
+    public String getIsPublic() {
+        return isPublic;
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+
+    @Override
+    public String toString() {
+        return "ChargingSession [id=" + id + ", title=" + title + ", subtitle=" + subtitle + ", energyCharged="
+                + energyCharged + ", sessionStatus=" + sessionStatus + ", issues=" + issues + ", isPublic=" + isPublic
+                + "]";
+    }
 }

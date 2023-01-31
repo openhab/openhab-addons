@@ -25,10 +25,6 @@ public class Address {
         return formatted;
     }
 
-    public void setFormatted(String formatted) {
-        this.formatted = formatted;
-    }
-
     @Override
     public String toString() {
         return "Address [formatted=" + formatted + "]";

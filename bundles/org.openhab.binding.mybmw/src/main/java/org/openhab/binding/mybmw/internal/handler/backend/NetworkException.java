@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mybmw.internal.dto.network;
+package org.openhab.binding.mybmw.internal.handler.backend;
 
 /**
  * The {@link NetworkException} Data Transfer Object

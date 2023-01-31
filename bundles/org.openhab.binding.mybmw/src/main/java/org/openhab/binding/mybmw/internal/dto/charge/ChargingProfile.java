@@ -45,56 +45,28 @@ public class ChargingProfile {
         return reductionOfChargeCurrent;
     }
 
-    public void setReductionOfChargeCurrent(ChargingWindow reductionOfChargeCurrent) {
-        this.reductionOfChargeCurrent = reductionOfChargeCurrent;
-    }
-
     public String getChargingMode() {
         return chargingMode;
-    }
-
-    public void setChargingMode(String chargingMode) {
-        this.chargingMode = chargingMode;
     }
 
     public String getChargingPreference() {
         return chargingPreference;
     }
 
-    public void setChargingPreference(String chargingPreference) {
-        this.chargingPreference = chargingPreference;
-    }
-
     public String getChargingControlType() {
         return chargingControlType;
-    }
-
-    public void setChargingControlType(String chargingControlType) {
-        this.chargingControlType = chargingControlType;
     }
 
     public List<Timer> getDepartureTimes() {
         return departureTimes;
     }
 
-    public void setDepartureTimes(List<Timer> departureTimes) {
-        this.departureTimes = departureTimes;
-    }
-
     public boolean isClimatisationOn() {
         return climatisationOn;
     }
 
-    public void setClimatisationOn(boolean climatisationOn) {
-        this.climatisationOn = climatisationOn;
-    }
-
     public ChargingSettings getChargingSettings() {
         return chargingSettings;
-    }
-
-    public void setChargingSettings(ChargingSettings chargingSettings) {
-        this.chargingSettings = chargingSettings;
     }
 
     @Override

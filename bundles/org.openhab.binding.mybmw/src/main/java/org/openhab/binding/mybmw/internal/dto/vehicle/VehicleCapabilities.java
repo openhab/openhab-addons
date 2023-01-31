@@ -78,380 +78,33 @@ public class VehicleCapabilities {
     private boolean speechThirdPartyAlexa = false; // true,
     private boolean speechThirdPartyAlexaSDK = false; // false,
     private boolean unlock = false; // true,
-    private boolean vehicleFinder = false; // true,
-    private DigitalKey digitalKey = new DigitalKey();
-    private String a4aType = ""; // NOT_SUPPORTED,
-    private String climateFunction = ""; // VENTILATION,
-    private String climateTimerTrigger = ""; // DEPARTURE_TIMER,
-    private String lastStateCallState = ""; // ACTIVATED,
-    private String vehicleStateSource = ""; // LAST_STATE_CALL,
 
-    public String getA4aType() {
-        return a4aType;
-    }
-
-    public void setA4aType(String a4aType) {
-        this.a4aType = a4aType;
-    }
-
+    /**
+     * @return the climateNow
+     */
     public boolean isClimateNow() {
         return climateNow;
     }
 
-    public void setClimateNow(boolean climateNow) {
-        this.climateNow = climateNow;
-    }
-
-    public boolean isClimateTimerSupported() {
-        return isClimateTimerSupported;
-    }
-
-    public void setClimateTimerSupported(boolean isClimateTimerSupported) {
-        this.isClimateTimerSupported = isClimateTimerSupported;
-    }
-
-    public String getClimateTimerTrigger() {
-        return climateTimerTrigger;
-    }
-
-    public void setClimateTimerTrigger(String climateTimerTrigger) {
-        this.climateTimerTrigger = climateTimerTrigger;
-    }
-
-    public String getClimateFunction() {
-        return climateFunction;
-    }
-
-    public void setClimateFunction(String climateFunction) {
-        this.climateFunction = climateFunction;
-    }
-
+    /**
+     * @return the horn
+     */
     public boolean isHorn() {
         return horn;
     }
 
-    public void setHorn(boolean horn) {
-        this.horn = horn;
-    }
-
-    public boolean isBmwChargingSupported() {
-        return isBmwChargingSupported;
-    }
-
-    public void setBmwChargingSupported(boolean isBmwChargingSupported) {
-        this.isBmwChargingSupported = isBmwChargingSupported;
-    }
-
-    public boolean isCarSharingSupported() {
-        return isCarSharingSupported;
-    }
-
-    public void setCarSharingSupported(boolean isCarSharingSupported) {
-        this.isCarSharingSupported = isCarSharingSupported;
-    }
-
-    public boolean isChargeNowForBusinessSupported() {
-        return isChargeNowForBusinessSupported;
-    }
-
-    public void setChargeNowForBusinessSupported(boolean isChargeNowForBusinessSupported) {
-        this.isChargeNowForBusinessSupported = isChargeNowForBusinessSupported;
-    }
-
-    public boolean isChargingHistorySupported() {
-        return isChargingHistorySupported;
-    }
-
-    public void setChargingHistorySupported(boolean isChargingHistorySupported) {
-        this.isChargingHistorySupported = isChargingHistorySupported;
-    }
-
-    public boolean isChargingHospitalityEnabled() {
-        return isChargingHospitalityEnabled;
-    }
-
-    public void setChargingHospitalityEnabled(boolean isChargingHospitalityEnabled) {
-        this.isChargingHospitalityEnabled = isChargingHospitalityEnabled;
-    }
-
-    public boolean isChargingLoudnessEnabled() {
-        return isChargingLoudnessEnabled;
-    }
-
-    public void setChargingLoudnessEnabled(boolean isChargingLoudnessEnabled) {
-        this.isChargingLoudnessEnabled = isChargingLoudnessEnabled;
-    }
-
-    public boolean isChargingPlanSupported() {
-        return isChargingPlanSupported;
-    }
-
-    public void setChargingPlanSupported(boolean isChargingPlanSupported) {
-        this.isChargingPlanSupported = isChargingPlanSupported;
-    }
-
-    public boolean isChargingPowerLimitEnabled() {
-        return isChargingPowerLimitEnabled;
-    }
-
-    public void setChargingPowerLimitEnabled(boolean isChargingPowerLimitEnabled) {
-        this.isChargingPowerLimitEnabled = isChargingPowerLimitEnabled;
-    }
-
-    public boolean isChargingSettingsEnabled() {
-        return isChargingSettingsEnabled;
-    }
-
-    public void setChargingSettingsEnabled(boolean isChargingSettingsEnabled) {
-        this.isChargingSettingsEnabled = isChargingSettingsEnabled;
-    }
-
-    public boolean isChargingTargetSocEnabled() {
-        return isChargingTargetSocEnabled;
-    }
-
-    public void setChargingTargetSocEnabled(boolean isChargingTargetSocEnabled) {
-        this.isChargingTargetSocEnabled = isChargingTargetSocEnabled;
-    }
-
-    public boolean isCustomerEsimSupported() {
-        return isCustomerEsimSupported;
-    }
-
-    public void setCustomerEsimSupported(boolean isCustomerEsimSupported) {
-        this.isCustomerEsimSupported = isCustomerEsimSupported;
-    }
-
-    public boolean isDataPrivacyEnabled() {
-        return isDataPrivacyEnabled;
-    }
-
-    public void setDataPrivacyEnabled(boolean isDataPrivacyEnabled) {
-        this.isDataPrivacyEnabled = isDataPrivacyEnabled;
-    }
-
-    public boolean isDCSContractManagementSupported() {
-        return isDCSContractManagementSupported;
-    }
-
-    public void setDCSContractManagementSupported(boolean isDCSContractManagementSupported) {
-        this.isDCSContractManagementSupported = isDCSContractManagementSupported;
-    }
-
-    public boolean isEasyChargeEnabled() {
-        return isEasyChargeEnabled;
-    }
-
-    public void setEasyChargeEnabled(boolean isEasyChargeEnabled) {
-        this.isEasyChargeEnabled = isEasyChargeEnabled;
-    }
-
-    public boolean isMiniChargingSupported() {
-        return isMiniChargingSupported;
-    }
-
-    public void setMiniChargingSupported(boolean isMiniChargingSupported) {
-        this.isMiniChargingSupported = isMiniChargingSupported;
-    }
-
-    public boolean isEvGoChargingSupported() {
-        return isEvGoChargingSupported;
-    }
-
-    public void setEvGoChargingSupported(boolean isEvGoChargingSupported) {
-        this.isEvGoChargingSupported = isEvGoChargingSupported;
-    }
-
-    public boolean isRemoteHistoryDeletionSupported() {
-        return isRemoteHistoryDeletionSupported;
-    }
-
-    public void setRemoteHistoryDeletionSupported(boolean isRemoteHistoryDeletionSupported) {
-        this.isRemoteHistoryDeletionSupported = isRemoteHistoryDeletionSupported;
-    }
-
-    public boolean isRemoteEngineStartSupported() {
-        return isRemoteEngineStartSupported;
-    }
-
-    public void setRemoteEngineStartSupported(boolean isRemoteEngineStartSupported) {
-        this.isRemoteEngineStartSupported = isRemoteEngineStartSupported;
-    }
-
-    public boolean isRemoteServicesActivationRequired() {
-        return isRemoteServicesActivationRequired;
-    }
-
-    public void setRemoteServicesActivationRequired(boolean isRemoteServicesActivationRequired) {
-        this.isRemoteServicesActivationRequired = isRemoteServicesActivationRequired;
-    }
-
-    public boolean isRemoteServicesBookingRequired() {
-        return isRemoteServicesBookingRequired;
-    }
-
-    public void setRemoteServicesBookingRequired(boolean isRemoteServicesBookingRequired) {
-        this.isRemoteServicesBookingRequired = isRemoteServicesBookingRequired;
-    }
-
-    public boolean isScanAndChargeSupported() {
-        return isScanAndChargeSupported;
-    }
-
-    public void setScanAndChargeSupported(boolean isScanAndChargeSupported) {
-        this.isScanAndChargeSupported = isScanAndChargeSupported;
-    }
-
-    public String getLastStateCallState() {
-        return lastStateCallState;
-    }
-
-    public void setLastStateCallState(String lastStateCallState) {
-        this.lastStateCallState = lastStateCallState;
-    }
-
+    /**
+     * @return the lights
+     */
     public boolean isLights() {
         return lights;
     }
 
-    public void setLights(boolean lights) {
-        this.lights = lights;
-    }
-
+    /**
+     * @return the lock
+     */
     public boolean isLock() {
         return lock;
-    }
-
-    public void setLock(boolean lock) {
-        this.lock = lock;
-    }
-
-    public boolean isRemoteSoftwareUpgrade() {
-        return remoteSoftwareUpgrade;
-    }
-
-    public void setRemoteSoftwareUpgrade(boolean remoteSoftwareUpgrade) {
-        this.remoteSoftwareUpgrade = remoteSoftwareUpgrade;
-    }
-
-    public boolean isSendPoi() {
-        return sendPoi;
-    }
-
-    public void setSendPoi(boolean sendPoi) {
-        this.sendPoi = sendPoi;
-    }
-
-    public boolean isSpeechThirdPartyAlexa() {
-        return speechThirdPartyAlexa;
-    }
-
-    public void setSpeechThirdPartyAlexa(boolean speechThirdPartyAlexa) {
-        this.speechThirdPartyAlexa = speechThirdPartyAlexa;
-    }
-
-    public boolean isSpeechThirdPartyAlexaSDK() {
-        return speechThirdPartyAlexaSDK;
-    }
-
-    public void setSpeechThirdPartyAlexaSDK(boolean speechThirdPartyAlexaSDK) {
-        this.speechThirdPartyAlexaSDK = speechThirdPartyAlexaSDK;
-    }
-
-    public boolean isUnlock() {
-        return unlock;
-    }
-
-    public void setUnlock(boolean unlock) {
-        this.unlock = unlock;
-    }
-
-    public boolean isVehicleFinder() {
-        return vehicleFinder;
-    }
-
-    public void setVehicleFinder(boolean vehicleFinder) {
-        this.vehicleFinder = vehicleFinder;
-    }
-
-    public String getVehicleStateSource() {
-        return vehicleStateSource;
-    }
-
-    public void setVehicleStateSource(String vehicleStateSource) {
-        this.vehicleStateSource = vehicleStateSource;
-    }
-
-    public boolean isRemoteHistorySupported() {
-        return isRemoteHistorySupported;
-    }
-
-    public void setRemoteHistorySupported(boolean isRemoteHistorySupported) {
-        this.isRemoteHistorySupported = isRemoteHistorySupported;
-    }
-
-    public boolean isWifiHotspotServiceSupported() {
-        return isWifiHotspotServiceSupported;
-    }
-
-    public void setWifiHotspotServiceSupported(boolean isWifiHotspotServiceSupported) {
-        this.isWifiHotspotServiceSupported = isWifiHotspotServiceSupported;
-    }
-
-    public boolean isNonLscFeatureEnabled() {
-        return isNonLscFeatureEnabled;
-    }
-
-    public void setNonLscFeatureEnabled(boolean isNonLscFeatureEnabled) {
-        this.isNonLscFeatureEnabled = isNonLscFeatureEnabled;
-    }
-
-    public boolean isSustainabilitySupported() {
-        return isSustainabilitySupported;
-    }
-
-    public void setSustainabilitySupported(boolean isSustainabilitySupported) {
-        this.isSustainabilitySupported = isSustainabilitySupported;
-    }
-
-    public boolean isSustainabilityAccumulatedViewEnabled() {
-        return isSustainabilityAccumulatedViewEnabled;
-    }
-
-    public void setSustainabilityAccumulatedViewEnabled(boolean isSustainabilityAccumulatedViewEnabled) {
-        this.isSustainabilityAccumulatedViewEnabled = isSustainabilityAccumulatedViewEnabled;
-    }
-
-    public boolean isCheckSustainabilityDPP() {
-        return checkSustainabilityDPP;
-    }
-
-    public void setCheckSustainabilityDPP(boolean checkSustainabilityDPP) {
-        this.checkSustainabilityDPP = checkSustainabilityDPP;
-    }
-
-    public boolean isRemoteParkingSupported() {
-        return isRemoteParkingSupported;
-    }
-
-    public void setRemoteParkingSupported(boolean isRemoteParkingSupported) {
-        this.isRemoteParkingSupported = isRemoteParkingSupported;
-    }
-
-    public boolean isClimateTimerWeeklyActive() {
-        return isClimateTimerWeeklyActive;
-    }
-
-    public void setClimateTimerWeeklyActive(boolean isClimateTimerWeeklyActive) {
-        this.isClimateTimerWeeklyActive = isClimateTimerWeeklyActive;
-    }
-
-    public DigitalKey getDigitalKey() {
-        return digitalKey;
-    }
-
-    public void setDigitalKey(DigitalKey digitalKey) {
-        this.digitalKey = digitalKey;
     }
 
     /**
@@ -462,25 +115,40 @@ public class VehicleCapabilities {
     }
 
     /**
-     * @param remote360 the remote360 to set
+     * @return the sendPoi
      */
-    public void setRemote360(boolean remote360) {
-        this.remote360 = remote360;
+    public boolean isSendPoi() {
+        return sendPoi;
     }
 
     /**
-     * @return the remoteChargingCommands
+     * @return the unlock
      */
-    public RemoteChargingCommands getRemoteChargingCommands() {
-        return remoteChargingCommands;
+    public boolean isUnlock() {
+        return unlock;
     }
 
     /**
-     * @param remoteChargingCommands the remoteChargingCommands to set
+     * @return the vehicleFinder
      */
-    public void setRemoteChargingCommands(RemoteChargingCommands remoteChargingCommands) {
-        this.remoteChargingCommands = remoteChargingCommands;
+    public boolean isVehicleFinder() {
+        return vehicleFinder;
     }
+
+    /**
+     * @return the digitalKey
+     */
+    public DigitalKey getDigitalKey() {
+        return digitalKey;
+    }
+
+    private boolean vehicleFinder = false; // true,
+    private DigitalKey digitalKey = new DigitalKey();
+    private String a4aType = ""; // NOT_SUPPORTED,
+    private String climateFunction = ""; // VENTILATION,
+    private String climateTimerTrigger = ""; // DEPARTURE_TIMER,
+    private String lastStateCallState = ""; // ACTIVATED,
+    private String vehicleStateSource = ""; // LAST_STATE_CALL,
 
     /*
      * (non-Javadoc)

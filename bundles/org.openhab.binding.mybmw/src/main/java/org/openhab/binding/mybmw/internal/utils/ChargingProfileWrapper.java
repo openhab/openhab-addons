@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.*;
-import static org.openhab.binding.mybmw.internal.utils.Constants.*;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.TIMER1;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.TIMER2;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.TIMER3;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.TIMER4;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.WINDOWEND;
+import static org.openhab.binding.mybmw.internal.utils.ChargingProfileWrapper.ProfileKey.WINDOWSTART;
+import static org.openhab.binding.mybmw.internal.utils.Constants.NULL_LOCAL_TIME;
+import static org.openhab.binding.mybmw.internal.utils.Constants.TIME_FORMATER;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -154,27 +159,6 @@ public class ChargingProfileWrapper {
         return daysOfWeek.get(key);
     }
 
-    public void setDays(final ProfileKey key, final @Nullable Set<DayOfWeek> days) {
-        if (days == null) {
-            daysOfWeek.remove(key);
-        } else {
-            daysOfWeek.put(key, days);
-        }
-    }
-
-    public void setDayEnabled(final ProfileKey key, final DayOfWeek day, final boolean enabled) {
-        final Set<DayOfWeek> days = daysOfWeek.get(key);
-        if (days == null) {
-            daysOfWeek.put(key, enabled ? EnumSet.of(day) : EnumSet.noneOf(DayOfWeek.class));
-        } else {
-            if (enabled) {
-                days.add(day);
-            } else {
-                days.remove(day);
-            }
-        }
-    }
-
     public LocalTime getTime(final ProfileKey key) {
         LocalTime t = times.get(key);
         if (t != null) {
@@ -182,14 +166,6 @@ public class ChargingProfileWrapper {
         } else {
             logger.debug("Profile not valid - Key {} doesn't contain boolean value", key);
             return Constants.NULL_LOCAL_TIME;
-        }
-    }
-
-    public void setTime(final ProfileKey key, @Nullable LocalTime time) {
-        if (time == null) {
-            times.remove(key);
-        } else {
-            times.put(key, time);
         }
     }
 
@@ -222,46 +198,5 @@ public class ChargingProfileWrapper {
                 }
             }
         }
-    }
-
-    private Timer getTimer(final ProfileKey key) {
-        final Timer timer = new Timer();
-        switch (key) {
-            case TIMER1:
-                timer.id = 1;
-                break;
-            case TIMER2:
-                timer.id = 2;
-                break;
-            case TIMER3:
-                timer.id = 3;
-                break;
-            case TIMER4:
-                timer.id = 4;
-                break;
-            default:
-                // timer id stays -1
-                break;
-        }
-        Boolean enabledBool = isEnabled(key);
-        if (enabledBool != null) {
-            timer.action = enabledBool ? ACTIVATE : DEACTIVATE;
-        } else {
-            timer.action = DEACTIVATE;
-        }
-        final LocalTime time = getTime(key);
-        if (!time.equals(Constants.NULL_LOCAL_TIME)) {
-            timer.timeStamp = new Time();
-            timer.timeStamp.setHour(time.getHour());
-            timer.timeStamp.setMinute(time.getMinute());
-        }
-        final Set<DayOfWeek> days = daysOfWeek.get(key);
-        if (days != null) {
-            timer.timerWeekDays = new ArrayList<>();
-            for (DayOfWeek day : days) {
-                timer.timerWeekDays.add(day.name().toLowerCase());
-            }
-        }
-        return timer;
     }
 }

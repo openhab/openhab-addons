@@ -20,8 +20,47 @@ import java.util.List;
  * @author Bernd Weymann - Initial contribution
  */
 public class ChargingSessions {
-    public String total;// ": "~ 218 kWh",
-    public String numberOfSessions;// ": "17",
-    public String chargingListState;// ": "HAS_SESSIONS",
-    public List<ChargingSession> sessions;
+    private String total;// ": "~ 218 kWh",
+    private String numberOfSessions;// ": "17",
+    private String chargingListState;// ": "HAS_SESSIONS",
+    private List<ChargingSession> sessions;
+
+    /**
+     * @return the total
+     */
+    public String getTotal() {
+        return total;
+    }
+
+    /**
+     * @return the numberOfSessions
+     */
+    public String getNumberOfSessions() {
+        return numberOfSessions;
+    }
+
+    /**
+     * @return the chargingListState
+     */
+    public String getChargingListState() {
+        return chargingListState;
+    }
+
+    /**
+     * @return the sessions
+     */
+    public List<ChargingSession> getSessions() {
+        return sessions;
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+
+    @Override
+    public String toString() {
+        return "ChargingSessions [total=" + total + ", numberOfSessions=" + numberOfSessions + ", chargingListState="
+                + chargingListState + ", sessions=" + sessions + "]";
+    }
 }

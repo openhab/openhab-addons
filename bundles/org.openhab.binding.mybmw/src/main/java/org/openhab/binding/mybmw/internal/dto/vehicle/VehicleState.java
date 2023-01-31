@@ -49,156 +49,122 @@ public class VehicleState {
     private List<ClimateTimer> climateTimers = new ArrayList<>();
     private ChargingProfile chargingProfile = new ChargingProfile();
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+
+    /**
+     * @return the isLeftSteering
+     */
     public boolean isLeftSteering() {
         return isLeftSteering;
     }
 
-    public void setLeftSteering(boolean isLeftSteering) {
-        this.isLeftSteering = isLeftSteering;
-    }
-
+    /**
+     * @return the lastFetched
+     */
     public String getLastFetched() {
         return lastFetched;
     }
 
-    public void setLastFetched(String lastFetched) {
-        this.lastFetched = lastFetched;
-    }
-
+    /**
+     * @return the lastUpdatedAt
+     */
     public String getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    public void setLastUpdatedAt(String lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
-    }
-
+    /**
+     * @return the isLscSupported
+     */
     public boolean isLscSupported() {
         return isLscSupported;
     }
 
-    public void setLscSupported(boolean isLscSupported) {
-        this.isLscSupported = isLscSupported;
-    }
-
+    /**
+     * @return the range
+     */
     public int getRange() {
         return range;
     }
 
-    public void setRange(int range) {
-        this.range = range;
-    }
-
+    /**
+     * @return the doorsState
+     */
     public VehicleDoorsState getDoorsState() {
         return doorsState;
     }
 
-    public void setDoorsState(VehicleDoorsState doorsState) {
-        this.doorsState = doorsState;
-    }
-
+    /**
+     * @return the windowsState
+     */
     public VehicleWindowsState getWindowsState() {
         return windowsState;
     }
 
-    public void setWindowsState(VehicleWindowsState windowsState) {
-        this.windowsState = windowsState;
-    }
-
+    /**
+     * @return the roofState
+     */
     public VehicleRoofState getRoofState() {
         return roofState;
     }
 
-    public void setRoofState(VehicleRoofState roofState) {
-        this.roofState = roofState;
-    }
-
+    /**
+     * @return the tireState
+     */
     public VehicleTireStates getTireState() {
         return tireState;
     }
 
-    public void setTireState(VehicleTireStates tireState) {
-        this.tireState = tireState;
-    }
-
+    /**
+     * @return the location
+     */
     public VehicleLocation getLocation() {
         return location;
     }
 
-    public void setLocation(VehicleLocation location) {
-        this.location = location;
-    }
-
+    /**
+     * @return the currentMileage
+     */
     public int getCurrentMileage() {
         return currentMileage;
     }
 
-    public void setCurrentMileage(int currentMileage) {
-        this.currentMileage = currentMileage;
-    }
-
+    /**
+     * @return the climateControlState
+     */
     public ClimateControlState getClimateControlState() {
         return climateControlState;
     }
 
-    public void setClimateControlState(ClimateControlState climateControlState) {
-        this.climateControlState = climateControlState;
-    }
-
+    /**
+     * @return the requiredServices
+     */
     public List<RequiredService> getRequiredServices() {
         return requiredServices;
     }
 
-    public void setRequiredServices(List<RequiredService> requiredServices) {
-        this.requiredServices = requiredServices;
-    }
-
+    /**
+     * @return the checkControlMessages
+     */
     public List<CheckControlMessage> getCheckControlMessages() {
         return checkControlMessages;
     }
 
-    public void setCheckControlMessages(List<CheckControlMessage> checkControlMessages) {
-        this.checkControlMessages = checkControlMessages;
-    }
-
+    /**
+     * @return the combustionFuelLevel
+     */
     public CombustionFuelLevel getCombustionFuelLevel() {
         return combustionFuelLevel;
     }
 
-    public void setCombustionFuelLevel(CombustionFuelLevel combustionFuelLevel) {
-        this.combustionFuelLevel = combustionFuelLevel;
-    }
-
+    /**
+     * @return the driverPreferences
+     */
     public DriverPreferences getDriverPreferences() {
         return driverPreferences;
-    }
-
-    public void setDriverPreferences(DriverPreferences driverPreferences) {
-        this.driverPreferences = driverPreferences;
-    }
-
-    public boolean isDeepSleepModeActive() {
-        return isDeepSleepModeActive;
-    }
-
-    public void setDeepSleepModeActive(boolean isDeepSleepModeActive) {
-        this.isDeepSleepModeActive = isDeepSleepModeActive;
-    }
-
-    public List<ClimateTimer> getClimateTimers() {
-        return climateTimers;
-    }
-
-    public void setClimateTimers(List<ClimateTimer> climateTimers) {
-        this.climateTimers = climateTimers;
-    }
-
-    public ChargingProfile getChargingProfile() {
-        return chargingProfile;
-    }
-
-    public void setChargingProfile(ChargingProfile chargingProfile) {
-        this.chargingProfile = chargingProfile;
     }
 
     /**
@@ -209,17 +175,25 @@ public class VehicleState {
     }
 
     /**
-     * @param electricChargingState the electricChargingState to set
+     * @return the isDeepSleepModeActive
      */
-    public void setElectricChargingState(ElectricChargingState electricChargingState) {
-        this.electricChargingState = electricChargingState;
+    public boolean isDeepSleepModeActive() {
+        return isDeepSleepModeActive;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
+    /**
+     * @return the climateTimers
      */
+    public List<ClimateTimer> getClimateTimers() {
+        return climateTimers;
+    }
+
+    /**
+     * @return the chargingProfile
+     */
+    public ChargingProfile getChargingProfile() {
+        return chargingProfile;
+    }
 
     @Override
     public String toString() {

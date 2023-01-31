@@ -13,9 +13,7 @@
 package org.openhab.binding.mybmw.internal.utils;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -207,34 +205,5 @@ public interface Converter {
         }
         time.append(Integer.toString(t.getMinute()));
         return time.toString();
-    }
-
-    static int getOffsetMinutes() {
-        ZoneOffset zo = ZonedDateTime.now().getOffset();
-        return zo.getTotalSeconds() / 60;
-    }
-
-    static int stringToInt(String intStr) {
-        int integer = Constants.INT_UNDEF;
-        try {
-            integer = Integer.parseInt(intStr);
-
-        } catch (Exception e) {
-            LOGGER.debug("Unable to convert range {} into int value", intStr);
-        }
-        return integer;
-    }
-
-    static String getLocalTime(String chrageInfoLabel) {
-        String[] timeSplit = chrageInfoLabel.split(Constants.TILDE);
-        if (timeSplit.length == 2) {
-            try {
-                LocalTime timeL = LocalTime.parse(timeSplit[1].trim(), LOCALE_ENGLISH_TIMEFORMATTER);
-                return timeSplit[0] + Constants.TILDE + timeL.toString();
-            } catch (Exception e) {
-                LOGGER.debug("Unable to parse date {} - {}", timeSplit[1], e.getMessage());
-            }
-        }
-        return chrageInfoLabel;
     }
 }
