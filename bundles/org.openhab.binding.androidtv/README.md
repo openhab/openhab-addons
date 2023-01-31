@@ -68,6 +68,9 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_POWER
 - KEY_POWERON
 - KEY_GOOGLE
+- KEY_VOLUP
+- KEY_VOLDOWN
+- KEY_MUTE
 
 The list above causes an instantanious "press and release" of each button.  
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.

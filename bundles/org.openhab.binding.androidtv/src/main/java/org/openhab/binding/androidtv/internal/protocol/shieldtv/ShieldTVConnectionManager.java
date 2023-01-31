@@ -21,11 +21,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -65,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShieldTVConnectionManager {
-    private static final int DEFAULT_RECONNECT_MINUTES = 5;
+    private static final int DEFAULT_RECONNECT_SECONDS = 60;
     private static final int DEFAULT_HEARTBEAT_SECONDS = 5;
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
     private static final String DEFAULT_KEYSTORE_PASSWORD = "secret";
@@ -85,14 +91,23 @@ public class ShieldTVConnectionManager {
     private @Nullable BufferedWriter writer;
     private @Nullable BufferedReader reader;
 
+    private @NonNullByDefault({}) SSLServerSocketFactory sslServerSocketFactory;
+    private @Nullable Socket shimServerSocket;
+    private @Nullable BufferedWriter shimWriter;
+    private @Nullable BufferedReader shimReader;
+
     private @NonNullByDefault({}) ShieldTVMessageParser messageParser;
 
     private final BlockingQueue<ShieldTVCommand> sendQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ShieldTVCommand> shimQueue = new LinkedBlockingQueue<>();
 
     private @Nullable Future<?> asyncInitializeTask;
+    private @Nullable Future<?> shimAsyncInitializeTask;
 
     private @Nullable Thread senderThread;
     private @Nullable Thread readerThread;
+    private @Nullable Thread shimSenderThread;
+    private @Nullable Thread shimReaderThread;
 
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
@@ -100,9 +115,11 @@ public class ShieldTVConnectionManager {
     private final Object keepAliveReconnectLock = new Object();
 
     private StringBuffer sbReader = new StringBuffer();
+    private StringBuffer sbShimReader = new StringBuffer();
     private String lastMsg = "";
     private String thisMsg = "";
-    private int inMessage = 0;
+    private boolean inMessage = false;
+    private String msgType = "";
 
     private boolean isLoggedIn = false;
 
@@ -256,12 +273,14 @@ public class ShieldTVConnectionManager {
         }
 
         config.port = (config.port > 0) ? config.port : DEFAULT_PORT;
-        config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
+        config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_SECONDS;
         config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
         config.delay = (config.delay < 0) ? 0 : config.delay;
+        config.shim = (config.shim) ? true : false;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
-                : folderName + "/shieldtv." + handler.getThing().getUID().getId() + ".keystore";
+                : folderName + "/shieldtv." + ((config.shim) ? "shim." : "") + handler.getThing().getUID().getId()
+                        + ".keystore";
         config.keystorePassword = (!config.keystorePassword.equals("")) ? config.keystorePassword
                 : DEFAULT_KEYSTORE_PASSWORD;
 
@@ -271,7 +290,7 @@ public class ShieldTVConnectionManager {
         try {
             File keystoreFile = new File(config.keystoreFileName);
 
-            if (!keystoreFile.exists()) {
+            if (!keystoreFile.exists() || config.shim) {
                 androidtvPKI.generateNewKeyPair(encryptionKey);
                 androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
             } else {
@@ -289,8 +308,11 @@ public class ShieldTVConnectionManager {
             sslContext.init(kmf.getKeyManagers(), trustManagers, null);
 
             sslSocketFactory = sslContext.getSocketFactory();
-
-            asyncInitializeTask = scheduler.submit(this::connect);
+            if (!config.shim) {
+                asyncInitializeTask = scheduler.submit(this::connect);
+            } else {
+                shimAsyncInitializeTask = scheduler.submit(this::shimInitalize);
+            }
 
         } catch (NoSuchAlgorithmException | IOException e) {
             handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
@@ -338,7 +360,7 @@ public class ShieldTVConnectionManager {
 
         handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
 
-        Thread readerThread = new Thread(this::readerThreadJob, "ShiledTV reader");
+        Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader");
         readerThread.setDaemon(true);
         readerThread.start();
         this.readerThread = readerThread;
@@ -348,17 +370,79 @@ public class ShieldTVConnectionManager {
         senderThread.start();
         this.senderThread = senderThread;
 
-        logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
-        keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
-                TimeUnit.SECONDS);
+        if (!config.shim) {
+            logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
+            keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
+                    TimeUnit.SECONDS);
 
-        String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
-        sendCommand(new ShieldTVCommand(login));
+            String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
+            sendCommand(new ShieldTVCommand(login));
+        }
     }
 
-    private void scheduleConnectRetry(long waitMinutes) {
-        logger.debug("Scheduling ShieldTV connection retry in {} minutes", waitMinutes);
-        connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+    public synchronized void shimInitalize() {
+
+        AndroidTVPKI shimPKI = new AndroidTVPKI();
+        byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
+        SSLContext sslContext;
+
+        try {
+            shimPKI.generateNewKeyPair(shimEncryptionKey);
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(shimPKI.getKeyStore(config.keystorePassword, shimEncryptionKey),
+                    config.keystorePassword.toCharArray());
+            TrustManager[] trustManagers = defineNoOpTrustManager();
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+            this.sslServerSocketFactory = sslContext.getServerSocketFactory();
+
+            logger.debug("Opening ShieldTV shim on port {}", config.port);
+            ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.port);
+
+            while (true) {
+                logger.debug("Waiting for shim connection...");
+                Socket serverSocket = sslServerSocket.accept();
+                disconnect(true);
+                connect();
+                SSLSession session = ((SSLSocket) serverSocket).getSession();
+                Certificate[] cchain2 = session.getLocalCertificates();
+                for (int i = 0; i < cchain2.length; i++) {
+                    logger.trace("Connection from: {}", ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                }
+
+                logger.trace("Peer host is {}", session.getPeerHost());
+                logger.trace("Cipher is {}", session.getCipherSuite());
+                logger.trace("Protocol is {}", session.getProtocol());
+                logger.trace("ID is {}", new BigInteger(session.getId()));
+                logger.trace("Session created in {}", session.getCreationTime());
+                logger.trace("Session accessed in {}", session.getLastAccessedTime());
+
+                shimWriter = new BufferedWriter(
+                        new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                shimReader = new BufferedReader(
+                        new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                this.shimServerSocket = serverSocket;
+
+                Thread readerThread = new Thread(this::shimReaderThreadJob, "ShieldTV shim reader");
+                readerThread.setDaemon(true);
+                readerThread.start();
+                this.shimReaderThread = readerThread;
+
+                Thread senderThread = new Thread(this::shimSenderThreadJob, "ShieldTV shim sender");
+                senderThread.setDaemon(true);
+                senderThread.start();
+                this.shimSenderThread = senderThread;
+
+            }
+        } catch (Exception e) {
+            logger.trace("Shim initalization exception", e);
+            return;
+        }
+    }
+
+    private void scheduleConnectRetry(long waitSeconds) {
+        logger.debug("Scheduling ShieldTV connection retry in {} seconds", waitSeconds);
+        connectRetryJob = scheduler.schedule(this::connect, waitSeconds, TimeUnit.SECONDS);
     }
 
     /**
@@ -389,6 +473,17 @@ public class ShieldTVConnectionManager {
         if (readerThread != null && readerThread.isAlive()) {
             readerThread.interrupt();
         }
+
+        Thread shimSenderThread = this.shimSenderThread;
+        if (shimSenderThread != null && shimSenderThread.isAlive()) {
+            shimSenderThread.interrupt();
+        }
+
+        Thread shimReaderThread = this.shimReaderThread;
+        if (shimReaderThread != null && shimReaderThread.isAlive()) {
+            shimReaderThread.interrupt();
+        }
+
         SSLSocket sslSocket = this.sslSocket;
         if (sslSocket != null) {
             try {
@@ -412,6 +507,32 @@ public class ShieldTVConnectionManager {
                 writer.close();
             } catch (IOException e) {
                 logger.debug("Error closing writer: {}", e.getMessage());
+            }
+        }
+
+        Socket shimServerSocket = this.shimServerSocket;
+        if (shimServerSocket != null) {
+            try {
+                shimServerSocket.close();
+            } catch (IOException e) {
+                logger.debug("Error closing ShieldTV SSL socket: {}", e.getMessage());
+            }
+            this.shimServerSocket = null;
+        }
+        BufferedReader shimReader = this.shimReader;
+        if (shimReader != null) {
+            try {
+                shimReader.close();
+            } catch (IOException e) {
+                logger.debug("Error closing shimReader: {}", e.getMessage());
+            }
+        }
+        BufferedWriter shimWriter = this.shimWriter;
+        if (shimWriter != null) {
+            try {
+                shimWriter.close();
+            } catch (IOException e) {
+                logger.debug("Error closing shimWriter: {}", e.getMessage());
             }
         }
     }
@@ -465,10 +586,42 @@ public class ShieldTVConnectionManager {
         }
     }
 
+    private void shimSenderThreadJob() {
+        logger.debug("Shim sender thread started");
+        try {
+            while (!Thread.currentThread().isInterrupted() && shimWriter != null) {
+                ShieldTVCommand command = shimQueue.take();
+
+                try {
+                    BufferedWriter writer = this.shimWriter;
+                    if (writer != null) {
+                        logger.trace("Shim received from shield: {}",
+                                ShieldTVRequest.decodeMessage(command.toString()));
+                        writer.write(command.toString());
+                        writer.flush();
+                    }
+                } catch (InterruptedIOException e) {
+                    logger.debug("Shim interrupted while sending.");
+                    break; // exit loop and terminate thread
+                } catch (IOException e) {
+                    logger.warn("Shim communication error. Error: {}", e.getMessage());
+                    break; // reconnect() will start a new thread; terminate this one
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            logger.debug("Command sender thread exiting");
+        }
+    }
+
     private void flushReader() {
-        if ((inMessage == 0) && (sbReader.length() > 0)) {
+        if (!inMessage && (sbReader.length() > 0)) {
             sbReader.setLength(sbReader.length() - 2);
             messageParser.handleMessage(sbReader.toString());
+            if (config.shim) {
+                sendShim(new ShieldTVCommand(ShieldTVRequest.encodeMessage(sbReader.toString())));
+            }
             sbReader.setLength(0);
             sbReader.append(lastMsg.toString());
         }
@@ -479,8 +632,11 @@ public class ShieldTVConnectionManager {
     private void finishReaderMessage() {
         sbReader.append(thisMsg.toString());
         lastMsg = "";
-        inMessage = 0;
+        inMessage = false;
         messageParser.handleMessage(sbReader.toString());
+        if (config.shim) {
+            sendShim(new ShieldTVCommand(ShieldTVRequest.encodeMessage(sbReader.toString())));
+        }
         sbReader.setLength(0);
     }
 
@@ -500,58 +656,127 @@ public class ShieldTVConnectionManager {
             BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null) {
                 thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                if (lastMsg.equals("08") && thisMsg.equals("0a") && inMessage == 0) {
+                if (thisMsg.equals("ffffffff")) {
+                    // Shield has crashed the connection. Disconnect hard.
+                    reconnect();
+                    break;
+                }
+                if (lastMsg.equals("08") && !inMessage) {
                     flushReader();
-                    inMessage = 1;
-                } else if (lastMsg.equals("18") && thisMsg.equals("0a") && inMessage == 1) {
+                    inMessage = true;
+                    msgType = thisMsg;
+                } else if (lastMsg.equals("18") && thisMsg.equals(msgType) && inMessage) {
+                    if (!msgType.startsWith("0")) {
+                        sbReader.append(thisMsg.toString());
+                        thisMsg = fixMessage(Integer.toHexString(reader.read()));
+                    }
                     finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("0b") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 2;
-                } else if (lastMsg.equals("18") && thisMsg.equals("0b") && inMessage == 2) {
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("f1") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 3;
-                } else if (lastMsg.equals("18") && thisMsg.equals("f1") && inMessage == 3) {
-                    sbReader.append(thisMsg.toString());
-                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("ec") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 4;
-                } else if (lastMsg.equals("18") && thisMsg.equals("ec") && inMessage == 4) {
-                    sbReader.append(thisMsg.toString());
-                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("00") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 5;
-                } else if (lastMsg.equals("d1") && thisMsg.equals("30") && inMessage == 5) {
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("f0") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 6;
-                } else if (lastMsg.equals("18") && thisMsg.equals("f0") && inMessage == 6) {
-                    sbReader.append(thisMsg.toString());
-                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("f3") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 7;
-                } else if (lastMsg.equals("18") && thisMsg.equals("f3") && inMessage == 7) {
-                    sbReader.append(thisMsg.toString());
-                    thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                    finishReaderMessage();
-                } else if (lastMsg.equals("08") && thisMsg.equals("e9") && inMessage == 0) {
-                    flushReader();
-                    inMessage = 10;
-                } else if (sbReader.length() == 32 && inMessage == 10) {
+                } else if (msgType.equals("00") && (sbReader.toString().length() == 16)) {
+                    // keepalive messages don't have delimiters but are always 18 in length
                     finishReaderMessage();
                 } else {
                     sbReader.append(thisMsg.toString());
                     lastMsg = thisMsg;
                 }
+            }
+        } catch (InterruptedIOException e) {
+            logger.debug("Interrupted while reading");
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
+        } catch (IOException e) {
+            logger.debug("I/O error while reading from stream: {}", e.getMessage());
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "I/O Error");
+        } catch (RuntimeException e) {
+            logger.warn("Runtime exception in reader thread", e);
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Runtime exception");
+        } finally {
+            logger.debug("Message reader thread exiting");
+        }
+    }
+
+    private void shimReaderThreadJob() {
+        logger.debug("Shim reader thread started");
+        String thisShimMsg = "";
+        int thisShimRawMsg = 0;
+        int payloadRemain = 0;
+        int payloadBlock = 0;
+        String thisShimMsgType = "";
+        boolean inShimMessage = false;
+        try {
+            BufferedReader reader = this.shimReader;
+            while (!Thread.interrupted() && reader != null) {
+                thisShimRawMsg = reader.read();
+                thisShimMsg = fixMessage(Integer.toHexString(thisShimRawMsg));
+                if (thisShimMsg.equals("ffffffff")) {
+                    disconnect(true);
+                    break;
+                }
+                if (!inShimMessage) {
+                    // Beginning of payload
+                    sbShimReader.setLength(0);
+                    sbShimReader.append(thisShimMsg.toString());
+                    inShimMessage = true;
+                    payloadBlock++;
+                } else if ((payloadBlock == 1) && (thisShimMsg.equals("00"))) {
+                    sbShimReader.append(thisShimMsg.toString());
+                    payloadRemain = 8;
+                    thisShimMsgType = thisShimMsg;
+                    while (payloadRemain > 1) {
+                        thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
+                        sbShimReader.append(thisShimMsg.toString());
+                        payloadRemain--;
+                        payloadBlock++;
+                    }
+                    payloadRemain--;
+                    payloadBlock++;
+                } else if ((payloadBlock == 1) && (thisShimMsg.startsWith("f1") || thisShimMsg.startsWith("f3"))) {
+                    sbShimReader.append(thisShimMsg.toString());
+                    payloadRemain = 6;
+                    thisShimMsgType = thisShimMsg;
+                    while (payloadRemain > 1) {
+                        thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
+                        sbShimReader.append(thisShimMsg.toString());
+                        payloadRemain--;
+                        payloadBlock++;
+                    }
+                    payloadRemain--;
+                    payloadBlock++;
+                } else if (payloadBlock == 1) {
+                    thisShimMsgType = thisShimMsg;
+                    sbShimReader.append(thisShimMsg.toString());
+                    payloadBlock++;
+                } else if (payloadBlock == 2) {
+                    sbShimReader.append(thisShimMsg.toString());
+                    payloadBlock++;
+                } else if (payloadBlock == 3) {
+                    // Length of remainder of packet
+                    payloadRemain = thisShimRawMsg;
+                    sbShimReader.append(thisShimMsg.toString());
+                    payloadBlock++;
+                } else if (payloadBlock == 4) {
+                    sbShimReader.append(thisShimMsg.toString());
+                    if (thisShimMsgType.equals("e9") || thisShimMsgType.equals("f0")) {
+                        payloadRemain = thisShimRawMsg + 1;
+                    }
+                    while (payloadRemain > 1) {
+                        thisShimMsg = fixMessage(Integer.toHexString(reader.read()));
+                        sbShimReader.append(thisShimMsg.toString());
+                        payloadRemain--;
+                        payloadBlock++;
+                    }
+                    payloadRemain--;
+                    payloadBlock++;
+
+                }
+
+                if ((payloadBlock > 5) && (payloadRemain == 0)) {
+                    logger.trace("Shim sending to shield: {}", sbShimReader.toString());
+                    sendQueue.add(new ShieldTVCommand(ShieldTVRequest.encodeMessage(sbShimReader.toString())));
+                    inShimMessage = false;
+                    payloadBlock = 0;
+                    payloadRemain = 0;
+                    sbShimReader.setLength(0);
+                }
+
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
@@ -613,9 +838,15 @@ public class ShieldTVConnectionManager {
         reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
 
-    public void sendCommand(@Nullable ShieldTVCommand command) {
-        if (command != null) {
+    public void sendCommand(ShieldTVCommand command) {
+        if ((!config.shim) && (!command.toString().equals(""))) {
             sendQueue.add(command);
+        }
+    }
+
+    public void sendShim(ShieldTVCommand command) {
+        if (!command.toString().equals("")) {
+            shimQueue.add(command);
         }
     }
 
@@ -791,6 +1022,18 @@ public class ShieldTVConnectionManager {
                     case "KEY_GOOGLE":
                         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e907120808141005201e401f")));
                         break;
+                    case "KEY_VOLUP":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08f007120c08031208080110031a020102")));
+                        break;
+                    case "KEY_VOLDOWN":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08f007120c08031208080110011a020102")));
+                        break;
+                    case "KEY_MUTE":
+                        sendCommand(new ShieldTVCommand(
+                                ShieldTVRequest.encodeMessage("08f007120c08031208080110021a020102")));
+                        break;
                     default:
                         logger.trace("Unknown Keypress: {}", command.toString());
                 }
@@ -827,6 +1070,10 @@ public class ShieldTVConnectionManager {
         Future<?> asyncInitializeTask = this.asyncInitializeTask;
         if (asyncInitializeTask != null && !asyncInitializeTask.isDone()) {
             asyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
+        }
+        Future<?> shimAsyncInitializeTask = this.shimAsyncInitializeTask;
+        if (shimAsyncInitializeTask != null && !shimAsyncInitializeTask.isDone()) {
+            shimAsyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
         }
         disconnect(true);
     }
