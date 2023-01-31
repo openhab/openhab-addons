@@ -188,8 +188,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 } else {
                     logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                             API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
+                    apiIntervalErrors = 0;
                 }
-
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
