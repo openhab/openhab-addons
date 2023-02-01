@@ -252,6 +252,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
+        ZonedDateTime filterBeginDate = filter.getBeginDate();
+        ZonedDateTime filterEndDate = filter.getEndDate();
+        if (filterBeginDate != null && filterEndDate != null && filterBeginDate.isAfter(filterEndDate)) {
+            throw new IllegalArgumentException("begin (" + filterBeginDate + ") before end (" + filterEndDate + ")");
+        }
+
         String itemName = filter.getItemName();
 
         RrdDb db = null;
@@ -317,9 +323,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
             // an IAE to be thrown
-            if (start > end && filter.getEndDate() == null) {
-                logger.debug("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
-                        end);
+            if (start > end) {
                 return List.of();
             }
 
