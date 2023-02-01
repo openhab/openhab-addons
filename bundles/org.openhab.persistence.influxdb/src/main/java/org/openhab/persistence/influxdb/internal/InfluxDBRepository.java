@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public interface InfluxDBRepository {
     boolean checkConnectionStatus();
 
     /**
-     * Return all stored item names with it's count of stored points
+     * Return all stored item names with its count of stored points
      *
      * @return Map with <ItemName,ItemCount> entries
      */
@@ -80,4 +81,7 @@ public interface InfluxDBRepository {
      * @return the query creator for this repository
      */
     FilterCriteriaQueryCreator createQueryCreator();
+
+    record InfluxRow(Instant time, String itemName, Object value) {
+    }
 }

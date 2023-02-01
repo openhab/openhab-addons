@@ -38,7 +38,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,12 +81,15 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public void disconnect() {
+        final InfluxDB currentClient = client;
+        if (currentClient != null) {
+            currentClient.close();
+        }
         this.client = null;
     }
 
     @Override
     public boolean checkConnectionStatus() {
-        boolean dbStatus = false;
         final InfluxDB currentClient = client;
         if (currentClient != null) {
             try {
@@ -95,26 +97,19 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                 String version = pong.getVersion();
                 // may be check for version >= 0.9
                 if (version != null && !version.contains("unknown")) {
-                    dbStatus = true;
                     logger.debug("database status is OK, version is {}", version);
+                    return true;
                 } else {
                     logger.warn("database ping error, version is: \"{}\" response time was \"{}\"", version,
                             pong.getResponseTime());
-                    dbStatus = false;
                 }
             } catch (RuntimeException e) {
-                dbStatus = false;
-                logger.error("database connection failed", e);
-                handleDatabaseException(e);
+                logger.warn("database error: {}", e.getMessage(), e);
             }
         } else {
             logger.warn("checkConnection: database is not connected");
         }
-        return dbStatus;
-    }
-
-    private void handleDatabaseException(Exception e) {
-        logger.warn("database error: {}", e.getMessage(), e);
+        return false;
     }
 
     @Override
@@ -131,23 +126,20 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private Point convertPointToClientFormat(InfluxPoint point) throws UnexpectedConditionException {
         Point.Builder clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime().toEpochMilli(),
                 TimeUnit.MILLISECONDS);
-        setPointValue(point.getValue(), clientPoint);
-        point.getTags().forEach(clientPoint::tag);
-        return clientPoint.build();
-    }
-
-    private void setPointValue(@Nullable Object value, Point.Builder point) throws UnexpectedConditionException {
+        Object value = point.getValue();
         if (value instanceof String) {
-            point.addField(FIELD_VALUE_NAME, (String) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (String) value);
         } else if (value instanceof Number) {
-            point.addField(FIELD_VALUE_NAME, (Number) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (Number) value);
         } else if (value instanceof Boolean) {
-            point.addField(FIELD_VALUE_NAME, (Boolean) value);
+            clientPoint.addField(FIELD_VALUE_NAME, (Boolean) value);
         } else if (value == null) {
-            point.addField(FIELD_VALUE_NAME, "null");
+            clientPoint.addField(FIELD_VALUE_NAME, "null");
         } else {
             throw new UnexpectedConditionException("Not expected value type");
         }
+        point.getTags().forEach(clientPoint::tag);
+        return clientPoint.build();
     }
 
     @Override

@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,21 +65,11 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         this.influxDBMetadataService = influxDBMetadataService;
     }
 
-    /**
-     * Returns if the client has been successfully connected to server
-     *
-     * @return True if it's connected, otherwise false
-     */
     @Override
     public boolean isConnected() {
         return client != null;
     }
 
-    /**
-     * Connect to InfluxDB server
-     *
-     * @return True if successful, otherwise false
-     */
     @Override
     public boolean connect() {
         InfluxDBClientOptions.Builder optionsBuilder = InfluxDBClientOptions.builder().url(configuration.getUrl())
@@ -104,9 +92,6 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         return checkConnectionStatus();
     }
 
-    /**
-     * Disconnect from InfluxDB server
-     */
     @Override
     public void disconnect() {
         final InfluxDBClient currentClient = this.client;
@@ -116,11 +101,6 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         this.client = null;
     }
 
-    /**
-     * Check if connection is currently ready
-     *
-     * @return True if its ready, otherwise false
-     */
     @Override
     public boolean checkConnectionStatus() {
         final InfluxDBClient currentClient = client;
@@ -170,26 +150,16 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         }
     }
 
-    /**
-     * Executes Flux query
-     *
-     * @param query Query
-     * @return Query results
-     */
     @Override
     public List<InfluxRow> query(String query) {
         final QueryApi currentQueryAPI = queryAPI;
         if (currentQueryAPI != null) {
             List<FluxTable> clientResult = currentQueryAPI.query(query);
-            return convertClientResutToRepository(clientResult);
+            return clientResult.stream().flatMap(this::mapRawResultToHistoric).toList();
         } else {
             logger.warn("Returning empty list because queryAPI isn't present");
-            return Collections.emptyList();
+            return List.of();
         }
-    }
-
-    private List<InfluxRow> convertClientResutToRepository(List<FluxTable> clientResult) {
-        return clientResult.stream().flatMap(this::mapRawResultToHistoric).collect(Collectors.toList());
     }
 
     private Stream<InfluxRow> mapRawResultToHistoric(FluxTable rawRow) {
@@ -201,11 +171,6 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         });
     }
 
-    /**
-     * Return all stored item names with it's count of stored points
-     *
-     * @return Map with <ItemName,ItemCount> entries
-     */
     @Override
     public Map<String, Integer> getStoredItemsCount() {
         final QueryApi currentQueryAPI = queryAPI;

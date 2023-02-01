@@ -40,7 +40,6 @@ import org.openhab.persistence.influxdb.internal.InfluxDBPersistentItemInfo;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.ItemToStorePointCreator;
 import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
@@ -125,9 +124,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      */
     @Deactivate
     public void deactivate() {
-        logger.info("InfluxDB persistence service stopped.");
-        influxDBRepository.disconnect();
         tryReconnection = false;
+        influxDBRepository.disconnect();
+        logger.info("InfluxDB persistence service stopped.");
     }
 
     @Override
@@ -146,7 +145,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
-            logger.info("getItemInfo ignored, InfluxDB is not yet connected");
+            logger.info("getItemInfo ignored, InfluxDB is not connected");
             return Set.of();
         }
     }
@@ -185,7 +184,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             String query = influxDBRepository.createQueryCreator().createQuery(filter,
                     configuration.getRetentionPolicy());
             logger.trace("Query {}", query);
-            List<InfluxRow> results = influxDBRepository.query(query);
+            List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRowToHistoricItem).collect(Collectors.toList());
         } else {
             logger.debug("Query for persisted data ignored, InfluxDB is not connected");
@@ -193,10 +192,10 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    private HistoricItem mapRowToHistoricItem(InfluxRow row) {
-        State state = InfluxDBStateConvertUtils.objectToState(row.getValue(), row.getItemName(), itemRegistry);
-        return new InfluxDBHistoricItem(row.getItemName(), state,
-                ZonedDateTime.ofInstant(row.getTime(), ZoneId.systemDefault()));
+    private HistoricItem mapRowToHistoricItem(InfluxDBRepository.InfluxRow row) {
+        State state = InfluxDBStateConvertUtils.objectToState(row.value(), row.itemName(), itemRegistry);
+        return new InfluxDBHistoricItem(row.itemName(), state,
+                ZonedDateTime.ofInstant(row.time(), ZoneId.systemDefault()));
     }
 
     @Override
