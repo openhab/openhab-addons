@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/binding.pushbullet.name</name>
-	<description>@text/binding.pushbullet.description</description>
+	<name>@text/addon.pushbullet.name</name>
+	<description>@text/addon.pushbullet.description</description>
 
 </addon:addon>
