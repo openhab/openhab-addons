@@ -262,8 +262,8 @@ public final class EcovacsApiImpl implements EcovacsApi {
                     ((PortalIotCommandJsonResponse) commandResponse).response);
         }
         if (!commandResponse.wasSuccessful()) {
-            throw new EcovacsApiException(
-                    "Sending IOT command " + commandName + " failed: " + commandResponse.getFailureMessage());
+            final String msg = "Sending IOT command " + commandName + " failed: " + commandResponse.getErrorMessage();
+            throw new EcovacsApiException(msg, commandResponse.failedDueToAuthProblem());
         }
         try {
             return command.convertResponse(commandResponse, desc.protoVersion, gson);

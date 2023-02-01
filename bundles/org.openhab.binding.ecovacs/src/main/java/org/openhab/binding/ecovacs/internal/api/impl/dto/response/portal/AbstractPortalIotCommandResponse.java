@@ -24,20 +24,30 @@ public class AbstractPortalIotCommandResponse {
     @SerializedName("ret")
     private final String result;
 
-    @SerializedName("debug")
-    private final String failureMessage;
+    @SerializedName("errno")
+    private final int errorCode;
+    @SerializedName("error")
+    private final String errorMessage;
 
-    public AbstractPortalIotCommandResponse(String id, String result, String failureMessage) {
+    public AbstractPortalIotCommandResponse(String id, String result, int errorCode, String errorMessage) {
         this.id = id;
         this.result = result;
-        this.failureMessage = failureMessage;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
     }
 
     public boolean wasSuccessful() {
         return "ok".equals(result);
     }
 
-    public String getFailureMessage() {
-        return failureMessage;
+    public boolean failedDueToAuthProblem() {
+        return "fail".equals(result) && errorMessage != null && errorMessage.toLowerCase().contains("auth error");
+    }
+
+    public String getErrorMessage() {
+        if (wasSuccessful()) {
+            return null;
+        }
+        return "result=" + result + ", errno=" + errorCode + ", error=" + errorMessage;
     }
 }

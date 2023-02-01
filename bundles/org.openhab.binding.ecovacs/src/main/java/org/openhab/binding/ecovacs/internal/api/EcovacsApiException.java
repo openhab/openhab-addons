@@ -26,8 +26,12 @@ public class EcovacsApiException extends IOException {
     public final boolean isAuthFailure;
 
     public EcovacsApiException(String reason) {
+        this(reason, false);
+    }
+
+    public EcovacsApiException(String reason, boolean isAuthFailure) {
         super(reason);
-        isAuthFailure = false;
+        this.isAuthFailure = isAuthFailure;
     }
 
     public EcovacsApiException(Response response) {
