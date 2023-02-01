@@ -31,4 +31,5 @@ public class ShieldTVConfiguration {
     public String keystorePassword = "";
     public int delay = 0;
     public boolean shim;
+    public boolean shimNewKeys;
 }

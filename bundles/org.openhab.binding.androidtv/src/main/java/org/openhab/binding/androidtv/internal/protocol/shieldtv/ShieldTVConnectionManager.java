@@ -278,6 +278,7 @@ public class ShieldTVConnectionManager {
         config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
         config.delay = (config.delay < 0) ? 0 : config.delay;
         config.shim = (config.shim) ? true : false;
+        config.shimNewKeys = (config.shimNewKeys) ? true : false;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
                 : folderName + "/shieldtv." + ((config.shim) ? "shim." : "") + handler.getThing().getUID().getId()
@@ -291,7 +292,7 @@ public class ShieldTVConnectionManager {
         try {
             File keystoreFile = new File(config.keystoreFileName);
 
-            if (!keystoreFile.exists() || config.shim) {
+            if (!keystoreFile.exists() || config.shimNewKeys) {
                 androidtvPKI.generateNewKeyPair(encryptionKey);
                 androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
             } else {
