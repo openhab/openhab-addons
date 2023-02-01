@@ -287,10 +287,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         long start = 0L;
         long end = filterEndDate == null ? System.currentTimeMillis() / 1000
-                : filter.getEndDate().toInstant().getEpochSecond();
+                : filterEndDate.toInstant().getEpochSecond();
 
         try {
-            if (filter.getBeginDate() == null) {
+            if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more
                 // inaccurate, we only support descending order
                 // and a single return value
@@ -299,7 +299,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // query, which we want to support
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
-                    if (filter.getEndDate() == null) {
+                    if (filterEndDate == null) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -318,7 +318,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                             "rrd4j does not allow querys without a begin date, unless order is descending and a single value is requested");
                 }
             } else {
-                start = filter.getBeginDate().toInstant().getEpochSecond();
+                start = filterBeginDate.toInstant().getEpochSecond();
             }
 
             // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
