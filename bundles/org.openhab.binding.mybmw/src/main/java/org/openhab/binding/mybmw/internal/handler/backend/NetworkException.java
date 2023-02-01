@@ -12,37 +12,41 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link NetworkException} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - extend Exception
  */
+@NonNullByDefault
 public class NetworkException extends Exception {
 
     private static final long serialVersionUID = 123L;
 
-    private String url;
-    private int status;
-    private String reason;
-    private String body;
+    private String url = "";
+    private int status = -1;
+    private String reason = "";
+    private String body = "";
 
     public NetworkException() {
     }
 
-    public NetworkException(String url, int status, String reason, String body) {
+    public NetworkException(String url, int status, @Nullable String reason, @Nullable String body) {
         this.url = url;
         this.status = status;
-        this.reason = reason;
-        this.body = body;
+        this.reason = reason != null ? reason : "";
+        this.body = body != null ? body : "";
     }
 
-    public NetworkException(String url, int status, String reason, String body, Throwable cause) {
+    public NetworkException(String url, int status, @Nullable String reason, @Nullable String body, Throwable cause) {
         super(cause);
         this.url = url;
         this.status = status;
-        this.reason = reason;
-        this.body = body;
+        this.reason = reason != null ? reason : "";
+        this.body = body != null ? body : "";
     }
 
     public NetworkException(String message) {

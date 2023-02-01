@@ -190,9 +190,6 @@ public class MyBMWFileProxy implements MyBMWProxy {
         } catch (IOException e) {
             logger.error("file {} could not be loaded: {}", filename, e.getMessage());
             return "";
-        } catch (NullPointerException e) {
-            logger.error("file {} could not be loaded: {}", filename, e.getMessage());
-            return "";
         }
     }
 }
