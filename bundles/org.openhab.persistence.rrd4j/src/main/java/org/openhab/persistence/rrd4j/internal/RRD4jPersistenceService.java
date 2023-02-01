@@ -286,7 +286,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long start = 0L;
-        long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
+        long end = filterEndDate == null ? System.currentTimeMillis() / 1000
                 : filter.getEndDate().toInstant().getEpochSecond();
 
         try {
