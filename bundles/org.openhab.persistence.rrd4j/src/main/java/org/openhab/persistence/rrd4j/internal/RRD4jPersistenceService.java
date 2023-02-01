@@ -324,6 +324,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
             // an IAE to be thrown
             if (start > end) {
+                logger.debug("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
+                        end);
                 return List.of();
             }
 
