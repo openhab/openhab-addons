@@ -19,9 +19,11 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_C
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_EXPERIENCE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_HOSTNAME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_IP_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_LAST_SEEN;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_NAME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ONLINE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RECONNECT;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RSSI;
@@ -176,6 +178,19 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 state = OnOffType.from(clientHome);
                 break;
 
+            // :name
+            case CHANNEL_NAME:
+                if (client.getName() != null) {
+                    state = StringType.valueOf(client.getName());
+                }
+                break;
+
+            // :hostname
+            case CHANNEL_HOSTNAME:
+                if (client.getHostname() != null) {
+                    state = StringType.valueOf(client.getHostname());
+                }
+                break;
             // :site
             case CHANNEL_SITE:
                 if (site != null && site.getDescription() != null && !site.getDescription().isBlank()) {

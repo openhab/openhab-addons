@@ -40,6 +40,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
 
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
+        @SerializedName("command_template")
+        protected @Nullable String commandTemplate;
         @SerializedName("command_topic")
         protected String commandTopic = "";
         @SerializedName("payload_on")
@@ -56,7 +58,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
                 componentConfiguration.getUpdateListener())
                         .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                         .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos())
+                                channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                         .build();
     }
 }

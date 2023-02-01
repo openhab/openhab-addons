@@ -232,6 +232,11 @@ public class ComponentChannel {
                             .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
                     channelUID, valueState, channelStateUpdateListener, commandFilter);
 
+            // disabled by default components should always show up as advanced
+            if (!component.isEnabledByDefault()) {
+                isAdvanced = true;
+            }
+
             if (this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
