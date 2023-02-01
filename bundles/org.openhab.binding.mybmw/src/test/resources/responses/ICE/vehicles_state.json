@@ -1,12 +1,12 @@
 {
     "state": {
         "isLeftSteering": true,
-        "lastFetched": "2022-12-22T18:59:04.104Z",
-        "lastUpdatedAt": "2022-12-22T13:00:46Z",
+        "lastFetched": "2023-02-01T21:30:24.651Z",
+        "lastUpdatedAt": "2023-02-01T21:23:36Z",
         "isLscSupported": true,
-        "range": 384,
+        "range": 123,
         "doorsState": {
-            "combinedSecurityState": "SECURED",
+            "combinedSecurityState": "PARTIALLY_LOCKED",
             "leftFront": "CLOSED",
             "rightFront": "CLOSED",
             "combinedState": "CLOSED",
@@ -20,41 +20,41 @@
         },
         "location": {
             "coordinates": {
-				"latitude": 1.234,
-				"longitude": 5.678
+                "latitude": 48.427661388888886,
+                "longitude": 11.600997222222222
             },
             "address": {
-                "formatted": "Leopoldstraße 25, 80333 München"
+                "formatted": "Weiherweg 4A, 85391 Allershausen"
             },
-            "heading": 177
+            "heading": 173
         },
-        "currentMileage": 750,
+        "currentMileage": 1358,
         "requiredServices": [
             {
                 "dateTime": "2025-10-01T00:00:00.000Z",
                 "type": "VEHICLE_TUV",
                 "status": "OK",
-                "description": "Next state inspection due by the specified date."
+                "description": "Nächste gesetzliche Fahrzeuguntersuchung zum angegebenen Termin."
             },
             {
                 "dateTime": "2024-09-01T00:00:00.000Z",
                 "mileage": 30000,
                 "type": "OIL",
                 "status": "OK",
-                "description": "Next service due after the specified distance or date."
+                "description": "Nächster Service nach der angegebenen Fahrstrecke oder zum angegebenen Termin."
             },
             {
                 "dateTime": "2026-09-01T00:00:00.000Z",
                 "mileage": 60000,
                 "type": "VEHICLE_CHECK",
                 "status": "OK",
-                "description": "Next vehicle check due on the specified date or, if shown, after the specified distance."
+                "description": "Nächste Sichtprüfung zum angegebenen Termin oder nach der ggf. angegebenen Fahrstrecke."
             },
             {
                 "dateTime": "2025-09-01T00:00:00.000Z",
                 "type": "BRAKE_FLUID",
                 "status": "OK",
-                "description": "Next service due by the specified date."
+                "description": "Nächster Wechsel spätestens zum angegebenen Termin."
             }
         ],
         "checkControlMessages": [
@@ -71,8 +71,8 @@
             }
         ],
         "combustionFuelLevel": {
-            "remainingFuelLiters": 25,
-            "range": 384
+            "remainingFuelLiters": 8,
+            "range": 123
         },
         "driverPreferences": {
             "lscPrivacyMode": "OFF"
@@ -156,7 +156,7 @@
         "checkSustainabilityDPP": false,
         "specialThemeSupport": [],
         "isRemoteParkingSupported": false,
-        "remoteChargingCommands": {},
+        "remoteChargingCommands": null,
         "isClimateTimerWeeklyActive": false,
         "digitalKey": {
             "bookedServicePackage": "NONE",
