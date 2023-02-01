@@ -280,9 +280,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         long start = 0L;
-        // set end to {@link Instant#MAX} instead of current timestamp to enable requesting future time ranges including
-        // boundary values via REST API
-        // see discussion in https://github.com/openhab/openhab-addons/pull/14238
         long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
                 : filter.getEndDate().toInstant().getEpochSecond();
 
@@ -320,8 +317,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             // do not call method {@link RrdDb#createFetchRequest(ConsolFun, long, long, long)} if start > end to avoid
             // an IAE to be thrown
-            if (start > end) {
-                logger.warn("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
+            if (start > end && filter.getEndDate() == null) {
+                logger.debug("Could not query rrd4j database for item '{}': start ({}) > end ({})", itemName, start,
                         end);
                 return List.of();
             }
