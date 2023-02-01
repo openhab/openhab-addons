@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/binding.nanoleaf.name</name>
-	<description>@text/binding.nanoleaf.description</description>
+	<name>@text/addon.nanoleaf.name</name>
+	<description>@text/addon.nanoleaf.description</description>
 
 </addon:addon>
