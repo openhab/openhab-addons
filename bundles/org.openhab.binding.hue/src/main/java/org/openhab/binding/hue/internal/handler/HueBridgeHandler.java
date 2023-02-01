@@ -49,6 +49,7 @@ import org.openhab.binding.hue.internal.dto.State;
 import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
+import org.openhab.binding.hue.internal.exceptions.EmptyResponseException;
 import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
@@ -150,6 +151,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
+            } catch (EmptyResponseException e) {
+                // Unexpected empty response is ignored
+                logger.debug("{}", e.getMessage());
             } catch (ApiException | CommunicationException | IOException e) {
                 if (hueBridge != null && lastBridgeConnectionState) {
                     logger.debug("Connection to Hue Bridge {} lost: {}", hueBridge.getIPAddress(), e.getMessage(), e);
