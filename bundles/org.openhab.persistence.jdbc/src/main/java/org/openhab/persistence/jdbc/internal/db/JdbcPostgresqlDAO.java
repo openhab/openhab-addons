@@ -23,6 +23,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.types.State;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
@@ -64,6 +65,12 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema "
                 + "FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'";
+        // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g. "timestamp with time zone") and
+        // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias data_type as "column_type" and
+        // udt_name as "column_type_alias" to be compatible with the 'Column' class used in Yank.queryBeanList
+        sqlGetTableColumnTypes = "SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns "
+                + "WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' "
+                + "AND table_name='#itemsManageTable#')";
         // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified to do an "upsert" (overwrite
         // existing value). The version check and query change is performed at initAfterFirstDbConnection()
         sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
@@ -93,7 +100,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlTypes.put("CALLITEM", "VARCHAR");
         sqlTypes.put("COLORITEM", "VARCHAR");
         sqlTypes.put("CONTACTITEM", "VARCHAR");
-        sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
+        sqlTypes.put("DATETIMEITEM", "TIMESTAMPTZ");
         sqlTypes.put("DIMMERITEM", "SMALLINT");
         sqlTypes.put("IMAGEITEM", "VARCHAR");
         sqlTypes.put("LOCATIONITEM", "VARCHAR");
@@ -102,6 +109,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlTypes.put("ROLLERSHUTTERITEM", "SMALLINT");
         sqlTypes.put("STRINGITEM", "VARCHAR");
         sqlTypes.put("SWITCHITEM", "VARCHAR");
+        sqlTypes.put("tablePrimaryKey", "TIMESTAMPTZ");
         logger.debug("JDBC::initSqlTypes: Initialized the type array sqlTypes={}", sqlTypes.values());
     }
 
@@ -165,9 +173,50 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         }
     }
 
+    /*
+     * Override because for PostgreSQL a different query is required with a 3rd argument (itemsManageTable)
+     */
+    @Override
+    public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetTableColumnTypes,
+                new String[] { "#jdbcUriDatabaseName#", "#tableName#", "#itemsManageTable#" },
+                new String[] { vo.getJdbcUriDatabaseName(), vo.getTableName(), vo.getItemsManageTable() });
+        logger.debug("JDBC::doGetTableColumns sql={}", sql);
+        try {
+            return Yank.queryBeanList(sql, Column.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
     /*************
      * ITEM DAOs *
      *************/
+
+    /*
+     * Override since PostgreSQL does not support setting NOT NULL in the same clause as ALTER COLUMN .. TYPE
+     */
+    @Override
+    public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
+            throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
+                new String[] { "#tableName#", "#columnName#", "#columnType#" },
+                new String[] { tableName, columnName, columnType });
+        logger.info("JDBC::doAlterTableColumn sql={}", sql);
+        try {
+            Yank.execute(sql, null);
+            if (!nullable) {
+                String sql2 = StringUtilsExt.replaceArrayMerge(
+                        "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET NOT NULL",
+                        new String[] { "#tableName#", "#columnName#" }, new String[] { tableName, columnName });
+                logger.info("JDBC::doAlterTableColumn sql={}", sql2);
+                Yank.execute(sql2, null);
+            }
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
     @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);

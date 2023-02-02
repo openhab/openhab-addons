@@ -180,6 +180,7 @@ public class JdbcMapper {
         ItemsVO isvo = new ItemsVO();
         isvo.setJdbcUriDatabaseName(conf.getDbName());
         isvo.setTableName(tableName);
+        isvo.setItemsManageTable(conf.getItemsManageTable());
         List<Column> is = conf.getDBDAO().doGetTableColumns(isvo);
         logTime("getTableColumns", timerStart, System.currentTimeMillis());
         return is;

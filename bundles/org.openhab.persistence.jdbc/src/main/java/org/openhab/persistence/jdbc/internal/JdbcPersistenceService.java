@@ -313,7 +313,7 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     }
 
     /**
-     * Check schema for integrity issues.
+     * Check schema of specific item table for integrity issues.
      *
      * @param tableName for which columns should be checked
      * @param itemName that corresponds to table
@@ -347,7 +347,8 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 if (!"time".equals(columnName)) {
                     issues.add("Column name 'time' expected, but is '" + columnName + "'");
                 }
-                if (!timeDataType.equalsIgnoreCase(column.getColumnType())) {
+                if (!timeDataType.equalsIgnoreCase(column.getColumnType())
+                        && !timeDataType.equalsIgnoreCase(column.getColumnTypeAlias())) {
                     issues.add("Column type '" + timeDataType + "' expected, but is '"
                             + column.getColumnType().toUpperCase() + "'");
                 }
@@ -358,7 +359,8 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
                 if (!"value".equals(columnName)) {
                     issues.add("Column name 'value' expected, but is '" + columnName + "'");
                 }
-                if (!valueDataType.equalsIgnoreCase(column.getColumnType())) {
+                if (!valueDataType.equalsIgnoreCase(column.getColumnType())
+                        && !valueDataType.equalsIgnoreCase(column.getColumnTypeAlias())) {
                     issues.add("Column type '" + valueDataType + "' expected, but is '"
                             + column.getColumnType().toUpperCase() + "'");
                 }
@@ -403,13 +405,17 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         for (Column column : columns) {
             String columnName = column.getColumnName();
             if ("time".equalsIgnoreCase(columnName)) {
-                if (!"time".equals(columnName) || !timeDataType.equalsIgnoreCase(column.getColumnType())
+                if (!"time".equals(columnName)
+                        || (!timeDataType.equalsIgnoreCase(column.getColumnType())
+                                && !timeDataType.equalsIgnoreCase(column.getColumnTypeAlias()))
                         || column.getIsNullable()) {
                     alterTableColumn(tableName, "time", timeDataType, false);
                     isFixed = true;
                 }
             } else if ("value".equalsIgnoreCase(columnName)) {
-                if (!"value".equals(columnName) || !valueDataType.equalsIgnoreCase(column.getColumnType())
+                if (!"value".equals(columnName)
+                        || (!valueDataType.equalsIgnoreCase(column.getColumnType())
+                                && !valueDataType.equalsIgnoreCase(column.getColumnTypeAlias()))
                         || !column.getIsNullable()) {
                     alterTableColumn(tableName, "value", valueDataType, true);
                     isFixed = true;
