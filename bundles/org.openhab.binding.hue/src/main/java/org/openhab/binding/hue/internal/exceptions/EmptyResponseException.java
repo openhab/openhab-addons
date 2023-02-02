@@ -10,20 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.config;
+package org.openhab.binding.hue.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Astro Channel configuration.
+ * Thrown when API is returning an unexpected empty response.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Laurent Garnier - Initial contribution
  */
+@SuppressWarnings("serial")
 @NonNullByDefault
-public class AstroChannelConfig {
-    public int offset = 0;
-    public @Nullable String earliest;
-    public @Nullable String latest;
-    public boolean forceEvent = false;
+public class EmptyResponseException extends ApiException {
+    public EmptyResponseException() {
+    }
+
+    public EmptyResponseException(String message) {
+        super(message);
+    }
 }

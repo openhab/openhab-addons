@@ -41,12 +41,9 @@ public abstract class UniFiClient implements HasId {
 
     private String ip;
 
-    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
     private String hostname;
 
-    @SerializedName("name")
-    @JsonAdapter(UniFiTidyLowerCaseStringDeserializer.class)
-    private String alias;
+    private String name;
 
     private Integer uptime;
 
@@ -85,8 +82,8 @@ public abstract class UniFiClient implements HasId {
         return hostname;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getName() {
+        return name;
     }
 
     public Integer getUptime() {
@@ -128,7 +125,7 @@ public abstract class UniFiClient implements HasId {
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, experience: %d, device: %s}",
-                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, experience, getDevice());
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', name: '%s', wired: %b, guest: %b, blocked: %b, experience: %d, device: %s}",
+                id, mac, getIp(), hostname, name, isWired(), guest, blocked, experience, getDevice());
     }
 }

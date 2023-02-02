@@ -44,6 +44,7 @@ Tibber Pulse (optional):
 | Last Meter Consumption  | Last Recorded Meter Consumption          | True      |
 | Accumulated Consumption | Accumulated Consumption since Midnight   | True      |
 | Accumulated Cost        | Accumulated Cost since Midnight          | True      |
+| Accumulated Reward      | Accumulated Reward since Midnight        | True      |
 | Currency                | Currency of Cost                         | True      |
 | Min Power               | Min Power Consumption since Midnight     | True      |
 | Average Power           | Average Power Consumption since Midnight | True      |
@@ -231,6 +232,7 @@ Number:Power               TibberAPILivePower                    "Live Power Con
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
 Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
 Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
+Number:Dimensionless       TibberAPILiveAccumulatedReward        "Accumulated Reward [%.2f NOK]"             {channel="tibber:tibberapi:7cfae492:live_accumulatedReward"}
 String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
 Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_minPower"}
 Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [%.0f W]"        {channel="tibber:tibberapi:7cfae492:live_averagePower"}
