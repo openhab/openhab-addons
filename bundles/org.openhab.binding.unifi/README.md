@@ -230,67 +230,9 @@ The `poePort` information that is retrieved is available as these channels:
 The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.
 
-## Full Example
-
-things/unifi.things
-
-```
-Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
-	Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
-}
-```
-
-_Note: Usually on Unifi OS, the default port is 443_
-
-Replace `$user`, `$password` and `$cid` accordingly.
-
-items/unifi.items
-
-```
-Switch      MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
-String      MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
-String      MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
-String      MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
-String      MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
-String      MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
-Number      MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
-Number:Time MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
-DateTime    MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
-Switch      MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
-Switch      MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
-```
-
-transform/unifi.map
-
-```
-ON=Home
-OFF=Away
-```
-
-sitemaps/unifi.sitemap
-
-```
-sitemap unifi label="UniFi Binding"
-{
-	Frame {
-		Text item=MatthewsPhone
-		Text item=MatthewsPhoneSite
-		Text item=MatthewsPhoneMAC
-		Text item=MatthewsPhoneIP
-		Text item=MatthewsPhoneAP
-		Text item=MatthewsPhoneESSID
-		Text item=MatthewsPhoneRSSI
-		Text item=MatthewsPhoneUptime
-		Text item=MatthewsPhoneLastSeen
-		Switch item=MatthewsPhoneBlocked
-		Switch item=MatthewsPhoneReconnect
-	}
-}
-```
-
 ## Rule Actions
 
-As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` thing, it is possible to use thing actions to generate, revoke and list guest vouchers.
+As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` thing, it is possible to use rule actions on the thing to generate, revoke and list guest vouchers.
 The following actions are available:
 
 - `boolean success = generateVoucher(Integer expire, Integer users, Integer upLimit, Integer downLimit, Integer dataQuota)`
@@ -355,7 +297,65 @@ The structure of the returned json is (depending on content, some fields may be 
 ]
 ```
 
-Examples:
+## Full Example
+
+### `things/unifi.things`
+
+```
+Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
+	Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
+}
+```
+
+_Note: Usually on Unifi OS, the default port is 443_
+
+Replace `$user`, `$password` and `$cid` accordingly.
+
+### `items/unifi.items`
+
+```
+Switch      MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
+String      MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
+String      MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
+String      MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
+String      MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
+String      MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
+Number      MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
+Number:Time MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
+DateTime    MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
+Switch      MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
+Switch      MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
+```
+
+### `transform/unifi.map`
+
+```
+ON=Home
+OFF=Away
+```
+
+### `sitemaps/unifi.sitemap`
+
+```
+sitemap unifi label="UniFi Binding"
+{
+	Frame {
+		Text item=MatthewsPhone
+		Text item=MatthewsPhoneSite
+		Text item=MatthewsPhoneMAC
+		Text item=MatthewsPhoneIP
+		Text item=MatthewsPhoneAP
+		Text item=MatthewsPhoneESSID
+		Text item=MatthewsPhoneRSSI
+		Text item=MatthewsPhoneUptime
+		Text item=MatthewsPhoneLastSeen
+		Switch item=MatthewsPhoneBlocked
+		Switch item=MatthewsPhoneReconnect
+	}
+}
+```
+
+### `rule actions`
 
 ```java
 val uniFiActions = getActions("unifi","unifi:site:mycontroller:mysite")

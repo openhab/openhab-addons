@@ -55,7 +55,7 @@ public class UniFiSiteActions implements ThingActions {
     private @Nullable UniFiSiteThingHandler handler;
     private final Gson gson = new Gson();
 
-    @RuleAction(label = "@text/actions.unifi.generateVouchers.label", description = "@text/actions.unifi.generateVouchers.description")
+    @RuleAction(label = "@text/action.unifi.generateVouchers.label", description = "@text/action.unifi.generateVouchers.description")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean generateVoucher(
     /* @formatter:off */
             @ActionInput(name = "expire",
@@ -77,7 +77,7 @@ public class UniFiSiteActions implements ThingActions {
         return generateVouchers(1, expire, users, upLimit, downLimit, dataQuota);
     }
 
-    @RuleAction(label = "@text/actions.unifi.generateVouchers.label", description = "@text/actions.unifi.generateVouchers.description")
+    @RuleAction(label = "@text/action.unifi.generateVouchers.label", description = "@text/action.unifi.generateVouchers.description")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean generateVouchers(
     /* @formatter:off */
             @ActionInput(name = "count",
@@ -161,20 +161,20 @@ public class UniFiSiteActions implements ThingActions {
         return ((UniFiSiteActions) actions).generateVouchers(count, expire, users, upLimit, downLimit, dataQuota);
     }
 
-    @RuleAction(label = "@text/actions.unifi.revokeVouchers.label", description = "@text/actions.unifi.revokeVouchers.description")
+    @RuleAction(label = "@text/action.unifi.revokeVouchers.label", description = "@text/action.unifi.revokeVouchers.description")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean revokeVoucher(
     /* @formatter:off */
-            @ActionInput(name = "voucherCodes", label = "@text/actions.unifi.vouchersInputVoucherCodes.label",
-                description = "@text/actions.unifi.vouchersInputVoucherCodes.description") String voucherCode) {
+            @ActionInput(name = "voucherCodes", label = "@text/action.unifi.vouchersInputVoucherCodes.label",
+                description = "@text/action.unifi.vouchersInputVoucherCodes.description") String voucherCode) {
     /* @formatter:on */
         return revokeVouchers(List.of(voucherCode));
     }
 
-    @RuleAction(label = "@text/actions.unifi.revokeVouchers.label", description = "@text/actions.unifi.revokeVouchers.description")
+    @RuleAction(label = "@text/action.unifi.revokeVouchers.label", description = "@text/action.unifi.revokeVouchers.description")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean revokeVouchers(
     /* @formatter:off */
-            @ActionInput(name = "voucherCodes", label = "@text/actions.unifi.vouchersInputVoucherCodes.label",
-                description = "@text/actions.unifi.vouchersInputVoucherCodes.description") List<String> voucherCodes) {
+            @ActionInput(name = "voucherCodes", label = "@text/action.unifi.vouchersInputVoucherCodes.label",
+                description = "@text/action.unifi.vouchersInputVoucherCodes.description") List<String> voucherCodes) {
     /* @formatter:on */
         UniFiSiteThingHandler handler = this.handler;
         if (handler == null) {
@@ -205,7 +205,7 @@ public class UniFiSiteActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "@text/actions.unifi.revokeAllVouchers.label", description = "@text/actions.unifi.revokeAllVouchers.description")
+    @RuleAction(label = "@text/action.unifi.revokeAllVouchers.label", description = "@text/action.unifi.revokeAllVouchers.description")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean revokeAllVouchers() {
         return revokeVouchers(List.of());
     }
@@ -226,7 +226,7 @@ public class UniFiSiteActions implements ThingActions {
         return revokeVouchers(actions, List.of());
     }
 
-    @RuleAction(label = "@text/actions.unifi.listVouchers.label", description = "@text/actions.unifi.listVouchers.description")
+    @RuleAction(label = "@text/action.unifi.listVouchers.label", description = "@text/action.unifi.listVouchers.description")
     public @ActionOutput(name = "vouchers", type = "java.lang.String") String listVouchers() {
         UniFiSiteThingHandler handler = this.handler;
         if (handler == null) {
