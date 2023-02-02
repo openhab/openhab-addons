@@ -349,4 +349,13 @@ public class VehicleHandlerTest {
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
                 + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
+
+    @Test
+    public void testPhev330e() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/PHEV2/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
 }

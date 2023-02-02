@@ -159,4 +159,12 @@ public class ChargingStatisticsTest {
         String content = FileReader.fileToString("responses/ICE2/charging_statistics.json");
         assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
+
+    @Test
+    public void testPhev330e() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), false);
+        String content = FileReader.fileToString("responses/PHEV2/charging_statistics.json");
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
+    }
 }
