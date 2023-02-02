@@ -45,7 +45,7 @@ No autodiscovery available
 | energyToday     | Number:Energy            | The amount of energy generated today, in kWh by default                                                          |
 | energyTotal     | Number:Energy            | The total amount of energy generated, in kWh by default                                                          |
 | temperature     | Number:Temperature       | The temperature from the sensor                                                                                  |
-| hoursTotal      | Number:Time              | The totale amount of running hours                                                                               |
+| hoursTotal      | Number:Time              | The total amount of running hours                                                                                |
 
 ## Full Example
 
