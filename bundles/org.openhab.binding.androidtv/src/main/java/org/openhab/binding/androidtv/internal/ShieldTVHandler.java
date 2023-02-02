@@ -13,6 +13,8 @@
 package org.openhab.binding.androidtv.internal;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +44,9 @@ public class ShieldTVHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ShieldTVHandler.class);
 
     private @Nullable ShieldTVConnectionManager shieldtvConnectionManager;
+    private @Nullable ScheduledFuture<?> monitorThingStatusJob;
+    private final Object monitorThingStatusJobLock = new Object();
+    private static final int THING_STATUS_FREQUENCY = 250;
 
     public ShieldTVHandler(Thing thing) {
         super(thing);
@@ -49,18 +54,6 @@ public class ShieldTVHandler extends BaseThingHandler {
 
     public void setThingProperty(String property, String value) {
         thing.setProperty(property, value);
-    }
-
-    public void updateThingStatus(ThingStatus thingStatus) {
-        updateStatus(thingStatus);
-    }
-
-    public void updateThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
-        updateStatus(thingStatus, thingStatusDetail);
-    }
-
-    public void updateThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail, String status) {
-        updateStatus(thingStatus, thingStatusDetail, status);
     }
 
     public void updateChannelState(String channel, State state) {
@@ -71,9 +64,20 @@ public class ShieldTVHandler extends BaseThingHandler {
         return scheduler;
     }
 
+    private void monitorThingStatus() {
+        synchronized (monitorThingStatusJobLock) {
+            checkThingStatus();
+            monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
+                    TimeUnit.MILLISECONDS);
+        }
+    }
+
     public void checkThingStatus() {
         if (shieldtvConnectionManager.getLoggedIn()) {
             updateStatus(ThingStatus.ONLINE);
+        } else {
+            String statusMessage = "ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
         }
     }
 
@@ -86,9 +90,12 @@ public class ShieldTVHandler extends BaseThingHandler {
             return;
         }
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Protocols Starting");
+
         shieldtvConnectionManager = new ShieldTVConnectionManager(this, config);
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -99,6 +106,13 @@ public class ShieldTVHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        synchronized (monitorThingStatusJobLock) {
+
+            ScheduledFuture<?> monitorThingStatusJob = this.monitorThingStatusJob;
+            if (monitorThingStatusJob != null) {
+                monitorThingStatusJob.cancel(true);
+            }
+        }
         shieldtvConnectionManager.dispose();
     }
 }
