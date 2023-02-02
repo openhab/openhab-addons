@@ -219,8 +219,8 @@ public class ShieldTVConnectionManager {
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
         }
 
-        if (isLoggedIn && (this.isLoggedIn != isLoggedIn)) {
-            setStatus(true);
+        if (this.isLoggedIn != isLoggedIn) {
+            setStatus(isLoggedIn);
         }
     }
 
@@ -559,7 +559,6 @@ public class ShieldTVConnectionManager {
     private synchronized void reconnect() {
         if (!this.disposing) {
             logger.debug("Attempting to reconnect to the ShieldTV");
-            isLoggedIn = false;
             setStatus(false, "reconnecting");
             disconnect(false);
             connect();
