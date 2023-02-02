@@ -318,10 +318,11 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
-		<state readOnly="true"></state>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="blocked">
