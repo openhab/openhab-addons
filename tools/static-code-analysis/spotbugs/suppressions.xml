@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- see https://github.com/spotbugs/spotbugs/issues/1992 -->
+    <Bug pattern="SA_LOCAL_SELF_COMPARISON"/>
+  </Match>
+</FindBugsFilter>
