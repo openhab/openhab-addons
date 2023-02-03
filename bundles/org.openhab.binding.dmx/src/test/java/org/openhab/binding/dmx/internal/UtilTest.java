@@ -15,6 +15,7 @@ package org.openhab.binding.dmx.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 import org.openhab.core.library.types.PercentType;
@@ -24,6 +25,7 @@ import org.openhab.core.library.types.PercentType;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class UtilTest {
 
     @Test
