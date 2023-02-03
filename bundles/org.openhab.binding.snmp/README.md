@@ -6,8 +6,12 @@ Currently protocol version 1 and 2c are supported.
 
 ## Supported Things
 
-Only one thing is supported: `target`.
-It represents a single network device.
+There are two supported things:
+
+ - `target` for SNMP v1/v2c agents
+ - `target3` for SNMP v3 agents
+
+Both represent a single network device. 
 Things can be extended with `number`, `string` and `switch` channels.
 
 ## Binding Configuration
@@ -25,8 +29,8 @@ This can be done either by software like _snmptrapd_ or by adding a firewall rul
 iptables -t nat -I PREROUTING --src 0/0 --dst 192.168.0.10 -p udp --dport 162 -j REDIRECT --to-ports 8162
 ```
 
-would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162.
-Check with your operating system manual how to make that change permanent.
+would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162. 
+Check with your operating system manual how to make that change permanent. 
 
 Example configuration for using port 8162:
 
@@ -40,19 +44,11 @@ port=8162
 
 ## Thing Configuration
 
-The `target` thing has one mandatory parameter: `hostname`.
-It can be set as FQDN or IP address.
+### Common parameters for all thing-types
 
-Optional configuration parameters are `community`, `version` and `refresh`.
+The `hostname` is mandatory and can be set as FQDN or IP address. 
 
-The SNMP community can be set with the `community` parameter.
-It defaults to `public`.
-
-Currently two protocol versions are supported.
-The protocol version can be set with the `protocol` parameter.
-The allowed values are `v1` or `V1`for v1 and `v2c` or `V2C` for v2c.
-The default is `v1`.
-
+Optional configuration parameters is `refresh`.
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
 The default is `60` for 60s.
 
@@ -66,6 +62,44 @@ By using the `timeout` and `retries` parameters the timeout/error behaviour can 
 A single request times out after `timeout` ms.
 After `retries` timeouts the refresh operation is considered to be fails and the status of the thing set accordingly.
 The default values are `timeout=1500` and `retries=2`.
+
+### `target`
+
+The `target` thing has two optional configuration parameters: `community` and `version`.
+
+The SNMP community for SNMP version 2c can be set with the `community` parameter.
+It defaults to `public`.
+
+Currently two protocol versions are supported.
+The protocol version can be set with the `protocol` parameter.
+The allowed values are `v1` or `V1` for v1 and `v2c` or `V2C` for v2c.
+The default is `v1`.
+
+### `target3`
+
+The `target3` thing has additional mandatory parameters: `engineId` and `user`.
+
+The `engineId` must be given in hexadecimal notation (case insensitive) without separators (e.g. `80000009035c710dbcd9e6`).
+The allowed length is 11 to 32 bytes (22 to 64 hex characters).
+If you encounter problems, please check if your agent prefixes the set engine id (e.g. Mikrotik uses `80003a8c04` and appends the set value to that).
+
+The `user` parameter is named "securityName" or "userName" in most agents.
+
+Optional configuration parameters are: `securityModel`, `authProtocol`, `authPassphrase`, `privProtocol` and `privPassphrase`.
+
+The `securityModel` can be set to
+
+- `NO_AUTH_NO_PRIV` (default) - no encryption on authentication data, no encryption on transmitted data
+- `AUTH_NO_PRIV` - encryption on authentication data, no encryption on transmitted data 
+- `AUTH_PRIV` - encryption on authentication data, encryption on transmitted data
+
+Depending on the `securityModel` some of the other parameters are also mandatory.
+
+If authentication encryption is required, at least `authPassphrase` needs to be set, while `authProtocol` has a default of `MD5`.
+Other possible values for `authProtocol` are `SHA`, `HMAC128SHA224`, `HMAC192SHA256`, `HMAC256SHA384` and `HMAC384SHA512`.
+
+If encryption of transmitted data (privacy encryption) is rquired, at least `privPassphrase` needs to be set, while `privProtocol` defaults to `DES`.
+Other possible values for `privProtocol` are `AES128`, `AES192` and `AES256`.
 
 ## Channels
 
@@ -99,11 +133,16 @@ In `READ`, `READ_WRITE` or `TRAP` mode they change to either `ON` or `OFF` on th
 The parameters used for defining the values are `onvalue` and `offvalue`.
 The `datatype` parameter is used to convert the configuration strings to the needed values.
 
-| type   | item   | description                    |
-| ------ | ------ | ------------------------------ |
-| number | Number | a channel with a numeric value |
-| string | String | a channel with a string value  |
-| switch | Switch | a channel that has two states  |
+`number`-type channels have a `unit` parameter.
+The unit is added to the received value before it is passed to the channel.
+For commands (i.e. sending), the value is first converted to the configured unit. 
+
+| type     | item   | description                     |
+|----------|--------|---------------------------------|
+| number   | Number | a channel with a numeric value  |
+| string   | String | a channel with a string value   |
+| switch   | Switch | a channel that has two states   |
+
 
 ### SNMP Exception (Error) Handling
 
@@ -121,10 +160,10 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 
 demo.things:
 
-```java
+```
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
-        Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ", unit="B" ]
+        Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
         Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
         Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
         Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
@@ -137,7 +176,6 @@ demo.items:
 
 ```java
 Number inBytes "Router bytes in [%d]" { channel="snmp:target:router:inBytes" }
-Number inGigaBytes "Router gigabytes in [%d GB]" { channel="snmp:target:router:inBytes" }
 Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" }
 Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:if4Status" }
 Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }

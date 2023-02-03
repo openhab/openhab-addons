@@ -275,7 +275,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         List<ChannelGroupDefinition> newChannelGroups = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             String index = String.valueOf(i);
-            ChannelGroupDefinition channelGroupDef = thingTypeProvider
+            ChannelGroupDefinition channelÏGroupDef = thingTypeProvider
                     .createChannelGroupDefinitionWithIndex(channelGroupID, channelGroupTypeID, i);
             if (!(channelGroupDef == null || channelGroups.contains(channelGroupID + index))) {
                 logger.trace("Adding channel group {}", channelGroupID + index);
