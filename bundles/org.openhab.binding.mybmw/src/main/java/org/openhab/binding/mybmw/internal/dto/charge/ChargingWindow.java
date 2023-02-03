@@ -19,8 +19,8 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * @author Martin Grassl - refactored to Java Bean
  */
 public class ChargingWindow {
-    private Time start;
-    private Time end;
+    private Time start = new Time();
+    private Time end = new Time();
 
     public Time getStart() {
         return start;

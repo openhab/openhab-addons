@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.dto.charge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,13 +23,13 @@ import java.util.List;
  * @author Martin Grassl - refactored to Java Bean
  */
 public class ChargingProfile {
-    private ChargingWindow reductionOfChargeCurrent;
-    private String chargingMode;// ": "immediateCharging",
-    private String chargingPreference;// ": "chargingWindow",
-    private String chargingControlType;// ": "weeklyPlanner",
-    private List<Timer> departureTimes;
-    private boolean climatisationOn;// ": false,
-    private ChargingSettings chargingSettings;
+    private ChargingWindow reductionOfChargeCurrent = new ChargingWindow();
+    private String chargingMode = "";// ": "immediateCharging",
+    private String chargingPreference = "";// ": "chargingWindow",
+    private String chargingControlType = "";// ": "weeklyPlanner",
+    private List<Timer> departureTimes = new ArrayList<>();
+    private boolean climatisationOn = false;// ": false,
+    private ChargingSettings chargingSettings = new ChargingSettings();
 
     public Timer getTimerId(int id) {
         if (departureTimes != null) {

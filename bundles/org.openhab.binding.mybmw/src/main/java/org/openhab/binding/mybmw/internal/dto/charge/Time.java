@@ -20,8 +20,8 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * @author Martin Grassl - refactored to Java Bean
  */
 public class Time {
-    private int hour;// ": 11,
-    private int minute;// ": 0
+    private int hour = -1;// ": 11,
+    private int minute = -1;// ": 0
 
     public int getHour() {
         return hour;
