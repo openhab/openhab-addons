@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Sure Petcare Binding</name>
 	<description>This binding interacts with the Sure Petcare Connect range of cat flaps and feeders</description>
-	<author>Rene Scherer, Holger Eisold</author>
 
 </addon:addon>
