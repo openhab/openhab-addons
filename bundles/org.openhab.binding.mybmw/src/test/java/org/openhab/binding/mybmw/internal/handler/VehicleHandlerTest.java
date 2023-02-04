@@ -297,6 +297,24 @@ public class VehicleHandlerTest {
     }
 
     @Test
+    public void testBevI4() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/BEV4/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void testBevI7() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), "anonymous");
+        String content = FileReader.fileToString("responses/BEV5/vehicles_state.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + LOCATION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
     public void testIceMiniCooper() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), "anonymous");
