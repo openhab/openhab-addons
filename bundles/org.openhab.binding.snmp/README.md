@@ -29,8 +29,8 @@ This can be done either by software like _snmptrapd_ or by adding a firewall rul
 iptables -t nat -I PREROUTING --src 0/0 --dst 192.168.0.10 -p udp --dport 162 -j REDIRECT --to-ports 8162
 ```
 
-would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162. 
-Check with your operating system manual how to make that change permanent. 
+would forward all TCP packets addressed to 192.168.0.10 from port 162 to 8162.
+Check with your operating system manual how to make that change permanent.
 
 Example configuration for using port 8162:
 
@@ -48,7 +48,7 @@ port=8162
 
 The `hostname` is mandatory and can be set as FQDN or IP address. 
 
-Optional configuration parameters is `refresh`.
+An optional configuration parameter is `refresh`.
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
 The default is `60` for 60s.
 
@@ -98,7 +98,7 @@ Depending on the `securityModel` some of the other parameters are also mandatory
 If authentication encryption is required, at least `authPassphrase` needs to be set, while `authProtocol` has a default of `MD5`.
 Other possible values for `authProtocol` are `SHA`, `HMAC128SHA224`, `HMAC192SHA256`, `HMAC256SHA384` and `HMAC384SHA512`.
 
-If encryption of transmitted data (privacy encryption) is rquired, at least `privPassphrase` needs to be set, while `privProtocol` defaults to `DES`.
+If encryption of transmitted data (privacy encryption) is required, at least `privPassphrase` needs to be set, while `privProtocol` defaults to `DES`.
 Other possible values for `privProtocol` are `AES128`, `AES192` and `AES256`.
 
 ## Channels
