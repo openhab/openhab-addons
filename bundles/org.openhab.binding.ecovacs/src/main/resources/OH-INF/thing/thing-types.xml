@@ -84,6 +84,7 @@
 			<channel id="main-brush-lifetime" typeId="main-brush-lifetime"/>
 			<channel id="side-brush-lifetime" typeId="side-brush-lifetime"/>
 			<channel id="dust-filter-lifetime" typeId="dust-filter-lifetime"/>
+			<channel id="other-component-lifetime" typeId="other-component-lifetime"/>
 		</channels>
 	</channel-group-type>
 
@@ -316,6 +317,13 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Dust Filter Lifetime</label>
 		<description>Remaining life time of dust bin filter in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="other-component-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Other Component Lifetime</label>
+		<description>Remaining time until device maintenance is required in percent</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 

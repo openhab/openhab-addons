@@ -167,6 +167,7 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "unit_care_lifespan",
             "mapping"
         ]
     },
@@ -214,6 +215,7 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "unit_care_lifespan",
             "auto_empty_station",
             "mapping"
         ]
@@ -237,6 +239,7 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "unit_care_lifespan",
             "true_detect_3d",
             "mapping"
         ]
@@ -315,6 +318,7 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info",
+            "unit_care_lifespan",
             "true_detect_3d",
             "mapping",
             "auto_empty_station"

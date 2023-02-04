@@ -70,6 +70,7 @@ it is automatically removed from the given thing.
 | consumables#main-brush-lifetime         | Number:Dimensionless | The remaining life time of the main brush in percent      | Yes       | Polling    | [8]      |
 | consumables#side-brush-lifetime         | Number:Dimensionless | The remaining life time of the side brush in percent      | Yes       | Polling    |          |
 | consumables#dust-filter-lifetime        | Number:Dimensionless | The remaining life time of the dust bin filter in percent | Yes       | Polling    |          |
+| consumables#other-component-lifetime    | Number:Dimensionless | The remaining time until device maintenance in percent    | Yes       | Polling    | [9]      |
 | last-clean#last-clean-start             | DateTime             | The start time of the last completed cleaning run         | Yes       | Polling    |          |
 | last-clean#last-clean-duration          | Number:Time          | The duration of the last completed cleaning run           | Yes       | Polling    |          |
 | last-clean#last-clean-area              | Number:Area          | The area cleaned in the last completed cleaning run       | Yes       | Polling    |          |
@@ -78,8 +79,8 @@ it is automatically removed from the given thing.
 | total-stats#total-cleaning-time         | Number:Time          | The total time spent cleaning during the device life time | Yes       | Polling    |          |
 | total-stats#total-cleaned-area          | Number:Area          | The total area cleaned during the device life time        | Yes       | Polling    |          |
 | total-stats#total-clean-runs            | Number               | The total number of clean runs in the device life time    | Yes       | Polling    |          |
-| settings#auto-empty                     | Switch               | Whether dust bin auto empty to station is enabled         | No        | Polling    | [9]      |
-| settings#cleaning-passes                | Number               | Number of cleaning passes to be used (1 or 2)             | No        | Polling    | [10]     |
+| settings#auto-empty                     | Switch               | Whether dust bin auto empty to station is enabled         | No        | Polling    | [10]     |
+| settings#cleaning-passes                | Number               | Number of cleaning passes to be used (1 or 2)             | No        | Polling    | [9]      |
 | settings#continuous-cleaning            | Switch               | Whether unfinished cleaning resumes after charging        | No        | Polling    |          |
 | settings#suction-power                  | String               | The power level used during cleaning                      | No        | Polling    | [11]     |
 | settings#true-detect-3d                 | Switch               | Whether True Detect 3D is enabled                         | No        | Polling    | [12]     |
@@ -96,8 +97,8 @@ Remarks:
 - [6] Only present if device has a mopping system
 - [7] Only present on newer generation devices (Deebot OZMO 950 and newer)
 - [8] Only present if device has a main brush
-- [9] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string 'trigger' (to trigger immediate auto empty)
-- [10] Only present on newer generation devices (Deebot N8/T8 or newer)
+- [9] Only present on newer generation devices (Deebot N8/T8 or newer)
+- [10] Only present if device has a dustbin auto empty station; supports both on/off command (to turn on/off the setting) and the string 'trigger' (to trigger immediate auto empty)
 - [11] Only present if device can control power level. Possible values vary by device: 'normal' and 'high' are always supported, 'silent' and 'higher' are supported for some models
 - [12] Only present if device supports True Detect 3D
 - [13] Only present if device has voice reporting

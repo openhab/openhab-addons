@@ -655,6 +655,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 int mainBrushPercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.BRUSH));
                 updateState(CHANNEL_ID_MAIN_BRUSH_LIFETIME, new QuantityType<>(mainBrushPercent, Units.PERCENT));
             }
+            if (device.hasCapability(DeviceCapability.UNIT_CARE_LIFESPAN)) {
+                int unitCarePercent = device.sendCommand(new GetComponentLifeSpanCommand(Component.UNIT_CARE));
+                updateState(CHANNEL_ID_OTHER_COMPONENT_LIFETIME, new QuantityType<>(unitCarePercent, Units.PERCENT));
+            }
             if (device.hasCapability(DeviceCapability.VOICE_REPORTING)) {
                 int level = device.sendCommand(new GetVolumeCommand());
                 updateState(CHANNEL_ID_VOICE_VOLUME, new PercentType(level * 10));

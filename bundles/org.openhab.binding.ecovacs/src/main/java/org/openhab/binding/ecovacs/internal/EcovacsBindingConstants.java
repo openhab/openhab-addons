@@ -57,6 +57,7 @@ public class EcovacsBindingConstants {
     public static final String CHANNEL_ID_LAST_CLEAN_MODE = "last-clean#last-clean-mode";
     public static final String CHANNEL_ID_LAST_CLEAN_MAP = "last-clean#last-clean-map";
     public static final String CHANNEL_ID_MAIN_BRUSH_LIFETIME = "consumables#main-brush-lifetime";
+    public static final String CHANNEL_ID_OTHER_COMPONENT_LIFETIME = "consumables#other-component-lifetime";
     public static final String CHANNEL_ID_SIDE_BRUSH_LIFETIME = "consumables#side-brush-lifetime";
     public static final String CHANNEL_ID_STATE = "status#state";
     public static final String CHANNEL_ID_SUCTION_POWER = "settings#suction-power";

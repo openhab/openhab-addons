@@ -21,7 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum Component {
     BRUSH("Brush", "brush"),
     SIDE_BRUSH("SideBrush", "sideBrush"),
-    DUST_CASE_HEAP("DustCaseHeap", "heap");
+    DUST_CASE_HEAP("DustCaseHeap", "heap"),
+    UNIT_CARE("" /* not supported in XML */, "unitCare");
 
     public final String xmlValue;
     public final String jsonValue;

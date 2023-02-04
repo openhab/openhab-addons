@@ -43,6 +43,8 @@ public enum DeviceCapability {
     READ_NETWORK_INFO,
     @SerializedName("true_detect_3d")
     TRUE_DETECT_3D,
+    @SerializedName("unit_care_lifespan")
+    UNIT_CARE_LIFESPAN,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,
