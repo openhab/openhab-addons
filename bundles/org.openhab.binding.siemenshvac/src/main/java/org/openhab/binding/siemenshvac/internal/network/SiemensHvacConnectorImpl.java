@@ -24,6 +24,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -63,6 +65,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
+    private final static @NotNull Gson gson;
+    private final static @NotNull Gson gsonWithAdpter;
+
     private @Nullable String sessionId = null;
     private @Nullable String sessionIdHttp = null;
     private String baseUrl = "";
@@ -80,6 +85,19 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private Map<String, Type> updateCommand;
 
     private @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler;
+
+    static {
+        GsonBuilder builder = new GsonBuilder();
+        gson = builder.setPrettyPrinting().create();
+
+        RuntimeTypeAdapterFactory<SiemensHvacMetadata> adapter = RuntimeTypeAdapterFactory
+                .of(SiemensHvacMetadata.class);
+        adapter.registerSubtype(SiemensHvacMetadataMenu.class);
+        adapter.registerSubtype(SiemensHvacMetadataDataPoint.class);
+
+        gsonWithAdpter = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
+
+    }
 
     @Activate
     public SiemensHvacConnectorImpl(@Reference HttpClientFactory httpClientFactory) {
@@ -205,7 +223,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return response;
     }
 
-    private void _initConfig() throws Exception {
+    private void initConfig() throws Exception {
 
         Configuration config = null;
         SiemensHvacBridgeBaseThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
@@ -230,17 +248,17 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
     }
 
-    private void _doAuth(boolean http) throws Exception {
+    private void doAuth(boolean http) throws Exception {
         logger.debug("siemensHvac:doAuth()");
 
-        _initConfig();
+        initConfig();
         String baseUri = baseUrl;
         String uri = "";
 
         if (http) {
             uri = "main.app";
         } else {
-            uri = "api/auth/login.json?user=" + userName + "&pwd=" + userPassword;
+            uri = String.format("api/auth/login.json?user=%s&pwd=%s", userName, userPassword);
         }
 
         final Request request = httpClient.newRequest(baseUri + uri);
@@ -311,9 +329,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             logger.debug("siemensHvac:doAuth:connect()");
 
-        } catch (
-
-        Exception ex) {
+        } catch (Exception ex) {
             logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
         } finally {
         }
@@ -329,11 +345,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     public @Nullable String DoBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
         if (sessionIdHttp == null) {
-            _doAuth(true);
+            doAuth(true);
         }
 
         if (sessionId == null) {
-            _doAuth(false);
+            doAuth(false);
         }
 
         try {
@@ -458,19 +474,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     public static Gson getGson() {
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.setPrettyPrinting().create();
         return gson;
     }
 
     public static Gson getGsonWithAdapter() {
-        RuntimeTypeAdapterFactory<SiemensHvacMetadata> adapter = RuntimeTypeAdapterFactory
-                .of(SiemensHvacMetadata.class);
-        adapter.registerSubtype(SiemensHvacMetadataMenu.class);
-        adapter.registerSubtype(SiemensHvacMetadataDataPoint.class);
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
-        return gson;
+        return gsonWithAdpter;
     }
 
     public void AddDpUpdate(String itemName, Type dp) {

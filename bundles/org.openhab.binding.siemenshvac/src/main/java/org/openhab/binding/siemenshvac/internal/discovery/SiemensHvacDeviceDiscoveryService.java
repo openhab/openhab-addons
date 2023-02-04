@@ -75,7 +75,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void stopBackgroundDiscovery() {
-        // can be overridden
     }
 
     private @Nullable ThingUID getThingUID(ThingTypeUID thingTypeUID, String serial) {
@@ -96,8 +95,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
         if (lcMetadataRegistry != null) {
             lcMetadataRegistry.ReadMeta();
 
-            // SiemensHvacMetadataMenu rootMenu = metadataRegistry.getRoot();
-            // for (SiemensHvacMetadata child : rootMenu.getChilds().values()) {
             ArrayList<SiemensHvacMetadataDevice> devices = lcMetadataRegistry.getDevices();
 
             if (devices == null) {
@@ -152,7 +149,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof SiemensHvacBridgeBaseThingHandler) {
             siemensHvacBridgeHandler = (SiemensHvacBridgeBaseThingHandler) handler;
-            // bridgeUID = handler.getThing().getUID();
         }
     }
 
@@ -171,12 +167,5 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        /*
-         * removeOlderResults(new Date().getTime(), bridgeUID);
-         * final HueBridgeHandler handler = hueBridgeHandler;
-         * if (handler != null) {
-         * handler.unregisterDiscoveryListener();
-         * }
-         */
     }
 }

@@ -30,11 +30,9 @@ public class SiemensHvacMetadataDevice {
 
     private String serialNr = "";
 
-    @Nullable
-    private String treeDate;
+    private @Nullable String treeDate;
 
-    @Nullable
-    private String treeTime;
+    private @Nullable String treeTime;
 
     private boolean treeGenerated;
     private int treeId;

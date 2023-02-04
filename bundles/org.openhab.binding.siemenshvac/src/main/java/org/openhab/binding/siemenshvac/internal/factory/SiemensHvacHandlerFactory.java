@@ -42,14 +42,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.siemenshvac")
 public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
 
-    private @Nullable NetworkAddressService networkAddressService;
-    private @Nullable HttpClientFactory httpClientFactory;
-    private SiemensHvacMetadataRegistry metaDataRegistry;
-
-    //
+    private final NetworkAddressService networkAddressService;
+    private final HttpClientFactory httpClientFactory;
+    private final SiemensHvacMetadataRegistry metaDataRegistry;
 
     @Activate
-    public SiemensHvacHandlerFactory(@Nullable final @Reference HttpClientFactory httpClientFactory,
+    public SiemensHvacHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference SiemensHvacMetadataRegistry metaDataRegistry,
             final @Reference NetworkAddressService networkAddressService) {
         this.httpClientFactory = httpClientFactory;
@@ -78,15 +76,12 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW672)) {
-            if (networkAddressService != null) {
-                return new SiemensHvacOZW672BridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
-                        metaDataRegistry);
-            }
+            return new SiemensHvacOZW672BridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
+                    metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
-            SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing);
-            handler.setChannelTypeProvider(metaDataRegistry.getChannelTypeProvider());
-            handler.setSiemensHvacConnector(metaDataRegistry.getSiemensHvacConnector());
-            handler.setSiemensHvacMetadataRegistry(metaDataRegistry);
+            SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,
+                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry,
+                    metaDataRegistry.getChannelTypeProvider());
             return handler;
         }
         return null;
@@ -101,7 +96,4 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         return new ThingUID(thingTypeUID, ipAddress);
     }
 
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
 }

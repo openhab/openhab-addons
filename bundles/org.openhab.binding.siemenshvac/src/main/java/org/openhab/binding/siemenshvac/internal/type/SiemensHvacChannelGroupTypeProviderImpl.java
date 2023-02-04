@@ -36,8 +36,6 @@ public class SiemensHvacChannelGroupTypeProviderImpl implements SiemensHvacChann
 
     private final Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<>();
 
-    //
-
     @Override
     public @Nullable ChannelGroupType getInternalChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID) {
         return channelGroupTypesByUID.get(channelGroupTypeUID);

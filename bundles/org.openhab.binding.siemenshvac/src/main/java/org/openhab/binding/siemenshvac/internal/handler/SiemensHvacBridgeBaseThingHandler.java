@@ -35,13 +35,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandler {
 
-    // protected ConcurrentHashMap<IndividualAddress, Destination> destinations = new ConcurrentHashMap<>();
-    // private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
-    // private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
-
     private @Nullable SiemensHvacDeviceDiscoveryService discoveryService;
-    @SuppressWarnings("unused")
-    private final @Nullable NetworkAddressService networkAddressService;
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
 
@@ -49,7 +43,6 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
             @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge);
         SiemensHvacConnector lcConnector = null;
-        this.networkAddressService = networkAddressService;
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
 
@@ -83,7 +76,6 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         if (lcDiscoveryService == null) {
             lcDiscoveryService = listener;
             lcDiscoveryService.setSiemensHvacMetadataRegistry(metaDataRegistry);
-            // getFullLights().forEach(listener::addLightDiscovery);
             return true;
         }
 
