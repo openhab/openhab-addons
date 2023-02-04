@@ -52,6 +52,8 @@ import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayC
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.items.Item;
+import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +113,14 @@ public class OpenhabGraalJSScriptEngine
                     (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
                         return Duration.ofNanos(v.invokeMember("toNanos").asLong());
                     }, HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate openhab-js Item to org.openhab.core.items.Item
+            .targetTypeMapping(Value.class, Item.class, (v) -> v.hasMember("rawItem"),
+                    v -> v.getMember("rawItem").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
+
+            // Translate openhab-js Quantity to org.openhab.core.library.types.QuantityType
+            .targetTypeMapping(Value.class, QuantityType.class, (v) -> v.hasMember("raw") && v.hasMember("toUnit"),
+                    v -> v.getMember("raw").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
     /** {@link Lock} synchronization of multi-thread access */
