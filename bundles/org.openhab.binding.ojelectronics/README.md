@@ -23,7 +23,6 @@ After the ojcloud bridge is successfully initialized all thermostats will be dis
 | password              | password from the OJElectronics App (required)                           |
 | apiKey                | API key. You get the key from your local distributor.                    |
 | apiUrl                | URL of the API endpoint. Optional, the default value should always work. |
-| refreshDelayInSeconds | Refresh interval in seconds. Optional, the default value is 30 seconds.  |
 | customerId            | Customer ID. Optional, the default value should always work.             |
 | softwareVersion       | Software version. Optional, the default value should always work.        |
 

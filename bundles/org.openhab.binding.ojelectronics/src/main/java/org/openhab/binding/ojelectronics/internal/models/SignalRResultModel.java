@@ -29,45 +29,45 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class SignalRResultModel {
     @SerializedName("Groups")
-    private List<GroupContentModel> mGroups = List.of();
+    private List<GroupContentModel> groups = List.of();
     @SerializedName("SequenceNr")
-    private int mSequenceNr;
+    private int sequenceNr;
 
     @SerializedName("ThermostatRealTimes")
-    private List<ThermostatRealTimeValuesModel> mThermostatRealTimes = List.of();
+    private List<ThermostatRealTimeValuesModel> thermostatRealTimes = List.of();
 
     @SerializedName("Thermostats")
-    private List<ThermostatModel> mThermostats = List.of();
+    private List<ThermostatModel> thermostats = List.of();
 
     public List<GroupContentModel> getGroups() {
-        return this.mGroups;
+        return this.groups;
     }
 
     public int getSequenceNr() {
-        return this.mSequenceNr;
+        return this.sequenceNr;
     }
 
     public List<ThermostatRealTimeValuesModel> getThermostatRealTimes() {
-        return this.mThermostatRealTimes;
+        return this.thermostatRealTimes;
     }
 
     public List<ThermostatModel> getThermostats() {
-        return this.mThermostats;
+        return this.thermostats;
     }
 
     public void setGroups(List<GroupContentModel> paramArrayList) {
-        this.mGroups = paramArrayList;
+        this.groups = paramArrayList;
     }
 
     public void setSequenceNr(int paramInt) {
-        this.mSequenceNr = paramInt;
+        this.sequenceNr = paramInt;
     }
 
     public void setThermostatRealTimes(List<ThermostatRealTimeValuesModel> paramArrayList) {
-        this.mThermostatRealTimes = paramArrayList;
+        this.thermostatRealTimes = paramArrayList;
     }
 
     public void setThermostats(List<ThermostatModel> paramArrayList) {
-        this.mThermostats = paramArrayList;
+        this.thermostats = paramArrayList;
     }
 }

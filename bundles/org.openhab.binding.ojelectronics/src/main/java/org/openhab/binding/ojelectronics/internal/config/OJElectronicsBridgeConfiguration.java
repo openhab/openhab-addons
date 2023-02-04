@@ -40,7 +40,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Url for API
      */
-    public String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com";
+    private String apiUrl = "https://OWD5-OJ001-App.ojelectronics.com";
 
     /**
      * API-Key
