@@ -12,8 +12,42 @@
  */
 package org.openhab.binding.mybmw.internal.handler.auth;
 
-import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.*;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.API_OAUTH_CONFIG;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.APP_VERSIONS;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTHORIZATION_CODE;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.AUTH_PROVIDER;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.BRAND_BMW;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_LOGIN;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.CHINA_PUBLIC_KEY;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.EADRAX_SERVER_MAP;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.LOGIN_NONCE;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OAUTH_ENDPOINT;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.OCP_APIM_KEYS;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_CHINA;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_NORTH_AMERICA;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.REGION_ROW;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.USER_AGENT;
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.X_USER_AGENT;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.AUTHORIZATION;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CLIENT_ID;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLENGE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_CHALLENGE_METHOD;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CODE_VERIFIER;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_URL_ENCODED;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.GRANT_TYPE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_ACP_SUBSCRIPTION_KEY;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_BMW_CORRELATION_ID;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_CORRELATION_ID;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_IDENTITY_PROVIDER;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.HEADER_X_USER_AGENT;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.NONCE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.PASSWORD;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.REDIRECT_URI;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.RESPONSE_TYPE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.SCOPE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.STATE;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.USERNAME;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -121,7 +155,8 @@ public class MyBMWTokenController {
             String authValuesUrl = "https://" + EADRAX_SERVER_MAP.get(configuration.region) + API_OAUTH_CONFIG;
             Request authValuesRequest = httpClient.newRequest(authValuesUrl);
             authValuesRequest.header(HEADER_ACP_SUBSCRIPTION_KEY, OCP_APIM_KEYS.get(configuration.region));
-            authValuesRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
+            authValuesRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
+                    APP_VERSIONS.get(configuration.region), configuration.region));
             authValuesRequest.header(HEADER_X_IDENTITY_PROVIDER, AUTH_PROVIDER);
             authValuesRequest.header(HEADER_X_CORRELATION_ID, uuidString);
             authValuesRequest.header(HEADER_BMW_CORRELATION_ID, uuidString);
@@ -276,7 +311,8 @@ public class MyBMWTokenController {
             String publicKeyUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_PUBLIC_KEY;
             Request oauthQueryRequest = httpClient.newRequest(publicKeyUrl);
             oauthQueryRequest.header(HttpHeader.USER_AGENT, USER_AGENT);
-            oauthQueryRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
+            oauthQueryRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
+                    APP_VERSIONS.get(configuration.region), configuration.region));
             ContentResponse publicKeyResponse = oauthQueryRequest.send();
             if (publicKeyResponse.getStatus() != 200) {
                 throw new HttpResponseException("URL: " + oauthQueryRequest.getURI() + ", Error: "
@@ -309,7 +345,8 @@ public class MyBMWTokenController {
              */
             String tokenUrl = "https://" + EADRAX_SERVER_MAP.get(REGION_CHINA) + CHINA_LOGIN;
             Request loginRequest = httpClient.POST(tokenUrl);
-            loginRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW, configuration.region));
+            loginRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
+                    APP_VERSIONS.get(configuration.region), configuration.region));
             String jsonContent = "{ \"mobile\":\"" + configuration.userName + "\", \"password\":\"" + encodedPassword
                     + "\"}";
             loginRequest.content(new StringContentProvider(jsonContent));

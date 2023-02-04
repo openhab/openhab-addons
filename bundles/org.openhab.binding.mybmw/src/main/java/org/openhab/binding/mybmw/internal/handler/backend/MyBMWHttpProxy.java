@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.handler.backend;
 
+import static org.openhab.binding.mybmw.internal.utils.BimmerConstants.APP_VERSIONS;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -72,6 +74,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
      */
     private final String vehicleUrl;
+    private final String vehicleStateUrl;
     private final String remoteCommandUrl;
     private final String remoteStatusUrl;
 
@@ -85,6 +88,8 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
         vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + BimmerConstants.API_VEHICLES;
+
+        vehicleStateUrl = vehicleUrl + "/state";
 
         remoteCommandUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + BimmerConstants.API_REMOTE_SERVICE_BASE_URL;
@@ -169,8 +174,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     }
 
     public String requestVehicleStateJson(String vin, String brand) throws NetworkException {
-        byte[] vehicleStateResponse = get(vehicleUrl + "/" + vin + "/state", brand, vin,
-                HTTPConstants.CONTENT_TYPE_JSON);
+        byte[] vehicleStateResponse = get(vehicleStateUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String vehicleStateResponseString = new String(vehicleStateResponse, Charset.defaultCharset());
         return vehicleStateResponseString;
     }
@@ -296,10 +300,11 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         }
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenHandler.getToken().getBearerToken());
-        req.header(HTTPConstants.HEADER_X_USER_AGENT,
-                String.format(BimmerConstants.X_USER_AGENT, brand, bridgeConfiguration.region));
+        req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand,
+                APP_VERSIONS.get(bridgeConfiguration.region), bridgeConfiguration.region));
         req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.language);
         req.header(HttpHeader.ACCEPT, contentType);
+        req.header(HTTPConstants.HEADER_BMW_VIN, vin);
 
         try {
             ContentResponse response = req.timeout(HTTPConstants.HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
