@@ -95,5 +95,4 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         String ipAddress = (String) configuration.get(SiemensHvacBindingConstants.IP_ADDRESS);
         return new ThingUID(thingTypeUID, ipAddress);
     }
-
 }
