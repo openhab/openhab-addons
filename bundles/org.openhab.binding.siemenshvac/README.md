@@ -68,4 +68,24 @@ Channels are autodiscovered, you will find them on the RVS things.
 They are organized the same way as the LCD screen of your PAC device, by top level menu functionnality, and sub-functionnalities.
 Each channel are strongly typed, so for exemple, for heating mode, openhab will provide you with a list of choice supported by the device.
 
+## Full Example
 
+Things file `.things`
+
+```java
+Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval=5, user="gardener", password = "cutter"]
+```
+
+Items file `.items`
+
+```java
+Sring   Chaudiere_Etat_Pompe_ECS    "Etat Pompe ECS [%s]"   { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2259_PpeChargeECS"          }       
+Number  Chaudiere_Etat_ECS          "Etat ECS [%s]"         { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2032#2035_Etat_ECS"              }
+Number  Temperature_Depart_Reel     "Départ réel [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2248_ValReelleTempDep_CC1"  }   
+Number  Temperature_Depart_Consigne "Départ cons [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2249_ConsTDepResultCC1"     }   
+Number  Heure_fct_ECS               "Heure Fct Ecs"         { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2263_HeuresFoncPompeECS"    }   
+Number  Nb_Demarrage_ECS            "Nbr dém ECS [%.1f]"    { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2266_ComptDemarResEl_ECS"   }
+Number  TemperatureThermostat       "Temp thermt [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:2237#2246_TAmbAct_CC1"           }
+Number  Temperature_Consigne_C      "Chauf Cons  [%.1f °C]" { channel = "siemenshvac:RVS41_813_327:ff00f445:84c80f3715:1724#1726_ConsConfort_TA_CC1"    }
+Number  Chauffage_Mode              "Chauffage Mode [%s]"   { channel="siemenshvac:RVS41_813_327:ff00f445:84c80f3715:1724#1725_Regime_CC1"              }
+``` 
