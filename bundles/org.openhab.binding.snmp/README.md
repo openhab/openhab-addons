@@ -2,7 +2,7 @@
 
 This binding integrates the Simple Network Management Protocol (SNMP).
 SNMP can be used to monitor or control a large variety of network equipment, e.g. routers, switches, NAS-systems.
-Currently protocol version 1 and 2c are supported.
+Currently, protocol version 1 and 2c are supported.
 
 ## Supported Things
 
@@ -21,7 +21,7 @@ In this case the `port` parameter defaults to `0`.
 
 For receiving traps a port for receiving traps needs to be configured.
 The standard port for receiving traps is 162, however binding to ports lower than 1024 is only allowed with privileged right on most *nix systems.
-Therefore it is recommended to bind to a port higher than 1024 (e.g. 8162).
+Therefore, it is recommended to bind to a port higher than 1024 (e.g. 8162).
 In case the trap sending equipment does not allow to change the destination port (e.g. Mikrotik routers), it is necessary to forward the received packets to the new port.
 This can be done either by software like _snmptrapd_ or by adding a firewall rule to your system, e.g. by executing
 
@@ -79,7 +79,7 @@ The default is `v1`.
 
 The `target3` thing has additional mandatory parameters: `engineId` and `user`.
 
-The `engineId` must be given in hexadecimal notation (case insensitive) without separators (e.g. `80000009035c710dbcd9e6`).
+The `engineId` must be given in hexadecimal notation (case-insensitive) without separators (e.g. `80000009035c710dbcd9e6`).
 The allowed length is 11 to 32 bytes (22 to 64 hex characters).
 If you encounter problems, please check if your agent prefixes the set engine id (e.g. Mikrotik uses `80003a8c04` and appends the set value to that).
 
@@ -121,7 +121,7 @@ Using`TRAP` channels requires configuring the receiving port (see "Binding confi
 The `datatype` parameter is needed in some special cases where data is written to the target.
 The default `datatype` for `number` channels is `UINT32`, representing an unsigned integer with 32 bit length.
 Alternatively `INT32` (signed integer with 32 bit length), `COUNTER64` (unsigned integer with 64 bit length) or `FLOAT` (floating point number) can be set.
-Floating point numbers have to be supplied (and will be send) as strings.
+Floating point numbers have to be supplied (and will be sent) as strings.
 For `string` channels the default `datatype` is `STRING` (i.e. the item's will be sent as a string).
 If it is set to `IPADDRESS`, an SNMP IP address object is constructed from the item's value.
 The `HEXSTRING` datatype converts a hexadecimal string (e.g. `aa bb 11`) to the respective octet string before sending data to the target (and vice versa for receiving data).
