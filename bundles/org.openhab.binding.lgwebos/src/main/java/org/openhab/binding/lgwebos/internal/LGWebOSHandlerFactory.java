@@ -16,6 +16,8 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -53,7 +55,8 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
-        this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
+        var httpClient = new HttpClient(new SslContextFactory.Client(true));
+        this.webSocketClient = new WebSocketClient(httpClient);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -74,9 +77,6 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        // LGWebOS TVs only support WEAK cipher suites, thus not using SSL.
-        // SslContextFactory sslContextFactory = new SslContextFactory(true);
-        // sslContextFactory.addExcludeProtocols("tls/1.3");
 
         // reduce timeout from default 15sec
         this.webSocketClient.setConnectTimeout(1000);
