@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyBMWFileProxy implements MyBMWProxy {
     private final Logger logger = LoggerFactory.getLogger(MyBMWFileProxy.class);
-    private final String vehicleToBeTested;
+    private String vehicleToBeTested;
 
     private static final String RESPONSES = "responses" + File.separator;
     private static final String VEHICLES_BASE = File.separator + "vehicles_base.json";
@@ -58,9 +58,14 @@ public class MyBMWFileProxy implements MyBMWProxy {
     private static final String REMOTE_SERVICES_CALL = File.separator + "remote_service_call.json";
     private static final String REMOTE_SERVICES_STATE = File.separator + "remote_service_status.json";
 
-    public MyBMWFileProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration config) {
+    public MyBMWFileProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration bridgeConfiguration) {
         logger.trace("MyBMWFileProxy - initialize");
-        vehicleToBeTested = config.password;
+        vehicleToBeTested = bridgeConfiguration.password;
+    }
+
+    public void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
+        logger.trace("MyBMWFileProxy - update bridge");
+        vehicleToBeTested = bridgeConfiguration.password;
     }
 
     public List<@NonNull Vehicle> requestVehicles() throws NetworkException {

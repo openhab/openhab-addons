@@ -506,7 +506,8 @@ public class VehicleHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC, qtElectricRange, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC, qtElectricRadius, channelToBeUpdated);
         }
-        if (hasFuel) {
+
+        if (hasFuel && !isHybrid) {
             int rangeFuel = vehicleState.getCombustionFuelLevel().getRange();
             QuantityType<Length> qtFuelRange = QuantityType.valueOf(rangeFuel, lengthUnit);
             QuantityType<Length> qtFuelRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeFuel), lengthUnit);
@@ -516,12 +517,25 @@ public class VehicleHandler extends BaseThingHandler {
 
         if (isHybrid) {
             int rangeCombined = vehicleState.getRange();
+
+            // there is a bug/feature in the API that the fuel range is the same like the combined range, hence in case
+            // of
+            // hybrid the fuel range has to be subtracted by the electric range
+            int rangeFuel = vehicleState.getCombustionFuelLevel().getRange()
+                    - vehicleState.getElectricChargingState().getRange();
+
             QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, lengthUnit);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeCombined),
                     lengthUnit);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID, qtHybridRange, channelToBeUpdated);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID, qtHybridRadius, channelToBeUpdated);
+
+            QuantityType<Length> qtFuelRange = QuantityType.valueOf(rangeFuel, lengthUnit);
+            QuantityType<Length> qtFuelRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeFuel), lengthUnit);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_FUEL, qtFuelRange, channelToBeUpdated);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL, qtFuelRadius, channelToBeUpdated);
         }
+
         if (vehicleState.getCurrentMileage() == Constants.INT_UNDEF) {
             updateChannel(CHANNEL_GROUP_RANGE, MILEAGE, UnDefType.UNDEF, channelToBeUpdated);
         } else {

@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 public class MyBMWHttpProxy implements MyBMWProxy {
     private final Logger logger = LoggerFactory.getLogger(MyBMWHttpProxy.class);
     private final HttpClient httpClient;
-    private final MyBMWBridgeConfiguration configuration;
+    private MyBMWBridgeConfiguration bridgeConfiguration;
     private final MyBMWTokenController myBMWTokenHandler;
 
     /**
@@ -75,20 +75,25 @@ public class MyBMWHttpProxy implements MyBMWProxy {
     private final String remoteCommandUrl;
     private final String remoteStatusUrl;
 
-    public MyBMWHttpProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration config) {
+    public MyBMWHttpProxy(HttpClientFactory httpClientFactory, MyBMWBridgeConfiguration bridgeConfiguration) {
         logger.trace("MyBMWHttpProxy - initialize");
         httpClient = httpClientFactory.getCommonHttpClient();
 
-        myBMWTokenHandler = new MyBMWTokenController(config, httpClient);
+        myBMWTokenHandler = new MyBMWTokenController(bridgeConfiguration, httpClient);
 
-        configuration = config;
+        this.bridgeConfiguration = bridgeConfiguration;
 
-        vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
+        vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + BimmerConstants.API_VEHICLES;
 
-        remoteCommandUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
+        remoteCommandUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + BimmerConstants.API_REMOTE_SERVICE_BASE_URL;
         remoteStatusUrl = remoteCommandUrl + "eventStatus";
+    }
+
+    @Override
+    public void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration) {
+        this.bridgeConfiguration = bridgeConfiguration;
     }
 
     public List<@NonNull Vehicle> requestVehicles() throws NetworkException {
@@ -147,7 +152,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
      * @return
      */
     public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException {
-        final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
+        final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + "/eadrax-ics/v3/presentation/vehicles/" + vin + "/images?carView=" + props.viewport;
         return get(localImageUrl, brand, vin, HTTPConstants.CONTENT_TYPE_IMAGE);
     }
@@ -184,7 +189,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         chargeStatisticsParams.put("vin", vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
-        String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
+        String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
         byte[] chargeStatisticsResponse = get(chargeStatisticsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeStatisticsResponseString = new String(chargeStatisticsResponse);
@@ -206,7 +211,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         chargeSessionsParams.put("maxResults", "40");
         chargeSessionsParams.put("include_date_picker", "true");
         String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
-        String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
+        String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(bridgeConfiguration.region)
                 + "/eadrax-chs/v1/charging-sessions?" + params;
         byte[] chargeSessionsResponse = get(chargeSessionsUrl, brand, vin, HTTPConstants.CONTENT_TYPE_JSON);
         String chargeSessionsResponseString = new String(chargeSessionsResponse);
@@ -292,8 +297,8 @@ public class MyBMWHttpProxy implements MyBMWProxy {
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenHandler.getToken().getBearerToken());
         req.header(HTTPConstants.HEADER_X_USER_AGENT,
-                String.format(BimmerConstants.X_USER_AGENT, brand, configuration.region));
-        req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
+                String.format(BimmerConstants.X_USER_AGENT, brand, bridgeConfiguration.region));
+        req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.language);
         req.header(HttpHeader.ACCEPT, contentType);
 
         try {

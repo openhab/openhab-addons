@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
@@ -32,6 +33,9 @@ import org.openhab.binding.mybmw.internal.utils.ImageProperties;
  */
 @NonNullByDefault
 public interface MyBMWProxy {
+
+    void setBridgeConfiguration(MyBMWBridgeConfiguration bridgeConfiguration);
+
     List<@NonNull Vehicle> requestVehicles() throws NetworkException;
 
     /**
@@ -39,16 +43,16 @@ public interface MyBMWProxy {
      *
      * @param brand
      */
-    public List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException;
+    List<VehicleBase> requestVehiclesBase(String brand) throws NetworkException;
 
-    public String requestVehiclesBaseJson(String brand) throws NetworkException;
+    String requestVehiclesBaseJson(String brand) throws NetworkException;
 
     /**
      * request vehicles for all possible brands
      *
      * @param callback
      */
-    public List<VehicleBase> requestVehiclesBase() throws NetworkException;
+    List<VehicleBase> requestVehiclesBase() throws NetworkException;
 
     /**
      * request the vehicle image
@@ -57,7 +61,7 @@ public interface MyBMWProxy {
      * @param props
      * @return
      */
-    public byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException;
+    byte[] requestImage(String vin, String brand, ImageProperties props) throws NetworkException;
 
     /**
      * request the state for one specific vehicle
@@ -65,29 +69,28 @@ public interface MyBMWProxy {
      * @param baseVehicle
      * @return
      */
-    public VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException;
+    VehicleStateContainer requestVehicleState(String vin, String brand) throws NetworkException;
 
-    public String requestVehicleStateJson(String vin, String brand) throws NetworkException;
+    String requestVehicleStateJson(String vin, String brand) throws NetworkException;
 
     /**
      * request charge statistics for electric vehicles
      *
      */
-    public ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException;
+    ChargingStatisticsContainer requestChargeStatistics(String vin, String brand) throws NetworkException;
 
-    public String requestChargeStatisticsJson(String vin, String brand) throws NetworkException;
+    String requestChargeStatisticsJson(String vin, String brand) throws NetworkException;
 
     /**
      * request charge sessions for electric vehicles
      *
      */
-    public ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException;
+    ChargingSessionsContainer requestChargeSessions(String vin, String brand) throws NetworkException;
 
-    public String requestChargeSessionsJson(String vin, String brand) throws NetworkException;
+    String requestChargeSessionsJson(String vin, String brand) throws NetworkException;
 
-    public ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
+    ExecutionStatusContainer executeRemoteServiceCall(String vin, String brand, RemoteService service)
             throws NetworkException;
 
-    public ExecutionStatusContainer executeRemoteServiceStatusCall(String brand, String eventId)
-            throws NetworkException;
+    ExecutionStatusContainer executeRemoteServiceStatusCall(String brand, String eventId) throws NetworkException;
 }

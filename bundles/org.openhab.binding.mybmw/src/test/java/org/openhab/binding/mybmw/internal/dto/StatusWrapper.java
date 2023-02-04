@@ -217,7 +217,14 @@ public class StatusWrapper {
                 assertTrue(hasFuel, "Has Fuel");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(vehicleState.getCombustionFuelLevel().getRange(), qt.intValue(), "Range Combustion");
+                if (!isHybrid) {
+                    assertEquals(vehicleState.getCombustionFuelLevel().getRange(), qt.intValue(), "Range Combustion");
+                } else {
+                    assertEquals(
+                            vehicleState.getCombustionFuelLevel().getRange()
+                                    - vehicleState.getElectricChargingState().getRange(),
+                            qt.intValue(), "Range Combustion");
+                }
                 break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -368,8 +375,15 @@ public class StatusWrapper {
                 assertTrue(state instanceof QuantityType);
                 assertTrue(hasFuel);
                 qt = (QuantityType) state;
-                assertEquals(Converter.guessRangeRadius(vehicleState.getCombustionFuelLevel().getRange()),
-                        qt.intValue(), "Range Radius Fuel");
+                if (!isHybrid) {
+                    assertEquals(Converter.guessRangeRadius(vehicleState.getCombustionFuelLevel().getRange()),
+                            qt.intValue(), "Range Radius Fuel");
+                } else {
+                    assertEquals(
+                            Converter.guessRangeRadius(vehicleState.getCombustionFuelLevel().getRange()
+                                    - vehicleState.getElectricChargingState().getRange()),
+                            qt.intValue(), "Range Radius Fuel");
+                }
                 break;
             case RANGE_RADIUS_HYBRID:
                 assertTrue(state instanceof QuantityType);

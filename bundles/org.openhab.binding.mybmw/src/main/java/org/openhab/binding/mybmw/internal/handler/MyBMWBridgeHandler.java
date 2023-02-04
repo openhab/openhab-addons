@@ -123,6 +123,10 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler {
     private void discoverVehicles() {
         logger.trace("xxxMyBMWBridgeHandler.requestVehicles");
 
+        MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
+
+        myBmwProxy.ifPresent(proxy -> proxy.setBridgeConfiguration(config));
+
         vehicleDiscovery.ifPresent(discovery -> discovery.discoverVehicles());
     }
 
