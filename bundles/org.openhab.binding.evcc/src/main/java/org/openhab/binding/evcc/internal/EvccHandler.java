@@ -341,7 +341,8 @@ public class EvccHandler extends BaseThingHandler {
         if (batteryConfigured) {
             float batteryCapacity = result.getBatteryCapacity();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_CAPACITY);
-            updateState(channel, new QuantityType<>(batteryCapacity, Units.WATT_HOUR));
+            updateState(channel, new QuantityType<>(batteryCapacity, Units.KILOWATT_HOUR));
+
             float batteryPower = result.getBatteryPower();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
@@ -450,7 +451,8 @@ public class EvccHandler extends BaseThingHandler {
         updateState(channel, new StringType(title));
         float vehicleCapacity = loadpoint.getVehicleCapacity();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
-        updateState(channel, new QuantityType<>(vehicleCapacity, Units.WATT_HOUR));
+        updateState(channel, new QuantityType<>(vehicleCapacity, Units.KILOWATT_HOUR));
+
         float vehicleOdometer = loadpoint.getVehicleOdometer();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
