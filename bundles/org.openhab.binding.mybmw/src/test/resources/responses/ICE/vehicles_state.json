@@ -20,11 +20,11 @@
         },
         "location": {
             "coordinates": {
-                "latitude": 48.427661388888886,
-                "longitude": 11.600997222222222
+                "latitude": 1.23,
+                "longitude": 3.45
             },
             "address": {
-                "formatted": "Weiherweg 4A, 85391 Allershausen"
+                "formatted": "anonymousAddress"
             },
             "heading": 173
         },
