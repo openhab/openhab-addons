@@ -10,14 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.snmp.internal;
+package org.openhab.binding.snmp.internal.types;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SnmpDatatype} enum defines the datatype of SNMP channels
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public enum SnmpDatatype {
     INT32,
     UINT32,

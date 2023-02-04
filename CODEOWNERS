@@ -309,7 +309,7 @@
 /bundles/org.openhab.binding.smhi/ @pacive
 /bundles/org.openhab.binding.smsmodem/ @dalgwen
 /bundles/org.openhab.binding.sncf/ @clinique
-/bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.snmp/ @J-N-K
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
