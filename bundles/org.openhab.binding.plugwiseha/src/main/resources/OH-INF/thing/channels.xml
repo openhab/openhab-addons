@@ -209,10 +209,6 @@
 		<label>Domestic Hot Water Setpoint Temperature</label>
 		<description>Gets the temperature of the domestic hot water setpoint</description>
 		<category>heating</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
