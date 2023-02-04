@@ -43,7 +43,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,43 +64,22 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    private @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
-    private @Nullable SiemensHvacConnector hvacConnector;
-    private @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
+    private final @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
+    private final @Nullable SiemensHvacConnector hvacConnector;
+    private final @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
 
-    public SiemensHvacHandlerImpl(Thing thing) {
+    public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
+            @Nullable SiemensHvacMetadataRegistry metaDataRegistry,
+            @Nullable SiemensHvacChannelTypeProvider channelTypeProvider) {
         super(thing);
+
+        this.channelTypeProvider = channelTypeProvider;
+        this.hvacConnector = hvacConnector;
+        this.metaDataRegistry = metaDataRegistry;
 
         logger.debug("===========================================================");
         logger.debug("Siemens HVac");
         logger.debug("===========================================================");
-    }
-
-    @Reference
-    public void setSiemensHvacConnector(@Nullable SiemensHvacConnector hvacConnector) {
-        this.hvacConnector = hvacConnector;
-    }
-
-    public void unsetSiemensHvacConnector(SiemensHvacConnector hvacConnector) {
-        this.hvacConnector = null;
-    }
-
-    @Reference
-    public void setSiemensHvacMetadataRegistry(@Nullable SiemensHvacMetadataRegistry metaDataRegistry) {
-        this.metaDataRegistry = metaDataRegistry;
-    }
-
-    public void unsetSiemensHvacMetadataRegistry(SiemensHvacMetadataRegistry metaDataRegistry) {
-        this.metaDataRegistry = null;
-    }
-
-    @Reference
-    public void setChannelTypeProvider(@Nullable SiemensHvacChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = channelTypeProvider;
-    }
-
-    public void unsetChannelTypeProvider(@Nullable SiemensHvacChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = null;
     }
 
     @Override
@@ -204,15 +182,15 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
             if (("Numeric").equals(typer)) {
                 updateState(updateKey, new DecimalType(value.getAsDouble()));
-            } else if (("Enumeration").equals(typer)) {
+            } else if ("Enumeration".equals(typer)) {
                 if (enumValue != null) {
                     updateState(updateKey, new DecimalType(enumValue.getAsInt()));
                 }
-            } else if (("Text").equals(typer)) {
+            } else if ("Text".equals(typer)) {
                 updateState(updateKey, new StringType(value.getAsString()));
-            } else if (("RadioButton").equals(typer)) {
+            } else if ("RadioButton".equals(typer)) {
                 updateState(updateKey, new StringType(value.getAsString()));
-            } else if (("DayOfTime").equals(typer) || ("DateTime").equals(typer)) {
+            } else if ("DayOfTime".equals(typer) || "DateTime".equals(typer)) {
                 try {
                     SimpleDateFormat dtf = new SimpleDateFormat("EEEE, d. MMMM yyyy hh:mm"); // first example
                     ZonedDateTime zdt = dtf.parse(value.getAsString()).toInstant().atZone(ZoneId.systemDefault());
@@ -230,7 +208,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     private void ReadDp(String dp, String uid, String type, boolean async) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
-        if (("-1").equals(dp)) {
+        if ("-1".equals(dp)) {
             return;
         }
 
@@ -271,7 +249,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     private void WriteDp(String dp, Type dpVal, String type) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
-        if (("-1").equals(dp)) {
+        if ("-1".equals(dp)) {
             return;
         }
 
@@ -299,7 +277,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                 }
             }
 
-            String request = "api/menutree/write_datapoint.json?Id=" + dp + "&Value=" + valUpdate + "&Type=" + type;
+            String request = String.format("api/menutree/write_datapoint.json?Id=%s&Value=%s&Type=%s", dp, valUpdate,
+                    type);
 
             if (lcHvacConnector != null) {
                 logger.debug("Write request for : {} ", valUpdate);

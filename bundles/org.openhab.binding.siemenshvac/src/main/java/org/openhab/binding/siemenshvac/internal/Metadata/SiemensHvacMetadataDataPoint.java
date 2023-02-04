@@ -39,16 +39,13 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
     private @Nullable String fieldWitdh = null;
     private @Nullable String decimalDigits = null;
     private boolean detailsResolved = false;
-    @SuppressWarnings("unused")
-    private boolean unresolvableDetails = false;
     private @Nullable String dialogType = null;
     private @Nullable String maxLength = null;
     private @Nullable String address = null;
     private int dptSubKey = -1;
     private boolean writeAccess = false;
 
-    @NotNull
-    private List<SiemensHvacMetadataPointChild> child = List.of();
+    private @NotNull List<SiemensHvacMetadataPointChild> child = List.of();
 
     public SiemensHvacMetadataDataPoint() {
         child = new ArrayList<SiemensHvacMetadataPointChild>();
@@ -62,7 +59,7 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
         this.dptType = dptType;
     }
 
-    public @Nullable List<SiemensHvacMetadataPointChild> getChild() {
+    public List<SiemensHvacMetadataPointChild> getChild() {
         return child;
     }
 
@@ -187,7 +184,6 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
 
             if (("datatype not supported").equals(errorMsg)) {
                 detailsResolved = true;
-                unresolvableDetails = true;
                 return;
             }
 

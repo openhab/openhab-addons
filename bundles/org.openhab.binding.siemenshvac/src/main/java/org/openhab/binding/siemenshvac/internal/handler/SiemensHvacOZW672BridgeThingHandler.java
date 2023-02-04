@@ -13,7 +13,7 @@
 package org.openhab.binding.siemenshvac.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,6 +63,6 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SiemensHvacDeviceDiscoveryService.class);
+        return Set.of(SiemensHvacDeviceDiscoveryService.class);
     }
 }

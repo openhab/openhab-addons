@@ -79,9 +79,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
     private static final Logger logger = LoggerFactory.getLogger(SiemensHvacMetadataRegistryImpl.class);
 
-    // private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<>();
-    // protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();
-
     // A map contains data point config read from Api and/or WebPages
     private Map<String, SiemensHvacMetadata> dptMap = new Hashtable<String, SiemensHvacMetadata>();
     private @Nullable SiemensHvacMetadata root = null;
@@ -383,8 +380,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
@@ -433,11 +430,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         List<StateOption> options = new ArrayList<StateOption>();
         if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
             List<SiemensHvacMetadataPointChild> childs = dpt.getChild();
-            if (childs != null) {
-                for (SiemensHvacMetadataPointChild opt : childs) {
-                    StateOption stOpt = new StateOption(opt.getValue(), opt.getText());
-                    options.add(stOpt);
-                }
+            for (SiemensHvacMetadataPointChild opt : childs) {
+                StateOption stOpt = new StateOption(opt.getValue(), opt.getText());
+                options.add(stOpt);
             }
         }
 
