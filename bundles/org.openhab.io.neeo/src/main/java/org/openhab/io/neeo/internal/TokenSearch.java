@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.binding.BindingInfo;
+import org.openhab.core.addon.AddonInfo;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
@@ -118,7 +118,7 @@ public class TokenSearch {
                 if (tt != null) {
                     score += search(tt.getLabel(), needles);
 
-                    final BindingInfo bi = context.getBindingInfoRegistry().getBindingInfo(tt.getBindingId());
+                    final AddonInfo bi = context.getAddonInfoRegistry().getAddonInfo(tt.getBindingId());
                     if (bi != null) {
                         score += search(bi.getName(), needles);
                     }

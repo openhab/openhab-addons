@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="netatmo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Netatmo Binding</name>
+	<description>The Netatmo binding integrates Weather Station with companion modules, Healthy Home Coach, Thermostat Plug
+		and Welcome Camera.</description>
+
+
+	<config-description>
+		<parameter name="readFriends" type="boolean">
+			<label>Access Guests</label>
+			<description>For Weather Stations: A friend gave you access to their Netatmo Weather Station.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</addon:addon>
