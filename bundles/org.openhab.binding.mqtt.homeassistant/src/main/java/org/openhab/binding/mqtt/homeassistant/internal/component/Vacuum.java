@@ -127,9 +127,6 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         @SerializedName("docked_topic")
         protected @Nullable String dockedTopic;
 
-        @SerializedName("enabled_by_default")
-        protected @Nullable Boolean enabledByDefault = true;
-
         @SerializedName("error_template")
         protected @Nullable String errorTemplate;
         @SerializedName("error_topic")

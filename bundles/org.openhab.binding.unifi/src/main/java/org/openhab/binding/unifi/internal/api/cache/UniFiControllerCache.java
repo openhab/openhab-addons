@@ -13,6 +13,7 @@
 package org.openhab.binding.unifi.internal.api.cache;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
+import org.openhab.binding.unifi.internal.api.dto.UniFiVoucher;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Bowman - Initial contribution
  * @author Hilbrand Bouwkamp - Moved cache to this dedicated class.
+ * @author Mark Herwege - Added guest vouchers
  */
 @NonNullByDefault
 public class UniFiControllerCache {
@@ -47,6 +50,7 @@ public class UniFiControllerCache {
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
     private final UniFiClientCache insightsCache = new UniFiClientCache();
+    private final UniFiVoucherCache vouchersCache = new UniFiVoucherCache();
     private final Map<String, UniFiSwitchPorts> devicesToPortTables = new ConcurrentHashMap<>();
 
     public void clear() {
@@ -55,6 +59,7 @@ public class UniFiControllerCache {
         devicesCache.clear();
         clientsCache.clear();
         insightsCache.clear();
+        vouchersCache.clear();
     }
 
     // Sites Cache
@@ -169,5 +174,20 @@ public class UniFiControllerCache {
 
     public void putInsights(final UniFiClient @Nullable [] insights) {
         insightsCache.putAll(insights);
+    }
+
+    // Vouchers Cache
+
+    public void putVouchers(final UniFiVoucher @Nullable [] vouchers) {
+        vouchersCache.putAll(vouchers);
+    }
+
+    public synchronized Stream<UniFiVoucher> getVoucherStreamForSite(final UniFiSite site) {
+        return vouchersCache.values().stream().filter(voucher -> voucher.getSite().equals(site));
+    }
+
+    public @Nullable UniFiVoucher getVoucher(final UniFiSite site) {
+        // Use one of the oldest vouchers first
+        return getVoucherStreamForSite(site).min(Comparator.comparing(UniFiVoucher::getCreateTime)).orElse(null);
     }
 }
