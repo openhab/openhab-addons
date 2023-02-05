@@ -178,12 +178,15 @@ public class ShieldTVMessageParser {
 
             } else if (msg.equals("08f1071202080318f107")) {
                 // App successfully started
-            } else if (msg.startsWith("08f10712") && (msg.length() > 20)) {
+            } else if (msg.equals("08f107120608031202080118f107")) {
+                // App failed to start
+            } else if (msg.startsWith("08f10712") && (msg.length() > 30)) {
                 // Massive dump of currently installed apps
                 // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
 
                 Map<String, String> appNameDB = new HashMap<>();
                 Map<String, String> appURLDB = new HashMap<>();
+                int appCount = 0;
                 int i = 18;
                 String st = "";
                 int length;
@@ -219,6 +222,8 @@ public class ShieldTVMessageParser {
                     if (!st.toString().equals("12")) {
                         appSBPrepend = new StringBuffer();
                         appSBDN = new StringBuffer();
+
+                        appCount++;
 
                         // App Prepend
                         // Usually 10 in length but can be longer or shorter so look for 0a twice
@@ -299,8 +304,13 @@ public class ShieldTVMessageParser {
                     appNameDB.put(appDN, appName);
                     appURLDB.put(appDN, appURL);
                 }
-                logger.trace("MP appNameDB: {} appURLDB: {}", appNameDB.toString(), appURLDB.toString());
-                callback.setAppDB(appNameDB, appURLDB);
+                if (appCount > 0) {
+                    logger.trace("MP appNameDB: {} appURLDB: {}", appNameDB.toString(), appURLDB.toString());
+                    callback.setAppDB(appNameDB, appURLDB);
+                } else {
+                    logger.warn("MP empty msg: {} appDB appNameDB: {} appURLDB: {}", msg, appNameDB.toString(),
+                            appURLDB.toString());
+                }
             } else if (msg.startsWith("08f30712")) {
                 // This has something to do with successful command response, maybe.
             } else if (msg.equals("080028fae0a6c0d130")) {
