@@ -55,7 +55,8 @@ public final class RefreshService implements AutoCloseable {
     private @Nullable Runnable unauthorized;
     private @Nullable String sessionId;
     private @Nullable Connection signalRConnection;
-    private static boolean destroyed = false;
+    private boolean destroyed = false;
+    private boolean isInitializing = false;
 
     /**
      * Creates a new instance of {@link RefreshService}
@@ -89,12 +90,10 @@ public final class RefreshService implements AutoCloseable {
         this.unauthorized = unauthorized;
         this.sessionId = sessionId;
 
-        if (this.signalRConnection == null) {
-            this.signalRConnection = createSignalRConnection();
-        }
-        initializeGroups();
-
+        signalRConnection = createSignalRConnection();
         destroyed = false;
+        isInitializing = false;
+        initializeGroups(true);
     }
 
     /**
@@ -102,10 +101,10 @@ public final class RefreshService implements AutoCloseable {
      */
     public void stop() {
         destroyed = true;
-        final Connection localSignalRConnection = this.signalRConnection;
+        final Connection localSignalRConnection = signalRConnection;
         if (localSignalRConnection != null) {
-            localSignalRConnection.disconnect();
             localSignalRConnection.stop();
+            signalRConnection = null;
         }
     }
 
@@ -134,24 +133,36 @@ public final class RefreshService implements AutoCloseable {
             }
         });
         signalRConnection.reconnected(() -> {
-            initializeGroups();
+            initializeGroups(false);
         });
         signalRConnection.connected(() -> {
             signalRConnection.send(sessionId);
         });
+        signalRConnection.error(error -> logger.info("SignalR error {}", error.getLocalizedMessage()));
         return signalRConnection;
     }
 
-    private void initializeGroups() {
+    private void initializeGroups(boolean shouldStartSignalRService) {
+        if (destroyed) {
+            return;
+        }
         final String sessionId = this.sessionId;
         if (sessionId == null) {
             handleConnectionLost();
         }
+        if (isInitializing) {
+            return;
+        }
+        isInitializing = true;
+        logger.trace("initializeGroups started");
         final Runnable unauthorized = this.unauthorized;
         createRequest().send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
-                if (!destroyed) {
+                try {
+                    if (destroyed) {
+                        return;
+                    }
                     if (result == null || result.isFailed()) {
                         handleConnectionLost();
                     } else {
@@ -165,12 +176,18 @@ public final class RefreshService implements AutoCloseable {
                             }
                         } else if (status == HttpStatus.OK_200) {
                             initializationDone(Objects.requireNonNull(getContentAsString()));
-                            Objects.requireNonNull(signalRConnection).start();
+                            final Connection localSignalRConnection = signalRConnection;
+                            if (shouldStartSignalRService && (localSignalRConnection != null)) {
+                                localSignalRConnection.start();
+                            }
                         } else {
                             logger.warn("unsupported HTTP-Status {}", status);
                             handleConnectionLost();
                         }
                     }
+                } finally {
+                    logger.trace("initializeGroups completed");
+                    isInitializing = false;
                 }
             }
         });
@@ -179,7 +196,7 @@ public final class RefreshService implements AutoCloseable {
     private Request createRequest() {
         Request request = httpClient.newRequest(config.getApiUrl() + "/Group/GroupContents")
                 .param("sessionid", sessionId).param("apiKey", config.apiKey).method(HttpMethod.GET);
-        return Objects.requireNonNull(request);
+        return request;
     }
 
     private void initializationDone(String responseBody) {

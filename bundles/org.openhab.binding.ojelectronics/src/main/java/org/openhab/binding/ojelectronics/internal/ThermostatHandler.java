@@ -37,6 +37,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -123,6 +124,15 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        @Nullable
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE && currentThermostat == null) {
+            @Nullable
+            OJCloudHandler bridgeHandler = (OJCloudHandler) (bridge.getHandler());
+            if (bridgeHandler != null) {
+                bridgeHandler.reInitialize();
+            }
+        }
     }
 
     /**
