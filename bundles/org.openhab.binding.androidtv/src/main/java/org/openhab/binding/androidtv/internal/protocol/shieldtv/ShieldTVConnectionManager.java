@@ -247,6 +247,7 @@ public class ShieldTVConnectionManager {
         this.appURLDB = appURLDB;
         logger.debug("App DB Populated");
         logger.trace("Handler appNameDB: {} appURLDB: {}", this.appNameDB.toString(), this.appURLDB.toString());
+        handler.updateCDP(CHANNEL_APP, this.appNameDB);
     }
 
     private TrustManager[] defineNoOpTrustManager() {

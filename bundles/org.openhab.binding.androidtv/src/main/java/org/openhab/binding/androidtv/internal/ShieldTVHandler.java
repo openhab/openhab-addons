@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +29,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +52,11 @@ public class ShieldTVHandler extends BaseThingHandler {
     private final Object monitorThingStatusJobLock = new Object();
     private static final int THING_STATUS_FREQUENCY = 250;
 
-    public ShieldTVHandler(Thing thing) {
+    private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
+
+    public ShieldTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing);
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     public void setThingProperty(String property, String value) {
@@ -62,6 +69,14 @@ public class ShieldTVHandler extends BaseThingHandler {
 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    public void updateCDP(String channelName, Map<String, String> cdpMap) {
+        logger.trace("Updating CDP for {}", channelName);
+        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
+        logger.trace("CDP List: {}", commandOptions.toString());
+        commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
     }
 
     private void monitorThingStatus() {
