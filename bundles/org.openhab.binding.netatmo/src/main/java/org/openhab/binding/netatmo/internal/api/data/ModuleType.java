@@ -79,7 +79,7 @@ public enum ModuleType {
 
     WELCOME(FeatureArea.SECURITY, "NACamera", HOME, Set.of(CameraCapability.class, ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
-            new ChannelGroup(CameraChannelHelper.class, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
+            new ChannelGroup(CameraChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
 
     TAG(FeatureArea.SECURITY, "NACamDoorTag", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(DoorTagChannelHelper.class, GROUP_TAG)),

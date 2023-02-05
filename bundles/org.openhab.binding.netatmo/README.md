@@ -495,28 +495,29 @@ Warnings:
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel Group | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
-| ------------- | -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| status        | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
-| status        | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
-| status        | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
-| live          | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
-| live          | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
-| live          | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
-| live          | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
-| live          | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
-| signal        | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
-| signal        | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| last-event    | type                 | String       | Read-only  | Type of event                                                                                                                               |
-| last-event    | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
-| last-event    | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
-| last-event    | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
-| last-event    | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
-| last-event    | snapshot-url         | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
-| last-event    | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
-| last-event    | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
-| last-event    | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
-| last-event    | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
+| Channel Group  | Channel ID           | Item Type    | Read/Write | Description                                                                                                                                 |
+|----------------| -------------------- | ------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| security-event | home-event           |              | Read-only  | Trigger channel which is triggered when the camera sent an event                                                                            |
+| status         | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
+| status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
+| status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
+| live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
+| live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
+| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
+| live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
+| signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
+| signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
+| last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
+| last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
+| last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
+| last-event     | message              | String       | Read-only  | Message sent by Netatmo corresponding to given event                                                                                        |
+| last-event     | snapshot             | Image        | Read-only  | picture of the last event, if it applies                                                                                                    |
+| last-event     | snapshot-url         | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here                   |
+| last-event     | local-video-url      | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding local video URL will be available here |
+| last-event     | vpn-video-url        | String       | Read-only  | If the last event (depending upon event type) in the home lead a snapshot picture, the corresponding VPN video URL will be available here   |
+| last-event     | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
+| last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
 (*) This channel is configurable : low, poor, high.
 
