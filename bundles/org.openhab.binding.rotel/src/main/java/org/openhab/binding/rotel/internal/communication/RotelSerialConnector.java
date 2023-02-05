@@ -94,7 +94,7 @@ public class RotelSerialConnector extends RotelConnector {
                 }
             }
 
-            readerThread.start();
+            startReaderThread();
 
             this.serialPort = commPort;
             this.dataIn = dataIn;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="lutron" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Lutron Binding</name>
+	<description>The Lutron binding interfaces with Lutron lighting control and home automation systems such as RadioRA,
+		RadioRA 2, HomeWorks, HomeWorks QS, RA2 Select, Caseta, and GRAFIK Eye.</description>
+
+</addon:addon>

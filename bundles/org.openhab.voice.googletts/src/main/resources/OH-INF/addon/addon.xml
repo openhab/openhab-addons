@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="googletts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>voice</type>
+	<name>Google Cloud Test-to-speech</name>
+	<description>Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech
+		Synthesis Markup Language (SSML) input into audio data of natural human speech.</description>
+
+	<service-id>org.openhab.voice.googletts</service-id>
+
+	<config-description-ref uri="voice:googletts"/>
+
+</addon:addon>

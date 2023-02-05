@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Xiaomi Mi Smart Home Binding</name>
+	<description>Connects to Xiaomi Smart Gateway v2 and allows to communicate with Xiaomi Mi Smart Home suite (also called
+		Xiaomi Aqara). The Gateway connects with a range of Xiaomi Zigbee sensors such as Wireless Switches, Wall Plugs or
+		Temperature Sensors.</description>
+
+</addon:addon>
