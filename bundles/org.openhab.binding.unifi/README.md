@@ -355,15 +355,15 @@ sitemap unifi label="UniFi Binding"
 }
 ```
 
-### `rule actions`
+### `rule actions` for `site` thing
 
 ```java
-val uniFiActions = getActions("unifi","unifi:site:mycontroller:mysite")
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
 val success = uniFiActions.generateVoucher(null, null, null, 100, 500, 250)
 ```
 
 ```java
-val uniFiActions = getActions("unifi","unifi:site:mycontroller:mysite")
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
 val vouchersJson = uniFiActions.listVouchers()
 ```
 
@@ -371,6 +371,6 @@ val vouchersJson = uniFiActions.listVouchers()
 import java.util.List
 
 val List<String> voucherList = newArrayList("38677-91284", "46415-36104")
-val uniFiActions = getActions("unifi","unifi:site:mycontroller:mysite")
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
 val success = uniFiActions.revokeVouchers(voucherList)
 ```
