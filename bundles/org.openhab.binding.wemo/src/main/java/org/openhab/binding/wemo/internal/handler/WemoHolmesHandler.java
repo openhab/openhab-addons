@@ -30,7 +30,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
@@ -75,9 +74,8 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, upnpService, wemoHttpCaller);
+    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, wemoHttpCaller);
 
         logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
     }

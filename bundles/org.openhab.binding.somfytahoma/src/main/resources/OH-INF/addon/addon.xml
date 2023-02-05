@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>SomfyTahoma Binding</name>
+	<description>This is the binding for Somfy Tahoma and Somfy Connexoon home automation systems and for any other system
+		based on the OverKiz API.</description>
+
+</addon:addon>

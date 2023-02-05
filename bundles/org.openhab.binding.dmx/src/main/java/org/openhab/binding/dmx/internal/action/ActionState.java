@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dmx.internal.action;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ActionState} gives the state of an action
  *
@@ -22,6 +24,7 @@ package org.openhab.binding.dmx.internal.action;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public enum ActionState {
     WAITING,
     RUNNING,
