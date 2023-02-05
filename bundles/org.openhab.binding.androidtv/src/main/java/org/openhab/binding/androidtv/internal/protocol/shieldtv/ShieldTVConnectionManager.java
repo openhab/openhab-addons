@@ -109,6 +109,7 @@ public class ShieldTVConnectionManager {
     private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
+    private int periodicUpdate;
 
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
@@ -211,12 +212,15 @@ public class ShieldTVConnectionManager {
         return this.currentApp;
     }
 
+    private void sendPeriodicUpdate() {
+        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
+        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
+        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
+    }
+
     public void setLoggedIn(boolean isLoggedIn) {
         if (!this.isLoggedIn && isLoggedIn) {
-            // Only run this if we aren't already logged in
-            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
-            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
-            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
+            sendPeriodicUpdate();
         }
 
         if (this.isLoggedIn != isLoggedIn) {
@@ -391,6 +395,7 @@ public class ShieldTVConnectionManager {
         this.senderThread = senderThread;
 
         if (!config.shim) {
+            this.periodicUpdate = 20;
             logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
             keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
                     TimeUnit.SECONDS);
@@ -817,6 +822,12 @@ public class ShieldTVConnectionManager {
         String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
         sendCommand(new ShieldTVCommand(keepalive));
         reconnectTaskSchedule();
+        if (this.periodicUpdate <= 1) {
+            sendPeriodicUpdate();
+            this.periodicUpdate = 20;
+        } else {
+            periodicUpdate--;
+        }
     }
 
     /**
