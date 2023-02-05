@@ -304,12 +304,13 @@ The structure of the returned json is (depending on content, some fields may be 
 ```
 Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
 	Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
+	Thing site mysite "My Site" [ sid="$sid" ]
 }
 ```
 
 _Note: Usually on Unifi OS, the default port is 443_
 
-Replace `$user`, `$password` and `$cid` accordingly.
+Replace `$user`, `$password`, `$cid` and `$sid` accordingly.
 
 ### `items/unifi.items`
 
