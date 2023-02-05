@@ -176,7 +176,9 @@ public class ShieldTVMessageParser {
                 callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
                 callback.setArch(ShieldTVRequest.encodeMessage(arch.toString()));
 
-            } else if (msg.startsWith("08f10712")) {
+	    } else if (msg.equals("08f1071202080318f107") {
+		    // App successfully started
+            } else if (msg.startsWith("08f10712") && ( msg.length() > 20 )) {
                 // Massive dump of currently installed apps
                 // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
 
