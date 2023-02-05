@@ -212,6 +212,7 @@ public class Shelly2RpcSocket {
             if (client.isStarted()) {
                 client.stop();
             }
+            client.destroy();
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 logger.debug("{}: Unable to close socket - interrupted", thingName); // e.g. device was rebooted
