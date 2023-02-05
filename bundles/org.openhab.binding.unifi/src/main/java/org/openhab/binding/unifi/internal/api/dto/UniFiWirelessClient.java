@@ -38,7 +38,7 @@ public class UniFiWirelessClient extends UniFiClient {
     }
 
     @Override
-    public Boolean isWired() {
+    public boolean isWired() {
         return false;
     }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="googlestt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>voice</type>
+	<name>Google Cloud Speech-to-Text</name>
+	<description>Google Cloud STT Service uses the non-free Google Cloud Speech-to-Text API to transcript audio data to
+		text.</description>
+
+	<service-id>org.openhab.voice.googlestt</service-id>
+
+	<config-description-ref uri="voice:googlestt"/>
+
+</addon:addon>
