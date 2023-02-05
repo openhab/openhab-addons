@@ -12,19 +12,17 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_VOUCHER;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_VOUCHERS_GENERATE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_TOTAL_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRED_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRELESS_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiSiteThingConfig;
 import org.openhab.binding.unifi.internal.UniFiVoucherChannelConfig;
+import org.openhab.binding.unifi.internal.action.UniFiSiteActions;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
@@ -38,6 +36,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -127,9 +126,14 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
             final Integer upLimit = config.getUpLimit();
             final Integer downLimit = config.getDownLimit();
             final Integer dataQuota = config.getDataQuota();
-            controller.generateGuestVouchers(entity, count, expire, users, upLimit, downLimit, dataQuota);
+            controller.generateVouchers(entity, count, expire, users, upLimit, downLimit, dataQuota);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(UniFiSiteActions.class);
     }
 }
