@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * directly defined on the bridge
  *
  * @author Karel Goderis - Initial contribution
- * @author Simon Kaufmann - Refactoring & cleanup
+ * @author Simon Kaufmann - Refactoring and cleanup
  */
 @NonNullByDefault
 public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
