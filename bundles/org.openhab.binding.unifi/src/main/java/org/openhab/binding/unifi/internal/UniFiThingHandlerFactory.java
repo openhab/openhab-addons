@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.ALL_THING_TYPE_SUPPORTED;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_CONTROLLER;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_POE_PORT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_SITE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WLAN;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

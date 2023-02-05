@@ -16,7 +16,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,7 +41,6 @@ import org.slf4j.LoggerFactory;
 abstract class UniFiCache<T extends @Nullable HasId> {
 
     public enum Prefix {
-        ALIAS,
         DESC,
         HOSTNAME,
         ID,
@@ -103,13 +104,12 @@ abstract class UniFiCache<T extends @Nullable HasId> {
 
     public final void putAll(final T @Nullable [] values) {
         if (values != null) {
-            logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
-                    lazyFormatAsList(values));
-            for (final T value : values) {
-                if (value != null) {
-                    put(value.getId(), value);
-                }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Put #{} entries in {}: {}", values.length, getClass().getSimpleName(),
+                        Stream.of(values).filter(Objects::nonNull).map(Object::toString)
+                                .collect(Collectors.joining(System.lineSeparator() + " - ")));
             }
+            Stream.of(values).filter(Objects::nonNull).forEach(value -> put(value.getId(), value));
         }
     }
 
@@ -133,18 +133,4 @@ abstract class UniFiCache<T extends @Nullable HasId> {
     }
 
     protected abstract @Nullable String getSuffix(T value, Prefix prefix);
-
-    private static Object lazyFormatAsList(final Object[] arr) {
-        return new Object() {
-
-            @Override
-            public String toString() {
-                String value = "";
-                for (final Object o : arr) {
-                    value += "\n - " + o.toString();
-                }
-                return value;
-            }
-        };
-    }
 }

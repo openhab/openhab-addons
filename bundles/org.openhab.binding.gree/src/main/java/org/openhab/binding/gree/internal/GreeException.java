@@ -92,7 +92,7 @@ public class GreeException extends Exception {
         return getCauseClass() == UnknownHostException.class;
     }
 
-    public boolean IsJSONException() {
+    public boolean isJSONException() {
         return getCauseClass() == JsonSyntaxException.class;
     }
 
