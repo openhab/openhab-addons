@@ -522,13 +522,13 @@ A Novy extractor fan.
 
 ##### Channels
 
-| Name            | Channel Type                        | Item Type     | Remarks                                              |
-| --------------- | ----------------------------------- | ------------- | ---------------------------------------------------- |
-| command         | [command](#channels)                | Switch        |                                                      |
-| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
-| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                   |
-| fanLight        | [fanlight](#channels)               | Switch        |                                                      |
-| signalLevel     | [system.signal-strength](#channels) | Number        |                                                      |
+| Name            | Channel Type                        | Item Type     | Remarks                                                          |
+| --------------- | ----------------------------------- | ------------- | ---------------------------------------------------------------- |
+| command         | [command](#channels)                | Switch        |                                                                  |
+| commandString   | [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER, MOOD_LIGHT |
+| fanSpeedControl | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN                                               |
+| fanLight        | [fanlight](#channels)               | Switch        |                                                                  |
+| signalLevel     | [system.signal-strength](#channels) | Number        |                                                                  |
 
 ##### Configuration Options
 

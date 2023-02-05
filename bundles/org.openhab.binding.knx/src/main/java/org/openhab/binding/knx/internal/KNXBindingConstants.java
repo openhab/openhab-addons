@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link KNXBinding} class defines common constants, which are
+ * The {@link KNXBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution

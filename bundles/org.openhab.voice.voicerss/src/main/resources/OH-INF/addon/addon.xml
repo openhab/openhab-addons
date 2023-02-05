@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="voicerss" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>voice</type>
+	<name>VoiceRSS Text-to-Speech</name>
+	<description>VoiceRSS is an Internet based TTS service hosted at https://api.voicerss.org.</description>
+
+	<service-id>org.openhab.voice.voicerss</service-id>
+
+	<config-description-ref uri="voice:voicerss"/>
+
+</addon:addon>
