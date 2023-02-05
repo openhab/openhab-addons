@@ -236,6 +236,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
             webSocketClient.stop();
         } catch (Exception e) {
         }
+        webSocketClient.destroy();
     }
 
     @OnWebSocketConnect
