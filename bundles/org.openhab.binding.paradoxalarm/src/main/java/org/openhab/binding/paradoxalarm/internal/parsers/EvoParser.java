@@ -76,6 +76,19 @@ public class EvoParser extends AbstractParser {
         byte[] zonesLowBattery = zoneStateFlags.getZonesLowBattery();
         boolean hasLowBattery = ParadoxUtil.isBitSet(zonesLowBattery[index], bitNumber);
 
+        // TODO when we retrieve the ZoneFlags from the communicator, ensure that we model all possible flag states in
+        // the ZoneState object
+        // (they are 8 states - each bit represents a state see Evo Technical Info 1.0.5 xls, sheet RAM_MAP DETAIL)
+        // Zone Flags:
+        // 0 = Zone supervision trouble
+        // 1 = Zone in TX delay
+        // 2 = Zone shutted down
+        // 3 = Zone bypassed
+        // 4 = Zone activated intellizone delay
+        // 5 = Zone activated entry delay
+        // 6 = Zone presently in alarm
+        // 7 = Zone generated an alarm
+
         return new ZoneState(isOpened, isTampered, hasLowBattery);
     }
 }

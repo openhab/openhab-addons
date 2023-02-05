@@ -176,7 +176,16 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
         byte[] firstPage = memoryMap.getElement(0);
         byte[] secondPage = memoryMap.getElement(8);
+        createZoneOpenedFlags(result, firstPage, secondPage);
+        createZoneTamperedFlags(result, firstPage, secondPage);
+        createZoneLowbatteryFlags(result, firstPage, secondPage);
 
+        createZoneSpecialFlags(result);
+
+        return result;
+    }
+
+    private void createZoneOpenedFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
         int pageOffset = panelType == PanelType.EVO48 ? 34 : 40;
         byte[] firstBlock = Arrays.copyOfRange(firstPage, 28, pageOffset);
         if (panelType != PanelType.EVO192) {
@@ -186,7 +195,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             byte[] zonesOpened = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock);
             result.setZonesOpened(zonesOpened);
         }
+    }
 
+    private void createZoneTamperedFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
+        int pageOffset;
+        byte[] firstBlock;
         pageOffset = panelType == PanelType.EVO48 ? 46 : 52;
         firstBlock = Arrays.copyOfRange(firstPage, 40, pageOffset);
         if (panelType != PanelType.EVO192) {
@@ -196,7 +209,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             byte[] zonesTampered = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock);
             result.setZonesTampered(zonesTampered);
         }
+    }
 
+    private void createZoneLowbatteryFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
+        int pageOffset;
+        byte[] firstBlock;
         pageOffset = panelType == PanelType.EVO48 ? 58 : 64;
         firstBlock = Arrays.copyOfRange(firstPage, 52, pageOffset);
         if (panelType != PanelType.EVO192) {
@@ -206,8 +223,6 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             byte[] zonesLowBattery = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock);
             result.setZonesLowBattery(zonesLowBattery);
         }
-
-        return result;
     }
 
     public void initializeMemoryMap() {
@@ -220,6 +235,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             ramCache.add(new byte[0]);
         }
         memoryMap = new MemoryMap(ramCache);
+    }
+
+    private void createZoneSpecialFlags(ZoneStateFlags result) {
+        // TODO Retrieve zone flags from BLock 2, Block 3 and Block 9, 10 and 11 (see the excel EvoTechnicalInfo 1.0.5,
+        // sheet RAM MAP)
     }
 
     @Override
