@@ -109,6 +109,7 @@ public class TouchWandWebSockets {
         } catch (Exception e) {
             logger.warn("Could not stop webSocketClient,  message {}", e.getMessage());
         }
+        client.destroy();
     }
 
     public void registerListener(TouchWandUnitStatusUpdateListener listener) {
