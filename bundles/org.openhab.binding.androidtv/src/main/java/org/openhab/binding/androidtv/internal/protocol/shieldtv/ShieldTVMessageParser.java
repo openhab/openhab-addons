@@ -336,17 +336,19 @@ public class ShieldTVMessageParser {
                 // 080a 12 1108b510 12 0c0804 12 08 54696d65206f7574 180a
                 // 080a 12 1108b510 12 0c0804 12 LEN Timeout 180a
                 logger.debug("Timeout");
-            } else if (msg.startsWith("08ec07")) {
+            } else if (msg.startsWith("08ec07") && msg.startsWith("0807", 10)) {
                 // Current App
                 // 08ec07 12 2a0807 22 262205 656e5f555342 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
                 // 18ec07
                 // 08ec07 12 2a0807 22 262205 en_USB LEN AppName 18ec07
                 StringBuffer appName = new StringBuffer();
-                for (int i = 36; i < msg.length() - 6; i++) {
+                String lengthStr = "" + charArray[34] + charArray[35];
+                int length = Integer.parseInt(lengthStr, 16) * 2;
+                for (int i = 36; i < 36 + length; i++) {
                     appName.append(charArray[i]);
                 }
                 callback.setCurrentApp(ShieldTVRequest.encodeMessage(appName.toString()));
-            } else if (msg.startsWith("080a12") && msg.startsWith("1008b510", 8)) {
+            } else if (msg.startsWith("080a12") && msg.startsWith("08b510", 10)) {
                 // Certificate Reply
                 // |--6-----------12-----------10---------------16---------6--- = 50 characters long
                 // |080a 12 ad10 08b510 12 a710 0801 12 07 53756363657373 1ac009 3082... 3082... 180a

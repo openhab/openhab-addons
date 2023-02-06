@@ -216,6 +216,7 @@ public class ShieldTVConnectionManager {
         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f30712020805"))); // No Reply
         sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08f10712020800"))); // Get App DB
+        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08ec0712020806"))); // Get App
     }
 
     public void setLoggedIn(boolean isLoggedIn) {
@@ -779,7 +780,9 @@ public class ShieldTVConnectionManager {
                     payloadBlock++;
                 } else if (payloadBlock == 4) {
                     sbShimReader.append(thisShimMsg.toString());
-                    if (thisShimMsgType.equals("e9") || thisShimMsgType.equals("f0")) {
+                    logger.trace("PB4 SSR {} TSMT {} TSM {} PR {}", sbShimReader.toString(), thisShimMsgType,
+                            thisShimMsg, payloadRemain);
+                    if (thisShimMsgType.equals("e9") || thisShimMsgType.equals("f0") || thisShimMsgType.equals("ec")) {
                         payloadRemain = thisShimRawMsg + 1;
                     }
                     while (payloadRemain > 1) {
@@ -821,6 +824,7 @@ public class ShieldTVConnectionManager {
         logger.trace("Sending ShieldTV keepalive query");
         String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
         sendCommand(new ShieldTVCommand(keepalive));
+        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08ec0712020806"))); // Get App
         reconnectTaskSchedule();
         if (this.periodicUpdate <= 1) {
             sendPeriodicUpdate();
@@ -1065,8 +1069,14 @@ public class ShieldTVConnectionManager {
                         sendCommand(new ShieldTVCommand(
                                 ShieldTVRequest.encodeMessage("08f007120c08031208080110021a020102")));
                         break;
-                    default:
-                        logger.trace("Unknown Keypress: {}", command.toString());
+                }
+                if (command.toString().length() == 5) {
+                    // Account for KEY_(ASCII Character)
+                    String keyPress = "08ec07120708011201"
+                            + ShieldTVRequest.decodeMessage(new String("" + command.toString().charAt(4))) + "1801";
+                    sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage(keyPress)));
+                } else {
+                    logger.trace("Unknown Keypress: {}", command.toString());
                 }
             }
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
@@ -1093,6 +1103,14 @@ public class ShieldTVConnectionManager {
             if (command instanceof StringType) {
                 String message = ShieldTVRequest.encodeMessage(ShieldTVRequest.startApp(command.toString()));
                 sendCommand(new ShieldTVCommand(message));
+            }
+        } else if (CHANNEL_KEYBOARD.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                String entry = ShieldTVRequest.keyboardEntry(command.toString());
+                logger.trace("Keyboard Entry {}", entry);
+                String message = ShieldTVRequest.encodeMessage(entry);
+                sendCommand(new ShieldTVCommand(message));
+                sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e9071209081410012001320138")));
             }
         }
     }
