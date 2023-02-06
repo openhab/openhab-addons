@@ -257,31 +257,31 @@ OPEN command to execute: *5*8#134##
 
 #### `shutter` position
 
-For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN. It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically.
+For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in milliseconds) to go from full UP to full DOWN. It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically.
 
-_Automatic calibration of `shutterRun`_
+##### Automatic calibration of `shutterRun`
 
-If `shutterRun` is set to AUTO a _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter. The binding then relies on the _STOP_ command sent by the actuator at the stop time set in the actuator's advanced configuration in the My Home Suite. Therefore the binding's automatic calibration of `shutterRun` only works correctly if the stop time is set to the time the shutters need to go from full UP to full DOWN. 
+When `shutterRun` is set to `AUTO`, a  _UP >> DOWN >> Position%_ cycle will be performed automatically the first time a Percent command is sent to the shutter: this way the binding will calculate the shutter "run time" and set the `shutterRun` parameter accordingly.
+Note that there is a "stop time" parameter that is usually set on the physical actuator (eg. F411U2) either via virtual configuration (MyHOME_Suite: parameter "Stop time" or "M") or physical configuration (jumpers): check the actuator instructions to configure correctly this parameter before doing an automatic calibration of `shutterRun`.
+If the "stop time" of the physical actuator is wrongly set or cannot be modified to the actual "run time", auto calibration cannot be used and `shutterRun` has to be set manually.
 
-Older actuators that come without an ID and do not support advanced configuration via the My Home Suite have a fixed stop time of 60 seconds. In this case auto calibration of the binding cannot be used and `shutterRun` has to be set manually.
-
-_Notes on `shutter` position_
+##### Position estimation of the shutter
 
 - if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
-- if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEF`: try to reduce shutterRun until you find the right value
+- if `shutterRun` is wrongly set *higher* than the actual runtime, then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
 - before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
-- if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
-- the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
+- if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronise again its position with the binding
+- the shutter position is estimated based on UP/DOWN timings: an error of ±2% is normal
 
 #### Scenario channels
 
 Basic Scenarios and CEN/CEN+ Scenarios channels are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
 
 A powerful feature is to detect scenario activations and CEN/CEN+ buttons press events to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by BTicino scenario control modules or by CEN/CEN+ scenarios physical buttons.
-See [openwebnet.rules](#openwebnetrules) for examples on how to define rules that trigger on scenarios and on CEN/CEN+ button press events.
+See [openwebnet.rules](#openwebnet-rules) for examples on how to define rules that trigger on scenarios and on CEN/CEN+ button press events.
 
 It's also possible to send _virtual scenario activation_ and _virtual press_ events on the BUS, for example to enable the activation of MH202 or F420 scenarios from openHAB..
-See [openwebnet.sitemap](#openwebnetsitemap) & [openwebnet.rules](#openwebnetrules) sections for examples on how to use the `activateScenario` and `virtualPress` actions connected to a pushbutton on a sitemap.
+See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for examples on how to use the `activateScenario` and `virtualPress` actions connected to a pushbutton on a sitemap.
 
 - basic scenario channels are named `scenario` and possible events are: `SCENARIO_01` ... `SCENARIO_16` (or up to `SCENARIO_20` in case of module IR3456) when a scenario is activated
 - CEN/CEN+ channels are named `button#X` where `X` is the button number on the CEN/CEN+ Scenario Control device
@@ -319,7 +319,7 @@ BUS gateway and things configuration:
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
-      bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
+      bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="20050"]
 
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]
@@ -438,7 +438,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     Frame label="Living Room Thermo"
     {
           Default   item=iLR_zone_temp      label="Temperature" icon="fire" valuecolor=[<20="red"] 
-          Setpoint  item=iLR_zone_set       label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
+          Setpoint  item=iLR_zone_setTemp   label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
           Selection item=iLR_zone_fanSpeed  label="Fan Speed" icon="fan" mappings=[AUTO="AUTO", SPEED_1="Low", SPEED_2="Medium", SPEED_3="High"]
           Switch    item=iLR_zone_mode      label="Mode" icon="settings"
           Selection item=iLR_zone_func      label="Function" icon="heating" mappings=[HEATING="Heating", COOLING="Cooling", GENERIC="Heating/Cooling"]
