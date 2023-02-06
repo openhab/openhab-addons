@@ -69,15 +69,34 @@ public class ShieldTVRequest {
         return message;
     }
 
+    private static String fixMessage(String tempMsg) {
+        if (tempMsg.length() % 2 > 0) {
+            tempMsg = "0" + tempMsg;
+        }
+        return tempMsg;
+    }
+
     public static String startApp(String message) {
         int length = message.length();
-        String len1 = Integer.toHexString(length + 6);
-        String len2 = Integer.toHexString(length + 2);
-        String len3 = Integer.toHexString(length);
+        String len1 = fixMessage(Integer.toHexString(length + 6));
+        String len2 = fixMessage(Integer.toHexString(length + 2));
+        String len3 = fixMessage(Integer.toHexString(length));
         String reply = "08f10712" + len1 + "080212" + len2 + "0a" + len3 + decodeMessage(message);
         return reply;
     }
     // 080b120308cd08 - Longer Hostname Reply
     // 08f30712020805 - Unknown
     // 08f10712020800 - Get all apps
+    // 08ec0712020806 - Get current app
+
+    public static String keyboardEntry(String entry) {
+        // 08ec07120d08081205616263646532020a0a
+        // 08ec0712 0d 0808 12 05 6162636465 3202 0a0a
+        int length = entry.length();
+        String len1 = fixMessage(Integer.toHexString(length + 8));
+        String len2 = fixMessage(Integer.toHexString(length));
+        String len3 = fixMessage(Integer.toHexString(length * 2));
+        String reply = "08ec0712" + len1 + "080812" + len2 + decodeMessage(entry) + "3202" + len3 + len3;
+        return reply;
+    }
 }

@@ -37,6 +37,7 @@ Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 
 | Channel    | Type   | Read/Write | Description                 |
 |------------|--------|------------|-----------------------------|
+| keyboard   | String | RW         | Keyboard Data Entry         }
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | app        | String | RW         | App Control                 |
@@ -45,6 +46,7 @@ Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 
 
 ```java
+String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
@@ -76,6 +78,8 @@ The list above causes an instantanious "press and release" of each button.
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
 (e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
 
+You may also send an ASCII character as a single letter to simulate a key entry (e.g KEY_A, KEY_1, KEY_z).
+
 APP will display the currently active app as presented by the ShieldTV.  
 You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.
 
@@ -97,6 +101,7 @@ Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 ```
 
 ```java
+String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
