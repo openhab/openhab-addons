@@ -251,8 +251,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 new VeSyncRequestManagedDeviceBypassV2.SetMode(targetMode));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
-                        if (!DEV_FAMILY_CLASSIC_300S.equals(deviceFamily)
-                                && !DEV_FAMILY_600S.equals(deviceFamily)) {
+                        if (!DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) && !DEV_FAMILY_600S.equals(deviceFamily)) {
                             logger.warn("Humidifier night light is not valid for your device ({}})", deviceFamily);
                             return;
                         }
