@@ -294,6 +294,7 @@
     <module>org.openhab.binding.pjlinkdevice</module>
     <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
+    <module>org.openhab.binding.plex</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
