@@ -147,7 +147,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
 
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withBridge(bridgeUID)
                     .withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS).withProperties(properties)
-                    .withLabel(uc.getAlias()).build());
+                    .withLabel(uc.getName()).build());
         }
     }
 

@@ -10,23 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.snmp.internal;
+package org.openhab.binding.snmp.internal.types;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SnmpProtocolVersion} enum defines the datatype of SNMP channels
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public enum SnmpProtocolVersion {
     v1(0),
     V1(0),
     v2c(1),
-    V2C(1);
+    V2C(1),
+    v3(3),
+    V3(3);
 
     private final int value;
 
-    private SnmpProtocolVersion(int value) {
+    SnmpProtocolVersion(int value) {
         this.value = value;
     }
 
