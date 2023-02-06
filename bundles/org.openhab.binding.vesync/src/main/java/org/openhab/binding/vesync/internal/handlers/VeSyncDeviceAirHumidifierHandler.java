@@ -104,7 +104,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                     toRemove = new String[] { DEVICE_CHANNEL_WARM_ENABLED, DEVICE_CHANNEL_WARM_LEVEL,
                             DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
-                case DEV_FAMILY_600S:
+                case DEV_FAMILY_OASIS_MIST:
                     toRemove = new String[] { DEVICE_CHANNEL_AF_NIGHT_LIGHT };
                     break;
             }
@@ -252,7 +252,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
                         if (!DEV_FAMILY_CLASSIC_300S.equals(deviceFamily)
-                                && !DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {
+                                && !DEV_FAMILY_600S.equals(deviceFamily)) {
                             logger.warn("Humidifier night light is not valid for your device ({}})", deviceFamily);
                             return;
                         }
@@ -346,7 +346,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_HUMIDIFIER_MODE, new StringType(humidifierStatus.result.result.mode));
 
         // Only the 300S supports nightlight currently of tested devices.
-        if (DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) || DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {
+        if (DEV_FAMILY_CLASSIC_300S.equals(deviceFamily) || DEV_FAMILY_600S.equals(deviceFamily)) {
             // Map the numeric that only applies to the same modes as the Air Filter 300S series.
             if (humidifierStatus.result.result.nightLightBrightness == 0) {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_OFF));
@@ -355,7 +355,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             } else {
                 updateState(DEVICE_CHANNEL_AF_NIGHT_LIGHT, new StringType(MODE_DIM));
             }
-        } else if (DEV_FAMILY_600S.equals(deviceFamily)) {
+        } else if (DEV_FAMILY_600S.equals(deviceFamily) || DEV_FAMILY_OASIS_MIST.equals(deviceFamily)) {
             updateState(DEVICE_CHANNEL_WARM_ENABLED, OnOffType.from(humidifierStatus.result.result.warnEnabled));
             updateState(DEVICE_CHANNEL_WARM_LEVEL, new DecimalType(humidifierStatus.result.result.warmLevel));
         }
