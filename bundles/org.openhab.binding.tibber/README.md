@@ -70,7 +70,7 @@ The following input is required for initialization:
 Note: Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
 
-Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibber.com/explorer): 
+Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer): 
 
 * Sign in (Tibber user account) and "load" personal token.
 * Copy query from below and paste into the Tibber API Explorer, and run query. 
@@ -100,7 +100,7 @@ Retrieve personal token and HomeId from description above, and initialize/start 
 
 Tibber API will be auto discovered if provided input is correct.
 
-## Tomorrow and Today prices
+## Tomorrow and Today Prices
 
 Example of tomorrow and today prices data structure - an array of tuples:
 
