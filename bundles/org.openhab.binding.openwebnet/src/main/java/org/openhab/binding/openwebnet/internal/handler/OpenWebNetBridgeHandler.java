@@ -517,7 +517,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                         || (discoveryByActivation && !scanIsActive))) {
                     discoverByActivation(baseMsg);
                 } else {
-                    logger.debug("ownId={} has NO DEVICE associated, ignoring it", ownId);
+                    logger.debug("ownId={} has NO DEVICE associated to bridge {}: ignoring it", ownId, thing.getUID());
                 }
             } else {
                 deviceHandler.handleMessage(baseMsg);
