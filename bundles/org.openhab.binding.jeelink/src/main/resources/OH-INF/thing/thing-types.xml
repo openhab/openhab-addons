@@ -395,7 +395,7 @@
 	</thing-type>
 
 	<channel-type id="wind-angle">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>@text/channel-type.wind-angle.label</label>
 		<description>@text/channel-type.wind-angle.description</description>
 		<category>Wind</category>

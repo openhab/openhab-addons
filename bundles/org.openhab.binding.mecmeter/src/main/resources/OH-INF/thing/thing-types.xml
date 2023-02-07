@@ -407,14 +407,14 @@
 
 	<!-- Angles -->
 	<channel-type id="phase_angle_currvolt" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Angle Current to Voltage</label>
 		<description>Angle Current to Voltage in Degree</description>
 		<state pattern="%.1f °" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="phase_angle" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Angle Voltage to Voltage</label>
 		<description>Angle Voltage to Voltage in Degree</description>
 		<state pattern="%.1f °" readOnly="true"></state>

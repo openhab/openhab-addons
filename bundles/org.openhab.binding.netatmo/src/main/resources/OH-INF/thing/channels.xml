@@ -568,7 +568,7 @@
 	</channel-type>
 
 	<channel-type id="gust-angle">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Gust Angle</label>
 		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>

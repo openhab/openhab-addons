@@ -405,7 +405,7 @@
 	</channel-type>
 
 	<channel-type id="sensorTilt">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>@text/channel-type.shelly.sensorTilt.label</label>
 		<description>@text/channel-type.shelly.sensorTilt.description</description>
 		<category>Tilt</category>

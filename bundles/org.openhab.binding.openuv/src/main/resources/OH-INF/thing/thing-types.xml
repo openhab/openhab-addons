@@ -130,7 +130,7 @@
 	</channel-type>
 
 	<channel-type id="elevation">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the sun (should FOLLOW appropriate item).</description>
 		<category>niveau</category>

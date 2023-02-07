@@ -119,7 +119,7 @@
 	</channel-type>
 
 	<channel-type id="wind-direction">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
@@ -128,7 +128,7 @@
 	</channel-type>
 
 	<channel-type id="wind-direction-last2min-average" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Wind Direction (Average)</label>
 		<description>Wind direction average over last two minutes</description>
 		<category>Wind</category>

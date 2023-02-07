@@ -334,7 +334,7 @@
 	</channel-type>
 
 	<channel-type id="maxWindDirection-degrees" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Maximum Wind Direction (angle)</label>
 		<description>Maximum wind direction as an angle</description>
 		<category>Wind</category>
@@ -343,7 +343,7 @@
 	</channel-type>
 
 	<channel-type id="averageWindDirection-degrees" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Average Wind Direction (angle)</label>
 		<description>Average wind direction as an angle</description>
 		<category>Wind</category>

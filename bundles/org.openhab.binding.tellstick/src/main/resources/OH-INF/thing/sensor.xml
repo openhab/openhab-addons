@@ -118,7 +118,7 @@
 	</channel-type>
 
 	<channel-type id="winddirection">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Wind Direction</label>
 		<description>Current wind direction</description>
 		<category>Wind</category>

@@ -26,14 +26,14 @@
 	</channel-group-type>
 
 	<channel-type id="azimuth">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="elevation">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -355,7 +355,7 @@
 	</channel-type>
 
 	<channel-type id="ageDegree">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

@@ -539,7 +539,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-wind-direction">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Forecasted Wind Direction</label>
 		<description>Forecasted wind direction expressed as an angle.</description>
 		<category>Wind</category>

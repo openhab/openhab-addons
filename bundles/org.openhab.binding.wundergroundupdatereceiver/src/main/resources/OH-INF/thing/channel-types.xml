@@ -66,7 +66,7 @@
 	</channel-type>
 
 	<channel-type id="wind-gust-direction">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Gust Direction</label>
 		<description>Current wind gust direction expressed as an angle using software specific time period.</description>
 		<category>Wind</category>
@@ -90,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="wind-direction-avg-2min" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Wind Direction 2min Average</label>
 		<description>2 minute average wind direction.</description>
 		<category>Wind</category>
@@ -114,7 +114,7 @@
 	</channel-type>
 
 	<channel-type id="wind-gust-direction-10min" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Gust Direction 10min Average</label>
 		<description>10 minute average gust direction.</description>
 		<category>Wind</category>

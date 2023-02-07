@@ -707,7 +707,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-cos-phi">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Grid Cos Phi</label>
 		<description>Current power factor on grid</description>
 		<category>Energy</category>

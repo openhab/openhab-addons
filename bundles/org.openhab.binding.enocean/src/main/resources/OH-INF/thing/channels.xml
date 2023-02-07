@@ -416,7 +416,7 @@
 
 	<!-- Angle Channel -->
 	<channel-type id="angle">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Angle</label>
 		<description>Blind Angle</description>
 		<category>Blinds</category>

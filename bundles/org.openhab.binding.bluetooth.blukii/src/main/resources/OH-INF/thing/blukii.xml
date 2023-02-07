@@ -62,19 +62,19 @@
 	</channel-type>
 
 	<channel-type id="blukii_tiltx" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Tilt X</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="blukii_tilty" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Tilt Y</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="blukii_tiltz" advanced="true">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Tilt Z</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

@@ -8,7 +8,7 @@
 		<label>GPS Coordinates</label>
 	</channel-type>
 	<channel-type id="heading-channel">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Heading Angle</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

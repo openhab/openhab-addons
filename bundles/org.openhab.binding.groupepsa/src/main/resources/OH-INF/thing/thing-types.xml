@@ -279,7 +279,7 @@
 	</channel-type>
 
 	<channel-type id="heading">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Heading</label>
 		<description>Direction of travel</description>
 		<state pattern="%.0f %unit%"/>

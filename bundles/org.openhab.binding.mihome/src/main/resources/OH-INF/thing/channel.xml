@@ -85,7 +85,7 @@
 	</channel-type>
 
 	<channel-type id="rotationAngle">
-		<item-type>Number:Angle</item-type>
+		<item-type unit="°">Number</item-type>
 		<label>Cube Rotation Angle</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
