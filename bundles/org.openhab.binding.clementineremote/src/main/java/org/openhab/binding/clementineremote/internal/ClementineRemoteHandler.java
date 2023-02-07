@@ -85,11 +85,11 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * used to track the current state of the player
      */
     private enum State {
-        unknown,
-        playing,
-        paused,
-        skipping,
-        stopped
+        UNKNOWN,
+        PLAYING,
+        PAUSED,
+        SKIPPING,
+        STOPPED
     }
 
     private final Logger logger = LoggerFactory.getLogger(ClementineRemoteHandler.class);
@@ -101,7 +101,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     private @Nullable SongMetadata song = null;
 
     private Message.Builder builder = Message.newBuilder();
-    private State state = State.unknown;
+    private State state = State.UNKNOWN;
 
     public ClementineRemoteHandler(Thing thing) {
         super(thing);
@@ -162,7 +162,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      */
     private void disconnect() {
         updateStatus(ThingStatus.OFFLINE);
-        setState(State.unknown);
+        setState(State.UNKNOWN);
 
         if (out != null) { // try to close the output stream
             try {
@@ -269,10 +269,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
                 handleCurrentMeta(message.getResponseCurrentMetadata());
                 break;
             case PAUSE:
-                setState(State.paused);
+                setState(State.PAUSED);
                 break;
             case PLAY:
-                setState(State.playing);
+                setState(State.PLAYING);
                 break;
             case SET_VOLUME:
                 handleVolume(message.getRequestSetVolume());
@@ -292,13 +292,13 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleStop() {
         setTrack("-", "-", "-", "-");
-        setState(State.stopped);
+        setState(State.STOPPED);
         handleNullableTrackPos(null);
     }
 
     private void handleNullableTrackPos(@Nullable Integer newPos) {
         if (newPos != null) {
-            setState(State.playing);
+            setState(State.PLAYING);
             currentPos = newPos;
         } else {
             currentPos = 0;
@@ -342,14 +342,14 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     }
 
     private boolean sendSkip(int d) {
-        state = State.skipping;
+        state = State.SKIPPING;
         var pos = RequestSetTrackPosition.newBuilder().setPosition(currentPos + d);
         Message msg = builder.setType(MsgType.SET_TRACK_POSITION).setRequestSetTrackPosition(pos).build();
         return sendMessage(msg);
     }
 
     private boolean sendMessage(MsgType type) {
-        state = State.unknown;
+        state = State.UNKNOWN;
         return sendMessage(builder.setType(type).build());
     }
 
@@ -386,11 +386,11 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         }
         state = newState;
         switch (state) {
-            case playing:
+            case PLAYING:
                 updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
                 break;
-            case paused:
-            case stopped:
+            case PAUSED:
+            case STOPPED:
                 updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
                 break;
         }
