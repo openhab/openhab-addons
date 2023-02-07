@@ -37,7 +37,7 @@ Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 
 | Channel    | Type   | Read/Write | Description                 |
 |------------|--------|------------|-----------------------------|
-| keyboard   | String | RW         | Keyboard Data Entry         }
+| keyboard   | String | RW         | Keyboard Data Entry         |
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | app        | String | RW         | App Control                 |
