@@ -44,7 +44,7 @@ public class Zone extends Entity implements Commandable {
 
     public void setZoneState(ZoneState zoneState) {
         this.zoneState = zoneState;
-        logger.debug("Zone {} state updated to: {}", zoneState);
+        logger.debug("Zone {} state updated to: {}", getLabel(), zoneState);
     }
 
     @Override
