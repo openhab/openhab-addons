@@ -55,6 +55,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,6 +212,11 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * @return
      */
     private boolean handleControlCommand(Command command) {
+        if (command instanceof RefreshType){
+            propagate(song);
+            propagate(state);
+        }
+
         if (command instanceof StringType) {
             var cmd = ((StringType) command).toString();
             switch (cmd) {
@@ -239,12 +245,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleCurrentMeta(ResponseCurrentMetadata meta) {
         song = meta.getSongMetadata();
-        var bytes = song.getArt().toByteArray();
-        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
-        updateState(CHANNEL_ALBUM, new StringType(song.getAlbum()));
-        updateState(CHANNEL_ARTIST, new StringType(song.getArtist()));
-        updateState(CHANNEL_TRACK, new StringType(song.getTrack() + ""));
-        updateState(CHANNEL_TITLE, new StringType(song.getTitle()));
+        propagate(song);
     }
 
     private void handleMessages() throws IOException {
@@ -325,6 +326,31 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         scheduler.execute(this::connect);
     }
 
+    private void propagate(SongMetadata song){
+        if (song == null) {
+            return;
+        }
+        var bytes = song.getArt().toByteArray();
+        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
+        updateState(CHANNEL_ALBUM, new StringType(song.getAlbum()));
+        updateState(CHANNEL_ARTIST, new StringType(song.getArtist()));
+        updateState(CHANNEL_TRACK, new StringType(song.getTrack() + ""));
+        updateState(CHANNEL_TITLE, new StringType(song.getTitle()));
+    }
+
+    private void propagate(State state){
+        switch (state) {
+            case PLAYING:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
+                break;
+            case PAUSED:
+            case STOPPED:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
+                break;
+        }
+        updateState(CHANNEL_STATE, new StringType(state.toString()));
+    }
+
     private void sleep15secs() {
         try {
             sleep(15000);
@@ -384,17 +410,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         if (state == newState) {
             return false;
         }
-        state = newState;
-        switch (state) {
-            case PLAYING:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
-                break;
-            case PAUSED:
-            case STOPPED:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
-                break;
-        }
-        updateState(CHANNEL_STATE, new StringType(state.toString()));
+        propagate(state = newState);
         return true;
     }
 
