@@ -112,7 +112,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
         List<MyBMWBridgeHandler> handlers;
         if (args.length > 1) {
             handlers = bridgeHandlers.stream()
-                    .filter(b -> args[1].equals(b.getThing().getConfiguration().get("userName")))
+                    .filter(b -> args[1].equalsIgnoreCase(b.getThing().getConfiguration().get("userName").toString()))
                     .filter(Objects::nonNull).collect(Collectors.toList());
             if (handlers.isEmpty()) {
                 console.println("No myBMW account bridge for user '" + args[1] + "'");
@@ -306,7 +306,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                         thingRegistry.stream()
                                 .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID()))
                                 .map(t -> t.getConfiguration().get("userName").toString()).collect(Collectors.toList()),
-                        true).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+                        false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
             } else if (cursorArgumentIndex == 2) {
                 MyBMWBridgeHandler handler = (MyBMWBridgeHandler) thingRegistry.stream()
                         .filter(t -> THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(t.getThingTypeUID())
@@ -315,7 +315,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
                 List<VehicleBase> vehicles = handler.getMyBmwProxy().get().requestVehiclesBase();
                 return new StringsCompleter(
                         vehicles.stream().map(v -> v.getVin()).filter(Objects::nonNull).collect(Collectors.toList()),
-                        true).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+                        false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
         } catch (NoSuchElementException | NetworkException e) {
             return false;
