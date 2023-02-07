@@ -326,7 +326,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         scheduler.execute(this::connect);
     }
 
-    private void propagate(SongMetadata song) {
+    private void propagate(@Nullable SongMetadata song) {
         if (song == null) {
             return;
         }
