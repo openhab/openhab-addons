@@ -180,7 +180,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         createZoneTamperedFlags(result, firstPage, secondPage);
         createZoneLowbatteryFlags(result, firstPage, secondPage);
 
-        createZoneSpecialFlags(result);
+        createSpecialZoneFlags(result, memoryMap);
 
         return result;
     }
@@ -198,10 +198,8 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     }
 
     private void createZoneTamperedFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
-        int pageOffset;
-        byte[] firstBlock;
-        pageOffset = panelType == PanelType.EVO48 ? 46 : 52;
-        firstBlock = Arrays.copyOfRange(firstPage, 40, pageOffset);
+        int pageOffset = panelType == PanelType.EVO48 ? 46 : 52;
+        byte[] firstBlock = Arrays.copyOfRange(firstPage, 40, pageOffset);
         if (panelType != PanelType.EVO192) {
             result.setZonesTampered(firstBlock);
         } else {
@@ -212,16 +210,47 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     }
 
     private void createZoneLowbatteryFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
-        int pageOffset;
-        byte[] firstBlock;
-        pageOffset = panelType == PanelType.EVO48 ? 58 : 64;
-        firstBlock = Arrays.copyOfRange(firstPage, 52, pageOffset);
+        int pageOffset = panelType == PanelType.EVO48 ? 58 : 64;
+        byte[] firstBlock = Arrays.copyOfRange(firstPage, 52, pageOffset);
         if (panelType != PanelType.EVO192) {
-            result.setZonesTampered(firstBlock);
+            result.setZonesLowBattery(firstBlock);
         } else {
             byte[] secondBlock = Arrays.copyOfRange(secondPage, 24, 36);
             byte[] zonesLowBattery = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock);
             result.setZonesLowBattery(zonesLowBattery);
+        }
+    }
+
+    @SuppressWarnings("incomplete-switch")
+    private void createSpecialZoneFlags(ZoneStateFlags result, MemoryMap memoryMap) {
+        byte[] page2 = memoryMap.getElement(1);
+        byte[] page3 = memoryMap.getElement(2);
+        byte[] page7 = memoryMap.getElement(8);
+        byte[] page8 = memoryMap.getElement(9);
+        byte[] page9 = memoryMap.getElement(10);
+
+        switch (panelType) {
+            case EVO48:
+                byte[] firstBlock = Arrays.copyOfRange(page2, 0, 48);
+                result.setZoneSpecialFlags(firstBlock);
+                break;
+            case EVO96:
+                firstBlock = Arrays.copyOf(page2, 64);
+                byte[] secondBlock = Arrays.copyOfRange(page3, 0, 32);
+                byte[] specialZoneFlags = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock);
+                result.setZoneSpecialFlags(specialZoneFlags);
+                break;
+            case EVO192:
+            case EVOHD:
+                firstBlock = Arrays.copyOf(page2, 64);
+                secondBlock = Arrays.copyOfRange(page3, 0, 32);
+                byte[] thirdBlock = Arrays.copyOfRange(page7, 36, 64);
+                byte[] fourthBlock = Arrays.copyOf(page8, 64);
+                byte[] fifthBlock = Arrays.copyOfRange(page9, 0, 4);
+                specialZoneFlags = ParadoxUtil.mergeByteArrays(firstBlock, secondBlock, thirdBlock, fourthBlock,
+                        fifthBlock);
+                result.setZoneSpecialFlags(specialZoneFlags);
+                break;
         }
     }
 
@@ -235,11 +264,6 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             ramCache.add(new byte[0]);
         }
         memoryMap = new MemoryMap(ramCache);
-    }
-
-    private void createZoneSpecialFlags(ZoneStateFlags result) {
-        // TODO Retrieve zone flags from BLock 2, Block 3 and Block 9, 10 and 11 (see the excel EvoTechnicalInfo 1.0.5,
-        // sheet RAM MAP)
     }
 
     @Override
