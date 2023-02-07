@@ -40,20 +40,6 @@ public class Device {
     }
 
     /**
-     * Return the data item at the given index
-     *
-     * @return A String containing the data item at the Index or "" if the Index is invalid
-     */
-    public String getDataItem(int index) {
-        if (index >= 0 && index < dataItems.length) {
-            return dataItems[index];
-        } else {
-            logger.warn("getDataItem: Invalid Index {}.", index);
-            return "";
-        }
-    }
-
-    /**
      * @param dataItems
      */
     public void setDataItems(String[] dataItems) {

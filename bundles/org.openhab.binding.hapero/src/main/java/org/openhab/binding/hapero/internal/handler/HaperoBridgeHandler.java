@@ -417,19 +417,13 @@ public class HaperoBridgeHandler extends BaseBridgeHandler {
      */
     private void updateDeviceList(InputStream stream) {
         String result;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        try {
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             result = reader.readLine();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.ftp.read.error");
             logger.warn("Exception in updateDeviceTree: {}", e.getMessage());
             return;
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                // Ignore error
-            }
         }
 
         if (result != null) {

@@ -96,21 +96,13 @@ public class HaperoTankHandler extends HaperoThingHandler {
             case HaperoBindingConstants.CHANNEL_PUMP:
                 valueBoolean = device.getBoolean(CHANNEL_PUMP_INDEX);
                 if (valueBoolean != null) {
-                    if (valueBoolean) {
-                        state = OnOffType.ON;
-                    } else {
-                        state = OnOffType.OFF;
-                    }
+                    state = valueBoolean ? OnOffType.ON : OnOffType.OFF;
                 }
                 break;
             case HaperoBindingConstants.CHANNEL_SWITCHVALVE:
                 valueBoolean = device.getBoolean(CHANNEL_SWITCHVALVE_INDEX);
                 if (valueBoolean != null) {
-                    if (valueBoolean) {
-                        state = OpenClosedType.OPEN;
-                    } else {
-                        state = OpenClosedType.CLOSED;
-                    }
+                    state = valueBoolean ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 }
                 break;
             case HaperoBindingConstants.CHANNEL_CHARGING:
