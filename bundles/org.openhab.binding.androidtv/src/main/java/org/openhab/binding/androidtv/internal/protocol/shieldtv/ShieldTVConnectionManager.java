@@ -1069,6 +1069,9 @@ public class ShieldTVConnectionManager {
                         sendCommand(new ShieldTVCommand(
                                 ShieldTVRequest.encodeMessage("08f007120c08031208080110021a020102")));
                         break;
+                    case "KEY_SUBMIT":
+                        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08e9071209081410012001320138")));
+                        break;
                 }
                 if (command.toString().length() == 5) {
                     // Account for KEY_(ASCII Character)

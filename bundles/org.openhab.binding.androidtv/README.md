@@ -37,7 +37,7 @@ Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 
 | Channel    | Type   | Read/Write | Description                 |
 |------------|--------|------------|-----------------------------|
-| keyboard   | String | RW         | Keyboard Data Entry         }
+| keyboard   | String | RW         | Keyboard Data Entry         |
 | keypress   | String | RW         | Manual Key Press Entry      |
 | pincode    | String | RW         | PIN Code Entry              |
 | app        | String | RW         | App Control                 |
@@ -73,12 +73,15 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_VOLUP
 - KEY_VOLDOWN
 - KEY_MUTE
+- KEY_SUBMIT
 
 The list above causes an instantanious "press and release" of each button.  
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
 (e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
 
 You may also send an ASCII character as a single letter to simulate a key entry (e.g KEY_A, KEY_1, KEY_z).
+Use KEY_SUBMIT when full text entry is complete to tell the shield to process the line.
+KEY_SUBMIT is automatically sent by KEYBOARD when a command is sent to the channel.
 
 APP will display the currently active app as presented by the ShieldTV.  
 You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.

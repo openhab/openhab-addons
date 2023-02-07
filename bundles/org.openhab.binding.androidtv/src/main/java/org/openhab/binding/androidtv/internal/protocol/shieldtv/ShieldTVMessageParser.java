@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.shieldtv;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -305,8 +310,27 @@ public class ShieldTVMessageParser {
                     appURLDB.put(appDN, appURL);
                 }
                 if (appCount > 0) {
-                    logger.trace("MP appNameDB: {} appURLDB: {}", appNameDB.toString(), appURLDB.toString());
-                    callback.setAppDB(appNameDB, appURLDB);
+                    LinkedHashMap<String, String> sortedAppNameDB = new LinkedHashMap<>();
+                    ArrayList<String> valueList = new ArrayList<>();
+                    for (Map.Entry<String, String> entry : appNameDB.entrySet()) {
+                        valueList.add(entry.getValue());
+                    }
+                    Collections.sort(valueList, new Comparator<String>() {
+                        public int compare(String str, String str1) {
+                            return (str).compareTo(str1);
+                        }
+                    });
+                    for (String str : valueList) {
+                        for (Entry<String, String> entry : appNameDB.entrySet()) {
+                            if (entry.getValue().equals(str)) {
+                                sortedAppNameDB.put(entry.getKey(), str);
+                            }
+                        }
+                    }
+
+                    logger.trace("MP appNameDB: {} sortedAppNameDB: {} appURLDB: {}", appNameDB.toString(),
+                            sortedAppNameDB.toString(), appURLDB.toString());
+                    callback.setAppDB(sortedAppNameDB, appURLDB);
                 } else {
                     logger.warn("MP empty msg: {} appDB appNameDB: {} appURLDB: {}", msg, appNameDB.toString(),
                             appURLDB.toString());
@@ -336,6 +360,8 @@ public class ShieldTVMessageParser {
                 // 080a 12 1108b510 12 0c0804 12 08 54696d65206f7574 180a
                 // 080a 12 1108b510 12 0c0804 12 LEN Timeout 180a
                 logger.debug("Timeout");
+            } else if (msg.startsWith("08ec07") && msg.startsWith("0803", 10)) {
+                // Get current app command successful. Usually paired with 0807 reply below.
             } else if (msg.startsWith("08ec07") && msg.startsWith("0807", 10)) {
                 // Current App
                 // 08ec07 12 2a0807 22 262205 656e5f555342 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
