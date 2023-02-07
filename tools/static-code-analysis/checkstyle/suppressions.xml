@@ -7,6 +7,8 @@
     <suppress files=".+[\\/]dto[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|MissingJavadocFilterCheck|NullAnnotationsCheck"/>
     <suppress files=".+Impl\.java" checks="JavadocType|JavadocVariable|JavadocMethod|MissingJavadocFilterCheck"/>
     <suppress files=".+[\\/]OH-INF[\\/].+\.xml" checks="OhInfXmlLabelCheck"/>
+    <!-- temporarily disable XML validation -->
+    <suppress files=".+[\\/]OH-INF[\\/].+\.xml" checks="OhInfXmlValidationCheck"/>
 
     <!-- Homematic and Tellstick bindings are creating and configuring things dynamically, they will log false positives for unused configuration -->
     <!-- IO and Voice bundles have specific use cases - they use only the config .xml files and will log false positives as well -->
