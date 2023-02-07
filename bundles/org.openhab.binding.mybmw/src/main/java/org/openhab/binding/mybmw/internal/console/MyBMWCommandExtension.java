@@ -240,7 +240,7 @@ public class MyBMWCommandExtension extends AbstractConsoleCommandExtension imple
     private void writeJsonToFile(String pathString, String filename, String json) throws IOException {
         try {
             JsonElement element = JsonParser.parseString(json);
-            if (element.isJsonNull() || (element.isJsonArray() && ((JsonArray) element).size() > 0)) {
+            if (element.isJsonNull() || (element.isJsonArray() && ((JsonArray) element).size() == 0)) {
                 // Don't write a file if empty
                 return;
             }
