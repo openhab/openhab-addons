@@ -213,8 +213,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      */
     private boolean handleControlCommand(Command command) {
         if (command instanceof RefreshType) {
-            propagate(song);
-            propagate(state);
+            updatePlayerStateChannels(state);
+            updateTrackInfoChannels(song);
         }
 
         if (command instanceof StringType) {
@@ -245,7 +245,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleCurrentMeta(ResponseCurrentMetadata meta) {
         song = meta.getSongMetadata();
-        propagate(song);
+        updateTrackInfoChannels(song);
     }
 
     private void handleMessages() throws IOException {
@@ -292,7 +292,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     }
 
     private void handleStop() {
-        setTrack("-", "-", "-", "-");
+        updateTrackInfoChannels("-", "-", "-", "-");
         setState(State.STOPPED);
         handleNullableTrackPos(null);
     }
@@ -320,35 +320,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(ClementineRemoteConfiguration.class);
-
         updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(this::connect);
-    }
-
-    private void propagate(@Nullable SongMetadata song) {
-        if (song == null) {
-            return;
-        }
-        var bytes = song.getArt().toByteArray();
-        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
-        updateState(CHANNEL_ALBUM, new StringType(song.getAlbum()));
-        updateState(CHANNEL_ARTIST, new StringType(song.getArtist()));
-        updateState(CHANNEL_TRACK, new StringType(song.getTrack() + ""));
-        updateState(CHANNEL_TITLE, new StringType(song.getTitle()));
-    }
-
-    private void propagate(State state) {
-        switch (state) {
-            case PLAYING:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
-                break;
-            case PAUSED:
-            case STOPPED:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
-                break;
-        }
-        updateState(CHANNEL_STATE, new StringType(state.toString()));
     }
 
     private void sleep15secs() {
@@ -410,15 +383,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         if (state == newState) {
             return false;
         }
-        propagate(state = newState);
+        updatePlayerStateChannels(state = newState);
         return true;
-    }
-
-    private void setTrack(String artist, String album, String track, String title) {
-        updateState(CHANNEL_ALBUM, new StringType(album));
-        updateState(CHANNEL_ARTIST, new StringType(artist));
-        updateState(CHANNEL_TRACK, new StringType(track));
-        updateState(CHANNEL_TITLE, new StringType(title));
     }
 
     @Override
@@ -426,5 +392,34 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         super.updateConfiguration(configuration);
         dispose();
         scheduler.execute(this::connect);
+    }
+
+    private void updatePlayerStateChannels(State state) {
+        switch (state) {
+            case PLAYING:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
+                break;
+            case PAUSED:
+            case STOPPED:
+                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
+                break;
+        }
+        updateState(CHANNEL_STATE, new StringType(state.toString()));
+    }
+
+    private void updateTrackInfoChannels(@Nullable SongMetadata song) {
+        if (song == null) {
+            return;
+        }
+        var bytes = song.getArt().toByteArray();
+        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
+        updateTrackInfoChannels(song.getArtist(), song.getAlbum(), song.getTrack() + "", song.getTitle());
+    }
+
+    private void updateTrackInfoChannels(String artist, String album, String track, String title) {
+        updateState(CHANNEL_ALBUM, new StringType(album));
+        updateState(CHANNEL_ARTIST, new StringType(artist));
+        updateState(CHANNEL_TRACK, new StringType(track));
+        updateState(CHANNEL_TITLE, new StringType(title));
     }
 }
