@@ -212,7 +212,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * @return
      */
     private boolean handleControlCommand(Command command) {
-        if (command instanceof RefreshType){
+        if (command instanceof RefreshType) {
             propagate(song);
             propagate(state);
         }
@@ -287,7 +287,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
             case KEEP_ALIVE:
                 break;
             default:
-                logger.info("handleMessageFromClementine(): received {} message from clementine: {}", type, message);
+                logger.debug("handleMessageFromClementine(): received {} message from clementine: {}", type, message);
         }
     }
 
@@ -326,7 +326,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         scheduler.execute(this::connect);
     }
 
-    private void propagate(SongMetadata song){
+    private void propagate(SongMetadata song) {
         if (song == null) {
             return;
         }
@@ -338,7 +338,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         updateState(CHANNEL_TITLE, new StringType(song.getTitle()));
     }
 
-    private void propagate(State state){
+    private void propagate(State state) {
         switch (state) {
             case PLAYING:
                 updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
