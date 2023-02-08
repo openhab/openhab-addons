@@ -1404,12 +1404,12 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
 	<channel-type id="weatherWindGust" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>

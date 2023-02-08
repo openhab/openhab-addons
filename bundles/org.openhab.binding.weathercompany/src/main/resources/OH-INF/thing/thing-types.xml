@@ -330,7 +330,7 @@
 	</channel-type>
 
 	<channel-type id="precipitationRate">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Precipitation Rate</label>
 		<description>Precipitation rate</description>
 		<category>Rain</category>
@@ -489,7 +489,7 @@
 	</channel-type>
 
 	<channel-type id="windSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

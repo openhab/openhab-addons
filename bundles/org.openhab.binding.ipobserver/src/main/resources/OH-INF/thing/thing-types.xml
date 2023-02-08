@@ -163,14 +163,14 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windAverageSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windSpeed" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Wind Speed</description>
 		<category>Wind</category>
@@ -181,14 +181,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windGust" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<description>Wind Gust</description>
 		<category>Wind</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windMaxGust" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Max Gust</label>
 		<description>Max wind gust for today</description>
 		<category>Wind</category>

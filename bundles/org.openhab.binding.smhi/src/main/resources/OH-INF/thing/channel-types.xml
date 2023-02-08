@@ -41,19 +41,19 @@
 		<state readOnly="true" pattern="%d °"/>
 	</channel-type>
 	<channel-type id="ws">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="wsmax">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Max Wind Speed</label>
 		<description>Highest wind speed of the day</description>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="wsmin">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Min Wind Speed</label>
 		<description>Lowest wind speed of the day</description>
 		<state readOnly="true" pattern="%.1f m/s"/>
@@ -95,19 +95,19 @@
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="gust">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust Speed</label>
 		<description>Wind gust speed</description>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="pmin">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Minimum Precipitation</label>
 		<description>Minimum precipitation intensity</description>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 	<channel-type id="pmax">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Maximum Precipitation</label>
 		<description>Maximum precipitation intensity</description>
 		<state readOnly="true" pattern="%.1f mm/h"/>
@@ -119,13 +119,13 @@
 		<state readOnly="true" pattern="%.1f mm"/>
 	</channel-type>
 	<channel-type id="pmean" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Mean Precipitation</label>
 		<description>Mean precipitation intensity</description>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 	<channel-type id="pmedian" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Median Precipitation</label>
 		<description>Median precipitation intensity</description>
 		<state readOnly="true" pattern="%.1f mm/h"/>

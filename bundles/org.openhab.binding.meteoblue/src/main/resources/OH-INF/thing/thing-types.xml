@@ -211,7 +211,7 @@
 	</channel-type>
 
 	<channel-type id="maxWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Maximum Wind Speed</label>
 		<description>The maximum wind speed</description>
 		<category>Wind</category>
@@ -219,7 +219,7 @@
 	</channel-type>
 
 	<channel-type id="minWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Minimum Wind Speed</label>
 		<description>The minimum wind speed</description>
 		<category>Wind</category>
@@ -227,7 +227,7 @@
 	</channel-type>
 
 	<channel-type id="meanWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Mean Wind Speed</label>
 		<description>The mean wind speed</description>
 		<category>Wind</category>

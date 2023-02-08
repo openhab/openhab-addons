@@ -258,7 +258,7 @@
 	</channel-type>
 
 	<channel-type id="speed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Speed</label>
 		<description>Current speed</description>
 		<state pattern="%.1f %unit%"/>
@@ -506,7 +506,7 @@
 	</channel-type>
 
 	<channel-type id="chargingRate">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Charging Rate</label>
 		<description>Battery Charging Rate</description>
 		<category>BatteryLevel</category>

@@ -268,7 +268,7 @@
 	</channel-type>
 
 	<channel-type id="wind">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>

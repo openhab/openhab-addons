@@ -133,7 +133,7 @@
 	</channel-type>
 
 	<channel-type id="rain-intensity">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Rain Intensity</label>
 		<description>Current precipitation intensity.</description>
 		<category>Rain</category>
@@ -576,7 +576,7 @@
 	</channel-type>
 
 	<channel-type id="gust-strength">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Gust Strength</label>
 		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
@@ -584,7 +584,7 @@
 	</channel-type>
 
 	<channel-type id="max-wind-strength" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Max Wind Strength</label>
 		<description>Maximum wind strength recorded</description>
 		<category>Wind</category>

@@ -531,7 +531,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-wind-speed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Forecasted Wind Speed</label>
 		<description>Forecasted wind speed.</description>
 		<category>Wind</category>
@@ -547,7 +547,7 @@
 	</channel-type>
 
 	<channel-type id="gust-speed" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Gust Speed</label>
 		<description>Current gust speed.</description>
 		<category>Wind</category>
@@ -559,7 +559,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-gust-speed" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Forecasted Gust Speed</label>
 		<description>Forecasted gust speed.</description>
 		<category>Wind</category>

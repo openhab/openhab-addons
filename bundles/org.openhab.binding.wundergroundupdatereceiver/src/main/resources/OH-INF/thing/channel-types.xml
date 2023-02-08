@@ -42,7 +42,7 @@
 	</channel-type>
 
 	<channel-type id="wind-speed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Current Wind Speed</label>
 		<description>Current wind speed, using software specific time period.</description>
 		<category>Wind</category>
@@ -54,7 +54,7 @@
 	</channel-type>
 
 	<channel-type id="wind-gust-speed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Current Gust Speed</label>
 		<description>Current wind gust speed, using software specific time period.</description>
 		<category>Wind</category>
@@ -78,7 +78,7 @@
 	</channel-type>
 
 	<channel-type id="wind-speed-avg-2min" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed 2min Average</label>
 		<description>2 minute average wind speed.</description>
 		<category>Wind</category>
@@ -102,7 +102,7 @@
 	</channel-type>
 
 	<channel-type id="wind-gust-speed-10min" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Gust Speed 10min Average</label>
 		<description>10 minute average gust speed.</description>
 		<category>Wind</category>

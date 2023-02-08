@@ -74,7 +74,7 @@
 	</channel-type>
 
 	<channel-type id="rainHourlyRate">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Rain Fall Hourly Rate</label>
 		<description>Rain fall hourly rate</description>
 		<category>Rain</category>
@@ -145,7 +145,7 @@
 	</channel-type>
 
 	<channel-type id="windSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
@@ -153,7 +153,7 @@
 	</channel-type>
 
 	<channel-type id="windSpeedMaxDaily">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Maximum Daily Wind Speed</label>
 		<description>Maximum daily wind speed</description>
 		<category>Wind</category>
@@ -175,7 +175,7 @@
 	</channel-type>
 
 	<channel-type id="windGust">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
@@ -197,7 +197,7 @@
 	</channel-type>
 
 	<channel-type id="windGustMaxDaily">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Maximum Daily Wind Gust</label>
 		<description>Maximum daily wind gust</description>
 		<category>Wind</category>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="windSpeedAvg2Minute">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed 2-Minute</label>
 		<description>Wind speed 2-minute average</description>
 		<category>Wind</category>
@@ -227,7 +227,7 @@
 	</channel-type>
 
 	<channel-type id="windSpeedAvg10Minute">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed 10-Minute</label>
 		<description>Wind speed 10-minute average</description>
 		<category>Wind</category>

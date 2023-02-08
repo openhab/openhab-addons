@@ -352,7 +352,7 @@
 	</channel-type>
 
 	<channel-type id="maxWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Maximum Wind Speed</label>
 		<description>Maximum wind speed</description>
 		<category>Wind</category>
@@ -360,7 +360,7 @@
 	</channel-type>
 
 	<channel-type id="averageWindSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Average Wind Speed</label>
 		<description>Average wind speed</description>
 		<category>Wind</category>
@@ -368,7 +368,7 @@
 	</channel-type>
 
 	<channel-type id="windGust">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>

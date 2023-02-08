@@ -1081,7 +1081,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="windspeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<description>Currently measured wind speed</description>
 		<category>Wind</category>

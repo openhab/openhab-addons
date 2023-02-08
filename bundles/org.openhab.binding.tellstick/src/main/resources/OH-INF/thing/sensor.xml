@@ -104,14 +104,14 @@
 	</channel-type>
 
 	<channel-type id="windgust">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<description>Current wind gust</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="windaverage">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Average</label>
 		<description>Current average wind</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

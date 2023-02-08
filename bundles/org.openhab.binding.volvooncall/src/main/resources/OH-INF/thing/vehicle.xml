@@ -255,7 +255,7 @@
 	</channel-type>
 
 	<channel-type id="averageSpeed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Average Speed</label>
 		<description>Average speed of the vehicle</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

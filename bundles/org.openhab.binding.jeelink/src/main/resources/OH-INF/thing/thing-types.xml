@@ -403,7 +403,7 @@
 	</channel-type>
 
 	<channel-type id="wind-strength">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>@text/channel-type.wind-strength.label</label>
 		<description>@text/channel-type.wind-strength.description</description>
 		<category>Wind</category>

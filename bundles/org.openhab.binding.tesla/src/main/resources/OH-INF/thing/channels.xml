@@ -159,7 +159,7 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerate" advanced="true">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Charge Rate</label>
 		<description>Distance per hour charging rate</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -592,7 +592,7 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="speed">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Speed</label>
 		<description>Vehicle speed</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

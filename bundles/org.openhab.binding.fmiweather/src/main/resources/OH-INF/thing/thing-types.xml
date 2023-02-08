@@ -330,13 +330,13 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-speed-channel">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Speed</label>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="wind-gust-channel">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Wind Gust</label>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -483,7 +483,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation-intensity-channel">
-		<item-type>Number:Speed</item-type>
+		<item-type unit="m/s">Number</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
