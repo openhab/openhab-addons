@@ -62,6 +62,8 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             return new ShieldTVHandler(thing, commandDescriptionProvider);
+        } else if (THING_TYPE_GOOGLETV.equals(thingTypeUID)) {
+            return new GoogleTVHandler(thing, commandDescriptionProvider);
         }
 
         return null;
