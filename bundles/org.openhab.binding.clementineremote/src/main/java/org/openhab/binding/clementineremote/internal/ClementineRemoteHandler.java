@@ -119,7 +119,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * When the connection breaks: try to disconnect gracefully.
      */
     private void connect() throws IOException {
-        if (socket == null || socket.isClosed()) {
+        @Nullable final Socket localSock = socket;
+        if (localSock == null || localSock.isClosed()) {
             var address = new InetSocketAddress(config.hostname, config.port);
             socket = new Socket();
             socket.connect(address);
@@ -143,18 +144,19 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     private void disconnect() {
         updateStatus(ThingStatus.OFFLINE);
         setState(PlaybackState.UNKNOWN);
-
-        if (out != null) { // try to close the output stream
+        @Nullable final DataOutputStream localOut = out;
+        if (localOut != null) { // try to close the output stream
             try {
-                out.close();
+                localOut.close();
             } catch (IOException e) {
                 logger.warn("disconnect(): failed to close output stream socket: {}", e.getMessage());
             }
             out = null;
         }
-        if (socket != null) { // try to close the connection
+        @Nullable final Socket localSock = socket;
+        if (localSock != null) { // try to close the connection
             try {
-                socket.close();
+                localSock.close();
             } catch (IOException e) {
                 logger.warn("disconnect(): failed to close clementine protobuf socket: {}", e.getMessage());
             }
