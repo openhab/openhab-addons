@@ -37,6 +37,22 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="powerStripe">
+		<label>SmartPlug</label>
+		<description>Tapo Smart Plug Power Outlet</description>
+		<channels>
+			<channel id="output1" typeId="outputChannel">
+				<label>Output Switch #1</label>
+			</channel>
+			<channel id="output2" typeId="outputChannel">
+				<label>Output Switch #2</label>
+			</channel>
+			<channel id="output3" typeId="outputChannel">
+				<label>Output Switch #3</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<!--Light-Bulb Channel Type -->
 	<channel-group-type id="lightBulb">
 		<label>Light Bulb</label>

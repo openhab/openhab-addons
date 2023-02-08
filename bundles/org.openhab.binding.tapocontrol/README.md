@@ -12,6 +12,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 |                                    | P105        | Smart Mini Socket                           |
 | EnergyMonitoring SmartPlug (Wi-Fi) | P110        | Energy Monitoring Smart Socket              |
 |                                    | P115        | Energy Monitoring Mini Smart Socket         |
+|                                    | P300        | Smart Wi-Fi Power Strip                     |
 | Dimmable SmartBulb (Wi-Fi)         | L510        | Dimmable White-Light Smart-Bulb (E27)       |
 |                                    | L610        | Dimmable White-Light Smart-Spot (GU10)      |
 | MultiColor SmartBulb (Wi-Fi)       | L530        | Multicolor Smart-Bulb (E27)                 |
@@ -66,6 +67,9 @@ All devices support some of the following channels:
 | group     | channel          | type                   | description                  | things supporting this channel                                   |
 |-----------|----------------- |------------------------|------------------------------|------------------------------------------------------------------|
 | actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
+|           | output1          | Switch                 | Power socket 1 on or off     | P300                                                             |
+|           | output2          | Switch                 | Power socket 2 on or off     | P300                                                             |
+|           | output3          | Switch                 | Power socket 3 on or off     | P300                                                             |
 |           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L610, L630, L900                                     |
 |           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L610, L630, L900                                     |
 |           | color            | Color                  | Color                        | L530, L630, L900                                                 |
@@ -94,7 +98,7 @@ tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bri
 tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30 ]
 
 Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
-   Thing tapocontrol:P110:secondBridgeExample:mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
+   Thing P110 mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
 }
 ```
 
