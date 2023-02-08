@@ -82,7 +82,7 @@
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
 	<channel-type id="amps" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Contains the current Amp value for the given plug</description>
 		<state readOnly="true" pattern="%.1f A"/>

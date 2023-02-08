@@ -9,7 +9,7 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="rwtype-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Electric Current</label>
 		<state pattern="%.1f %unit%" readOnly="false">
 		</state>

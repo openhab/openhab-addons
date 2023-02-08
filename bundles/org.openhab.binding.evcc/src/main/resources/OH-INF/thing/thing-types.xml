@@ -105,7 +105,7 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charging current</label>
 		<description>Current amperage per connected phase while charging</description>
 		<category>Energy</category>
@@ -183,7 +183,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="maxCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charging max current</label>
 		<description>Maximum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>
@@ -191,7 +191,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="minCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charging min current</label>
 		<description>Minimum amperage per connected phase with which the car should be charged</description>
 		<category>Energy</category>

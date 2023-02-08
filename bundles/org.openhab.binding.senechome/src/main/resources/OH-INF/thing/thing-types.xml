@@ -139,19 +139,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentMpp1">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current MPP1</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentMpp2">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current MPP2</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentMpp3">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current MPP3</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -213,7 +213,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryCurrent">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Battery Current</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -281,19 +281,19 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase1">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Current Phase 1</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase2">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Current Phase 2</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridCurrentPhase3">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Current Phase 3</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -441,25 +441,25 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="currentPack1" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current battery pack 1</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentPack2" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current battery pack 2</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentPack3" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current battery pack 3</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentPack4" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current battery pack 4</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -571,19 +571,19 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase1" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Wallbox 1 charging Current Phase 1</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase2" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Wallbox 1 charging Current Phase 2</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingCurrentPhase3" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Wallbox 1 charging Current Phase 3</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="imaxType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IMAX</label>
 		<description>Maximum consumed electric current</description>
 		<category>Energy</category>
@@ -13,7 +13,7 @@
 	</channel-type>
 
 	<channel-type id="iinstType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IINST</label>
 		<description>Instantaneous electric current</description>
 		<category>Energy</category>
@@ -21,7 +21,7 @@
 	</channel-type>
 
 	<channel-type id="adpsType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>ADPS</label>
 		<description>Excess electric current warning</description>
 		<category>Energy</category>

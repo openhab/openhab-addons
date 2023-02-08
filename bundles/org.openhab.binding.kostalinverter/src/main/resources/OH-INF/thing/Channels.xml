@@ -83,7 +83,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>P1 Amperage</label>
 		<description>Amperage of phase 1</description>
 		<category>Energy</category>
@@ -104,7 +104,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>P2 Amperage</label>
 		<description>Amperage of phase 2</description>
 		<category>Energy</category>
@@ -125,7 +125,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>P3 Amperage</label>
 		<description>Amperage of phase 3</description>
 		<category>Energy</category>
@@ -166,7 +166,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Battery Amperage</label>
 		<description>Current amperage of the battery</description>
 		<category>Energy</category>
@@ -194,7 +194,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV Str1 Amperage</label>
 		<description>Current amperage of photovoltaic string 1</description>
 		<category>Energy</category>
@@ -215,7 +215,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV Str2 Amperage</label>
 		<description>Current amperage of photovoltaic string 2</description>
 		<category>Energy</category>
@@ -236,7 +236,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-amperage">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV Str3 Amperage</label>
 		<description>Current amperage of photovoltaic string 3</description>
 		<category>Energy</category>
@@ -532,7 +532,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l1">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Amperage L1</label>
 		<description>Current output amperage to the grid, L1</description>
 		<category>Energy</category>
@@ -553,7 +553,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l2">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Amperage L2</label>
 		<description>Current output amperage to the grid, L2</description>
 		<category>Energy</category>
@@ -574,7 +574,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l3">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Grid Amperage L3</label>
 		<description>Current output amperage to the grid, L3</description>
 		<category>Energy</category>
@@ -602,7 +602,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC1 Amperage</label>
 		<description>Current amperage from solar panels, DC1</description>
 		<category>Energy</category>
@@ -623,7 +623,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC2 Amperage</label>
 		<description>Current amperage from solar panels, DC2</description>
 		<category>Energy</category>
@@ -644,7 +644,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC3 Amperage</label>
 		<description>Current amperage from solar panels, DC3</description>
 		<category>Energy</category>
@@ -763,7 +763,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Current</description>
 		<category>Energy</category>

@@ -60,7 +60,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Actual current usage.</description>
 		<category>Energy</category>

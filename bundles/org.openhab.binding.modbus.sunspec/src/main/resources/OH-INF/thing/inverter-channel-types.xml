@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="ac-total-current-type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Total Current Value</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-phase-current-type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Phase Current Value</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="dc-current-type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC Current Value</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

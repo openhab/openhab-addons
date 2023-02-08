@@ -509,7 +509,7 @@
 
 	<!-- Revolt Current Type -->
 	<channel-type id="electric-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>@text/channel-type.electric-current.label</label>
 		<description>@text/channel-type.electric-current.description</description>
 	</channel-type>

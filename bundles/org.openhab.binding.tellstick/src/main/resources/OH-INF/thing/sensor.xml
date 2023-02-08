@@ -141,7 +141,7 @@
 	</channel-type>
 
 	<channel-type id="ampere">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Ampere</label>
 		<description>Current ampere</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

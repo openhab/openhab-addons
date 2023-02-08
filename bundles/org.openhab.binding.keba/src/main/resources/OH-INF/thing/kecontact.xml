@@ -134,25 +134,25 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current_settable">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Preset Current</label>
 		<description>Preset Current</description>
 		<state pattern="%.3f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Current</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="maxcurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Max. System Current</label>
 		<description>Maximal System Current</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="failsafecurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Failsafe Current</label>
 		<description>Failsafe Current (if network is lost)</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
@@ -164,7 +164,7 @@
 		<state pattern="%.1f %%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pilotcurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Pilot Current</label>
 		<description>Current value offered to the vehicle via control pilot signalization (PWM)</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>

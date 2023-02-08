@@ -11,7 +11,7 @@
 	</channel-type>
 	<!-- PV current Channel Type -->
 	<channel-type id="Ipv0">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -55,7 +55,7 @@
 	</channel-type>
 	<!-- PV1 current Channel Type -->
 	<channel-type id="Ipv1">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV1 Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -99,7 +99,7 @@
 	</channel-type>
 	<!-- PV2 current Channel Type -->
 	<channel-type id="Ipv2">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>PV2 Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

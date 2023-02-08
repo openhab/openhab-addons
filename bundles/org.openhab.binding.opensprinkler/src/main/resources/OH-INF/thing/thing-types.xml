@@ -124,7 +124,7 @@
 	</channel-type>
 
 	<channel-type id="currentDraw">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current Draw</label>
 		<description>The current draw in mA</description>
 		<category>Energy</category>

@@ -11,7 +11,7 @@
 	</channel-type>
 	<!-- Input current Channel Type -->
 	<channel-type id="Iin">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Input Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -35,7 +35,7 @@
 	</channel-type>
 	<!-- Output current Channel Type -->
 	<channel-type id="Iout">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Output Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

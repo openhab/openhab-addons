@@ -18,7 +18,7 @@
 	</channel-type>
 
 	<channel-type id="iinst1Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IINST1</label>
 		<description>Instantaneous electric current on phase 1</description>
 		<category>Energy</category>
@@ -26,7 +26,7 @@
 	</channel-type>
 
 	<channel-type id="iinst2Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IINST2</label>
 		<description>Instantaneous electric current on phase 2</description>
 		<category>Energy</category>
@@ -34,7 +34,7 @@
 	</channel-type>
 
 	<channel-type id="iinst3Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IINST3</label>
 		<description>Instantaneous electric current on phase 3</description>
 		<category>Energy</category>
@@ -42,7 +42,7 @@
 	</channel-type>
 
 	<channel-type id="imax1Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IMAX1</label>
 		<description>Maximum consumed electric current on phase 1</description>
 		<category>Energy</category>
@@ -50,7 +50,7 @@
 	</channel-type>
 
 	<channel-type id="imax2Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IMAX2</label>
 		<description>Maximum consumed electric current on phase 2</description>
 		<category>Energy</category>
@@ -58,7 +58,7 @@
 	</channel-type>
 
 	<channel-type id="imax3Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>IMAX3</label>
 		<description>Maximum consumed electric current on phase 3</description>
 		<category>Energy</category>
@@ -90,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="adir1Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>ADIR1</label>
 		<description>Excess electric current on phase 1 warning</description>
 		<category>Energy</category>
@@ -98,7 +98,7 @@
 	</channel-type>
 
 	<channel-type id="adir2Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>ADIR2</label>
 		<description>Excess electric current on phase 2 warning</description>
 		<category>Energy</category>
@@ -106,7 +106,7 @@
 	</channel-type>
 
 	<channel-type id="adir3Type">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>ADIR3</label>
 		<description>Excess electric current on phase 3 warning</description>
 		<category>Energy</category>

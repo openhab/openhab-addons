@@ -399,7 +399,7 @@
 
 	<!-- Current -->
 	<channel-type id="current" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Current in Ampere</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

@@ -172,13 +172,13 @@
 		<state pattern="%.3f kvar" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualTresholdAType" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Actual Threshold Current</label>
 		<description>The actual threshold.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualFuseThresholdAType" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Actual Fuse Threshold</label>
 		<description>The actual fuse threshold.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
@@ -272,19 +272,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantCurrentL1Type" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Instant Current L1</label>
 		<description>The instant current L1.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantCurrentL2Type" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Instant Current L2</label>
 		<description>The instant current L2.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantCurrentL3Type" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Instant Current L3</label>
 		<description>The instant current L3.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

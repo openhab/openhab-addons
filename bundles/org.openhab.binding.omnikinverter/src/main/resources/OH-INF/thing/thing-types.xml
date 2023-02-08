@@ -124,7 +124,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="currentAC">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -134,7 +134,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="currentPV">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current PV</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

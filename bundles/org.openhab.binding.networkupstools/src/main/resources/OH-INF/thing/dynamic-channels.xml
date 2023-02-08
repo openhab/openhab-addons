@@ -19,7 +19,7 @@
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config"/>
 	</channel-type>
 	<channel-type id="number-electric-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Electric Current</label>
 		<description>Electric Current channel</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

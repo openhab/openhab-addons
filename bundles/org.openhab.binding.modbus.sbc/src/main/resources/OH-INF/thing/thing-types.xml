@@ -73,7 +73,7 @@
 	</channel-type>
 
 	<channel-type id="current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Effective Current</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

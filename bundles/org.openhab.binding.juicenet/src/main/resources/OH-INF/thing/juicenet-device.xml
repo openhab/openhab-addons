@@ -152,14 +152,14 @@
 	</channel-type>
 
 	<channel-type id="currentLimit">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current Limit</label>
 		<description>Max charging current allowed.</description>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Current charging current.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

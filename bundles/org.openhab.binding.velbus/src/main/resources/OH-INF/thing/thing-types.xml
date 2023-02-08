@@ -1043,7 +1043,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Currently measured current</description>
 		<category>Current</category>

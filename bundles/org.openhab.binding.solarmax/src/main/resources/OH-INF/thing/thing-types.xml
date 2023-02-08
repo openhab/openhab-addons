@@ -65,21 +65,21 @@
 	</channel-type>
 
 	<channel-type id="acPhase1Current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Phase 1 Current</label>
 		<description>AC Phase 1 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase2Current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Phase 2 Current</label>
 		<description>AC Phase 2 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase3Current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Phase 3 Current</label>
 		<description>AC Phase 3 Current in Amps</description>
 		<state readOnly="true"></state>

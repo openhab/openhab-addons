@@ -415,7 +415,7 @@
 	</channel-type>
 
 	<channel-type id="poeCurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Port PoE Current</label>
 		<description>Current usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>

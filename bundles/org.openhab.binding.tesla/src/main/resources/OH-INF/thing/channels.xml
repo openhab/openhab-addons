@@ -22,7 +22,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterycurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Battery Current</label>
 		<description>Current (Ampere) floating into (+) or out (-) of the battery</description>
 		<state pattern="%.1f A" readOnly="true"></state>
@@ -93,13 +93,13 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargingamps" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Set Charging Amps</label>
 		<description>Current (Ampere) to use for charging</description>
 		<state pattern="%.0f A"></state>
 	</channel-type>
 	<channel-type id="chargecurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charge Current</label>
 		<description>Current (Ampere) requested from the charger</description>
 		<state pattern="%.1f A" readOnly="true"></state>
@@ -147,7 +147,7 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargemaxcurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charge Max Current</label>
 		<description>Maximum current (Ampere) that can be requested from the charger</description>
 		<state pattern="%.1f A" readOnly="true"></state>
@@ -203,7 +203,7 @@
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
 	</channel-type>
 	<channel-type id="chargercurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charge Current</label>
 		<description>Current (Ampere) actually being drawn from the charger</description>
 		<state pattern="%.1f A" readOnly="true"></state>
@@ -215,7 +215,7 @@
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargermaxcurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Charger Maximum Current</label>
 		<description>Maximum current (Ampere) that can be delivered by the charger</description>
 		<state pattern="%.1f A" readOnly="true"></state>

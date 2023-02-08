@@ -22,19 +22,19 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string1-dc-current-channel">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>String 1 Current</label>
 		<description>Current on String 1</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-current-channel">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>String 2 Current</label>
 		<description>Current on String 2</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-current-channel">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>String 3 Current</label>
 		<description>Current on String 3</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

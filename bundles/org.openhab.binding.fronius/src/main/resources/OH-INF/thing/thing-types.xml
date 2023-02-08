@@ -203,26 +203,26 @@
 	</channel-type>
 
 	<channel-type id="iac">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Current</label>
 		<description>AC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="idc">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC Current</label>
 		<description>DC current</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="idc2">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC Current 2</label>
 		<description>DC current 2</description>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="idc3">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>DC Current 3</label>
 		<description>DC current 3</description>
 		<state pattern="%.2f A" readOnly="true"></state>
@@ -328,7 +328,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_ac_current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>AC Current</label>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>

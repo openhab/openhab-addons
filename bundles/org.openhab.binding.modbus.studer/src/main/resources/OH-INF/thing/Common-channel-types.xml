@@ -11,7 +11,7 @@
 	</channel-type>
 	<!-- Battery current Channel Type -->
 	<channel-type id="Ibat">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Battery Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

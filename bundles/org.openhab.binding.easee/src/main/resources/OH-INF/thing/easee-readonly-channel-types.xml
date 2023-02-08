@@ -16,7 +16,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>ElectricCurrent</label>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

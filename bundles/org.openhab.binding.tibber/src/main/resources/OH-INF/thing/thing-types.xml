@@ -113,7 +113,7 @@
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="current">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unit="A">Number</item-type>
 		<label>Current</label>
 		<description>Current on given Phase</description>
 		<state pattern="%.1f %unit%"></state>
