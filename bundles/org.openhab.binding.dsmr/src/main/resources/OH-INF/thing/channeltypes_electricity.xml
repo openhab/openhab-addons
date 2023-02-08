@@ -4,43 +4,43 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="deliveryType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery</label>
 		<description>The total amount of electricity used.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff0Type">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 0</label>
 		<description>The total amount of electricity used for tariff 0.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff1Type">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff2Type">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff1BelgiumType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff2BelgiumType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff0AntiFraudType" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 0</label>
 		<description>The total amount of electricity used for tariff 0 (anti fraud).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -52,85 +52,85 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="deliveryTariff2AntiFraudType" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2 (anti fraud).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="productionTariff0Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Production Tariff 0</label>
 		<description>The total amount of electricity produced for tariff 0.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="productionTariff1Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Production Tariff 1</label>
 		<description>The total amount of electricity produced for tariff 1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="productionTariff2Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Production Tariff 2</label>
 		<description>The total amount of electricity produced for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="productionTariff1BelgiumType" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Production Tariff 1</label>
 		<description>The total amount of electricity produced for tariff 1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="productionTariff2BelgiumType" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Production Tariff 2</label>
 		<description>The total amount of electricity produced for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterPType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Imported Energy (P+)</label>
 		<description>The total imported energy register (P+).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterPType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Exported Energy (P+)</label>
 		<description>The total exported energy register (P-).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterQType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Imported Energy (Q+)</label>
 		<description>The total imported energy register (Q+).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterQType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Exported Energy (Q-)</label>
 		<description>The total exported energy register (Q-).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterRRate1Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Exported Energy R1</label>
 		<description>The total exported energy register R Rate1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterRRate2Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Exported Energy R</label>
 		<description>The total exported energy register R Rate2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterRRate1Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Imported Energy R1</label>
 		<description>The total imported energy register R Rate1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterRRate2Type" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Imported Energy R2</label>
 		<description>The total imported energy register R Rate2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

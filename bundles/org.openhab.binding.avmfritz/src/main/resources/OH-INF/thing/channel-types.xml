@@ -121,7 +121,7 @@
 	</channel-type>
 
 	<channel-type id="energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Consumption</label>
 		<description>Accumulated energy consumption.</description>
 		<category>Energy</category>

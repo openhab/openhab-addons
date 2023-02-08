@@ -8,7 +8,7 @@
 		<label>Charge Statistic Month</label>
 	</channel-type>
 	<channel-type id="statistic-energy-channel">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Charged</label>
 		<description>Total energy charged in current month</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -89,7 +89,7 @@
 	</channel-type>
 
 	<channel-type id="energyToday" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Today</label>
 		<description>Todays power consumption</description>
 		<category>Energy</category>
@@ -97,7 +97,7 @@
 	</channel-type>
 
 	<channel-type id="energyTotal" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Total</label>
 		<description>Total power consumption</description>
 		<category>Energy</category>

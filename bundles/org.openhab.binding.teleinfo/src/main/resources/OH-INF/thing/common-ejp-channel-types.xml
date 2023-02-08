@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="ejphpmType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>EJPHPM</label>
 		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
@@ -13,7 +13,7 @@
 	</channel-type>
 
 	<channel-type id="ejphnType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>EJPHN</label>
 		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>

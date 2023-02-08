@@ -53,7 +53,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="energy-usage">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Usage</label>
 		<description>Actual energy usage.</description>
 		<category>Energy</category>

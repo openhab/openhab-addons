@@ -444,7 +444,7 @@
 
 	<!-- Total Energy Consumption Channel Type -->
 	<channel-type id="consumption-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>

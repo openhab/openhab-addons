@@ -325,43 +325,43 @@
 
 
 	<channel-type id="liveBatCharge">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Bat Charge</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveBatDischarge">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Bat Discharge</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveGridImport">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Grid Import</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveGridExport">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Grid Export</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveHouseConsumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live House Consumption</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="livePowerGenerator">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Power Generator</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="liveEnergyWallbox1">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Live Wallbox 1 charged Energy</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -369,49 +369,49 @@
 
 
 	<channel-type id="chargedEnergyPack1" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total charged energy battery pack 1</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="chargedEnergyPack2" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total charged energy battery pack 2</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="chargedEnergyPack3" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total charged energy battery pack 3</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="chargedEnergyPack4" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total charged energy battery pack 4</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="dischargedEnergyPack1" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total discharged energy battery pack 1</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="dischargedEnergyPack2" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total discharged energy battery pack 2</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="dischargedEnergyPack3" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total discharged energy battery pack 3</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="dischargedEnergyPack4" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total discharged energy battery pack 4</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -589,7 +589,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingPower">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Wallbox 1 charging Power</label>
 		<category>Power</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>

@@ -528,7 +528,7 @@
 	</channel-type>
 
 	<channel-type id="addHeatPowerEnergy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Additional Heat Power</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

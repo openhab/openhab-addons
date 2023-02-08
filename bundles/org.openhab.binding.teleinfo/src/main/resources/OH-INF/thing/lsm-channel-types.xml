@@ -12,7 +12,7 @@
 	</channel-type>
 
 	<channel-type id="energyType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Teleinfo Energy Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>

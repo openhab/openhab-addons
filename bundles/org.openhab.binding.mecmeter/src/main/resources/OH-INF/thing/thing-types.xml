@@ -458,21 +458,21 @@
 
 	<!-- Forward Energy -->
 	<channel-type id="fwd_active_energy_all">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Active Energy</label>
 		<description>Forward Active Energy in kWh</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fwd_active_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Active Energy</label>
 		<description>Forward Active Energy in kWh</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fwd_active_energy_allphase">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Active Energy</label>
 		<description>Forward Active Energy all phase in kWh</description>
 		<category>Energy</category>
@@ -480,7 +480,7 @@
 	</channel-type>
 
 	<channel-type id="fwd_active_fund_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Active Fund. Energy</label>
 		<description>Forward Active Fundamental Energy in kWh</description>
 		<category>Energy</category>
@@ -488,7 +488,7 @@
 	</channel-type>
 
 	<channel-type id="fwd_active_harm_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Active Harm. Energy</label>
 		<description>Forward Active Harmonic Energy in kWh</description>
 		<category>Energy</category>
@@ -496,7 +496,7 @@
 	</channel-type>
 
 	<channel-type id="fwd_reactive_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Forward Reactive Energy</label>
 		<description>Forward Reactive Energy in VArh</description>
 		<category>Energy</category>
@@ -505,14 +505,14 @@
 
 	<!-- Reverse Energy -->
 	<channel-type id="rev_active_energy_all">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Reverse Active Energy</label>
 		<description>Reverse Active Energy in kWh</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rev_active_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Reverse Active Energy</label>
 		<description>Reverse Active Energy in kWh</description>
 		<category>Energy</category>
@@ -520,7 +520,7 @@
 	</channel-type>
 
 	<channel-type id="rev_active_fund_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Reverse Active Fund. Energy</label>
 		<description>Reverse Active Fundamental Energy in kWh</description>
 		<category>Energy</category>
@@ -528,7 +528,7 @@
 	</channel-type>
 
 	<channel-type id="rev_active_harm_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Reverse Active Harm. Energy</label>
 		<description>Reverse Active Harmonic Energy in kWh</description>
 		<category>Energy</category>
@@ -536,7 +536,7 @@
 	</channel-type>
 
 	<channel-type id="rev_reactive_energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Reverse Reactive Energy</label>
 		<description>Reverse Reactive Energy in VArh</description>
 		<category>Energy</category>
@@ -545,7 +545,7 @@
 
 	<!-- Apparent Energy -->
 	<channel-type id="appenergy_consumption" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Apparent Energy Consumption</label>
 		<description>Apparent Energy Consumption in VArh</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

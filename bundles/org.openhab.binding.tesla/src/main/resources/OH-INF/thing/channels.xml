@@ -111,7 +111,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargeenergyadded" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Charge Energy Added</label>
 		<description>Energy added, in kWh, during the last charging session</description>
 		<state pattern="%d kWh" readOnly="true"></state>

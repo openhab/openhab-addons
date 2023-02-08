@@ -23,7 +23,7 @@
 	</channel-type>
 	<!-- Production PV in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed0">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>PV Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -67,7 +67,7 @@
 	</channel-type>
 	<!-- Production PV1 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed1">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>PV1 Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -111,7 +111,7 @@
 	</channel-type>
 	<!-- Production PV2 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed2">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>PV2 Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

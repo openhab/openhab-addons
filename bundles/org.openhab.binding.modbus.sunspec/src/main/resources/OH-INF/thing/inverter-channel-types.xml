@@ -61,7 +61,7 @@
 	</channel-type>
 
 	<channel-type id="ac-lifetime-energy-type">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>AC Lifetime Energy Production</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

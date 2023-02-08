@@ -10,7 +10,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy</label>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

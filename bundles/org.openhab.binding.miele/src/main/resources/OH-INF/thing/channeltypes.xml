@@ -225,7 +225,7 @@
 	</channel-type>
 
 	<channel-type id="powerConsumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Power Consumption</label>
 		<description>Power consumption by the currently running program on the appliance</description>
 		<category>Energy</category>

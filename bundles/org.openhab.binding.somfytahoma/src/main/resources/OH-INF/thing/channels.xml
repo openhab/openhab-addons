@@ -233,7 +233,7 @@
 	</channel-type>
 
 	<channel-type id="energy_consumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Consumption</label>
 		<description>The energy consumption reported by the sensor</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

@@ -90,7 +90,7 @@
 		<state pattern="%.3f"></state>
 	</channel-type>
 	<channel-type id="consumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
 		<state pattern="%.3f %unit%"></state>
@@ -119,7 +119,7 @@
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="production">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Production</label>
 		<description>Accumulated Production since Midnight</description>
 		<state pattern="%.3f %unit%"></state>

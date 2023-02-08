@@ -442,7 +442,7 @@
 	</channel-type>
 
 	<channel-type id="residual">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Remaining Charge</label>
 		<description>Remaining battery charge</description>
 		<category>BatteryLevel</category>
@@ -450,7 +450,7 @@
 	</channel-type>
 
 	<channel-type id="capacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Battery Capacity</label>
 		<description>Battery capacity</description>
 		<category>BatteryLevel</category>

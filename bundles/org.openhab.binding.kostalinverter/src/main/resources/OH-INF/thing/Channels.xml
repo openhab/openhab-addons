@@ -333,112 +333,112 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Day</label>
 		<description>Home consumption today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-month">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Month</label>
 		<description>Home consumption this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Total</label>
 		<description>Home consumption overall</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-year">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Year</label>
 		<description>Home consumption this year</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Battery Day</label>
 		<description>Home consumption obtained from the battery today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-month">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Battery Month</label>
 		<description>Home consumption obtained from the battery this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Battery Total</label>
 		<description>Home consumption obtained from the battery overall</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-year">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Battery Year</label>
 		<description>Home consumption obtained from the battery this year</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Grid Day</label>
 		<description>Home consumption obtained from the grid today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-month">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Grid Month</label>
 		<description>Home consumption obtained from the grid this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Grid Total</label>
 		<description>Home consumption obtained from the grid overall</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-year">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Grid Year</label>
 		<description>Home consumption obtained from the grid this year</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption PV Day</label>
 		<description>Home consumption obtained from the photovoltaic plant today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-month">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption PV Month</label>
 		<description>Home consumption obtained from the photovoltaic plant this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption PV Total</label>
 		<description>Home consumption obtained from the photovoltaic plant overall</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-year">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption PV Year</label>
 		<description>Home consumption obtained from the photovoltaic plant this year</description>
 		<category>Energy</category>
@@ -469,28 +469,28 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Day</label>
 		<description>Yield of the photovoltaic plant today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-month">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Month</label>
 		<description>Yield of the photovoltaic plant this month</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Total</label>
 		<description>Yield of the photovoltaic plant overall</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-year">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Year</label>
 		<description>Yield of the photovoltaic plant this year</description>
 		<category>Energy</category>
@@ -504,14 +504,14 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-day-second-gen">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Day</label>
 		<description>Total produced power day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-total-second-gen">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Yield Total</label>
 		<description>Total produced power</description>
 		<category>Energy</category>
@@ -714,14 +714,14 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-home-consumption-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Day</label>
 		<description>Total home consumption day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-day">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Own Consumption Day</label>
 		<description>Total own consumption day</description>
 		<category>Energy</category>
@@ -742,14 +742,14 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-home-consumption-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Home Consumption Total</label>
 		<description>Total home consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Own Consumption Total</label>
 		<description>Total own consumptionl</description>
 		<category>Energy</category>

@@ -24,7 +24,7 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="last_reading_value_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

@@ -200,13 +200,13 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="energy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Session</label>
 		<description>Power consumption</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="totalenergy" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Total</label>
 		<description>Total energy consumption is added up after each completed charging session</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -248,7 +248,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="setenergylimit">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Limit</label>
 		<description>An energy limit for an already running or the next charging session</description>
 		<state pattern="%.1f %unit%" readOnly="false"></state>

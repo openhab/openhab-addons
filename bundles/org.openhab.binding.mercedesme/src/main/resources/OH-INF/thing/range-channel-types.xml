@@ -24,12 +24,12 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charged-channel">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Charged Battery Energy</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="uncharged-channel">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Uncharged Battery Energy</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

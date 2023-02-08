@@ -181,7 +181,7 @@
 
 	<!-- today energy usage -->
 	<channel-type id="todayEnergyUsageChannel">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Today Usage</label>
 		<description>Today energy usage</description>
 		<category>Energy</category>

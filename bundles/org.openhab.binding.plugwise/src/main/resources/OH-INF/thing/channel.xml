@@ -21,7 +21,7 @@
 	</channel-type>
 
 	<channel-type id="energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy</label>
 		<description>Energy consumption/production during the last measurement interval</description>
 		<category>Energy</category>

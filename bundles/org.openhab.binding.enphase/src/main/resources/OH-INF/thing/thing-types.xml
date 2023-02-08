@@ -139,19 +139,19 @@
 	</channel-group-type>
 
 	<channel-type id="watt-hours-today">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Produced Today</label>
 		<description>Watt hours produced today</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-seven-days">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Produced 7 Days</label>
 		<description>Watt hours produced the last 7 days</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watt-hours-lifetime">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Produced Lifetime</label>
 		<description>Watt hours produced over the lifetime</description>
 		<state pattern="%d %unit%" readOnly="true"/>

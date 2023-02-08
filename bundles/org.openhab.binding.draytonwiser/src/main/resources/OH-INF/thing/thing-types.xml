@@ -439,7 +439,7 @@
 	</channel-type>
 
 	<channel-type id="plugEnergyDelivered-channel">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Plug Energy Delivered</label>
 		<description>Cumulative energy drawn through the plug</description>
 		<state readOnly="true" pattern="%d %unit%"/>

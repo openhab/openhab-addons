@@ -88,7 +88,7 @@
 	</channel-group-type>
 
 	<channel-type id="consumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
 		<category>energy</category>

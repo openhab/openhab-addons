@@ -521,7 +521,7 @@
 	</channel-type>
 
 	<channel-type id="lastPower1" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>@text/channel-type.shelly.lastPower1.label</label>
 		<description>@text/channel-type.shelly.lastPower1.description</description>
 		<category>Energy</category>
@@ -530,7 +530,7 @@
 	</channel-type>
 
 	<channel-type id="meterTotal">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>@text/channel-type.shelly.meterTotal.label</label>
 		<description>@text/channel-type.shelly.meterTotal.description</description>
 		<category>Energy</category>
@@ -539,7 +539,7 @@
 	</channel-type>
 
 	<channel-type id="meterReturned">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>@text/channel-type.shelly.meterReturned.label</label>
 		<description>@text/channel-type.shelly.meterReturned.description</description>
 		<category>Energy</category>

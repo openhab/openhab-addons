@@ -28,7 +28,7 @@
 	</channel-type>
 	<!-- Production in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

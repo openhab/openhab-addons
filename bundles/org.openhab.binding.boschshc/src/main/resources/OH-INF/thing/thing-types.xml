@@ -405,7 +405,7 @@
 	</channel-type>
 
 	<channel-type id="energy-consumption">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

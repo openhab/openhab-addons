@@ -54,13 +54,13 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>ImportEnergy</label>
 		<description>importenergy for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Exportgrid</label>
 		<description>exportgrid for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

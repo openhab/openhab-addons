@@ -179,19 +179,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="scl">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Current Session Charge Energy Limit</label>
 		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="scs">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Current Session Charged Energy</label>
 		<description>Amount of energy that has been charged in this session</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="eto">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Charged Energy</label>
 		<description>Amount of energy that has been charged since installation</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

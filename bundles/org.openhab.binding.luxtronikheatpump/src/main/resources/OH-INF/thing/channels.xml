@@ -1355,28 +1355,28 @@
 	</channel-type>
 
 	<channel-type id="heatMeterHeating">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Heat Meter Heating</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatMeterHotWater">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Heat Meter Domestic Water</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatMeterSwimmingPool">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Heat Meter Swimming Pool</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatMeterTotalSinceReset">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Heat Meter (since Reset)</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1572,7 +1572,7 @@
 	</channel-type>
 
 	<channel-type id="controlSignalCirculatingPump" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Control Signal Circulating Pump</label>
 		<category>Energy</category>
 		<state pattern="%.1f %%" readOnly="true"/>
@@ -1592,14 +1592,14 @@
 	</channel-type>
 
 	<channel-type id="powerTargetValue" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Power Target Value</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="powerActualValue" advanced="true">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Power Actual Value</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>

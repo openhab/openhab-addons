@@ -173,7 +173,7 @@
 	</channel-type>
 
 	<channel-type id="energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Current Energy</label>
 		<description>Current power level of vehicle.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -202,21 +202,21 @@
 	</channel-type>
 
 	<channel-type id="energyAtPlugin">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy at Plugin</label>
 		<description>Energy value at the plugging time.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyToAdd">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy to Add</label>
 		<description>Amount of energy to be added in current session.</description>
 		<state pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="lifetimeEnergy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Lifetime Energy</label>
 		<description>Total energy delivered to vehicles during lifetime.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -265,7 +265,7 @@
 	</channel-type>
 
 	<channel-type id="carBatterySize">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Car Battery Pack Size</label>
 		<description>Car battery pack size.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

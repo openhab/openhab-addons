@@ -264,7 +264,7 @@
 	</channel-type>
 
 	<channel-type id="totalusage">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Usage</label>
 		<description>Used energy in Kilowatt hours</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

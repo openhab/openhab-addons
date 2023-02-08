@@ -98,13 +98,13 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="kwh">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="kwhForecast">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Forecast</label>
 		<category>Energy</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>

@@ -86,14 +86,14 @@
 	</channel-type>
 
 	<channel-type id="energyGeneratedToday">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated Today</label>
 		<description>Energy Generated Today in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedTotal">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated Total</label>
 		<description>Energy Generated Total since recording began in wH</description>
 		<state readOnly="true"></state>
@@ -107,35 +107,35 @@
 	</channel-type>
 
 	<channel-type id="energyGeneratedYesterday">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated Yesterday</label>
 		<description>Energy Generated Yesterday in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedLastMonth">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated Last Month</label>
 		<description>Energy Generated Last Month in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedLastYear">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated Last Year</label>
 		<description>Energy Generated Last Year in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedThisMonth">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated This Month</label>
 		<description>Energy Generated This Month in wH</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedThisYear">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Generated This Year</label>
 		<description>Energy Generated This Year in wH</description>
 		<state readOnly="true"></state>

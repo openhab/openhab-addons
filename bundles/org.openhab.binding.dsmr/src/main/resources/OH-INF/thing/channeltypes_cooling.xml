@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="coolingValueType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Cooling Delivery (GJ)</label>
 		<description>The total amount of cooling used.</description>
 		<state pattern="%.3f GJ" readOnly="true"></state>

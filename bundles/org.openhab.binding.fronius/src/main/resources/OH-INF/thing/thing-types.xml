@@ -153,7 +153,7 @@
 	</thing-type>
 
 	<channel-type id="day_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Day Energy</label>
 		<description>Energy generated on current day</description>
 		<state pattern="%.2f kWh" readOnly="true"></state>
@@ -183,13 +183,13 @@
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="total_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Total Energy</label>
 		<description>Energy generated overall</description>
 		<state pattern="%.3f MWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="year_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Year Energy</label>
 		<description>Energy generated in current year</description>
 		<state pattern="%.3f MWh" readOnly="true"></state>
@@ -348,7 +348,7 @@
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy</label>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -360,7 +360,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ohmpilot_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Real Energy Consumed</label>
 		<description>Total consumed energy [Wh]</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

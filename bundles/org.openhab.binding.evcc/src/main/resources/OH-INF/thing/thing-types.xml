@@ -47,7 +47,7 @@
 
 	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
 	<channel-type id="batteryCapacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Battery Capacity</label>
 		<description>Capacity of (home) battery</description>
 		<category>Energy</category>
@@ -133,14 +133,14 @@
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeRemainingEnergy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Charging remaining energy</label>
 		<description>Remaining energy until target SoC is reached</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargedEnergy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Charged energy</label>
 		<description>Energy charged since plugged-in</description>
 		<category>Energy</category>
@@ -285,7 +285,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleCapacity">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Vehicle capacity</label>
 		<description>Capacity of EV battery</description>
 		<category>Energy</category>

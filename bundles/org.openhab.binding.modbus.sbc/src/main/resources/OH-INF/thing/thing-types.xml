@@ -49,19 +49,19 @@
 	</thing-type>
 
 	<channel-type id="total_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Total</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="partial_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Counter Resettable</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="feeding_back_energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>Energy Feeding Back</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

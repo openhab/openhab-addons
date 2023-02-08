@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="bbrhpjrType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHPJR</label>
 		<description>Total consumed energy at high rate pricing on red days</description>
 		<category>Energy</category>
@@ -13,7 +13,7 @@
 	</channel-type>
 
 	<channel-type id="bbrhcjrType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHCJR</label>
 		<description>Total consumed energy at low rate pricing on red days</description>
 		<category>Energy</category>
@@ -21,7 +21,7 @@
 	</channel-type>
 
 	<channel-type id="bbrhpjwType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHPJW</label>
 		<description>Total consumed energy at high rate pricing on white days</description>
 		<category>Energy</category>
@@ -29,7 +29,7 @@
 	</channel-type>
 
 	<channel-type id="bbrhcjwType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHCJW</label>
 		<description>Total consumed energy at low rate pricing on white days</description>
 		<category>Energy</category>
@@ -37,7 +37,7 @@
 	</channel-type>
 
 	<channel-type id="bbrhpjbType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHPJB</label>
 		<description>Total consumed energy at high rate pricing on blue days</description>
 		<category>Energy</category>
@@ -45,7 +45,7 @@
 	</channel-type>
 
 	<channel-type id="bbrhcjbType">
-		<item-type>Number:Energy</item-type>
+		<item-type unit="kWh">Number</item-type>
 		<label>BBRHCJB</label>
 		<description>Total consumed energy at low rate pricing on blue days</description>
 		<category>Energy</category>
