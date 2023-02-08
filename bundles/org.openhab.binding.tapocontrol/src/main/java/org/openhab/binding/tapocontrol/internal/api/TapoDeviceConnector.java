@@ -355,7 +355,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             this.childData = Objects.requireNonNull(GSON.fromJson(jsnResult, TapoChildData.class));
             this.device.setChildData(childData);
         } else {
-            this.energyData = new TapoEnergyData();
+            this.childData = new TapoChildData();
         }
         this.device.responsePasstrough(responseBody);
     }

@@ -12,7 +12,6 @@ The following Tapo-Devices are supported. For precise channel-description look a
 |                                    | P105        | Smart Mini Socket                           |
 | EnergyMonitoring SmartPlug (Wi-Fi) | P110        | Energy Monitoring Smart Socket              |
 |                                    | P115        | Energy Monitoring Mini Smart Socket         |
-|                                    | P300        | Smart Wi-Fi Power Strip                     |
 | Dimmable SmartBulb (Wi-Fi)         | L510        | Dimmable White-Light Smart-Bulb (E27)       |
 |                                    | L610        | Dimmable White-Light Smart-Spot (GU10)      |
 | MultiColor SmartBulb (Wi-Fi)       | L530        | Multicolor Smart-Bulb (E27)                 |
@@ -20,6 +19,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | MultiColor LightStrip (Wi-Fi)      | L900        | Multicolor RGB Dimmable LightStrip (5m)     |
 |                                    | L920        | Multicolor RGB-IC ColorZone LightStrip (5m) |
 |                                    | L930        | Multicolor RGBW-IC 50-Zone LightStrip (5m)  |
+| Power Strip (Wi-Fi)                | P300        | Smart Wi-Fi Power Strip - 3 sockets         |
 
 ## Prerequisites
 

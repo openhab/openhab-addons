@@ -154,13 +154,6 @@ public class TapoThingConstants {
     public static final String ENERGY_PROPERTY_PAST1Y = "past1y";
     // childs management
     public static final String CHILD_PROPERTY_START_INDEX = "start_index";
-    public static final String CHILD_PROPERTY_SUM = "sum";
-    public static final String CHILD_PROPERTY_SLOT_NUMBER = "slot_number";
-    public static final String CHILD_PROPERTY_POSITION = "position";
-    public static final String CHILD_PROPERTY_BIND_COUNT = "bind_count";
-    public static final String CHILD_PROPERTY_OVERHEAT = "overheat_status";
-    public static final String CHILD_PROPERTY_CATEGORY = "category";
-    public static final String CHILD_DEVICE_LIST = "child_device_list";
 
     /*** DEVICE SETTINGS ***/
     public static final Integer BULB_MIN_COLORTEMP = 2500;

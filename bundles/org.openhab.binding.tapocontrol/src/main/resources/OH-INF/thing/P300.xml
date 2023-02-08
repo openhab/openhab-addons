@@ -13,7 +13,7 @@
 		<label>P300 Power Strip</label>
 		<description>Tapo Smart Wi-Fi Power Strip</description>
 		<channel-groups>
-			<channel-group id="actuator" typeId="powerStripe"/>
+			<channel-group id="actuator" typeId="powerStrip"/>
 			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>

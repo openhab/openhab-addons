@@ -387,9 +387,6 @@ public class TapoDeviceHttpApi {
                                 case DEVICE_CMD_CHILD_DEVICE_LIST:
                                     handleChildDevices(rBody);
                                     break;
-                                case DEVICE_CMD_CONTROL_CHILD:
-                                    queryChildDevices();
-                                    break;
                             }
                         } else {
                             getErrorCode(rBody);

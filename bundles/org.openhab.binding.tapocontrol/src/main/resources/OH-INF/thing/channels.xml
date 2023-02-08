@@ -37,7 +37,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="powerStripe">
+	<channel-group-type id="powerStrip">
 		<label>SmartPlug</label>
 		<description>Tapo Smart Plug Power Outlet</description>
 		<channels>
