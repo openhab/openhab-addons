@@ -89,7 +89,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_txPower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>TX Power</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

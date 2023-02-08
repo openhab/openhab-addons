@@ -118,7 +118,7 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Channel representing the power consumption</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

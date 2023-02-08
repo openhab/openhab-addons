@@ -473,7 +473,7 @@
 	</channel-type>
 
 	<channel-type id="meterWatts">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.shelly.meterWatts.label</label>
 		<description>@text/channel-type.shelly.meterWatts.description</description>
 		<category>Energy</category>
@@ -486,7 +486,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuWatts" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.shelly.meterAccuWatts.label</label>
 		<description>@text/channel-type.shelly.meterAccuWatts.description</description>
 		<category>Energy</category>
@@ -495,7 +495,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuTotal" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.shelly.meterAccuTotal.label</label>
 		<description>@text/channel-type.shelly.meterAccuTotal.description</description>
 		<category>Energy</category>
@@ -504,7 +504,7 @@
 	</channel-type>
 
 	<channel-type id="meterAccuReturned" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.shelly.meterAccuReturned.label</label>
 		<description>@text/channel-type.shelly.meterAccuReturned.description</description>
 		<category>Energy</category>
@@ -513,7 +513,7 @@
 	</channel-type>
 
 	<channel-type id="meterReactive">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>
 		<description>@text/channel-type.shelly.meterReactive.description</description>
 		<state readOnly="true" pattern="%.3f %unit%">

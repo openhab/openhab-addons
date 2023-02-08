@@ -307,7 +307,7 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>
 		<category>Number</category>

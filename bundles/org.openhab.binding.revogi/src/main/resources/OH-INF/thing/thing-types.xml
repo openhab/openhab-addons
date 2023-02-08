@@ -76,7 +76,7 @@
 		<description>Switch a single plug</description>
 	</channel-type>
 	<channel-type id="watts" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Contains the current watt value for the given plug</description>
 		<state readOnly="true" pattern="%.1f W"/>

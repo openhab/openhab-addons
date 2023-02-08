@@ -126,7 +126,7 @@
 	</channel-type>
 
 	<channel-type id="watt">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Current power</description>
 		<state readOnly="true" pattern="%.1f %unit%">

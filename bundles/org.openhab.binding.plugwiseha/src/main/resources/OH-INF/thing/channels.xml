@@ -79,7 +79,7 @@
 	</channel-type>
 
 	<channel-type id="powerUsage">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power Usage</label>
 		<tags>
 			<tag>Measurement</tag>

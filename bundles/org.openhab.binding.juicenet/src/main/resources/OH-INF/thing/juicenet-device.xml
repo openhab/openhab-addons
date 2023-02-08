@@ -187,7 +187,7 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Charging Power</label>
 		<description>Current charging power.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -251,7 +251,7 @@
 	</channel-type>
 
 	<channel-type id="energyPerMile">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Energy Hours Per Mile</label>
 		<description>Energy Hours Per Mile.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -279,7 +279,7 @@
 	</channel-type>
 
 	<channel-type id="carChargingRate">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Car Charging Rate</label>
 		<description>Car charging rate.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

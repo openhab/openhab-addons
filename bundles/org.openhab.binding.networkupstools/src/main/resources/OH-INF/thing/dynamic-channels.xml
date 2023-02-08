@@ -40,7 +40,7 @@
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
 	<channel-type id="number-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Power channel</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

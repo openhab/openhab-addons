@@ -334,7 +334,7 @@
 
 	<!-- Energy channels -->
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Current active power</description>
 		<category>Energy</category>

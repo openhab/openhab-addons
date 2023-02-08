@@ -151,7 +151,7 @@
 	</thing-type>
 
 	<channel-type id="power-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>

@@ -428,7 +428,7 @@
 
 	<!-- Current Power Channel Type -->
 	<channel-type id="current-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.current-power.label</label>
 		<description>@text/channel-type.current-power.description</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -436,7 +436,7 @@
 
 	<!-- Max Power Channel Type -->
 	<channel-type id="max-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>@text/channel-type.max-power.label</label>
 		<description>@text/channel-type.max-power.description</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

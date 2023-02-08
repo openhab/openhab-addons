@@ -76,7 +76,7 @@
 	</channel-type>
 
 	<channel-type id="active_power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Total Net Power</label>
 		<description>
 			This channel provides the current net total power in W. It will be below 0 if power is currently being
@@ -85,7 +85,7 @@
 	</channel-type>
 
 	<channel-type id="active_power_l1">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Phase 1 Net Power</label>
 		<description>
 			This channel provides the current net phase 1 power in W. It will be below 0 if power is currently being
@@ -94,7 +94,7 @@
 	</channel-type>
 
 	<channel-type id="active_power_l2">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Phase 2 Net Power</label>
 		<description>
 			This channel provides the current net phase 2 power in W. It will be below 0 if power is currently being
@@ -103,7 +103,7 @@
 	</channel-type>
 
 	<channel-type id="active_power_l3">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Phase 3 Net Power</label>
 		<description>
 			This channel provides the current net phase 3 power in W. It will be below 0 if power is currently being

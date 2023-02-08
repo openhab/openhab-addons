@@ -509,7 +509,7 @@
 	</channel-type>
 
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Signal</label>
 		<description>Signal strength indicator.</description>
 		<category>QualityOfService</category>

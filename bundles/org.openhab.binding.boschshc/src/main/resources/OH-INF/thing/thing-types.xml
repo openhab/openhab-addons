@@ -412,7 +412,7 @@
 	</channel-type>
 
 	<channel-type id="power-consumption">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

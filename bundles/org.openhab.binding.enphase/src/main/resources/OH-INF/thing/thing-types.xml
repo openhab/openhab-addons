@@ -157,7 +157,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="watts-now">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Latest Power</label>
 		<description>Latest watts produced</description>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -165,13 +165,13 @@
 
 	<!-- Inverter channels -->
 	<channel-type id="last-report-watts">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Last Report</label>
 		<description>Last reported power delivery</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-report-watts">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Max Report</label>
 		<description>Maximum reported power</description>
 		<state pattern="%d %unit%" readOnly="true"/>

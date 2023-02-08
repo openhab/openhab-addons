@@ -80,7 +80,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentEnergy">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Energy Usage</label>
 		<description>Actual energy usage in watts</description>
 		<category>Energy</category>

@@ -318,7 +318,7 @@
 	</channel-type>
 
 	<channel-type id="rssi">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<category>QualityOfService</category>
@@ -401,7 +401,7 @@
 	</channel-type>
 
 	<channel-type id="poePower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Port PoE Power</label>
 		<description>Power usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>

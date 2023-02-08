@@ -22,7 +22,7 @@
 	</channel-type>
 	<!-- Power of the PV generator Channel Type -->
 	<channel-type id="Psol">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power of the PV Generator</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

@@ -1959,7 +1959,7 @@
 	</channel-type>
 
 	<channel-type id="heatingPowerActualValue" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Heating Power Actual Value</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

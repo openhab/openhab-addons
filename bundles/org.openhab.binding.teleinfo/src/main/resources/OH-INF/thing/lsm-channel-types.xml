@@ -33,7 +33,7 @@
 	</channel-type>
 
 	<channel-type id="powerType">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Teleinfo Power Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>

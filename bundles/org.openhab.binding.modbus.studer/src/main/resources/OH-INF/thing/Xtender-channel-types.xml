@@ -17,7 +17,7 @@
 	</channel-type>
 	<!-- Input active power Channel Type -->
 	<channel-type id="Pina">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Input Active Power</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -41,7 +41,7 @@
 	</channel-type>
 	<!-- Output active power Channel Type -->
 	<channel-type id="Pouta">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Output Active Power</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

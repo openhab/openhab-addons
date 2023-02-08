@@ -4,55 +4,55 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="pv-power-supply-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Output</label>
 		<description>Photovoltaic Power Production</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-supply-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Discharge</label>
 		<description>Battery discharges and provides Power</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-power-consumption-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Charge</label>
 		<description>Battery charges and consumes Power</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="household-power-consumption-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Household Consumption</label>
 		<description>Household consuming Power</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-consumption-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power Consumption</label>
 		<description>More Photovoltaic Power is produced than needed. Additional Power is consumed by Grid</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="grid-power-supply-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power Supply</label>
 		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="external-power-supply-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>External Power Supply</label>
 		<description>Power produced by an external device which is attached to your E3DC device</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-power-consumption-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Wallbox Power Consumption</label>
 		<description>Power consumption of attached Wallboxes</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="wallbox-pv-power-consumption-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Wallbox PV Power Consumption</label>
 		<description>Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes</description>
 		<state pattern="%d %unit%" readOnly="true"/>

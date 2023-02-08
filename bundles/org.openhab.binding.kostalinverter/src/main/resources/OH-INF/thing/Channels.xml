@@ -9,49 +9,49 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-dc-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-battery">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption Battery</label>
 		<description>Current home consumption obtained from the battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-grid">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption Grid</label>
 		<description>Current home consumption obtained from the grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ownconsumption">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Own Consumption</label>
 		<description>Current own consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-pv">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption PV</label>
 		<description>Current home consumption obtained from photovoltaic</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-total">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption</label>
 		<description>Current total home consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-absolute">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Feed-in Limit</label>
 		<description>Permitted feed-in quantity as absolute value as specified by the energy supplier </description>
 		<category>Energy</category>
@@ -90,7 +90,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>P1 Power</label>
 		<description>Power of phase 1</description>
 		<category>Energy</category>
@@ -111,7 +111,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>P2 Power</label>
 		<description>Power of phase 2</description>
 		<category>Energy</category>
@@ -132,7 +132,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>P3 Power</label>
 		<description>Power of phase 3</description>
 		<category>Energy</category>
@@ -146,7 +146,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-current-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Power</label>
 		<description>Current AC power of the inverter</description>
 		<category>Energy</category>
@@ -173,7 +173,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Power</label>
 		<description>Current battery charge</description>
 		<category>Energy</category>
@@ -201,7 +201,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Str1 Power</label>
 		<description>Current power of photovoltaic string 1</description>
 		<category>Energy</category>
@@ -222,7 +222,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Str2 Power</label>
 		<description>Current power of photovoltaic string 2</description>
 		<category>Energy</category>
@@ -243,7 +243,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Str3 Power</label>
 		<description>Current power of photovoltaic string 3</description>
 		<category>Energy</category>
@@ -497,7 +497,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-output-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Output Power</label>
 		<description>Current output power to the grid</description>
 		<category>Energy</category>
@@ -539,7 +539,7 @@
 		<state readOnly="true" pattern="%.2f  %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l1">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power L1</label>
 		<description>Current output power to the grid, L1</description>
 		<category>Energy</category>
@@ -560,7 +560,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l2">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power L2</label>
 		<description>Current output power to the grid, L2</description>
 		<category>Energy</category>
@@ -581,14 +581,14 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l3">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power L3</label>
 		<description>Current output power to the grid, L3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc-power-pv">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power PV</label>
 		<description>Current power from solar panels</description>
 		<category>Energy</category>
@@ -609,7 +609,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC1 Power</label>
 		<description>Current power from solar panels, DC1</description>
 		<category>Energy</category>
@@ -630,7 +630,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC2 Power</label>
 		<description>Current power from solar panels, DC2</description>
 		<category>Energy</category>
@@ -651,49 +651,49 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC3 Power</label>
 		<description>Current power from solar panels, DC3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-solar">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption PV</label>
 		<description>Current consumption from solar panels</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-bat">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption Bat</label>
 		<description>Current consumption from battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-grid">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption Grid</label>
 		<description>Current consumption from grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l1">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption L1</label>
 		<description>Current home consumption, L1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l2">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption L2</label>
 		<description>Current home consumption, L2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l3">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Consumption L3</label>
 		<description>Current home consumption, L3</description>
 		<category>Energy</category>
@@ -833,14 +833,14 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-self-consumption">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Self Consumption</label>
 		<description>Current self consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Usage Consumption</label>
 		<description>Battery usage consumption</description>
 		<category>Energy</category>

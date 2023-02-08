@@ -66,7 +66,7 @@
 	</channel-type>
 
 	<channel-type id="pmaxType">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PMAX</label>
 		<description>Maximum consumed electric power on all phases</description>
 		<category>Energy</category>
@@ -74,7 +74,7 @@
 	</channel-type>
 
 	<channel-type id="pappType">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PAPP</label>
 		<description>Instantaneous apparent power</description>
 		<category>Energy</category>

@@ -40,19 +40,19 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string1-dc-output-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>String 1 Power</label>
 		<description>Power produced by String 1</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-output-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>String 2 Power</label>
 		<description>Power produced by String 2</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-output-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>String 3 Power</label>
 		<description>Power produced by String 3</description>
 		<state pattern="%d %unit%" readOnly="true"/>

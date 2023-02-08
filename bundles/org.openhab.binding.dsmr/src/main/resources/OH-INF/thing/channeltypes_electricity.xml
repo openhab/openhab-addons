@@ -142,19 +142,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="activeImportPowerType" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Aggregate Active Import Power</label>
 		<description>The aggregate active import power.</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualDeliveryType">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Actual Power Delivery</label>
 		<description>The current power delivery.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualProductionType" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Actual Power Production</label>
 		<description>The current power production.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
@@ -184,7 +184,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="actualTresholdkWType" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Actual Threshold</label>
 		<description>The actual threshold.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
@@ -290,13 +290,13 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantPowerDeliveryL1Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power Delivery L1</label>
 		<description>The instant power delivery L1.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantPowerDeliveryL2Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power Delivery L2</label>
 		<description>The instant power delivery L2.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
@@ -308,55 +308,55 @@
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantPowerProductionL1Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power Production L1</label>
 		<description>The instant power production L1.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantPowerProductionL2Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power Production L2</label>
 		<description>The instant power production L2.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantPowerProductionL3Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power Production L3</label>
 		<description>The instant power production L3.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerDeliveryL1Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Delivery L1</label>
 		<description>The instant reactive power delivery L1.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerDeliveryL2Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Delivery L2</label>
 		<description>The instant reactive power delivery L2.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerDeliveryL3Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Delivery L3</label>
 		<description>The instant reactive power delivery L3.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerProductionL1Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Production L1</label>
 		<description>The instant reactive power production L1.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerProductionL2Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Production L2</label>
 		<description>The instant reactive power production L2.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantReactivePowerProductionL3Type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Reactive Power Production L3</label>
 		<description>The instant reactive power production L3.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>

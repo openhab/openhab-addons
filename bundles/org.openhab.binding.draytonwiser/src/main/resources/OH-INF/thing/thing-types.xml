@@ -432,7 +432,7 @@
 	</channel-type>
 
 	<channel-type id="plugInstantaneousPower-channel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Plug Instantaneous Power</label>
 		<description>Current Power being drawn through the plug</description>
 		<state readOnly="true" pattern="%d %unit%"/>

@@ -108,13 +108,13 @@
 
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instantaneous Power</label>
 		<description>Deprecated! See channel 'powerAC1'</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="powerAC">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instantaneous Power AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

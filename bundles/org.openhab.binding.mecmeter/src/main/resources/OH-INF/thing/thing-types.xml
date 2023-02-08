@@ -422,35 +422,35 @@
 
 	<!-- Power -->
 	<channel-type id="activepower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Active Power</label>
 		<description>Active power consumed</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="activefundpower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Active Fundamental Power</label>
 		<description>Active fundamental power</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="activeharmpower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Active Harmonic Power</label>
 		<description>Active harmonic power</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="reactivepower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Reactive Power</label>
 		<description>Reactive power consumed</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="apppower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Apparent Power</label>
 		<description>Apparent power consumed</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

@@ -54,7 +54,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryPower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Power</label>
 		<description>Current power from battery</description>
 		<category>Energy</category>
@@ -75,21 +75,21 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="gridPower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power</label>
 		<description>Current power from grid (negative means feed-in)</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="homePower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Home Power</label>
 		<description>Current power taken by home</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pvPower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Power</label>
 		<description>Current power from photovoltaik</description>
 		<category>Energy</category>
@@ -119,7 +119,7 @@
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargePower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Charging power</label>
 		<description>Current power of charging</description>
 		<category>Energy</category>

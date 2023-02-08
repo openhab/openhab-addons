@@ -17,7 +17,7 @@
 	</channel-type>
 	<!-- PV Power Channel Type -->
 	<channel-type id="Ppv0">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV Power</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -61,7 +61,7 @@
 	</channel-type>
 	<!-- PV1 Power Channel Type -->
 	<channel-type id="Ppv1">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV1 Power</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -105,7 +105,7 @@
 	</channel-type>
 	<!-- PV2 Power Channel Type -->
 	<channel-type id="Ppv2">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>PV2 Power</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

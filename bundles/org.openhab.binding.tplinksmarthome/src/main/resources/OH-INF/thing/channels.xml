@@ -46,7 +46,7 @@
 
 	<!-- Energy Channel types -->
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Actual power usage.</description>
 		<category>Energy</category>
@@ -76,7 +76,7 @@
 
 	<!-- Misc Channel types -->
 	<channel-type id="rssi" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>

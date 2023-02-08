@@ -70,7 +70,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Unnamed Power</label>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>

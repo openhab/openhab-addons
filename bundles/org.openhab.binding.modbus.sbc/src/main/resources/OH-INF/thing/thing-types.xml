@@ -79,14 +79,14 @@
 	</channel-type>
 
 	<channel-type id="active_power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Effective Active Power</label>
 		<description>Negative numbers mean feeding back</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="reactive_power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Effective Reactive Power</label>
 		<description>Negative numbers mean feeding back</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>

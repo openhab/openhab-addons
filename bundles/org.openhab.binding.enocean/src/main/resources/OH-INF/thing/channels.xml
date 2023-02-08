@@ -245,7 +245,7 @@
 	</channel-type>
 
 	<channel-type id="instantpower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Instant Power</label>
 		<description>Instant power consumption in Watts</description>
 		<state pattern="%d %unit%" readOnly="true"/>

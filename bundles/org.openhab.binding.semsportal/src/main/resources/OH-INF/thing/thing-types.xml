@@ -61,7 +61,7 @@
 			that was checked: the station goes offline at night.</description>
 	</channel-type>
 	<channel-type id="currentOutput">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Output</label>
 		<description>Current output in Watts</description>
 	</channel-type>

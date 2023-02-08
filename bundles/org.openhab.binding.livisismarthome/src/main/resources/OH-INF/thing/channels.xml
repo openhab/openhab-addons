@@ -214,7 +214,7 @@
 
 	<!-- PowerConsumptionWatt -->
 	<channel-type id="powerConsumptionWatt">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Power Consumption</label>
 		<description>The current power consumption in Watt</description>
 		<category>Energy</category>
@@ -268,7 +268,7 @@
 
 	<!-- PowerGenerationWatt -->
 	<channel-type id="powerGenerationWatt">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Power Generation</label>
 		<description>The current power generation in Watt</description>
 		<category>Energy</category>

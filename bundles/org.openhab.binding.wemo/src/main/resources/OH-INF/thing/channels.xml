@@ -65,7 +65,7 @@
 	</channel-type>
 
 	<channel-type id="averagePower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Average Power</label>
 		<description>The average power consumption</description>
 		<category>Energy</category>
@@ -73,7 +73,7 @@
 	</channel-type>
 
 	<channel-type id="currentPower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Power</label>
 		<description>The current power consumption</description>
 		<category>Energy</category>
@@ -81,7 +81,7 @@
 	</channel-type>
 
 	<channel-type id="currentPowerRaw" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Current Power Raw</label>
 		<description>The current power consumption with full precision</description>
 		<category>Energy</category>
@@ -105,7 +105,7 @@
 	</channel-type>
 
 	<channel-type id="standByLimit" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>StandBy Limit</label>
 		<description>Minimum energy draw to register device as switched on</description>
 		<category>Energy</category>

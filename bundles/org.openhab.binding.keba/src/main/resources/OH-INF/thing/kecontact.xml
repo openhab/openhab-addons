@@ -188,7 +188,7 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Active Power</description>
 		<state pattern="%.3f %unit%" readOnly="true"></state>

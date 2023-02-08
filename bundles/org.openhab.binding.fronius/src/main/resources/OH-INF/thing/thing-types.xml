@@ -159,25 +159,25 @@
 		<state pattern="%.2f kWh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pac">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Power</label>
 		<description>AC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pdc">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power</label>
 		<description>DC power</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pdc2">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power 2</label>
 		<description>DC power 2</description>
 		<state pattern="%f W" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pdc3">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power 3</label>
 		<description>DC power 3</description>
 		<state pattern="%f W" readOnly="true"></state>
@@ -266,25 +266,25 @@
 	</channel-type>
 
 	<channel-type id="pGrid">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Grid Power</label>
 		<description>Grid Power ( + from grid, - to grid )</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pLoad">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Load Power</label>
 		<description>Load Power ( + generator, - consumer )</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pAkku">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Battery Power</label>
 		<description>Battery Power ( + discharge, - charge )</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pPv">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Solar Plant Power</label>
 		<description>Current Solar Plant Power</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
@@ -302,7 +302,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="inverter1Power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Inverter 1 Power</label>
 		<description>Inverter 1 Power</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
@@ -338,7 +338,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_powerreal">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -354,7 +354,7 @@
 	</channel-type>
 
 	<channel-type id="ohmpilot_powerreal">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Real Power Sum</label>
 		<description>Actual power consumption [W]</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

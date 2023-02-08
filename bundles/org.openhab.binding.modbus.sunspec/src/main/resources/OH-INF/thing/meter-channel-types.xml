@@ -15,22 +15,22 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-real-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Total Real Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-real-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Real Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-apparent-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Total Apparent Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-total-reactive-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Total Reactive Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

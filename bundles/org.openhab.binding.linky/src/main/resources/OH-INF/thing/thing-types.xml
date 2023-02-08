@@ -96,7 +96,7 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
 		<state readOnly="true" pattern="%.3f %unit%"/>

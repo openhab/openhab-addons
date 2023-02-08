@@ -31,7 +31,7 @@
 	</channel-type>
 
 	<channel-type id="ac-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -43,13 +43,13 @@
 	</channel-type>
 
 	<channel-type id="ac-apparent-power-type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Apparent Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-reactive-power-type" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>AC Reactive Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -79,7 +79,7 @@
 	</channel-type>
 
 	<channel-type id="dc-power-type">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>DC Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

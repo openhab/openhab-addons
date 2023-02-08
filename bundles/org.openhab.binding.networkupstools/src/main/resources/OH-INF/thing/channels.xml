@@ -17,13 +17,13 @@
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-power" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>UPS Power</label>
 		<description>Current value of apparent power (Volt-Amps)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-realpower">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>UPS Realpower</label>
 		<description>Current value of real power (Watts)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
@@ -84,7 +84,7 @@
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="input-realpower" advanced="true">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Input Realpower</label>
 		<description>Current sum value of all (ePDU) phases real power (W)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

@@ -172,7 +172,7 @@
 	<!-- DEVICE-STATE CHANNEL TYPES -->
 	<!-- actual power usage -->
 	<channel-type id="actualPowerChannel">
-		<item-type>Number:Power</item-type>
+		<item-type unit="W">Number</item-type>
 		<label>Power</label>
 		<description>Actual power usage</description>
 		<category>Energy</category>
