@@ -47,6 +47,10 @@ A heating or cooling schedule with all fields left blank will be ignored by the 
 
 If the thermostat schedule is to be managed by openHAB, the thermostat should be de-provisioned from the MyRadioThermostat/EnergyHub cloud service to prevent the openHAB schedule from being overridden.
 
+The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
+- ```curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}' -X POST```
+- ```curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST```
+
 ### Some notes
 
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
