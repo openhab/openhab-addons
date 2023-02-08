@@ -135,7 +135,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Anel Device Temperature</label>
 		<description>The value of the built-in temperature sensor of the Anel device</description>
 		<state readOnly="true"/>
@@ -180,7 +180,7 @@
 	</channel-type>
 
 	<channel-type id="sensorTemperature-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Sensor Temperature</label>
 		<description>The temperature value of the optional sensor</description>
 		<state readOnly="true"/>

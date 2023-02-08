@@ -79,7 +79,7 @@
 
 	<!-- Channel types -->
 	<channel-type id="measures-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Indoor temperature as measured by the sensor</description>
 		<category>Temperature</category>
@@ -116,7 +116,7 @@
 	</channel-type>
 
 	<channel-type id="status-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current operational target temperature set on the module</description>
 		<category>Temperature</category>
@@ -160,7 +160,7 @@
 	</channel-type>
 
 	<channel-type id="settings-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>New operational set-point temperature to be set on the module (valid only for Mode = "Manual")</description>
 		<category>Temperature</category>

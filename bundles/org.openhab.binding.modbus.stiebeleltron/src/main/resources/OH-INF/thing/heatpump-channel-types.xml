@@ -5,13 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="fek-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>FFK Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fek-temperature-setpoint-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>FFK Temperature Set Point</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -21,48 +21,48 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-dewpoint-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>FFK Dewpoint</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="outdoor-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="hk1-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>HK1 Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hk1-temperature-setpoint-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>HK1 Temperature Set Point</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="supply-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="source-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Source Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water-temperature-setpoint-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Temperature Set Point</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -149,22 +149,22 @@
 		</state>
 	</channel-type>
 	<channel-type id="comfort-temperature-heating-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Temperature Heating</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-heating-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Temperature Heating</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfort-temperature-water-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Temperature Water</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="eco-temperature-water-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Temperature Water</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

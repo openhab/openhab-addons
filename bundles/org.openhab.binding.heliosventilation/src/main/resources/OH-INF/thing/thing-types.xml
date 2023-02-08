@@ -56,7 +56,7 @@
 	</thing-type>
 
 	<channel-type id="outside_temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outside Temperature</label>
 		<description>Temperature measured in the outdoor air flow.</description>
 		<category>Temperature</category>
@@ -64,7 +64,7 @@
 	</channel-type>
 
 	<channel-type id="extract_temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Extract Temperature</label>
 		<description>Temperature measured in the extract (indoor, room temperature) air flow.</description>
 		<category>Temperature</category>
@@ -72,7 +72,7 @@
 	</channel-type>
 
 	<channel-type id="supply_temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Temperature</label>
 		<description>Temperature measured in the supply (incoming) air flow.</description>
 		<category>Temperature</category>
@@ -80,7 +80,7 @@
 	</channel-type>
 
 	<channel-type id="outgoing_temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outgoing Temperature</label>
 		<description>Temperature measured in the outgoing air flow.</description>
 		<category>Temperature</category>
@@ -89,7 +89,7 @@
 
 
 	<channel-type id="set_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Set temperature for the supply air. Not used in all ventilation systems.</description>
 		<category>Temperature</category>
@@ -118,7 +118,7 @@
 	</channel-type>
 
 	<channel-type id="bypass_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cell Bypass Temperature</label>
 		<description>Bypass temperature to disable the bypass function if outside temperature is below this threshold even if
 			ventilation system is in summer mode.</description>
@@ -127,7 +127,7 @@
 	</channel-type>
 
 	<channel-type id="supply_stop_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Stop Temperature</label>
 		<description>Stop the supply fan if outside temperature is below this threshold.</description>
 		<category>Temperature</category>
@@ -135,7 +135,7 @@
 	</channel-type>
 
 	<channel-type id="preheat_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Preheat Temperature</label>
 		<description>Set temperature for preheater.</description>
 		<category>Temperature</category>
@@ -167,7 +167,7 @@
 	</channel-type>
 
 	<channel-type id="hysteresis" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hysteresis</label>
 		<description>Hysteresis on defroster temperature.</description>
 		<state pattern="%d %unit%" min="1" max="10" readOnly="false"/>

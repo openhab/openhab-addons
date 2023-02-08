@@ -170,7 +170,7 @@
 	</channel-type>
 
 	<channel-type id="measured">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Measured</label>
 		<description>Temperature Measured by Thermostat</description>
 		<category>Temperature</category>
@@ -182,7 +182,7 @@
 	</channel-type>
 
 	<channel-type id="setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint</label>
 		<description>Setpoint Temperature of Thermostat</description>
 		<category>Temperature</category>

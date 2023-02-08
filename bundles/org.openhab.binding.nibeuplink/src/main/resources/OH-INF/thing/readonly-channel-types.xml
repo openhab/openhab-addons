@@ -28,7 +28,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="type-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Unnamed Temperature</label>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

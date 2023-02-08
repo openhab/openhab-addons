@@ -135,7 +135,7 @@
 	</channel-type>
 
 	<channel-type id="current_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -156,7 +156,7 @@
 	</channel-type>
 
 	<channel-type id="target_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>The target temperature of the heating system</description>
 		<state pattern="%.1f %unit%"/>
@@ -226,7 +226,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The temperature value of the sensor</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -496,7 +496,7 @@
 	</channel-type>
 
 	<channel-type id="middlewater_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Middle Water Temperature</label>
 		<description>Describes the temperature at the middle sensor</description>
 		<state readOnly="true"/>
@@ -605,14 +605,14 @@
 	</channel-type>
 
 	<channel-type id="dhw_setting_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>DHW Temperature Setting</label>
 		<description>DHW temperature setting control</description>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="dhw_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>DHW Temperature</label>
 		<description>DHW temperature state</description>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -716,14 +716,14 @@
 	</channel-type>
 
 	<channel-type id="eco_mode_target_offset">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Mode Target Offset</label>
 		<description>Eco mode target offset control</description>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="eco_mode_offset">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Mode Offset</label>
 		<description>Eco mode offset state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -762,42 +762,42 @@
 	</channel-type>
 
 	<channel-type id="water_inlet_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Inlet Temperature</label>
 		<description>Water inlet temperature state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="water_outlet_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Outlet Temperature</label>
 		<description>Water outlet temperature state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="water_outlet_hp_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Outlet Hp Temperature</label>
 		<description>Water outlet hp temperature state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="liquid_temp_thmi">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Liquid Temperature THMI</label>
 		<description>Liquid temperature THMI state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="liquid_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Liquid Temperature</label>
 		<description>Liquid temperature state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="anti_legionella_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Anti Legionella Temperature</label>
 		<description>Anti legionella temperature control</description>
 		<state pattern="%d %unit%"></state>
@@ -811,28 +811,28 @@
 	</channel-type>
 
 	<channel-type id="water_temp_setting">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Water Temperature Setting</label>
 		<description>Water temperature setting state</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="thermostat_setting_zone1">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Zone 1 Thermostat Setting</label>
 		<description>Thermostat setting control for the zone 1</description>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="wh_setting_temp_zone1">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Zone 1 Water Heating Setting Temperature</label>
 		<description>Water heating setting temperature control for the zone 1</description>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="room_ambient_temp_zone1">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Zone 1 Room Ambient Temperature</label>
 		<description>Room ambient temperature control for the zone 1</description>
 		<state pattern="%d %unit%"></state>

@@ -59,7 +59,7 @@
 	</thing-type>
 
 	<channel-type id="currentTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>Current temperature in room, may be air or floor dependent on Heating Target</description>
 		<category>Temperature</category>
@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="targetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Target temperature currently set on device</description>
 		<category>Heating</category>

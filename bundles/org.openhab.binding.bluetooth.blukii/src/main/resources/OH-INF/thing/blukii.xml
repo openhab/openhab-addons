@@ -38,7 +38,7 @@
 	</thing-type>
 
 	<channel-type id="blukii_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

@@ -118,7 +118,7 @@
 
 	<!-- Temperature Group Channel Type -->
 	<channel-type id="temp-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Group channel for CBus temperature groups</description>
 		<category>Temperature</category>

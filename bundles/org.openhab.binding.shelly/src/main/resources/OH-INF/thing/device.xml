@@ -110,7 +110,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="deviceTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.shelly.deviceTemp.label</label>
 		<description>@text/channel-type.shelly.deviceTemp.description</description>
 		<category>Temperature</category>

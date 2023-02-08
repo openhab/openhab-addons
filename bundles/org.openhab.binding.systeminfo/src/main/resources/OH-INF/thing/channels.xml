@@ -269,7 +269,7 @@
 	</channel-type>
 
 	<channel-type id="cpuTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU temperature</description>
 		<state readOnly="true" pattern="%.1f °C"/>

@@ -82,7 +82,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_setpoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Temperature</label>
 		<description>Temperature thermostat setpoint</description>
 		<category>Temperature</category>
@@ -90,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_readback" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>Current system ambient temperature</description>
 		<category>Temperature</category>

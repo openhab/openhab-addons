@@ -28,7 +28,7 @@
 	</thing-type>
 
 	<channel-type id="currentSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Setpoint</label>
 		<description>Current Setpoint</description>
 		<category>Temperature</category>

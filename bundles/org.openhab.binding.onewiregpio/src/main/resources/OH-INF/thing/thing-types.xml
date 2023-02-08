@@ -33,7 +33,7 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Indicates the temperature read from one wire gpio sensor</description>
 		<state readOnly="true" pattern="%.3f %unit%"/>

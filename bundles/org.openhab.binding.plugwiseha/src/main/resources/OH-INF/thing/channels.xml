@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="setpointTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Gets or sets the set point of this zone</description>
 		<category>heating</category>
@@ -17,7 +17,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Zone Temperature</label>
 		<description>Gets the temperature of this zone</description>
 		<category>heating</category>
@@ -29,7 +29,7 @@
 	</channel-type>
 
 	<channel-type id="offsetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Thermostat Temperature Offset</label>
 		<description>Gets or sets the temperature offset for this thermostat</description>
 		<category>heating</category>
@@ -137,7 +137,7 @@
 	</channel-type>
 
 	<channel-type id="intendedBoilerTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Intended Boiler Temperature</label>
 		<description>Gets the intended temperature of this boiler</description>
 		<category>heating</category>
@@ -161,7 +161,7 @@
 	</channel-type>
 
 	<channel-type id="dhwTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Domestic Hot Water Temperature</label>
 		<description>Gets the temperature of the domestic hot water</description>
 		<category>heating</category>
@@ -181,7 +181,7 @@
 	</channel-type>
 
 	<channel-type id="boilerTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Boiler Temperature</label>
 		<description>Gets the temperature of this boiler</description>
 		<category>heating</category>
@@ -193,7 +193,7 @@
 	</channel-type>
 
 	<channel-type id="returnWaterTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Water Temperature</label>
 		<description>Gets the temperature of the return water</description>
 		<category>heating</category>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="dhwSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Domestic Hot Water Setpoint Temperature</label>
 		<description>Gets the temperature of the domestic hot water setpoint</description>
 		<category>heating</category>
@@ -213,7 +213,7 @@
 	</channel-type>
 
 	<channel-type id="maxBoilerTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Max Boiler Temperature</label>
 		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>

@@ -209,7 +209,7 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Measured temperature value (Read-Only)</description>
 		<category>temperature</category>
@@ -224,7 +224,7 @@
 	</channel-type>
 
 	<channel-type id="targetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Target temperature setting of the room</description>
 		<category>temperature</category>

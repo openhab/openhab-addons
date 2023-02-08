@@ -177,7 +177,7 @@
 	</channel-type>
 
 	<channel-type id="heatSinkTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Sink Temperature</label>
 		<description>Heat Sink Temperature in degrees celcius</description>
 		<state readOnly="true"></state>

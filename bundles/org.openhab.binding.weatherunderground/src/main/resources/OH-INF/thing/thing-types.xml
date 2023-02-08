@@ -253,7 +253,7 @@
 	</channel-type>
 
 	<channel-type id="minTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Temperature</label>
 		<description>Minimum temperature</description>
 		<category>Temperature</category>
@@ -261,7 +261,7 @@
 	</channel-type>
 
 	<channel-type id="maxTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Temperature</label>
 		<description>Maximum temperature</description>
 		<category>Temperature</category>
@@ -269,7 +269,7 @@
 	</channel-type>
 
 	<channel-type id="dewPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
@@ -277,7 +277,7 @@
 	</channel-type>
 
 	<channel-type id="heatIndex" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Index</label>
 		<description>Heat index</description>
 		<category>Temperature</category>
@@ -285,7 +285,7 @@
 	</channel-type>
 
 	<channel-type id="windChill" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Wind Chill Temperature</label>
 		<description>Wind chill temperature</description>
 		<category>Temperature</category>
@@ -293,7 +293,7 @@
 	</channel-type>
 
 	<channel-type id="feelingTemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>

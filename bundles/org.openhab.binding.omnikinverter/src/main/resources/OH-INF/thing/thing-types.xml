@@ -155,7 +155,7 @@
 		<description>The amount of generated energy in total</description>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>The temperature from the sensor</description>
 		<category>Temperature</category>

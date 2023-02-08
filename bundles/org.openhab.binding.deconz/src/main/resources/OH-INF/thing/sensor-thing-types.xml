@@ -240,7 +240,7 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -545,7 +545,7 @@
 	</thing-type>
 
 	<channel-type id="heatsetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Target temperature</description>
 		<category>Heating</category>
@@ -565,7 +565,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="offset">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Offset</label>
 		<description>Temperature offset</description>
 		<state pattern="%.2f %unit%" step="0.01"></state>

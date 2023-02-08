@@ -378,7 +378,7 @@
 	</channel-type>
 
 	<channel-type id="comfortTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Temperature</label>
 		<description>Comfort temperature</description>
 		<category>Temperature</category>
@@ -427,7 +427,7 @@
 	</channel-type>
 
 	<channel-type id="temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature in °C</description>
 		<category>Temperature</category>

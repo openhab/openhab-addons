@@ -256,7 +256,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="drivertemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Driver Temperature</label>
 		<description>Indicates the auto conditioning temperature set at the driver's side</description>
 		<state pattern="%.1f %unit%"></state>
@@ -336,7 +336,7 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="insidetemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -402,13 +402,13 @@
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="minavailabletemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Temperature</label>
 		<description>Indicates the minimal inside temperature of the vehicle</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="maxavailabletemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Temperature</label>
 		<description>Indicates the maximum inside temperature of the vehicle</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -444,7 +444,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="outsidetemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outside Temperature</label>
 		<description>Indicates the outside temperature of the vehicle</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -627,7 +627,7 @@
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="combinedtemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Combined Temperature</label>
 		<description>Combined average temperature of the driver and passenger autoconditioning settings. The temperature for
 			the driver and passenger will be synced when set.</description>

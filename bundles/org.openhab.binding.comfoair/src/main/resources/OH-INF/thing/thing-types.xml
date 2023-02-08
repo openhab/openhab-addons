@@ -420,7 +420,7 @@
 	</channel-type>
 
 	<channel-type id="target_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Target (comfort) temperature</description>
 		<category>Temperature</category>
@@ -556,7 +556,7 @@
 	</channel-type>
 
 	<channel-type id="outdoor_temperature_in">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature Incoming</label>
 		<description>Intake air temperature (outside)</description>
 		<category>Temperature</category>
@@ -564,7 +564,7 @@
 	</channel-type>
 
 	<channel-type id="outdoor_temperature_out">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature Outgoing</label>
 		<description>Outlet air temperature (outside)</description>
 		<category>Temperature</category>
@@ -572,7 +572,7 @@
 	</channel-type>
 
 	<channel-type id="indoor_temperature_in">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature Incoming</label>
 		<description>Inlet air temperature (inside)</description>
 		<category>Temperature</category>
@@ -580,7 +580,7 @@
 	</channel-type>
 
 	<channel-type id="indoor_temperature_out">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature Outgoing</label>
 		<description>Uptake air temperature (inside)</description>
 		<category>Temperature</category>
@@ -708,7 +708,7 @@
 	</channel-type>
 
 	<channel-type id="ghx_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>GHX Temperature</label>
 		<description>Temperature of geothermal heat exchanger sensor</description>
 		<category>Temperature</category>
@@ -716,7 +716,7 @@
 	</channel-type>
 
 	<channel-type id="heater_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heater Temperature</label>
 		<description>Temperature of heater sensor</description>
 		<category>Temperature</category>
@@ -724,7 +724,7 @@
 	</channel-type>
 
 	<channel-type id="cookerhood_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cookerhood Temperature</label>
 		<description>Temperature of cookerhood sensor</description>
 		<category>Temperature</category>
@@ -868,7 +868,7 @@
 	</channel-type>
 
 	<channel-type id="ghx_temperature_low" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>GHX Temperature (low)</label>
 		<description>Lower temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
@@ -876,7 +876,7 @@
 	</channel-type>
 
 	<channel-type id="ghx_temperature_high" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>GHX Temperature (high)</label>
 		<description>Upper temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
@@ -908,7 +908,7 @@
 	</channel-type>
 
 	<channel-type id="heater_target_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heater Target Temperature</label>
 		<description>Target temperature of the heater</description>
 		<category>Temperature</category>
@@ -924,7 +924,7 @@
 	</channel-type>
 
 	<channel-type id="enthalpy_temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Enthalpy Sensor Temperature</label>
 		<description>Temperature of the enthalpy sensor</description>
 		<category>Temperature</category>

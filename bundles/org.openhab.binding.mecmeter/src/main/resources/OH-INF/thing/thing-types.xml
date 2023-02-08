@@ -365,7 +365,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Internal Temperature</label>
 		<description>Internal Temperature of the energy meter</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

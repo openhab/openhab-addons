@@ -112,7 +112,7 @@
 		<description>The pressure of your water supply</description>
 	</channel-type>
 	<channel-type id="temperature_guard">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The ambient temperature of the appliance</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -129,7 +129,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The temperature reported by the device</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

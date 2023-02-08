@@ -72,7 +72,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The current temperature at this thermostat.</description>
 		<category>Temperature</category>
@@ -84,7 +84,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_heat_setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat SetPoint</label>
 		<description>The current low/heating setpoint of this thermostat.</description>
 		<category>Temperature</category>
@@ -92,7 +92,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_cool_setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool SetPoint</label>
 		<description>The current high/cooling setpoint of this thermostat.</description>
 		<category>Temperature</category>

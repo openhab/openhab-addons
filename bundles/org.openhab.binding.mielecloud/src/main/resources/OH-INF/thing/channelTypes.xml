@@ -242,7 +242,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -250,7 +250,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.temperature_current.description</description>
 		<category>Number:Temperature</category>
@@ -316,7 +316,7 @@
 	</channel-type>
 
 	<channel-type id="fridge_temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.fridge_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.fridge_temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -324,7 +324,7 @@
 	</channel-type>
 
 	<channel-type id="fridge_temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.fridge_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.fridge_temperature_current.description</description>
 		<category>Number:Temperature</category>
@@ -332,7 +332,7 @@
 	</channel-type>
 
 	<channel-type id="freezer_temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.freezer_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.freezer_temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -340,7 +340,7 @@
 	</channel-type>
 
 	<channel-type id="freezer_temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.freezer_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.freezer_temperature_current.description</description>
 		<category>Number:Temperature</category>
@@ -348,7 +348,7 @@
 	</channel-type>
 
 	<channel-type id="top_temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.top_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.top_temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -356,7 +356,7 @@
 	</channel-type>
 
 	<channel-type id="top_temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.top_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.top_temperature_current.description</description>
 		<category>Number:Temperature</category>
@@ -364,7 +364,7 @@
 	</channel-type>
 
 	<channel-type id="middle_temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.middle_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.middle_temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -372,7 +372,7 @@
 	</channel-type>
 
 	<channel-type id="middle_temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.middle_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.middle_temperature_current.description</description>
 		<category>Number:Temperature</category>
@@ -380,7 +380,7 @@
 	</channel-type>
 
 	<channel-type id="bottom_temperature_target">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.bottom_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.bottom_temperature_target.description</description>
 		<category>Number:Temperature</category>
@@ -388,7 +388,7 @@
 	</channel-type>
 
 	<channel-type id="bottom_temperature_current">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.mielecloud.bottom_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.bottom_temperature_current.description</description>
 		<category>Number:Temperature</category>

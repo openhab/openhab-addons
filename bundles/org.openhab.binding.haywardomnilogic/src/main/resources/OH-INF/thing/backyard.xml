@@ -30,7 +30,7 @@
 	</thing-type>
 
 	<channel-type id="airTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Air Temp</label>
 		<description>Air Temp</description>
 		<state pattern="%d %unit%" readOnly="true"/>

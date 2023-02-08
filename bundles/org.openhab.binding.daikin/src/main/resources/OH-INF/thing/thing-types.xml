@@ -91,7 +91,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
@@ -99,7 +99,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-indoortemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>The indoor temperature</description>
 		<category>Temperature</category>
@@ -107,7 +107,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-outdoortemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 		<description>The outdoor temperature</description>
 		<category>Temperature</category>

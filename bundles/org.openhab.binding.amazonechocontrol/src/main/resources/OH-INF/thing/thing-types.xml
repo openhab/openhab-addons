@@ -629,7 +629,7 @@
 	</channel-type>
 	<!-- Alexa.TemperatureSensor -->
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -648,13 +648,13 @@
 	</channel-type>
 	<!-- Alexa.ThermostatController -->
 	<channel-type id="targetSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Setpoint</label>
 		<description>Target Setpoint</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="upperSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Upper Setpoint</label>
 		<description>Upper Setpoint</description>
 		<category>Temperature</category>
@@ -665,7 +665,7 @@
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="lowerSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Lower Setpoint</label>
 		<description>Lower Setpoint</description>
 		<category>Temperature</category>

@@ -77,7 +77,7 @@
 	</thing-type>
 
 	<channel-type id="temp-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The Current Temperature Reading of the Thermostat</description>
 		<category>Temperature</category>
@@ -163,7 +163,7 @@
 	</channel-type>
 
 	<channel-type id="remote_temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Remote Temperature</label>
 		<description>The remote temperature takes the place of the ambient temperature as read by the local thermostat
 			temperature sensor</description>

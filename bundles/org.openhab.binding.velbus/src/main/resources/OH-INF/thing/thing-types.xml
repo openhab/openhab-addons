@@ -1002,7 +1002,7 @@
 		<category>Blinds</category>
 	</channel-type>
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -1028,7 +1028,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="temperatureSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Setpoint</label>
 		<category>Temperature</category>
 		<state readOnly="false" min="-55" max="63.5" step="0.5" pattern="%.1f %unit%">

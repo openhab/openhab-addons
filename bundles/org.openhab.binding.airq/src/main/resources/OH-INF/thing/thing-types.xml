@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="dewpt" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew Point</label>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
@@ -301,7 +301,7 @@
 	</channel-type>
 
 	<channel-type id="temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>

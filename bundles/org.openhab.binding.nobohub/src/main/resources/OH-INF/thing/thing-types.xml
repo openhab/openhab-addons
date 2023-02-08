@@ -75,7 +75,7 @@
 	</channel-type>
 
 	<channel-type id="eco-temperature-channel-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Temperature</label>
 		<description>The preferred Eco temperature level set on the heater or in the binding</description>
 		<category>Temperature</category>
@@ -87,7 +87,7 @@
 	</channel-type>
 
 	<channel-type id="comfort-temperature-channel-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Temperature</label>
 		<description>The preferred Comfort temperature level set on the heater or in the binding</description>
 		<category>Temperature</category>
@@ -99,7 +99,7 @@
 	</channel-type>
 
 	<channel-type id="temperature-channel-type">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>The current temperature from a device that supports reporting temperatures</description>
 		<category>Temperature</category>

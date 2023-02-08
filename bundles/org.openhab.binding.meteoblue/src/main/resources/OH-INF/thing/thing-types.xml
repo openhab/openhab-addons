@@ -127,7 +127,7 @@
 	</channel-type>
 
 	<channel-type id="minTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Temperature</label>
 		<description>The low temperature</description>
 		<category>Temperature</category>
@@ -135,7 +135,7 @@
 	</channel-type>
 
 	<channel-type id="maxTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Temperature</label>
 		<description>The high temperature</description>
 		<category>Temperature</category>
@@ -143,7 +143,7 @@
 	</channel-type>
 
 	<channel-type id="meanTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mean Temperature</label>
 		<description>The average temperature</description>
 		<category>Temperature</category>
@@ -151,7 +151,7 @@
 	</channel-type>
 
 	<channel-type id="feltTemperatureMin" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Felt Temperature</label>
 		<description>The low "feels like" temperature</description>
 		<category>Temperature</category>
@@ -159,7 +159,7 @@
 	</channel-type>
 
 	<channel-type id="feltTemperatureMax" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Felt Temperature</label>
 		<description>The high "feels like" temperature</description>
 		<category>Temperature</category>

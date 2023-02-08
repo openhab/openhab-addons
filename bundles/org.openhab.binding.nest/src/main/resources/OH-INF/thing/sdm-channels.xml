@@ -129,7 +129,7 @@
 	</channel-type>
 
 	<channel-type id="SDMAmbientTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Ambient Temperature</label>
 		<description>Lists the current ambient temperature from the thermostat</description>
 		<category>Temperature</category>
@@ -189,7 +189,7 @@
 	</channel-type>
 
 	<channel-type id="SDMMaximumTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Temperature Setting</label>
 		<description>Lists the maximum temperature setting from the thermostat</description>
 		<category>Temperature</category>
@@ -197,7 +197,7 @@
 	</channel-type>
 
 	<channel-type id="SDMMinimumTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Temperature Setting</label>
 		<description>Lists the minimum temperature setting from the thermostat</description>
 		<category>Temperature</category>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="SDMTargetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Lists the target temperature setting from the thermostat</description>
 		<category>Temperature</category>
@@ -213,7 +213,7 @@
 	</channel-type>
 
 	<channel-type id="SDMTemperatureCool">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Temperature</label>
 		<description>Lists the cool temperature setting from the thermostat</description>
 		<category>Temperature</category>
@@ -221,7 +221,7 @@
 	</channel-type>
 
 	<channel-type id="SDMTemperatureHeat">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Temperature</label>
 		<description>Lists the heat temperature setting from the thermostat</description>
 		<category>Temperature</category>

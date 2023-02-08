@@ -401,7 +401,7 @@
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="oven_current_cavity_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cavity Temperature</label>
 		<description>This status describes the oven cavity temperature of the home appliance.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -413,7 +413,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<description>This status describes the intended cooking compartment temperature of the home appliance.</description>
 		<state pattern="%.0f %unit%" step="1"/>
@@ -583,13 +583,13 @@
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature_refrigerator">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Refrigerator Temperature</label>
 		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature_freezer">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Freezer temperature</label>
 		<description>Target temperature of the freezer compartment (Range depends on appliance - common range -16 to -24°C).</description>
 		<state step="1" pattern="%.0f %unit%"/>

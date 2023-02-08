@@ -1174,7 +1174,7 @@
 
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -1186,7 +1186,7 @@
 	</channel-type>
 
 	<channel-type id="setpointTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>

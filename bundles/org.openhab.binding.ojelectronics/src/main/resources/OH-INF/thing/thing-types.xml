@@ -83,7 +83,7 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="floorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Floor Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -109,7 +109,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -135,7 +135,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="comfortSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Set Point Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
@@ -149,7 +149,7 @@
 		<label>End Time of Boost Mode</label>
 	</channel-type>
 	<channel-type id="manualSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Manual Set Point Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>

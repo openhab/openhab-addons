@@ -5,126 +5,126 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="temperatureHeatingCircuitFlow">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Flow Temp. Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatingCircuitReturn">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Temp. Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatingCircuitReturnTarget">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Temp. Target Heating Circuit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureBufferTankReturn" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Temp. in Buffer Tank</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotGas" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hot Gas Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutside">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outside Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOutsideMean">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Avg. 24h-Temp. Outside (Limiting)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotWater">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hot Water Actual Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceInlet" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Source Inlet Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceOutlet" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Source Outlet Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit1Flow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 1 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit1FlowTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 1 Flow Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomStation" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Room Station 1</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit2Flow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 2 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit2FlowTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 2 Flow Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureSolarCollector" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Solar Collector Sensor</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureSolarTank" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Solar Tank Sensor</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureExternalEnergySource" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Sensor Ext. Energy Source</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1187,7 +1187,7 @@
 	</channel-type>
 
 	<channel-type id="bakeoutProgramTemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Bakeout Program</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1270,14 +1270,14 @@
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit3FlowTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 3 Flow Temp. Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureMixingCircuit3Flow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Mixing Circuit 3 Flow Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1309,14 +1309,14 @@
 	</channel-type>
 
 	<channel-type id="temperatureRoomStation2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Room Station 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomStation3" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Room Station 3</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1411,14 +1411,14 @@
 	</channel-type>
 
 	<channel-type id="temperatureSupplyAir" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Air Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureExhaustAir" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Exhaust Air Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1517,35 +1517,35 @@
 	</channel-type>
 
 	<channel-type id="temperatureSuctionEvaporator" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Suction Evaporator</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureSuctionCompressor" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Suction Compressor</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureCompressorHeating" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Compressor Heating</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheating" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheatingTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1606,7 +1606,7 @@
 	</channel-type>
 
 	<channel-type id="temperatureFlowTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Flow Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1647,49 +1647,49 @@
 	</channel-type>
 
 	<channel-type id="temperatureCompressorEVI" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Compressor Temp. EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeEVI" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Intake Temp. EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheatingEVI" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating EVI</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheatingTargetEVI" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating EVI Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureCondensation" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Condensation Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureLiquidEEV" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Liquid Temp. EEV</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHypothermiaEEV" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hypothermia EEV</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1710,49 +1710,49 @@
 	</channel-type>
 
 	<channel-type id="temperatureHotGas2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hot Gas Temp. Sensor 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHeatSourceInlet2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Sensor Heat Source Inlet 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeEvaporator2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Intake Temp. Evaporator 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureIntakeCompressor2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Intake Temp. Compressor 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureCompressor2Heating" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Compressor 2 Heating</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheating2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureOverheatingTarget2" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Overheating Target 2</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1920,21 +1920,21 @@
 	</channel-type>
 
 	<channel-type id="temperatureRoom" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Temp. Actual Value</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureRoomTarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Temp. Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureHotWaterTop" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temp. Domestic Water Top</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1972,14 +1972,14 @@
 
 
 	<channel-type id="temperatureHeatingParallelShift">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heating Temp. (Offset)</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
 	</channel-type>
 
 	<channel-type id="temperatureHotWaterCoverage">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Coverage Hot Water Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
@@ -2054,7 +2054,7 @@
 	</channel-type>
 
 	<channel-type id="temperatureHotWaterTarget">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hot Water Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
@@ -2072,21 +2072,21 @@
 	</channel-type>
 
 	<channel-type id="temperatureComfortCoolingATRelease">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Cooling AT Release</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="temperatureComfortCoolingATReleaseTarget">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Cooling AT Release Target</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="temperatureHeatingLimit">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Heating Limit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>

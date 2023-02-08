@@ -72,7 +72,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureIndoor">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>Current Temperature Indoors</description>
 		<category>Temperature</category>
@@ -83,14 +83,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureWindChill" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Wind Chill Temperature</label>
 		<description>Wind Chill Temperature Outdoors</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureDewPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew Point Temperature</label>
 		<description>Dew Point Temperature Outdoors</description>
 		<category>Temperature</category>

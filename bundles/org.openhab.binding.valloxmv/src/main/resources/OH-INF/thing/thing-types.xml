@@ -102,7 +102,7 @@
 	</channel-type>
 
 	<channel-type id="tempinside">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Inside</label>
 		<description>Current temperature inside the building.</description>
 		<category>Temperature</category>
@@ -110,7 +110,7 @@
 	</channel-type>
 
 	<channel-type id="tempoutside">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Outside</label>
 		<description>Current temperature outside the building.</description>
 		<category>Temperature</category>
@@ -118,7 +118,7 @@
 	</channel-type>
 
 	<channel-type id="tempexhaust">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Exhaust</label>
 		<description>Current temperature of the air flow exhausting the building.</description>
 		<category>Temperature</category>
@@ -126,7 +126,7 @@
 	</channel-type>
 
 	<channel-type id="tempincomingbeforeheating" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Incoming Before Heating</label>
 		<description>
 			Current temperature of the air flow incoming to the building before heating (if optional heating module
@@ -137,7 +137,7 @@
 	</channel-type>
 
 	<channel-type id="tempincoming">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Incoming</label>
 		<description>Current temperature of the air flow incoming to the building.</description>
 		<category>Temperature</category>
@@ -243,7 +243,7 @@
 	</channel-type>
 
 	<channel-type id="homeairtemptarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Home Target Temperature</label>
 		<description>Target temperature in home state</description>
 		<category>Temperature</category>
@@ -251,7 +251,7 @@
 	</channel-type>
 
 	<channel-type id="awayairtemptarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Away Target Temperature</label>
 		<description>Target temperature in away state</description>
 		<category>Temperature</category>
@@ -259,7 +259,7 @@
 	</channel-type>
 
 	<channel-type id="boostairtemptarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Boost Target Temperature</label>
 		<description>Target temperature in boost state</description>
 		<category>Temperature</category>
@@ -307,7 +307,7 @@
 	</channel-type>
 
 	<channel-type id="extraairtemptarget" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Extra Target Temperature</label>
 		<description>Target temperature in extra profile</description>
 		<category>Temperature</category>

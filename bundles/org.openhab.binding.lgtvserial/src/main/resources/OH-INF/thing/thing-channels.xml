@@ -458,7 +458,7 @@
 
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
 	<channel-type id="temperature-value">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Value</label>
 		<description>Read the inside temperature value</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

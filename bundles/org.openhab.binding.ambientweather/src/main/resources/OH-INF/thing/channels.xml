@@ -26,7 +26,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
@@ -34,7 +34,7 @@
 	</channel-type>
 
 	<channel-type id="dewPoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
@@ -42,7 +42,7 @@
 	</channel-type>
 
 	<channel-type id="feelingTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
@@ -270,7 +270,7 @@
 	</channel-type>
 
 	<channel-type id="soilTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Soil Temperature</label>
 		<description>Temperature of the soil</description>
 		<category>Sensor</category>

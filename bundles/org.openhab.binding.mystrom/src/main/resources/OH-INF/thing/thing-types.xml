@@ -158,7 +158,7 @@
 	</channel-type>
 
 	<channel-type id="temperature-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The current temperature at the plug</description>
 		<state readOnly="true"/>

@@ -83,7 +83,7 @@
 	</thing-type>
 
 	<channel-type id="indoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>Current indoor temperature</description>
 		<category>Temperature</category>
@@ -92,7 +92,7 @@
 	</channel-type>
 
 	<channel-type id="outdoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
 		<category>Temperature</category>

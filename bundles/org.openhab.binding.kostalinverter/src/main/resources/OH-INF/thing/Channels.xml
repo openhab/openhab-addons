@@ -784,7 +784,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-battery-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Battery Temperature</label>
 		<description>Current battery temperature</description>
 		<category>Energy</category>

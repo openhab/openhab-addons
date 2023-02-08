@@ -255,7 +255,7 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="actualTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Actual Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -265,7 +265,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="rawTemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Raw Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -275,12 +275,12 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="desiredHeat">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Heat</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCool">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Cool</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -300,22 +300,22 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="desiredHeatRangeLow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Heat Range Low</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredHeatRangeHigh" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Heat Range High</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCoolRangeLow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Cool Range Low</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredCoolRangeHigh" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Desired Cool Range High</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -505,7 +505,7 @@
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="coldTempAlert">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cold Temp Alert</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -515,7 +515,7 @@
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hotTempAlert">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Hot Temp Alert</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -655,7 +655,7 @@
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="compressorProtectionMinTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Compressor Protection Min Temp</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -745,42 +745,42 @@
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 	<channel-type id="heatMinTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Min Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatMaxTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Max Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolMinTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Min Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolMaxTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Max Temp</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatRangeHigh" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Range High</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="heatRangeLow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Range Low</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolRangeHigh" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Range High</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="coolRangeLow" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Range Low</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -800,12 +800,12 @@
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="auxOutdoorTempAlert" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Aux Outdoor Temp Alert</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="auxMaxOutdoorTemp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Aux Max Outdoor Temp</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1218,12 +1218,12 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="eventCoolHoldTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cool Hold Temp</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="eventHeatHoldTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Hold Temp</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -1379,7 +1379,7 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="weatherTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1394,7 +1394,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherDewpoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dewpoint</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1429,12 +1429,12 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherTempHigh">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>High Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherTempLow">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Low Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1734,7 +1734,7 @@
 
 	<!-- Dynamically created sensor channel types -->
 	<channel-type id="sensorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Sensor Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

@@ -340,7 +340,7 @@
 	</channel-type>
 
 	<channel-type id="setTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Temperature</label>
 		<description>Desired target room temperature</description>
 		<category>Temperature</category>
@@ -352,7 +352,7 @@
 	</channel-type>
 
 	<channel-type id="measuredRoomTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Measured Room Temperature</label>
 		<description>Measured Room Temperature</description>
 		<category>Temperature</category>
@@ -364,7 +364,7 @@
 	</channel-type>
 
 	<channel-type id="measuredOutdoorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Measured Outdoor Temperature</label>
 		<description>Measured Outdoor Temperature</description>
 		<category>Temperature</category>

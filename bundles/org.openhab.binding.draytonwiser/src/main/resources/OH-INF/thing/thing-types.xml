@@ -235,7 +235,7 @@
 
 	<!-- Channel Types -->
 	<channel-type id="currentTemperature-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -251,7 +251,7 @@
 	</channel-type>
 
 	<channel-type id="currentSetPoint-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Point</label>
 		<description>Current set point</description>
 		<category>Temperature</category>
@@ -342,7 +342,7 @@
 	</channel-type>
 
 	<channel-type id="awayModeSetPoint-channel" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Away Mode Set Point</label>
 		<description>Away Mode Set Point</description>
 		<category>Temperature</category>

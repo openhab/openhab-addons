@@ -539,19 +539,19 @@
 
 
 	<channel-type id="batteryTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Battery Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="caseTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Case Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="mcuTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>MCU Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>

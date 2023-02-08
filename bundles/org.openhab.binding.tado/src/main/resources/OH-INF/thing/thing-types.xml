@@ -127,7 +127,7 @@
 	</channel-type>
 
 	<channel-type id="currentTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -167,7 +167,7 @@
 	</channel-type>
 
 	<channel-type id="targetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>

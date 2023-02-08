@@ -48,7 +48,7 @@
 
 	</thing-type>
 	<channel-type id="isTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Is Temperature Stove</label>
 		<description>Receives the is temperature of the stove as number:temperature</description>
 		<state readOnly="true"/>
@@ -62,7 +62,7 @@
 	</channel-type>
 
 	<channel-type id="spTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Temperature Stove</label>
 		<description>Set the target temperature of the stove as number:temperature</description>
 	</channel-type>

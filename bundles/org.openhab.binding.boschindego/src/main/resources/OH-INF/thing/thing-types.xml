@@ -153,7 +153,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryTemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Battery Temperature</label>
 		<description>Battery temperature reported by the device</description>
 		<category>Temperature</category>

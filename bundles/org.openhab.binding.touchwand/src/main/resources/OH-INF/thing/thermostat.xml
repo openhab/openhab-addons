@@ -22,7 +22,7 @@
 		<label>AC On Off State</label>
 	</channel-type>
 	<channel-type id="targetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Target Temperature</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
@@ -30,7 +30,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="roomTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Temperature</label>
 		<description>Current room temperature</description>
 		<category>Temperature</category>

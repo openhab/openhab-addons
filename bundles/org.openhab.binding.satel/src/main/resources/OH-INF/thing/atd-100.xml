@@ -37,7 +37,7 @@
 	</thing-type>
 
 	<channel-type id="zoneTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in the zone</description>
 		<category>Temperature</category>

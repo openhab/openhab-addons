@@ -108,7 +108,7 @@
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="airthings_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

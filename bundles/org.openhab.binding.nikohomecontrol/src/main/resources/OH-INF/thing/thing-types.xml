@@ -219,7 +219,7 @@
 	</channel-type>
 
 	<channel-type id="measured">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channelMeasuredLabel</label>
 		<description>@text/channelMeasuredDescription</description>
 		<category>Temperature</category>
@@ -230,7 +230,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channelSetpointLabel</label>
 		<description>@text/channelSetpointDescription</description>
 		<category>Temperature</category>

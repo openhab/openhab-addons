@@ -27,7 +27,7 @@
 
 	<!-- Temperature Sensor Channels -->
 	<channel-type id="sensor_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The current temperature at this temperature sensor.</description>
 		<category>Temperature</category>
@@ -39,7 +39,7 @@
 	</channel-type>
 
 	<channel-type id="sensor_temp_low_setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Low SetPoint</label>
 		<description>The current low setpoint of this temperature sensor.</description>
 		<category>Temperature</category>
@@ -47,7 +47,7 @@
 	</channel-type>
 
 	<channel-type id="sensor_temp_high_setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>High SetPoint</label>
 		<description>The current high setpoint of this temperature sensor.</description>
 		<category>Temperature</category>

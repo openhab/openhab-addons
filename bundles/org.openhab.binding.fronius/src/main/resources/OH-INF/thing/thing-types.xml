@@ -366,7 +366,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="ohmpilot_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature of the PT1000</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

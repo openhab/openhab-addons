@@ -150,7 +150,7 @@
 	</channel-type>
 
 	<channel-type id="dew-point" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew Point</label>
 		<description>Outdoor dew point.</description>
 		<category>Humidity</category>
@@ -162,7 +162,7 @@
 	</channel-type>
 
 	<channel-type id="wind-chill" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Wind Chill</label>
 		<description>The apparent wind chill temperature.</description>
 		<category>Temperature</category>
@@ -175,7 +175,7 @@
 
 	<!-- for extra outdoor sensors use temp2f, temp3f, and so on -->
 	<channel-type id="indoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>Indoor temperature.</description>
 		<category>Temperature</category>
@@ -188,7 +188,7 @@
 
 	<!-- for sensors 2,3,4 use soiltemp2f, soiltemp3f, and soiltemp4f -->
 	<channel-type id="soil-temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Soil Temperature</label>
 		<description>Soil temperature.</description>
 		<category>Temperature</category>

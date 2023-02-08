@@ -144,7 +144,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature at the unit.</description>
 		<category>Temperature</category>

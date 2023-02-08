@@ -108,7 +108,7 @@
 	</channel-type>
 
 	<channel-type id="internalTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Probe Internal Temperature</label>
 		<description>Internal temperature reading of MEATER Probe</description>
 		<category>Temperature</category>
@@ -116,7 +116,7 @@
 	</channel-type>
 
 	<channel-type id="ambientTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Probe Ambient Temperature</label>
 		<description>Ambient temperature reading of MEATER Probe. If ambient is less than internal, ambient will equal
 			internal</description>
@@ -125,7 +125,7 @@
 	</channel-type>
 
 	<channel-type id="cookTargetTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Cook Target Temperature</label>
 		<description>Target temperature of current cook</description>
 		<category>Temperature</category>
@@ -133,7 +133,7 @@
 	</channel-type>
 
 	<channel-type id="cookPeakTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Cook Peak Temperature</label>
 		<description>Peak temperature of current cook</description>
 		<category>Temperature</category>

@@ -30,35 +30,35 @@
 	</channel-type>
 
 	<channel-type id="temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature_min" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Low Temperature Alarm</label>
 		<category>Temperature</category>
 		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature_max" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>High Temperature Alarm</label>
 		<category>Temperature</category>
 		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature_min_ro" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Low Temperature Alarm</label>
 		<category>Temperature</category>
 		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature_max_ro" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>High Temperature Alarm</label>
 		<category>Temperature</category>
 		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
@@ -182,7 +182,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_setpoint_ro" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f %unit%" readOnly="true"/>
@@ -231,7 +231,7 @@
 	</channel-type>
 
 	<channel-type id="temperature_setpoint" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<category>Temperature</category>
 		<state min="0" pattern="%.1f %unit%"/>

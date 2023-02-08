@@ -178,7 +178,7 @@
 	</channel-type>
 
 	<channel-type id="targetTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.shelly.targetTemp.label</label>
 		<description>@text/channel-type.shelly.targetTemp.description</description>
 		<category>Heating</category>
@@ -297,7 +297,7 @@
 	</channel-type>
 
 	<channel-type id="sensorTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.shelly.sensorTemp.label</label>
 		<description>@text/channel-type.shelly.sensorTemp.description</description>
 		<category>Temperature</category>
@@ -462,7 +462,7 @@
 	</channel-type>
 
 	<channel-type id="sensorExtTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
 		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
 		<category>Temperature</category>

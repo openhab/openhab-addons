@@ -611,7 +611,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>The temperature</description>
 		<state readOnly="true" pattern="%d %unit%"/>

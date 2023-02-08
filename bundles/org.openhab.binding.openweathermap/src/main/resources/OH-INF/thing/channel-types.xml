@@ -395,7 +395,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-outdoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Forecasted Temperature</label>
 		<description>Forecasted outdoor temperature.</description>
 		<category>Temperature</category>
@@ -403,7 +403,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-min-outdoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Minimum Temperature</label>
 		<description>Minimum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
@@ -411,7 +411,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-max-outdoor-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Maximum Temperature</label>
 		<description>Maximum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
@@ -419,7 +419,7 @@
 	</channel-type>
 
 	<channel-type id="day-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Day Temperature</label>
 		<description>Forecasted outdoor temperature for the day.</description>
 		<category>Temperature</category>
@@ -427,7 +427,7 @@
 	</channel-type>
 
 	<channel-type id="morning-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Morning Temperature</label>
 		<description>Forecasted outdoor temperature for the morning.</description>
 		<category>Temperature</category>
@@ -435,7 +435,7 @@
 	</channel-type>
 
 	<channel-type id="evening-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Evening Temperature</label>
 		<description>Forecasted outdoor temperature for the evening.</description>
 		<category>Temperature</category>
@@ -443,7 +443,7 @@
 	</channel-type>
 
 	<channel-type id="night-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Night Temperature</label>
 		<description>Forecasted outdoor temperature for the night.</description>
 		<category>Temperature</category>
@@ -451,7 +451,7 @@
 	</channel-type>
 
 	<channel-type id="apparent-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Apparent Temperature</label>
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
@@ -459,7 +459,7 @@
 	</channel-type>
 
 	<channel-type id="apparent-morning">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Apparent Morning Temperature</label>
 		<description>Forecasted apparent temperature in the morning.</description>
 		<category>Temperature</category>
@@ -467,7 +467,7 @@
 	</channel-type>
 
 	<channel-type id="apparent-day">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Apparent Day Temperature</label>
 		<description>Forecasted apparent temperature during the day.</description>
 		<category>Temperature</category>
@@ -475,7 +475,7 @@
 	</channel-type>
 
 	<channel-type id="apparent-evening">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Apparent Evening Temperature</label>
 		<description>Forecasted apparent temperature at the evening.</description>
 		<category>Temperature</category>
@@ -483,7 +483,7 @@
 	</channel-type>
 
 	<channel-type id="apparent-night">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Apparent Night Temperature</label>
 		<description>Forecasted apparent temperature in the night.</description>
 		<category>Temperature</category>
@@ -491,7 +491,7 @@
 	</channel-type>
 
 	<channel-type id="dew-point" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dew-Point Temperature</label>
 		<description>Forecasted dew-point temperature.</description>
 		<category>Temperature</category>
@@ -507,7 +507,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-apparent-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Forecasted Apparent Temperature</label>
 		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>

@@ -215,14 +215,14 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tmpT2p">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature type 2 port</label>
 		<description>Temperature of the Go-eCharger on the type 2 port</description>
 		<category>Temperature</category>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tmp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature circuit board</label>
 		<description>Temperature of the Go-eCharger on circuit board</description>
 		<category>Temperature</category>

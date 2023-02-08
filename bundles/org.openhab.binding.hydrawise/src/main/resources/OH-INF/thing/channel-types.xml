@@ -223,7 +223,7 @@
 
 	<!-- Weather Forecast -->
 	<channel-type id="temperaturehigh">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>High temperature</label>
 		<description>High temperature</description>
 		<category>Temperature</category>
@@ -231,7 +231,7 @@
 	</channel-type>
 
 	<channel-type id="temperaturelow">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Low Temperature</label>
 		<description>Low Temperature</description>
 		<category>Temperature</category>

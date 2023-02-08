@@ -88,7 +88,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in degree Celsius</description>
 		<category>Temperature</category>
@@ -523,14 +523,14 @@
 	</channel-type>
 
 	<channel-type id="temperatureSetPoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Point</label>
 		<description>Desired temperature</description>
 		<state min="10" max="30"/>
 	</channel-type>
 
 	<channel-type id="feedTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Feed Temperature</label>
 		<description>Water temperature in the radiator input</description>
 		<state readOnly="true"/>
@@ -779,7 +779,7 @@
 	</channel-type>
 
 	<channel-type id="outdoorAirTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 		<description>Current outdoor air temperature in degree Celsius</description>
 		<category>Temperature</category>
@@ -787,7 +787,7 @@
 	</channel-type>
 
 	<channel-type id="supplyAirTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Air Temperature</label>
 		<description>Current supply air temperature in degree Celsius</description>
 		<category>Temperature</category>
@@ -795,7 +795,7 @@
 	</channel-type>
 
 	<channel-type id="indoorAirTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 		<description>Current indoor air temperature in degree Celsius</description>
 		<category>Temperature</category>
@@ -803,7 +803,7 @@
 	</channel-type>
 
 	<channel-type id="exhaustAirTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Exhaust Air Temperature</label>
 		<description>Current exhaust air temperature in degree Celsius</description>
 		<category>Temperature</category>

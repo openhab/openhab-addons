@@ -309,7 +309,7 @@
 
 	<!-- Thermostat -->
 	<channel-type id="WWNTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
@@ -317,7 +317,7 @@
 	</channel-type>
 
 	<channel-type id="WWNSetPoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Set Point</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
@@ -325,7 +325,7 @@
 	</channel-type>
 
 	<channel-type id="WWNMaxSetPoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Max Set Point</label>
 		<description>The max set point temperature</description>
 		<category>Temperature</category>
@@ -333,7 +333,7 @@
 	</channel-type>
 
 	<channel-type id="WWNMinSetPoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Min Set Point</label>
 		<description>The min set point temperature</description>
 		<category>Temperature</category>
@@ -341,7 +341,7 @@
 	</channel-type>
 
 	<channel-type id="WWNEcoMaxSetPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Max Set Point</label>
 		<description>The eco range max set point temperature</description>
 		<category>Temperature</category>
@@ -349,7 +349,7 @@
 	</channel-type>
 
 	<channel-type id="WWNEcoMinSetPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Min Set Point</label>
 		<description>The eco range min set point temperature</description>
 		<category>Temperature</category>
@@ -357,7 +357,7 @@
 	</channel-type>
 
 	<channel-type id="WWNLockedMaxSetPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Locked Max Set Point</label>
 		<description>The locked range max set point temperature</description>
 		<category>Temperature</category>
@@ -365,7 +365,7 @@
 	</channel-type>
 
 	<channel-type id="WWNLockedMinSetPoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Locked Min Set Point</label>
 		<description>The locked range min set point temperature</description>
 		<category>Temperature</category>

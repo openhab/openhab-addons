@@ -54,7 +54,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="ups-temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>UPS Temperature</label>
 		<description>UPS temperature (degrees C)</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

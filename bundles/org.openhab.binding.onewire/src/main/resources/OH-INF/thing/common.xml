@@ -12,13 +12,13 @@
 	</channel-type>
 	<!-- Temperature Channel -->
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-por">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -31,7 +31,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="temperature-por-res">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -56,7 +56,7 @@
 	</channel-type>
 	<!-- Dewpoint Channel -->
 	<channel-type id="dewpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dewpoint</label>
 		<description>dewpoint (calculated from temperature and relative humidity)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

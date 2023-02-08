@@ -103,7 +103,7 @@
 
 	<!-- Channel definitions of specific FRITZ! devices or Channel Groups -->
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
@@ -152,7 +152,7 @@
 	</channel-type>
 
 	<channel-type id="actual_temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
@@ -160,7 +160,7 @@
 	</channel-type>
 
 	<channel-type id="set_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature.</description>
 		<category>Heating</category>
@@ -168,7 +168,7 @@
 	</channel-type>
 
 	<channel-type id="eco_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Eco Temperature</label>
 		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
@@ -176,7 +176,7 @@
 	</channel-type>
 
 	<channel-type id="comfort_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Comfort Temperature</label>
 		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
@@ -209,7 +209,7 @@
 	</channel-type>
 
 	<channel-type id="next_temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Next Setpoint Temperature</label>
 		<description>Next Setpoint Temperature.</description>
 		<category>Temperature</category>

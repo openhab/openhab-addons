@@ -25,7 +25,7 @@
 	<!-- boiler -->
 
 	<channel-type id="roomtemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Temperature</label>
 		<description>Current sensed room temperature</description>
 		<category>Temperature</category>
@@ -33,7 +33,7 @@
 	</channel-type>
 
 	<channel-type id="roomsetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Room Setpoint</label>
 		<description>Current room temperature setpoint</description>
 		<category>Temperature</category>
@@ -41,7 +41,7 @@
 	</channel-type>
 
 	<channel-type id="temperaturetemporary">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temporary Room Setpoint Override</label>
 		<description>Temporary override room temperature setpoint</description>
 		<category>Temperature</category>
@@ -49,7 +49,7 @@
 	</channel-type>
 
 	<channel-type id="temperatureconstant">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Constant Room Setpoint Override</label>
 		<description>Constant override room temperature setpoint</description>
 		<category>Temperature</category>
@@ -57,7 +57,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint</label>
 		<description>Central heating water setpoint set at boiler</description>
 		<category>Temperature</category>
@@ -65,7 +65,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpointrequested">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint Requested</label>
 		<description>Central heating water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
@@ -73,7 +73,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpointoverride">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint Override</label>
 		<description>Central heating water setpoint configured on OTGW</description>
 		<category>Temperature</category>
@@ -81,7 +81,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpoint2">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint 2</label>
 		<description>Central heating 2 water setpoint set at boiler</description>
 		<category>Temperature</category>
@@ -89,7 +89,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpoint2requested">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint 2 Requested</label>
 		<description>Central heating 2 water setpoint requested by Thermostat</description>
 		<category>Temperature</category>
@@ -97,7 +97,7 @@
 	</channel-type>
 
 	<channel-type id="controlsetpoint2override">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Control Setpoint 2 Override</label>
 		<description>Central heating 2 water setpoint configured on OTGW</description>
 		<category>Temperature</category>
@@ -105,7 +105,7 @@
 	</channel-type>
 
 	<channel-type id="dhwtemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Domestic Hot Water Temperature</label>
 		<description>Domestic hot water temperature</description>
 		<category>Temperature</category>
@@ -113,7 +113,7 @@
 	</channel-type>
 
 	<channel-type id="tdhwset">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Domestic Hot Water Setpoint</label>
 		<description>Domestic hot water temperature setpoint</description>
 		<category>Temperature</category>
@@ -121,7 +121,7 @@
 	</channel-type>
 
 	<channel-type id="overridedhwsetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Domestic Hot Water Setpoint Override</label>
 		<description>Domestic hot water temperature setpoint override</description>
 		<category>Temperature</category>
@@ -129,7 +129,7 @@
 	</channel-type>
 
 	<channel-type id="flowtemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Boiler Water Temperature</label>
 		<description>Boiler water temperature</description>
 		<category>Temperature</category>
@@ -137,7 +137,7 @@
 	</channel-type>
 
 	<channel-type id="returntemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Return Water Temperature</label>
 		<description>Return water temperature</description>
 		<category>Temperature</category>
@@ -145,7 +145,7 @@
 	</channel-type>
 
 	<channel-type id="outsidetemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outside Temperature</label>
 		<description>Outside temperature</description>
 		<category>Temperature</category>
@@ -607,28 +607,28 @@
 	</channel-type>
 
 	<channel-type id="vh_supplyinlettemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Inlet Temperature</label>
 		<description>Supply inlet temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vh_supplyoutlettemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Supply Outlet Temperature</label>
 		<description>Supply outlet temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vh_exhaustinlettemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Exhaust Inlet Temperature</label>
 		<description>Exhaust inlet temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vh_exhaustoutlettemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Exhaust Outlet Temperature</label>
 		<description>Exhaust outlet temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

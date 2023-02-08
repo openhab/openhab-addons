@@ -303,7 +303,7 @@
 	</channel-type>
 
 	<channel-type id="heatingSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heating Setpoint</label>
 		<description>Heating Setpoint</description>
 		<category>Temperature</category>
@@ -311,7 +311,7 @@
 	</channel-type>
 
 	<channel-type id="coolingSetpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Cooling Setpoint</label>
 		<description>Cooling Setpoint</description>
 		<category>Temperature</category>
@@ -319,7 +319,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<category>Temperature</category>
@@ -328,7 +328,7 @@
 	</channel-type>
 
 	<channel-type id="outdoorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 		<description>Outdoor Temperature</description>
 		<category>Temperature</category>

@@ -476,7 +476,7 @@
 
 	<!-- Temperature Channel Type -->
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/channel-type.temperature.label</label>
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>

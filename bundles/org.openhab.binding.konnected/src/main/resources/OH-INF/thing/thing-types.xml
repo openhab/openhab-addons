@@ -49,7 +49,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="temperature-wifi">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
 		<state readOnly="true"/>
@@ -229,7 +229,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="temperature-pro">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
 		<state readOnly="true"/>

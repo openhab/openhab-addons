@@ -84,7 +84,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

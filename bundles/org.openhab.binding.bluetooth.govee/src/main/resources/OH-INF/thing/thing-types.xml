@@ -162,7 +162,7 @@
 	</thing-type>
 
 	<channel-type id="govee-temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Measured Temperature</label>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

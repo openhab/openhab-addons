@@ -63,12 +63,12 @@
 	</channel-type>
 
 	<channel-type id="brc1h_indoorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Indoor Temperature</label>
 	</channel-type>
 
 	<channel-type id="brc1h_outdoorTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Outdoor Temperature</label>
 	</channel-type>
 
@@ -98,7 +98,7 @@
 	</channel-type>
 
 	<channel-type id="brc1h_setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint</label>
 	</channel-type>
 

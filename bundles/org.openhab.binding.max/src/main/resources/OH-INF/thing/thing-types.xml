@@ -441,7 +441,7 @@
 	</channel-type>
 
 	<channel-type id="actual_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Current Temperature</label>
 		<description>Current measured room temperature</description>
 		<category>Temperature</category>
@@ -453,7 +453,7 @@
 	</channel-type>
 
 	<channel-type id="set_temp">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature</description>
 		<category>Temperature</category>

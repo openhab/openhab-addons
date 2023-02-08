@@ -17,7 +17,7 @@
 	</channel-type>
 	<!-- Battery temperature Channel Type -->
 	<channel-type id="Tbat">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Battery Temperature</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

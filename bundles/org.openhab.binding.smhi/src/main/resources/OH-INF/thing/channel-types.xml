@@ -11,19 +11,19 @@
 		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
 	<channel-type id="t">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="tmax">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Max Temperature</label>
 		<description>Highest temperature of the day</description>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="tmin">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Min Temperature</label>
 		<description>Lowest temperature of the day</description>
 		<state readOnly="true" pattern="%.1f °C"/>

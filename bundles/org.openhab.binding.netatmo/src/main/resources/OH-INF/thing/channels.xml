@@ -218,7 +218,7 @@
 	</channel-type>
 
 	<channel-type id="setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint.</description>
 		<category>Temperature</category>
@@ -529,7 +529,7 @@
 	</channel-type>
 
 	<channel-type id="heat-index">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Heat Index</label>
 		<description>Apparent computed temperature (based on temperature and humidity).</description>
 		<category>Temperature</category>
@@ -537,7 +537,7 @@
 	</channel-type>
 
 	<channel-type id="dewpoint" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dewpoint</label>
 		<description>Temperature to which air must be cooled to become saturated with water vapor.</description>
 		<category>Temperature</category>
@@ -545,14 +545,14 @@
 	</channel-type>
 
 	<channel-type id="dewpoint-depression" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Dewpoint Depression</label>
 		<description>Difference between the temperature and the dewpoint.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="max-temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Max Temp</label>
 		<description>Maximum Temperature on current day.</description>
 		<category>Temperature</category>
@@ -560,7 +560,7 @@
 	</channel-type>
 
 	<channel-type id="min-temp" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Min Temp</label>
 		<description>Minimum Temperature on current day</description>
 		<category>Temperature</category>

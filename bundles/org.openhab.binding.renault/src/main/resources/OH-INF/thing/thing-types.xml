@@ -178,14 +178,14 @@
 		</state>
 	</channel-type>
 	<channel-type id="hvactargettemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>HVAC Target Temperature</label>
 		<description>HVAC target temperature (19 to 21)</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="externaltemperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>External Temperature</label>
 		<description>Temperature outside of the car</description>
 		<category>Temperature</category>

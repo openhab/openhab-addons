@@ -172,7 +172,7 @@
 	</channel-type>
 
 	<channel-type id="dew-point" advanced="true">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>@text/dewPointLabel</label>
 		<description>@text/dewPointDescription</description>
 		<category>Temperature</category>

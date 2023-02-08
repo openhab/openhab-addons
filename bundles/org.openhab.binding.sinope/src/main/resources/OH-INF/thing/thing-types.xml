@@ -55,7 +55,7 @@
 	</thing-type>
 
 	<channel-type id="insideTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current inside temperature</description>
 		<category>Temperature</category>
@@ -64,7 +64,7 @@
 	</channel-type>
 
 	<channel-type id="outsideTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Current outside temperature</description>
 		<category>Temperature</category>
@@ -72,7 +72,7 @@
 	</channel-type>
 
 	<channel-type id="setpointTemperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>

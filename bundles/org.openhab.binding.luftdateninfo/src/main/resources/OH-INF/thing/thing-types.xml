@@ -84,7 +84,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temp-channel">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Temperature from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

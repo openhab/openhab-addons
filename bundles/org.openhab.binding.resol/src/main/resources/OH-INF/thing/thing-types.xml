@@ -189,7 +189,7 @@
 	</channel-type>
 
 	<channel-type id="temperature" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<description>Virtual temperature sensor input.</description>
 		<category>Temperature</category>
@@ -210,7 +210,7 @@
 	</channel-type>
 
 	<channel-type id="temperatureAdjust" advanced="false">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature Adjustment</label>
 		<description>Virtual temperature offset on heating circuit of an emulated BAS (RCP12 room control unit).</description>
 		<category>Temperature</category>

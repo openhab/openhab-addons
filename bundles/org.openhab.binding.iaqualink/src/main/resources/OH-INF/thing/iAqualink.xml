@@ -300,7 +300,7 @@
 	</channel-type>
 
 	<channel-type id="setpoint">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Setpoint</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
@@ -308,7 +308,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>

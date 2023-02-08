@@ -162,7 +162,7 @@
 
 	<!-- temperature -->
 	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Sensor Temperature</label>
 		<description>The current temperature reported by the sensor</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -170,7 +170,7 @@
 
 	<!-- thermostat -->
 	<channel-type id="thermostat">
-		<item-type>Number:Temperature</item-type>
+		<item-type unit="°C">Number</item-type>
 		<label>Thermostat Temperature</label>
 		<description>The current temperature reported by the thermostat</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
