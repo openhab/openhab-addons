@@ -354,9 +354,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void sendConnectMessage() throws IOException {
         var req = builder.getRequestConnectBuilder();
-        if (config.authCode != null && config.authCode != 0) {
-            req.setAuthCode(config.authCode);
-        }
+        Optional.ofNullable(config)
+                .map(cfg -> cfg.authCode)
+                .filter(code -> code != 0)
+                .ifPresent(req::setAuthCode);
         sendMessageOrThrow(builder.setRequestConnect(req.build()).build());
     }
 
