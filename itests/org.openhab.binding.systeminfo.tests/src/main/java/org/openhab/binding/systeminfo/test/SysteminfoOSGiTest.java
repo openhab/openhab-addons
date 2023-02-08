@@ -52,6 +52,8 @@ import org.openhab.core.config.discovery.inbox.InboxPredicates;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
 import org.openhab.core.library.dimension.DataAmount;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
@@ -323,7 +325,20 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
         GenericItem item = null;
         if (acceptedItemType.startsWith("Number")) {
-            item = new NumberItem(acceptedItemType, itemName);
+            item = new NumberItem(itemName);
+            if ("Number:Time".equals(acceptedItemType)) {
+                item.addedMetadata(
+                        new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, itemName), "s", null));
+            } else if ("Number:DataAmount".equals(acceptedItemType)) {
+                item.addedMetadata(
+                        new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, itemName), "MiB", null));
+            } else if ("Number:ElectricPotential".equals(acceptedItemType)) {
+                item.addedMetadata(
+                        new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, itemName), "V", null));
+            } else if ("Number:Temperature".equals(acceptedItemType)) {
+                item.addedMetadata(
+                        new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, itemName), "°C", null));
+            }
         } else if ("String".equals(acceptedItemType)) {
             item = new StringItem(itemName);
         }

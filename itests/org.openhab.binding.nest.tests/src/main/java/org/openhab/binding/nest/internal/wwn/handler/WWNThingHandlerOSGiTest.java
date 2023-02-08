@@ -43,11 +43,15 @@ import org.openhab.binding.nest.internal.wwn.test.WWNTestHandlerFactory;
 import org.openhab.binding.nest.internal.wwn.test.WWNTestServer;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.events.ItemEventFactory;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.test.TestPortUtil;
 import org.openhab.core.test.java.JavaOSGiTest;
@@ -278,7 +282,27 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
     protected void createAndLinkItems() {
         thing.getChannels().forEach(c -> {
             String itemName = getItemName(c.getUID().getId());
-            Item item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
+            // TODO: fix it properly
+            // ChannelType channelType = channelTypeRegistry.getChannelType(c.getChannelTypeUID());
+            // Unit<?> suggestedUnit = channelType.getUnit();
+            String acceptedItemType = c.getAcceptedItemType();
+            Item item;
+            if (acceptedItemType.startsWith("Number:")) {
+                item = itemFactory.createItem("Number", itemName);
+                String unit = switch (acceptedItemType) {
+                    case "Number" -> null;
+                    case "Number:Dimensionless" -> "%";
+                    case "Number:Temperature" -> "°C";
+                    case "Number:Time" -> "s";
+                    default -> throw new IllegalArgumentException(acceptedItemType + " unknown unit");
+                };
+                if (unit != null) {
+                    ((GenericItem) item).addedMetadata(
+                            new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, itemName), unit, null));
+                }
+            } else {
+                item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
+            }
             if (item != null) {
                 itemRegistry.add(item);
             }

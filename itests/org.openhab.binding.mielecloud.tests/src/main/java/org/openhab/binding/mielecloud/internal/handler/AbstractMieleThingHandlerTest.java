@@ -47,10 +47,13 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
-import org.openhab.core.items.ItemBuilder;
 import org.openhab.core.items.ItemBuilderFactory;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -293,12 +296,24 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         for (Channel channel : thing.getChannels()) {
             String acceptedItemType = channel.getAcceptedItemType();
             assertNotNull(acceptedItemType);
+            Objects.requireNonNull(acceptedItemType);
 
-            ItemBuilder itemBuilder = itemBuilderFactory.newItemBuilder(Objects.requireNonNull(acceptedItemType),
-                    channel.getUID().getId());
-            assertNotNull(itemBuilder);
+            // TODO: Fix it properly
+            Item item;
+            if (acceptedItemType.startsWith("Number:")) {
+                item = itemBuilderFactory.newItemBuilder("Number", channel.getUID().getId()).build();
 
-            Item item = itemBuilder.build();
+                String unit = switch (acceptedItemType) {
+                    case "Number:Temperature" -> "°C";
+                    default -> throw new IllegalArgumentException(acceptedItemType + " can't be handled");
+                };
+
+                ((GenericItem) item).addedMetadata(
+                        new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, item.getName()), unit, null));
+            } else {
+                item = itemBuilderFactory
+                        .newItemBuilder(Objects.requireNonNull(acceptedItemType), channel.getUID().getId()).build();
+            }
             assertNotNull(item);
 
             getItemRegistry().add(item);

@@ -41,6 +41,8 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
@@ -615,14 +617,16 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
             @Nullable State stateOverride) {
         final GenericItem copiedItem;
         try {
-            if (itemTemplate instanceof NumberItem) {
-                copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class, String.class)
-                        .newInstance(itemTemplate.getType(), nameOverride == null ? item.getName() : nameOverride);
-            } else {
-                copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class)
-                        .newInstance(nameOverride == null ? item.getName() : nameOverride);
+            copiedItem = (GenericItem) itemTemplate.getClass().getDeclaredConstructor(String.class)
+                    .newInstance(nameOverride == null ? item.getName() : nameOverride);
+            if (itemTemplate instanceof NumberItem numberItem) { // copy unit
+                Unit<?> unit = numberItem.getUnit();
+                if (unit != null) {
+                    copiedItem.addedMetadata(
+                            new Metadata(new MetadataKey(NumberItem.UNIT_METADATA_NAMESPACE, copiedItem.getName()),
+                                    unit.toString(), null));
+                }
             }
-
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             throw new IllegalArgumentException(item.toString(), e);
