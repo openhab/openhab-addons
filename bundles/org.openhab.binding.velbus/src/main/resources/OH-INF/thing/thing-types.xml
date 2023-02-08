@@ -1035,7 +1035,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>Currently measured voltage</description>
 		<category>Voltage</category>

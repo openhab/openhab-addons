@@ -67,7 +67,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>Actual voltage usage.</description>
 		<category>Energy</category>

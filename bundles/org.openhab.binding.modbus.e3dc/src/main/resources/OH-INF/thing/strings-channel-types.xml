@@ -4,19 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="string1-dc-voltage-channel">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>String 1 Potential</label>
 		<description>Voltage on String 1</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string2-dc-voltage-channel">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>String 2 Potential</label>
 		<description>Voltage on String 2</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="string3-dc-voltage-channel">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>String 3 Potential</label>
 		<description>Voltage on String 3</description>
 		<state pattern="%d %unit%" readOnly="true"/>

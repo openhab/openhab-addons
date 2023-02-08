@@ -36,7 +36,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>voltage for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

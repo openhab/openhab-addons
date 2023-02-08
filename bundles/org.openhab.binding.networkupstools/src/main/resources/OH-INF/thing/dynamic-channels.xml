@@ -26,7 +26,7 @@
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
 	<channel-type id="number-electric-potential">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Electric Potential</label>
 		<description>Electric Potential channel</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

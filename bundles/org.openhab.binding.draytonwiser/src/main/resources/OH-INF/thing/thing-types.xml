@@ -259,7 +259,7 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltage-channel" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Current Battery Voltage for the device</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

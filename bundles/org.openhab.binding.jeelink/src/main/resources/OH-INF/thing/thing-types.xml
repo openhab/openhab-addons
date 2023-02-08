@@ -523,7 +523,7 @@
 
 	<!-- Revolt Electric Potential Type -->
 	<channel-type id="electric-potential">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.electric-potential.label</label>
 		<description>@text/channel-type.electric-potential.description</description>
 	</channel-type>

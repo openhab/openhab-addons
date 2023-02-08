@@ -175,19 +175,19 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp1">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage MPP1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage MPP2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageMpp3">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage MPP3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -219,7 +219,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -299,19 +299,19 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase1">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage Phase 1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage Phase 2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridVoltagePhase3">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage Phase 3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -465,73 +465,73 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePack1" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage battery pack 1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePack2" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage battery pack 2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePack3" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage battery pack 3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePack4" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage battery pack 4</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="maxCellVoltagePack1" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Maximum cell voltage battery pack 1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="maxCellVoltagePack2" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Maximum cell voltage battery pack 2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="maxCellVoltagePack3" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Maximum cell voltage battery pack 3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="maxCellVoltagePack4" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Maximum cell voltage battery pack 4</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="minCellVoltagePack1" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Minimum cell voltage battery pack 1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="minCellVoltagePack2" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Minimum cell voltage battery pack 2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="minCellVoltagePack3" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Minimum cell voltage battery pack 3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="minCellVoltagePack4" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Minimum cell voltage battery pack 4</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>

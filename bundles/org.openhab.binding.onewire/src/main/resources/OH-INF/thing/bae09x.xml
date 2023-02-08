@@ -146,7 +146,7 @@
 	</channel-type>
 	<!-- Analog In (ADC) -->
 	<channel-type id="bae-analog">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Input</label>
 		<description>Analog input (ADC)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

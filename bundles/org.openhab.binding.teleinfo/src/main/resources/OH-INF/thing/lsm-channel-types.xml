@@ -26,7 +26,7 @@
 	</channel-type>
 
 	<channel-type id="potentialType">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Teleinfo Potential Type</label>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true"/>

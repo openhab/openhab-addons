@@ -362,19 +362,19 @@
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantVoltageL1Type" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Instant Voltage L1</label>
 		<description>The instant voltage L1.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantVoltageL2Type" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Instant Voltage L2</label>
 		<description>The instant voltage L2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="instantVoltageL3Type" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Instant Voltage L3</label>
 		<description>The instant voltage L3.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

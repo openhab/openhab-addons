@@ -227,7 +227,7 @@
 		<state pattern="%.1f kW" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargervoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Charger Voltage</label>
 		<description>Voltage (V) actually presented by the charger</description>
 		<state pattern="%.1f V" readOnly="true"></state>

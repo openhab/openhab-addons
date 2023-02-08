@@ -96,14 +96,14 @@
 	</channel-type>
 	<!-- Voltage Channel -->
 	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>The voltage measured by the sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Supply-Voltage Channel -->
 	<channel-type id="supplyvoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Supply Voltage</label>
 		<description>The sensor's supply voltage</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

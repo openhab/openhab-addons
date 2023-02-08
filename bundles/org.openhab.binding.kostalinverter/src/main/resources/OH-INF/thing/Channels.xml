@@ -97,7 +97,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>P1 Voltage</label>
 		<description>Voltage of phase 1</description>
 		<category>Energy</category>
@@ -118,7 +118,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>P2 Voltage</label>
 		<description>Voltage of phase 2</description>
 		<category>Energy</category>
@@ -139,7 +139,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>P3 Voltage</label>
 		<description>Voltage of phase 3</description>
 		<category>Energy</category>
@@ -187,7 +187,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Current voltage of the battery</description>
 		<category>Energy</category>
@@ -208,7 +208,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>PV Str1 Voltage</label>
 		<description>Current voltage of photovoltaic string 1</description>
 		<category>Energy</category>
@@ -229,7 +229,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>PV Str2 Voltage</label>
 		<description>Current voltage of photovoltaic string 2</description>
 		<category>Energy</category>
@@ -250,7 +250,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>PV Str3 Voltage</label>
 		<description>Current voltage of photovoltaic string 3</description>
 		<category>Energy</category>
@@ -525,7 +525,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l1">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage L1</label>
 		<description>Current output voltage to the grid, L1</description>
 		<category>Energy</category>
@@ -546,7 +546,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage L2</label>
 		<description>Current output voltage to the grid, L2</description>
 		<category>Energy</category>
@@ -567,7 +567,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l3">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Grid Voltage L3</label>
 		<description>Current output voltage to the grid, L3</description>
 		<category>Energy</category>
@@ -595,7 +595,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC1 Voltage</label>
 		<description>Current voltage from solar panels, DC1</description>
 		<category>Energy</category>
@@ -616,7 +616,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC2 Voltage</label>
 		<description>Current voltage from solar panels, DC2</description>
 		<category>Energy</category>
@@ -637,7 +637,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC3 Voltage</label>
 		<description>Current voltage from solar panels, DC3</description>
 		<category>Energy</category>
@@ -819,7 +819,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-voltage">
-		<item-type>Number:ElectricalPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Current battery voltage</description>
 		<category>Energy</category>

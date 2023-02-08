@@ -102,7 +102,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="input-voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Input Voltage</label>
 		<description>Input voltage (V)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
@@ -120,7 +120,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="output-voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Output Voltage</label>
 		<description>Output voltage (V)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
@@ -138,7 +138,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Battery voltage (V)</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

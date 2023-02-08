@@ -541,7 +541,7 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltageType">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>The current battery voltage</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

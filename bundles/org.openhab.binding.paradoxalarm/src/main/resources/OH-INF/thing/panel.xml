@@ -65,7 +65,7 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>Voltage</description>
 		<state readOnly="true" pattern="%f %unit%"/>

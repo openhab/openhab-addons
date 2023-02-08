@@ -182,7 +182,7 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>Voltage</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

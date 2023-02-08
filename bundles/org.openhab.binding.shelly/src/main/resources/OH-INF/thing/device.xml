@@ -122,7 +122,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="supplyVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.shelly.supplyVoltage.label</label>
 		<description>@text/channel-type.shelly.supplyVoltage.description</description>
 		<category>Energy</category>

@@ -119,7 +119,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltageAC">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -139,7 +139,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="voltagePV">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage PV</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

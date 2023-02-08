@@ -16,7 +16,7 @@
 	</channel-type>
 	<!-- Voltage of the PV generator Channel Type -->
 	<channel-type id="Upv">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>PV Generator Voltage</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

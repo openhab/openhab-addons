@@ -1342,7 +1342,7 @@
 	</channel-type>
 
 	<channel-type id="inputAnalog" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Input Signal</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1390,14 +1390,14 @@
 	</channel-type>
 
 	<channel-type id="outputAnalog1" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Output 1</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outputAnalog2" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Output 2</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1432,28 +1432,28 @@
 	</channel-type>
 
 	<channel-type id="outputAnalog3" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Output 3</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outputAnalog4" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Output 4</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outputSupplyAirFan" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Supply Air Fan (Defrost)</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outputExhaustFan" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Exhaust Fan</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1472,14 +1472,14 @@
 	</channel-type>
 
 	<channel-type id="inputAnalog2" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Input 2</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="inputAnalog3" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Input 3</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1703,7 +1703,7 @@
 	</channel-type>
 
 	<channel-type id="voltageInverter" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage Inverter</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>

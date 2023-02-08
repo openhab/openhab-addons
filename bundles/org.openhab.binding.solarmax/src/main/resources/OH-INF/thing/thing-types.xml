@@ -156,21 +156,21 @@
 	</channel-type>
 
 	<channel-type id="acPhase1Voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>AC Phase1 Voltage</label>
 		<description>AC Phase1 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase2Voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>AC Phase2 Voltage</label>
 		<description>AC Phase2 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase3Voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>AC Phase3 Voltage</label>
 		<description>AC Phase3 Voltage in V</description>
 		<state readOnly="true"></state>

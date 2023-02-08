@@ -379,19 +379,19 @@
 
 	<!-- Voltage -->
 	<channel-type id="avg_neutral_phase_voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Average Voltage</label>
 		<description>Average N – Phase Voltage in Volt</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage</label>
 		<description>Voltage in Volt</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="avg_phase_phase_voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Average Phase – Phase Voltage</label>
 		<description>Average Phase – Phase Voltage in Volt</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

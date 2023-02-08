@@ -228,25 +228,25 @@
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uac">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>AC Voltage</label>
 		<description>AC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC Voltage</label>
 		<description>DC voltage</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC Voltage 2</label>
 		<description>DC voltage 2</description>
 		<state pattern="%.1f V" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="udc3">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>DC Voltage 3</label>
 		<description>DC voltage 3</description>
 		<state pattern="%.1f V" readOnly="true"></state>
@@ -333,7 +333,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_ac_voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>AC Voltage</label>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>

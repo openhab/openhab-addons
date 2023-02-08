@@ -283,14 +283,14 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Voltage of the battery</description>
 		<state pattern="%f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energyStorage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Energy Storage</label>
 		<description>?</description>
 		<state pattern="%f %unit%" readOnly="true"/>

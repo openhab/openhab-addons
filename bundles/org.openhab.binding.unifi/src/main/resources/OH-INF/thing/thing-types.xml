@@ -408,7 +408,7 @@
 	</channel-type>
 
 	<channel-type id="poeVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Port PoE Voltage</label>
 		<description>Voltage usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>

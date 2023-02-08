@@ -27,7 +27,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="type-volt">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>ElectricPotential</label>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

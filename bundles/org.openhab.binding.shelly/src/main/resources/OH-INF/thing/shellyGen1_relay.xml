@@ -548,7 +548,7 @@
 	</channel-type>
 
 	<channel-type id="meterVoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.shelly.meterVoltage.label</label>
 		<description>@text/channel-type.shelly.meterVoltage.description</description>
 		<tags>
@@ -560,7 +560,7 @@
 	</channel-type>
 
 	<channel-type id="meterCurrent">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.shelly.meterCurrent.label</label>
 		<description>@text/channel-type.shelly.meterCurrent.description</description>
 		<category>Energy</category>

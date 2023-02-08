@@ -107,19 +107,19 @@
 		</state>
 	</channel-type>
 	<channel-type id="vl1">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage L1</label>
 		<description>Voltage on L1</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vl2">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage L2</label>
 		<description>Voltage on L2</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vl3">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Voltage L3</label>
 		<description>Voltage on L3</description>
 		<state pattern="%d %unit%" readOnly="true"/>

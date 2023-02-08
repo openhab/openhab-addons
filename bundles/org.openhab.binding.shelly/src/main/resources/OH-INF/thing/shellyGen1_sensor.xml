@@ -427,7 +427,7 @@
 	</channel-type>
 
 	<channel-type id="sensorADC">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
 		<description>@text/channel-type.shelly.sensorADC.description</description>
 		<state readOnly="true" pattern="%.3f %unit%">
@@ -488,7 +488,7 @@
 	</channel-type>
 
 	<channel-type id="sensorExtVolt">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>@text/channel-type.shelly.sensorExtVolt.label</label>
 		<description>@text/channel-type.shelly.sensorExtVolt.description</description>
 		<tags>

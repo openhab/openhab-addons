@@ -277,7 +277,7 @@
 	</channel-type>
 
 	<channel-type id="cpuVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>CPU Voltage</label>
 		<description>CPU voltage</description>
 		<state readOnly="true" pattern="%.1f V"/>

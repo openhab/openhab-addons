@@ -1298,7 +1298,7 @@
 	</channel-type>
 
 	<channel-type id="analog_volt" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Analog Input Voltage Level</label>
 		<description>Voltage level of analog input</description>
 		<category>Number</category>

@@ -147,7 +147,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Battery voltage reported by the device</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

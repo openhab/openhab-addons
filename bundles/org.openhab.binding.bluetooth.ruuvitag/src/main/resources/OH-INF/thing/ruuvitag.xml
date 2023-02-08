@@ -54,7 +54,7 @@
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_batteryVoltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

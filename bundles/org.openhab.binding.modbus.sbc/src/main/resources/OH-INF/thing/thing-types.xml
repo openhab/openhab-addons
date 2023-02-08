@@ -67,7 +67,7 @@
 	</channel-type>
 
 	<channel-type id="voltage">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Effective Voltage</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

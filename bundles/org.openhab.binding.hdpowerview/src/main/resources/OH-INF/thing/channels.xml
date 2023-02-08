@@ -46,7 +46,7 @@
 	</channel-type>
 
 	<channel-type id="battery-voltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unit="V">Number</item-type>
 		<label>Battery Voltage</label>
 		<description>Battery voltage reported by the shade</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
