@@ -248,6 +248,31 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
             PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
+
+            if (colorControlModel.currentMode == 4) {
+                int temp = colorControlModel.temperature;
+                int pct = 0;
+                if (temp <= 2700) {
+                    pct = 0;
+                } else if ((temp > 2700) && (temp <= 3000)) {
+                    pct = 13;
+                } else if ((temp > 3000) && (temp <= 3400)) {
+                    pct = 25;
+                } else if ((temp > 3400) && (temp <= 3800)) {
+                    pct = 38;
+                } else if ((temp > 3800) && (temp <= 4200)) {
+                    pct = 50;
+                } else if ((temp > 4200) && (temp <= 4700)) {
+                    pct = 63;
+                } else if ((temp > 4700) && (temp <= 5300)) {
+                    pct = 75;
+                } else if ((temp > 5300) && (temp <= 5900)) {
+                    pct = 88;
+                } else if (temp > 5900) { // 6500
+                    pct = 100;
+                }
+                updateThingChannelState(CHANNEL_COLORTEMPERATURE, new PercentType(pct));
+            }
         }
     }
 
@@ -476,23 +501,23 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (color_temperature != null) {
                     int pct = color_temperature.intValue();
                     int temperature = 2700;
-                    if (pct <= 11) {
+                    if (pct <= 6) {
                         temperature = 2700;
-                    } else if ((pct > 11) && (pct <= 22)) {
+                    } else if ((pct > 6) && (pct <= 19)) {
                         temperature = 3000;
-                    } else if ((pct > 22) && (pct <= 33)) {
+                    } else if ((pct > 19) && (pct <= 31)) {
                         temperature = 3400;
-                    } else if ((pct > 33) && (pct <= 44)) {
+                    } else if ((pct > 31) && (pct <= 44)) {
                         temperature = 3800;
-                    } else if ((pct > 44) && (pct <= 55)) {
+                    } else if ((pct > 44) && (pct <= 56)) {
                         temperature = 4200;
-                    } else if ((pct > 55) && (pct <= 66)) {
+                    } else if ((pct > 56) && (pct <= 69)) {
                         temperature = 4700;
-                    } else if ((pct > 66) && (pct <= 77)) {
+                    } else if ((pct > 69) && (pct <= 81)) {
                         temperature = 5300;
-                    } else if ((pct > 77) && (pct <= 88)) {
+                    } else if ((pct > 81) && (pct <= 93)) {
                         temperature = 5900;
-                    } else if (pct >= 88) {
+                    } else if (pct >= 93) {
                         temperature = 6500;
                     }
                     fritzBox.setColorTemperature(ain, temperature, 0);
