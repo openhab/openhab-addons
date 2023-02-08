@@ -117,10 +117,7 @@ public class GoogleTVConnectionManager {
 
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
-    private String lastMsg = "";
     private String thisMsg = "";
-    private boolean inMessage = false;
-    private String msgType = "";
 
     private boolean disposing = false;
     private boolean isLoggedIn = false;
@@ -727,10 +724,8 @@ public class GoogleTVConnectionManager {
 
                 if ((length > 0) && (current == length)) {
                     logger.trace("GoogleTV Message: {} {}", length, sbReader.toString());
-                    if (!config.shim) {
-                        messageParser.handleMessage(sbReader.toString());
-                    } else {
-                        messageParser.handleMessage(sbReader.substring(2).toString());
+                    messageParser.handleMessage(sbReader.toString());
+                    if (config.shim) {
                         shimQueue.add(new GoogleTVCommand(GoogleTVRequest.encodeMessage(sbReader.toString())));
                     }
                     length = 0;
@@ -740,7 +735,7 @@ public class GoogleTVConnectionManager {
             logger.debug("Interrupted while reading");
             setStatus(false, "Interrupted");
         } catch (IOException e) {
-            if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))) {
+            if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
                 setStatus(false, "PIN Process Incomplete");
                 logger.debug("GoogleTV PIN Process Incomplete");
                 reconnectTaskCancel(true);

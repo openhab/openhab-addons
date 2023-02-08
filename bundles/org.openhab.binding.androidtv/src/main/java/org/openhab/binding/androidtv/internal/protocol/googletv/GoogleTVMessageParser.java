@@ -40,15 +40,19 @@ public class GoogleTVMessageParser {
             return; // Ignore empty lines
         }
 
-        logger.trace("Received GoogleTV message from: {} - Message: {}", callback.getHostName(), msg);
+        char[] charArray = msg.toCharArray();
+        String lenString = "" + charArray[0] + charArray[1];
+        int length = Integer.parseInt(lenString, 16);
+        msg = msg.substring(2);
+
+        logger.trace("Received GoogleTV message from: {} - Length: {} Message: {}", callback.getHostName(), length,
+                msg);
         // logger.trace("Encoded message: {}", GoogleTVRequest.encodeMessage(msg));
 
         callback.validMessageReceived();
 
-        char[] charArray = msg.toCharArray();
-
         try {
-            logger.debug("Unknown payload received. {}", msg);
+            logger.debug("Unknown payload received. {} {}", length, msg);
         } catch (Exception e) {
             logger.debug("Message Parser Caught Exception", e);
         } finally {
