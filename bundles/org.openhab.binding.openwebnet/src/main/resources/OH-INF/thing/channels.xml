@@ -43,7 +43,7 @@
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Control the brightness and switch the light ON and OFF</description>
+		<description>Control the brightness and switch the light ON and OFF (read/write)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
@@ -55,7 +55,7 @@
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
-		<description>Control the roller shutter position</description>
+		<description>Control the roller shutter position (read/write)</description>
 		<category>Blinds</category>
 		<tags>
 			<tag>OpenLevel</tag>
@@ -92,7 +92,7 @@
 	<channel-type id="functionCentralUnit">
 		<item-type>String</item-type>
 		<label>Thermo Function</label>
-		<description>Thermo function of the Central Unit</description>
+		<description>Thermo function of the Central Unit (read only)</description>
 		<state readOnly="true">
 			<options>
 				<option value="HEATING">Heating</option>
@@ -341,16 +341,48 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
+	<!-- Scenario trigger channels -->
+	<channel-type id="scenarioEvent">
+		<kind>trigger</kind>
+		<label>Activated Scenario Event</label>
+		<description>Event corresponding to the number of Basic Scenario that has been activated (read only)</description>
+		<event>
+			<options>
+				<option value="SCENARIO_01">Scenario 1</option>
+				<option value="SCENARIO_02">Scenario 2</option>
+				<option value="SCENARIO_03">Scenario 3</option>
+				<option value="SCENARIO_04">Scenario 4</option>
+				<option value="SCENARIO_05">Scenario 5</option>
+				<option value="SCENARIO_06">Scenario 6</option>
+				<option value="SCENARIO_07">Scenario 7</option>
+				<option value="SCENARIO_08">Scenario 8</option>
+				<option value="SCENARIO_09">Scenario 9</option>
+				<option value="SCENARIO_10">Scenario 10</option>
+				<option value="SCENARIO_11">Scenario 11</option>
+				<option value="SCENARIO_12">Scenario 12</option>
+				<option value="SCENARIO_13">Scenario 13</option>
+				<option value="SCENARIO_14">Scenario 14</option>
+				<option value="SCENARIO_15">Scenario 15</option>
+				<option value="SCENARIO_16">Scenario 16</option>
+				<option value="SCENARIO_17">Scenario 17</option>
+				<option value="SCENARIO_18">Scenario 18</option>
+				<option value="SCENARIO_19">Scenario 19</option>
+				<option value="SCENARIO_20">Scenario 20</option>
+			</options>
+		</event>
+	</channel-type>
+
 	<!-- CEN/CEN+ trigger channels -->
 	<channel-type id="cenButtonEvent">
 		<kind>trigger</kind>
 		<label>CEN Button Event</label>
+		<description>Event corresponding to the button press (read only)</description>
 		<event>
 			<options>
-				<option value="START_PRESS">start press</option>
-				<option value="SHORT_PRESS">release after short press</option>
-				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
-				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+				<option value="START_PRESS">Start press</option>
+				<option value="SHORT_PRESS">Release after short press</option>
+				<option value="EXTENDED_PRESS">Extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">Release after extended press</option>
 			</options>
 		</event>
 	</channel-type>
@@ -358,16 +390,18 @@
 	<channel-type id="cenPlusButtonEvent">
 		<kind>trigger</kind>
 		<label>CEN+ Button Event</label>
+		<description>Event corresponding to the button press (read only)</description>
 		<event>
 			<options>
-				<option value="SHORT_PRESS">short press</option>
-				<option value="START_EXTENDED_PRESS">start of extended press</option>
-				<option value="EXTENDED_PRESS">extended press (repeated until release)</option>
-				<option value="RELEASE_EXTENDED_PRESS">release after extended press</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="START_EXTENDED_PRESS">Start of extended press</option>
+				<option value="EXTENDED_PRESS">Extended press (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESS">Release after extended press</option>
 			</options>
 		</event>
 	</channel-type>
 
+	<!-- Dry Contact / IR channel -->
 	<channel-type id="dryContactIR">
 		<item-type>Switch</item-type>
 		<label>Sensor</label>
@@ -375,4 +409,59 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<!-- Alarm channels -->
+	<channel-type id="alarmSystemState">
+		<item-type>Switch</item-type>
+		<label>System State</label>
+		<description>Alarm system is active (ON) or inactive (OFF) (read only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="armedState">
+		<item-type>Switch</item-type>
+		<label>Armed State</label>
+		<description>Alarm is armed (ON) or disarmed (OFF) (read only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmNetwork">
+		<item-type>Switch</item-type>
+		<label>Network State</label>
+		<description>Alarm system network state (ON = network OK, OFF = no network) (read only).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmBattery">
+		<item-type>String</item-type>
+		<label>Battery State</label>
+		<description>Alarm system battery state (read only).</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">Ok</option>
+				<option value="FAULT">Fault</option>
+				<option value="UNLOADED">Unloaded</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zoneAlarm">
+		<item-type>String</item-type>
+		<label>Zone Alarm</label>
+		<description>Current alarm for the zone (read only).</description>
+		<state readOnly="true">
+			<options>
+				<option value="INTRUSION">Intrusion</option>
+				<option value="TAMPERING">Tampering</option>
+				<option value="ANTI_PANIC">Anti Panic</option>
+				<option value="SILENT">Silent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarmZoneState">
+		<item-type>Switch</item-type>
+		<label>Alarm Zone State</label>
+		<description>Alarm zone is active (ON) or inactive (OFF) (read only).</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

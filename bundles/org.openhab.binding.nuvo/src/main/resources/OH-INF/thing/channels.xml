@@ -342,6 +342,7 @@
 			<channel id="allmute" typeId="system.mute"/>
 			<channel id="page" typeId="page"/>
 			<channel id="sendcmd" typeId="sendcmd"/>
+			<channel id="buttonpress" typeId="button_press"/>
 		</channels>
 	</channel-group-type>
 
@@ -378,6 +379,7 @@
 			<channel id="track_position" typeId="track_position"/>
 			<channel id="button_press" typeId="button_press"/>
 			<channel id="art_url" typeId="art_url"/>
+			<channel id="album_art" typeId="album_art"/>
 		</channels>
 	</channel-group-type>
 
@@ -517,7 +519,7 @@
 	<channel-type id="button_press">
 		<item-type>String</item-type>
 		<label>Button Pressed</label>
-		<description>Indicates the Last Button Pressed On the Keypad for a Non NuvoNet Source</description>
+		<description>Indicates the Last Button Pressed On the Keypad</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -525,6 +527,13 @@
 		<item-type>String</item-type>
 		<label>Album Art URL</label>
 		<description>The URL of the Album Art JPG for this source that is displayed on a CTP-36</description>
+	</channel-type>
+
+	<channel-type id="album_art">
+		<item-type>Image</item-type>
+		<label>Album Art</label>
+		<description>The Album Art loaded from the art_url channel for display in a UI widget</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

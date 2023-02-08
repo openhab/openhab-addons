@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,6 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     private final Logger logger = LoggerFactory.getLogger(TelldusLocalDeviceController.class);
     private long lastSend = 0;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND_SEC = 250;
-    static final int REQUEST_TIMEOUT_MS = 5000;
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private String localApiUrl;

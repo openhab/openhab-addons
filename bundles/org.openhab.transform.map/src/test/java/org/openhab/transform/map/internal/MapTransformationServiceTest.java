@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,7 @@ public class MapTransformationServiceTest extends JavaTest {
     private static final String NON_DEFAULTED_TRANSFORMATION_DE = "map" + File.separator + "doorstatus_de.map";
     private static final String NON_DEFAULTED_TRANSFORMATION_FR = "map" + File.separator + "doorstatus_fr.map";
     private static final String DEFAULTED_TRANSFORMATION = "map" + File.separator + "doorstatus_defaulted.map";
+    private static final String FALLBACK_TRANSFORMATION = "map" + File.separator + "doorstatus_fallback.map";
     private static final String UNKNOWN_TRANSFORMATION = "map" + File.separator + "de.map";
 
     private static final String SRC_FOLDER = "conf" + File.separator + "transform";
@@ -104,6 +105,11 @@ public class MapTransformationServiceTest extends JavaTest {
     }
 
     @Test
+    public void testTransformSucceedsWithFallbackDefault() throws TransformationException {
+        assertEquals(SOURCE_UNKNOWN, processor.transform(FALLBACK_TRANSFORMATION, SOURCE_UNKNOWN));
+    }
+
+    @Test
     public void testTransformFailsOnUnknownTransformation() {
         assertThrows(TransformationException.class, () -> processor.transform(UNKNOWN_TRANSFORMATION, SOURCE_CLOSED));
     }
@@ -123,7 +129,6 @@ public class MapTransformationServiceTest extends JavaTest {
     public void setTransformationIsNotUpdatedIfOldElementMissing() throws TransformationException {
         // update configuration
         Transformation transformationDE = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_DE));
-        Transformation transformationFR = Objects.requireNonNull(configurationMap.get(NON_DEFAULTED_TRANSFORMATION_FR));
         Transformation transformationModified = new Transformation(transformationDE.getUID(),
                 transformationDE.getLabel(), transformationDE.getType(), transformationDE.getConfiguration());
         processor.updated(transformationDE, transformationModified);

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="openwebnet"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Scenario Control (BTicino F420/IR3456) -->
+
+	<thing-type id="bus_scenario_control">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Scenario Control</label>
+		<description>An OpenWebNet BUS/SCS Scenario Control device. BTicino models: F420/IR3456</description>
+
+		<channels>
+			<channel id="scenario" typeId="scenarioEvent"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-F420/IR3456</property>
+			<property name="ownDeviceType">3</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>Example: scenario control module address 53 --> where=53. On local bus: where=53#4#01</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

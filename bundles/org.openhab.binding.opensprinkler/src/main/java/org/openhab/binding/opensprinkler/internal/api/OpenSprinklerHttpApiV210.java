@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,7 +164,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
         switch (returnCode) {
             case -1:
                 throw new UnknownApiException(
-                        "The OpenSprinkler API returnd an result that was not parseable: " + returnContent);
+                        "The OpenSprinkler API returnd a result that was not parseable: " + returnContent);
             case 1:
                 return;
             case 2:

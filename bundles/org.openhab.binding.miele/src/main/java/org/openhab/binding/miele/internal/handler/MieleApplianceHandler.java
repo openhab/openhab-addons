@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,9 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.IllformedLocaleException;
 import java.util.Locale;
@@ -24,13 +27,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
+import org.openhab.binding.miele.internal.TimeStabilizer;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
 import org.openhab.binding.miele.internal.api.dto.DeviceMetaData;
 import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,6 +51,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,19 +88,25 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     protected TranslationProvider i18nProvider;
     protected LocaleProvider localeProvider;
     protected MieleTranslationProvider translationProvider;
+    private TimeZoneProvider timeZoneProvider;
+    private TimeStabilizer startTimeStabilizer;
+    private TimeStabilizer finishTimeStabilizer;
     private Class<E> selectorType;
     protected String modelID;
 
     protected Map<String, String> metaDataCache = new HashMap<>();
 
     public MieleApplianceHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
-            Class<E> selectorType, String modelID) {
+            TimeZoneProvider timeZoneProvider, Class<E> selectorType, String modelID) {
         super(thing);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.selectorType = selectorType;
         this.modelID = modelID;
         this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider);
+        this.timeZoneProvider = timeZoneProvider;
+        this.startTimeStabilizer = new TimeStabilizer();
+        this.finishTimeStabilizer = new TimeStabilizer();
     }
 
     public ApplianceChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
@@ -180,6 +195,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             }
             applianceId = null;
         }
+        startTimeStabilizer.clear();
+        finishTimeStabilizer.clear();
     }
 
     @Override
@@ -242,6 +259,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
             }
 
+            ThingUID thingUid = getThing().getUID();
             if (EXTENDED_DEVICE_STATE_PROPERTY_NAME.equals(dp.Name)) {
                 if (!dp.Value.isEmpty()) {
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
@@ -251,6 +269,13 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                         ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
                     }
                 }
+                return;
+            } else if (START_TIME_PROPERTY_NAME.equals(dp.Name)) {
+                updateStateFromTime(new ChannelUID(thingUid, START_CHANNEL_ID), dp.Value, startTimeStabilizer);
+                return;
+            } else if (FINISH_TIME_PROPERTY_NAME.equals(dp.Name)) {
+                updateDurationState(new ChannelUID(thingUid, FINISH_CHANNEL_ID), dp.Value);
+                updateStateFromTime(new ChannelUID(thingUid, END_CHANNEL_ID), dp.Value, finishTimeStabilizer);
                 return;
             }
 
@@ -265,7 +290,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
             if (selector != null) {
                 String channelId = selector.getChannelID();
-                ThingUID thingUid = getThing().getUID();
                 State state = selector.getState(dpValue, dmd, this.translationProvider);
                 if (selector.isProperty()) {
                     String value = state.toString();
@@ -287,6 +311,38 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
         logger.trace("Update state of {} with extended state '{}'", channelUid, state);
         updateState(channelUid, state);
+    }
+
+    private void updateStateFromTime(ChannelUID channelUid, String value, TimeStabilizer stabilizer) {
+        try {
+            long minutesFromNow = Long.valueOf(value);
+            if (minutesFromNow > 0) {
+                Instant rawTime = Instant.now().truncatedTo(ChronoUnit.MINUTES).plusSeconds(minutesFromNow * 60);
+                ZonedDateTime correctedTime = stabilizer.apply(rawTime).atZone(timeZoneProvider.getTimeZone());
+                ZonedDateTime truncatedTime = correctedTime.truncatedTo(ChronoUnit.MINUTES);
+                logger.trace("Update state of {} from {} -> '{}' -> '{}' to '{}'", channelUid, minutesFromNow, rawTime,
+                        correctedTime, truncatedTime);
+                updateState(channelUid, new DateTimeType(truncatedTime));
+                return;
+            }
+        } catch (NumberFormatException e) {
+            // Fall through.
+        }
+        updateState(channelUid, UnDefType.UNDEF);
+        stabilizer.clear();
+    }
+
+    private void updateDurationState(ChannelUID channelUid, String value) {
+        try {
+            long minutesFromNow = Long.valueOf(value);
+            if (minutesFromNow > 0) {
+                updateState(channelUid, new QuantityType<>(minutesFromNow, Units.MINUTE));
+                return;
+            }
+        } catch (NumberFormatException e) {
+            // Fall through.
+        }
+        updateState(channelUid, UnDefType.UNDEF);
     }
 
     protected void updateSwitchOnOffFromState(DeviceProperty dp) {

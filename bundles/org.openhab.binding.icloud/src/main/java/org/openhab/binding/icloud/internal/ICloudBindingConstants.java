@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,9 +24,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
- * @author Patrik Gfeller
- *         - Class renamed to be more consistent
- *         - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
+ * @author Patrik Gfeller - Class renamed to be more consistent
+ * @author Patrik Gfeller - Constant FIND_MY_DEVICE_REQUEST_SUBJECT introduced
  * @author Gaël L'hopital - Added low battery
  */
 @NonNullByDefault

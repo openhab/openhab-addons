@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -119,6 +120,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         String parentTopic = config.getParentTopic();
 
         while (type != Object.class) {
+            Objects.requireNonNull(type, "Bug: type is null"); // Should not happen? Making compiler happy
             Arrays.stream(type.getDeclaredFields()).filter(this::isMqttTopicField)
                     .forEach(field -> replacePlaceholderByParentTopic(config, field, parentTopic));
             type = type.getSuperclass();

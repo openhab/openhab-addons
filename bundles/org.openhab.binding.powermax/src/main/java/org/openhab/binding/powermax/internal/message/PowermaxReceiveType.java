@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.powermax.internal.message;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Used to map received messages from the Visonic alarm panel to a ENUM value
+ * Used to map received messages from the Visonic alarm panel to an ENUM value
  *
  * @author Laurent Garnier - Initial contribution
  */

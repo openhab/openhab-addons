@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.Http
 public interface TimetablesV1ApiFactory {
 
     /**
-     * Creates an new instance of the {@link TimetablesV1Api}.
+     * Creates a new instance of the {@link TimetablesV1Api}.
      */
     public abstract TimetablesV1Api create(final String clientId, final String clientSecret,
             final HttpCallable httpCallable) throws JAXBException;

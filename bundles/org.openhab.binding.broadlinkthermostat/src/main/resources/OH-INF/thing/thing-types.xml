@@ -24,7 +24,7 @@
 
 		<representation-property>host</representation-property>
 
-		<config-description-ref uri="thing-type:broadlinkthermostat:floureonandhysenthermostat"/>
+		<config-description-ref uri="thing-type:broadlinkthermostat:deviceconfig"/>
 	</thing-type>
 	<thing-type id="hysenthermostat">
 		<label>Hysen Thermostat</label>
@@ -45,9 +45,20 @@
 
 		<representation-property>host</representation-property>
 
-		<config-description-ref uri="thing-type:broadlinkthermostat:floureonandhysenthermostat"/>
+		<config-description-ref uri="thing-type:broadlinkthermostat:deviceconfig"/>
 	</thing-type>
+	<thing-type id="rmuniversaldevice">
+		<label>Rm Universal Device</label>
+		<description>A universal infrared remote</description>
+		<channels>
+			<channel id="learningmode" typeId="learningmode"/>
+			<channel id="savelearned" typeId="savelearned"/>
+			<channel id="sendlearned" typeId="sendlearned"/>
+		</channels>
+		<representation-property>host</representation-property>
 
+		<config-description-ref uri="thing-type:broadlinkthermostat:deviceconfig"/>
+	</thing-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
@@ -132,5 +143,19 @@
 		<description>The time and day of week</description>
 		<category>Time</category>
 	</channel-type>
-
+	<channel-type id="learningmode">
+		<item-type>Switch</item-type>
+		<label>Learning Mode</label>
+		<description>Put device in infrared learning mode when turned on</description>
+	</channel-type>
+	<channel-type id="savelearned">
+		<item-type>String</item-type>
+		<label>Save Learned</label>
+		<description>Saves the learned keys using the provided name.</description>
+	</channel-type>
+	<channel-type id="sendlearned">
+		<item-type>String</item-type>
+		<label>Send Learned</label>
+		<description>Send previously learned keys by name.</description>
+	</channel-type>
 </thing:thing-descriptions>

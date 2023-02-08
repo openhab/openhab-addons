@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ public class Ffmpeg {
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private String password;
+    private Boolean notFrozen = true;
 
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
@@ -130,46 +131,51 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
-                        logger.debug("{}", line);
-                        if (format.equals(FFmpegFormat.RTSP_ALARMS)) {
-                            if (line.contains("lavfi.")) {
-                                // When the number of pixels that change are below the noise floor we need to look
-                                // across frames to confirm it is motion and not noise.
-                                if (countOfMotions < 10) {// Stop increasing otherwise it will take too long to go OFF.
-                                    countOfMotions++;
-                                }
-                                if (countOfMotions > 9) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                } else if (countOfMotions > 4 && ipCameraHandler.motionThreshold.intValue() > 10) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                } else if (countOfMotions > 3 && ipCameraHandler.motionThreshold.intValue() > 15) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                } else if (countOfMotions > 2 && ipCameraHandler.motionThreshold.intValue() > 30) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                } else if (countOfMotions > 0 && ipCameraHandler.motionThreshold.intValue() > 89) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                    countOfMotions = 4;// Used to debounce the Alarm.
-                                }
-                            } else if (line.contains("speed=")) {
-                                if (countOfMotions > 0) {
-                                    if (ipCameraHandler.motionThreshold.intValue() > 89) {
-                                        countOfMotions--;
+                        logger.trace("{}", line);
+                        switch (format) {
+                            case RTSP_ALARMS:
+                                if (line.contains("lavfi.")) {
+                                    // When the number of pixels that change are below the noise floor we need to look
+                                    // across frames to confirm it is motion and not noise.
+                                    if (countOfMotions < 10) {// Stop increasing otherwise it takes too long to go OFF
+                                        countOfMotions++;
                                     }
-                                    if (ipCameraHandler.motionThreshold.intValue() > 10) {
-                                        countOfMotions -= 2;
-                                    } else {
-                                        countOfMotions -= 4;
+                                    if (countOfMotions > 9) {
+                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    } else if (countOfMotions > 4 && ipCameraHandler.motionThreshold.intValue() > 10) {
+                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    } else if (countOfMotions > 3 && ipCameraHandler.motionThreshold.intValue() > 15) {
+                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    } else if (countOfMotions > 2 && ipCameraHandler.motionThreshold.intValue() > 30) {
+                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    } else if (countOfMotions > 0 && ipCameraHandler.motionThreshold.intValue() > 89) {
+                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                        countOfMotions = 4;// Used to debounce the Alarm.
                                     }
-                                    if (countOfMotions <= 0) {
-                                        ipCameraHandler.noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                        countOfMotions = 0;
+                                } else if (line.contains("speed=")) {
+                                    if (countOfMotions > 0) {
+                                        if (ipCameraHandler.motionThreshold.intValue() > 89) {
+                                            countOfMotions--;
+                                        }
+                                        if (ipCameraHandler.motionThreshold.intValue() > 10) {
+                                            countOfMotions -= 2;
+                                        } else {
+                                            countOfMotions -= 4;
+                                        }
+                                        if (countOfMotions <= 0) {
+                                            ipCameraHandler.noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                            countOfMotions = 0;
+                                        }
                                     }
+                                } else if (line.contains("silence_start")) {
+                                    ipCameraHandler.noAudioDetected();
+                                } else if (line.contains("silence_end")) {
+                                    ipCameraHandler.audioDetected();
                                 }
-                            } else if (line.contains("silence_start")) {
-                                ipCameraHandler.noAudioDetected();
-                            } else if (line.contains("silence_end")) {
-                                ipCameraHandler.audioDetected();
-                            }
+                            case MJPEG:
+                            case SNAPSHOT:
+                                notFrozen = true;// RTSP_ALARMS, MJPEG and SNAPSHOT all set this to true, no break.
+                                break;
                         }
                     }
                 }
@@ -212,7 +218,10 @@ public class Ffmpeg {
     public boolean getIsAlive() {
         Process localProcess = process;
         if (localProcess != null) {
-            return localProcess.isAlive();
+            if (localProcess.isAlive() && notFrozen) {
+                notFrozen = false; // Any process output will set this back to true before next check.
+                return true;
+            }
         }
         return false;
     }

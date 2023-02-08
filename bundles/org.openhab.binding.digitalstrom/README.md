@@ -12,15 +12,15 @@ The digitalSTROM-Server communicates through the digitalSTROM-Meters with the di
 
 ### digitalSTROM-Server
 
-The digitalSTROM-Server is required for accessing any other digitalSTROM-Devices. It acts like a *"bridge"*.
+The digitalSTROM-Server is required for accessing any other digitalSTROM-Devices. It acts like a _"bridge"_.
 
 ### digitalSTROM-Devices
 
-At this point almost all available **GE**, **SW**, **GR** and **BL** digitalSTROM-Devices with a set output-mode, unequal *disabled*, are supported by this binding.
+At this point almost all available **GE**, **SW**, **GR** and **BL** digitalSTROM-Devices with a set output-mode, unequal _disabled_, are supported by this binding.
 Furthermore sensor devices like the **dS-iSens200** and **SW-devices** with binary-inputs are supported.
 Last but not least the **circuit** (dS-Meter) is supported, too. They will provide the power consumption and electric meter as channels.
 
-For that there are identically named thing types. Only the *GR* type has a channel (shade), which cannot be changed.
+For that there are identically named thing types. Only the _GR_ type has a channel (shade), which cannot be changed.
 The other types add their channels dynamically affected by the set color-group and output-mode.
 They also automatically change or add the channels, if the color-group or output-mode has changed through the dSS-web-configuration or the configured sensor priorities of the thing has changed.
 
@@ -56,44 +56,44 @@ The different scene thing types are listed in the following table.
 | zoneScene  | Zone-Scene | Represents a digitalSTROM Zone-Scene.  |
 | groupScene  | Group-Scene | Represents a digitalSTROM Group-Scene.  |
 | namedScene  | Named-Scene | Represents a digitalSTROM Scene, which has a user-defined name.  |
- 
+
 ### digitalSTROM-Zone-Temperature-Control
 
 Last but not least, the digitalSTROM-Zone-Temperature-Control is also supported, if a zone-temerature-control is configured, as thing-type **zone_temperature_control**.
-The difference between the digitalSTROM-heating-control-app is, that there are no operation-modes, like *comfort* or *eco*.
-You can directly set the target temperature, in case *pid-control* is configured, otherwise you can set the value in percent of heating valves at the zone.
-The needed channels will be added automatically, as it is also the case for the devices. 
+The difference between the digitalSTROM-heating-control-app is, that there are no operation-modes, like _comfort_ or _eco_.
+You can directly set the target temperature, in case _pid-control_ is configured, otherwise you can set the value in percent of heating valves at the zone.
+The needed channels will be added automatically, as it is also the case for the devices.
 
 ## Discovery
 
-The digitalSTROM-Server is discovered by mDNS or *dss.local.* at the local network.
+The digitalSTROM-Server is discovered by mDNS or _dss.local._ at the local network.
 Once the server is added as a thing, you have to set a user name and password or insert a valid application-token to authenticate with the server.
-If the binding is authorized, it automatically reads all supported devices, the dS-Meters and temperature controlled configured zones, that are set up on the digitalSTROM-System, and puts them into the *inbox*.
- 
+If the binding is authorized, it automatically reads all supported devices, the dS-Meters and temperature controlled configured zones, that are set up on the digitalSTROM-System, and puts them into the _inbox_.
+
 digitalSTROM-Scenes can be discovered, too.
 The background scene-discovery is deactivated by default to not flood the inbox.
 Otherwise it will discover so many scenes, that it can be difficult to find the searched devices.
- 
+
 Discoverable scenes are all user named scenes, group scenes that are reachable by local push-buttons, zone scenes and apartment scenes.
 The discovery also will discover all called scenes, if they aren't automatically discovered yet.
-Temperature control scenes, like *eco* will be ignored, so they cannot be discovered. 
+Temperature control scenes, like _eco_ will be ignored, so they cannot be discovered.
 
 If you only want to discover one of the thing types, you can start a discovery scan on the thing type you want to have discovered.
 You can use the command line command, e.g.: ``openhab:discovery start digitalstrom:namedScene`` to start the scan.
-Which thing types this binding supports, please have a look at **Supported Things**. 
+Which thing types this binding supports, please have a look at **Supported Things**.
 
 ## Thing Configuration and Properties
 
 ### digitalSTROM-Server
 
-The digitalSTROM-Server thing has the following configuration parameter groups: *Connection configuration*, *Server information* and *General configurations*.
+The digitalSTROM-Server thing has the following configuration parameter groups: _Connection configuration_, _Server information_ and _General configurations_.
 
 #### Connection configuration
 
 If the digitalSTROM-Server isn’t found automatically, e.g. because the server isn’t placed at the local network or the mDNS-service is deactivated, you have to insert the network address or URL and the authentication data manually through the graphical user interface or type it into the \*.thing with textual configuration.
 If you use your user name and password for authentication and there is already a token for this application, it will be automatically retrieved from the digitalSTROM-Server, otherwise a new application-token will be generated.
 
-| Parameter Label | Parameter ID | Description  | Required | Advanced 
+| Parameter Label | Parameter ID | Description  | Required | Advanced
 |--------------|------------|--------------------------------|----------------- |------------- |
 | Network address | dSSAddress | Network address of the digitalSTROM-Server.| true | false |
 | User name | userName | Name of a registered user to authenticate to the digitalSTROM-Server.| user name and password or Application-Token | false |
@@ -101,28 +101,27 @@ If you use your user name and password for authentication and there is already a
 | Application-Token | applicationToken | The Application-Token to authenticate to the digitalSTROM-Server. | user name and password or Application-Token| false |
 
 #### Server information
- 
-The parameter group *Server information* only includes informative parameters, which have no special functionality.
 
+The parameter group _Server information_ only includes informative parameters, which have no special functionality.
 
-| Parameter Label | Parameter ID | Description  | Required | Advanced 
+| Parameter Label | Parameter ID | Description  | Required | Advanced
 |-----------------|-------------|--------------------------|---------- |------------- |
-| dSID | dSID | The unique identifier of a digitalSTROM-server. | false| false | 
+| dSID | dSID | The unique identifier of a digitalSTROM-server. | false| false |
 
 #### General configuration:
 
-Here you can set general binding configuration parameters, which are shown in following table: 
+Here you can set general binding configuration parameters, which are shown in following table:
 
-| Parameter Label | Parameter ID| Description  | Required | Advanced | default 
+| Parameter Label | Parameter ID| Description  | Required | Advanced | default
 |-----------------|------------------|-----------------------------------------|---------------- |------------- | ----------------- |
 | Sensor update interval | sensorDataUpdateInterval | Sets the seconds after the digitalSTROM-Device sensor data will be updated. If the priority is higher than 'never'. | false | false | 60 |
 | Total power update interval | totalPowerUpdateInterval | Sets the interval in seconds, after the digitalSTROM total power consumption and total electric meter sensor data will be updated. | false | false | 30 |
 | Days to be slaked trash bin devices | defaultTrashBinDeleateTime| Sets the days after the temporary saved digitalSTROM-Device configuration from not reachable digitalSTROM-Devices get permanently deleted. | false | false | 7 |
-| Wait time sensor reading | sensorWaitTime| Waiting time between the evaluation of the sensor values and the reading of the scenes in seconds. **ATTENTION:** digitalSTROM rule 8 and 9 require a waiting period of 1 minute. Values less than 60 seconds could affect the digitalSTROM system. | false | true | 60 | 
+| Wait time sensor reading | sensorWaitTime| Waiting time between the evaluation of the sensor values and the reading of the scenes in seconds. **ATTENTION:** digitalSTROM rule 8 and 9 require a waiting period of 1 minute. Values less than 60 seconds could affect the digitalSTROM system. | false | true | 60 |
 
 At the thing file, a manual configuration looks e.g. like
 
-```
+```java
 Bridge digitalstrom:dssBridge:dssBridge1 [ dSSAddress="dss.local.",  userName="dssadmin", password="dssadmin", sensorDataUpdateInterval=180]
 ```
 
@@ -141,19 +140,19 @@ In addition to the configuration the digitalSTROM-Server has the following prope
 | Serial | The digitalSTROM-Server hardware serial number. |
 | Ethernet | The digitalSTROM-Server IEEE mac address. |
 | MachineID | The digitalSTROM-Server unique id. |
-| Kernel | The digitalSTROM-Server Linux kernel release string. | 
+| Kernel | The digitalSTROM-Server Linux kernel release string. |
 
 ### digitalSTROM-Devices
 
-The digitalSTROM-Device things have the following configuration parameter groups *Device information* and *Sensor setup*.
-   
+The digitalSTROM-Device things have the following configuration parameter groups _Device information_ and _Sensor setup_.
+
 #### Device information
 
 Each digitalSTROM-Device needs the device ID named dSID as configuration parameter.
 The device ID is printed as serial number at the digitalSTROM-Device and can also be found within the web-interface of the digitalSTROM-Server.
-The following table shows the parameter: 
+The following table shows the parameter:
 
-| Parameter Label | Parameter ID| Description  | Required | Advanced 
+| Parameter Label | Parameter ID| Description  | Required | Advanced
 |-----------------|------------------------|--------------|----------------- |------------- |
 | ID | dSID| The unique identifier of a digitalSTORM-device. | true | false |
 
@@ -171,12 +170,12 @@ So these devices have the following parameters to read them out.
 #### Properties
 
 Furthermore a supported digitalSTROM-Device has some informative properties.
-The following table shows all informative properties: 
+The following table shows all informative properties:
 
 | Property-Name | Description |
 | ------------- | ------------------------------------- |
-|dSUID | The unique identifier of a digitalSTORM-device with virtual devices. | 
-| deviceName | he name of a digitalSTROM-Device. | 
+|dSUID | The unique identifier of a digitalSTORM-device with virtual devices. |
+| deviceName | he name of a digitalSTROM-Device. |
 | meterDSID | Identifier of the meter to which the device is connected. |
 | hwInfo | The hardware type from this digitalSTROM-Device. |
 | zoneID |The digitalSTROM-Device is part of this zone. |
@@ -188,11 +187,11 @@ The device scene configurations will also be persisted in the properties. There 
 
 | Property-Name | Description |
 | ------------- | ------------------------------------- |
-| scene[sceneID] | {Scene: [sceneID], dontcare: [don't care flag], localPrio: [local prio flag], specialMode: [special mode flag]}(0..1), {sceneValue: [scene value], sceneAngle: [scene angle]}(0..1) | 
+| scene[sceneID] | {Scene: [sceneID], dontcare: [don't care flag], localPrio: [local prio flag], specialMode: [special mode flag]}(0..1), {sceneValue: [scene value], sceneAngle: [scene angle]}(0..1) |
 
 ### digitalSTROM-Meter
 
-A digitalSTROM-Meter needs, like the digitalSTROM-Devices, only the unique digitalSTROM device ID named dSID as configuration parameter, which has the same parameters, so please have a look at the point *Device information*. 
+A digitalSTROM-Meter needs, like the digitalSTROM-Devices, only the unique digitalSTROM device ID named dSID as configuration parameter, which has the same parameters, so please have a look at the point _Device information_.
 
 #### Properties
 
@@ -211,12 +210,12 @@ In contrast to the digitalSTROM-Device there are other informal properties. The 
 
 ### digitalSTROM-Zone-Temperature-Control
 
-The thing type of a digitalSTROM-Zone-Temperature-Control is **zone_temperature_control**. 
+The thing type of a digitalSTROM-Zone-Temperature-Control is **zone_temperature_control**.
 As configuration only the zone ID or the zone name, to identify the controlled zone, is needed.
 
-| Parameter Label | Parameter ID| Description  | Required | Advanced | 
+| Parameter Label | Parameter ID| Description  | Required | Advanced |
 |-----------------|------------------------|----------------------------------|----------------- |------------- |
-| Zone ID or name | zoneID | The zone id or zone name of the temperature controlled zone.  | true | false | 
+| Zone ID or name | zoneID | The zone id or zone name of the temperature controlled zone.  | true | false |
 
 #### Properties
 
@@ -230,44 +229,43 @@ As configuration only the zone ID or the zone name, to identify the controlled z
 
 The digitalSTROM-Scenes can be defined with following parameters.
 
-| Parameter Label | Parameter ID| Description  | Required | Advanced | 
+| Parameter Label | Parameter ID| Description  | Required | Advanced |
 |-----------------|------------------------|----------------------------------|----------------- |------------- |
-| Zone ID or name | zoneID | The zone ID or zone name of the called scene. 0 or empty is broadcast to all. | false | false | 
-| Group ID or name | groupID | The group ID or group name of the called scene. 0 or empty is broadcast to all. | false | false | 
-| Scene ID or name | sceneID |The call scene ID or scene name, e.g. preset 1 for scene ID 5. Callable scenes are from 0 to 126. | false | false | 
+| Zone ID or name | zoneID | The zone ID or zone name of the called scene. 0 or empty is broadcast to all. | false | false |
+| Group ID or name | groupID | The group ID or group name of the called scene. 0 or empty is broadcast to all. | false | false |
+| Scene ID or name | sceneID |The call scene ID or scene name, e.g. preset 1 for scene ID 5. Callable scenes are from 0 to 126. | false | false |
 
-The Scene-Thing-Type *Named-Scene* and *Group-Scene* have all parameters.
-The *Apartment-Scene* only has the parameters *Scene name* and *Scene ID* an the *Zone-Scene* has all parameters without *Group ID or name*. 
-
+The Scene-Thing-Type _Named-Scene_ and _Group-Scene_ have all parameters.
+The _Apartment-Scene_ only has the parameters _Scene name_ and _Scene ID_ and the _Zone-Scene_ has all parameters without _Group ID or name_.
 
 ### Textual configuration examples
 
 Usually the discovery works reliable, so that a manual configuration is not needed.
 
-However, at the thing file, a manual configuration looks e.g. like 
+However, at the thing file, a manual configuration looks e.g. like
 
 #### digitalSTROM-Devices
 
-```
+```java
 Thing digitalstrom:GE:GE-KM200 (digitalstrom:dssBridge:myDssBridge) [ dSID="3504175fe0000000000043d4",  activePowerRefreshPriority="low", electricMeterRefreshPriority=“medium", outputCurrentRefreshPriority="high"]
 Thing digitalstrom:GR:GR-KL200 (digitalstrom:dssBridge:myDssBridge) [ dSID="3504175fe0000000000043d5"]
 ```
 
 #### digitalSTROM-Meters
 
-```
+```java
 Thing digitalstrom:circuit:circuit (digitalstrom:dssBridge:myDssBridge) [ dSID="3504175fe0000000000043d5"]
 ```
 
 #### digitalSTROM-Zone-Temperature-Control
 
-```
+```java
 Thing digitalstrom:zone_temperature_control:zone_temperature_control3 (digitalstrom:dssBridge:myDssBridge)  [ zoneID="3"]
 ```
 
 #### digitalSTROM-Group-Scene
 
-```
+```java
 Thing digitalstrom:groupScene:preset1 (digitalstrom:dssBridge:myDssBridge) [ zoneID="3", groupID="1", sceneID="5"]
 ```
 
@@ -281,25 +279,25 @@ digitalSTROM-Devices with an activated output mode.
 
 | Channel Type ID | Item Type    | Description  | supported device type |
 |-------|---------|------------------------------------|----------------- |
-| light_dimmer | Dimmer | The *light_dimm* channel allows to dimm a light device.  | GE, SW | 
-| light_switch | Switch | The *light_switch* channel allows to turn a light device on or off. | GE, SW | 
-| light_2_stage | String| The *light_2_stage* channel allows to turn both light devices on or off or switch only 1 of the both light device on or off. | SW-UMR200 | 
-| light_3_stage | String | The *light_3_stage* channel allows to turn both light devices on or off or switch both light devices separated from each other on or off. | SW-UMR200 | 
-| shade | Rollershutter | The *shade* channel allows to control shade device e.g. a roller shutter or awnings. | GR |
-| shade_angle | Dimmer | The *shade_angle* channel allows to control the relative slat position in percent of blinds. | GR | 
-| general_dimmer | Dimmer | The *general_dimmer* channel allows to control the power of a device e.g. a ceiling fan. | SW | 
-| general_switch | Switch | The *general_switch* channel allows to turn a device on or off e.g. a HIFI-System. | SW | 
-| general_2_stage  | String | The *general_2_stage* channel allows to turn both relais of the device on or off or switch only 1 of the both relais on or off. | SW-UMR200 | 
-| general_3_stage  | String | The *general_3_stage* channel allows to turn both relais of the device on or off or switch both relais of the device separated from each other on or off. | SW-UMR200 | 
-| heating_switch | Switch | The *heating_switch* channel allows to turn a heating device on or off. | BL |
-| heating_dimmer | Dimmer | The *heating_switch* channel allows to control the value in percent of heating valve. | BL |
+| light_dimmer | Dimmer | The _light_dimm_ channel allows to dimm a light device.  | GE, SW |
+| light_switch | Switch | The _light_switch_ channel allows to turn a light device on or off. | GE, SW |
+| light_2_stage | String| The _light_2_stage_ channel allows to turn both light devices on or off or switch only 1 of the both light device on or off. | SW-UMR200 |
+| light_3_stage | String | The _light_3_stage_ channel allows to turn both light devices on or off or switch both light devices separated from each other on or off. | SW-UMR200 |
+| shade | Rollershutter | The _shade_ channel allows to control shade device e.g. a roller shutter or awnings. | GR |
+| shade_angle | Dimmer | The _shade_angle_ channel allows to control the relative slat position in percent of blinds. | GR |
+| general_dimmer | Dimmer | The _general_dimmer_ channel allows to control the power of a device e.g. a ceiling fan. | SW |
+| general_switch | Switch | The _general_switch_ channel allows to turn a device on or off e.g. a HIFI-System. | SW |
+| general_2_stage  | String | The _general_2_stage_ channel allows to turn both relais of the device on or off or switch only 1 of the both relais on or off. | SW-UMR200 |
+| general_3_stage  | String | The _general_3_stage_ channel allows to turn both relais of the device on or off or switch both relais of the device separated from each other on or off. | SW-UMR200 |
+| heating_switch | Switch | The _heating_switch_ channel allows to turn a heating device on or off. | BL |
+| heating_dimmer | Dimmer | The _heating_switch_ channel allows to control the value in percent of heating valve. | BL |
 
 digitalSTROM-Zone-Temperature-Controlled
 
-| Channel Type ID | Item Type    | Description  | 
+| Channel Type ID | Item Type    | Description  |
 |-------|---------|------------------------------------|
-| heating_temperature_controled | Number | The *heating_temperature_controled* channel allows to set a target temperature of a zone. |
-| heating_dimmer | Dimmer | The *heating_switch* channel allows to control the value in percent of heating valve. | 
+| heating_temperature_controled | Number | The _heating_temperature_controled_ channel allows to set a target temperature of a zone. |
+| heating_dimmer | Dimmer | The _heating_switch_ channel allows to control the value in percent of heating valve. |
 
 ### Sensor-Channels
 
@@ -307,9 +305,9 @@ digitalSTROM-Devices which have sensors data.
 
 | Channel Type ID | Item Type    | Description  | supported device type |
 |-------|---------|------------------------------------|----------------- |
-| active_power | Number | This channel indicates the current active power in watt (W) of the device." | GE, SW, BL | 
-| output_current | Number | This channel indicates the current output current in milliamper (mA) of the device." | GE, SW, BL | 
-| electric_meter | Number | This channel indicates the current electric meter value in killowatts hours (kWh) of the device. | GE, SW, BL | 
+| active_power | Number | This channel indicates the current active power in watt (W) of the device." | GE, SW, BL |
+| output_current | Number | This channel indicates the current output current in milliamper (mA) of the device." | GE, SW, BL |
+| electric_meter | Number | This channel indicates the current electric meter value in killowatts hours (kWh) of the device. | GE, SW, BL |
 | temperature_indoors | Number |  This channel indicates the current temperature indoors in Celsius (°C) of the device. | dS-iSens200 |
 | temperature_outdoors | Number |  This channel indicates the current temperature outdoors in Celsius (°C) of the device. | --- |
 | brightness_indoors | Number |  This channel indicates the current brightness indoors in Lux (Lx) of the device. | --- |
@@ -325,7 +323,7 @@ digitalSTROM-Devices which have sensors data.
 | room_temperation_set_point | Number |  This channel indicates the current room temperation set point in Celsius (°C) of the device. | --- |
 | room_temperation_control_variable | Number |  This channel indicates the current room temperation control variable in Celsius (°C) of the device. | --- |
 
-*If no supported device type is at the table, digitalSTROM currently does not offer a device, which support this type of sensor. 
+*If no supported device type is at the table, digitalSTROM currently does not offer a device, which support this type of sensor.
 
 ### Binary-Input-Channels
 
@@ -356,49 +354,49 @@ digitalSTROM-Devices which are able to set a binary-input sensor like SW-UMR200 
 
 ### Metering-Channels
 
-The digitalSTROM-Meters 
+The digitalSTROM-Meters
 
 | Channel Type ID | Item Type    | Description  | supported device type |
 |-------|---------|------------------------------------|----------------- |
-| consumption_Wh | Number | The *consumption_Wh* channel indicates the current power consumption in watt (W)  of the  circuit. | circuit | 
-| energy_Wh | Number | The *energy_Wh* channel indicates the current electric meter value in killowatt hours of the circuit. | circuit  |
+| consumption_Wh | Number | The _consumption_Wh_ channel indicates the current power consumption in watt (W)  of the  circuit. | circuit |
+| energy_Wh | Number | The _energy_Wh_ channel indicates the current electric meter value in killowatt hours of the circuit. | circuit  |
 
-The digitalSTROM-Server 
+The digitalSTROM-Server
 
 | Channel Type ID | Item Type    | Description  | supported device type |
 |-------|---------|------------------------------------|----------------- |
-| total_consumption_Wh | Number | The *total_consumption_Wh* channel indicates the current consumption power in watt (W)  of all connected circuits to the digitalSTROM-System. | dssBridge | 
-| total_energy_Wh | Number | The *total_energy_Wh* channel indicates the current electric meter value in killowatt hours of all connected circuits to the digitalSTROM-System. | dssBridge  | 
+| total_consumption_Wh | Number | The _total_consumption_Wh_ channel indicates the current consumption power in watt (W)  of all connected circuits to the digitalSTROM-System. | dssBridge |
+| total_energy_Wh | Number | The _total_energy_Wh_ channel indicates the current electric meter value in killowatt hours of all connected circuits to the digitalSTROM-System. | dssBridge  |
 
 ### Scenes
 
 | Channel Type ID | Item Type    | Description  | supported device type |
 |-------|---------|------------------------------------|----------------- |
-| scene | Switch | The scene channel allows to call or undo a scene from digitalSTROM. | all scene-types | 
+| scene | Switch | The scene channel allows to call or undo a scene from digitalSTROM. | all scene-types |
 
-**Notes: **
+**Notes:**
 
-*Generally:*
+_Generally:_
 
-* The digitalSTROM-Server only informs the binding about scene-commands. So if you set the output value of devices e.g. through  the dSS-App, the binding will not be informed about the changes and you have to send a "refresh-command" to update the channel.
-* If you press a physical switch at your digitalSTROM-installation and the called scene-value is not red out yet, it can take a bit time to read it out and change the state of the channel.
-It the scene-value is red out, the state will change immediately.
-See also *General-Informations/digitalSTROM-Scenes*.
+- The digitalSTROM-Server only informs the binding about scene-commands. So if you set the output value of devices e.g. through  the dSS-App, the binding will not be informed about the changes and you have to send a "refresh-command" to update the channel.
+- If you press a physical switch at your digitalSTROM-installation and the called scene-value is not red out yet, it can take a bit time to read it out and change the state of the channel.
+  It the scene-value is red out, the state will change immediately.
+  See also _General-Informations/digitalSTROM-Scenes_.
 
-*Channels with accepted command type increase and decrease:*
+_Channels with accepted command type increase and decrease:_
 
-  * digitalSTROM will only evaluate increase and decrease commands, if a scene was called before which turn the device on. 
-   
-*Blinds:*
+- digitalSTROM will only evaluate increase and decrease commands, if a scene was called before which turn the device on.
 
- * Increase, decrease and up, down commands of the shade channel changes the angle in digitalSTROM, too. If you want to set only the position, you have to set the value directly.
- * To protect the slats digitalSTROM changes the position by setting the angle, too, if the position is very high or low. So if you want to see the correct position, you have to send a refresh or stop command, if the blind is ready. 
+_Blinds:_
+
+- Increase, decrease and up, down commands of the shade channel changes the angle in digitalSTROM, too. If you want to set only the position, you have to set the value directly.
+- To protect the slats digitalSTROM changes the position by setting the angle, too, if the position is very high or low. So if you want to see the correct position, you have to send a refresh or stop command, if the blind is ready.
 
 ## Full Example
 
 ### demo.things:
 
-```
+```java
 Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin", password="mySecretPassword", sensorDataUpdateInterval=180] {
   GE GE-KM-200 [ dSID="3504175fe000000000010db9",  activePowerRefreshPriority="low", electricMeterRefreshPriority="medium", outputCurrentRefreshPriority="high"] 
   SW SW-ZWS-200 [ dSID="3504175fe0000000000651c0"] 
@@ -414,7 +412,7 @@ Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin
 
 ### demo.items:
 
-```
+```java
 //dSS
 Number TotalActivePower { channel="digitalstrom:dssBridge:dSS:total_consumption_wh" }
 Number TotalElectricMeter { channel="digitalstrom:dssBridge:dSS:total_energy_wh" }
@@ -455,7 +453,7 @@ Number Temperature { channel="digitalstrom:zoneTemperatureControl:dSS:zoneTemper
 
 ### demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
   Frame label="System" {
@@ -524,17 +522,17 @@ sitemap demo label="Main Menu"
 
 ### digitalSTROM-Scenes
 
-The device scene configuration will be saved persistently to the thing properties, if the thing is not textual configured (because textual configured things will not be persisted), to update the device state faster. 
-For that each scene configuration of each device has to be read out first, because of the digitalSTROM-rule 9 that requires a waiting period of one minute, that take some time so that at the first start a scene call can be take some time to read it out and update the device state. 
-To read it out faster only the discovered or called scenes will be read out. 
- 
+The device scene configuration will be saved persistently to the thing properties, if the thing is not textual configured (because textual configured things will not be persisted), to update the device state faster.
+For that each scene configuration of each device has to be read out first, because of the digitalSTROM-rule 9 that requires a waiting period of one minute, that take some time so that at the first start a scene call can be take some time to read it out and update the device state.
+To read it out faster only the discovered or called scenes will be read out.
+
 **Note:**
 Because the digitalSTROM-Server can't inform the binding about save scene events at this time, the persistently saved scene configurations can't be updated.
 The current troubleshooting to read out the new scene configuration after a save scene action at the digitalSTROM-Server is the following:
 
 1. delete the thing to delete the persistently saved scene configuration
-2. restart the server to delete the temporary saved scene configuration 
-3. add the thing again to read out the scene configuration again.
+1. restart the server to delete the temporary saved scene configuration
+1. add the thing again to read out the scene configuration again.
 
 ### Initial state of digitalSTROM-Scenes and devices
 
@@ -542,17 +540,17 @@ To get the device and scene state after a server start or restart, the binding u
 Because of that there are two things to be observed:
 
 1. If a device status has changed through a device scene or a directly set output value, the status is maybe not correct.
-2. If the last called group scene was not read out yet, it can takes some time until the status will be updated. 
+1. If the last called group scene was not read out yet, it can takes some time until the status will be updated.
 
 ### Textual configuration notice
 
-If you configure your system with textual configuration files, like *\*.thing*, there is one things you have to  consider.
+If you configure your system with textual configuration files, like _\*.thing_, there is one things you have to  consider.
 
-* The feature of the persisting of scene-configurations, to get the scene-configurations after a restart faster (see *digitalSTROM-Scenes* above), will not support  textural configured things, because the properties cannot be persist in this case. 
+- The feature of the persisting of scene-configurations, to get the scene-configurations after a restart faster (see _digitalSTROM-Scenes_ above), will not support  textural configured things, because the properties cannot be persist in this case.
 
 ### Rule specific notice
 
 If you want to create a rule, which uses things of the digitalSTROM-Binding, there are also two things you have to consider.
 
 1. If the rule contains several digitalSTROM-Devices, which can be summarized in a digitalSTROM-Scene, e.g. some lights in a zone, please use an equivalent supported scene. That will significantly reduce the communication to the digitalSTROM-Server, increases performance and does not bypass the digitalSTROM state-machine.
-2. If you implement your own temperature control algorithm for a zone/room, e.g. because you want to use other temperature sensors, and call more than one digitalSTROM-BL-KM200, please use the *zone_temperature_control* for valve value control. The *zone_temperature_control* for valve value control will call all digitalSTROM-BL-KM200 with one command and increases the performance. To get the needed channel at the *zone_temperature_control* you have to choose a control mode unequal to *pid-controlled* for the affected zone at the digitalSTROM-heating-control-app. 
+1. If you implement your own temperature control algorithm for a zone/room, e.g. because you want to use other temperature sensors, and call more than one digitalSTROM-BL-KM200, please use the _zone_temperature_control_ for valve value control. The _zone_temperature_control_ for valve value control will call all digitalSTROM-BL-KM200 with one command and increases the performance. To get the needed channel at the _zone_temperature_control_ you have to choose a control mode unequal to _pid-controlled_ for the affected zone at the digitalSTROM-heating-control-app.

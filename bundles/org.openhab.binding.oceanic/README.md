@@ -47,7 +47,7 @@ All things support the following channels (non-exhaustive):
 
 .things
 
-```
+```java
 Thing oceanic:serial:s1 [ port="/dev/tty.usbserial-FTWGX64N", interval=60]
 Thing oceanic:network:s2 [ ipAddress="192.168.0.6", portNumber=9000, interval=60]
 
@@ -55,7 +55,7 @@ Thing oceanic:network:s2 [ ipAddress="192.168.0.6", portNumber=9000, interval=60
 
 .items
 
-```
+```java
 Number oceanicVolume "volume [%d]" (oceanic) {channel="oceanic:serial:s1:totalflow"}
 String oceanicAlarm "alarm: [%s]" (oceanic) {channel="oceanic:serial:s1:alarm"}
 String oceanicAlert "alert: [%s]" (oceanic) {channel="oceanic:serial:s1:alert"}
@@ -84,49 +84,48 @@ Number oceanicConsLastWk "volume last week is [%d]"(oceanic) {channel="oceanic:s
 
 ## Known issues
 
-The Oceanic binding makes use of the nrjavaserial library, and unfortunately java and serial ports never have been a great marriage. 
+The Oceanic binding makes use of the nrjavaserial library, and unfortunately java and serial ports never have been a great marriage.
 
-Although some work is being done to improve things (<https://github.com/eclipse/smarthome/issues/4465>), the best thing is to avoid serial ports as much as possible, as some issues (<https://github.com/NeuronRobotics/nrjavaserial/issues/96>) are not resolved. 
+Although some work is being done to improve things (<https://github.com/eclipse/smarthome/issues/4465>), the best thing is to avoid serial ports as much as possible, as some issues (<https://github.com/NeuronRobotics/nrjavaserial/issues/96>) are not resolved.
 
 For example, On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the SerialPort.
 
 Within the Oceanic binding two routes are provided:
 
-1. Connect to the Oceanic softener over a serial port that is outside the scope of the Java Virtual Machine, setup a TCP "proxy" on the host that is connected to the softener, and make openHAB connect to that proxy over a plain TCP connection. This can be achieved with ```socat```:
+1. Connect to the Oceanic softener over a serial port that is outside the scope of the Java Virtual Machine, setup a TCP "proxy" on the host that is connected to the softener, and make openHAB connect to that proxy over a plain TCP connection. This can be achieved with `socat`:
 
-```
-             /usr/bin/socat -v TCP-LISTEN:9000 /dev/ttyUSB0,raw,echo=0           
-```
+    ```shell
+    /usr/bin/socat -v TCP-LISTEN:9000 /dev/ttyUSB0,raw,echo=0           
+    ```
 
-In the above example, the name of the host running socat, and the TCP port number 9000, will be part of the **network** Thing configuration
+    In the above example, the name of the host running socat, and the TCP port number 9000, will be part of the **network** Thing configuration
+1. Connect to the Oceanic softener over a serial port on the openHAB host and use `socat` to pipe the data from that serial port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
 
-2. Connect to the Oceanic softener over a serial port on the openHAB host and use ```socat``` to pipe the data from that serial port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
+    ```shell
+    /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0            
+    ```
 
-```
-             /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0            
-```
-                           
 Both workarounds can be implemented using a systemd system manager script, for example:
 
-```
-             [Install]
-             WantedBy=multi-user.target   
+```text
+[Install]
+WantedBy=multi-user.target   
 
-             [Service]
-             #Type=forking
-             ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
-             #PIDFile=/var/run/socat.pid
-             User=root
-             Restart=always
-             RestartSec=10             
+[Service]
+#Type=forking
+ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
+#PIDFile=/var/run/socat.pid
+User=root
+Restart=always
+RestartSec=10             
 ```
 
 However, in order to fix permissions at the OS level, one has to issue following commands in order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB runtime), and to make the tty both readable and writable.
 
+```shell
+sudo useradd  -G dialout openhab
+sudo chgrp dialout /dev/ttyS1
+sudo chmod 777 /dev/ttyS1 
 ```
-             sudo useradd  -G dialout openhab
-             sudo chgrp dialout /dev/ttyS1
-             sudo chmod 777 /dev/ttyS1 
-```
-          
+
 Alternatively, these commands can be executed through a script that is attached to the systemd system manager script.

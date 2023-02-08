@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to an Gardena account.
+ * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to a Gardena account.
  *
  * @author Gerhard Riegler - Initial contribution
  */

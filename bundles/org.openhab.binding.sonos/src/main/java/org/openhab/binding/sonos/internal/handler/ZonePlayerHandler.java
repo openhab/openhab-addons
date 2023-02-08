@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String RADIO_URI = "x-sonosapi-radio:";
     private static final String RADIO_MP3_URI = "x-rincon-mp3radio:";
     private static final String RADIOAPP_URI = "x-sonosapi-hls:radioapp_";
-    private static final String OPML_TUNE = "http://opml.radiotime.com/Tune.ashx";
+    private static final String OPML_TUNE = "://opml.radiotime.com/Tune.ashx";
     private static final String FILE_URI = "x-file-cifs:";
     private static final String SPDIF = ":spdif";
     private static final String TUNEIN_URI = "x-sonosapi-stream:s%s?sid=%s&flags=32";
@@ -1466,6 +1466,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     codec = "DTS";
                     break;
                 case "59":
+                case "61":
                 case "63":
                     codec = "dolbyAtmos";
                     break;
@@ -3111,7 +3112,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     /**
-     * This will attempt to match the station string with a entry in the
+     * This will attempt to match the station string with an entry in the
      * favorites list, this supports both single entries and playlists
      *
      * @param favorite to match

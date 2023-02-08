@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Used to map thing types from the binding string to a ENUM value.
+ * Used to map thing types from the binding string to an ENUM value.
  *
  * @author Russell Stephens - Initial Contribution
  */

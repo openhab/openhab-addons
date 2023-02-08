@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -237,6 +237,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         if (!httpClient.isRunning()) {
             try {
                 httpClient.start();
+                // we act as a blind proxy, don't try to auto decode content
+                httpClient.getContentDecoderFactories().clear();
             } catch (Exception e) {
                 logger.error("Could not start Jetty http client", e);
             }
@@ -245,7 +247,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         String localBaseUrl = "http://localhost:" + localPort;
         cloudClient = new CloudClient(httpClient, InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl,
                 remoteAccessEnabled, exposedItems);
-        cloudClient.setOpenHABVersion(OpenHAB.getVersion());
         cloudClient.connect();
         cloudClient.setListener(this);
         NotificationAction.cloudService = this;

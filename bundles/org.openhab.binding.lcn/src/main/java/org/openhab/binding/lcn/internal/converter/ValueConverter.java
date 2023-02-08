@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,6 @@ import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all LCN variable value converters.
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ValueConverter extends Converter {
-    private final Logger logger = LoggerFactory.getLogger(ValueConverter.class);
     private @Nullable final Unit<?> unit;
     private final Function<Long, Double> toHuman;
     private final Function<Double, Long> toNative;
@@ -102,20 +99,20 @@ public class ValueConverter extends Converter {
      *
      * @param state from the Thing
      * @return human readable State
+     * @throws LcnException
      */
     @Override
-    public State onStateUpdateFromHandler(State state) {
-        State result = state;
-
+    public State onStateUpdateFromHandler(State state) throws LcnException {
         if (state instanceof DecimalType) {
             Unit<?> localUnit = unit;
             if (localUnit != null) {
-                result = QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
+                return QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
             }
-        } else {
-            logger.warn("Unexpected state type: {}", state.getClass().getSimpleName());
-        }
 
-        return result;
+            return state;
+        } else {
+            throw new LcnException("Unexpected state type: Was " + state.getClass().getSimpleName()
+                    + " but expected DecimalType: " + state);
+        }
     }
 }

@@ -41,7 +41,7 @@
 			</parameter>
 			<parameter name="localSourceAddr" type="text">
 				<label>Local Device Address</label>
-				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this KNX/IP gateway
+				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this openHAB Thing
 					within the KNX bus</description>
 				<default>0.0.0</default>
 			</parameter>

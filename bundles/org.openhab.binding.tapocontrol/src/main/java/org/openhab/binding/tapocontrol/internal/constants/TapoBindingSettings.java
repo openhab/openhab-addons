@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ public class TapoBindingSettings {
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String TAPO_CLOUD_URL = "https://eu-wap.tplinkcloud.com";
     public static final String TAPO_APP_TYPE = "Tapo_Ios";
-    public static final String TAPO_TERMINAL_UUID = "0A950402-7224-46EB-A450-7362CDB902A2";
     public static final String TAPO_DEVICE_URL = "http://%s/app";
     public static final Integer HTTP_MAX_CONNECTIONS = 10; // setMaxConnectionsPerDestination for HTTP-Client
     public static final Integer HTTP_MAX_QUEUED_REQUESTS = 10; // setMaxRequestsQueuedPerDestination for HTTP-Client

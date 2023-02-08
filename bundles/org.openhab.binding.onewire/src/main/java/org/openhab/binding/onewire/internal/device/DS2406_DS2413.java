@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
 /**
- * The {@link DS2406_DS2413} class defines an DS2406 or DS2413 device
+ * The {@link DS2406_DS2413} class defines a DS2406 or DS2413 device
  *
  * @author Jan N. Klug - Initial contribution
  */

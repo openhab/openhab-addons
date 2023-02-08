@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection;
 
 /**
- * The {@link HttpTransport} executes an request to the DigitalSTROM-Server.
+ * The {@link HttpTransport} executes a request to the DigitalSTROM-Server.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

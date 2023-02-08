@@ -1,0 +1,45 @@
+/**
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.juicenet.internal.api.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * {@link JuiceNetApiInfo } implements DTO for Info
+ *
+ * @author Jeff James - Initial contribution
+ */
+@NonNullByDefault
+public class JuiceNetApiInfo {
+    public String name = "";
+    public String address = "";
+    public String city = "";
+    public String zip = "";
+    @SerializedName("country_code")
+    public String countryCode = "";
+    public String ip = "";
+    @SerializedName("gascost")
+    public int gasCost;
+    public int mpg;
+    public int ecost;
+    @SerializedName("whpermile")
+    public int whPerMile;
+    public String timeZoneId = "";
+    @SerializedName("amps_wire_rating")
+    public int ampsWireRating;
+    @SerializedName("amps_unit_rating")
+    public int ampsUnitRating;
+    public JuiceNetApiCar[] cars = {};
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public interface VirtualDatapointHandler {
     public boolean canHandleEvent(HmDatapoint dp);
 
     /**
-     * Handles a event to extract data required for the virtual datapoint.
+     * Handles an event to extract data required for the virtual datapoint.
      */
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp);
 

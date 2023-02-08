@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
@@ -49,6 +50,7 @@ public class HomekitOHItemProxy {
     private final Logger logger = LoggerFactory.getLogger(HomekitOHItemProxy.class);
     private static final int DEFAULT_DELAY = 50; // in ms
     private final Item item;
+    private final Item baseItem;
     private final Map<HomekitCommandType, State> commandCache = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -57,8 +59,20 @@ public class HomekitOHItemProxy {
     // delay, how long wait for further commands. in ms.
     private int delay = DEFAULT_DELAY;
 
+    public static Item getBaseItem(Item item) {
+        if (item instanceof GroupItem) {
+            final GroupItem groupItem = (GroupItem) item;
+            final Item baseItem = groupItem.getBaseItem();
+            if (baseItem != null) {
+                return baseItem;
+            }
+        }
+        return item;
+    }
+
     public HomekitOHItemProxy(Item item) {
         this.item = item;
+        this.baseItem = getBaseItem(item);
     }
 
     public Item getItem() {
@@ -75,9 +89,9 @@ public class HomekitOHItemProxy {
 
     @SuppressWarnings("null")
     private void sendCommand() {
-        if (!(item instanceof DimmerItem)) {
+        if (!(baseItem instanceof DimmerItem)) {
             // currently supports only DimmerItem and ColorItem (which extends DimmerItem)
-            logger.debug("unexpected item type {}. Only DimmerItem and ColorItem are supported.", item);
+            logger.debug("unexpected item type {}. Only DimmerItem and ColorItem are supported.", baseItem);
             return;
         }
         final OnOffType on = (OnOffType) commandCache.remove(ON_COMMAND);
@@ -96,16 +110,20 @@ public class HomekitOHItemProxy {
                     || ((dimmerMode == DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) && (currentOnState != OnOffType.ON)
                             && ((brightness == null) || (brightness.intValue() == 100)))) {
                 logger.trace("send OnOff command for item {} with value {}", item, on);
-                ((DimmerItem) item).send(on);
+                if (item instanceof GroupItem) {
+                    ((GroupItem) item).send(on);
+                } else {
+                    ((DimmerItem) item).send(on);
+                }
             }
         }
 
         // if hue or saturation present, send an HSBType state update. no filter applied for HUE & Saturation
         if ((hue != null) || (saturation != null)) {
-            if (item instanceof ColorItem) {
+            if (baseItem instanceof ColorItem) {
                 sendHSBCommand((ColorItem) item, hue, saturation, brightness);
             }
-        } else if ((brightness != null) && (item instanceof DimmerItem)) {
+        } else if ((brightness != null) && (baseItem instanceof DimmerItem)) {
             // sends brightness:
             // - DIMMER_MODE_NORMAL
             // - DIMMER_MODE_FILTER_ON
@@ -116,6 +134,8 @@ public class HomekitOHItemProxy {
                 logger.trace("send Brightness command for item {} with value {}", item, brightness);
                 if (item instanceof ColorItem) {
                     sendHSBCommand((ColorItem) item, hue, saturation, brightness);
+                } else if (item instanceof GroupItem) {
+                    ((GroupItem) item).send(brightness);
                 } else {
                     ((DimmerItem) item).send(brightness);
                 }
@@ -124,14 +144,19 @@ public class HomekitOHItemProxy {
         commandCache.clear();
     }
 
-    private void sendHSBCommand(ColorItem item, @Nullable DecimalType hue, @Nullable PercentType saturation,
+    private void sendHSBCommand(Item item, @Nullable DecimalType hue, @Nullable PercentType saturation,
             @Nullable PercentType brightness) {
         final HSBType currentState = item.getState() instanceof UnDefType ? HSBType.BLACK : (HSBType) item.getState();
         // logic for ColorItem = combine hue, saturation and brightness update to one command
         final DecimalType targetHue = hue != null ? hue : currentState.getHue();
         final PercentType targetSaturation = saturation != null ? saturation : currentState.getSaturation();
         final PercentType targetBrightness = brightness != null ? brightness : currentState.getBrightness();
-        item.send(new HSBType(targetHue, targetSaturation, targetBrightness));
+        final HSBType command = new HSBType(targetHue, targetSaturation, targetBrightness);
+        if (item instanceof GroupItem) {
+            ((GroupItem) item).send(command);
+        } else {
+            ((ColorItem) item).send(command);
+        }
         logger.trace("send HSB command for item {} with following values hue={} saturation={} brightness={}", item,
                 targetHue, targetSaturation, targetBrightness);
     }
@@ -141,7 +166,7 @@ public class HomekitOHItemProxy {
         logger.trace("add command to command cache: item {}, command type {}, command state {}. cache state after: {}",
                 this, commandType, state, commandCache);
         // if cache has already HUE+SATURATION or BRIGHTNESS+ON then we don't expect any further relevant command
-        if (((item instanceof ColorItem) && commandCache.containsKey(HUE_COMMAND)
+        if (((baseItem instanceof ColorItem) && commandCache.containsKey(HUE_COMMAND)
                 && commandCache.containsKey(SATURATION_COMMAND))
                 || (commandCache.containsKey(BRIGHTNESS_COMMAND) && commandCache.containsKey(ON_COMMAND))) {
             if (future != null) {

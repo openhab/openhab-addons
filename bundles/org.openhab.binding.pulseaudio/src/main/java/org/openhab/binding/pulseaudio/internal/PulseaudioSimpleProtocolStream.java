@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,7 +44,8 @@ public abstract class PulseaudioSimpleProtocolStream {
 
     protected @Nullable Socket clientSocket;
 
-    private boolean isIdle = true;
+    private ReentrantLock countClientLock = new ReentrantLock();
+    private Integer countClient = 0;
 
     private @Nullable ScheduledFuture<?> scheduledDisconnection;
 
@@ -54,6 +56,7 @@ public abstract class PulseaudioSimpleProtocolStream {
 
     /**
      * Connect to pulseaudio with the simple protocol
+     * Will schedule an attempt for disconnection after timeout
      *
      * @throws IOException
      * @throws InterruptedException when interrupted during the loading module wait
@@ -61,12 +64,13 @@ public abstract class PulseaudioSimpleProtocolStream {
     public void connectIfNeeded() throws IOException, InterruptedException {
         Socket clientSocketLocal = clientSocket;
         if (clientSocketLocal == null || !clientSocketLocal.isConnected() || clientSocketLocal.isClosed()) {
-            logger.debug("Simple TCP Stream connecting");
+            logger.debug("Simple TCP Stream connecting for {}", getLabel(null));
             String host = pulseaudioHandler.getHost();
             int port = pulseaudioHandler.getSimpleTcpPortAndLoadModuleIfNecessary();
             var clientSocketFinal = new Socket(host, port);
             clientSocketFinal.setSoTimeout(pulseaudioHandler.getBasicProtocolSOTimeout());
             clientSocket = clientSocketFinal;
+            scheduleDisconnectIfNoClient();
         }
     }
 
@@ -75,8 +79,8 @@ public abstract class PulseaudioSimpleProtocolStream {
      */
     public void disconnect() {
         final Socket clientSocketLocal = clientSocket;
-        if (clientSocketLocal != null && isIdle) {
-            logger.debug("Simple TCP Stream disconnecting");
+        if (clientSocketLocal != null) {
+            logger.debug("Simple TCP Stream disconnecting for {}", getLabel(null));
             try {
                 clientSocketLocal.close();
             } catch (IOException ignored) {
@@ -86,15 +90,23 @@ public abstract class PulseaudioSimpleProtocolStream {
         }
     }
 
-    public void scheduleDisconnect() {
-        var scheduledDisconnectionFinal = scheduledDisconnection;
-        if (scheduledDisconnectionFinal != null) {
-            scheduledDisconnectionFinal.cancel(true);
-        }
-        int idleTimeout = pulseaudioHandler.getIdleTimeout();
-        if (idleTimeout > -1) {
-            logger.debug("Scheduling disconnect");
-            scheduledDisconnection = scheduler.schedule(this::disconnect, idleTimeout, TimeUnit.MILLISECONDS);
+    private void scheduleDisconnectIfNoClient() {
+        countClientLock.lock();
+        try {
+            if (countClient <= 0) {
+                var scheduledDisconnectionFinal = scheduledDisconnection;
+                if (scheduledDisconnectionFinal != null) {
+                    logger.debug("Aborting next disconnect");
+                    scheduledDisconnectionFinal.cancel(true);
+                }
+                int idleTimeout = pulseaudioHandler.getIdleTimeout();
+                if (idleTimeout > -1) {
+                    logger.debug("Scheduling next disconnect");
+                    scheduledDisconnection = scheduler.schedule(this::disconnect, idleTimeout, TimeUnit.MILLISECONDS);
+                }
+            }
+        } finally {
+            countClientLock.unlock();
         }
     }
 
@@ -115,7 +127,35 @@ public abstract class PulseaudioSimpleProtocolStream {
         return label != null ? label : pulseaudioHandler.getThing().getUID().getId();
     }
 
-    public void setIdle(boolean idle) {
-        isIdle = idle;
+    protected void addClientCount() {
+        countClientLock.lock();
+        try {
+            countClient += 1;
+            logger.debug("Adding new client for pulseaudio sink/source {}. Current count: {}", getLabel(null),
+                    countClient);
+            if (countClient <= 0) { // safe against misuse
+                countClient = 1;
+            }
+            var scheduledDisconnectionFinal = scheduledDisconnection;
+            if (scheduledDisconnectionFinal != null) {
+                logger.debug("Aborting next disconnect");
+                scheduledDisconnectionFinal.cancel(true);
+            }
+        } finally {
+            countClientLock.unlock();
+        }
+    }
+
+    protected void minusClientCount() {
+        countClientLock.lock();
+        countClient -= 1;
+        logger.debug("Removing client for pulseaudio sink/source {}. Current count: {}", getLabel(null), countClient);
+        if (countClient < 0) { // safe against misuse
+            countClient = 0;
+        }
+        countClientLock.unlock();
+        if (countClient <= 0) {
+            scheduleDisconnectIfNoClient();
+        }
     }
 }

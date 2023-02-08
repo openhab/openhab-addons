@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,7 +193,7 @@ public abstract class SmartthingsConverter {
             case "Vector3":
                 // This is a weird result from Smartthings. If the messages is from a "state" request the result will
                 // look like: "value":{"z":22,"y":-36,"x":-987}
-                // But if the result is from sensor change via a subscription to a a threeAxis device the results will
+                // But if the result is from sensor change via a subscription to a threeAxis device the results will
                 // be a String of the format "value":"-873,-70,484"
                 // which GSON returns as a LinkedTreeMap
                 if (deviceValue instanceof String) {

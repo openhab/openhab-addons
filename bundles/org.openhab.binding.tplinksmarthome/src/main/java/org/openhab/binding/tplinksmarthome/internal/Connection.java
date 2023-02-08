@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * This class acts as and interface to the physical device.
  *
  * @author Christian Fischer - Initial contribution
- * @author Hilbrand Bouwkamp - Reorganized code an put connection in single class
+ * @author Hilbrand Bouwkamp - Reorganized code and put connection in single class
  */
 @NonNullByDefault
 public class Connection {

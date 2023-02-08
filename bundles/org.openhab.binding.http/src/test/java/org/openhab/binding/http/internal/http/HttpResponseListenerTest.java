@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,7 +118,7 @@ public class HttpResponseListenerTest {
     // ******** Tests ******** //
 
     /**
-     * When a exception is thrown during the request phase, the future completes unexceptionally
+     * When an exception is thrown during the request phase, the future completes unexceptionally
      * with no value.
      */
     @Test
@@ -134,7 +134,7 @@ public class HttpResponseListenerTest {
     }
 
     /**
-     * When a exception is thrown during the response phase, the future completes unexceptionally
+     * When an exception is thrown during the response phase, the future completes unexceptionally
      * with no value.
      */
     @Test
@@ -255,7 +255,7 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side response with a HTTP/204 and no payload, the future completes normally
-     * and contains a empty Content.
+     * and contains an empty Content.
      */
     @Test
     public void nocontent() {
@@ -297,7 +297,7 @@ public class HttpResponseListenerTest {
 
     /**
      * When the remote side responds with anything we don't expect (in this case a HTTP/500), the
-     * future completes exceptionally with a IllegalStateException.
+     * future completes exceptionally with an IllegalStateException.
      */
     @Test
     public void unexpectedStatus() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.tellstick.internal.local;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +50,7 @@ import org.tellstick.device.iface.Device;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusLocalDeviceController} to execute the actual commands.
  *
- * @author Jan Gustafsson- Initial contribution
+ * @author Jan Gustafsson - Initial contribution
  */
 public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
@@ -59,7 +59,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     private TellstickLocalDevicesDTO deviceList = null;
     private TellstickLocalSensorsDTO sensorList = null;
     private TelldusLocalDeviceController controller = null;
-    private List<DeviceStatusListener> deviceStatusListeners = Collections.synchronizedList(new ArrayList<>());
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
     private final HttpClient httpClient;
     private ScheduledFuture<?> pollingJob;
     /**

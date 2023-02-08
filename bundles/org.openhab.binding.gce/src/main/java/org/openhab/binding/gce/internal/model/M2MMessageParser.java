@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.gce.internal.model;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.handler.Ipx800DeviceConnector;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.slf4j.Logger;
@@ -35,11 +34,11 @@ public class M2MMessageParser {
 
     private final Logger logger = LoggerFactory.getLogger(M2MMessageParser.class);
     private final Ipx800DeviceConnector connector;
-    private final @Nullable Ipx800EventListener listener;
+    private final Ipx800EventListener listener;
 
     private String expectedResponse = "";
 
-    public M2MMessageParser(Ipx800DeviceConnector connector, @Nullable Ipx800EventListener listener) {
+    public M2MMessageParser(Ipx800DeviceConnector connector, Ipx800EventListener listener) {
         this.connector = connector;
         this.listener = listener;
         connector.setParser(this);
@@ -87,9 +86,7 @@ public class M2MMessageParser {
 
     private void setStatus(String port, double value) {
         logger.debug("Received {} : {}", port, value);
-        if (listener != null) {
-            listener.dataReceived(port, value);
-        }
+        listener.dataReceived(port, value);
     }
 
     public void setExpectedResponse(String expectedResponse) {
@@ -125,9 +122,7 @@ public class M2MMessageParser {
 
     public void errorOccurred(Exception e) {
         logger.warn("Error received from connector : {}", e.getMessage());
-        if (listener != null) {
-            listener.errorOccurred(e);
-        }
+        listener.errorOccurred(e);
     }
 
     public void resetPLC() {

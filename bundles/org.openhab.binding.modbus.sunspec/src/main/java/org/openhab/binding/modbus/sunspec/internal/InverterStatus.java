@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.modbus.sunspec.internal;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 /**
  * Possible values for an inverter's status field
  *
@@ -21,7 +24,12 @@ public enum InverterStatus {
 
     OFF(1),
     SLEEP(2),
+    STARTING(3),
     ON(4),
+    THROTTLED(5),
+    SHUTTING_DOWN(6),
+    FAULT(7),
+    STANDBY(8),
     UNKNOWN(-1);
 
     private final int code;
@@ -35,15 +43,8 @@ public enum InverterStatus {
     }
 
     public static InverterStatus getByCode(int code) {
-        switch (code) {
-            case 1:
-                return InverterStatus.OFF;
-            case 2:
-                return InverterStatus.SLEEP;
-            case 4:
-                return InverterStatus.ON;
-            default:
-                return InverterStatus.UNKNOWN;
-        }
+        Optional<InverterStatus> status = Arrays.stream(InverterStatus.values()).filter(s -> s.code == code)
+                .findFirst();
+        return status.orElse(InverterStatus.UNKNOWN);
     }
 }

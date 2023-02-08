@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,16 @@ package org.openhab.binding.hue.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -37,29 +42,25 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class HueCommandExtension extends AbstractConsoleCommandExtension {
+public class HueCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String USER_NAME = "username";
     private static final String SCENES = "scenes";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(USER_NAME, SCENES), false);
+    private static final StringsCompleter SCENES_COMPLETER = new StringsCompleter(List.of(SCENES), false);
 
     private final ThingRegistry thingRegistry;
 
     @Activate
     public HueCommandExtension(final @Reference ThingRegistry thingRegistry) {
-        super("hue", "Interact with the hue binding.");
+        super("hue", "Interact with the Hue binding.");
         this.thingRegistry = thingRegistry;
     }
 
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             HueBridgeHandler bridgeHandler = null;
             HueGroupHandler groupHandler = null;
@@ -78,7 +79,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                 console.println("No handler initialized for the thingUID '" + args[0] + "'");
                 printUsage(console);
             } else if (bridgeHandler == null && groupHandler == null) {
-                console.println("'" + args[0] + "' is neither a Hue bridgeUID nor a Hue groupThingUID");
+                console.println("'" + args[0] + "' is neither a Hue BridgeUID nor a Hue groupThingUID");
                 printUsage(console);
             } else {
                 switch (args[1]) {
@@ -87,7 +88,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
                             String userName = bridgeHandler.getUserName();
                             console.println("Your user name is " + (userName != null ? userName : "undefined"));
                         } else {
-                            console.println("'" + args[0] + "' is not a Hue bridgeUID");
+                            console.println("'" + args[0] + "' is not a Hue BridgeUID");
                             printUsage(console);
                         }
                         break;
@@ -113,5 +114,40 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"),
                 buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
                 buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> HueBindingConstants.THING_TYPE_BRIDGE.equals(t.getThingTypeUID())
+                            || HueBindingConstants.THING_TYPE_GROUP.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            } else if (thing != null && HueBindingConstants.THING_TYPE_GROUP.equals(thing.getThingTypeUID())) {
+                return SCENES_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

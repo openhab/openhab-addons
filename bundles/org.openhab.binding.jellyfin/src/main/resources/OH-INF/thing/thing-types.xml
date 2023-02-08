@@ -23,6 +23,10 @@
 				<description>Connect through https</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="path" type="text" required="false">
+				<label>Base Path</label>
+				<description>Base path of the server</description>
+			</parameter>
 			<parameter name="refreshSeconds" type="integer" min="10" max="300" required="true">
 				<label>Refresh Seconds</label>
 				<description>Interval to pull devices state from the server</description>

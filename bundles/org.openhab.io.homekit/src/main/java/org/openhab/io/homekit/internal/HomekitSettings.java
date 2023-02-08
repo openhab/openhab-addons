@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class HomekitSettings {
     public String pin = "031-45-154";
     public String setupId;
     public String qrCode;
-    public int startDelay = 30;
+    public boolean useDummyAccessories = false;
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
     public boolean blockUserDeletion = false;
@@ -62,9 +62,11 @@ public class HomekitSettings {
         result = prime * result + ((thermostatTargetModeHeat == null) ? 0 : thermostatTargetModeHeat.hashCode());
         result = prime * result + ((thermostatTargetModeOff == null) ? 0 : thermostatTargetModeOff.hashCode());
         result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
+        result = prime * result + (useDummyAccessories ? 1249 : 1259);
         return result;
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -125,6 +127,9 @@ public class HomekitSettings {
             return false;
         }
         if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
+            return false;
+        }
+        if (useDummyAccessories != other.useDummyAccessories) {
             return false;
         }
         return true;

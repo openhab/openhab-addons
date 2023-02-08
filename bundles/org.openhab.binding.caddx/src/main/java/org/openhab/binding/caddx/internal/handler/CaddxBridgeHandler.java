@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,9 +90,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private @Nullable CaddxCommunicator communicator = null;
 
     // Things served by the bridge
-    private Map<BigDecimal, Thing> thingZonesMap = new ConcurrentHashMap<>();
-    private Map<BigDecimal, Thing> thingPartitionsMap = new ConcurrentHashMap<>();
-    private Map<BigDecimal, Thing> thingKeypadsMap = new ConcurrentHashMap<>();
+    private Map<Integer, Thing> thingZonesMap = new ConcurrentHashMap<>();
+    private Map<Integer, Thing> thingPartitionsMap = new ConcurrentHashMap<>();
+    private Map<Integer, Thing> thingKeypadsMap = new ConcurrentHashMap<>();
     private @Nullable Thing thingPanel = null;
 
     public @Nullable CaddxDiscoveryService getDiscoveryService() {
@@ -163,9 +163,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
             // Send status commands to the zones and partitions
             thingZonesMap.forEach((k, v) -> sendCommand(CaddxMessageContext.COMMAND,
-                    CaddxBindingConstants.ZONE_STATUS_REQUEST, k.subtract(BigDecimal.ONE).toString()));
+                    CaddxBindingConstants.ZONE_STATUS_REQUEST, String.valueOf(k - 1)));
             thingPartitionsMap.forEach((k, v) -> sendCommand(CaddxMessageContext.COMMAND,
-                    CaddxBindingConstants.PARTITION_STATUS_REQUEST, k.subtract(BigDecimal.ONE).toString()));
+                    CaddxBindingConstants.PARTITION_STATUS_REQUEST, String.valueOf(k - 1)));
         }
 
         // list all channels
@@ -197,15 +197,15 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         switch (caddxThingType) {
             case PARTITION:
                 if (partition != null) {
-                    return thingPartitionsMap.get(BigDecimal.valueOf(partition));
+                    return thingPartitionsMap.get(Integer.valueOf(partition));
                 }
             case ZONE:
                 if (zone != null) {
-                    return thingZonesMap.get(BigDecimal.valueOf(zone));
+                    return thingZonesMap.get(Integer.valueOf(zone));
                 }
             case KEYPAD:
                 if (keypad != null) {
-                    return thingKeypadsMap.get(BigDecimal.valueOf(keypad));
+                    return thingKeypadsMap.get(Integer.valueOf(keypad));
                 }
             case PANEL:
                 return thingPanel;
@@ -412,14 +412,15 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof ThingHandlerPartition) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration()
-                    .get(CaddxPartitionConfiguration.PARTITION_NUMBER);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxPartitionConfiguration.PARTITION_NUMBER))
+                    .intValue();
             thingPartitionsMap.put(id, childThing);
         } else if (childHandler instanceof ThingHandlerZone) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER)).intValue();
             thingZonesMap.put(id, childThing);
         } else if (childHandler instanceof ThingHandlerKeypad) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS))
+                    .intValue();
             thingKeypadsMap.put(id, childThing);
         } else if (childHandler instanceof ThingHandlerPanel) {
             thingPanel = childThing;
@@ -431,14 +432,15 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof ThingHandlerPartition) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration()
-                    .get(CaddxPartitionConfiguration.PARTITION_NUMBER);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxPartitionConfiguration.PARTITION_NUMBER))
+                    .intValue();
             thingPartitionsMap.remove(id);
         } else if (childHandler instanceof ThingHandlerZone) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxZoneConfiguration.ZONE_NUMBER)).intValue();
             thingZonesMap.remove(id);
         } else if (childHandler instanceof ThingHandlerKeypad) {
-            BigDecimal id = (BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS);
+            int id = ((BigDecimal) childThing.getConfiguration().get(CaddxKeypadConfiguration.KEYPAD_ADDRESS))
+                    .intValue();
             thingKeypadsMap.remove(id);
         } else if (childHandler instanceof ThingHandlerPanel) {
             thingPanel = null;

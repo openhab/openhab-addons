@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="zway" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Z-Way Binding</name>
+	<description>
+		<![CDATA[
+		Z-Way is a home automation software to configure and control a Z-Wave network. The ZAutomation interface provides
+		all Z-Wave devices and handles incoming commands. The Z-Way Binding uses this HTTP interface to load all device
+		and make them available during the discovery process.<br>
+		Currently only a continuous polling is available!
+		]]>
+	</description>
+
+</addon:addon>

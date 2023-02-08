@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LifxThrottlingUtil} is a utility class that regulates the frequency at which messages/packets are
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public final class LifxThrottlingUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LifxThrottlingUtil.class);
 
     private LifxThrottlingUtil() {
         // hidden utility class constructor

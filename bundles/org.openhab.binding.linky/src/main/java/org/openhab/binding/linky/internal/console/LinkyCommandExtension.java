@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -40,9 +44,10 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
+public class LinkyCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String REPORT = "report";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(REPORT), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -55,13 +60,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length >= 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             LinkyHandler handler = null;
             if (thing != null) {
@@ -129,5 +128,37 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays
                 .asList(buildCommandUsage(String.format("<thingUID> %s <start day> <end day> [<separator>]", REPORT),
                         "report daily consumptions between two dates"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> LinkyBindingConstants.THING_TYPE_LINKY.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

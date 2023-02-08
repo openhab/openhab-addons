@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.binding.digitalstrom.internal.lib.listener.stateenums.Manager
 public interface ManagerStatusListener {
 
     /**
-     * This method is called whenever the state of an digitalSTROM-Manager has changed.<br>
+     * This method is called whenever the state of a digitalSTROM-Manager has changed.<br>
      * For that it passes the {@link ManagerTypes} and the new {@link ManagerStates}.
      *
      * @param managerType of the digitalSTROM-Manager

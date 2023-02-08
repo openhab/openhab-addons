@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -260,7 +261,7 @@ public class ReadmeHelper {
         try {
             JsonReader reader = new JsonReader(new FileReader(DEVICE_NAMES_FILE));
             names = gson.fromJson(reader, names.getClass());
-        } catch (IOException e) {
+        } catch (JsonSyntaxException | IOException e) {
             LOGGER.info("Error reading name list {}: ", DEVICE_NAMES_FILE, e.getMessage());
         }
 

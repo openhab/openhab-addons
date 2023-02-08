@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public enum ItemSubType {
     }
 
     /**
-     * Parses the text into a ItemSubType enum (ignoring case)
+     * Parses the text into an ItemSubType enum (ignoring case)
      *
      * @param text the text to parse
      * @return the ItemSubType type

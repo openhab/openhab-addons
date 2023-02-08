@@ -2,13 +2,13 @@
 
 The LaMetric binding allows to connect openHAB to LaMetric Time connected clock devices, providing following features:
 
-* Control the LaMetric Time Device
-    * Control Display Brightness
-    * Change Audio Volume
-    * Enable / Disable Bluetooth
-    * Activate an Application
-* Send notifications messages
-* Control the core (built-in) apps
+- Control the LaMetric Time Device
+  - Control Display Brightness
+  - Change Audio Volume
+  - Enable / Disable Bluetooth
+  - Activate an Application
+- Send notifications messages
+- Control the core (built-in) apps
 
 ## Supported Things
 
@@ -59,7 +59,7 @@ For example, if you duplicated the weather app for two locations, the app would 
 
 ### Sample Thing Configuration
 
-```
+```java
 Bridge lametrictime:device:demo [ host="somehost", apiKey="ksfjsdkfsksjfs" ]
 {
     Thing clockApp     clock       [ widgetId="generatedcorewidgetid1" ]
@@ -135,23 +135,23 @@ The binding provides three simple notification channels for info messages (chann
 
 To post messages to these channels, simply map them to a String item, e.g. like this:
 
-```
+```java
 String DeviceNotifyInfo "Info Message" {channel="lametrictime:device:demo:info"}
 ```
 
-By setting a text on the item, the binding will send the notification which is then shown on the LaMetric device. 
+By setting a text on the item, the binding will send the notification which is then shown on the LaMetric device.
 
 In a rule this can be done the following way:
 
-``` 
+```java
 DeviceNotifyInfo.sendCommand("My Information Message to be displayed")
 ```
 
 ## Items
- 
+
 Sample item configuration:
- 
-```
+
+```java
 Dimmer DeviceBrightness         "Brightness"                                { channel="lametrictime:device:demo:brightness" }
 String DeviceBrightnessMode     "Brightness Mode"                           { channel="lametrictime:device:demo:brightnessMode" }
 Dimmer DeviceVolume             "Volume"                                    { channel="lametrictime:device:demo:volume" }
@@ -187,7 +187,7 @@ Sample sitemap configuration:
 **Note:** Populating switch or selection options automatically from the state description is not currently possible with sitemaps.
 For this reason, the brightness modes and example applications are repeated here.
 
-```
+```perl
   Text label="LaMetric Time Demo" {
       Frame label="Device Controls" {
           Slider item=DeviceBrightness
@@ -225,7 +225,7 @@ For this reason, the brightness modes and example applications are repeated here
 
 Sample rules:
 
-```
+```java
 import java.util.Calendar
 
 rule "Notify Info"

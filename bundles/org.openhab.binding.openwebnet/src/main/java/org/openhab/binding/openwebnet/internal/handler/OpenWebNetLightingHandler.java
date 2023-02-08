@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,7 +310,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light brightness state based on a OWN Lighting message
+     * Updates light brightness state based on an OWN Lighting message
      *
      * @param msg the Lighting message received
      */
@@ -341,7 +341,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light on/off state based on a OWN Lighting event message received
+     * Updates light on/off state based on an OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */

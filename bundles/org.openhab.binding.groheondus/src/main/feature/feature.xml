@@ -5,8 +5,6 @@
 	<feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature dependency="true">openhab.tp-jackson</feature>
-		<bundle dependency="true">mvn:org.apache.commons/commons-text/1.6</bundle>
-		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.8.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.groheondus/${project.version}</bundle>
 	</feature>
 </features>

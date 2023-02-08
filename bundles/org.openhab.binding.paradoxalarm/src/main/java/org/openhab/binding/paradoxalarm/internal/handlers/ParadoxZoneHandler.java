@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,9 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     @Override
     protected void updateEntity() {
         int index = calculateEntityIndex();
-        List<Zone> zones = ParadoxPanel.getInstance().getZones();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
+        List<Zone> zones = panel.getZones();
         if (zones == null) {
             logger.debug(
                     "Zones collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");

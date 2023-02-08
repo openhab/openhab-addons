@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,11 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_C
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_EXPERIENCE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_HOSTNAME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_IP_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_LAST_SEEN;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_NAME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ONLINE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RECONNECT;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RSSI;
@@ -46,7 +48,6 @@ import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -127,7 +128,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 break;
             case CHANNEL_UPTIME:
                 // mgb: uptime should default to 0 seconds
-                state = DecimalType.ZERO;
+                state = new QuantityType<>(0, Units.SECOND);
                 break;
             case CHANNEL_EXPERIENCE:
                 // mgb: uptime + experience should default to 0
@@ -165,7 +166,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     protected State getChannelState(final UniFiClient client, final String channelId) {
         final boolean clientHome = isClientHome(client);
         final UniFiDevice device = client.getDevice();
-        final UniFiSite site = (device == null ? null : device.getSite());
+        final UniFiSite site = device == null ? null : device.getSite();
         State state = getDefaultState(channelId);
 
         switch (channelId) {
@@ -176,6 +177,19 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 state = OnOffType.from(clientHome);
                 break;
 
+            // :name
+            case CHANNEL_NAME:
+                if (client.getName() != null) {
+                    state = StringType.valueOf(client.getName());
+                }
+                break;
+
+            // :hostname
+            case CHANNEL_HOSTNAME:
+                if (client.getHostname() != null) {
+                    state = StringType.valueOf(client.getHostname());
+                }
+                break;
             // :site
             case CHANNEL_SITE:
                 if (site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
@@ -200,7 +214,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :uptime
             case CHANNEL_UPTIME:
                 if (client.getUptime() != null) {
-                    state = new DecimalType(client.getUptime());
+                    state = new QuantityType<>(client.getUptime(), Units.SECOND);
                 }
                 break;
 
@@ -271,7 +285,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :rssi
             case CHANNEL_RSSI:
                 if (client.getRssi() != null) {
-                    state = new DecimalType(client.getRssi());
+                    state = new QuantityType<>(client.getRssi(), Units.DECIBEL_MILLIWATTS);
                 }
                 break;
 

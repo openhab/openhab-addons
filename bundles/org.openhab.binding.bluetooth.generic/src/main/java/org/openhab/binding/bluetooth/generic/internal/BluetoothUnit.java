@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -229,9 +229,6 @@ public enum BluetoothUnit {
     public static class BUnits {
         public static final Unit<ArealDensity> KILOGRAM_PER_SQUARE_METER = addUnit(
                 new ProductUnit<ArealDensity>(SIUnits.KILOGRAM.divide(SIUnits.SQUARE_METRE)));
-
-        public static final Unit<RadiationExposure> COULOMB_PER_KILOGRAM = addUnit(
-                new ProductUnit<RadiationExposure>(Units.COULOMB.divide(SIUnits.KILOGRAM)));
 
         public static final Unit<RadiationDoseAbsorptionRate> GRAY_PER_SECOND = addUnit(
                 new ProductUnit<RadiationDoseAbsorptionRate>(Units.GRAY.divide(Units.SECOND)));

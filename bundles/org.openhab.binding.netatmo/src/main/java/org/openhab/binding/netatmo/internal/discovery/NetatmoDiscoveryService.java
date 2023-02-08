@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static java.util.Comparator.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.AircareApi;
-import org.openhab.binding.netatmo.internal.api.HomeApi;
-import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
-import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
@@ -64,77 +53,27 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public void startScan() {
         ApiBridgeHandler localHandler = handler;
         if (localHandler != null) {
-            ThingUID accountUID = localHandler.getThing().getUID();
-            try {
-                AircareApi airCareApi = localHandler.getRestManager(AircareApi.class);
-                if (airCareApi != null) { // Search Healthy Home Coaches
-                    ListBodyResponse<NAMain> body = airCareApi.getHomeCoachData(null).getBody();
-                    if (body != null) {
-                        body.getElements().stream().forEach(homeCoach -> createThing(homeCoach, accountUID));
-                    }
-                }
-                WeatherApi weatherApi = localHandler.getRestManager(WeatherApi.class);
-                if (weatherApi != null) { // Search owned or favorite stations
-                    weatherApi.getFavoriteAndGuestStationsData().stream().forEach(station -> {
-                        if (!station.isReadOnly() || localHandler.getReadFriends()) {
-                            ThingUID stationUID = createThing(station, accountUID);
-                            station.getModules().values().stream().forEach(module -> createThing(module, stationUID));
-                        }
-                    });
-                }
-                HomeApi homeApi = localHandler.getRestManager(HomeApi.class);
-                if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
-                    homeApi.getHomesData(null, null).stream()
-                            .filter(h -> !(h.getFeatures().isEmpty()
-                                    || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
-                            .forEach(home -> {
-                                ThingUID homeUID = createThing(home, accountUID);
-
-                                home.getKnownPersons().forEach(person -> createThing(person, homeUID));
-
-                                Map<String, ThingUID> bridgesUids = new HashMap<>();
-
-                                home.getRooms().values().stream().forEach(room -> {
-                                    room.getModuleIds().stream().map(id -> home.getModules().get(id))
-                                            .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
-                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny()
-                                            .ifPresent(f -> bridgesUids.put(room.getId(), createThing(room, homeUID)));
-                                });
-
-                                // Creating modules that have no bridge first, avoiding weather station itself
-                                home.getModules().values().stream()
-                                        .filter(module -> module.getType().feature != FeatureArea.WEATHER)
-                                        .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
-                                        .forEach(module -> {
-                                            String bridgeId = module.getBridge();
-                                            if (bridgeId == null) {
-                                                bridgesUids.put(module.getId(), createThing(module, homeUID));
-                                            } else {
-                                                createThing(module, bridgesUids.getOrDefault(bridgeId, homeUID));
-                                            }
-                                        });
-                            });
-                }
-            } catch (NetatmoException e) {
-                logger.warn("Error during discovery process : {}", e.getMessage());
-            }
+            localHandler.identifyAllModulesAndApplyAction(this::createThing);
         }
     }
 
-    private ThingUID findThingUID(ModuleType thingType, String thingId, ThingUID bridgeUID) {
-        ThingTypeUID thingTypeUID = thingType.thingTypeUID;
+    private Optional<ThingUID> findThingUID(ModuleType moduleType, String thingId, ThingUID bridgeUID) {
+        ThingTypeUID thingTypeUID = moduleType.thingTypeUID;
         return getSupportedThingTypes().stream().filter(supported -> supported.equals(thingTypeUID)).findFirst()
-                .map(supported -> new ThingUID(supported, bridgeUID, thingId.replaceAll("[^a-zA-Z0-9_]", "")))
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported device type discovered : " + thingType));
+                .map(supported -> new ThingUID(supported, bridgeUID, thingId.replaceAll("[^a-zA-Z0-9_]", "")));
     }
 
-    private ThingUID createThing(NAModule module, ThingUID bridgeUID) {
-        ThingUID moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
-        DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID)
-                .withProperty(NAThingConfiguration.ID, module.getId())
-                .withRepresentationProperty(NAThingConfiguration.ID)
-                .withLabel(module.getName() != null ? module.getName() : module.getId()).withBridge(bridgeUID);
-        thingDiscovered(resultBuilder.build());
+    private Optional<ThingUID> createThing(NAModule module, ThingUID bridgeUID) {
+        Optional<ThingUID> moduleUID = findThingUID(module.getType(), module.getId(), bridgeUID);
+        if (moduleUID.isPresent()) {
+            DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(moduleUID.get())
+                    .withProperty(NAThingConfiguration.ID, module.getId())
+                    .withRepresentationProperty(NAThingConfiguration.ID)
+                    .withLabel(module.getName() != null ? module.getName() : module.getId()).withBridge(bridgeUID);
+            thingDiscovered(resultBuilder.build());
+        } else {
+            logger.info("Module '{}' is not handled by this version of the binding - it is ignored.", module.getName());
+        }
         return moduleUID;
     }
 

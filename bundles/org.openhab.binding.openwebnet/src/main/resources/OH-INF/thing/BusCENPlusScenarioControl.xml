@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 		<label>CEN+ Scenario Control</label>
-		<description>A OpenWebNet BUS/SCS CEN+ Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
+		<description>An OpenWebNet BUS/SCS CEN+ Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
 
 		<!-- channels are created dynamically based on configured buttons -->
 

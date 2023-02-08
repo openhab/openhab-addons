@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
@@ -365,6 +366,12 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
      * @return The created {@link ThingHandler}.
      */
     protected abstract AbstractMieleThingHandler setUpThingHandler();
+
+    @AfterEach
+    public void tearDownAbstractMieleThingHandlerTest() {
+        getThingRegistry().forceRemove(getThingHandler().getThing().getUID());
+        getThingRegistry().forceRemove(getBridge().getUID());
+    }
 
     @Test
     public void testCachedStateIsQueriedOnInitialize() throws Exception {

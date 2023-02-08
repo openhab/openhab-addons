@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,19 +38,19 @@ import com.google.gson.JsonSyntaxException;
 public class EvccAPI {
     private final Logger logger = LoggerFactory.getLogger(EvccAPI.class);
     private final Gson gson = new Gson();
-    private String host = "";
+    private String host;
 
     public EvccAPI(String host) {
-        this.host = host;
+        this.host = (host.endsWith("/") ? host.substring(0, host.length() - 1) : host);
     }
 
     /**
      * Make a HTTP request.
      * 
      * @param url full request URL
-     * @param method reguest method, e.g. GET, POST
+     * @param method request method, e.g. GET, POST
      * @return the response body
-     * @throws {@link EvccApiException} if HTTP request failed
+     * @throws EvccApiException if HTTP request failed
      */
     private String httpRequest(String url, String method) throws EvccApiException {
         try {
@@ -67,10 +67,9 @@ public class EvccAPI {
     // API calls to evcc
     /**
      * Get the status from evcc.
-     * 
-     * @param host hostname of IP address of the evcc instance
+     *
      * @return {@link Result} result object from API
-     * @throws {@link EvccApiException} if status request failed
+     * @throws EvccApiException if status request failed
      */
     public Result getResult() throws EvccApiException {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");
@@ -110,7 +109,7 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public String setTargetCharge(int loadpoint, int targetSoC, ZonedDateTime targetTime) throws EvccApiException {
+    public String setTargetCharge(int loadpoint, float targetSoC, ZonedDateTime targetTime) throws EvccApiException {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
                 + targetTime.toLocalDateTime().format(formatter), "POST");

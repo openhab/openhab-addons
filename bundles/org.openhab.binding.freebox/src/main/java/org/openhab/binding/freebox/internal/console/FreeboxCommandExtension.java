@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,15 @@ package org.openhab.binding.freebox.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.handler.FreeboxHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -36,9 +41,10 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class FreeboxCommandExtension extends AbstractConsoleCommandExtension {
+public class FreeboxCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String APP_TOKEN = "apptoken";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(APP_TOKEN), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -51,13 +57,7 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             FreeboxHandler handler = null;
             if (thing != null) {
@@ -94,5 +94,37 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage("<bridgeUID> " + APP_TOKEN, "show the application token"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER.equals(thing.getThingTypeUID())) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,19 +107,22 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
         new SystemApi(jellyClient).getPublicSystemInfo(asyncResponse);
         try {
             var publicSystemInfo = asyncResponse.awaitContent();
-            discoverServer(uri.getHost(), uri.getPort(), uri.getScheme().equalsIgnoreCase("https"), publicSystemInfo);
+            discoverServer(uri.getHost(), uri.getPort(), uri.getScheme().equalsIgnoreCase("https"), uri.getPath(),
+                    publicSystemInfo);
         } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
             logger.warn("Discovery error: {}", e.getMessage());
         }
     }
 
-    private void discoverServer(String hostname, int port, boolean ssl, PublicSystemInfo publicSystemInfo) {
+    private void discoverServer(String hostname, int port, boolean ssl, String path,
+            PublicSystemInfo publicSystemInfo) {
         logger.debug("Server discovered: [{}:{}] {}", hostname, port, publicSystemInfo.getServerName());
         var id = Objects.requireNonNull(publicSystemInfo.getId());
         Map<String, Object> properties = new HashMap<>();
         properties.put("hostname", hostname);
         properties.put("port", port);
         properties.put("ssl", ssl);
+        properties.put("path", path);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
         var productName = publicSystemInfo.getProductName();
         if (productName != null) {

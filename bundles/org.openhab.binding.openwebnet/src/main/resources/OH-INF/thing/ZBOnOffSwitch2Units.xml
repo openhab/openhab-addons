@@ -4,14 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for ZigBee OnOff Switch with 2 units (BTicino 4592) -->
+	<!-- Thing for Zigbee OnOff Switch with 2 units (BTicino 4592) -->
 	<thing-type id="zb_on_off_switch2u">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="zb_gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>ZigBee 2-units Switch</label>
-		<description>A OpenWebNet ZigBee 2-units switch (actuator) for the control of 2 loads/lights. BTicino model: 4592</description>
+		<label>Zigbee 2-units Switch</label>
+		<description>An OpenWebNet Zigbee 2-units switch (actuator) for the control of 2 loads/lights. BTicino model: 4592</description>
 
 		<channels>
 			<channel id="switch_01" typeId="switch"/>
@@ -29,7 +29,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>It identifies one ZigBee device. Example: 765432100#9 (use unit=00 at the end)</description>
+				<description>It identifies one Zigbee device. Example: 765432100#9 (use unit=00 at the end)</description>
 			</parameter>
 		</config-description>
 

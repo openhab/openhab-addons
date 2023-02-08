@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,16 +63,19 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private static final int JOB_INTERVAL = 60;
-    private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]{8}", Pattern.CASE_INSENSITIVE);
+    private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]*[A-F]+[A-F\\d]*",
+            Pattern.CASE_INSENSITIVE);
 
     @Nullable
     protected ScheduledFuture<?> reInitJob;
     protected T configuration;
     @Nullable
     private NukiHttpClient nukiHttpClient;
+    protected final boolean readOnly;
 
-    public AbstractNukiDeviceHandler(Thing thing) {
+    public AbstractNukiDeviceHandler(Thing thing, boolean readOnly) {
         super(thing);
+        this.readOnly = readOnly;
         this.configuration = getConfigAs(getConfigurationClass());
     }
 
@@ -108,9 +111,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         // legacy support - check if nukiId is hexadecimal (which might have been set by previous binding version)
         // and convert it to decimal
         if (NUKI_ID_HEX_PATTERN.matcher(nukiId).matches()) {
-            logger.warn(
-                    "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
-                    thing.getUID());
+            if (!readOnly) {
+                logger.warn(
+                        "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
+                        thing.getUID());
+            }
             Configuration newConfig = editConfiguration();
             newConfig.put(NukiBindingConstants.PROPERTY_NUKI_ID, hexToDecimal(nukiId));
             updateConfiguration(newConfig);

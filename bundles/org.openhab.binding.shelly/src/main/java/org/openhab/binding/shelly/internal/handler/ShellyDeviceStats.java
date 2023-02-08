@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,8 @@ public class ShellyDeviceStats {
     public long alarms = 0;
     public String lastAlarm = "";
     public long lastAlarmTs = 0;
-    public long coiotMessages = 0;
-    public long coiotErrors = 0;
+    public long protocolMessages = 0;
+    public long protocolErrors = 0;
     public int wifiRssi = 0;
     public int maxInternalTemp = 0;
 
@@ -48,8 +48,8 @@ public class ShellyDeviceStats {
         prop.put("alarmCount", String.valueOf(alarms));
         prop.put("lastAlarm", lastAlarm);
         prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs));
-        prop.put("coiotMessages", String.valueOf(coiotMessages));
-        prop.put("coiotErrors", String.valueOf(coiotErrors));
+        prop.put("protocolMessages", String.valueOf(protocolMessages));
+        prop.put("protocolErrors", String.valueOf(protocolErrors));
         prop.put("wifiRssi", String.valueOf(wifiRssi));
         return prop;
     }

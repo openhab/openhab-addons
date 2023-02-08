@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
+        return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
                 .collect(FutureCollector.allOf());
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().parallelStream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
+        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**
@@ -238,5 +238,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     @Nullable
     public TransformationServiceProvider getTransformationServiceProvider() {
         return componentConfiguration.getTransformationServiceProvider();
+    }
+
+    public boolean isEnabledByDefault() {
+        return channelConfiguration.isEnabledByDefault();
     }
 }

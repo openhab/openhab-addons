@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEV
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -41,8 +42,10 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
 
-    public HoodHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, HoodChannelSelector.class, MIELE_DEVICE_CLASS_HOOD);
+    public HoodHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, HoodChannelSelector.class,
+                MIELE_DEVICE_CLASS_HOOD);
     }
 
     @Override

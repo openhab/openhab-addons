@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,7 +155,9 @@ public interface CommonInterface {
                 finalReason = thingStatusReason;
             }
         }
-        if (!newData.isIgnoredForThingUpdate()) {
+        // Prevent turning ONLINE myself if in the meantime something turned account OFFLINE
+        ApiBridgeHandler accountHandler = getAccountHandler();
+        if (accountHandler != null && accountHandler.isConnected() && !newData.isIgnoredForThingUpdate()) {
             setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     finalReason);
         }

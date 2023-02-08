@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
  * , {@link #callDeviceScene(String, Short)} etc. can be used.
  *
  * <p>
- * If you call the {@link #start()} method a {@link EventListener} will be started to handle scene calls and undos from
+ * If you call the {@link #start()} method an {@link EventListener} will be started to handle scene calls and undos from
  * the outside.
  *
  * @author Michael Ochel - Initial contribution
@@ -54,7 +54,7 @@ public interface SceneManager extends EventHandler {
     void callInternalScene(InternalScene scene);
 
     /**
-     * Activates a {@link InternalScene} with the given id, if it exists. Otherwise a new
+     * Activates an {@link InternalScene} with the given id, if it exists. Otherwise a new
      * {@link InternalScene} will be created and activated, if it is a callable scene.
      *
      * @param sceneID of the scene to call
@@ -86,7 +86,7 @@ public interface SceneManager extends EventHandler {
     void undoInternalScene(InternalScene scene);
 
     /**
-     * Deactivates a {@link InternalScene} with the given sceneID, if it exists. Otherwise a new
+     * Deactivates an {@link InternalScene} with the given sceneID, if it exists. Otherwise a new
      * {@link InternalScene} will be created and deactivated, if it is a callable scene.
      *
      * @param sceneID of the scene to undo

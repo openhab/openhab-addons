@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ class Debouncer {
     private final Logger logger = LoggerFactory.getLogger(Debouncer.class);
 
     private volatile Long lastCallAttempt;
-    private ScheduledFuture<?> feature;
+    private ScheduledFuture<?> future;
 
     /**
      * Highly performant generic debouncer
@@ -76,14 +76,14 @@ class Debouncer {
         lastCallAttempt = clock.millis();
         calls.incrementAndGet();
         if (pending.compareAndSet(false, true)) {
-            feature = scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
+            future = scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
         }
     }
 
     public void stop() {
         logger.trace("stop debouncer");
-        if (feature != null) {
-            feature.cancel(true);
+        if (future != null) {
+            future.cancel(true);
             calls.set(0);
             pending.set(false);
         }
@@ -101,7 +101,7 @@ class Debouncer {
                 try {
                     action.run();
                 } catch (Exception e) {
-                    logger.warn("Debouncer {} action resulted in error: {}", name, e.getMessage());
+                    logger.warn("Debouncer {} action resulted in error", name, e);
                 }
             } else {
                 logger.warn("Invalid state in debouncer. Should not have reached here!");
@@ -111,7 +111,7 @@ class Debouncer {
             // Note: we use Math.max as there's a _very_ small chance lastCallAttempt could advance in another thread,
             // and result in a negative calculation
             long delay = Math.max(1, lastCallAttempt - now + delayMs);
-            feature = scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
+            future = scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
         }
     }
 }

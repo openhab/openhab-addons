@@ -13,7 +13,7 @@ There are two things:
 
 ## Discovery
 
-After the ojcloud bridge is succesfully initialized all thermostats will be discovered.
+After the ojcloud bridge is successfully initialized all thermostats will be discovered.
 
 ### OJ Electronics Bridge configuration (ojcloud)
 
@@ -60,7 +60,7 @@ This example shows how to configure the OJElecttronics binding.
 
 ### demo.things
 
-```
+```java
 Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
@@ -68,17 +68,16 @@ Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserNa
 
 ### demo.items
 
-```
+```java
 Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myCloud:myThermostat:floorTemperature"}
 String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myCloud:myThermostat:regulationMode"}
 ```
 
 ### demo.sitemap
 
-```
+```perl
 sitemap myHome label="my Home"{
   Text item=Bath_Floor_Temperature
   Text item=Bath_Mode
 }
 ```
-

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bondhome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channels Groups -->
+
+	<channel-group-type id="commonChannelGroup">
+		<label>Common</label>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="command" typeId="commandChannelType"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ceilingFanChannelGroup">
+		<label>Ceiling Fan</label>
+		<channels>
+			<channel id="speed" typeId="fanSpeedChannelType"/>
+			<channel id="rawSpeed" typeId="rawFanSpeedChannelType"/>
+			<channel id="breezeState" typeId="breezeStateChannelType"/>
+			<channel id="breezeMean" typeId="breezeMeanChannelType"/>
+			<channel id="breezeVariability" typeId="breezeVariabilityChannelType"/>
+			<channel id="direction" typeId="directionChannelType"/>
+			<channel id="timer" typeId="timerChannelType"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="lightChannelGroup">
+		<label>Light</label>
+		<channels>
+			<channel id="power" typeId="lightChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="upLightChannelGroup">
+		<label>Up Light</label>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="enable" typeId="enableChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="downLightChannelGroup">
+		<label>Down Light</label>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="enable" typeId="enableChannelType"/>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fireplaceChannelGroup">
+		<label>Fireplace</label>
+		<channels>
+			<channel id="flame" typeId="flameChannelType"/>
+			<channel id="fanPower" typeId="system.power"/>
+			<channel id="fanSpeed" typeId="fpFanSpeedChannelType"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="shadeChannelGroup">
+		<label>Motorized Shades</label>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutterChannelType"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

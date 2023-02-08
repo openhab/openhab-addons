@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,8 @@ public class LcnModuleRvarSetpointSubHandlerTest extends AbstractTestLcnModuleSu
     @Test
     public void testRvar1SensorDefective() {
         tryParseAllHandlers("=M000005.S132512");
-        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1", new StringType("DEFECTIVE"));
+        verify(handler).updateChannel(LcnChannelGroup.RVARSETPOINT, "1",
+                new StringType("Sensor defective: RVARSETPOINT1"));
         verify(handler).updateChannel(LcnChannelGroup.RVARLOCK, "1", OnOffType.OFF);
         verify(handler, times(2)).updateChannel(any(), any(), any());
     }

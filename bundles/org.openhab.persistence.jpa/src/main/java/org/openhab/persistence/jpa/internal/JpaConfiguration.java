@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.persistence.jpa.internal;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - migrated to 3.x
  *
  */
+@NonNullByDefault
 public class JpaConfiguration {
     private final Logger logger = LoggerFactory.getLogger(JpaConfiguration.class);
 
@@ -33,51 +36,51 @@ public class JpaConfiguration {
     private static final String CFG_PASSWORD = "password";
     private static final String CFG_SYNCMAPPING = "syncmappings";
 
-    public static boolean isInitialized = false;
-
     public final String dbConnectionUrl;
     public final String dbDriverClass;
     public final String dbUserName;
     public final String dbPassword;
     public final String dbSyncMapping;
 
-    public JpaConfiguration(final Map<String, Object> properties) {
-        logger.debug("Update config...");
+    public JpaConfiguration(final Map<String, @Nullable Object> properties) throws IllegalArgumentException {
+        logger.debug("Creating JPA config...");
 
         String param = (String) properties.get(CFG_CONNECTION_URL);
         logger.debug("url: {}", param);
         if (param == null) {
-            logger.warn("Connection url is required in jpa.cfg!");
+            throw new IllegalArgumentException("Connection URL is required in JPA configuration!");
         } else if (param.isBlank()) {
-            logger.warn("Empty connection url in jpa.cfg!");
+            throw new IllegalArgumentException("Empty connection URL in JPA configuration!");
         }
         dbConnectionUrl = param;
 
         param = (String) properties.get(CFG_DRIVER_CLASS);
         logger.debug("driver: {}", param);
         if (param == null) {
-            logger.warn("Driver class is required in jpa.cfg!");
+            throw new IllegalArgumentException("Driver class is required in JPA configuration!");
         } else if (param.isBlank()) {
-            logger.warn("Empty driver class in jpa.cfg!");
+            throw new IllegalArgumentException("Empty driver class in JPA configuration!");
         }
         dbDriverClass = param;
 
-        if (properties.get(CFG_USERNAME) == null) {
-            logger.info("{} was not specified!", CFG_USERNAME);
+        param = (String) properties.get(CFG_USERNAME);
+        if (param == null) {
+            logger.info("{} was not specified in JPA configuration!", CFG_USERNAME);
         }
-        dbUserName = (String) properties.get(CFG_USERNAME);
+        dbUserName = param == null ? "" : param;
 
-        if (properties.get(CFG_PASSWORD) == null) {
-            logger.info("{} was not specified!", CFG_PASSWORD);
+        param = (String) properties.get(CFG_PASSWORD);
+        if (param == null) {
+            logger.info("{} was not specified in JPA configuration!", CFG_PASSWORD);
         }
-        dbPassword = (String) properties.get(CFG_PASSWORD);
+        dbPassword = param == null ? "" : param;
 
-        if (properties.get(CFG_SYNCMAPPING) == null) {
-            logger.debug("{} was not specified!", CFG_SYNCMAPPING);
+        param = (String) properties.get(CFG_SYNCMAPPING);
+        if (param == null) {
+            logger.debug("{} was not specified in JPA configuration!", CFG_SYNCMAPPING);
         }
-        dbSyncMapping = (String) properties.get(CFG_SYNCMAPPING);
+        dbSyncMapping = param == null ? "" : param;
 
-        isInitialized = true;
-        logger.debug("Update config... done");
+        logger.debug("Creating JPA config... done");
     }
 }

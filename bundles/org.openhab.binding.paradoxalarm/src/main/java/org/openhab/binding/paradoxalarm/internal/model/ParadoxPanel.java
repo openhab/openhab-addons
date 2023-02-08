@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
@@ -38,9 +37,6 @@ public class ParadoxPanel implements IDataUpdateListener {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
-    @NonNull
-    private static ParadoxPanel paradoxPanel = new ParadoxPanel();
-
     private ParadoxInformation panelInformation;
     private List<Partition> partitions;
     private List<Zone> zones;
@@ -51,7 +47,7 @@ public class ParadoxPanel implements IDataUpdateListener {
     private double dcLevel;
     private ZonedDateTime panelTime;
 
-    private ParadoxPanel() {
+    public ParadoxPanel() {
         this.parser = new EvoParser();
     }
 
@@ -67,10 +63,6 @@ public class ParadoxPanel implements IDataUpdateListener {
             throw new ParadoxRuntimeException(
                     "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
         }
-    }
-
-    public static ParadoxPanel getInstance() {
-        return paradoxPanel;
     }
 
     public boolean isPanelSupported() {
@@ -123,7 +115,7 @@ public class ParadoxPanel implements IDataUpdateListener {
         zones = new ArrayList<>();
         Map<Integer, String> zoneLabels = communicator.getZoneLabels();
         for (int i = 0; i < zoneLabels.size(); i++) {
-            Zone zone = new Zone(i + 1, zoneLabels.get(i));
+            Zone zone = new Zone(this, i + 1, zoneLabels.get(i));
             zones.add(zone);
         }
         return zones;
@@ -133,7 +125,7 @@ public class ParadoxPanel implements IDataUpdateListener {
         partitions = new ArrayList<>();
         Map<Integer, String> partitionLabels = communicator.getPartitionLabels();
         for (int i = 0; i < partitionLabels.size(); i++) {
-            Partition partition = new Partition(i + 1, partitionLabels.get(i));
+            Partition partition = new Partition(this, i + 1, partitionLabels.get(i));
             partitions.add(partition);
             logger.debug("Partition {}:\t{}", i + 1, partition.getState().getMainState());
         }

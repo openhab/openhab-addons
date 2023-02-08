@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * If a telegram is received with at least 1 Cosem Object a bridge is assumed available and a Thing is added (regardless
  * if there were problems receiving the telegram) and the discovery is stopped.
  *
- * If there are communication problems the service will give an warning and give up
+ * If there are communication problems the service will give a warning and give up
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.

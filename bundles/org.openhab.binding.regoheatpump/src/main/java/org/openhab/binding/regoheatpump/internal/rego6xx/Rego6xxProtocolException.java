@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link Rego6xxProtocolException} is responsible for holding information about an Rego6xx protocol error.
+ * The {@link Rego6xxProtocolException} is responsible for holding information about a Rego6xx protocol error.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class Rego6xxProtocolException extends Exception {
 
     private static final long serialVersionUID = 7556083982084149686L;

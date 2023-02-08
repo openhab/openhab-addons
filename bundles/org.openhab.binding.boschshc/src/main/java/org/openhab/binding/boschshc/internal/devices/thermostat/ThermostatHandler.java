@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CHILD_LOCK;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
 import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
@@ -33,11 +31,11 @@ import org.openhab.core.types.Command;
 
 /**
  * Handler for a thermostat device.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public final class ThermostatHandler extends BoschSHCDeviceHandler {
+public final class ThermostatHandler extends AbstractBatteryPoweredDeviceHandler {
 
     private ChildLockService childLockService;
 
@@ -48,6 +46,8 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
         this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
         this.registerService(this.childLockService, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
@@ -67,7 +67,7 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
     /**
      * Updates the channels which are linked to the {@link TemperatureLevelService}
      * of the device.
-     * 
+     *
      * @param state Current state of {@link TemperatureLevelService}.
      */
     private void updateChannels(TemperatureLevelServiceState state) {
@@ -77,7 +77,7 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
     /**
      * Updates the channels which are linked to the {@link ValveTappetService} of
      * the device.
-     * 
+     *
      * @param state Current state of {@link ValveTappetService}.
      */
     private void updateChannels(ValveTappetServiceState state) {
@@ -87,7 +87,7 @@ public final class ThermostatHandler extends BoschSHCDeviceHandler {
     /**
      * Updates the channels which are linked to the {@link ChildLockService} of the
      * device.
-     * 
+     *
      * @param state Current state of {@link ChildLockService}.
      */
     private void updateChannels(ChildLockServiceState state) {

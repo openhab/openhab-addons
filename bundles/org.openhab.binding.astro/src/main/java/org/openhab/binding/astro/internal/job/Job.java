@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,6 @@ public interface Job extends SchedulerRunnable, Runnable {
      */
     public static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt,
             List<String> events, String channelId, boolean configAlreadyApplied) {
-
         if (events.isEmpty()) {
             return;
         }
@@ -115,25 +114,44 @@ public interface Job extends SchedulerRunnable, Runnable {
      * @param channelId the channel ID
      */
     public static void scheduleRange(String thingUID, AstroThingHandler astroHandler, Range range, String channelId) {
-        Calendar start = range.getStart();
-        Calendar end = range.getEnd();
-
-        // depending on the location you might not have a valid range for day/night, so skip the events:
-        if (start == null || end == null) {
-            return;
-        }
-
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
             LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
             return;
         }
         AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-        Calendar configStart = truncateToSecond(applyConfig(start, config));
-        Calendar configEnd = truncateToSecond(applyConfig(end, config));
+        Range adjustedRange = adjustRangeToConfig(range, config);
 
-        scheduleEvent(thingUID, astroHandler, configStart, EVENT_START, channelId, true);
-        scheduleEvent(thingUID, astroHandler, configEnd, EVENT_END, channelId, true);
+        Calendar start = adjustedRange.getStart();
+        Calendar end = adjustedRange.getEnd();
+
+        if (start == null || end == null) {
+            LOGGER.debug("event was not scheduled as either start or end was null");
+            return;
+        }
+
+        scheduleEvent(thingUID, astroHandler, start, EVENT_START, channelId, true);
+        scheduleEvent(thingUID, astroHandler, end, EVENT_END, channelId, true);
+    }
+
+    public static Range adjustRangeToConfig(Range range, AstroChannelConfig config) {
+        Calendar start = range.getStart();
+        Calendar end = range.getEnd();
+
+        if (config.forceEvent && start == null) {
+            start = getAdjustedEarliest(Calendar.getInstance(), config);
+        }
+        if (config.forceEvent && end == null) {
+            end = getAdjustedLatest(Calendar.getInstance(), config);
+        }
+
+        // depending on the location and configuration you might not have a valid range for day/night, so skip the
+        // events:
+        if (start == null || end == null) {
+            return range;
+        }
+
+        return new Range(truncateToSecond(applyConfig(start, config)), truncateToSecond(applyConfig(end, config)));
     }
 
     /**

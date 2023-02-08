@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -936,7 +936,7 @@ public class DsAPIImpl implements DsAPI {
                         } else {
                             builder.buildRequestString();
                             throw new IllegalArgumentException(
-                                    "The first field of the object array have to be a String and the second have to be a Integer.");
+                                    "The first field of the object array have to be a String and the second have to be an Integer.");
                         }
                     }
                     String response = transport.execute(builder.buildRequestString());

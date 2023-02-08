@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,7 +113,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
                 result.add(homeStatus);
             }
         } catch (NetatmoException e) {
-            logger.warn("Error gettting Home informations : {}", e.getMessage());
+            logger.warn("Error getting Home informations : {}", e.getMessage());
         }
         return result;
     }

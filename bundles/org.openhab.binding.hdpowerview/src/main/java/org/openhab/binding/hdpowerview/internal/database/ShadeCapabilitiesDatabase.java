@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,8 +68,12 @@ public class ShadeCapabilitiesDatabase {
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
+            new Type(10).capabilities(0).text("Duette/Applause Skylift"),
             new Type(18).capabilities(1).text("Pirouette"),
             new Type(23).capabilities(1).text("Silhouette"),
+            new Type(26).capabilities(3).text("Skyline Panel, Left Stack"),
+            new Type(27).capabilities(3).text("Skyline Panel, Right Stack"),
+            new Type(28).capabilities(3).text("Skyline Panel, Split Stack"),
             new Type(31).capabilities(0).text("Vignette"),
             new Type(33).capabilities(7).text("Duette Architella"),
             new Type(38).capabilities(9).text("Silhouette Duolite"),

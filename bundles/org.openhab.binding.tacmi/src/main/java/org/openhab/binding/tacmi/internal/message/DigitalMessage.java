@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This class can be used to decode the digital values received in a messag and
- * also to create a new DigitalMessage used to send ON/OFF to an digital CAN
+ * also to create a new DigitalMessage used to send ON/OFF to a digital CAN
  * Input port
  *
  * @author Timo Wendt - Initial contribution
@@ -86,6 +86,7 @@ public final class DigitalMessage extends Message {
      * @param portNumber - the portNumber in Range 1-32
      * @return
      */
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean hasPortnumber(int portNumber) {
         if (podNumber == 0 && portNumber <= 16) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public class SceneManagerImpl implements SceneManager {
 
     /**
      * Same constructor like {@link #SceneManagerImpl(ConnectionManager, StructureManager, ManagerStatusListener)}, but
-     * a {@link EventListener} can be set, too.
+     * an {@link EventListener} can be set, too.
      *
      * @param connectionManager (must not be null)
      * @param structureManager (must not be null)

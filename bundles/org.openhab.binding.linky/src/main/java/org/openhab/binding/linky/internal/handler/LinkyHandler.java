@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,13 +105,18 @@ public class LinkyHandler extends BaseThingHandler {
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-            LocalDate to = LocalDate.now();
-            LocalDate from = to.minusDays(1);
-            Consumption consumption = getPowerData(from, to);
+            // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
+            // is not needed by the binding. This is only a workaround to an API bug that will return
+            // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not
+            // yet available.
+            // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the
+            // data is not yet available.
+            LocalDate today = LocalDate.now();
+            Consumption consumption = getPowerData(today.minusDays(2), today);
             if (consumption != null) {
                 logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
                         Target.ALL);
-                consumption = getConsumptionAfterChecks(consumption, Target.FIRST);
+                consumption = getConsumptionAfterChecks(consumption, Target.LAST);
             }
             return consumption;
         });
@@ -199,8 +204,8 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
             cachedPowerData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
-                updateVAChannel(PEAK_POWER, days.datas.get(0));
-                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(0).dateDebut));
+                updateVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
+                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
             }, () -> {
                 updateKwhChannel(PEAK_POWER, Double.NaN);
                 updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);

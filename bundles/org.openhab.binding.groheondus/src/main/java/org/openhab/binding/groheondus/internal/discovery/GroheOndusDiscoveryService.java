@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.groheondus.internal.discovery;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.grohe.ondus.api.OndusService;
-import org.grohe.ondus.api.model.BaseAppliance;
 import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -33,6 +32,9 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
+import io.github.floriansw.ondus.api.model.BaseAppliance;
 
 /**
  * @author Florian Schmidt - Initial contribution
@@ -59,6 +61,9 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        // Remove old results - or they will stay there forever
+        removeOlderResults(getTimestampOfLastScan(), null, bridgeHandler.getThing().getUID());
+
         OndusService service;
         try {
             service = bridgeHandler.getService();
@@ -71,17 +76,16 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
             discoveredAppliances = service.appliances();
         } catch (IOException e) {
             logger.debug("Could not discover appliances.", e);
-            return;
         }
 
         discoveredAppliances.forEach(appliance -> {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingUID thingUID = null;
             switch (appliance.getType()) {
-                case org.grohe.ondus.api.model.guard.Appliance.TYPE:
+                case io.github.floriansw.ondus.api.model.guard.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSEGUARD, bridgeUID, appliance.getApplianceId());
                     break;
-                case org.grohe.ondus.api.model.sense.Appliance.TYPE:
+                case io.github.floriansw.ondus.api.model.sense.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSE, bridgeUID, appliance.getApplianceId());
                     break;
                 default:

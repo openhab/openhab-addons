@@ -11,18 +11,31 @@
 		<channels>
 			<channel id="todaySignal" typeId="signal">
 				<label>Today Signal</label>
-				<description>The signal relating to the forecast consumption level for today. Values are 1 for normal consumption, 2
-					for strained electrical system and 3 for very strained electrical system.</description>
+				<description>The signal relating to the forecast consumption level for today. Values are 1 for normal consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 			</channel>
 			<channel id="tomorrowSignal" typeId="signal">
 				<label>Tomorrow Signal</label>
 				<description>The signal relating to the forecast consumption level for tomorrow. Values are 1 for normal
-					consumption, 2 for strained electrical system and 3 for very strained electrical system.</description>
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="inTwoDaysSignal" typeId="signal">
+				<label>In Two Days Signal</label>
+				<description>The signal relating to the forecast consumption level in two days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="inThreeDaysSignal" typeId="signal">
+				<label>In Three Days Signal</label>
+				<description>The signal relating to the forecast consumption level in three days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 			</channel>
 			<channel id="currentHourSignal" typeId="signal">
 				<label>Current Hour Signal</label>
 				<description>The signal relating to the forecast consumption level for the current hour. Values are 1 for normal
-					consumption, 2 for strained electrical system and 3 for very strained electrical system.</description>
+					consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 			</channel>
 		</channels>
 
@@ -42,13 +55,13 @@
 	<channel-type id="signal">
 		<item-type>Number</item-type>
 		<label>Consumption Signal</label>
-		<description>The signal relating to the forecast consumption level. Values are 1 for normal consumption, 2 for
-			strained electrical system and 3 for very strained electrical system.</description>
+		<description>The signal relating to the forecast consumption level. Values are 1 for normal consumption (green), 2 for
+			strained electrical system (orange) and 3 for very strained electrical system (red).</description>
 		<state readOnly="true">
 			<options>
-				<option value="1">Green (normal consumption)</option>
-				<option value="2">Orange (strained electrical system)</option>
-				<option value="3">Red (very strained electrical system)</option>
+				<option value="1">Green</option>
+				<option value="2">Orange</option>
+				<option value="3">Red</option>
 			</options>
 		</state>
 	</channel-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,7 +151,7 @@ public abstract class MeterDevice<T> {
     }
 
     /**
-     * Read values from this device an store them locally against their OBIS code.
+     * Read values from this device a store them locally against their OBIS code.
      *
      * If there is an error in reading, it will be retried {@value #NUMBER_OF_RETRIES} times. The retry will be delayed
      * by {@code period} seconds.

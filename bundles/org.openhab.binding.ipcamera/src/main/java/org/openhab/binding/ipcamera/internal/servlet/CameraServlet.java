@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -187,11 +187,10 @@ public class CameraServlet extends IpCameraServlet {
                     if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
                         output = new StreamOutput(resp);
                     } else {
-                        ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
+                        ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));
                         if (tracker == null || !tracker.getChannel().isOpen()) {
                             logger.debug("Not the first stream requested but the stream from camera was closed");
                             handler.openCamerasStream();
-                            openStreams.closeAllStreams();
                         }
                         output = new StreamOutput(resp, handler.mjpegContentType);
                     }

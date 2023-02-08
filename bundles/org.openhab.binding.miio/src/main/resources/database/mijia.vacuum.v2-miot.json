@@ -657,35 +657,35 @@
 						},
 						{
 							"value": "1",
-							"label": "简体中文"
+							"label": "Chinese"
 						},
 						{
 							"value": "2",
-							"label": "Español"
+							"label": "Spanish"
 						},
 						{
 							"value": "3",
-							"label": "Русский"
+							"label": "Russian"
 						},
 						{
 							"value": "4",
-							"label": "Italiano"
+							"label": "Italian"
 						},
 						{
 							"value": "5",
-							"label": "Français"
+							"label": "French"
 						},
 						{
 							"value": "6",
-							"label": "Deutsch"
+							"label": "German"
 						},
 						{
 							"value": "7",
-							"label": "한국어"
+							"label": "Korean"
 						},
 						{
 							"value": "8",
-							"label": "Polski"
+							"label": "Polish"
 						}
 					]
 				},
@@ -696,7 +696,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"English\",\"1\"\u003d\"简体中文\",\"2\"\u003d\"Español\",\"3\"\u003d\"Русский\",\"4\"\u003d\"Italiano\",\"5\"\u003d\"Français\",\"6\"\u003d\"Deutsch\",\"7\"\u003d\"한국어\",\"8\"\u003d\"Polski\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"English\",\"1\"\u003d\"Chinese\",\"2\"\u003d\"Spanish\",\"3\"\u003d\"Russian\",\"4\"\u003d\"Italian\",\"5\"\u003d\"French\",\"6\"\u003d\"German\",\"7\"\u003d\"Korean\",\"8\"\u003d\"Polish\"]`"
 			},
 			{
 				"property": "not-disturb-switch",

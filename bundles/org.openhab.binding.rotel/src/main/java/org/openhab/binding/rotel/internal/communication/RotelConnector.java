@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,11 @@ public abstract class RotelConnector {
 
     private final Logger logger = LoggerFactory.getLogger(RotelConnector.class);
 
+    private final RotelAbstractProtocolHandler protocolHandler;
     private final boolean simu;
-    protected final Thread readerThread;
+    private final String readerThreadName;
+
+    private @Nullable Thread readerThread;
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -54,8 +57,9 @@ public abstract class RotelConnector {
      * @param readerThreadName the name of thread to be created
      */
     public RotelConnector(RotelAbstractProtocolHandler protocolHandler, boolean simu, String readerThreadName) {
+        this.protocolHandler = protocolHandler;
         this.simu = simu;
-        this.readerThread = new RotelReaderThread(this, protocolHandler, readerThreadName);
+        this.readerThreadName = readerThreadName;
     }
 
     /**
@@ -88,15 +92,32 @@ public abstract class RotelConnector {
      */
     public abstract void close();
 
+    protected void startReaderThread() {
+        Thread thread = readerThread;
+        if (thread == null || thread.isInterrupted()) {
+            thread = new RotelReaderThread(this, protocolHandler, readerThreadName);
+            readerThread = thread;
+            thread.start();
+        }
+    }
+
+    protected void stopReaderThread() {
+        Thread thread = readerThread;
+        if (thread != null) {
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+            }
+            readerThread = null;
+        }
+    }
+
     /**
      * Stop the thread that handles the feedback messages and close the opened input and output streams
      */
     protected void cleanup() {
-        readerThread.interrupt();
-        try {
-            readerThread.join();
-        } catch (InterruptedException e) {
-        }
+        stopReaderThread();
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {

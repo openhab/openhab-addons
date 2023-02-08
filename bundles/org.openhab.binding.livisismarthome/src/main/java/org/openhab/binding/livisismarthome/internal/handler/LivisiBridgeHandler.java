@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(LivisiBridgeHandler.class);
     private final GsonOptional gson = new GsonOptional();
     private final Object lock = new Object();
-    private final Map<String, DeviceStatusListener> deviceStatusListeners;
+    private final Map<String, DeviceStatusListener> deviceStatusListeners = new ConcurrentHashMap<>();
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
 
@@ -128,7 +128,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
-        deviceStatusListeners = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -564,7 +563,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleStateChangedEvent(final EventDTO event) throws IOException {
-
         // CAPABILITY
         if (event.isLinkedtoCapability()) {
             logger.trace("Event is linked to capability");
@@ -596,7 +594,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleControllerConnectivityChangedEvent(final EventDTO event) throws IOException {
-
         final Boolean connected = event.getIsConnected();
         if (connected != null) {
             final ThingStatus thingStatus;
@@ -621,7 +618,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleNewMessageReceivedEvent(final MessageEventDTO event) throws IOException {
-
         final MessageDTO message = event.getMessage();
         if (logger.isTraceEnabled()) {
             logger.trace("Message: {}", gson.toJson(message));
@@ -645,7 +641,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
      * @param event event
      */
     private void handleMessageDeletedEvent(final EventDTO event) throws IOException {
-
         final String messageId = event.getData().getId();
         logger.debug("handleMessageDeletedEvent with messageId '{}'", messageId);
 

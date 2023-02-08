@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="pushsafer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Pushsafer Binding</name>
+	<description>With Pushsafer you can send &amp; receive push notifications in real time, easily and securely on your
+		iPhone, iPad, Android, Windows mobile or Windows desktop device as well as on your browser (Chrome, Firefox, Opera
+		&amp; Yandex)!</description>
+
+</addon:addon>

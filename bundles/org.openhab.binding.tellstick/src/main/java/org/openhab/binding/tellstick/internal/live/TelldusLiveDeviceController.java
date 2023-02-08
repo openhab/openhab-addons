@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.tellstick.internal.live;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,7 @@ import org.asynchttpclient.Response;
 import org.asynchttpclient.oauth.ConsumerKey;
 import org.asynchttpclient.oauth.OAuthSignatureCalculator;
 import org.asynchttpclient.oauth.RequestToken;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
 import org.openhab.binding.tellstick.internal.live.xml.TelldusLiveResponse;
@@ -66,7 +69,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveDeviceController.class);
     private long lastSend = 0;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND = 250;
-    static final int REQUEST_TIMEOUT_MS = 5000;
+    private static final int REQUEST_TIMEOUT_MS = 15000;
     private AsyncHttpClient client;
     static final String HTTP_API_TELLDUS_COM_XML = "http://api.telldus.com/xml/";
     static final String HTTP_TELLDUS_CLIENTS = HTTP_API_TELLDUS_COM_XML + "clients/list";
@@ -77,7 +80,13 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     static final String HTTP_TELLDUS_DEVICE_DIM = HTTP_API_TELLDUS_COM_XML + "device/dim?id=%d&level=%d";
     static final String HTTP_TELLDUS_DEVICE_TURNOFF = HTTP_API_TELLDUS_COM_XML + "device/turnOff?id=%d";
     static final String HTTP_TELLDUS_DEVICE_TURNON = HTTP_API_TELLDUS_COM_XML + "device/turnOn?id=%d";
-    private static final int MAX_RETRIES = 3;
+
+    private int nbRequest;
+    private long sumRequestDuration;
+    private long minRequestDuration = 1_000_000;
+    private long maxRequestDuration;
+    private int nbTimeouts;
+    private int nbErrors;
 
     public TelldusLiveDeviceController() {
     }
@@ -87,7 +96,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         try {
             client.close();
         } catch (Exception e) {
-            logger.error("Failed to close client", e);
+            logger.debug("Failed to close client", e);
         }
     }
 
@@ -101,7 +110,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
             logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("Failed to connect", e);
+            logger.warn("Failed to connect", e);
         }
     }
 
@@ -114,7 +123,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void handleSendEvent(Device device, int resendCount, boolean isdimmer, Command command)
             throws TellstickException {
-        logger.info("Send {} to {}", command, device);
+        logger.debug("Send {} to {}", command, device);
         if (device instanceof TellstickNetDevice) {
             if (command == OnOffType.ON) {
                 turnOn(device);
@@ -276,37 +285,71 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     <T> T callRestMethod(String uri, Class<T> response) throws TelldusLiveException {
+        Instant start = Instant.now();
         T resultObj = null;
         try {
-            for (int i = 0; i < MAX_RETRIES; i++) {
-                try {
-                    resultObj = innerCallRest(uri, response);
-                    break;
-                } catch (TimeoutException e) {
-                    logger.warn("TimeoutException error in get", e);
-                } catch (InterruptedException e) {
-                    logger.warn("InterruptedException error in get", e);
-                }
-            }
-        } catch (JAXBException e) {
-            logger.warn("Encoding error in get", e);
+            resultObj = innerCallRest(uri, response);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logResponse(uri, e);
+            monitorAdditionalRequest(start, Instant.now(), e);
             throw new TelldusLiveException(e);
-        } catch (XMLStreamException e) {
-            logger.warn("Communication error in get", e);
+        } catch (TimeoutException | ExecutionException | JAXBException | XMLStreamException e) {
             logResponse(uri, e);
-            throw new TelldusLiveException(e);
-        } catch (ExecutionException e) {
-            logger.warn("ExecutionException error in get", e);
+            monitorAdditionalRequest(start, Instant.now(), e);
             throw new TelldusLiveException(e);
         }
+        monitorAdditionalRequest(start, Instant.now(), null);
         return resultObj;
+    }
+
+    private void monitorAdditionalRequest(Instant start, Instant end, @Nullable Throwable exception) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        long duration = Duration.between(start, end).toMillis();
+        sumRequestDuration += duration;
+        nbRequest++;
+        if (duration < minRequestDuration) {
+            minRequestDuration = duration;
+        }
+        if (duration > maxRequestDuration) {
+            maxRequestDuration = duration;
+        }
+        if (exception instanceof TimeoutException) {
+            nbTimeouts++;
+        } else if (exception != null) {
+            nbErrors++;
+        }
+    }
+
+    public long getAverageRequestDuration() {
+        return nbRequest == 0 ? 0 : sumRequestDuration / nbRequest;
+    }
+
+    public long getMinRequestDuration() {
+        return minRequestDuration;
+    }
+
+    public long getMaxRequestDuration() {
+        return maxRequestDuration;
+    }
+
+    public int getNbTimeouts() {
+        return nbTimeouts;
+    }
+
+    public int getNbErrors() {
+        return nbErrors;
     }
 
     private <T> T innerCallRest(String uri, Class<T> response) throws InterruptedException, ExecutionException,
             TimeoutException, JAXBException, FactoryConfigurationError, XMLStreamException {
         Future<Response> future = client.prepareGet(uri).execute();
         Response resp = future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        if (resp.getStatusCode() != 200) {
+            throw new ExecutionException("HTTP request returned status code " + resp.getStatusCode(), null);
+        }
         // TelldusLiveHandler.logger.info("Devices" + resp.getResponseBody());
         JAXBContext jc = JAXBContext.newInstance(response);
         XMLInputFactory xif = XMLInputFactory.newInstance();
@@ -324,8 +367,6 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     private void logResponse(String uri, Exception e) {
-        if (e != null) {
-            logger.warn("Request [{}] Failure:{}", uri, e.getMessage());
-        }
+        logger.warn("Request [{}] failed: {} {}", uri, e.getClass().getSimpleName(), e.getMessage());
     }
 }

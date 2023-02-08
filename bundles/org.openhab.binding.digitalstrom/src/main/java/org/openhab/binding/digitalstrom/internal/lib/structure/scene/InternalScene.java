@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,7 @@ public class InternalScene {
     }
 
     /**
-     * Will be called by a device, if an undo call of an other scene activated this scene.
+     * Will be called by a device, if an undo call of another scene activated this scene.
      */
     public void activateSceneByDevice() {
         logger.debug("activate scene by device: {}", this.getSceneName());
@@ -134,7 +134,7 @@ public class InternalScene {
     }
 
     /**
-     * Will be called by a device, if an call of an other scene deactivated this scene.
+     * Will be called by a device, if a call of another scene deactivated this scene.
      */
     public void deactivateSceneByDevice() {
         logger.debug("deactivate scene by device: {}", this.getSceneName());

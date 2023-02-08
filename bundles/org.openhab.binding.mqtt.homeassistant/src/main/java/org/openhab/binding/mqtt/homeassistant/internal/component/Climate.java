@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -241,9 +241,10 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 updateListener, channelConfiguration.fanModeCommandTemplate, channelConfiguration.fanModeCommandTopic,
                 channelConfiguration.fanModeStateTemplate, channelConfiguration.fanModeStateTopic, commandFilter);
 
-        if (channelConfiguration.holdModes != null && !channelConfiguration.holdModes.isEmpty()) {
-            buildOptionalChannel(HOLD_CH_ID, new TextValue(channelConfiguration.holdModes.toArray(new String[0])),
-                    updateListener, channelConfiguration.holdCommandTemplate, channelConfiguration.holdCommandTopic,
+        List<String> holdModes = channelConfiguration.holdModes;
+        if (holdModes != null && !holdModes.isEmpty()) {
+            buildOptionalChannel(HOLD_CH_ID, new TextValue(holdModes.toArray(new String[0])), updateListener,
+                    channelConfiguration.holdCommandTemplate, channelConfiguration.holdCommandTopic,
                     channelConfiguration.holdStateTemplate, channelConfiguration.holdStateTopic, commandFilter);
         }
 

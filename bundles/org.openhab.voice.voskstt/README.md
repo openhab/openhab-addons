@@ -17,6 +17,8 @@ The following platforms are supported:
 * osx
 * win64
 
+**On Linux this binary requires the package libatomic to be installed (apt install libatomic1).**
+
 ## Configuring the model
 
 Before you can use this service you should configure your language model.

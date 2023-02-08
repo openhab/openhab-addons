@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
+import org.openhab.binding.hue.internal.dto.State;
+import org.openhab.binding.hue.internal.dto.State.ColorMode;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.binding.hue.internal.handler.LightStateConverter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -31,6 +34,7 @@ import org.openhab.core.library.types.PercentType;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Markus Rathgeb - migrated to plain Java test
  */
+@NonNullByDefault
 public class LightStateConverterTest {
 
     @Test

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shellyht">
-		<label>Shelly H&amp;T (SHHT-1)</label>
+		<label>Shelly H&amp;T</label>
 		<description>@text/thing-type.shelly.shellyht.description</description>
 		<category>Sensor</category>
 		<channel-groups>
@@ -33,7 +33,7 @@
 	</thing-type>
 
 	<thing-type id="shellygas">
-		<label>Shelly GAS (SHGS-1)</label>
+		<label>Shelly Gas</label>
 		<description>@text/thing-type.shelly.shellygas.description</description>
 		<category>Sensor</category>
 		<channel-groups>
@@ -46,7 +46,7 @@
 	</thing-type>
 
 	<thing-type id="shellyflood">
-		<label>Shelly Flood (SHWT-1)</label>
+		<label>Shelly Flood</label>
 		<description>@text/thing-type.shelly.shellyflood.description</description>
 		<category>Sensor</category>
 		<channel-groups>
@@ -60,7 +60,7 @@
 	</thing-type>
 
 	<thing-type id="shellydw">
-		<label>Shelly Door/Window (SHDW-1)</label>
+		<label>Shelly Door/Window</label>
 		<description>@text/thing-type.shelly.shellydw.description</description>
 		<category>Sensor</category>
 		<channel-groups>
@@ -74,7 +74,7 @@
 	</thing-type>
 
 	<thing-type id="shellydw2">
-		<label>Shelly Door/Window (SHDW-2)</label>
+		<label>Shelly Door/Window</label>
 		<description>@text/thing-type.shelly.shellydw2.description</description>
 		<category>Sensor</category>
 		<channel-groups>
@@ -88,7 +88,7 @@
 	</thing-type>
 
 	<thing-type id="shellysense">
-		<label>Shelly Sense (SHSEN-1)</label>
+		<label>Shelly Sense</label>
 		<description>@text/thing-type.shelly.shellysense.description</description>
 		<channel-groups>
 			<channel-group id="control" typeId="control"/>
@@ -102,7 +102,7 @@
 	</thing-type>
 
 	<thing-type id="shellybutton1">
-		<label>Shelly Button 1 (SHBTN-1)</label>
+		<label>Shelly Button 1</label>
 		<description>@text/thing-type.shelly.shellybutton1.description</description>
 		<category>WallSwitch</category>
 		<channel-groups>
@@ -116,7 +116,7 @@
 	</thing-type>
 
 	<thing-type id="shellybutton2">
-		<label>Shelly Button 2 (SHBTN-2)</label>
+		<label>Shelly Button 2</label>
 		<description>@text/thing-type.shelly.shellybutton2.description</description>
 		<category>WallSwitch</category>
 		<channel-groups>
@@ -130,7 +130,7 @@
 	</thing-type>
 
 	<thing-type id="shellymotion">
-		<label>Shelly Motion (SHMOS-01/SHMOS-02)</label>
+		<label>Shelly Motion</label>
 		<description>@text/thing-type.shelly.shellymotion.description</description>
 		<category>MotionDetector</category>
 		<channel-groups>
@@ -144,7 +144,7 @@
 	</thing-type>
 
 	<thing-type id="shellytrv">
-		<label>Shelly TRV (SHTRV-01)</label>
+		<label>Shelly TRV</label>
 		<description>@text/thing-type.shelly.shellytrv.description</description>
 		<category>RadiatorControl</category>
 		<channel-groups>
@@ -209,7 +209,6 @@
 		<description>@text/channel-type.shelly.controlSchedule.description</description>
 		<state readOnly="false"></state>
 	</channel-type>
-
 
 	<channel-group-type id="sensorData">
 		<label>@text/channel-group-type.shelly.sensorData.label</label>
@@ -310,32 +309,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="sensorExtTemp">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
-		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
-		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-
-	<channel-type id="sensorExtHum">
-		<item-type>Number:Dimensionless</item-type>
-		<label>@text/channel-type.shelly.sensorExtHum.label</label>
-		<description>@text/channel-type.shelly.sensorExtHum.description</description>
-		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
-		</state>
-	</channel-type>
-
 	<channel-type id="sensorHumidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
@@ -345,7 +318,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sensorFlood">
@@ -457,7 +430,7 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.shelly.sensorADC.label</label>
 		<description>@text/channel-type.shelly.sensorADC.description</description>
-		<state readOnly="true" pattern="%.0f %unit%">
+		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 
@@ -485,6 +458,65 @@
 				<option value="checking">@text/channel-type.shelly.sensorValve.state.option.checking</option>
 				<option value="unknown">@text/channel-type.shelly.sensorValve.state.option.UNKNOWN</option>
 			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.shelly.sensorExtTemp.label</label>
+		<description>@text/channel-type.shelly.sensorExtTemp.label</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtHum">
+		<item-type>Number:Dimensionless</item-type>
+		<label>@text/channel-type.shelly.sensorExtHum.label</label>
+		<description>@text/channel-type.shelly.sensorExtHum.description</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtVolt">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>@text/channel-type.shelly.sensorExtVolt.label</label>
+		<description>@text/channel-type.shelly.sensorExtVolt.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtDigitalInput">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.sensorExtDigitalInput.label</label>
+		<description>@text/channel-type.shelly.sensorExtDigitalInput.description</description>
+		<category>Status</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorExtAnalogInput">
+		<item-type>Number:Dimensionless</item-type>
+		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
+		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 

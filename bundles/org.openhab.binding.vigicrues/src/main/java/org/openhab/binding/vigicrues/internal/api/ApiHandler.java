@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,28 +71,28 @@ public class ApiHandler {
     }
 
     public InfoVigiCru getTronconStatus(String tronconId) throws VigiCruesException {
-        final String BASE_URL = "https://www.vigicrues.gouv.fr/services/1/InfoVigiCru.jsonld/?TypEntVigiCru=8&CdEntVigiCru=%s";
-        return execute(String.format(BASE_URL, tronconId), InfoVigiCru.class);
+        final String baseUrl = "https://www.vigicrues.gouv.fr/services/1/InfoVigiCru.jsonld/?TypEntVigiCru=8&CdEntVigiCru=%s";
+        return execute(String.format(baseUrl, tronconId), InfoVigiCru.class);
     }
 
     public TronEntVigiCru getTroncon(String stationId) throws VigiCruesException {
-        final String BASE_URL = "https://www.vigicrues.gouv.fr/services/1/TronEntVigiCru.jsonld/?TypEntVigiCru=8&CdEntVigiCru=%s";
-        return execute(String.format(BASE_URL, stationId), TronEntVigiCru.class);
+        final String baseUrl = "https://www.vigicrues.gouv.fr/services/1/TronEntVigiCru.jsonld/?TypEntVigiCru=8&CdEntVigiCru=%s";
+        return execute(String.format(baseUrl, stationId), TronEntVigiCru.class);
     }
 
     public TerEntVigiCru getTerritoire(String stationId) throws VigiCruesException {
-        final String BASE_URL = "https://www.vigicrues.gouv.fr/services/1/TerEntVigiCru.jsonld/?TypEntVigiCru=5&CdEntVigiCru=%s";
-        return execute(String.format(BASE_URL, stationId), TerEntVigiCru.class);
+        final String baseUrl = "https://www.vigicrues.gouv.fr/services/1/TerEntVigiCru.jsonld/?TypEntVigiCru=5&CdEntVigiCru=%s";
+        return execute(String.format(baseUrl, stationId), TerEntVigiCru.class);
     }
 
     public CdStationHydro getStationDetails(String stationId) throws VigiCruesException {
-        final String BASE_URL = "https://www.vigicrues.gouv.fr/services/station.json/index.php?CdStationHydro=%s";
-        return execute(String.format(BASE_URL, stationId), CdStationHydro.class);
+        final String baseUrl = "https://www.vigicrues.gouv.fr/services/station.json/index.php?CdStationHydro=%s";
+        return execute(String.format(baseUrl, stationId), CdStationHydro.class);
     }
 
     public OpenDatasoftResponse getMeasures(String stationId) throws VigiCruesException {
-        final String BASE_URL = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
-        return execute(String.format(BASE_URL, stationId), OpenDatasoftResponse.class);
+        final String baseUrl = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
+        return execute(String.format(baseUrl, stationId), OpenDatasoftResponse.class);
     }
 
     public HubEauResponse discoverStations(PointType location, int range) throws VigiCruesException {

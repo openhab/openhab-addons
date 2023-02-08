@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,10 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
-import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
-import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
-import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents.ScheduledEvent;
+import org.openhab.binding.hdpowerview.internal.dto.Scene;
+import org.openhab.binding.hdpowerview.internal.dto.SceneCollection;
+import org.openhab.binding.hdpowerview.internal.dto.ScheduledEvent;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -193,10 +192,10 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         String timeString, daysString;
 
         switch (scheduledEvent.eventType) {
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME:
+            case ScheduledEvent.SCHEDULED_EVENT_TYPE_TIME:
                 timeString = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
                 break;
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE:
+            case ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNRISE:
                 if (scheduledEvent.minute == 0) {
                     timeString = translationProvider.getText("dynamic-channel.automation.at-sunrise");
                 } else if (scheduledEvent.minute < 0) {
@@ -207,7 +206,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
                             getFormattedTimeOffset(scheduledEvent.minute));
                 }
                 break;
-            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET:
+            case ScheduledEvent.SCHEDULED_EVENT_TYPE_SUNSET:
                 if (scheduledEvent.minute == 0) {
                     timeString = translationProvider.getText("dynamic-channel.automation.at-sunset");
                 } else if (scheduledEvent.minute < 0) {
@@ -225,9 +224,9 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         EnumSet<DayOfWeek> days = scheduledEvent.getDays();
         if (EnumSet.allOf(DayOfWeek.class).equals(days)) {
             daysString = translationProvider.getText("dynamic-channel.automation.all-days");
-        } else if (ScheduledEvents.WEEKDAYS.equals(days)) {
+        } else if (ScheduledEvent.WEEKDAYS.equals(days)) {
             daysString = translationProvider.getText("dynamic-channel.automation.weekdays");
-        } else if (ScheduledEvents.WEEKENDS.equals(days)) {
+        } else if (ScheduledEvent.WEEKENDS.equals(days)) {
             daysString = translationProvider.getText("dynamic-channel.automation.weekends");
         } else {
             StringJoiner joiner = new StringJoiner(", ");

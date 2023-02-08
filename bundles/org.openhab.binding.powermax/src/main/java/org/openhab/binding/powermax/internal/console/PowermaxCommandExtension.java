@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,16 @@ package org.openhab.binding.powermax.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.powermax.internal.PowermaxBindingConstants;
 import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -36,11 +41,13 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
+public class PowermaxCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String INFO_SETUP = "info_setup";
     private static final String DOWNLOAD_SETUP = "download_setup";
     private static final String BRIDGE_STATE = "bridge_state";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
+            List.of(INFO_SETUP, DOWNLOAD_SETUP, BRIDGE_STATE), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -53,13 +60,7 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length >= 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             PowermaxBridgeHandler handler = null;
             if (thing != null) {
@@ -112,5 +113,39 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + INFO_SETUP, "information on setup"),
                 buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup"),
                 buildCommandUsage("<bridgeUID> " + BRIDGE_STATE, "show current state") });
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(t.getThingTypeUID())
+                            || PowermaxBindingConstants.BRIDGE_TYPE_IP.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && (PowermaxBindingConstants.BRIDGE_TYPE_SERIAL.equals(thing.getThingTypeUID())
+                    || PowermaxBindingConstants.BRIDGE_TYPE_IP.equals(thing.getThingTypeUID()))) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

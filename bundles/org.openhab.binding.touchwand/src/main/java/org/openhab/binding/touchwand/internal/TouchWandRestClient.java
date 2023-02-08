@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,7 +230,7 @@ public class TouchWandRestClient {
             response = request.send();
             return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error opening connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+            logger.warn("Error opening connection to {} : {} ", touchWandIpAddr, e.getMessage());
         }
         return "";
     }
