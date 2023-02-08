@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.clementineremote.internal;
 
-import static java.lang.Thread.sleep;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_ALBUM;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_ARTIST;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_COVER;
@@ -41,6 +40,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URLConnection;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,7 +85,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     /**
      * used to track the current state of the player
      */
-    private enum State {
+    private enum PlaybackState {
         UNKNOWN,
         PLAYING,
         PAUSED,
@@ -102,25 +102,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     private @Nullable SongMetadata song = null;
 
     private Message.Builder builder = Message.newBuilder();
-    private State state = State.UNKNOWN;
+    private PlaybackState playbackState = PlaybackState.UNKNOWN;
 
     public ClementineRemoteHandler(Thing thing) {
         super(thing);
-    }
-
-    /**
-     * Try to establish a connection to the Clementine instance.
-     * If the connection breaks: wait 15s, then try again
-     */
-    private void connect() {
-        enabled = true;
-        while (enabled) {
-            connectionStart();
-            if (enabled) {
-                logger.debug("Connection broken. Reconnectiong in 15 secs…");
-                sleep15secs();
-            }
-        }
     }
 
     /**
@@ -133,20 +118,14 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * </ul>
      * When the connection breaks: try to disconnect gracefully.
      */
-    private void connectionStart() {
-        try {
-            if (socket == null || socket.isClosed()) {
-                var address = new InetSocketAddress(config.hostname, config.port);
-                socket = new Socket();
-                socket.connect(address);
-            }
-            out = new DataOutputStream(socket.getOutputStream());
-            sendConnectMessage();
-            handleMessages();
-        } catch (IOException e) {
-            logger.debug("openConnection() failed: {}", e.getMessage());
+    private void connect() throws IOException {
+        if (socket == null || socket.isClosed()) {
+            var address = new InetSocketAddress(config.hostname, config.port);
+            socket = new Socket();
+            socket.connect(address);
         }
-        disconnect();
+        out = new DataOutputStream(socket.getOutputStream());
+        sendConnectMessage();
     }
 
     private static Optional<String> detectMime(byte[] bytes) {
@@ -163,7 +142,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      */
     private void disconnect() {
         updateStatus(ThingStatus.OFFLINE);
-        setState(State.UNKNOWN);
+        setState(PlaybackState.UNKNOWN);
 
         if (out != null) { // try to close the output stream
             try {
@@ -195,6 +174,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         var channel = channelUID.getId();
+        if (command instanceof RefreshType) {
+            handleRefreshCommand(channel);
+            return;
+        }
         switch (channel) {
             case CHANNEL_PLAYBACK:
             case CHANNEL_VOLUME:
@@ -212,11 +195,6 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * @return
      */
     private boolean handleControlCommand(Command command) {
-        if (command instanceof RefreshType) {
-            updatePlayerStateChannels(state);
-            updateTrackInfoChannels(song);
-        }
-
         if (command instanceof StringType) {
             var cmd = ((StringType) command).toString();
             switch (cmd) {
@@ -245,7 +223,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleCurrentMeta(ResponseCurrentMetadata meta) {
         song = meta.getSongMetadata();
-        updateTrackInfoChannels(song);
+        updateSongChannels();
     }
 
     private void handleMessages() throws IOException {
@@ -270,10 +248,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
                 handleCurrentMeta(message.getResponseCurrentMetadata());
                 break;
             case PAUSE:
-                setState(State.PAUSED);
+                setState(PlaybackState.PAUSED);
                 break;
             case PLAY:
-                setState(State.PLAYING);
+                setState(PlaybackState.PLAYING);
                 break;
             case SET_VOLUME:
                 handleVolume(message.getRequestSetVolume());
@@ -291,21 +269,46 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         }
     }
 
-    private void handleStop() {
-        updateTrackInfoChannels("-", "-", "-", "-");
-        setState(State.STOPPED);
-        handleNullableTrackPos(null);
-    }
-
     private void handleNullableTrackPos(@Nullable Integer newPos) {
         if (newPos != null) {
-            setState(State.PLAYING);
+            setState(PlaybackState.PLAYING);
             currentPos = newPos;
         } else {
             currentPos = 0;
         }
 
-        updateState(CHANNEL_POSITION, new QuantityType<>(currentPos, Units.SECOND));
+        updatePositionChannel();
+    }
+
+    private ClementineRemoteHandler handleRefreshCommand(String channel) {
+        switch (channel) {
+            case CHANNEL_ALBUM:
+                return updateAlbumChannel();
+            case CHANNEL_ARTIST:
+                return updateArtistChannel();
+            case CHANNEL_COVER:
+                return updateCoverChannel();
+            case CHANNEL_PLAYBACK:
+            case CHANNEL_STATE:
+                return updatePlayerStateChannel();
+            case CHANNEL_POSITION:
+                return updatePositionChannel();
+            case CHANNEL_TITLE:
+                return updateTitleChannel();
+            case CHANNEL_TRACK:
+                return updateTrackChannel();
+            case CHANNEL_VOLUME:
+                return updateVolume();
+
+        }
+        return this;
+    }
+
+    private void handleStop() {
+        setState(PlaybackState.STOPPED);
+        song = null;
+        currentPos = 0;
+        updateSongChannels();
     }
 
     private void handleTrackPos(ResponseUpdateTrackPosition message) {
@@ -314,21 +317,33 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleVolume(RequestSetVolume message) {
         volume = message.getVolume();
-        updateState(CHANNEL_VOLUME, new PercentType(volume));
+        updateVolume();
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(ClementineRemoteConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::connect);
+        scheduler.execute(this::loopedConnection);
     }
 
-    private void sleep15secs() {
+    /**
+     * Try to establish a connection to the Clementine instance.
+     * If the connection breaks: wait 15s, then try again
+     */
+    private void loopedConnection() {
+        enabled = true;
         try {
-            sleep(15000);
-        } catch (InterruptedException e) {
-            logger.warn("sleep interrupted: {}", e.getMessage());
+            connect();
+            handleMessages(); // blocking until connection breaks or disabled
+        } catch (IOException e) {
+            logger.debug("handleMessages() failed: {}", e.getMessage());
+        }
+        disconnect();
+
+        if (enabled) {
+            logger.debug("Connection broken. Reconnectiong in 15 secs…");
+            scheduler.schedule(this::loopedConnection, 15, TimeUnit.SECONDS);
         }
     }
 
@@ -341,14 +356,14 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     }
 
     private boolean sendSkip(int d) {
-        state = State.SKIPPING;
+        playbackState = PlaybackState.SKIPPING;
         var pos = RequestSetTrackPosition.newBuilder().setPosition(currentPos + d);
         Message msg = builder.setType(MsgType.SET_TRACK_POSITION).setRequestSetTrackPosition(pos).build();
         return sendMessage(msg);
     }
 
     private boolean sendMessage(MsgType type) {
-        state = State.UNKNOWN;
+        playbackState = PlaybackState.UNKNOWN;
         return sendMessage(builder.setType(type).build());
     }
 
@@ -379,47 +394,78 @@ public class ClementineRemoteHandler extends BaseThingHandler {
         return sendMessage(msg);
     }
 
-    private boolean setState(State newState) {
-        if (state == newState) {
-            return false;
+    private ClementineRemoteHandler setState(PlaybackState newState) {
+        if (playbackState == newState) {
+            return this;
         }
-        updatePlayerStateChannels(state = newState);
-        return true;
+        playbackState = newState;
+        return updatePlayerStateChannel();
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
         dispose();
-        scheduler.execute(this::connect);
+        scheduler.execute(this::loopedConnection);
     }
 
-    private void updatePlayerStateChannels(State state) {
-        switch (state) {
+    private ClementineRemoteHandler updateCoverChannel() {
+        if (song != null) {
+            var bytes = song.getArt().toByteArray();
+            detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
+        }
+        return this;
+    }
+
+    private ClementineRemoteHandler updateAlbumChannel() {
+        return updateStringChannel(CHANNEL_ALBUM, song == null ? "-" : song.getAlbum());
+    }
+
+    private ClementineRemoteHandler updateArtistChannel() {
+        return updateStringChannel(CHANNEL_ARTIST, song == null ? "-" : song.getArtist());
+    }
+
+    private ClementineRemoteHandler updatePlayerStateChannel() {
+        switch (playbackState) {
             case PLAYING:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PLAY));
-                break;
+                return updateStringChannel(CHANNEL_PLAYBACK, CMD_PLAY);
             case PAUSED:
             case STOPPED:
-                updateState(CHANNEL_PLAYBACK, new StringType(CMD_PAUSE));
-                break;
+                return updateStringChannel(CHANNEL_PLAYBACK, CMD_PAUSE);
         }
-        updateState(CHANNEL_STATE, new StringType(state.toString()));
+        return updateStringChannel(CHANNEL_STATE, playbackState.toString());
     }
 
-    private void updateTrackInfoChannels(@Nullable SongMetadata song) {
-        if (song == null) {
-            return;
-        }
-        var bytes = song.getArt().toByteArray();
-        detectMime(bytes).ifPresent(mime -> updateState(CHANNEL_COVER, new RawType(bytes, mime)));
-        updateTrackInfoChannels(song.getArtist(), song.getAlbum(), song.getTrack() + "", song.getTitle());
+    private ClementineRemoteHandler updatePositionChannel() {
+        updateState(CHANNEL_POSITION, new QuantityType<>(currentPos, Units.SECOND));
+        return this;
     }
 
-    private void updateTrackInfoChannels(String artist, String album, String track, String title) {
-        updateState(CHANNEL_ALBUM, new StringType(album));
-        updateState(CHANNEL_ARTIST, new StringType(artist));
-        updateState(CHANNEL_TRACK, new StringType(track));
-        updateState(CHANNEL_TITLE, new StringType(title));
+    private ClementineRemoteHandler updateSongChannels() {
+        updateAlbumChannel();
+        updateArtistChannel();
+        updateCoverChannel();
+        updatePositionChannel();
+        updateTitleChannel();
+        updateTrackChannel();
+        return this;
+    }
+
+    private ClementineRemoteHandler updateStringChannel(String channel, String value) {
+        updateState(channel, new StringType(value));
+        return this;
+    }
+
+    private ClementineRemoteHandler updateTrackChannel() {
+        return updateStringChannel(CHANNEL_TRACK, song == null ? "-" : song.getTrack() + "");
+    }
+
+    private ClementineRemoteHandler updateTitleChannel() {
+        return updateStringChannel(CHANNEL_TITLE, song == null ? "-" : song.getTitle());
+    }
+
+    private ClementineRemoteHandler updateVolume() {
+        updateState(CHANNEL_VOLUME, new PercentType(volume));
+        return this;
     }
 }

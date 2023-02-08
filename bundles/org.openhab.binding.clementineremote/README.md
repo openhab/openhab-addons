@@ -29,8 +29,6 @@ Configuring the connection to Clementine is quite easy:
 Normally you only need to set the hostname your Clementine player is running at.
 If you set a password in the Clementine configuration, you will have to provide it to the configuration, too.
 
-### Clementine Thing Configuration
-
 | Name     | Type    | Description                                                       | Default | Required | Advanced |
 |----------|---------|-------------------------------------------------------------------|---------|----------|----------|
 | hostname | text    | Hostname or IP address of the device                              | N/A     | yes      | no       |

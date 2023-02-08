@@ -32,13 +32,13 @@ public class ClementineRemoteBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_ARTIST = "artist";
-    public static final String CHANNEL_PLAYBACK = "playback-control";
-    public static final String CHANNEL_VOLUME = "volume-control";
     public static final String CHANNEL_COVER = "cover";
+    public static final String CHANNEL_PLAYBACK = "playback-control";
     public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_TITLE = "title";
     public static final String CHANNEL_TRACK = "track";
+    public static final String CHANNEL_VOLUME = "volume-control";
 
     // List of commands
     public static final String CMD_FORWARD = "FASTFORWARD";
