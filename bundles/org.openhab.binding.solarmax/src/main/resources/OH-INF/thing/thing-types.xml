@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="solarmax"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- SolarMaxBindingConstants.THING_TYPE_ID -->
 	<thing-type id="inverter">
@@ -37,9 +36,14 @@
 				<description>Hostname or IP Address</description>
 			</parameter>
 			<parameter name="portNumber" type="integer" required="false">
-				<label>Port</label>
+				<label>Port Number</label>
 				<description>Port Number (defaults to 12345)</description>
 				<default>12345</default>
+			</parameter>
+			<parameter name="deviceAddress" type="integer" required="false">
+				<label>Device Address</label>
+				<description>Device address for devices connected serially (defaults to 1)</description>
+				<default>1</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
