@@ -159,7 +159,7 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="device-local-battery-full-charge-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unit="C">Number</item-type>
 		<label>Battery Capacity</label>
 		<description>Capacity of the battery if charged fully</description>
 		<category>BatteryLevel</category>

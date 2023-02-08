@@ -1057,7 +1057,7 @@
 		<category>Percentage</category>
 	</channel-type>
 	<channel-type id="resistance">
-		<item-type>Number:ElectricResistance</item-type>
+		<item-type unit="Ω">Number</item-type>
 		<label>Resistance</label>
 		<description>Currently measured resistance</description>
 		<category>Resistance</category>
