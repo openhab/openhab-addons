@@ -30,6 +30,7 @@ public class ClementineRemoteConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname = DEFAULT_HOST;
-    @Nullable public Integer authCode = null;
+    @Nullable
+    public Integer authCode = null;
     public int port = DEFAULT_PORT;
 }
