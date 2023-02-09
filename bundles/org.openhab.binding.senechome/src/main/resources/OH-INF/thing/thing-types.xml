@@ -317,7 +317,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="gridFrequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Grid Frequency</label>
 		<category>Frequency</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>

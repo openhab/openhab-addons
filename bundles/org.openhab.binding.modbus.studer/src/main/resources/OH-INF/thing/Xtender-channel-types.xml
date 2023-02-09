@@ -23,7 +23,7 @@
 	</channel-type>
 	<!-- Input frequency Channel Type -->
 	<channel-type id="Fin">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Input Frequency</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -47,7 +47,7 @@
 	</channel-type>
 	<!-- Output frequency Channel Type -->
 	<channel-type id="Fout">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Output Frequency</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

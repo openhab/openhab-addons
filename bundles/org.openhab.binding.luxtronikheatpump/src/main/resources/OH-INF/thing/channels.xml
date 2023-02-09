@@ -1941,13 +1941,13 @@
 	</channel-type>
 
 	<channel-type id="frequencyCompressor" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Compressor Frequency</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="frequencyCompressorTarget" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Compressor Target Frequency</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

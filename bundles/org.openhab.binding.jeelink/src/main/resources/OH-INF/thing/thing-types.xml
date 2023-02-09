@@ -530,7 +530,7 @@
 
 	<!-- Revolt Frequency Type -->
 	<channel-type id="power-frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>@text/channel-type.power-frequency.label</label>
 		<description>@text/channel-type.power-frequency.description</description>
 	</channel-type>

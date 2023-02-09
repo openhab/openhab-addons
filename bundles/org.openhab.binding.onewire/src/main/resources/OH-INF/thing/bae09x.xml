@@ -78,7 +78,7 @@
 	</thing-type>
 	<!-- PWM Channels -->
 	<channel-type id="bae-pwm-frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Frequency</label>
 		<description>Frequency of PWM output in Hz</description>
 		<config-description>

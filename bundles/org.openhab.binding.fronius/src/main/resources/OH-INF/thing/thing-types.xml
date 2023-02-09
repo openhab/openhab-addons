@@ -196,7 +196,7 @@
 	</channel-type>
 
 	<channel-type id="fac">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>AC Frequency</label>
 		<description>AC frequency</description>
 		<state pattern="%.2f Hz" readOnly="true"></state>

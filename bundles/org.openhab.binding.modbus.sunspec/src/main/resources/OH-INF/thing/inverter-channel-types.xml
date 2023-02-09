@@ -37,7 +37,7 @@
 	</channel-type>
 
 	<channel-type id="ac-frequency-type">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>AC Frequency Value</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

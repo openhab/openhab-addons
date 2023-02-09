@@ -129,7 +129,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="frequencyAC">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Frequency AC</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

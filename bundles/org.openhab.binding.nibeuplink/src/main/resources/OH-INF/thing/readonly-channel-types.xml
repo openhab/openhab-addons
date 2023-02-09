@@ -58,13 +58,13 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-frequency-unscaled">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Unnamed Frequency</label>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-frequency-scale10">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Unnamed Frequency</label>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>

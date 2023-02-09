@@ -33,7 +33,7 @@
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
 	<channel-type id="number-frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Frequency</label>
 		<description>Frequency channel</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

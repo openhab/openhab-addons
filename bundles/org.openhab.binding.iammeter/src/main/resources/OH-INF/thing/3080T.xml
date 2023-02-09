@@ -66,7 +66,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Frequency</label>
 		<description>frequency for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

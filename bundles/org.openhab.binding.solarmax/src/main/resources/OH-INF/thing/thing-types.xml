@@ -149,7 +149,7 @@
 	</channel-type>
 
 	<channel-type id="acFrequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>AC Frequency</label>
 		<description>AcFrequency in Hz</description>
 		<state readOnly="true"></state>

@@ -77,7 +77,7 @@
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="device-local-ac-frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="kg">NumberFrequency</item-type>
 		<label>AC Frequency</label>
 		<description>AC Frequency</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -700,7 +700,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-freq">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Grid Freq</label>
 		<description>Current frequency on grid</description>
 		<category>Energy</category>

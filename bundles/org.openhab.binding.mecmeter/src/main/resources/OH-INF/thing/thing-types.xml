@@ -359,7 +359,7 @@
 	<!-- definition of channels types -->
 	<!-- General -->
 	<channel-type id="frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type unit="Hz">Number</item-type>
 		<label>Main Frequency</label>
 		<description>Frequency in Hertz</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
