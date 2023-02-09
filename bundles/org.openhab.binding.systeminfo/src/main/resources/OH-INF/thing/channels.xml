@@ -141,7 +141,7 @@
 	</channel-group-type>
 
 	<channel-type id="availableHeap" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Available Heap</label>
 		<description>How much data is available in the Java heap.</description>
 		<state pattern="%.0f MiB" readOnly="true"/>
@@ -173,7 +173,7 @@
 	</channel-type>
 
 	<channel-type id="available">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Available</label>
 		<description>Available size</description>
 		<state readOnly="true" pattern="%.0f MiB"/>
@@ -181,7 +181,7 @@
 	</channel-type>
 
 	<channel-type id="used">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Used</label>
 		<description>Used size</description>
 		<state readOnly="true" pattern="%.0f MiB"/>
@@ -189,7 +189,7 @@
 	</channel-type>
 
 	<channel-type id="used_process">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Used</label>
 		<description>Used size</description>
 		<state readOnly="true" pattern="%.0f MiB"/>
@@ -197,7 +197,7 @@
 	</channel-type>
 
 	<channel-type id="total">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Total</label>
 		<description>Total size</description>
 		<state readOnly="true" pattern="%.0f MiB"/>
@@ -413,7 +413,7 @@
 	</channel-type>
 
 	<channel-type id="dataSent" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Data Sent</label>
 		<description>Volume of data sent</description>
 		<state readOnly="true" pattern="%.0f MiB"/>
@@ -421,7 +421,7 @@
 	</channel-type>
 
 	<channel-type id="dataReceived" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Data Received</label>
 		<description>Volume of data received</description>
 		<state readOnly="true" pattern="%.0f MiB"/>

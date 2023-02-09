@@ -151,14 +151,14 @@
 
 
 	<channel-type id="freeSpace" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Free Space</label>
 		<description>Amount of free storage left on device in bytes</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="totalSpace" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Total Space</label>
 		<description>Amount of total storage available on device in bytes</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -172,14 +172,14 @@
 	</channel-type>
 
 	<channel-type id="freeMemory" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Free RAM</label>
 		<description>Amount of free memory left on device in bytes</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="totalMemory" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Total RAM</label>
 		<description>Amount of total memory available on device in bytes</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -300,14 +300,14 @@
 	</channel-type>
 
 	<channel-type id="txBytes" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Transmitted Bytes</label>
 		<description>Amount of bytes transmitted</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rxBytes" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unit="MB">Number</item-type>
 		<label>Received Bytes</label>
 		<description>Amount of bytes received</description>
 		<state readOnly="true" pattern="%d %unit%"/>
