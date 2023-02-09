@@ -272,14 +272,14 @@
 	</channel-type>
 
 	<channel-type id="txRate">
-		<item-type>Number:DataTransferRate</item-type>
+		<item-type unit="m²">NumberDataTransferRate</item-type>
 		<label>Transmission Rate</label>
 		<description>Rate of data transmission in megabits per second</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rxRate">
-		<item-type>Number:DataTransferRate</item-type>
+		<item-type unit="MB/s">Number</item-type>
 		<label>Receiving Rate</label>
 		<description>Rate of data receiving in megabits per second</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

@@ -181,14 +181,14 @@
 	</channel-type>
 
 	<channel-type id="rateUp">
-		<item-type>Number:DataTransferRate</item-type>
+		<item-type unit="MB/s">Number</item-type>
 		<label>Upload Rate</label>
 		<description>Current upload rate</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rateDown">
-		<item-type>Number:DataTransferRate</item-type>
+		<item-type unit="MB/s">Number</item-type>
 		<label>Download Rate</label>
 		<description>Current download rate</description>
 		<state readOnly="true" pattern="%d %unit%"/>
