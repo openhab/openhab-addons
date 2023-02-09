@@ -362,14 +362,14 @@
 	</channel-type>
 
 	<channel-type id="agePercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="illumination">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Moon Illumination</label>
 		<description>The illumination of the moon</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

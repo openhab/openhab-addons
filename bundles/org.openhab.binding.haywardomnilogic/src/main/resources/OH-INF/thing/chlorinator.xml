@@ -48,7 +48,7 @@
 	</channel-type>
 
 	<channel-type id="timedPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Salt Output (%)</label>
 		<description>Current salt output setting for the chlorinator (%).</description>
 		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
@@ -85,14 +85,14 @@
 	</channel-type>
 
 	<channel-type id="avgSaltLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Average Salt Level</label>
 		<description>Average Salt Level</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="instantSaltLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Instant Salt Level</label>
 		<description>Instant Salt Level</description>
 		<state pattern="%d %unit%" readOnly="true"/>

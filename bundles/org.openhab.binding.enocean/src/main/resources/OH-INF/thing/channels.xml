@@ -765,14 +765,14 @@
 	</channel-type>
 
 	<channel-type id="airQualityValue1">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Air Quality Value</label>
 		<description>Air quality value of first sensor in percentages</description>
 		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="airQualityValue2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Air Quality Value</label>
 		<description>Air quality value of second sensor in percentages</description>
 		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
@@ -825,14 +825,14 @@
 	</channel-type>
 
 	<channel-type id="supplyFanSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Supply Fan Speed</label>
 		<description>Supply fan speed in revolutions per minutes</description>
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="exhaustFanSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Exhaust Fan Speed</label>
 		<description>Exhaust fan speed in revolutions per minutes</description>
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>

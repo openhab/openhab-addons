@@ -82,27 +82,27 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity Level</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Carbon Dioxide</label>
 		<description>Carbon dioxide Level</description>
 		<category>CarbonDioxide</category>
 		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
 	<channel-type id="voc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Volatile Compounds</label>
 		<description>Volatile Organic Compounds Level</description>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
 	<channel-type id="gpi">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Pollution Index</label>
 		<description>Global Pollution Index Level</description>
 		<state readOnly="true" pattern="%.0f %%"/>

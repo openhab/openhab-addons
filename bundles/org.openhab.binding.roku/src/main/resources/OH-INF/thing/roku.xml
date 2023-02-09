@@ -175,7 +175,7 @@
 	</channel-type>
 
 	<channel-type id="signalQuality">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Signal Quality</label>
 		<description>The Signal Quality of the Current TV Channel</description>
 		<state readOnly="true" pattern="%d %unit%"/>

@@ -73,7 +73,7 @@
 	</channel-type>
 
 	<channel-type id="gauge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Measure</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

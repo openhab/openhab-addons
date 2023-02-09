@@ -113,7 +113,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Current Humidity</label>
 		<description>Current measured humidity.</description>
 		<category>Humidity</category>

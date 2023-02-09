@@ -313,7 +313,7 @@
 	</channel-type>
 
 	<channel-type id="meshNetworkQoS">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Mesh Network QoS</label>
 		<description>Quality of Service: percentage of configured devices currently connected to the RF mesh network</description>
 		<state readOnly="true" pattern="%.0f %%"></state>

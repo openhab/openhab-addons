@@ -109,14 +109,14 @@
 	</channel-type>
 
 	<channel-type id="waterlevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Water Level</label>
 		<description>The current watering level in percent</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="flowSensorCount">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Flow Sensor Count</label>
 		<description>A count of how many pulses the water flow sensor has given.</description>
 		<category>Flow</category>

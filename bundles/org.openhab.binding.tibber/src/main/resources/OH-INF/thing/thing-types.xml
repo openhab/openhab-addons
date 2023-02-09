@@ -67,7 +67,7 @@
 		<description>Timestamp for measurement/change</description>
 	</channel-type>
 	<channel-type id="price">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Current Total Price</label>
 		<description>Total Price: Energy + Tax</description>
 		<state pattern="%.3f"></state>
@@ -78,13 +78,13 @@
 		<description>Current price level</description>
 	</channel-type>
 	<channel-type id="cost">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Total Cost</label>
 		<description>Cost at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
 		<state pattern="%.3f"></state>
 	</channel-type>
 	<channel-type id="reward">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Total Reward</label>
 		<description>Reward at given time interval (e.g. hourly, daily, accumulated since midnight)</description>
 		<state pattern="%.3f"></state>

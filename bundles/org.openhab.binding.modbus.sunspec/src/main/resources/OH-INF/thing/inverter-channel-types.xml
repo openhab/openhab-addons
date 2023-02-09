@@ -55,7 +55,7 @@
 	</channel-type>
 
 	<channel-type id="ac-power-factor-type">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>AC Power Factor</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

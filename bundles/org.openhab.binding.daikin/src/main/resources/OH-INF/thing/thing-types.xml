@@ -115,7 +115,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Indoor Humidity</label>
 		<description>The indoor humidity as measured by the A/C unit</description>
 		<category>Humidity</category>
@@ -183,7 +183,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-cmpfrequency" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Compressor Frequency</label>
 		<description>Current compressor frequency</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>

@@ -264,7 +264,7 @@
 	</thing-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
@@ -518,7 +518,7 @@
 	</channel-type>
 
 	<channel-type id="airqualityppb">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Air quality in ppb</label>
 		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
 			specified in ppb (parts per billion).</description>
@@ -571,7 +571,7 @@
 		<state pattern="%.2f %unit%" step="0.01"></state>
 	</channel-type>
 	<channel-type id="valve">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Valve position</label>
 		<description>Current valve position</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

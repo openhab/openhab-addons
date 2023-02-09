@@ -338,7 +338,7 @@
 	</channel-type>
 
 	<channel-type id="experience">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Experience</label>
 		<description>The wired/wireless experience of the client</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

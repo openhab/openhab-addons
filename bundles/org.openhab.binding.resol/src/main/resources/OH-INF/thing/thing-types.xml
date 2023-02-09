@@ -180,7 +180,7 @@
 	</channel-type>
 
 	<channel-type id="relay" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relay State</label>
 		<description>Virtual relay output, will be set by the controller and can be used to communicate data from the Resol
 			controller to openHAB.</description>

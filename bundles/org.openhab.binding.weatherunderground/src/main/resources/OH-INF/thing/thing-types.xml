@@ -301,7 +301,7 @@
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
@@ -437,7 +437,7 @@
 	</channel-type>
 
 	<channel-type id="probaPrecipitation">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Precipitation Probability</label>
 		<description>Probability of precipitation</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%">

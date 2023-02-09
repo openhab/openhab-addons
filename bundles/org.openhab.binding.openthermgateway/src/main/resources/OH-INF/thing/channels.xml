@@ -7,7 +7,7 @@
 	<!-- generic channel type for dynamic tsp and fhb channels -->
 
 	<channel-type id="tspfhb">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Set Dynamically</label>
 		<description>Transparent slave parameter or Fault history buffer value</description>
 		<state readOnly="true"/>
@@ -153,7 +153,7 @@
 	</channel-type>
 
 	<channel-type id="waterpressure">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Central Heating Water Pressure</label>
 		<description>Central heating water pressure</description>
 		<state readOnly="true" pattern="%.1f bar"/>
@@ -230,14 +230,14 @@
 	</channel-type>
 
 	<channel-type id="modulevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Modulation Level</label>
 		<description>Relative modulation level</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="maxrelmdulevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Maximum Relative Modulation Level</label>
 		<description>Maximum relative modulation level</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -293,7 +293,7 @@
 	</channel-type>
 
 	<channel-type id="oemfaultcode">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>OEM Fault Code</label>
 		<description>OEM fault code</description>
 		<state readOnly="true"/>
@@ -307,35 +307,35 @@
 	</channel-type>
 
 	<channel-type id="unsuccessfulburnerstarts">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Unsuccessful Burner Starts</label>
 		<description>Unsuccessful burner starts</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="burnerstarts">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Burner Starts</label>
 		<description>Burner starts</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="chpumpstarts">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Central Heating Pump Starts</label>
 		<description>Central heating pump starts</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dhwpvstarts">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Domestic Hot Water Pump/Valve Starts</label>
 		<description>Domestic hot water pump/valve starts</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dhwburnerstarts">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Domestic Hot Water Burner Starts</label>
 		<description>Domestic hot water burner starts</description>
 		<state readOnly="true"/>
@@ -370,28 +370,28 @@
 	</channel-type>
 
 	<channel-type id="tspnumber">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Transparent Slave Parameter Number</label>
 		<description>Number of transparant slave parameter entries</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tspentry">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Transparent Slave Parameter Entry</label>
 		<description>Transparent slave parameter entry</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fhbnumber">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fault History Buffer Number</label>
 		<description>Number of fault history buffer entries</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fhbentry">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fault History Buffer Entry</label>
 		<description>Fault history buffer entry</description>
 		<state readOnly="true"/>
@@ -407,7 +407,7 @@
 	</channel-type>
 
 	<channel-type id="vh_bypassposition">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Bypass Position</label>
 		<description>Bypass position</description>
 		<state readOnly="true">
@@ -419,7 +419,7 @@
 	</channel-type>
 
 	<channel-type id="vh_bypassmode">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Bypass Mode</label>
 		<description>Bypass mode</description>
 		<state readOnly="true">
@@ -459,7 +459,7 @@
 	</channel-type>
 
 	<channel-type id="vh_bypassautomaticstatus">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Bypass Automatic Status</label>
 		<description>Bypass automatic status</description>
 		<state readOnly="true">
@@ -485,7 +485,7 @@
 	</channel-type>
 
 	<channel-type id="vh_controlsetpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Control Setpoint</label>
 		<description>Control setpoint</description>
 		<state readOnly="true"/>
@@ -520,21 +520,21 @@
 	</channel-type>
 
 	<channel-type id="vh_faultcode">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fault Code</label>
 		<description>Fault code</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_diagnosticcode">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Diagnostic Code</label>
 		<description>Diagnostic code</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_systemtype">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>System Type</label>
 		<description>System type</description>
 		<state readOnly="true">
@@ -553,7 +553,7 @@
 	</channel-type>
 
 	<channel-type id="vh_speedcontrol">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Speed Control</label>
 		<description>Speed control</description>
 		<state readOnly="true">
@@ -565,42 +565,42 @@
 	</channel-type>
 
 	<channel-type id="vh_memberid">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Member ID</label>
 		<description>Member ID</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_openthermversion">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>OpenTherm Version</label>
 		<description>OpenTherm version</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_versiontype">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Version Type</label>
 		<description>Version type</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_relativeventilation">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Ventilation</label>
 		<description>Relative ventilation position</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="vh_relativehumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>Relative humidity exhaust air</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="vh_co2level">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO2 Level</label>
 		<description>CO2 level exhaust air</description>
 		<state readOnly="true" pattern="%d ppm"/>
@@ -635,14 +635,14 @@
 	</channel-type>
 
 	<channel-type id="vh_actualexhaustfanspeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual Exhaust Fan Speed</label>
 		<description>Actual exhaust fan speed</description>
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
 	<channel-type id="vh_actualinletfanspeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual Inlet Fan Speed</label>
 		<description>Actual inlet fan speed</description>
 		<state readOnly="true" pattern="%d rpm"/>
@@ -656,7 +656,7 @@
 	</channel-type>
 
 	<channel-type id="vh_nominalventrw">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Nominal Ventilation Value</label>
 		<description>Nominal ventilation value</description>
 		<state readOnly="true">
@@ -668,7 +668,7 @@
 	</channel-type>
 
 	<channel-type id="vh_nominalventilationvalue">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Nominal Ventilation Value</label>
 		<description>Nominal ventilation value</description>
 		<state readOnly="true" pattern="%d %%"/>
@@ -682,35 +682,35 @@
 	</channel-type>
 
 	<channel-type id="vh_tspnumber">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Transparent Slave Parameter Number</label>
 		<description>Number of transparent slave parameter entries</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_tspentry">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Transparent Slave Parameter Entry</label>
 		<description>Transparent slave parameter entry</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_fhbnumber">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fault History Buffer Number</label>
 		<description>Number of fault history buffer entries</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_fhbentry">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fault History Buffer Entry</label>
 		<description>Fault history buffer entry</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vh_ventilationsetpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Ventilation Setpoint</label>
 		<description>Ventilation setpoint override</description>
 		<state readOnly="false" min="0" max="100" step="1"/>

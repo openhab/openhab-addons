@@ -553,7 +553,7 @@
 
 	<!-- Power Factor -->
 	<channel-type id="powerFactor" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Power Factor</label>
 		<description>Power Factor</description>
 		<state pattern="%.1f" readOnly="true"></state>

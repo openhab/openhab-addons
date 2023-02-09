@@ -485,7 +485,7 @@
 
 	<!-- Humidity Channel Type -->
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
@@ -516,7 +516,7 @@
 
 	<!-- Revolt Apparent Power Type -->
 	<channel-type id="power-factor">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.power-factor.label</label>
 		<description>@text/channel-type.power-factor.description</description>
 	</channel-type>

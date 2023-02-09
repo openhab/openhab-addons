@@ -53,7 +53,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
@@ -64,7 +64,7 @@
 	</channel-type>
 
 	<channel-type id="moisture">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Moisture</label>
 		<category>Moisture</category>
 		<tags>
@@ -97,7 +97,7 @@
 	</channel-type>
 
 	<channel-type id="uv-index">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>UV-Index</label>
 		<category>Sun</category>
 		<tags>
@@ -141,7 +141,7 @@
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO₂</label>
 		<description>Air Quality Indicator</description>
 		<category>CarbonDioxide</category>

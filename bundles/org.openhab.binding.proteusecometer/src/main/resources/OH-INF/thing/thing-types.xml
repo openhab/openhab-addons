@@ -48,7 +48,7 @@
 	</channel-type>
 
 	<channel-type id="UsableLevelInPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Usable Level in percent</label>
 		<description>The usable level in percent</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

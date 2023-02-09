@@ -174,7 +174,7 @@
 	</channel-type>
 
 	<channel-type id="progress">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Progress</label>
 		<description>Current Test progression</description>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>

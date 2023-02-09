@@ -93,7 +93,7 @@
 	</channel-type>
 
 	<channel-type id="power_factor">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Power Factor</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

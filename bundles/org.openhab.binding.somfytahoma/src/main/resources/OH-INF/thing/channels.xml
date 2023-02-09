@@ -142,7 +142,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>The current relative humidity</description>
 		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>

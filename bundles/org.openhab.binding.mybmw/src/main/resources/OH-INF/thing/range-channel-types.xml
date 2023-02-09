@@ -24,7 +24,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="soc-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Charge Level</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

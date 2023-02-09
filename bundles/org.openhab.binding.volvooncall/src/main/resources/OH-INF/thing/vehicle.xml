@@ -269,7 +269,7 @@
 	</channel-type>
 
 	<channel-type id="fuelLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fuel Level</label>
 		<description>Indicates the level of fuel in the tank</description>
 		<category>oil</category>
@@ -388,7 +388,7 @@
 	</channel-type>
 
 	<channel-type id="batteryLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Level</label>
 		<description>Indicates the level of power in the battery, or unknown in situations the API is misleading (in case of
 			PHEV / Twin Engine)</description>
@@ -397,7 +397,7 @@
 	</channel-type>
 
 	<channel-type id="batteryLevelRaw">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Level (Raw)</label>
 		<description>Indicates the level of power in the battery taken straight from the API, which can be misleading (in case
 			of PHEV / Twin Engine)</description>

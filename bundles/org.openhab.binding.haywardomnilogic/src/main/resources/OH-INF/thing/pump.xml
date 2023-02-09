@@ -39,14 +39,14 @@
 	</thing-type>
 
 	<channel-type id="pumpSpeedPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Pump Speed %</label>
 		<description>Pump Speed (%)</description>
 		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedRpm">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Pump Speed RPM</label>
 		<description>Pump Speed (RPM)</description>
 		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
@@ -90,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="pumpLastSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Last Speed</label>
 		<description>Last Speed (%)</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -1051,7 +1051,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="percentage">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percentage</label>
 		<description>Current percentage</description>
 		<category>Percentage</category>

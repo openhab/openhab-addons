@@ -102,7 +102,7 @@
 	</thing-type>
 
 	<channel-type id="airthings_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity level</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -120,13 +120,13 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO₂ Level</label>
 		<description>Carbon dioxide level</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_tvoc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>TVOC Level</label>
 		<description>Total volatile organic compounds</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

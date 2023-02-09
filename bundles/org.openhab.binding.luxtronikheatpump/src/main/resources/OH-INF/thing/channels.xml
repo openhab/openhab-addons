@@ -300,7 +300,7 @@
 	</channel-type>
 
 	<channel-type id="pulsesCompressor1">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Pulses Compressor 1</label>
 		<state readOnly="true"/>
 	</channel-type>
@@ -313,7 +313,7 @@
 	</channel-type>
 
 	<channel-type id="pulsesCompressor2" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Pulses Compressor 2</label>
 		<state readOnly="true"/>
 	</channel-type>

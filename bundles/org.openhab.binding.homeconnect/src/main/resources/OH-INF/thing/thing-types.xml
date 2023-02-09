@@ -395,7 +395,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="program_progress_state">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Progress State</label>
 		<description>This status describes the program progress of the home appliance.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
@@ -571,13 +571,13 @@
 		<state readOnly="true" min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="program_energy" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Program Energy</label>
 		<description>This channel provides the estimated energy required in percentage for a program of the home appliance.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="program_water" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Program Water</label>
 		<description>This channel provides the estimated water required in percentage for a program of the home appliance.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>

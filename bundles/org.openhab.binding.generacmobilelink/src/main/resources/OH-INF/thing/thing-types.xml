@@ -92,7 +92,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuelLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fuel Level</label>
 		<state readOnly="true"/>
 	</channel-type>

@@ -260,7 +260,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="actualHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -285,12 +285,12 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredHumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Desired Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="desiredDehumidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Desired Dehumidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -330,12 +330,12 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="actualCO2" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual CO2</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="actualVOC" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual VOC</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -870,12 +870,12 @@
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="humidityHighAlert">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity High Alert</label>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="humidityLowAlert">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity Low Alert</label>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1389,7 +1389,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherRelativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1424,7 +1424,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherPop" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Probability of Precipitation</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1739,7 +1739,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Sensor Humidity</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

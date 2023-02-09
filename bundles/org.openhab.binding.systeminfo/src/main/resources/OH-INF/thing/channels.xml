@@ -149,7 +149,7 @@
 	</channel-type>
 
 	<channel-type id="usedHeapPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Used Heap Percent</label>
 		<description>How much data in percent has been used from the max size the Java heap can grow to.</description>
 		<state pattern="%.1f %%" readOnly="true"/>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="availablePercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Available (%)</label>
 		<description>Available size in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -213,7 +213,7 @@
 	</channel-type>
 
 	<channel-type id="usedPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Used (%)</label>
 		<description>Used size in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -301,7 +301,7 @@
 	</channel-type>
 
 	<channel-type id="remainingCapacity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Remaining Capacity</label>
 		<description>Remaining capacity in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -309,7 +309,7 @@
 	</channel-type>
 
 	<channel-type id="load">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -317,7 +317,7 @@
 	</channel-type>
 
 	<channel-type id="load_process">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>

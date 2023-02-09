@@ -100,7 +100,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>The relative humidity at this thermostat.</description>
 		<category>Humidity</category>
@@ -112,7 +112,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_humidify_setpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidify SetPoint</label>
 		<description>The current low/humidify setpoint for this thermostat.</description>
 		<category>Humidity</category>
@@ -120,7 +120,7 @@
 	</channel-type>
 
 	<channel-type id="thermostat_dehumidify_setpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Dehumidify SetPoint</label>
 		<description>The current high/dehumidify setpoint for this thermostat.</description>
 		<category>Humidity</category>

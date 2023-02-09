@@ -243,7 +243,7 @@
 	</channel-type>
 
 	<channel-type id="atmospheric-humidity-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
@@ -266,7 +266,7 @@
 	</channel-type>
 
 	<channel-type id="demandPercent-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Current Heat Demand</label>
 		<description>Current heat demand in %</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -322,7 +322,7 @@
 	</channel-type>
 
 	<channel-type id="heatChannelDemand-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Heat Demand</label>
 		<description>Current heat demand in %</description>
 		<state readOnly="true" pattern="%d %unit%"/>

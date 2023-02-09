@@ -35,7 +35,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="ac-average-power-factor-type">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Average AC Power Factor</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

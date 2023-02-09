@@ -96,7 +96,7 @@
 
 	<!-- HumiditySensor -->
 	<channel-type id="humiditySensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Actual Humidity</label>
 		<description>Actual measured room humidity</description>
 		<category>Humidity</category>
@@ -151,7 +151,7 @@
 
 	<!-- LuminanceSensor Channel -->
 	<channel-type id="luminanceSensor">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Luminance</label>
 		<description>Shows the detected luminance in percent</description>
 		<category>Sun</category>
@@ -331,7 +331,7 @@
 
 	<!-- CPUUsage -->
 	<channel-type id="cpuUsage">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CPU Usage</label>
 		<description>The CPU usage of the SHC in percent</description>
 		<category>Line</category>
@@ -340,7 +340,7 @@
 
 	<!-- DiskUsage -->
 	<channel-type id="diskUsage">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Disk Usage</label>
 		<description>The disk usage of the SHC</description>
 		<category>Line</category>
@@ -349,7 +349,7 @@
 
 	<!-- MemoryUsage -->
 	<channel-type id="memoryUsage">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Memory Usage</label>
 		<description>The memory usage of the SHC in percent</description>
 		<category>Line</category>

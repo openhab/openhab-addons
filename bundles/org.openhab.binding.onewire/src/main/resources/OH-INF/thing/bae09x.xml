@@ -105,7 +105,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="bae-pwm-duty">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Duty Cycle</label>
 		<description>Duty cycle of PWM output in %</description>
 	</channel-type>

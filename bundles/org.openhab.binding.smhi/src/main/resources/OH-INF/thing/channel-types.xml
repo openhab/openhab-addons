@@ -59,37 +59,37 @@
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
 	<channel-type id="r">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>Relative humidity in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="tstm" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Thunder Probability</label>
 		<description>Probability of thunder in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="tcc_mean">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Total Cloud Cover</label>
 		<description>Mean value of total cloud cover in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="lcc_mean" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Low Level Cloud Cover</label>
 		<description>Mean value of low level cloud cover (0-2500 m) in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="mcc_mean" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Medium Level Cloud Cover</label>
 		<description>Mean value of medium level cloud cover (2500-6000 m) in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="hcc_mean" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>High Level Cloud Cover</label>
 		<description>Mean value of high level cloud cover (> 6000 m) in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
@@ -147,7 +147,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="spp" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Frozen Precipitation</label>
 		<description>Percent of precipitation in frozen form</description>
 		<state readOnly="true" pattern="%d %%"/>

@@ -64,17 +64,17 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="ruuvitag_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Measurement Sequence Number</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_movementCounter" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Movement Counter</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

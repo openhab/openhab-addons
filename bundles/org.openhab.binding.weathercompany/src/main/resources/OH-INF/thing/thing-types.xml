@@ -217,7 +217,7 @@
 	</channel-group-type>
 
 	<channel-type id="cloudCover">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Cloud Cover</label>
 		<description>Cloud cover</description>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
@@ -315,7 +315,7 @@
 	</channel-type>
 
 	<channel-type id="precipitationChance">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Precipitation Chance</label>
 		<description>Chance of precipitation</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -390,7 +390,7 @@
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>Forecasted relative humidity</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

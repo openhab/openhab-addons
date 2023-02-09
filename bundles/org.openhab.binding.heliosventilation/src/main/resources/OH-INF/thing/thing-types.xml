@@ -143,7 +143,7 @@
 	</channel-type>
 
 	<channel-type id="rh_limit" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>RH Limit</label>
 		<description>Limit for relative humidity sensor.</description>
 		<category>Humidity</category>
@@ -151,7 +151,7 @@
 	</channel-type>
 
 	<channel-type id="dc_fan_supply" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Supply Fan</label>
 		<description>Speed of the supply air fan (incoming air).</description>
 		<category>HVAC</category>
@@ -159,7 +159,7 @@
 	</channel-type>
 
 	<channel-type id="dc_fan_extract" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Extract Fan</label>
 		<description>Speed of the extract air fan (outgoing air).</description>
 		<category>HVAC</category>
@@ -221,14 +221,14 @@
 	</channel-type>
 
 	<channel-type id="adjust_interval" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Adjust Interval</label>
 		<category>HVAC</category>
 		<state pattern="%f %unit%" min="1" max="15" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="maintenance_interval" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Maintenance Interval</label>
 		<category>HVAC</category>
 		<state pattern="%f %unit%" min="1" max="15" readOnly="false"/>

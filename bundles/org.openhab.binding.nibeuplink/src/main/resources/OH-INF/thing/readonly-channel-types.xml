@@ -34,7 +34,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-flow">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Unnamed Flow</label>
 		<state pattern="%.1f l/min" readOnly="true">
 		</state>
@@ -88,7 +88,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-speed-percent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Unnamed Speed</label>
 		<state pattern="%d %%" readOnly="true">
 		</state>

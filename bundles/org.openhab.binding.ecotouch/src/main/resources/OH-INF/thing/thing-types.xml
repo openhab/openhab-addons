@@ -414,7 +414,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="position_expansion_valve" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Position Expansion Valve</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -434,12 +434,12 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="cop_heating">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>COP Heating</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="cop_cooling">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>COP Cooling</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -514,23 +514,23 @@
 		<state min="15" max="40" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="compressor_power" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percent Power Compressor</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_heat_circ_pump" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percent Circulation Pump</label>
 		<description>Percent Heating Circulation Pump</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_source_pump" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percent Source Pump</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_compressor" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percent Compressor</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -623,44 +623,44 @@
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="version_controller" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Version Controller</label>
 		<description>Version Display Controller</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="version_controller_build" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Build Number Controller</label>
 		<description>Build Number Display Controller</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="version_bios" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Version BIOS</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="date_day" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Day</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="date_month" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Month</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="date_year" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Year</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="time_hour" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Hour</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="time_minute" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Minute</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -721,7 +721,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="state" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>State</label>
 		<description>A Bitfield which encodes the state of all valves, pumps and compressors</description>
 		<state readOnly="true"/>
@@ -787,12 +787,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="alarm">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Alarm</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="interruptions" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Interruptions</label>
 		<state readOnly="true"/>
 	</channel-type>
@@ -809,61 +809,61 @@
 		<state min="-2" max="2" step="0.5" readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_heatingpump" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Heating Pump</label>
 		<description>Operating Mode Heating Pump</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_sourcepump" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Source Pump</label>
 		<description>Operating Mode Source Pump</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_solarpump1" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Solar Pump</label>
 		<description>Operating Mode Solar Pump</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_solarpump2" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Solar Pump 2</label>
 		<description>Operating Mode Solar Pump 2</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_tankpump" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Tank Pump</label>
 		<description>Operating Mode Tank Pump</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_valve" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Valve</label>
 		<description>Operating Mode Valve</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_poolvalve" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Pool Valve</label>
 		<description>Operating Mode Pool Valve</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_coolvalve" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Cooling Valve</label>
 		<description>Operating Mode Cooling Valve</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_4wayvalve" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable 4Way Valve</label>
 		<description>Operating Mode 4Way Valve</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="manual_multiext" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Enable Multi Ouput</label>
 		<description>Operating Mode Multi Ouput Ext</description>
 		<state readOnly="false"/>
@@ -919,22 +919,22 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_CO2_value">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>EcoVent CO2</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_moisture_value">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>EcoVent Air Moisture</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_output_y1">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>EcoVent Fan</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ecovent_mode">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>EcoVent Mode</label>
 		<description>EcoVent Mode (0..5: Day, Night, Timer, Party, Vacation, Bypass)</description>
 		<state min="0" max="5" step="1" readOnly="false"/>

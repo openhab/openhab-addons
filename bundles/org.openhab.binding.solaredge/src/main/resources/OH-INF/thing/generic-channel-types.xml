@@ -22,7 +22,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-percent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Percent</label>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>

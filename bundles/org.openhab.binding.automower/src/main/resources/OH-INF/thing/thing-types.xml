@@ -215,7 +215,7 @@
 	</channel-type>
 
 	<channel-type id="batteryType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery</label>
 		<description>The battery level of the mower at the time of last update</description>
 		<state readOnly="true" pattern="%d %%"/>

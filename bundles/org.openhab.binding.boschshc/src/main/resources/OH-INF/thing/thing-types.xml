@@ -385,7 +385,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
 		<state readOnly="true"/>
@@ -419,7 +419,7 @@
 	</channel-type>
 
 	<channel-type id="purity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Purity</label>
 		<description>Purity of the air. A higher value indicates a higher pollution.</description>
 		<state min="500" max="5500" pattern="%.1f ppm" readOnly="true"/>
@@ -488,7 +488,7 @@
 	</channel-type>
 
 	<channel-type id="valve-tappet-position">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Valve Tappet Position</label>
 		<description>Current open ratio (0 to 100).</description>
 		<state min="0" max="100" step="1" readOnly="true"/>

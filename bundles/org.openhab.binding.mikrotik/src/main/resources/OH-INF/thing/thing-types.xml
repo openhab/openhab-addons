@@ -165,7 +165,7 @@
 	</channel-type>
 
 	<channel-type id="usedSpace">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Used Space %</label>
 		<description>Percentage of used device storage space</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
@@ -186,14 +186,14 @@
 	</channel-type>
 
 	<channel-type id="usedMemory">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Used RAM %</label>
 		<description>Percentage of used device memory</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="cpuLoad">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CPU Load %</label>
 		<description>CPU load percentage</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>

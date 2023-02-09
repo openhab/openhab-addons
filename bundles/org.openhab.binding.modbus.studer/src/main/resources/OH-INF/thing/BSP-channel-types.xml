@@ -11,7 +11,7 @@
 	</channel-type>
 	<!-- State of charge Channel Type -->
 	<channel-type id="SOC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>State of Charge</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

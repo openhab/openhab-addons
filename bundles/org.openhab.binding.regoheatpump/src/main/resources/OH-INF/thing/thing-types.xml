@@ -521,7 +521,7 @@
 	</channel-type>
 
 	<channel-type id="addHeatPowerPercent" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Additional Heat Power</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -696,7 +696,7 @@
 	</channel-type>
 
 	<channel-type id="compressorSpeed" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Compressor Speed</label>
 		<category>Pump</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

@@ -164,7 +164,7 @@
 	</channel-type>
 
 	<channel-type id="progress">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Progress</label>
 		<description>Relative progression of the current program.</description>
 		<state readOnly="true" pattern="%d %unit%"/>

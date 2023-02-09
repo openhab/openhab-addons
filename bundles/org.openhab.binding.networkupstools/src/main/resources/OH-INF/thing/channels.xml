@@ -11,7 +11,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ups-load" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>UPS Load</label>
 		<description>Load on UPS (percent)</description>
 		<state pattern="%.1f %%" readOnly="true"/>
@@ -78,7 +78,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="input-load">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Input Load</label>
 		<description>Load on (ePDU) input (percent of full)</description>
 		<state pattern="%.1f %%" readOnly="true"/>
@@ -126,7 +126,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-charge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Charge</label>
 		<description>Battery charge (percent)</description>
 		<state pattern="%.1f %%" readOnly="true"/>

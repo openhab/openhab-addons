@@ -99,7 +99,7 @@
 	</channel-type>
 
 	<channel-type id="am43_speed" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Speed</label>
 		<description>The speed value in RPMs set for this motor</description>
 		<state readOnly="false" pattern="%d RPM"/>
@@ -127,14 +127,14 @@
 	</channel-type>
 
 	<channel-type id="am43_type" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Device Type</label>
 		<description>The type of blinds this motor is operating. (not really important)</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="am43_lightLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Light Level</label>
 		<description>Light level detected by the solar sensor. Will range from 0-10</description>
 		<state readOnly="true" pattern="%d"/>

@@ -318,7 +318,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -366,7 +366,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="clouds-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Cloudiness</label>
 		<description>Given as percentage, 0% being clear skies, and 100% being overcast. UNDEF when cloud coverage could not
 			be determined.
@@ -478,7 +478,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="total-cloud-cover-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Total Cloud Cover</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

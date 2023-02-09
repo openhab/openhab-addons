@@ -423,7 +423,7 @@
 	</channel-type>
 
 	<channel-type id="WWNHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Indicates the current relative humidity</description>
 		<category>Humidity</category>

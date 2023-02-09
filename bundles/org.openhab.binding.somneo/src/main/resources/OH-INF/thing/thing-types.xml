@@ -215,7 +215,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>The current humidity in %.</description>
 		<category>Humidity</category>
@@ -250,7 +250,7 @@
 	</channel-type>
 
 	<channel-type id="noise">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Noise</label>
 		<description>The current noise in dB.</description>
 		<category>Noise</category>

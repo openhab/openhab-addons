@@ -185,7 +185,7 @@
 	</channel-type>
 
 	<channel-type id="cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/cloudinessLabel</label>
 		<description>@text/cloudinessDescription</description>
 		<category>Sun_Clouds</category>

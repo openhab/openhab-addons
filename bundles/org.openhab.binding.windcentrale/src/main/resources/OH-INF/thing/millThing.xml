@@ -67,13 +67,13 @@
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerRel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Power</label>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="runPercentage">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Run Percentage</label>
 		<description>Run percentage this year</description>
 		<category>Energy</category>

@@ -61,14 +61,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batterySoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery SoC</label>
 		<description>Current State of Charge of battery</description>
 		<category>batterylevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryPrioritySoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Priority SoC</label>
 		<description>State of Charge for which the battery has priority over charging the ev when charging mode is "pv".</description>
 		<category>batterylevel</category>
@@ -199,7 +199,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="minSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Charging min SoC</label>
 		<description>Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off"</description>
 		<category>Batterylevel</category>
@@ -230,7 +230,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="targetSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Charging target SoC</label>
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>Batterylevel</category>
@@ -318,7 +318,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleSoC">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Vehicle SoC</label>
 		<description>Current State of Charge of EV</description>
 		<category>Batterylevel</category>

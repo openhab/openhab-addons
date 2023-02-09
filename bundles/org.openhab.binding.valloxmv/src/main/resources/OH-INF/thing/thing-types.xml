@@ -81,7 +81,7 @@
 	</channel-type>
 
 	<channel-type id="fanspeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed in % (0-100)</description>
 		<state readOnly="true" min="0" max="1" pattern="%d %unit%"/>
@@ -145,14 +145,14 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Current humidity of the air flow exhausting the building.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO2</label>
 		<description>CO2 measurement</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -208,35 +208,35 @@
 	</channel-type>
 
 	<channel-type id="extrfanbalancebase" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Extract Fan Base Speed</label>
 		<description>Extract fan base speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="suppfanbalancebase" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Supply Fan Base Speed</label>
 		<description>Supply fan base speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="homespeedsetting" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Home Fan Speed</label>
 		<description>Home fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="awayspeedsetting" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Away Fan Speed</label>
 		<description>Away fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="boostspeedsetting" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Boost Fan Speed</label>
 		<description>Boost fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
@@ -267,7 +267,7 @@
 	</channel-type>
 
 	<channel-type id="boosttime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Boost Timer</label>
 		<description>Boost profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min"/>
@@ -280,21 +280,21 @@
 	</channel-type>
 
 	<channel-type id="fireplaceextrfan" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fireplace Extract Fan Speed</label>
 		<description>Fireplace profile extract fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="fireplacesuppfan" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fireplace Supply Fan Speed</label>
 		<description>Fireplace profile supply fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="fireplacetime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fireplace Timer</label>
 		<description>Fireplace profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min"/>
@@ -315,21 +315,21 @@
 	</channel-type>
 
 	<channel-type id="extraextrfan" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Extra Extract Fan Speed</label>
 		<description>Extra profile extract fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="extrasuppfan" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Extra Supply Fan Speed</label>
 		<description>Extra profile supply fan speed in % (0-100)</description>
 		<state readOnly="false" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="extratime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Extra Timer</label>
 		<description>Extra profile timer value in minutes</description>
 		<state readOnly="false" min="1" max="65535" pattern="%d min"/>

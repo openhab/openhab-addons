@@ -126,7 +126,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Outdoor Humidity</label>
 		<description>Outdoor humidity in %.</description>
 		<category>Humidity</category>
@@ -138,7 +138,7 @@
 	</channel-type>
 
 	<channel-type id="indoor-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Indoor Humidity</label>
 		<description>Indoor humidity in %.</description>
 		<category>Humidity</category>
@@ -277,7 +277,7 @@
 
 	<!-- for sensors 2,3,4 use soilmoisture2, soilmoisture3, and soilmoisture4 -->
 	<channel-type id="soil-moisture" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Soil Moisture</label>
 		<description>Soil moisture in %.</description>
 		<category>Moisture</category>
@@ -290,7 +290,7 @@
 
 	<!-- for sensor 2 use leafwetness2 -->
 	<channel-type id="leafwetness" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Leaf Wetness</label>
 		<description>Leaf wetness in %.</description>
 		<category>Moisture</category>
@@ -314,7 +314,7 @@
 	</channel-type>
 
 	<channel-type id="uv">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>UV Index</label>
 		<description>UV index.</description>
 		<category>Sun</category>
@@ -338,7 +338,7 @@
 
 	<!-- Pollution Fields: -->
 	<channel-type id="nitric-oxide" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Nitric Oxide</label>
 		<description>Nitric Oxide ppm.</description>
 		<category>Pollution</category>
@@ -349,7 +349,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-measured" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Nitrogen Dioxide</label>
 		<description>Nitrogen Dioxide, true measure ppb.</description>
 		<category>Pollution</category>
@@ -360,7 +360,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-nox-no" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>NO2 X computed</label>
 		<description>NO2 computed, NOx-NO ppb.</description>
 		<category>Pollution</category>
@@ -371,7 +371,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide-noy-no" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>NO2 Y computed, NOy-NO ppb</label>
 		<description>NO2 computed, NOy-NO ppb.</description>
 		<category>Pollution</category>
@@ -382,7 +382,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-oxides" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Nitrogen Oxides</label>
 		<description>Nitrogen Oxides ppb.</description>
 		<category>Pollution</category>
@@ -393,7 +393,7 @@
 	</channel-type>
 
 	<channel-type id="total-reactive-nitrogen" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Total Reactive Nitrogen</label>
 		<description>Total reactive nitrogen.</description>
 		<category>Pollution</category>
@@ -426,7 +426,7 @@
 	</channel-type>
 
 	<channel-type id="sulfur-dioxide" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Sulfur Dioxide</label>
 		<description>Sulfur Dioxide, conventional ppb.</description>
 		<category>Pollution</category>
@@ -437,7 +437,7 @@
 	</channel-type>
 
 	<channel-type id="sulfur-dioxide-trace-levels" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Sulfur Dioxide Trace Levels</label>
 		<description>Sulfur Dioxide, trace levels ppb.</description>
 		<category>Pollution</category>
@@ -448,7 +448,7 @@
 	</channel-type>
 
 	<channel-type id="carbon-monoxide" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Carbon Monoxide, conventional ppm.</description>
 		<category>Pollution</category>
@@ -459,7 +459,7 @@
 	</channel-type>
 
 	<channel-type id="carbon-monoxide-trace-levels" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Carbon Monoxide Trace Levels</label>
 		<description>Carbon Monoxide, trace levels ppb.</description>
 		<category>Pollution</category>
@@ -536,7 +536,7 @@
 	</channel-type>
 
 	<channel-type id="ozone" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Ozone</label>
 		<description>Ozone, ppb.</description>
 		<category>Pollution</category>

@@ -127,7 +127,7 @@
 	</thing-type>
 
 	<channel-type id="powerLimitation">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Power Limitation</label>
 		<category>Number</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -225,7 +225,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryFuelCharge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Fuel</label>
 		<category>BatteryLevel</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>

@@ -86,7 +86,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity</description>
 		<category>Humidity</category>
@@ -102,35 +102,35 @@
 
 
 	<channel-type id="pm1">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>PM1</label>
 		<description>Particulate Matter 1 (0.001mm)</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="pm2_5">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>PM2.5</label>
 		<description>Particulate Matter 2.5 (0.0025mm)</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="pm10">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>PM10</label>
 		<description>Particulate Matter 10 (0.01mm)</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO2</label>
 		<description>CarbonDioxide</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="filterLife">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Filter Life</label>
 		<description>Filter Life</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>

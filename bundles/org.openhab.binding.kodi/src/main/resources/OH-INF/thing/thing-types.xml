@@ -474,7 +474,7 @@
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Current Time in Percent</label>
 		<description>Current time of currently playing media</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

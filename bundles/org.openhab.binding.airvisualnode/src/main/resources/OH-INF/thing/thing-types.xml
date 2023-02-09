@@ -63,7 +63,7 @@
 	<!-- Channel types -->
 
 	<channel-type id="Co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>CO₂ Level</label>
 		<description>CO&#8322; level, ppm</description>
 		<category>CarbonDioxide</category>
@@ -71,7 +71,7 @@
 	</channel-type>
 
 	<channel-type id="Humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity, %</description>
 		<category>Humidity</category>
@@ -79,7 +79,7 @@
 	</channel-type>
 
 	<channel-type id="Aqi">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>AQI</label>
 		<description>Air Quality Index (US)</description>
 		<state readOnly="true" pattern="%d"/>

@@ -55,7 +55,7 @@
 	</channel-type>
 
 	<channel-type id="filterSpeedPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Filter Speed %</label>
 		<description>Filter Speed (%)</description>
 		<state min="0" max="100" step="5" pattern="%d %unit%" readOnly="false"/>
@@ -106,7 +106,7 @@
 	</channel-type>
 
 	<channel-type id="filterLastSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Last Speed</label>
 		<description>Last Speed (%)</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -523,7 +523,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-atmospheric-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Forecasted Humidity</label>
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>
@@ -567,7 +567,7 @@
 	</channel-type>
 
 	<channel-type id="cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
 		<category>Sun_Clouds</category>
@@ -575,7 +575,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
 		<category>Sun_Clouds</category>
@@ -790,7 +790,7 @@
 	</channel-type>
 
 	<channel-type id="precip-probability">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>

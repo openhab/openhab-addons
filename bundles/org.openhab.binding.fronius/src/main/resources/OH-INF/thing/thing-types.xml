@@ -290,13 +290,13 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="powerflow_rel_autonomy">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autonomy</label>
 		<description>The current relative autonomy in %, NULL if no smart meter is connected</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="powerflow_rel_selfconsumption">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Self Consumption</label>
 		<description>The current relative self consumption in %, NULL if no smart meter is connected</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -308,7 +308,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="inverter1Soc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Inverter 1 State of Charge</label>
 		<description>Inverter 1 State of Charge</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

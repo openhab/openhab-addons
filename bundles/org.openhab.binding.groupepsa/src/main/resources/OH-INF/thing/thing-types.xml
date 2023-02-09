@@ -421,7 +421,7 @@
 	</channel-group-type>
 
 	<channel-type id="level">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
 		<state pattern="%.1f %unit%"/>
@@ -458,14 +458,14 @@
 	</channel-type>
 
 	<channel-type id="healthCapacity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Health - Capacity</label>
 		<description>Health of the battery capacity</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="healthResistance">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Health - Resistance</label>
 		<description>Health of the battery resistance</description>
 		<state pattern="%.1f %unit%"/>

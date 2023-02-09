@@ -90,7 +90,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="hum-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Humidity</label>
 		<description>Humidity from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -108,19 +108,19 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="noise-eq-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Average Noise</label>
 		<description>Average noise level from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="noise-min-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Minimum Noise</label>
 		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="noise-max-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Maximum Noise</label>
 		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

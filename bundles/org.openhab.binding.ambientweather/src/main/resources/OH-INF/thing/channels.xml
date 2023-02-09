@@ -50,7 +50,7 @@
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
@@ -256,7 +256,7 @@
 	</channel-type>
 
 	<channel-type id="uvIndex">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>UV Index</label>
 		<description>Ultraviolet radiation index</description>
 		<state readOnly="true" pattern="%.1f"/>
@@ -278,7 +278,7 @@
 	</channel-type>
 
 	<channel-type id="soilMoisture">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Soil Moisture</label>
 		<description>Amount of moisture in the soil</description>
 		<category>Sensor</category>
@@ -294,7 +294,7 @@
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Carbon Dioxide</label>
 		<description>Amount of carbon dioxide</description>
 		<category>Sensor</category>

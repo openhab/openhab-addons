@@ -310,7 +310,7 @@
 	</channel-type>
 
 	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
 		<description>@text/channel-type.shelly.sensorHumidity.description</description>
 		<category>Humidity</category>
@@ -414,7 +414,7 @@
 	</channel-type>
 
 	<channel-type id="sensorPPM">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.shelly.sensorPPM.label</label>
 		<description>@text/channel-type.shelly.sensorPPM.description</description>
 		<category>Gas</category>
@@ -475,7 +475,7 @@
 	</channel-type>
 
 	<channel-type id="sensorExtHum">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.shelly.sensorExtHum.label</label>
 		<description>@text/channel-type.shelly.sensorExtHum.description</description>
 		<category>Humidity</category>
@@ -509,7 +509,7 @@
 	</channel-type>
 
 	<channel-type id="sensorExtAnalogInput">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>@text/channel-type.shelly.sensorExtAnalogInput.label</label>
 		<description>@text/channel-type.shelly.sensorExtAnalogInput.description</description>
 		<category>Humidity</category>

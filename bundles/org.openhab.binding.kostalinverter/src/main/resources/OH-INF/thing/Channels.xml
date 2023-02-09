@@ -58,7 +58,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-relativ">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="°C">Numberimensionless</item-type>
 		<label>Feed-in Limit Relative</label>
 		<description>Permitted feed-in quantity as relative value as specified by the energy supplier </description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -71,7 +71,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-cos-phi">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="°C">Numberimensionless</item-type>
 		<label>Cos Phi</label>
 		<description>AC Power Factor</description>
 		<state readOnly="true" pattern="%.2f"/>
@@ -153,7 +153,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-loading-cycles">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Loading Cycles</label>
 		<description>Amount of loading cycles done by the battery</description>
 		<state readOnly="true" pattern="%.0f"/>
@@ -180,7 +180,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-state-of-charge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Battery Charge</label>
 		<description>Current battery charge status</description>
 		<category>BatteryLevel</category>
@@ -257,49 +257,49 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-mc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>MC Errors</label>
 		<description>Number of errors reported by the main controller</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-sfh">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>SFH Errors</label>
 		<description>Number of errors reported by the grid interface controller</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-scb">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>SCB Errors</label>
 		<description>Number of errors reported by the smart communication board</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-warning-count-scb">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>SCB Warnings</label>
 		<description>Number of warnings reported by the smart communication board</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-day">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autarky Day</label>
 		<description>Autarky ratio of this day</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-month">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autarky Month</label>
 		<description>Autarky ratio of this month</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-total">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autarky Total</label>
 		<description>Autarky ratio overall</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-year">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autarky Year</label>
 		<description>Autarky ratio of this year</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -445,25 +445,25 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-day">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Consumption Day</label>
 		<description>Percentage of electricity demand covered by photovoltaics today</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-month">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Consumption Month</label>
 		<description>Percentage of electricity demand covered by photovoltaics this month</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-total">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Consumption Total</label>
 		<description>Percentage of electricity demand covered by photovoltaics overall</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-year">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Consumption Year</label>
 		<description>Percentage of electricity demand covered by photovoltaics this year</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -518,7 +518,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-operating-status">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Operating Status</label>
 		<description>Operating status</description>
 		<category>Energy</category>
@@ -728,14 +728,14 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-day">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Cons Rate Day</label>
 		<description>Total own consumption rate day</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autonomy-degree-day">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autonomy Degree Day</label>
 		<description>Total autonomy degree day</description>
 		<category>Energy</category>
@@ -770,14 +770,14 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current-dir">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Current Dir</label>
 		<description>Current direction</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-charge-cycles">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Charge Cycles</label>
 		<description>Total number of charge cycles</description>
 		<category>Energy</category>
@@ -798,21 +798,21 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-s0-inpulse-cnt">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>S0 Inpulse Cnt</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-total">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Own Cons Rate Total</label>
 		<description>Total own consumption rate</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autonomy-degree-total">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Autonomy Degree Total</label>
 		<description>Total autonomy degree</description>
 		<category>Energy</category>
@@ -826,7 +826,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-bat-state-of-charge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Bat State of Charge</label>
 		<description>Current battery charge state</description>
 		<category>Energy</category>
@@ -854,21 +854,21 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Max Depth of Discharge</label>
 		<description>Max depth of discharge</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-shadow-management">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>Shadow Management</label>
 		<description>Shadow management</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-external-module-control">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unit="%">Number</item-type>
 		<label>External Module Control</label>
 		<description>External Module Control</description>
 		<category>Energy</category>
