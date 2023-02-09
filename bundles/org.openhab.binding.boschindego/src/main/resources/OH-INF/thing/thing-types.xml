@@ -164,7 +164,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="gardenSize">
-		<item-type>Number:Area</item-type>
+		<item-type unit="m²">Number</item-type>
 		<label>Garden Size</label>
 		<description>Garden size mapped by the device</description>
 		<state pattern="%d %unit%" readOnly="true"/>

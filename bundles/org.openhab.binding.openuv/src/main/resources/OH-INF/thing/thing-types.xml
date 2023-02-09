@@ -85,7 +85,7 @@
 	</channel-type>
 
 	<channel-type id="Ozone">
-		<item-type>Number:ArealDensity</item-type>
+		<item-type unit="DU">Number</item-type>
 		<label>Ozone</label>
 		<description>Ozone level from OMI data</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

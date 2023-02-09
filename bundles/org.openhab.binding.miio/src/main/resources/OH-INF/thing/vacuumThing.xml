@@ -332,7 +332,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="total_clean_area">
-		<item-type>Number:Area</item-type>
+		<item-type unit="m²">Number</item-type>
 		<label>Total Cleaning Area</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -363,7 +363,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_area">
-		<item-type>Number:Area</item-type>
+		<item-type unit="m²">Number</item-type>
 		<label>Cleaning Area</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
