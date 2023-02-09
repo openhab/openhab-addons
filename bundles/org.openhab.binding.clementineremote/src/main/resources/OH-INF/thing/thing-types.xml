@@ -14,7 +14,6 @@
 			<channel id="artist" typeId="system.media-artist"/>
 			<channel id="playback-control" typeId="playback-control"/>
 			<channel id="position" typeId="current-position"/>
-			<channel id="state" typeId="current-state"/>
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="track" typeId="current-track"/>
 			<channel id="volume-control" typeId="system.volume"/>
@@ -65,13 +64,6 @@
 		<item-type>String</item-type>
 		<label>Current Track</label>
 		<description>Number of the title within the current album</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="current-state">
-		<item-type>String</item-type>
-		<label>Current State</label>
-		<description>Current state of clementine player</description>
 		<state readOnly="true"/>
 	</channel-type>
 
