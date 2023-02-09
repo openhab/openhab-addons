@@ -46,13 +46,13 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-time-unscaled">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Unnamed Time</label>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-time-scale10">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Unnamed Time</label>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

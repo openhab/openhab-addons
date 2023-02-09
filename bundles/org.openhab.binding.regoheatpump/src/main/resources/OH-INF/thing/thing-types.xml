@@ -774,7 +774,7 @@
 	</channel-type>
 
 	<channel-type id="heatPumpInOperationDHW" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Heat Pump in Oper. - DHW</label>
 		<description>Heat pump in operation while heating DHW - number of hours</description>
 		<category>Time</category>
@@ -782,7 +782,7 @@
 	</channel-type>
 
 	<channel-type id="heatPumpInOperationRAD" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Heat Pump in Oper. - Radiators</label>
 		<description>Heat pump in operation while heating radiators - number of hours</description>
 		<category>Time</category>
@@ -790,7 +790,7 @@
 	</channel-type>
 
 	<channel-type id="addHeatInOperationDHW" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Add. Heat in Oper. - DHW</label>
 		<description>Additional heat in operation heating DHW - number of hours</description>
 		<category>Time</category>
@@ -798,7 +798,7 @@
 	</channel-type>
 
 	<channel-type id="addHeatInOperationRAD" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Add. Heat in Oper. - Radiators</label>
 		<description>Additional heat in operation heating radiators - number of hours</description>
 		<category>Time</category>

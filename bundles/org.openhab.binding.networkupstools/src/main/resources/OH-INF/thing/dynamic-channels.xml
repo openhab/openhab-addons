@@ -47,7 +47,7 @@
 		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type"/>
 	</channel-type>
 	<channel-type id="number-time">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time</label>
 		<description>Time channel</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -137,14 +137,14 @@
 		</state>
 	</channel-type>
 	<channel-type id="programDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Duration of the program</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="programPosition">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Play Position</label>
 		<description>Play Position since program started</description>
 		<state pattern="%d %unit%" readOnly="true">

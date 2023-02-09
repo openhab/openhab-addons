@@ -184,7 +184,7 @@
 	</channel-type>
 
 	<channel-type id="presetDuration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Preset Duration</label>
 		<description>Time for how long to show each preset for before moving to the next</description>
 		<category>Time</category>
@@ -219,7 +219,7 @@
 	</channel-type>
 
 	<channel-type id="transformTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Transform Time</label>
 		<description>Time it takes to change/fade from one look to the next.</description>
 		<category>Time</category>
@@ -288,7 +288,7 @@
 	</channel-type>
 
 	<channel-type id="sleepDuration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Sleep Duration</label>
 		<description>Time it takes to change/fade to the target brightness.</description>
 		<category>Time</category>

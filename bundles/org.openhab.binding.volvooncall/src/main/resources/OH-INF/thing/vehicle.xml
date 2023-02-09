@@ -234,7 +234,7 @@
 	</channel-type>
 
 	<channel-type id="tripDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Trip Duration</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -434,7 +434,7 @@
 	</channel-type>
 
 	<channel-type id="timeToHVBatteryFullyCharged">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Charging Time</label>
 		<description>Time in seconds until the battery is fully charged (in case of PHEV / Twin Engine)</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

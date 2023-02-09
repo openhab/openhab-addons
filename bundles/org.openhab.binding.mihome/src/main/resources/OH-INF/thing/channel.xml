@@ -91,7 +91,7 @@
 	</channel-type>
 
 	<channel-type id="rotationTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cube Rotation Time</label>
 		<state readOnly="false" pattern="%d %unit%"></state>
 	</channel-type>

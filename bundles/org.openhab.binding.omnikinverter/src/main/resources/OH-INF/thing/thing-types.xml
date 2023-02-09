@@ -166,13 +166,13 @@
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="hoursTotal">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Running Hours</label>
 		<description>The total amount of running hours</description>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
 	<channel-type id="hoursTotal">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Running Hours</label>
 		<description>The total amount of running hours</description>
 		<state readOnly="true" pattern="%.f %unit%"/>

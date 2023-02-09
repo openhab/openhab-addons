@@ -115,7 +115,7 @@
 	</channel-type>
 
 	<channel-type id="time_display">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time Display (S)</label>
 		<description>The Playback Time Elapsed/Remaining in Seconds</description>
 		<state readOnly="true" pattern="%d %unit%"/>

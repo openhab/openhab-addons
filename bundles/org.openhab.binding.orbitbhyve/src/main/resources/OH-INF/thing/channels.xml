@@ -23,13 +23,13 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rain_delay">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Rain Delay</label>
 		<description>Channel representing rain delay in hours</description>
 		<state pattern="%d h"></state>
 	</channel-type>
 	<channel-type id="watering_time">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Zone Watering Time</label>
 		<description>Channel representing the manual zone watering time in minutes</description>
 		<state max="240" min="0" pattern="%d min"></state>

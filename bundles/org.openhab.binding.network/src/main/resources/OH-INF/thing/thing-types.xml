@@ -209,7 +209,7 @@
 	</channel-type>
 
 	<channel-type id="latency">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Latency</label>
 		<description>States the latency time</description>
 		<state readOnly="true" pattern="%d %unit%"></state>

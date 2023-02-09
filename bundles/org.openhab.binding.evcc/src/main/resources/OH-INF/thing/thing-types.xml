@@ -112,7 +112,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging duration</label>
 		<description>Charging duration</description>
 		<category>Time</category>
@@ -126,7 +126,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeRemainingDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging remaining duration</label>
 		<description>Remaining duration until target SoC is reached</description>
 		<category>Time</category>
@@ -278,7 +278,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="vehicleConnectedDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Vehicle connected duration</label>
 		<description>Duration the vehicle is connected to loadpoint</description>
 		<category>Time</category>

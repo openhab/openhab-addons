@@ -169,7 +169,7 @@
 	</channel-type>
 
 	<channel-type id="remainingWaterTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
 		<category>Time</category>
@@ -177,7 +177,7 @@
 	</channel-type>
 
 	<channel-type id="nextDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<category>Time</category>
@@ -203,7 +203,7 @@
 	</channel-type>
 
 	<channel-type id="rainDelay">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Rain Delay</label>
 		<description>The amount of time in hours to delay the running of any program.</description>
 		<category>Time</category>

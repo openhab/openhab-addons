@@ -389,7 +389,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="remaining_program_time_state">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Program Time</label>
 		<description>This status indicates the remaining program time of the home appliance.</description>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -407,7 +407,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="elapsed_program_time">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Elapsed Program Time</label>
 		<description>This status describes the elapsed program time of the home appliance.</description>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -419,7 +419,7 @@
 		<state pattern="%.0f %unit%" step="1"/>
 	</channel-type>
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Selected Duration</label>
 		<description>This status describes the duration of the program of the home appliance.</description>
 		<state pattern="%d %unit%" step="60" min="60"/>

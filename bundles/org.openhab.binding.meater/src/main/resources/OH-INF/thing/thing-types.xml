@@ -84,7 +84,7 @@
 	</channel-type>
 
 	<channel-type id="cookElapsedTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cook Elapsed Time</label>
 		<description>Time since the start of cook in seconds. Default: 0</description>
 		<category>Time</category>
@@ -92,7 +92,7 @@
 	</channel-type>
 
 	<channel-type id="cookRemainingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cook Remaining Time</label>
 		<description>Remaining time in seconds or UNDEF when unknown</description>
 		<category>Time</category>

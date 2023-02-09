@@ -112,7 +112,7 @@
 	</channel-type>
 
 	<channel-type id="duration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Next start duration</description>
 		<state readOnly="true"></state>
@@ -139,7 +139,7 @@
 	</channel-type>
 
 	<channel-type id="runcustom">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Run Zones With Custom Duration</label>
 		<description>Run zones now for a custom duration</description>
 	</channel-type>
@@ -157,7 +157,7 @@
 	</channel-type>
 
 	<channel-type id="timeleft">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time Left Seconds</label>
 		<description>Time left that zone will run for</description>
 		<state readOnly="true"></state>
@@ -180,14 +180,14 @@
 	</channel-type>
 
 	<channel-type id="delay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Delay</label>
 		<description>Sensor delay</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="offtimer" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Off Timer</label>
 		<description>Sensor off timer</description>
 		<state readOnly="true"></state>

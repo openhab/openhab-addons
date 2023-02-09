@@ -356,14 +356,14 @@
 	</channel-type>
 
 	<channel-type id="title_length">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Title Length</label>
 		<description>The total running time of the currently playing movie</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="title_loc">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Title Location</label>
 		<description>The running time elapsed of the currently playing movie</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -377,14 +377,14 @@
 	</channel-type>
 
 	<channel-type id="chapter_length">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Chapter Length</label>
 		<description>The total running time of the current chapter</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="chapter_loc">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Chapter Location</label>
 		<description>The running time elapsed of the current chapter</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -610,14 +610,14 @@
 	</channel-type>
 
 	<channel-type id="track_length">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Length</label>
 		<description>The total running time of the current playing track</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="track_position">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Position</label>
 		<description>The running time elapsed of the current playing track</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -710,7 +710,7 @@
 	</channel-type>
 
 	<channel-type id="running_time">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Running time</label>
 		<description>The total running time of the selected item</description>
 		<state readOnly="true"/>

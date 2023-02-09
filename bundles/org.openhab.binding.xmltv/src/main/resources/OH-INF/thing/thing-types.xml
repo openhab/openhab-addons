@@ -143,21 +143,21 @@
 	</channel-type>
 
 	<channel-type id="elapsedTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing program.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="remainingTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Time</label>
 		<description>Time remaining until end of the program.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="timeLeft" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time Left</label>
 		<description>Time left before program start</description>
 		<state readOnly="true" pattern="%d %unit%"/>

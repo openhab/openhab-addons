@@ -228,7 +228,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerFailureLogDurationType" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Power Failure Duration</label>
 		<description>Duration of the power failure.
 			Each entry has its own channel (emeter_power_failure_log_duration*x*, *x* =

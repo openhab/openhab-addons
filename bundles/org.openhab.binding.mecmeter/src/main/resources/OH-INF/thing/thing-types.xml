@@ -371,7 +371,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="op_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time in Operation</label>
 		<description>Time in Operation</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

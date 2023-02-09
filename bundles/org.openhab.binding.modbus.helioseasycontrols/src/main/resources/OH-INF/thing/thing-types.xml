@@ -354,7 +354,7 @@
 	</channel-type>
 
 	<channel-type id="humidityStopTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Humidity Stop Time</label>
 		<description>Humidity stop time in hours (0-24)</description>
 		<category>Humidity</category>
@@ -386,7 +386,7 @@
 	</channel-type>
 
 	<channel-type id="duration" advanced="false">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Duration for operating mode (in minutes)</description>
 		<state min="5" max="180" step="1" pattern="%d %unit%" readOnly="false"/>
@@ -401,7 +401,7 @@
 	</channel-type>
 
 	<channel-type id="remainingTime" advanced="false">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time for operating mode (in minutes)</description>
 		<state min="0" max="180" step="1" pattern="%d %unit%" readOnly="true"/>
@@ -486,7 +486,7 @@
 	</channel-type>
 
 	<channel-type id="holidayProgrammeInterval" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Holiday Programme Interval</label>
 		<description>Holiday programme interval in hours</description>
 		<category>Vacation</category>
@@ -494,7 +494,7 @@
 	</channel-type>
 
 	<channel-type id="holidayProgrammeActivationTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Holiday Programme Activation Time</label>
 		<description>Holiday programme activation time in minutes</description>
 		<category>Vacation</category>
@@ -502,7 +502,7 @@
 	</channel-type>
 
 	<channel-type id="runOnTimeVhzNhz" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Stopping Time Preheater/Afterheater</label>
 		<description>Stopping time preheater/afterheater</description>
 		<category>Heating</category>
@@ -534,14 +534,14 @@
 	</channel-type>
 
 	<channel-type id="filterChangeInterval" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Filter Change Interval</label>
 		<description>Filter change interval in months</description>
 		<state min="1" max="12" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterChangeRemainingTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Filter Change Remaining Time</label>
 		<description>Filter change remaining time in minutes</description>
 		<state min="1" max="550000" step="1" pattern="%d %unit%" readOnly="true"/>

@@ -288,7 +288,7 @@
 	</channel-type>
 
 	<channel-type id="uptime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Uptime</label>
 		<description>Uptime of the client (in seconds)</description>
 		<category>Time</category>

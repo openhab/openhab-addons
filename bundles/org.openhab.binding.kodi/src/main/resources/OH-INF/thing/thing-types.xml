@@ -468,7 +468,7 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="currenttime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
 		<state pattern="%.0f %unit%"/>
@@ -480,7 +480,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

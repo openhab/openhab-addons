@@ -165,7 +165,7 @@
 	</channel-type>
 
 	<channel-type id="ramp-channel">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Ramp</label>
 		<description>Transition time from the light’s current state to the new state.</description>
 		<state pattern="%d %unit%"/>

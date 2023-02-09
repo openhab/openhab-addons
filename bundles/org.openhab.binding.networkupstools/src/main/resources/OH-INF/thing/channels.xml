@@ -132,7 +132,7 @@
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="battery-runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Battery Runtime</label>
 		<description>Battery runtime (seconds)</description>
 		<state pattern="%d %unit%" readOnly="true"/>

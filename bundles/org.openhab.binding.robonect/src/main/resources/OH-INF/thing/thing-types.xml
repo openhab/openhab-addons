@@ -121,7 +121,7 @@
 	</channel-type>
 
 	<channel-type id="durationType">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Status Duration</label>
 		<description>The number of seconds the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -135,7 +135,7 @@
 	</channel-type>
 
 	<channel-type id="hoursType">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Total Mowing Hours</label>
 		<description>The number of total mowing hours</description>
 		<state readOnly="true" pattern="%d %unit%"/>

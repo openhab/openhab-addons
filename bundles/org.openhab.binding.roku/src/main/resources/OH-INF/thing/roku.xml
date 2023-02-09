@@ -148,14 +148,14 @@
 	</channel-type>
 
 	<channel-type id="timeElapsed">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Playback Time</label>
 		<description>The Current Playback Time Elapsed</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="timeTotal">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
 		<state readOnly="true" pattern="%d %unit%"/>

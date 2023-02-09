@@ -272,7 +272,7 @@
 	</channel-type>
 
 	<channel-type id="relaxDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>The duration of relax breathe program in minutes.</description>
 		<category>Time</category>
@@ -290,7 +290,7 @@
 	</channel-type>
 
 	<channel-type id="remainingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time from an activated program.</description>
 		<category>Time</category>
@@ -302,7 +302,7 @@
 	</channel-type>
 
 	<channel-type id="sunsetDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>The duration of sunset program in minutes.</description>
 		<category>Time</category>

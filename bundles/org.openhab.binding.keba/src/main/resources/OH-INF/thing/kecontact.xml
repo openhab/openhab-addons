@@ -176,7 +176,7 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>System Uptime</label>
 		<description>System uptime since the last reset of the wallbox</description>
 		<state pattern="%d %unit%" readOnly="true"></state>

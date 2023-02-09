@@ -193,7 +193,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vdrEventDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Event Duration</label>
 		<description>Duration of EPG Event in Minutes</description>
 		<state readOnly="true" pattern="%d %unit%"/>

@@ -80,7 +80,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="runTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Run Time</label>
 		<description>Run time this year</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

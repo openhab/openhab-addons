@@ -106,7 +106,7 @@
 	</channel-type>
 
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>The duration of the event</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -348,7 +348,7 @@
 	</channel-type>
 
 	<channel-type id="age">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
 		<state readOnly="true" pattern="%d %unit%"/>

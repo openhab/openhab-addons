@@ -75,7 +75,7 @@
 	</channel-type>
 
 	<channel-type id="overrideRemaining">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Override Remaining</label>
 		<description>How long until the override deactivates</description>
 		<category>Time</category>

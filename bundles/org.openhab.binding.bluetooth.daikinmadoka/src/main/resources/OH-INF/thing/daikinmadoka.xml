@@ -146,19 +146,19 @@
 	</channel-type>
 
 	<channel-type id="brc1h_indoorPowerHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Number of hours system has been powered up</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorOperationHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Number of hours system has been operating</label>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorFanHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Number of hours fan has been operating</label>
 		<state readOnly="true"/>
 	</channel-type>

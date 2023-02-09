@@ -129,7 +129,7 @@
 	</channel-type>
 
 	<channel-type id="runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime</label>
 		<description>How long a zone will run in seconds</description>
 		<category>Number</category>

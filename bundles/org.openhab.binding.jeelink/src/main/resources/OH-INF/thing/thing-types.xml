@@ -452,7 +452,7 @@
 
 	<!-- Appliance On Time Channel Type -->
 	<channel-type id="appliance-time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -460,7 +460,7 @@
 
 	<!-- Sensor On Time Channel Type -->
 	<channel-type id="sensor-time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.sensor-time.label</label>
 		<description>@text/channel-type.sensor-time.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>

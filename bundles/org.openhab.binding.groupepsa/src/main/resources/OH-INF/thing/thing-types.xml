@@ -514,7 +514,7 @@
 	</channel-type>
 
 	<channel-type id="chargingRemainingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging Time Remaining</label>
 		<description>Time remaining till charged</description>
 		<category>Time</category>
@@ -522,7 +522,7 @@
 	</channel-type>
 
 	<channel-type id="chargingNextDelayedTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time Till Next Charging</label>
 		<description>Time till the next charging starts</description>
 		<category>Time</category>

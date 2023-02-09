@@ -66,7 +66,7 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="responseTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Response Time</label>
 		<description>How many milliseconds it took to fetch the sensor readings from livedata.htm</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>

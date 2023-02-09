@@ -21,7 +21,7 @@
 	</channel-type>
 
 	<channel-type id="pejpType">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>PEJP</label>
 		<description>Prior notice to EJP start</description>
 		<category>Energy</category>

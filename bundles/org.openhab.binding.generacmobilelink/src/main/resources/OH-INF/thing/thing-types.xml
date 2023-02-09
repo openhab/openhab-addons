@@ -77,12 +77,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Number of Hours Run</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="exerciseHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Number of Hours Exercised</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

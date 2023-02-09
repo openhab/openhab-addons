@@ -51,7 +51,7 @@
 	</channel-type>
 
 	<channel-type id="duration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Previous State Duration</label>
 		<description>Duration of previous state before state change.</description>
 		<state pattern="%d %unit%" readOnly="true"/>

@@ -389,7 +389,7 @@
 	</channel-type>
 
 	<channel-type id="boostRemaining-channel">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
 		<state readOnly="true" pattern="%.0f min"/>

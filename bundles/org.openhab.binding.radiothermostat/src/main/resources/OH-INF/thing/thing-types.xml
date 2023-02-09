@@ -199,28 +199,28 @@
 	</channel-type>
 
 	<channel-type id="today_heat_runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Today's Heating Runtime</label>
 		<description>The Number of Minutes of Heating Run-time Today</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="today_cool_runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Today's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Today</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="yesterday_heat_runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Yesterday's Heating Runtime</label>
 		<description>The Number of Minutes of Heating Run-time Yesterday</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="yesterday_cool_runtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Yesterday's Cooling Runtime</label>
 		<description>The Number of Minutes of Cooling Run-time Yesterday</description>
 		<state readOnly="true" pattern="%d %unit%"/>

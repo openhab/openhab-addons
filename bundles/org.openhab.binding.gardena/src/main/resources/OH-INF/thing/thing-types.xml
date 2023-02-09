@@ -408,21 +408,21 @@
 	</channel-type>
 
 	<channel-type id="powerCommandDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
 		<state pattern="%d min" min="1" max="59" step="1"/>
 	</channel-type>
 
 	<channel-type id="valveCommandDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
 		<state pattern="%d min" min="1" max="600" step="1"/>
 	</channel-type>
 
 	<channel-type id="mowerCommandDuration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Command Duration</label>
 		<description>A duration in minutes for a command</description>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
@@ -590,7 +590,7 @@
 	</channel-type>
 
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Duration in minutes</description>
 		<state readOnly="true" pattern="%d min"/>
@@ -618,7 +618,7 @@
 	</channel-type>
 
 	<channel-type id="operatingHours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operating Hours</label>
 		<description>The operating hours</description>
 		<state readOnly="true" pattern="%d %unit%"/>

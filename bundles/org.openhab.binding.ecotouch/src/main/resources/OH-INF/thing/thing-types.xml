@@ -665,31 +665,31 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="operating_hours_compressor1" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hours Compressor 1</label>
 		<description>Operating Hours Compressor 1</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="operating_hours_compressor2" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hours Compressor 2</label>
 		<description>Operating Hours Compressor 2</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="operating_hours_circulation_pump" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hours Circulation Pump</label>
 		<description>Operating Hours Circulation Pump</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="operating_hours_source_pump" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hours Source Pump</label>
 		<description>Operating Hours Source Pump</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="operating_hours_solar" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hours Solar</label>
 		<description>Operating Hours Solar</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

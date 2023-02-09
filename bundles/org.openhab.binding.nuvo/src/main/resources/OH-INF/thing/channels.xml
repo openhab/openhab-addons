@@ -503,14 +503,14 @@
 	</channel-type>
 
 	<channel-type id="track_length">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Length</label>
 		<description>The Total Running Time of the Current Playing Track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="track_position">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Position</label>
 		<description>The Running Time Elapsed of the Current Playing Track</description>
 		<state readOnly="true"/>

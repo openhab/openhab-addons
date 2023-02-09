@@ -70,7 +70,7 @@
 	</channel-type>
 
 	<channel-type id="duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
@@ -78,7 +78,7 @@
 	</channel-type>
 
 	<channel-type id="elapsed">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Elapsed Time</label>
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
@@ -86,7 +86,7 @@
 	</channel-type>
 
 	<channel-type id="finish">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Finish Time</label>
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>

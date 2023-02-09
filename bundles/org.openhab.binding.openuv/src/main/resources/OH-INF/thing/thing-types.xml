@@ -107,7 +107,7 @@
 	</channel-type>
 
 	<channel-type id="SafeExposure" advanced="false">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Safe Exposure</label>
 		<description>Safe exposure duration for Fitzpatrick Skin Types.</description>
 		<category>time</category>

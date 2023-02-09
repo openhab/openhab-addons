@@ -303,7 +303,7 @@
 	</channel-type>
 
 	<channel-type id="countdown-type">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Countdown</label>
 		<description>Time until start of period.</description>
 		<category>Time</category>
@@ -311,7 +311,7 @@
 	</channel-type>
 
 	<channel-type id="remaining-type">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining</label>
 		<description>Time until end of period.</description>
 		<category>Time</category>

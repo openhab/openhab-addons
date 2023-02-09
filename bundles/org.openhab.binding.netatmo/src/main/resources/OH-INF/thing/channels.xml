@@ -141,7 +141,7 @@
 	</channel-type>
 
 	<channel-type id="setpoint-duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Setpoint Duration</label>
 		<description>Default duration of manual setpoint changes.</description>
 		<category>Time</category>

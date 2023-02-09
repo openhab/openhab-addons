@@ -236,22 +236,22 @@
 		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="main_brush_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Main Brush Time till Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="side_brush_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Side Brush Time till Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filter_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Filter Time till Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor_dirt_time" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Sensor Dirt Time till Cleaning</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -327,7 +327,7 @@
 
 	<!-- Clean History -->
 	<channel-type id="total_clean_time">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Total Cleaning Time</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -358,7 +358,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_duration">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cleaning Duration</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

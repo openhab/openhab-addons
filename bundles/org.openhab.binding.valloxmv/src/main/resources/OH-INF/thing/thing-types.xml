@@ -201,7 +201,7 @@
 	</channel-type>
 
 	<channel-type id="remainingfilterdays" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Next Filter Change</label>
 		<description>Days until filter has to be changed</description>
 		<state pattern="%d d" readOnly="true"/>

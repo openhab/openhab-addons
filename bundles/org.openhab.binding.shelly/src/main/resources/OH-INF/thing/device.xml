@@ -83,7 +83,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.shelly.uptime.label</label>
 		<description>@text/channel-type.shelly.uptime.description</description>
 		<category>Time</category>

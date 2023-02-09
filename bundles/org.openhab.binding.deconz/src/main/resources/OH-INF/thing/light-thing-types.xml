@@ -158,7 +158,7 @@
 	</channel-type>
 
 	<channel-type id="ontime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>On Time</label>
 		<description>Time that the light stays on before switched off automatically (0=forever)</description>
 	</channel-type>

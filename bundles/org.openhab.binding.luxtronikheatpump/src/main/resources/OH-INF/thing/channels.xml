@@ -293,7 +293,7 @@
 	</channel-type>
 
 	<channel-type id="runtimeTotalCompressor1">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Compressor 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -306,7 +306,7 @@
 	</channel-type>
 
 	<channel-type id="runtimeTotalCompressor2" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Compressor 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -319,126 +319,126 @@
 	</channel-type>
 
 	<channel-type id="runtimeTotalSecondHeatGenerator1" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time 2nd Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalSecondHeatGenerator2" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time 2nd Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalSecondHeatGenerator3" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time 2nd Heat Generator 3</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalHeatPump">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalHeating">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Heating</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalHotWater">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Hot Water</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeTotalCooling">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Cooling</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeCurrentHeatPump" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime Heat Pump</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeCurrentSecondHeatGenerator1" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime 2nd Heat Generator 1</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeCurrentSecondHeatGenerator2" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime 2nd Heat Generator 2</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="mainsOnDelay" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Mains on Delay</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="switchingCycleLockOff" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Switching Cycle Lock Off</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="switchingCycleLockOn" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Switching Cycle Lock On</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="compressorIdleTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Compressor Idle Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatingControllerMoreTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Heating Controller More Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatingControllerLessTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Heating Controller Less Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runtimeCurrentThermalDisinfection" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime Thermal Disinfection</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timeHotWaterLock" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hot Water Lock</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1168,7 +1168,7 @@
 	</channel-type>
 
 	<channel-type id="menuStateTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Status Time</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1194,7 +1194,7 @@
 	</channel-type>
 
 	<channel-type id="bakeoutProgramTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Runtime Bakeout Program</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1302,7 +1302,7 @@
 	</channel-type>
 
 	<channel-type id="timeUntilDefrost" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time until Defrost</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1329,7 +1329,7 @@
 	</channel-type>
 
 	<channel-type id="runtimeTotalSwimmingPool" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Swimming Pool</label>
 		<category>Time</category>
 		<state readOnly="true"/>
@@ -1404,7 +1404,7 @@
 	</channel-type>
 
 	<channel-type id="timeLockSecondHotGasCompressor" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Lock 2nd Compressor Hot Gas</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1425,7 +1425,7 @@
 	</channel-type>
 
 	<channel-type id="runtimeTotalSolar" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time Solar</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -2093,14 +2093,14 @@
 	</channel-type>
 
 	<channel-type id="comfortCoolingATExcess">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>AT Excess</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>
 	</channel-type>
 
 	<channel-type id="comfortCoolingATUndercut">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>AT Undercut</label>
 		<category>Time</category>
 		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>

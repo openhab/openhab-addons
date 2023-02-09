@@ -57,7 +57,7 @@
 	</channel-type>
 
 	<channel-type id="timerTimePassed">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Timer Time Passed</label>
 		<description>Time that has passed since set by the Timer</description>
 		<state readOnly="true"/>
@@ -140,28 +140,28 @@
 	</channel-type>
 
 	<channel-type id="operationTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operation Time</label>
 		<description>Operation Time since the device was first started (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="discReplaceTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Hygiene Disc Replacement</label>
 		<description>Time until the Hygiene Disc should be replaced (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cleaningTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cleaning Time</label>
 		<description>Time until next cleaning (in hours)</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="serviceTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Service Time</label>
 		<description>Service time in minutes</description>
 		<state pattern="%d" readOnly="true"/>

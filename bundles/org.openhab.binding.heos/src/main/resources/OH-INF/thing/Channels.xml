@@ -47,14 +47,14 @@
 		<label>External Inputs</label>
 	</channel-type>
 	<channel-type id="currentPosition" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Position</label>
 		<description>The current track position</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Track Duration</label>
 		<description>The overall duration of the track</description>
 		<category>Time</category>

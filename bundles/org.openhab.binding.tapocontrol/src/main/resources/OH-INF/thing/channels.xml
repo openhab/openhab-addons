@@ -152,7 +152,7 @@
 	<!-- DEVICE-STATE CHANNEL TYPES -->
 	<!-- uptime -->
 	<channel-type id="ontime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>On-Time</label>
 		<description>Number of seconds since the device was powered on</description>
 		<category>Time</category>
@@ -190,7 +190,7 @@
 
 	<!-- today runtime -->
 	<channel-type id="todayRuntimeChannel">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Today Runtime</label>
 		<description>Today runtime (On-Time)</description>
 		<category>Time</category>

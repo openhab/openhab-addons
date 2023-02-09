@@ -431,7 +431,7 @@
 	</channel-type>
 
 	<channel-type id="WWNTimeToTarget">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time to Target</label>
 		<description>Time left to the target temperature approximately</description>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -459,7 +459,7 @@
 	</channel-type>
 
 	<channel-type id="WWNFanTimerDuration" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Fan Timer Duration</label>
 		<description>Length of time that the fan is set to run</description>
 		<state>

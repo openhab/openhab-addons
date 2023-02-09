@@ -211,7 +211,7 @@
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="eventLength">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Event Length</label>
 		<description>Length of the event in seconds</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>

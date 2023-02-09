@@ -196,7 +196,7 @@
 	</channel-type>
 
 	<channel-type id="boostTimer">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.shelly.boostTimer.label</label>
 		<description>@text/channel-type.shelly.boostTimer.description</description>
 		<category>Time</category>
@@ -529,7 +529,7 @@
 	</channel-type>
 
 	<channel-type id="sensorSleepTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.shelly.sensorSleepTime.label</label>
 		<description>@text/channel-type.shelly.sensorSleepTime.description</description>
 		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>

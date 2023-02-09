@@ -204,7 +204,7 @@
 		<description>MusicCast Status</description>
 	</channel-type>
 	<channel-type id="playTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Play Time</label>
 		<description>Play Time</description>
 	</channel-type>

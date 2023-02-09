@@ -112,7 +112,7 @@
 	</channel-type>
 
 	<channel-type id="chargingTimeLeft">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging Time Left</label>
 		<description>Charging time left.</description>
 		<category>Time</category>
@@ -194,7 +194,7 @@
 	</channel-type>
 
 	<channel-type id="chargingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging Time</label>
 		<description>Charging time since plug-in time.</description>
 		<category>Time</category>

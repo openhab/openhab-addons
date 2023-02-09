@@ -344,7 +344,7 @@
 	</channel-type>
 
 	<channel-type id="timerAutoOn" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.shelly.timerAutoOn.label</label>
 		<description>@text/channel-type.shelly.timerAutoOn.description</description>
 		<category>Time</category>
@@ -352,7 +352,7 @@
 	</channel-type>
 
 	<channel-type id="timerAutoOff" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>@text/channel-type.shelly.timerAutoOff.label</label>
 		<description>@text/channel-type.shelly.timerAutoOff.description</description>
 		<category>Time</category>

@@ -149,7 +149,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Charging Time Remaining</label>
 		<category>Time</category>
 		<state pattern="%d %unit%" readOnly="true"></state>

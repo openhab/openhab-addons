@@ -64,7 +64,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-worktime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Uptime</label>
 		<description>Uptime of the inverter</description>
 		<category>Time</category>
@@ -756,7 +756,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-operating-time-total">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Operating Time Total</label>
 		<description>Total operating time</description>
 		<category>Energy</category>
@@ -791,7 +791,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-loginterval">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Loginterval</label>
 		<description>Value for log interval</description>
 		<category>Energy</category>

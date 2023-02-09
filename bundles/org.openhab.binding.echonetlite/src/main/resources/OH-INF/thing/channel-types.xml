@@ -213,7 +213,7 @@
 	</channel-type>
 
 	<channel-type id="cumulativeOperatingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Cumulative Operating Time</label>
 		<description>Cumulative time the unit has been operating in seconds</description>
 		<category>Time</category>

@@ -235,7 +235,7 @@
 	</channel-type>
 
 	<channel-type id="mtime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Time Needed for Measurement</label>
 		<state readOnly="true" pattern="%d ms"></state>
 	</channel-type>
@@ -319,7 +319,7 @@
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Uptime</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>

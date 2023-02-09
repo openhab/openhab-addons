@@ -293,7 +293,7 @@
 	</channel-type>
 
 	<channel-type id="remainingTime">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Remaining Time</label>
 		<description>Remaining time</description>
 		<state readOnly="true" pattern="%.1f min"/>
@@ -333,7 +333,7 @@
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>System Uptime</label>
 		<description>System uptime (time after start)</description>
 		<state readOnly="true" pattern="%.1f min"/>

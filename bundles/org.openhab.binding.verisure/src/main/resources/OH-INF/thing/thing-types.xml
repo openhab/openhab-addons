@@ -729,14 +729,14 @@
 	</channel-type>
 
 	<channel-type id="durationLatestDetection">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration Last Detection</label>
 		<description>Duration last detection.</description>
 		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="durationLast24Hours">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Duration Last 24 Hours</label>
 		<description>Duration last 24 hours.</description>
 		<state readOnly="true" pattern="%d s"/>

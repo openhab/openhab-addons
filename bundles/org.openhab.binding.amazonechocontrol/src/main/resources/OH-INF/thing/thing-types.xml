@@ -473,13 +473,13 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Media Play Time</label>
 		<description>Media play time</description>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="mediaLength" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unit="s">Number</item-type>
 		<label>Media Length</label>
 		<description>Media length</description>
 		<state readOnly="true" pattern="%d %unit%"/>
