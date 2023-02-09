@@ -77,13 +77,13 @@ However, here is an example.
 
 wifiled.things:
 
-```
+```java
 Thing wifiled:wifiled:F0FE6B19CB2A [ ip="192.168.178.91", port=5577, pollingPeriod=3000, protocol="LD686", driver="CLASSIC", fadeDurationInMs=1000, fadeSteps=100 ]
 ```
 
 wifiled.items:
 
-```
+```java
 Switch MyWiFiLight_power "Power"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:power"}
 Dimmer MyWiFiLight_white "White"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:white"}
 Color  MyWiFiLight_color "Color"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:color"}
@@ -118,7 +118,7 @@ Switch LED_1_preset_23    "Jump - R/G/B"           <chart>        (LEDPresets1) 
 
 wifiled.sitemap
 
-```
+```perl
 sitemap wifiled label="LED Sitemap" 
 { 
 
@@ -160,7 +160,7 @@ sitemap wifiled label="LED Sitemap"
 
 led_program.map
 
-```
+```text
 -=Undefined
 NULL=Undefined
 48=Strobe
@@ -196,172 +196,172 @@ NULL=Undefined
 
 wifiled.rules
 
-```
+```java
 rule "Program - Strobe"
 when Item LED_1_preset_0 received command ON
 then
-	LED_1_program.sendCommand(48)
-	LED_1_preset_0.sendCommand(OFF)
+    LED_1_program.sendCommand(48)
+    LED_1_preset_0.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Custom 1"
 when Item LED_1_preset_1 received command ON
 then
-	LED_1_program.sendCommand(96)
-	LED_1_preset_1.sendCommand(OFF)
+    LED_1_program.sendCommand(96)
+    LED_1_preset_1.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Red"
 when Item LED_1_preset_2 received command ON
 then
-	LED_1_program.sendCommand(49)
-	LED_1_preset_2.sendCommand(OFF)
+    LED_1_program.sendCommand(49)
+    LED_1_preset_2.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Green"
 when Item LED_1_preset_3 received command ON
 then
-	LED_1_program.sendCommand(50)
-	LED_1_preset_3.sendCommand(OFF)
+    LED_1_program.sendCommand(50)
+    LED_1_preset_3.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Blue"
 when Item LED_1_preset_4 received command ON
 then
-	LED_1_program.sendCommand(51)
-	LED_1_preset_4.sendCommand(OFF)
+    LED_1_program.sendCommand(51)
+    LED_1_preset_4.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Cyan"
 when Item LED_1_preset_5 received command ON
 then
-	LED_1_program.sendCommand(53)
-	LED_1_preset_5.sendCommand(OFF)
+    LED_1_program.sendCommand(53)
+    LED_1_preset_5.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Purple"
 when Item LED_1_preset_6 received command ON
 then
-	LED_1_program.sendCommand(54)
-	LED_1_preset_6.sendCommand(OFF)
+    LED_1_program.sendCommand(54)
+    LED_1_preset_6.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Yellow"
 when Item LED_1_preset_7 received command ON
 then
-	LED_1_program.sendCommand(52)
-	LED_1_preset_7.sendCommand(OFF)
+    LED_1_program.sendCommand(52)
+    LED_1_preset_7.sendCommand(OFF)
 end
 
 rule "Program - Strobe - White"
 when Item LED_1_preset_8 received command ON
 then
-	LED_1_program.sendCommand(55)
-	LED_1_preset_8.sendCommand(OFF)
+    LED_1_program.sendCommand(55)
+    LED_1_preset_8.sendCommand(OFF)
 end
 
 rule "Program - Strobe - R/G/B"
 when Item LED_1_preset_9 received command ON
 then
-	LED_1_program.sendCommand(57)
-	LED_1_preset_9.sendCommand(OFF)
+    LED_1_program.sendCommand(57)
+    LED_1_preset_9.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Red/Green"
 when Item LED_1_preset_10 received command ON
 then
-	LED_1_program.sendCommand(45)
-	LED_1_preset_10.sendCommand(OFF)
+    LED_1_program.sendCommand(45)
+    LED_1_preset_10.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Red/Blue"
 when Item LED_1_preset_11 received command ON
 then
-	LED_1_program.sendCommand(46)
-	LED_1_preset_11.sendCommand(OFF)
+    LED_1_program.sendCommand(46)
+    LED_1_preset_11.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Blue/Green"
 when Item LED_1_preset_12 received command ON
 then
-	LED_1_program.sendCommand(47)
-	LED_1_preset_12.sendCommand(OFF)
+    LED_1_program.sendCommand(47)
+    LED_1_preset_12.sendCommand(OFF)
 end
 
 rule "Program - Fade"
 when Item LED_1_preset_13 received command ON
 then
-	LED_1_program.sendCommand(37)
-	LED_1_preset_13.sendCommand(OFF)
+    LED_1_program.sendCommand(37)
+    LED_1_preset_13.sendCommand(OFF)
 end
 
 rule "Program - Fade - White"
 when Item LED_1_preset_14 received command ON
 then
-	LED_1_program.sendCommand(44)
-	LED_1_preset_14.sendCommand(OFF)
+    LED_1_program.sendCommand(44)
+    LED_1_preset_14.sendCommand(OFF)
 end
 
 rule "Program - Fade - Green"
 when Item LED_1_preset_15 received command ON
 then
-	LED_1_program.sendCommand(39)
-	LED_1_preset_15.sendCommand(OFF)
+    LED_1_program.sendCommand(39)
+    LED_1_preset_15.sendCommand(OFF)
 end
 
 rule "Program - Fade - DarkBlue"
 when Item LED_1_preset_16 received command ON
 then
-	LED_1_program.sendCommand(40)
-	LED_1_preset_16.sendCommand(OFF)
+    LED_1_program.sendCommand(40)
+    LED_1_preset_16.sendCommand(OFF)
 end
 
 rule "Program - Fade - Yellow"
 when Item LED_1_preset_17 received command ON
 then
-	LED_1_program.sendCommand(41)
-	LED_1_preset_17.sendCommand(OFF)
+    LED_1_program.sendCommand(41)
+    LED_1_preset_17.sendCommand(OFF)
 end
 
 rule "Program - Fade - Red"
 when Item LED_1_preset_18 received command ON
 then
-	LED_1_program.sendCommand(38)
-	LED_1_preset_18.sendCommand(OFF)
+    LED_1_program.sendCommand(38)
+    LED_1_preset_18.sendCommand(OFF)
 end
 
 rule "Program - Fade - LightBlue"
 when Item LED_1_preset_19 received command ON
 then
-	LED_1_program.sendCommand(42)
-	LED_1_preset_19.sendCommand(OFF)
+    LED_1_program.sendCommand(42)
+    LED_1_preset_19.sendCommand(OFF)
 end
 
 rule "Program - Fade - Purple"
 when Item LED_1_preset_20 received command ON
 then
-	LED_1_program.sendCommand(43)
-	LED_1_preset_20.sendCommand(OFF)
+    LED_1_program.sendCommand(43)
+    LED_1_preset_20.sendCommand(OFF)
 end
 
 rule "Program - Fade - R/G/B"
 when Item LED_1_preset_21 received command ON
 then
-	LED_1_program.sendCommand(45)
-	LED_1_preset_21.sendCommand(OFF)
+    LED_1_program.sendCommand(45)
+    LED_1_preset_21.sendCommand(OFF)
 end
 
 rule "Program - Jump"
 when Item LED_1_preset_22 received command ON
 then
-	LED_1_program.sendCommand(56)
-	LED_1_preset_22.sendCommand(OFF)
+    LED_1_program.sendCommand(56)
+    LED_1_preset_22.sendCommand(OFF)
 end
 
 rule "Program - Jump - R/G/B"
 when Item LED_1_preset_23 received command ON
 then
-	LED_1_program.sendCommand(99)
-	LED_1_preset_23.sendCommand(OFF)
+    LED_1_program.sendCommand(99)
+    LED_1_preset_23.sendCommand(OFF)
 end
 ```
