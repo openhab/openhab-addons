@@ -404,7 +404,7 @@
 	</channel-type>
 
 	<channel-type id="no3-ion" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>NO3 ion</label>
 		<description>NO3 ion (nitrate, not adjusted for ammonium ion) µG/m3.</description>
 		<category>Pollution</category>
@@ -415,7 +415,7 @@
 	</channel-type>
 
 	<channel-type id="so4-ion" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>SO4 ion</label>
 		<description>SO4 ion (sulfate, not adjusted for ammonium ion) µG/m3.</description>
 		<category>Pollution</category>
@@ -470,7 +470,7 @@
 	</channel-type>
 
 	<channel-type id="elemental-carbon" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Elemental Carbon</label>
 		<description>Elemental Carbon, PM2.5 µG/m3.</description>
 		<category>Pollution</category>
@@ -481,7 +481,7 @@
 	</channel-type>
 
 	<channel-type id="organic-carbon" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Organic Carbon</label>
 		<description>Organic Carbon, not adjusted for oxygen and hydrogen, PM2.5 µG/m3.</description>
 		<category>Pollution</category>
@@ -492,7 +492,7 @@
 	</channel-type>
 
 	<channel-type id="black-carbon" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Black Carbon</label>
 		<description>Black Carbon at 880 nm, µG/m3.</description>
 		<category>Pollution</category>
@@ -503,7 +503,7 @@
 	</channel-type>
 
 	<channel-type id="aethalometer" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Second Channel of Aethalometer</label>
 		<description>second channel of Aethalometer at 370 nm, µG/m3.</description>
 		<category>Pollution</category>
@@ -514,7 +514,7 @@
 	</channel-type>
 
 	<channel-type id="pm2_5-mass" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM2.5 Mass</label>
 		<description>PM2.5 mass, µG/m3.</description>
 		<category>Pollution</category>
@@ -525,7 +525,7 @@
 	</channel-type>
 
 	<channel-type id="pm10-mass" advanced="true">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM10 Mass</label>
 		<description>PM10 mass, µG/m3.</description>
 		<category>Pollution</category>

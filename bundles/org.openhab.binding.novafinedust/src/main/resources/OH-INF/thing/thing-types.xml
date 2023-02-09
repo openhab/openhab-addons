@@ -47,14 +47,14 @@
 	</thing-type>
 
 	<channel-type id="pm25-type">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM 2.5</label>
 		<description>The PM 2.5 value</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="pm10-type">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM 10</label>
 		<description>The PM 10 value</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>

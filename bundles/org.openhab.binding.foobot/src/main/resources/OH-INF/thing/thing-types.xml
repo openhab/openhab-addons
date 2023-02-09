@@ -69,7 +69,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter</label>
 		<description>Particulate Matter Level</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

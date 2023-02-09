@@ -86,21 +86,21 @@
 	</channel-type>
 
 	<channel-type id="Pm_25">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, µg/m&#179;</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="Pm_10">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM10</label>
 		<description>PM10 level, µg/m&#179;(Only in Pro version)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="Pm_01">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM0.1</label>
 		<description>PM0.1 level, µg/m&#179;(Only in Pro version)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

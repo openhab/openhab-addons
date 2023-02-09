@@ -122,7 +122,7 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f µg/m³">
@@ -142,7 +142,7 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter10">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f µg/m³">

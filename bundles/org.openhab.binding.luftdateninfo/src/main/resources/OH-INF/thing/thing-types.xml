@@ -74,12 +74,12 @@
 	</thing-type>
 
 	<channel-type id="pm25-channel">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter category 2.5</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pm100-channel">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter category 10.0</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

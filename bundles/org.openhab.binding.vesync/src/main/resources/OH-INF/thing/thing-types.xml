@@ -207,7 +207,7 @@
 	</channel-type>
 
 	<channel-type id="airQualityPM25">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

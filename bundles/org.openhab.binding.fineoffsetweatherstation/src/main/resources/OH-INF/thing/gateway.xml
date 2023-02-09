@@ -119,7 +119,7 @@
 	</channel-type>
 
 	<channel-type id="pm25">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM2.5 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
@@ -130,7 +130,7 @@
 	</channel-type>
 
 	<channel-type id="pm10">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>PM10 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>

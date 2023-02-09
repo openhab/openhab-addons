@@ -89,7 +89,7 @@
 	</channel-type>
 	<!-- Absolute Humidity Channel -->
 	<channel-type id="abshumidity">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Abs. Humidity</label>
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>

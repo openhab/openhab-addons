@@ -94,7 +94,7 @@
 	</channel-type>
 
 	<channel-type id="tvoc">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>TVOC</label>
 		<description>Total Volatile Organic Compounds</description>
 		<state readOnly="true" pattern="%d %unit%"/>

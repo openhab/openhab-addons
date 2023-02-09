@@ -117,7 +117,7 @@
 	</channel-type>
 
 	<channel-type id="density-value">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Measure</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

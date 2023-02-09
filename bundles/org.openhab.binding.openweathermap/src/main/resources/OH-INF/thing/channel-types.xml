@@ -667,35 +667,35 @@
 	</channel-type>
 
 	<channel-type id="particulate-matter-2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-particulate-matter-2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Particulate Matter - PM2.5</label>
 		<description>Forecasted density of particles less than 2.5 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-particulate-matter-10">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="particulate-matter-10">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Particulate Matter - PM10</label>
 		<description>Forecasted density of particles less than 10 µm in diameter.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="carbon-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Current concentration of carbon monoxide.</description>
 		<tags>
@@ -706,77 +706,77 @@
 	</channel-type>
 
 	<channel-type id="forecasted-carbon-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Carbon Monoxide</label>
 		<description>Forecasted concentration of carbon monoxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Nitrogen Monoxide</label>
 		<description>Current concentration of nitrogen monoxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-nitrogen-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Nitrogen Monoxide</label>
 		<description>Forecasted concentration of nitrogen monoxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Nitrogen Dioxide</label>
 		<description>Current concentration of nitrogen dioxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-nitrogen-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Nitrogen Dioxide</label>
 		<description>Forecasted concentration of nitrogen dioxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ozone">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Ozone</label>
 		<description>Current concentration of ozone.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-ozone">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Ozone</label>
 		<description>Forecasted concentration of ozone.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="sulphur-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Sulphur Dioxide</label>
 		<description>Current concentration of sulphur dioxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-sulphur-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Sulphur Dioxide</label>
 		<description>Forecasted concentration of sulphur dioxide.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ammonia">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Ammonia</label>
 		<description>Current concentration of ammonia.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-ammonia">
-		<item-type>Number:Density</item-type>
+		<item-type unit="kg/m³">Number</item-type>
 		<label>Forecasted Ammonia</label>
 		<description>Forecasted concentration of ammonia.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
