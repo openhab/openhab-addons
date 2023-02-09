@@ -251,7 +251,7 @@
 	</channel-type>
 
 	<channel-type id="acceleration">
-		<item-type>Number:Acceleration</item-type>
+		<item-type unit="m/s²">Number</item-type>
 		<label>Acceleration</label>
 		<description>Current acceleration</description>
 		<state pattern="%.1f %unit%"/>

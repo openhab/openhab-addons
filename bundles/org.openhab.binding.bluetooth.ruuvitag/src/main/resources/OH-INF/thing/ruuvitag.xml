@@ -39,17 +39,17 @@
 	</thing-type>
 
 	<channel-type id="ruuvitag_accelerationx">
-		<item-type>Number:Acceleration</item-type>
+		<item-type unit="m/s²">Number</item-type>
 		<label>Acceleration X</label>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_accelerationy">
-		<item-type>Number:Acceleration</item-type>
+		<item-type unit="m/s²">Number</item-type>
 		<label>Acceleration Y</label>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_accelerationz">
-		<item-type>Number:Acceleration</item-type>
+		<item-type unit="m/s²">Number</item-type>
 		<label>Acceleration Z</label>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
