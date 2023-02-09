@@ -565,7 +565,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_load_recommendation" advanced="true">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Load Recommendation</label>
 		<description>This channel indicates the maximum laundry load recommended for a program of the home appliance.</description>
 		<state readOnly="true" min="0" pattern="%.1f %unit%"/>

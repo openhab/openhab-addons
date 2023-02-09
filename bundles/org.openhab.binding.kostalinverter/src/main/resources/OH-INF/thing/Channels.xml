@@ -305,28 +305,28 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-day">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>CO2 Savings Day</label>
 		<description>Savings in Co2 emissions today</description>
 		<category>CarbonDioxide</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-month">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>CO2 Savings Month</label>
 		<description>Savings in Co2 emissions this month</description>
 		<category>CarbonDioxide</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-total">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>CO2 Savings Total</label>
 		<description>Savings in Co2 emissions overall</description>
 		<category>CarbonDioxide</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-year">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>CO2 Savings Year</label>
 		<description>Savings in Co2 emissions this year</description>
 		<category>CarbonDioxide</category>

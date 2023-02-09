@@ -87,7 +87,7 @@
 	</channel-type>
 
 	<channel-type id="maintenanceIn">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Next Maintenance</label>
 		<description>Provides a pellet forecast when the stove need to be maintained next in kilogram as number:mass</description>
 		<state readOnly="true"/>
@@ -101,7 +101,7 @@
 	</channel-type>
 
 	<channel-type id="consumption">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Total Consumption Stove</label>
 		<description>Provides the information about the total consumption of pellets of the stove as number:mass</description>
 		<state readOnly="true"/>

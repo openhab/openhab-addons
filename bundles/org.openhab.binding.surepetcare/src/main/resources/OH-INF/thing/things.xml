@@ -484,7 +484,7 @@
 	</channel-type>
 
 	<channel-type id="weightType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Pet Weight</label>
 		<description>The pet weight</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -505,21 +505,21 @@
 	</channel-type>
 
 	<channel-type id="feederLastChangeType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Pet Feeding Last Change</label>
 		<description>The pet feeding last change</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feederLastChangeLeftType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Pet Feeding Last Change Left</label>
 		<description>The pet feeding last change left</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feederLastChangeRightType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Pet Feeding Last Change Right</label>
 		<description>The pet feeding last change right</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -575,7 +575,7 @@
 	</channel-type>
 
 	<channel-type id="bowlsTargetType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Bowls Target (Big Bowl)</label>
 		<description>The weight target of the bowl if the big bowl is used.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -595,7 +595,7 @@
 	</channel-type>
 
 	<channel-type id="bowlsTargetLeftType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Bowls Target Small Bowl (Left)</label>
 		<description>The weight target of the left bowl if the small bowls are used.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -615,7 +615,7 @@
 	</channel-type>
 
 	<channel-type id="bowlsTargetRightType">
-		<item-type>Number:Mass</item-type>
+		<item-type unit="kg">Number</item-type>
 		<label>Bowls Target Small Bowl (Right)</label>
 		<description>The weight target of the right bowl if the small bowls are used.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
