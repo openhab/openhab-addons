@@ -302,7 +302,7 @@
 	</channel-type>
 
 	<channel-type id="solarradiation">
-		<item-type>Number:Intensity</item-type>
+		<item-type unit="W/m²">Number</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar radiation in W/m2.</description>
 		<category>Sun</category>

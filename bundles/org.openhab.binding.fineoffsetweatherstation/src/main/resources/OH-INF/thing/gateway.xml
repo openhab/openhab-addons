@@ -86,7 +86,7 @@
 	</channel-type>
 
 	<channel-type id="uv-radiation">
-		<item-type>Number:Intensity</item-type>
+		<item-type unit="W/m²">Number</item-type>
 		<label>UV-Irradiation</label>
 		<category>Sun</category>
 		<tags>

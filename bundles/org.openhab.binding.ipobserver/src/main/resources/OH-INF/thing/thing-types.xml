@@ -130,7 +130,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="solarRadiation">
-		<item-type>Number:Intensity</item-type>
+		<item-type unit="W/m²">Number</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar Radiation</description>
 		<category>Sun</category>

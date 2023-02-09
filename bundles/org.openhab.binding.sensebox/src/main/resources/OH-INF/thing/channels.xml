@@ -48,7 +48,7 @@
 		"sensorType": "VEML6070",
 	-->
 	<channel-type id="uvIntensity">
-		<item-type>Number:Intensity</item-type>
+		<item-type unit="W/m²">Number</item-type>
 		<label>UV Intensity</label>
 		<description>Current UV intensity.</description>
 		<state readOnly="true" pattern="%.2f µW/cm²"></state>
