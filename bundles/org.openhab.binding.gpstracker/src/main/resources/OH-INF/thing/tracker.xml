@@ -21,14 +21,14 @@
 
 	<!-- Channel Types -->
 	<channel-type id="regionDistance">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Distance</label>
 		<description>Distance from region</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:gpstracker:distance"/>
 	</channel-type>
 	<channel-type id="gpsAccuracy">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Accuracy</label>
 		<description>GPS accuracy</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

@@ -411,7 +411,7 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>@text/channel-type.rain.label</label>
 		<description>@text/channel-type.rain.description</description>
 		<category>Rain</category>

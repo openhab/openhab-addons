@@ -155,13 +155,13 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Estimated Range</label>
 		<description>Estimated range of the car.</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Odometer</label>
 		<description>Total distance travelled</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

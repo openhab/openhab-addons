@@ -1065,7 +1065,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="rainfall">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rainfall</label>
 		<description>Currently measured quantity of rain</description>
 		<category>Rainfall</category>

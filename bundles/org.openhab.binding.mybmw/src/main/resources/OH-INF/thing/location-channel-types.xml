@@ -17,7 +17,7 @@
 		<label>Address</label>
 	</channel-type>
 	<channel-type id="home-distance-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Distance from Home</label>
 		<description>Computed distance between vehicle and home location</description>
 		<state pattern="%d %unit%" readOnly="true"/>

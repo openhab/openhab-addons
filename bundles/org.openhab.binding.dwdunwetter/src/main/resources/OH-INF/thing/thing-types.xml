@@ -119,13 +119,13 @@ This happens after all other channels are populated.]]></description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="altitude">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Height (from)</label>
 		<description>Lower Height above sea level for which the warning is valid.</description>
 		<state readOnly="true" pattern="%.0f m"/>
 	</channel-type>
 	<channel-type id="ceiling">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Height (to)</label>
 		<description>Upper Height above sea level for which the warning is valid.</description>
 		<state readOnly="true" pattern="%.0f m"/>

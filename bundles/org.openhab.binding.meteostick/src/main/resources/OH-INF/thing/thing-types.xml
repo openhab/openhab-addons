@@ -173,7 +173,7 @@
 	</channel-type>
 
 	<channel-type id="rain-lasthour">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rainfall (previous Hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
@@ -182,7 +182,7 @@
 	</channel-type>
 
 	<channel-type id="rain-currenthour">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rainfall (60 Minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>

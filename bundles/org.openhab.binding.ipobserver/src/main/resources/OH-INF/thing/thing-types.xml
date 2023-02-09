@@ -195,7 +195,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainHourlyRate">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain Hourly Rate</label>
 		<description>How much rain will fall in an Hour if the rate continues</description>
 		<category>Rain</category>
@@ -206,28 +206,28 @@
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainToday">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain Today</label>
 		<description>Rain since Midnight</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain for Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForMonth" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain for Month</label>
 		<description>Rain since 12:00 on the 1st of this month</description>
 		<category>Rain</category>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForYear">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>

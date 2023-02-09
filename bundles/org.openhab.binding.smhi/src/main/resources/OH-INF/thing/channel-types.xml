@@ -29,7 +29,7 @@
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="vis" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Visibility</label>
 		<description>Horizontal visibility</description>
 		<state readOnly="true" pattern="%.1f km"/>
@@ -113,7 +113,7 @@
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 	<channel-type id="ptotal">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Total Precipitation</label>
 		<description>Total amount of precipitation during the day</description>
 		<state readOnly="true" pattern="%.1f mm"/>

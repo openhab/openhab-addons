@@ -89,14 +89,14 @@
 	</channel-type>
 
 	<channel-type id="rainrate">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="raintotal">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Total Rain</label>
 		<description>Total rain</description>
 		<state pattern="%.1f %unit%" readOnly="true">

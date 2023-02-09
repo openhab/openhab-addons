@@ -267,7 +267,7 @@
 	</channel-type>
 
 	<channel-type id="precipitation">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Precipitation</label>
 		<description>Prediction of total precipitation</description>
 		<category>Rain</category>
@@ -275,7 +275,7 @@
 	</channel-type>
 
 	<channel-type id="convectivePrecipitation">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Convective Precipitation</label>
 		<description>Prediction of convective precipitation (rainfall)</description>
 		<category>Rain</category>
@@ -310,7 +310,7 @@
 	</channel-type>
 
 	<channel-type id="snowFall">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Snowfall</label>
 		<description>Prediction of snowfall</description>
 		<category>Rain</category>

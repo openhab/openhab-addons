@@ -17,7 +17,7 @@
 		<state pattern="%1$tb %1$tY"/>
 	</channel-type>
 	<channel-type id="service-mileage-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Mileage till Service</label>
 		<state pattern="%d %unit%"/>
 	</channel-type>

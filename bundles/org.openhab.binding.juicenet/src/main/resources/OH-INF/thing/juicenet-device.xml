@@ -272,7 +272,7 @@
 	</channel-type>
 
 	<channel-type id="carBatteryRange">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Mileage Range</label>
 		<description>Car distance range.</description>
 		<state readOnly="true" pattern="%d %unit%"/>

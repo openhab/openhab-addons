@@ -200,7 +200,7 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Hourly Rain</label>
 		<description>Rain over the past hour.</description>
 		<category>Rain</category>
@@ -212,7 +212,7 @@
 	</channel-type>
 
 	<channel-type id="rain-daily">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Daily Rain</label>
 		<description>Rain since the start of the day.</description>
 		<category>Rain</category>
@@ -224,7 +224,7 @@
 	</channel-type>
 
 	<channel-type id="rain-weekly" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Weekly Rain</label>
 		<description>Rain since the start of this week.</description>
 		<category>Rain</category>
@@ -236,7 +236,7 @@
 	</channel-type>
 
 	<channel-type id="rain-monthly" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Monthly Rain</label>
 		<description>Rain since the start if this month.</description>
 		<category>Rain</category>
@@ -248,7 +248,7 @@
 	</channel-type>
 
 	<channel-type id="rain-yearly" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Yearly Rain</label>
 		<description>Rain since the start of this year.</description>
 		<category>Rain</category>
@@ -326,7 +326,7 @@
 	</channel-type>
 
 	<channel-type id="visibility" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Visibility</label>
 		<description>Visibility.</description>
 		<category>Sun_Clouds</category>

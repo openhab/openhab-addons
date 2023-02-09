@@ -23,7 +23,7 @@
 		<state pattern="%1$tb %1$tY" readOnly="true"/>
 	</channel-type>
 	<channel-type id="next-service-mileage-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Mileage Till Next Service</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

@@ -265,7 +265,7 @@
 	</channel-type>
 
 	<channel-type id="mileage">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Mileage</label>
 		<description>Total travelled distance</description>
 		<state pattern="%.1f %unit%"/>
@@ -428,7 +428,7 @@
 	</channel-type>
 
 	<channel-type id="autonomy">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Fuel Autonomy</label>
 		<description>Remaining distance</description>
 		<state pattern="%.0f %unit%"/>

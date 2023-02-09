@@ -499,7 +499,7 @@
 	</channel-type>
 
 	<channel-type id="precipitation">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation volume of the related timespan.</description>
 		<category>Rain</category>
@@ -583,7 +583,7 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain</label>
 		<description>Rain volume of the last hour.</description>
 		<category>Rain</category>
@@ -595,7 +595,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-rain">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Forecasted Rain</label>
 		<description>Forecasted rain volume.</description>
 		<category>Rain</category>
@@ -603,7 +603,7 @@
 	</channel-type>
 
 	<channel-type id="snow">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Snow</label>
 		<description>Snow volume of the last hour.</description>
 		<category>Snow</category>
@@ -611,7 +611,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-snow">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Forecasted Snow</label>
 		<description>Forecasted snow volume.</description>
 		<category>Snow</category>
@@ -783,7 +783,7 @@
 	</channel-type>
 
 	<channel-type id="visibility">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Visibility</label>
 		<description>Current visibility.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

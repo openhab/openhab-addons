@@ -390,7 +390,7 @@
 	</channel-type>
 
 	<channel-type id="visibility" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Visibility</label>
 		<description>Visibility</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -413,7 +413,7 @@
 	</channel-type>
 
 	<channel-type id="rainDay">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
@@ -421,7 +421,7 @@
 	</channel-type>
 
 	<channel-type id="rainHour">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain Fall Hour</label>
 		<description>Rain fall during the last hour</description>
 		<category>Rain</category>
@@ -429,7 +429,7 @@
 	</channel-type>
 
 	<channel-type id="snow">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Snow Fall</label>
 		<description>Snow fall</description>
 		<category>Rain</category>

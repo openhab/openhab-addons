@@ -139,7 +139,7 @@
 	</channel-type>
 
 	<channel-type id="typps" advanced="false">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Average Size of Fine Dust</label>
 		<state readOnly="true" pattern="%.2f μm"></state>
 	</channel-type>

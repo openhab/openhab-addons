@@ -348,20 +348,20 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precipitation-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation in one hour</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="snow-depth-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Snow depth</label>
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="visibility-channel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Visibility</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

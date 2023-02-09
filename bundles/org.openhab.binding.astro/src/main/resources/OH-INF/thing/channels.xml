@@ -454,7 +454,7 @@
 	</channel-type>
 
 	<channel-type id="distance">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Distance</label>
 		<description>The distance of the object</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

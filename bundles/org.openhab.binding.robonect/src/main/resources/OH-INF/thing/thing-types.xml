@@ -128,7 +128,7 @@
 	</channel-type>
 
 	<channel-type id="distanceType">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Status Distance</label>
 		<description>The distance the mower is away from the charging station when searching the remote start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>

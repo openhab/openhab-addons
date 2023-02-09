@@ -125,7 +125,7 @@
 	</channel-type>
 
 	<channel-type id="rain-quantity">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain Quantity</label>
 		<description>Quantity of water over the period.</description>
 		<category>Rain</category>

@@ -34,7 +34,7 @@
 	</channel-type>
 
 	<channel-type id="SensorLevel">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Sensor Level</label>
 		<description>The distance between the sensor and the water surface</description>
 		<state readOnly="true" pattern="%d %unit%"/>

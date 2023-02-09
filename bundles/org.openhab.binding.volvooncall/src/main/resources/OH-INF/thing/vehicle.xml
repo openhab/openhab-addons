@@ -248,7 +248,7 @@
 	</channel-type>
 
 	<channel-type id="odometer">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

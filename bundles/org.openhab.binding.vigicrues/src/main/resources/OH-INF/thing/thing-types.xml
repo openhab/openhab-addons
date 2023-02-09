@@ -61,7 +61,7 @@
 	</channel-type>
 
 	<channel-type id="height">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Height</label>
 		<description>Water level in the river</description>
 		<category>flowpipe</category>

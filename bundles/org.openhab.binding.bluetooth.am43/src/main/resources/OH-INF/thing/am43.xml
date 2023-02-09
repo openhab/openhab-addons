@@ -113,14 +113,14 @@
 	</channel-type>
 
 	<channel-type id="am43_length" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Length</label>
 		<description>The distance the blinds travel from full open and close (not really important)</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="am43_diameter" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Diameter</label>
 		<description>The diameter of the pulley of this motor (not really important)</description>
 		<state readOnly="true" pattern="%d %unit%"/>

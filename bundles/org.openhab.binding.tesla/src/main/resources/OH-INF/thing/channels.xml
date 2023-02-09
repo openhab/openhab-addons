@@ -46,7 +46,7 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryrange" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Battery Range</label>
 		<description>Range of the battery</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -141,7 +141,7 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargeidealdistanceadded" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Ideal Charge Distance Added</label>
 		<description>Ideal range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -153,7 +153,7 @@
 		<state pattern="%.1f A" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerateddistanceadded" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rated Charge Distance Added</label>
 		<description>Rated range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -268,7 +268,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedbatteryrange" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Estimated Battery Range</label>
 		<description>Estimated battery range</description>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
@@ -330,7 +330,7 @@
 		<description>Indicates if the Home Link is nearby</description>
 	</channel-type>
 	<channel-type id="idealbatteryrange" advanced="true">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Ideal Battery Range</label>
 		<description>Indicates the Batter Range</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
@@ -438,7 +438,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>

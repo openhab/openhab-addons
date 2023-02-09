@@ -44,7 +44,7 @@
 	</thing-type>
 
 	<channel-type id="opengarage-distance">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Distance</label>
 		<description>Distance Reading from the OG unit</description>
 		<state readOnly="true" pattern="%d %unit%"/>

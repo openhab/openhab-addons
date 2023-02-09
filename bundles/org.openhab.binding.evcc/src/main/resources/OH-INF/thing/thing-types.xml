@@ -292,7 +292,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleOdometer">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Vehicle odometer</label>
 		<description>Total distance travelled by EV</description>
 		<category></category>
@@ -311,7 +311,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="vehicleRange">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Vehicle range</label>
 		<description>Battery range for EV</description>
 		<category></category>

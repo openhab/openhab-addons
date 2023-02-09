@@ -31,7 +31,7 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Rain</label>
 		<category>Rain</category>
 		<tags>
@@ -176,7 +176,7 @@
 	</channel-type>
 
 	<channel-type id="lightning-distance">
-		<item-type>Number:Length</item-type>
+		<item-type unit="m">Number</item-type>
 		<label>Lightning Distance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
