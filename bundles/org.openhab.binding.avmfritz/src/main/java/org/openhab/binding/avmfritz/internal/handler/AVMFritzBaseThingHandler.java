@@ -123,7 +123,8 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
- * @author Christoph Sommer, Tobias Lange - Added support for color temperature
+ * @author Christoph Sommer - Added support for color temperature
+ * @author Tobias Lange - Fixed Thing value changes and on/off behavior of Light Blub
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -203,7 +204,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (deviceModel.isHANFUNBlinds()) {
                     updateLevelControl(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isColorLight()) {
-                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
+                    updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
+                            deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
@@ -260,11 +262,16 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     private void updateColorLight(@Nullable ColorControlModel colorControlModel,
-            @Nullable LevelControlModel levelControlModel) {
+            @Nullable LevelControlModel levelControlModel, @Nullable SimpleOnOffModel simpleOnOff) {
         if (colorControlModel != null && levelControlModel != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
-            PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
+            PercentType brightness;
+            if (simpleOnOff.state) {
+                brightness = new PercentType(levelControlModel.getLevelPercentage());
+            } else {
+                brightness = PercentType.ZERO;
+            }
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
 
             if (colorControlModel.currentMode == 4) {
@@ -521,7 +528,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     }
                 }
                 if (brightness != null) {
-                    fritzBox.setLevelPercentage(ain, brightness);
+                    if (brightness.equals(BigDecimal.ZERO)) {
+                        fritzBox.setSwitch(ain, false);
+                    } else {
+                        fritzBox.setSwitch(ain, true);
+                        fritzBox.setLevelPercentage(ain, brightness);
+                    }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
