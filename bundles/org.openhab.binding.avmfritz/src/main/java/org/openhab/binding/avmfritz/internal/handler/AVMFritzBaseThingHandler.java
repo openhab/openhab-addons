@@ -268,25 +268,25 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
 
             if (colorControlModel.currentMode == 4) {
-                int temp = colorControlModel.temperature;
+                int temperature = colorControlModel.temperature;
                 int pct = 0;
-                if (temp <= 2700) {
+                if (temperature <= 2700) {
                     pct = 0;
-                } else if ((temp > 2700) && (temp <= 3000)) {
+                } else if ((temperature > 2700) && (temperature <= 3000)) {
                     pct = 13;
-                } else if ((temp > 3000) && (temp <= 3400)) {
+                } else if ((temperature > 3000) && (temperature <= 3400)) {
                     pct = 25;
-                } else if ((temp > 3400) && (temp <= 3800)) {
+                } else if ((temperature > 3400) && (temperature <= 3800)) {
                     pct = 38;
-                } else if ((temp > 3800) && (temp <= 4200)) {
+                } else if ((temperature > 3800) && (temperature <= 4200)) {
                     pct = 50;
-                } else if ((temp > 4200) && (temp <= 4700)) {
+                } else if ((temperature > 4200) && (temperature <= 4700)) {
                     pct = 63;
-                } else if ((temp > 4700) && (temp <= 5300)) {
+                } else if ((temperature > 4700) && (temperature <= 5300)) {
                     pct = 75;
-                } else if ((temp > 5300) && (temp <= 5900)) {
+                } else if ((temperature > 5300) && (temperature <= 5900)) {
                     pct = 88;
-                } else if (temp > 5900) { // 6500
+                } else if (temperature > 5900) { // 6500
                     pct = 100;
                 }
                 updateThingChannelState(CHANNEL_COLORTEMPERATURE, new PercentType(pct));
