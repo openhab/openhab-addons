@@ -345,19 +345,16 @@ public class ClementineRemoteHandler extends BaseThingHandler {
             logger.debug("handleMessages() failed: {}", e.getMessage());
         }
         disconnect();
-
-        if (enabled) {
-            logger.debug("Connection broken. Reconnectiong in 15 secs…");
-            scheduler.schedule(this::loopedConnection, 15, TimeUnit.SECONDS);
+        if (!enabled) {
+            return;
         }
+        logger.debug("Connection broken. Reconnectiong in 15 secs…");
+        scheduler.schedule(this::loopedConnection, 15, TimeUnit.SECONDS);
     }
 
     private void sendConnectMessage() throws IOException {
         var req = builder.getRequestConnectBuilder();
-        Optional.ofNullable(config)
-                .map(cfg -> cfg.authCode)
-                .filter(code -> code != 0)
-                .ifPresent(req::setAuthCode);
+        Optional.ofNullable(config).map(cfg -> cfg.authCode).filter(code -> code != 0).ifPresent(req::setAuthCode);
         sendMessageOrThrow(builder.setRequestConnect(req.build()).build());
     }
 
