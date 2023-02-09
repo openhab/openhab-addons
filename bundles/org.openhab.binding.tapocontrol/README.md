@@ -31,7 +31,7 @@ To satisfy this requirement while keeping the device isolated, your router shoul
 
 ## Discovery
 
-Discovery is done by connecting to the Tapo-Cloud Service. 
+Discovery is done by connecting to the Tapo-Cloud Service.
 All devices stored in your cloud account will be detected even if they are not in your network.
 You need to know the IP-Adress of your device. This must be set manually in the thing configuration
 
@@ -58,7 +58,6 @@ The thing has the following configuration parameters:
 | ipAddress          | IP Address of the device.                                            |
 | pollingInterval    | Refresh interval in seconds. Optional. The default is 30 seconds     |
 
-
 ## Channels
 
 All devices support some of the following channels:
@@ -75,18 +74,16 @@ All devices support some of the following channels:
 |           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110, P115                                                       |
 |           | todayRuntime     | Number:Time            | seconds output was on today  | P110, P115                                                       |
 
-
 ## Channel Refresh
 
 When the thing receives a `RefreshType` command the thing will send a new refreshRequest over http.
 To minimize network traffic the default refresh-rate is set to 30 seconds. This can be reduced down to 10 seconds in advanced settings of the device. If any command was sent to a channel, it will do an immediately refresh of the whole device.
 
-
 ## Full Example
 
 ### tapocontrol.things:
 
-```
+```java
 tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
 tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150", pollingInterval=30 ]
 tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", pollingInterval=30 ]
@@ -100,6 +97,6 @@ Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ 
 
 ### tapocontrol.items:
 
-```
+```java
 Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:myTapoBridge:mySocket:actuator#output" }
-``` 
+```

@@ -1,6 +1,6 @@
 # TR-064 Binding
 
-This binding brings support for internet gateway devices that support the TR-064 protocol (e.g. the AVM FritzBox family of routers). 
+This binding brings support for internet gateway devices that support the TR-064 protocol (e.g. the AVM FritzBox family of routers).
 It can be used to gather information from the device and/or re-configure it.
 Even though textual configuration is possible, it is strongly recommended to use the Main User Interface for configuration.
 
@@ -13,7 +13,7 @@ Two Bridge things are supported:
 
 Two kind of Things are supported:
 
-- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface) 
+- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface)
 - `subDeviceLan`: a special type of sub-device that supports MAC-detection
 
 ## Discovery
@@ -40,9 +40,9 @@ For security reasons it is highly recommended to set both, username and password
 
 ### `fritzbox`
 
-The `fritzbox` devices can give additional informations in dedicated channels, controlled 
+The `fritzbox` devices can give additional informations in dedicated channels, controlled
  by additional parameters (visible if Show Advanced is selected), w.r.t. to `generic` devices.
-If the parameters are specified, the corresponding channels will be added to the device. 
+If the parameters are specified, the corresponding channels will be added to the device.
 
 One or more TAM (telephone answering machines) are supported by most fritzbox devices.
 By setting the `tamIndices` parameter you can instruct the binding to add channels for these
@@ -58,7 +58,7 @@ This is an optional parameter and multiple values are allowed:  add one value pe
 Most devices support call lists.
 The binding can retrieve these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls,
 for a given number of days. A channel is added to the Thing if such a number is set through the corresponding parameter
-in the Main User Interface. 
+in the Main User Interface.
 The parameters are: `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
 
 Since FritzOS! 7.20 WAN access of local devices can be controlled by their IPs.
@@ -70,7 +70,7 @@ If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phoneb
 The `phonebookInterval` is used to set the refresh cycle for phonebooks.
 It defaults to 600 seconds, and it can be set to 0 if phonebooks are not used.
 
-Some parameters (e.g. `macOnline`, `wanBlockIPs`) accept lists. 
+Some parameters (e.g. `macOnline`, `wanBlockIPs`) accept lists.
 List items are configured one per line in the UI, or are comma separated values when using textual config.
 These parameters that accept list can also contain comments.
 Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
@@ -79,7 +79,7 @@ The full string is used for the channel label.
 ### `subdevice`, `subdeviceLan`
 
 Additional informations (i.e. channels) are available in subdevices of the bridge.
-Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device. 
+Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device.
 This is a mandatory parameter to be set in order to add the subdevice. Since the parameter value can only be determined
 by examining the SCPD of the root device, the simplest way to obtain it is through auto-discovery.
 
@@ -90,7 +90,7 @@ It therefore optionally contains a channel for each MAC address (in a format 11:
 
 ## Channels
 
-Channels are grouped according to the subdevice they belong to. 
+Channels are grouped according to the subdevice they belong to.
 
 ### `fritzbox` bridge channels
 
@@ -99,7 +99,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
 | `callDeflectionEnable`     | `Switch`                  |     x    | Enable/Disable the call deflection setup with the given index. |
-| `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |    
+| `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |
 | `deviceLog`                | `String`                  |     x    | A string containing the last log messages                      |
 | `missedCalls`              | `Number`                  |          | Number of missed calls within the given number of days.        |
 | `outboundCalls`            | `Number`                  |     x    | Number of outbound calls within the given number of days.      |
@@ -166,7 +166,7 @@ In this case you have to use the `wifi5GHzEnable` channel for switching the gues
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |     x    | Total Bytes Received                                           |
 | `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
- 
+
 **Note:** AVM Fritzbox devices use 4-byte-unsigned-integers for `wanTotalBytesReceived` and `wanTotalBytesSent`, because of that the counters are reset after around 4GB data.
 
 ## `PHONEBOOK` Profile
@@ -192,13 +192,13 @@ The phonebooks of a `fritzbox` thing can be used to lookup a number from rules v
 `phonebook` and `matchCount` are optional parameters.
 You can omit one or both of these parameters.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
-A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given. 
+A `matchCount` of `0` is considered as "match everything" and is used as default if no other value is given.
 As in the phonebook profile, matching is done on normalized versions of the numbers that have all characters except digits, '+' and '*' removed.
 The return value is either the phonebook entry (if found) or the input number.
 
 Example (use all phonebooks, match 5 digits from right):
 
-```
+```java
 val tr064Actions = getActions("tr064","tr064:fritzbox:2a28aee1ee")
 val result = tr064Actions.phonebookLookup("49157712341234", 5)
 ```
@@ -214,7 +214,7 @@ needed subdevices).
 
 The definition of the bridge and of the subdevices things is the following
 
-```
+```java
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
                                                          phonebookInterval="0"]{
     Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
@@ -227,7 +227,7 @@ Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", us
 
 The channel are automatically generated and it is simpler to use the Main User Interface to copy the textual definition of the channel
 
-```
+```java
 Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
 Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
 
@@ -235,6 +235,6 @@ Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_
 
 Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
 
-```
+```java
 Call IncomingCallResolved "Caller name: [%s]" { channel="avmfritz:fritzbox:fritzbox:incoming_call" [profile="transform:PHONEBOOK", phonebook="tr064_3Afritzbox_3AfritzboxTR064", phoneNumberIndex="1", matchCount="8"] }
 ```
