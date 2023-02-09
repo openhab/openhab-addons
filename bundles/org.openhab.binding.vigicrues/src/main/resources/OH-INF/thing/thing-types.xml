@@ -45,7 +45,7 @@
 	</thing-type>
 
 	<channel-type id="flow">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unit="l/min">Number</item-type>
 		<label>Current Flow</label>
 		<description>Current river flow</description>
 		<category>flow</category>

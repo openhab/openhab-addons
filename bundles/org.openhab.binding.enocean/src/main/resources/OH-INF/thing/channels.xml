@@ -424,7 +424,7 @@
 	</channel-type>
 
 	<channel-type id="currentFlow">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unit="l/min">Number</item-type>
 		<label>Current Flow</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
@@ -811,14 +811,14 @@
 	</channel-type>
 
 	<channel-type id="supplyAirFanAirFlowRate">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unit="l/min">Number</item-type>
 		<label>Supply Air Fan Air Flow Rate</label>
 		<description>Current supply air fan air flow rate</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="exhaustAirFanAirFlowRate">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unit="l/min">Number</item-type>
 		<label>Exhaust Air Fan Air Flow Rate</label>
 		<description>Current exhaust air fan air flow rate</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

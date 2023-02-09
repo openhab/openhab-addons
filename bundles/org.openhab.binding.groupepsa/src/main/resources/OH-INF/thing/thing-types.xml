@@ -435,7 +435,7 @@
 	</channel-type>
 
 	<channel-type id="consumption">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unit="l/min">Number</item-type>
 		<label>Fuel Consumption</label>
 		<description>Fuel consumption</description>
 		<state pattern="%.1f %unit%"/>
