@@ -15,7 +15,7 @@
 			<description>Duration of transition of events such as on/off, change of brightness and change of color, in
 				milliseconds.</description>
 			<unitLabel>milliseconds</unitLabel>
-			<default>500</default>
+			<default>5000</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
