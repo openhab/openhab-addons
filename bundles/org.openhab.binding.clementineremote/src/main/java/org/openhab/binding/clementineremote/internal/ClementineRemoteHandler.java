@@ -329,6 +329,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(ClementineRemoteConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
+        enabled = true;
         scheduler.execute(this::loopedConnection);
     }
 
@@ -337,7 +338,9 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      * If the connection breaks: wait 15s, then try again
      */
     private void loopedConnection() {
-        enabled = true;
+        if (!enabled) {
+            return;
+        }
         try {
             connect();
             handleMessages(); // blocking until connection breaks or disabled
@@ -408,7 +411,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        dispose();
+        dispose(); // will disable
+        enabled = true; // re-enable
         scheduler.execute(this::loopedConnection);
     }
 
