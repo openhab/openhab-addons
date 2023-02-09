@@ -338,7 +338,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure_evaporation" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure Evaporation</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -367,7 +367,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure_condensation" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure Condensation</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

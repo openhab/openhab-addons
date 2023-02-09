@@ -342,7 +342,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-channel">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

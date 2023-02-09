@@ -1552,14 +1552,14 @@
 	</channel-type>
 
 	<channel-type id="highPressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>High Pressure</label>
 		<category>Pressure</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lowPressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Low Pressure</label>
 		<category>Pressure</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1696,7 +1696,7 @@
 	</channel-type>
 
 	<channel-type id="pressureEVI" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure EVI</label>
 		<category>Pressure</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -1759,14 +1759,14 @@
 	</channel-type>
 
 	<channel-type id="highPressure2" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>High Pressure 2</label>
 		<category>Pressure</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lowPressure2" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Low Pressure 2</label>
 		<category>Pressure</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>

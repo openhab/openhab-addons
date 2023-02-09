@@ -114,7 +114,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="airthings_pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<description>Pressure</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

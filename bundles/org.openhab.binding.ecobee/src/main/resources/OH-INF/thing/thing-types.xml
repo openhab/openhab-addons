@@ -1384,7 +1384,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="weatherPressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

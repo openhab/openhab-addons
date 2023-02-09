@@ -283,7 +283,7 @@
 	</channel-type>
 
 	<channel-type id="pressure" advanced="false">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<state readOnly="true" pattern="%.2f hPa"></state>
 	</channel-type>

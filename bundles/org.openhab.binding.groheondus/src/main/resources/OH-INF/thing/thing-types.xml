@@ -107,7 +107,7 @@
 		<description>The name of the appliance</description>
 	</channel-type>
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<description>The pressure of your water supply</description>
 	</channel-type>

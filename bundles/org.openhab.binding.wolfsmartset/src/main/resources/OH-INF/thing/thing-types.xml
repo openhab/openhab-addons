@@ -65,7 +65,7 @@
 	</channel-type>
 
 	<channel-type id="barometric-pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

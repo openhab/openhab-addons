@@ -515,7 +515,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-barometric-pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Forecasted Pressure</label>
 		<description>Forecasted barometric pressure.</description>
 		<category>Pressure</category>

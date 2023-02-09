@@ -149,7 +149,7 @@
 	</channel-type>
 	<!-- Pressure Channel -->
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<description>The pressure measured by the sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

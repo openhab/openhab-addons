@@ -110,7 +110,7 @@
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<description>Current atmospheric pressure</description>
 		<category>Pressure</category>

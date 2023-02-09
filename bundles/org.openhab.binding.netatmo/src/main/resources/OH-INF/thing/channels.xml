@@ -517,7 +517,7 @@
 	</channel-type>
 
 	<channel-type id="absolute-pressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Absolute Pressure</label>
 		<description>Pressure measured relative to a full vacuum.</description>
 		<category>Pressure</category>

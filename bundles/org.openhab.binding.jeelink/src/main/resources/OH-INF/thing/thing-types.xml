@@ -419,7 +419,7 @@
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>@text/channel-type.pressure.label</label>
 		<description>@text/channel-type.pressure.description</description>
 		<category>Pressure</category>

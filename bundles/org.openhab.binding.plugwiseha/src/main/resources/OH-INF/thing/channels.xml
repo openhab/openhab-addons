@@ -221,7 +221,7 @@
 	</channel-type>
 
 	<channel-type id="waterPressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Water Pressure</label>
 		<description>Gets the water pressure of the boiler</description>
 		<category>heating</category>

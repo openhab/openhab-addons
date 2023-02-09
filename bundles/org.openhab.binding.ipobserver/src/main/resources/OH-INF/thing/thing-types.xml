@@ -108,7 +108,7 @@
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressureAbsolute">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure Absolute</label>
 		<description>Absolute Current Pressure</description>
 		<category>Pressure</category>
@@ -119,7 +119,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressureRelative">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure Relative</label>
 		<description>Relative Current Pressure</description>
 		<category>Pressure</category>

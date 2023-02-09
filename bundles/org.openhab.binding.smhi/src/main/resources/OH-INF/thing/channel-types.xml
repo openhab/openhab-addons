@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="msl">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
 		<state readOnly="true" pattern="%.1f hPa"/>

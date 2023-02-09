@@ -58,7 +58,7 @@
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Pressure</label>
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>

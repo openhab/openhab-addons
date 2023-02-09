@@ -96,13 +96,13 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-channel">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Atmospheric Pressure</label>
 		<description>Atmospheric Pressure from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressure-sea-channel">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Atmospheric Pressure Sea Level</label>
 		<description>Atmospheric Pressure at sea level from the selected Sensor ID</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>

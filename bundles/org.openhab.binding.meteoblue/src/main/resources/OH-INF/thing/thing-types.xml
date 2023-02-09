@@ -235,7 +235,7 @@
 	</channel-type>
 
 	<channel-type id="pressureMin">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Low Pressure</label>
 		<description>Low Pressure</description>
 		<category>Pressure</category>
@@ -243,7 +243,7 @@
 	</channel-type>
 
 	<channel-type id="pressureMax">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>High Pressure</label>
 		<description>High Pressure</description>
 		<category>Pressure</category>
@@ -251,7 +251,7 @@
 	</channel-type>
 
 	<channel-type id="pressureMean">
-		<item-type>Number:Pressure</item-type>
+		<item-type unit="hPa">Number</item-type>
 		<label>Mean Pressure</label>
 		<description>Mean Pressure</description>
 		<category>Pressure</category>
