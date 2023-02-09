@@ -25,7 +25,7 @@
 	</channel-type>
 
 	<channel-type id="cumlMarkingUsed" advanced="true">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Cumulative Marking Used</label>
 		<description>Shows the amount of Ink/Toner used</description>
 		<state readOnly="true" pattern="%f mL"/>

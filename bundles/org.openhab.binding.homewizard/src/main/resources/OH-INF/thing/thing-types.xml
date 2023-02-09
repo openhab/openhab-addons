@@ -112,7 +112,7 @@
 	</channel-type>
 
 	<channel-type id="total_gas">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Total Imported Gas</label>
 		<description>
 			This channel provides the most recently reported total imported gas in m^3. It does not get updated as

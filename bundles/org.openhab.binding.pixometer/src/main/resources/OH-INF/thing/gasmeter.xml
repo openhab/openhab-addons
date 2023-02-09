@@ -24,7 +24,7 @@
 		</config-description>
 	</thing-type>
 	<channel-type id="last_reading_value_gas">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>

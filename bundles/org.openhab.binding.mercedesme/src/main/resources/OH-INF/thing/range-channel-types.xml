@@ -49,12 +49,12 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuel-remain-channel">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Remaining Fuel</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuel-open-channel">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Open Fuel Capacity</label>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

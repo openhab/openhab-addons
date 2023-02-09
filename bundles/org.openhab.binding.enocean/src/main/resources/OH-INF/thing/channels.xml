@@ -437,7 +437,7 @@
 	</channel-type>
 
 	<channel-type id="cumulativeValue">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Cumulative Value</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>

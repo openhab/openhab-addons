@@ -29,7 +29,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Remaining Fuel</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

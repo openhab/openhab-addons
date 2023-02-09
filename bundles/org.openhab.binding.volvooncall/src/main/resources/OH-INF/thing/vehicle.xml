@@ -262,7 +262,7 @@
 	</channel-type>
 
 	<channel-type id="fuelQuantity">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Fuel Quantity</label>
 		<category>oil</category>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

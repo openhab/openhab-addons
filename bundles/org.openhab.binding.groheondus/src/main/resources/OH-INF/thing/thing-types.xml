@@ -135,7 +135,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterconsumption">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Water Consumption</label>
 		<description>The amount of water consumed in the given time period in liters.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -148,7 +148,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="waterconsumption_since_midnight">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Water Consumption Since Midnight</label>
 		<description>The amount of water consumed since midnight in liters</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

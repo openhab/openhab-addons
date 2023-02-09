@@ -215,7 +215,7 @@
 	</channel-type>
 
 	<channel-type id="waterflow" advanced="true">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Water Flow</label>
 		<description>Sensor water flow</description>
 		<state readOnly="true"></state>

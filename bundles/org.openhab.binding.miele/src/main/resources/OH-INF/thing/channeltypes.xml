@@ -237,7 +237,7 @@
 	</channel-type>
 
 	<channel-type id="waterConsumption">
-		<item-type>Number:Volume</item-type>
+		<item-type unit="l">Number</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption by the currently running program on the appliance</description>
 		<category>Water</category>
