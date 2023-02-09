@@ -17,7 +17,6 @@ import static org.openhab.binding.clementineremote.internal.ClementineRemoteBind
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_COVER;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_PLAYBACK;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_POSITION;
-import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_STATE;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_TITLE;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_TRACK;
 import static org.openhab.binding.clementineremote.internal.ClementineRemoteBindingConstants.CHANNEL_VOLUME;
@@ -87,8 +86,8 @@ public class ClementineRemoteHandler extends BaseThingHandler {
      */
     private enum PlaybackState {
         UNKNOWN,
-        PLAYING,
-        PAUSED,
+        PLAY,
+        PAUSE,
         SKIPPING,
         STOPPED
     }
@@ -190,7 +189,6 @@ public class ClementineRemoteHandler extends BaseThingHandler {
                 return;
         }
         logger.debug("No handler for command \"{}\" on channel {}", command, channel);
-        return;
     }
 
     /**
@@ -253,10 +251,10 @@ public class ClementineRemoteHandler extends BaseThingHandler {
                 handleCurrentMeta(message.getResponseCurrentMetadata());
                 break;
             case PAUSE:
-                setState(PlaybackState.PAUSED);
+                setState(PlaybackState.PAUSE);
                 break;
             case PLAY:
-                setState(PlaybackState.PLAYING);
+                setState(PlaybackState.PLAY);
                 break;
             case SET_VOLUME:
                 handleVolume(message.getRequestSetVolume());
@@ -276,7 +274,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
 
     private void handleNullableTrackPos(@Nullable Integer newPos) {
         if (newPos != null) {
-            setState(PlaybackState.PLAYING);
+            setState(PlaybackState.PLAY);
             currentPos = newPos;
         } else {
             currentPos = 0;
@@ -294,7 +292,6 @@ public class ClementineRemoteHandler extends BaseThingHandler {
             case CHANNEL_COVER:
                 return updateCoverChannel();
             case CHANNEL_PLAYBACK:
-            case CHANNEL_STATE:
                 return updatePlayerStateChannel();
             case CHANNEL_POSITION:
                 return updatePositionChannel();
@@ -433,14 +430,7 @@ public class ClementineRemoteHandler extends BaseThingHandler {
     }
 
     private ClementineRemoteHandler updatePlayerStateChannel() {
-        switch (playbackState) {
-            case PLAYING:
-                return updateStringChannel(CHANNEL_PLAYBACK, CMD_PLAY);
-            case PAUSED:
-            case STOPPED:
-                return updateStringChannel(CHANNEL_PLAYBACK, CMD_PAUSE);
-        }
-        return updateStringChannel(CHANNEL_STATE, playbackState.toString());
+        return updateStringChannel(CHANNEL_PLAYBACK, playbackState.toString());
     }
 
     private ClementineRemoteHandler updatePositionChannel() {

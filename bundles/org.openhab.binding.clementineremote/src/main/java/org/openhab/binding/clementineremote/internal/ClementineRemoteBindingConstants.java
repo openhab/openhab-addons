@@ -35,7 +35,6 @@ public class ClementineRemoteBindingConstants {
     public static final String CHANNEL_COVER = "cover";
     public static final String CHANNEL_PLAYBACK = "playback-control";
     public static final String CHANNEL_POSITION = "position";
-    public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_TITLE = "title";
     public static final String CHANNEL_TRACK = "track";
     public static final String CHANNEL_VOLUME = "volume-control";
