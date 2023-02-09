@@ -67,7 +67,7 @@
 		"sensorType": "TSL45315",
 	-->
 	<channel-type id="illuminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
 		<state readOnly="true" pattern="%.2f lx"></state>

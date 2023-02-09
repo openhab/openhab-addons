@@ -110,7 +110,7 @@
 	</channel-type>
 	<!-- Light Channel -->
 	<channel-type id="light">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Illuminance</label>
 		<description>Ambient light</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

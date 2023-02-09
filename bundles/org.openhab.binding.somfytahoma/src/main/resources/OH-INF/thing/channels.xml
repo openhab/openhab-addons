@@ -38,7 +38,7 @@
 	</channel-type>
 
 	<channel-type id="luminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Luminance</label>
 		<description>A light sensor luminance in lux</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

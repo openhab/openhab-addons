@@ -196,7 +196,7 @@
 	</thing-type>
 
 	<channel-type id="lightlux">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Illuminance</label>
 		<description>Current light illuminance</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>

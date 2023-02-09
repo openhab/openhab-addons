@@ -227,7 +227,7 @@
 	</channel-type>
 
 	<channel-type id="illuminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Illuminance</label>
 		<description>The current illuminance in lux.</description>
 		<category>Sun</category>

@@ -340,7 +340,7 @@
 	</channel-type>
 
 	<channel-type id="sensorLux">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>@text/channel-type.shelly.sensorLux.label</label>
 		<description>@text/channel-type.shelly.sensorLux.description</description>
 		<state readOnly="true" pattern="%.0f %unit%">

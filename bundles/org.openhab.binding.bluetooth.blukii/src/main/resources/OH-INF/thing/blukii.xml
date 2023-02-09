@@ -56,7 +56,7 @@
 	</channel-type>
 
 	<channel-type id="blukii_luminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Luminance</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

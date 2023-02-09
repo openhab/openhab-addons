@@ -1073,7 +1073,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="illuminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Illuminance</label>
 		<description>Currently measured illuminance</description>
 		<category>Illuminance</category>

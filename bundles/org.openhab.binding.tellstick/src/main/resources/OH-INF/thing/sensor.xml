@@ -134,7 +134,7 @@
 	</channel-type>
 
 	<channel-type id="lux">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unit="lx">Number</item-type>
 		<label>Lux</label>
 		<description>Current lumination</description>
 		<state readOnly="true" pattern="%f %unit%"/>
