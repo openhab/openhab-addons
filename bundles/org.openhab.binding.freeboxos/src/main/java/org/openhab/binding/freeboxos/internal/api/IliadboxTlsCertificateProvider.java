@@ -19,17 +19,17 @@ import org.openhab.core.io.net.http.TlsCertificateProvider;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Provides a CertificateManager for the Freebox SSL certificate
+ * Provides a CertificateManager for the IliadBox SSL certificate
  *
  * @author Gaël L'hopital - Initial Contribution
  */
 @Component
 @NonNullByDefault
-public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
+public class IliadboxTlsCertificateProvider implements TlsCertificateProvider {
 
-    private static final String CERTIFICATE_NAME = "freeboxECCRootCA.crt";
+    private static final String CERTIFICATE_NAME = "iliadboxECCRootCA.crt";
 
-    public static final String DEFAULT_NAME = "mafreebox.freebox.fr";
+    public static final String DEFAULT_NAME = "myiliadbox.iliad.it";
 
     @Override
     public String getHostName() {

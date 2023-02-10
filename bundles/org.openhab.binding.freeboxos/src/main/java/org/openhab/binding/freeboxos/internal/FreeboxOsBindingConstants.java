@@ -162,8 +162,6 @@ public class FreeboxOsBindingConstants {
     // Home channels
     public static final String BASIC_SHUTTER_CMD = "basic-shutter";
 
-    public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
-
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
 }

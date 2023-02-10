@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
-
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.FreeboxTlsCertificateProvider;
 
 /**
  * The {@link FreeboxOsConfiguration} is responsible for holding configuration informations needed to access the Freebox
@@ -31,7 +30,7 @@ public class FreeboxOsConfiguration {
     public static final String HTTPS_PORT = "httpsPort";
     public static final String HTTPS_AVAILABLE = "httpsAvailable";
 
-    private String apiDomain = DEFAULT_FREEBOX_NAME;
+    private String apiDomain = FreeboxTlsCertificateProvider.DEFAULT_NAME;
     public String appToken = "";
     public boolean discoverNetDevice;
 
