@@ -124,33 +124,25 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO(s)));
 
         // Check configuration settings
-        String configError = null;
-        if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
-            configError = "undefined serialPort and host configuration settings; please set one of them";
-        } else if (serialPort != null && (host == null || host.isEmpty())) {
+        if (serialPort != null && host == null && port == null) {
             if (serialPort.toLowerCase().startsWith("rfc2217")) {
-                configError = "use host and port configuration settings for a serial over IP connection";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error-rfc2217");
+                return;
             }
-        } else {
-            if (port == null) {
-                configError = "undefined port configuration setting";
-            } else if (port <= ZERO) {
-                configError = "invalid port configuration setting";
-            }
-        }
-
-        if (configError != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
+        } else if (serialPort != null && (host != null || port != null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error-conflict");
             return;
         }
 
         if (serialPort != null) {
             connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort, uid, amp);
-        } else if (port != null) {
+        } else if (host != null && (port != null && port > ZERO)) {
             connector = new MonopriceAudioIpConnector(host, port, uid, amp);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Either Serial port or Host & Port must be specifed");
+                    "@text/offline.configuration-error-missing");
             return;
         }
 
@@ -166,11 +158,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     if (zoneInt >= ONE && zoneInt <= amp.getMaxZones()) {
                         ignoreZones.add(ZONE + zoneInt);
                     } else {
-                        logger.warn("Invalid ignore zone value: {}, value must be between {} and {}", zone, ONE,
+                        logger.debug("Invalid ignore zone value: {}, value must be between {} and {}", zone, ONE,
                                 amp.getMaxZones());
                     }
                 } catch (NumberFormatException nfe) {
-                    logger.warn("Invalid ignore zone value: {}", zone);
+                    logger.debug("Invalid ignore zone value: {}", zone);
                 }
             }
         }
@@ -334,7 +326,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                             updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
                                         }
                                     } catch (MonopriceAudioException e) {
-                                        logger.warn("Error Turning All Zones On: {}", e.getMessage());
+                                        logger.debug("Error Turning All Zones On: {}", e.getMessage());
                                     }
                                 }
 
@@ -355,7 +347,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                                 updateChannelState(streamZoneId, CHANNEL_TYPE_SOURCE);
                                             }
                                         } catch (MonopriceAudioException e) {
-                                            logger.warn("Error Setting Source for All Zones: {}", e.getMessage());
+                                            logger.debug("Error Setting Source for All Zones: {}", e.getMessage());
                                         }
                                     }
                                 });
@@ -377,7 +369,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                             updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
                                         }
                                     } catch (MonopriceAudioException e) {
-                                        logger.warn("Error Setting Volume for All Zones: {}", e.getMessage());
+                                        logger.debug("Error Setting Volume for All Zones: {}", e.getMessage());
                                     }
                                 }
                             });
@@ -395,7 +387,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                             updateChannelState(streamZoneId, CHANNEL_TYPE_MUTE);
                                         }
                                     } catch (MonopriceAudioException e) {
-                                        logger.warn("Error Setting Mute for All Zones: {}", e.getMessage());
+                                        logger.debug("Error Setting Mute for All Zones: {}", e.getMessage());
                                     }
                                 }
                             });
@@ -411,8 +403,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     logger.trace("Command {} from channel {} succeeded", command, channel);
                 }
             } catch (MonopriceAudioException e) {
-                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
+                logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error-failed");
                 closeConnection();
                 scheduleReconnectJob();
             }
@@ -515,10 +508,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
                         // prevUpdateTime should have changed if a zone update was received
                         if (lastPollingUpdate == prevUpdateTime) {
-                            error = "Amplifier not responding to status requests";
+                            error = "@text/offline.communication-error-polling";
                         }
                     } else {
-                        error = "Reconnection failed";
+                        error = "@text/offline.communication-error-reconnection";
                     }
                     if (error != null) {
                         closeConnection();
@@ -578,7 +571,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     if ((System.currentTimeMillis() - lastPollingUpdate) > (pollingInterval * 2.25 * 1000)) {
                         logger.debug("Amplifier not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Amplifier not responding to status requests");
+                                "@text/offline.communication-error-polling");
                         closeConnection();
                         scheduleReconnectJob();
                     }

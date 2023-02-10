@@ -136,7 +136,7 @@ public abstract class MonopriceAudioConnector {
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
-                logger.warn("Error joining readerThread: {}", e.getMessage());
+                logger.debug("Error joining readerThread: {}", e.getMessage());
             }
             this.readerThread = null;
         }
