@@ -96,8 +96,7 @@
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port (IP or Serial over IP). For IP connection to the Xantech Amplifier</description>
-				<default>4444</default>
+				<description>Communication Port for Serial over IP connection to the Xantech Amplifier</description>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="16" required="true">
 				<label>Number of Zones</label>

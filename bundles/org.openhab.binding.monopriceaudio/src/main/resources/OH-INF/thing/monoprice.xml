@@ -100,13 +100,12 @@
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host Name or IP Address of the Amplifier or Serial over IP device</description>
+				<description>Host Name or IP Address of the Monoprice Amplifier or Serial over IP device</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port for Serial over IP connection to the Amplifier (Default 8080 for amps with built-in
-					Serial over IP)</description>
-				<default>8080</default>
+				<description>Communication Port for Serial over IP connection to the Monoprice Amplifier (8080 for amps with
+					built-in Serial over IP)</description>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="18" required="true">
 				<label>Number of Zones</label>

@@ -46,7 +46,7 @@ The thing has the following configuration parameters (number of sources and zone
 |------------------------|----------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
 | Serial Port            | serialPort           | Serial port to use for connecting to the whole house amplifier device                                                          | Serial port name |
 | Address                | host                 | Host name or IP address of the amplifier or serial over IP device                                                              | Host name or IP  |
-| Port                   | port                 | Communication port (default 8080 for newer amps with built-in serial over IP)                                                  | TCP port number  |
+| Port                   | port                 | Communication port (8080 for newer amps with built-in serial over IP)                                                          | TCP port number  |
 | Number of Zones        | numZones             | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
 | Polling Interval       | pollingInterval      | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
 | Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
