@@ -15,6 +15,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import java.net.URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,6 +69,8 @@ import static org.openhab.binding.freeboxos.internal.api.ApiConstants.DEFAULT_FR
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
 >>>>>>> e4ef5cc Switching to Java 17 records
 
+=======
+>>>>>>> a6d34ed Adding IliadBox compatibility
 import java.net.URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,22 +86,30 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
 
+    private static final String CERTIFICATE_NAME = "freeboxECCRootCA.crt";
+
+    public static final String DEFAULT_NAME = "mafreebox.freebox.fr";
+
     @Override
     public String getHostName() {
-        return DEFAULT_FREEBOX_NAME;
+        return DEFAULT_NAME;
     }
 
     @Override
     public URL getCertificate() {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("freeboxECCRootCA.crt");
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(CERTIFICATE_NAME);
         if (resource != null) {
             return resource;
         }
+<<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
         throw new IllegalStateException("Certifcate resource not found or not accessible");
 >>>>>>> 46dadb1 SAT warnings handling
 =======
         throw new IllegalStateException("Certificate resource not found or not accessible");
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+        throw new IllegalStateException("Certificate '%s' not found or not accessible".formatted(CERTIFICATE_NAME));
+>>>>>>> a6d34ed Adding IliadBox compatibility
     }
 }

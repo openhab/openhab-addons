@@ -344,6 +344,7 @@ public class FreeboxOsBindingConstants {
 
 <<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
     // Defaults api strings
     public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
 >>>>>>> 46dadb1 SAT warnings handling
@@ -354,6 +355,8 @@ public class FreeboxOsBindingConstants {
     public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
 
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+>>>>>>> a6d34ed Adding IliadBox compatibility
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
 }
