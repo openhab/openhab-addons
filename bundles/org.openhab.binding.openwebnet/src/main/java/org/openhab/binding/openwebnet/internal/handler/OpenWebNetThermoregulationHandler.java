@@ -128,6 +128,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, OnOffType.OFF);
             updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(programNumber));
             updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(programNumber));
+            updateState(CHANNEL_CU_FAILURE_DISCOVERED, OnOffType.OFF);
         }
     }
 
