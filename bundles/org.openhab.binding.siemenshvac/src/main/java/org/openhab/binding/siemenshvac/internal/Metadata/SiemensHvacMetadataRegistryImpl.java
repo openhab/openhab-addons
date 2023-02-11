@@ -380,8 +380,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
@@ -422,18 +422,30 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
         String itemType = getItemType(dpt);
         String category = getCategory(dpt);
-        String label = dpt.getShortDesc();
-        String description = dpt.getLongDesc();
+        String label = itemType;
+        String description = "";
 
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
 
         List<StateOption> options = new ArrayList<StateOption>();
         if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
+            StringBuilder descBuilder = new StringBuilder();
+            descBuilder.append("Enum:");
             List<SiemensHvacMetadataPointChild> childs = dpt.getChild();
+            int idx = 0;
+
             for (SiemensHvacMetadataPointChild opt : childs) {
                 StateOption stOpt = new StateOption(opt.getValue(), opt.getText());
                 options.add(stOpt);
+                if (idx > 0) {
+                    descBuilder.append("_");
+                }
+
+                descBuilder.append(String.format("(%s:%s)", opt.getValue(), opt.getText()));
+                idx++;
             }
+            description = descBuilder.toString();
+            label = channelTypeUID.getId();
         }
 
         if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
@@ -442,6 +454,9 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             BigDecimal step = new BigDecimal(dpt.getResolution());
 
             stateFragment.withMinimum(min).withMaximum(max).withStep(step).withReadOnly(false);
+
+            description = channelTypeUID.toString();
+            label = channelTypeUID.getId();
         } else {
             stateFragment.withPattern(getStatePattern(dpt)).withReadOnly(dpt.getWriteAccess() == false);
         }
