@@ -300,7 +300,7 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         }
 
         req.header(HttpHeader.AUTHORIZATION, myBMWTokenHandler.getToken().getBearerToken());
-        req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand,
+        req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand.toLowerCase(),
                 APP_VERSIONS.get(bridgeConfiguration.region), bridgeConfiguration.region));
         req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.language);
         req.header(HttpHeader.ACCEPT, contentType);
