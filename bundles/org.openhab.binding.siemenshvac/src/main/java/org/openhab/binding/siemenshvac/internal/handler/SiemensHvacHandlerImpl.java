@@ -27,7 +27,6 @@ import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataData
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
-import org.openhab.binding.siemenshvac.internal.type.SiemensHvacChannelTypeProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -39,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -64,18 +64,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
-    private final @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
     private final @Nullable SiemensHvacConnector hvacConnector;
     private final @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
     public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
-            @Nullable SiemensHvacMetadataRegistry metaDataRegistry,
-            @Nullable SiemensHvacChannelTypeProvider channelTypeProvider) {
+            @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
 
-        this.channelTypeProvider = channelTypeProvider;
         this.hvacConnector = hvacConnector;
         this.metaDataRegistry = metaDataRegistry;
+        this.channelTypeRegistry = channelTypeRegistry;
 
         logger.debug("===========================================================");
         logger.debug("Siemens HVac");
@@ -108,48 +107,50 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     }
 
     private void pollingCode() {
-        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
-
         var chList = this.getThing().getChannels();
-        for (Channel ch : chList) {
-            logger.debug("{}", ch.getDescription());
-
-            ThingHandlerCallback cb = this.getCallback();
-            boolean isLink = false;
-
-            if (cb != null) {
-                isLink = cb.isChannelLinked(ch.getUID());
-            }
-
-            if (!isLink) {
-                continue;
-            }
-
-            ChannelType tp = null;
-
-            if (lcChannelTypeProvider != null) {
-                tp = lcChannelTypeProvider.getInternalChannelType(ch.getChannelTypeUID());
-            }
-
-            if (tp == null) {
-                continue;
-            }
-
-            String Id = ch.getProperties().get("id");
-            String uid = ch.getUID().getId();
-            String type = tp.getItemType();
-
-            if (Id == null) {
-                logger.debug("poolingCode : Id is null {} ", ch);
-                continue;
-            }
-            if (type == null) {
-                logger.debug("poolingCode : type is null {} ", ch);
-                continue;
-            }
-            ReadDp(Id, uid, type, true);
-            logger.debug("{}", isLink);
+        for (Channel channel : chList) {
+            ReadChannel(channel);
         }
+    }
+
+    private void ReadChannel(Channel channel) {
+        logger.debug("{}", channel.getDescription());
+
+        ThingHandlerCallback cb = this.getCallback();
+        boolean isLink = false;
+
+        if (cb != null) {
+            isLink = cb.isChannelLinked(channel.getUID());
+        }
+
+        if (!isLink) {
+            return;
+        }
+
+        ChannelType tp = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
+
+        if (tp == null) {
+            return;
+        }
+
+        String Id = channel.getProperties().get("id");
+        String uid = channel.getUID().getId();
+        String type = tp.getItemType();
+
+        if (Id == null) {
+            Id = (String) channel.getConfiguration().getProperties().get("id");
+        }
+
+        if (Id == null) {
+            logger.debug("poolingCode : Id is null {} ", channel);
+            return;
+        }
+        if (type == null) {
+            logger.debug("poolingCode : type is null {} ", channel);
+            return;
+        }
+        ReadDp(Id, uid, type, true);
+        logger.debug("{}", isLink);
     }
 
     public void DecodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,
@@ -299,21 +300,19 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
-        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         logger.debug("handleCommand");
         if (command instanceof RefreshType) {
-            logger.debug("handleCommandRefresh");
+            var channel = this.getThing().getChannel(channelUID);
+            if (channel != null) {
+                ReadChannel(channel);
+            }
         } else {
-
             Channel channel = getThing().getChannel(channelUID);
             if (channel == null) {
                 return;
             }
 
-            ChannelType tp = null;
-            if (lcChannelTypeProvider != null) {
-                tp = lcChannelTypeProvider.getInternalChannelType(channel.getChannelTypeUID());
-            }
+            ChannelType tp = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
 
             if (tp == null) {
                 return;
@@ -323,6 +322,10 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             String dptType = "";
             String id = channel.getProperties().get("id");
             SiemensHvacMetadataDataPoint md = null;
+
+            if (id == null) {
+                id = (String) channel.getConfiguration().getProperties().get("id");
+            }
 
             if (lcMetaDataRegistry != null) {
                 md = (SiemensHvacMetadataDataPoint) lcMetaDataRegistry.getDptMap(id);

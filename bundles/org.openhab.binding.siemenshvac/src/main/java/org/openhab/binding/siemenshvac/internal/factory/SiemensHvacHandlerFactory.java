@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,14 +46,17 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
     private final HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
     public SiemensHvacHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference SiemensHvacMetadataRegistry metaDataRegistry,
-            final @Reference NetworkAddressService networkAddressService) {
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference ChannelTypeRegistry channelTypeRegistry) {
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
         this.networkAddressService = networkAddressService;
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override
@@ -80,8 +84,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,
-                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry,
-                    metaDataRegistry.getChannelTypeProvider());
+                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry);
             return handler;
         }
         return null;
