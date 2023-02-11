@@ -22,7 +22,7 @@ public class ExecutionError {
     public String description;// ": "Die folgenden Einschränkungen verbieten die Ausführung von Remote Services: Aus
                               // Sicherheitsgründen sind Remote Services nicht verfügbar, wenn die Fahrbereitschaft
                               // eingeschaltet ist. Remote Services können nur mit einem ausreichenden Ladezustand
-                              // durchgeführt werden. Die Remote Services „Verriegeln“ und „Entriegeln“ können nur
+                              // durchgeführt werden. Die Remote Services „Verriegeln" und „Entriegeln" können nur
                               // ausgeführt werden, wenn die Fahrertür geschlossen und der Türstatus bekannt ist.",
     public String presentationType;// ": "PAGE",
     public int iconId;// ": 60217,

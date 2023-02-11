@@ -1,0 +1,49 @@
+[
+    {
+        "vin": "anonymousICE2",
+        "mappingInfo": {
+            "isAssociated": false,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2023-01-21T18:57:39.114Z",
+            "model": "X3 xDrive20d",
+            "year": 2018,
+            "color": 4284900966,
+            "brand": "BMW",
+            "driveTrain": "COMBUSTION",
+            "headUnitType": "NBT_EVO",
+            "headUnitRaw": "NBTEVO",
+            "hmiVersion": "ID5",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 3,
+                    "year": 22
+                },
+                "iStep": 553,
+                "seriesCluster": "S15A"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 3,
+                    "year": 18
+                },
+                "iStep": 531,
+                "seriesCluster": "S15A"
+            },
+            "telematicsUnit": "ATM1",
+            "bodyType": "G01",
+            "countryOfOrigin": "AT",
+            "a4aType": "BLUETOOTH",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]
