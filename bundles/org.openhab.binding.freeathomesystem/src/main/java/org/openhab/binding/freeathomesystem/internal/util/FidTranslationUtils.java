@@ -184,6 +184,20 @@ public class FidTranslationUtils {
     public static final int FID_SCENE_TRIGGER = 0x4800; // Scene trigger
     public static final int FID_RULE_SWITCH = 0x4A00; // Scene trigger
 
+    // FID added based on tests
+    public static final int FID_AIRQUALITYSENSOR_PRESSURE = 0x0E017;
+    public static final int FID_AIRQUALITYSENSOR_CO2 = 0x0E018;
+    public static final int FID_AIRQUALITYSENSOR_CO = 0x0E019;
+    public static final int FID_AIRQUALITYSENSOR_NO2 = 0x0E01A;
+    public static final int FID_AIRQUALITYSENSOR_O3 = 0x0E01B;
+    public static final int FID_AIRQUALITYSENSOR_PM10 = 0x0E01C;
+    public static final int FID_AIRQUALITYSENSOR_PM25 = 0x0E01D;
+    public static final int FID_AIRQUALITYSENSOR_VOC = 0x0E01E;
+    public static final int FID_AIRQUALITYSENSOR_HUMIDITY = 0x0B03F;
+
+    public static final int FID_MOVEMENT_DETECTOR_FLEX = 0x1090;
+    public static final int FID_DIMMING_ACTUATOR_FLEX = 0x1810;
+
     static {
         Map<String, String> mapDesc = new HashMap<String, String>();
 
@@ -326,6 +340,22 @@ public class FidTranslationUtils {
         mapDesc.put("0x00A7", "Wallbox"); // FID_PANEL_WALLBOX
         mapDesc.put("0x00A8", "Door lock control"); // FID_DOOR_LOCK_CONTROL
         mapDesc.put("0x00AA", "Room temperature controller with fan speed level"); // FID_VRV_GATEWAY
+
+        mapDesc.put("0x4800", "Scene trigger"); // FID_SCENE_TRIGGER
+        mapDesc.put("0x4A00", "Rule Switch"); // FID_RULE_SWITCH
+
+        mapDesc.put("0x0E017", "Air quality sensor Pressure"); // FID_AIRQUALITYSENSOR_PRESSURE
+        mapDesc.put("0x0E018", "Air quality sensor CO2"); // FID_AIRQUALITYSENSOR_CO2
+        mapDesc.put("0x0E019", "Air quality sensor CO"); // FID_AIRQUALITYSENSOR_CO
+        mapDesc.put("0x0E01A", "Air quality sensor NO2"); // FID_AIRQUALITYSENSOR_NO2
+        mapDesc.put("0x0E01B", "Air quality sensor O3"); // FID_AIRQUALITYSENSOR_O3
+        mapDesc.put("0x0E01C", "Air quality sensor PM10"); // FID_AIRQUALITYSENSOR_PM10
+        mapDesc.put("0x0E01D", "Air quality sensor PM25"); // FID_AIRQUALITYSENSOR_PM25
+        mapDesc.put("0x0E01E", "Air quality sensor VOC"); // FID_AIRQUALITYSENSOR_VOC
+        mapDesc.put("0x0B03F", "Air quality sensor humidity"); // FID_AIRQUALITYSENSOR_HUMIDITY
+
+        mapDesc.put("0x1090", "Movement detector (flex)"); // FID_MOVEMENT_DETECTOR_FLEX
+        mapDesc.put("0x1810", "Dim actuator (flex)"); // FID_SWITCH_ACTUATOR_FLEX
 
         MAP_FUNCTIONID = Collections.unmodifiableMap(mapDesc);
     }

@@ -17,9 +17,12 @@ It requires a System Access Point with version 2.6.1 or higher.
 **Sensors and Actuators**
 
  - Switch Actuator Sensor with single and multiple channels (wired and wireless)
- - Dimming Actuator Sensor with single and multiple channels (wired and wireless)
+ - Dimming Actuator Sensor with single and multiple channels (wired, wireless and flex)
+ - Motion detection with and without actuator (wired, wireless and flex)
  - Switch Actuator 4-channel
  - Dimming Actuator 4- and 6-channel
+ - Door opener actuator
+ - Door ring sensor
  - Hue devices (untested)
 
 **Blinds and Windows**
@@ -38,13 +41,18 @@ It requires a System Access Point with version 2.6.1 or higher.
 **Other devices** (e.g. movement detector, ring sensor and door opener)
 
  - IP-touch panel (function: door opener, door ring sensor)
- - Movement Detector Actuator
+ - Virtual devices (e.g. virtual switch, RTC and detectors)
+
+**Information to virtual devices**
+Virtual device in the free@home smart-home system needs continuous keep-alive signal otherwise the free@home defive is marked as unresponsive. This keep-alive signal must be provided by a user script or set the TTL value of the virtual device to "-1" during the creation of the virtual device.
 
 # Tested SysAP Versions
 
 |Version|Supported|
 |---|---|
-|2.6.1+|yes|
+|2.6.1|yes|
+|2.6.3|yes|
+|3.1.1|yes|
 
 # Setup / Installation
 
@@ -64,10 +72,8 @@ The free@home bridge shall be added manually. Once it is added as a Thing with c
 The ABB/Busch free@home system is calling its smart home components as free@home devices.
 The free@home system devices can have one or multiple channels depending the device's features.
 During the scanning process the openHAB binding will detect only the devices IDs, the device features will be detected at the point in time, when a openHAB Thing is created.
-At the of the creation the free@home binding will generate automatically the relevant channels.
+At the of the creation the free@home binding will generate automatically the relevant channels without and further configuration.
 If a free@home system device has multiple smart-home  channels (e.g. 4x DIN/rail Actuator), the newly created Thing will get all relevant channels to operate all actuators existing inside the free@home device.
-
-`Actuator_Livingroom`
 
 ## Sensors and Actuators of free@home Devices as Things in openHAB
 
@@ -142,6 +148,8 @@ Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"
 ```
 
 # Communities
+
+[openhAB communitiy of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698/71)
 
 [Busch-Jaeger Community](https://community.busch-jaeger.de/)
 

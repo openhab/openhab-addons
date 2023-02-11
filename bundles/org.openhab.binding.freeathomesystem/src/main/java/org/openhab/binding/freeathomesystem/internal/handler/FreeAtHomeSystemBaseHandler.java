@@ -18,7 +18,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 
 /**
  * The {@link FreeAtHomeSystemBaseHandler} is the base class because state updates
@@ -42,9 +41,5 @@ public class FreeAtHomeSystemBaseHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // method stub
-    }
-
-    public void handleEventBasedUpdate(ChannelUID channelUID, State state) {
-        this.updateState(channelUID, state);
     }
 }

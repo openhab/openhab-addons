@@ -31,29 +31,40 @@ public class FreeAtHomeDatapoint {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapoint.class);
 
+    public static final int DATAPOINT_DIRECTION_UNKNOWN = 0;
     public static final int DATAPOINT_DIRECTION_INPUT = 1;
     public static final int DATAPOINT_DIRECTION_OUTPUT = 2;
     public static final int DATAPOINT_DIRECTION_INPUTOUTPUT = 3;
+    public static final int DATAPOINT_DIRECTION_INPUT_AS_OUTPUT = 4;
 
     public String channelId = "";
     private String datapointId = "";
 
-    boolean searchForDatapoint(int direction, int neededPairingIDFunction, String channelId,
+    int searchForDatapoint(int direction, int neededPairingIDFunction, String channelId,
             JsonObject jsonObjectOfChannel) {
+        int resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
         boolean foundedId = false;
         JsonObject localDataponits = null;
 
         switch (direction) {
             case DATAPOINT_DIRECTION_INPUT: {
                 localDataponits = jsonObjectOfChannel.getAsJsonObject("inputs");
+                resultingDirection = DATAPOINT_DIRECTION_INPUT;
+                break;
+            }
+            case DATAPOINT_DIRECTION_INPUT_AS_OUTPUT: {
+                localDataponits = jsonObjectOfChannel.getAsJsonObject("inputs");
+                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
             case DATAPOINT_DIRECTION_OUTPUT: {
                 localDataponits = jsonObjectOfChannel.getAsJsonObject("outputs");
+                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
             default: {
                 localDataponits = jsonObjectOfChannel.getAsJsonObject("outputs");
+                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
         }
@@ -84,11 +95,13 @@ public class FreeAtHomeDatapoint {
         if (!foundedId) {
             this.channelId = "";
             this.datapointId = "";
+            resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
 
-            logger.debug("Needed datapoint is not found - channel {} - datapoint {}", this.channelId, this.datapointId);
+            logger.debug("Needed datapoint is not found - channel {} - pairingId {}", channelId,
+                    neededPairingIDFunction);
         }
 
-        return foundedId;
+        return resultingDirection;
     }
 
     public String getChannelIdforDatapoint() {

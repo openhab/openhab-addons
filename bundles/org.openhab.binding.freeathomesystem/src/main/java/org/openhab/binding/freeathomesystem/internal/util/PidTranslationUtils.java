@@ -69,10 +69,10 @@ public class PidTranslationUtils {
         mapDescObj.put("0x0004", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
                 "Scene Control", "Recall or learn the set value related to encoded scene number"));
         mapDescObj.put("0x0006",
-                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
+                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_MOTION, "", "",
                         "Movement under consideration of brightness",
                         "Activation of an autonomous switch off function triggered by an movement detector"));
-        mapDescObj.put("0x0007", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0007", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_MOTION, "", "",
                 "Presence",
                 "Announces presence triggered by an movement detector to be used by e.g. RTCs. Is independent of brightness and can be used for alerts e.g."));
         mapDescObj.put("0x0010", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
@@ -81,7 +81,7 @@ public class PidTranslationUtils {
                 "Absolute Set Value", "Absolute control of the set value"));
         mapDescObj.put("0x0012", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                 "Night", "Toggle between day and night (where day = 0 / night = 1)"));
-        mapDescObj.put("0x0013", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_ENUM, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0013", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                 "invalid string id", "Resets load failures / short circuits / etc"));
         mapDescObj.put("0x0015", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                 "RGB color", "RGB Color coded in three bytes"));
@@ -101,20 +101,20 @@ public class PidTranslationUtils {
                 "100", "Set Absolute Position Blinds", "Moves the sunblinds into a specified position"));
         mapDescObj.put("0x0024", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_BLINDS, "0",
                 "100", "Set Absolute Position Slats", "Moves the slats into a specified position"));
-        mapDescObj.put("0x0025", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0025", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_WIND, "", "",
                 "Wind Alarm",
                 "State of the wind sensor (sent cyclically and on COV) Moves the sunblind to a secure position and to block it for any further control"));
-        mapDescObj.put("0x0026", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Frost Alarm",
+        mapDescObj.put("0x0026", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_TEMPERATURE, "",
+                "", "Frost Alarm",
                 "State of the frost sensor (sent cyclically and on COV) Moves the sunblind to a secure position and to block it for any further control"));
-        mapDescObj.put("0x0027", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0027", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_RAIN, "", "",
                 "Rain Alarm", "State of the rain sensor (sent cyclically and on COV)"));
         mapDescObj.put("0x0028", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
                 "Force-position blind", "Forces value dependent high priority up or down state"));
-        mapDescObj.put("0x0029", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_ENUM, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0029", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                 "Window/Door position", "Delivers position for Window/Door (Open / Tilted / Closed)"));
-        mapDescObj.put("0x0030", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Actuating Value Heating", "Determines the through flow volume of the control valve"));
+        mapDescObj.put("0x0030", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
+                "", "Actuating Value Heating", "Determines the through flow volume of the control valve"));
         mapDescObj.put("0x0031", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                 "Fan Level Heating", "Display value of the fan coil speed. (0=off / 1=lowest - 5=fastest)"));
         mapDescObj.put("0x0032", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
@@ -123,7 +123,7 @@ public class PidTranslationUtils {
                 "30", "Set Value Temperature", "Defines the displayed set point temperature of the system"));
         mapDescObj.put("0x0034", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
                 "30", "Relative Set Point Temperature", "Defines the relative set point temperature of the system"));
-        mapDescObj.put("0x0035", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_ENUM, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0035", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                 "Window/Door", "Open = 1 / closed = 0"));
         mapDescObj.put("0x0036", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
                 "", "Status indication", "states: on/off heating/cooling; eco/comfort; frost/not frost"));
@@ -237,7 +237,7 @@ public class PidTranslationUtils {
                 "", "Heating demand feedback signal", ""));
         mapDescObj.put("0x0150", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
                 "", "Cooling demand feedback signal", ""));
-        mapDescObj.put("0x0151", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_HUMIDITY, "", "",
+        mapDescObj.put("0x0151", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_HUMIDITY, "", "",
                 "Humidity", "Measured Humidity"));
         mapDescObj.put("0x0152", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                 "Aux On/Off request", "Aux On/Off request"));
@@ -289,19 +289,19 @@ public class PidTranslationUtils {
                 "Switch test alarm", "Switch Test Alarm"));
         mapDescObj.put("0x02C3", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                 "Fire alarm active", "Fire-Alarm Active"));
-        mapDescObj.put("0x0400", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Outside temperature", "Outdoor Temperature"));
-        mapDescObj.put("0x0401", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0400", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "",
+                "", "Outside temperature", "Outdoor Temperature"));
+        mapDescObj.put("0x0401", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_WIND, "", "",
                 "Wind force", "Wind force"));
-        mapDescObj.put("0x0402", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0402", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
                 "Brightness alarm", "Brightness alarm"));
-        mapDescObj.put("0x0403", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0403", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_UNDEFINED, "", "",
                 "Lux value", "Weatherstation brightness level"));
-        mapDescObj.put("0x0404", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0404", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_WIND, "", "",
                 "Wind speed", "Wind speed"));
-        mapDescObj.put("0x0405", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0405", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_RAIN, "", "",
                 "Rain detection", ""));
-        mapDescObj.put("0x0406", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+        mapDescObj.put("0x0406", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_RAIN, "", "",
                 "Rain sensor frequency", ""));
         mapDescObj.put("0x0440", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                 "Play", "Start playing"));
@@ -524,6 +524,24 @@ public class PidTranslationUtils {
         mapDescObj.put("0xFF04", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                 "Measured temperature 4", "For debug purposes"));
 
+        // new values missing original documentation
+        mapDescObj.put("0x061A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_PRESSURE, "", "",
+                "Air Quality - Pressure value", "Air quality sensor value - Pressure value"));
+        mapDescObj.put("0x061B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - CO2 value", "Air quality sensor value - CO2 value"));
+        mapDescObj.put("0x061C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - CO value", "Air quality sensor value - CO value"));
+        mapDescObj.put("0x061D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - NO2 value", "Air quality sensor value - NO2 value"));
+        mapDescObj.put("0x061E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - O3 value", "Air quality sensor value - O3 value"));
+        mapDescObj.put("0x061F", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - PM10 value", "Air quality sensor value - PM10 value"));
+        mapDescObj.put("0x0620", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - PM25 value", "Air quality sensor value - PM25 value"));
+        mapDescObj.put("0x0621", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
+                "Air Quality - VOC value", "Air quality sensor value - VOC value"));
+
         MAP_TRANSLATOR = Collections.unmodifiableMap(mapDescObj);
     }
 
@@ -531,55 +549,55 @@ public class PidTranslationUtils {
     public static String getShortTextForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.label;
+        return (desc != null) ? desc.label : "Unknown label";
     }
 
     @SuppressWarnings("null")
     public static String getDescriptionTextForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.descprition;
+        return (desc != null) ? desc.descprition : "Unknown description";
     }
 
     @SuppressWarnings("null")
     public static String getValueTypeForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.valueType;
+        return (desc != null) ? desc.valueType : PID_VALUETYPE_DECIMAL;
     }
 
     @SuppressWarnings("null")
     public static String getItemTypeForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.category;
+        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     @SuppressWarnings("null")
     public static String getCategoryForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.category;
+        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     @SuppressWarnings("null")
     public static String getPatternForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.category;
+        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     @SuppressWarnings("null")
     public static int getMax(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.max;
+        return (desc != null) ? desc.max : 1;
     }
 
     @SuppressWarnings("null")
     public static int getMin(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return desc.min;
+        return (desc != null) ? desc.min : 0;
     }
 }

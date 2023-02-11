@@ -35,6 +35,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -70,6 +71,7 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
     private static URI configDescriptionUriChannel;
 
     private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
+    private Map<ChannelUID, String> mapChannelUIDVal = new HashMap<ChannelUID, String>();
 
     public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider,
             FreeAtHomeChannelGroupTypeProvider channelGroupTypeProvider) {
@@ -124,55 +126,123 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
             return;
         }
 
-        if (command instanceof RefreshType) {
-            FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+        FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
 
-            String valueStr = freeAtHomeBridge.getDatapoint(deviceID, dpg.getOutputDatapoint().channelId,
-                    dpg.getOutputDatapoint().getDatapointId());
+        // is the dataponitgroup invalid
+        if (dpg == null) {
+            logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
+                    deviceID, channelUID.getAsString(), command.toFullString());
 
-            ValueStateConverter vsc = dpg.getValueStateConverter();
+            String errInfo = "Datapointgroup is not available in RefreshCommand - channel: " + channelUID.getAsString();
 
-            updateState(channelUID, vsc.convertToState(valueStr));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, errInfo);
         } else {
-            FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+            if (command instanceof RefreshType) {
+                String valueStr = "0";
 
-            ValueStateConverter vsc = dpg.getValueStateConverter();
+                // Check whether it is a INPUT only datapoint group
+                if (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT) {
+                    valueStr = freeAtHomeBridge.getDatapoint(deviceID, dpg.getInputDatapoint().channelId,
+                            dpg.getInputDatapoint().getDatapointId());
+                } else {
+                    valueStr = freeAtHomeBridge.getDatapoint(deviceID, dpg.getOutputDatapoint().channelId,
+                            dpg.getOutputDatapoint().getDatapointId());
+                }
 
-            State state = null;
+                ValueStateConverter vsc = dpg.getValueStateConverter();
 
-            if (command instanceof StopMoveType) {
-                valueString = "0";
+                updateState(channelUID, vsc.convertToState(valueStr));
+
+                // in case of virtual channels store the current value string
+                if (device.isVirtual()) {
+                    mapChannelUIDVal.put(channelUID, valueStr);
+                }
             } else {
-                state = ((State) command);
-                valueString = vsc.convertToValueString(state);
+                ValueStateConverter vsc = dpg.getValueStateConverter();
+
+                State state = null;
+
+                if (command instanceof StopMoveType) {
+                    valueString = "0";
+                } else {
+                    state = ((State) command);
+                    valueString = vsc.convertToValueString(state);
+                }
+
+                freeAtHomeBridge.setDatapoint(deviceID, dpg.getInputDatapoint().channelId,
+                        dpg.getInputDatapoint().getDatapointId(), valueString);
+
+                if (state != null) {
+                    updateState(channelUID, state);
+                } else {
+                    updateState(channelUID, new StringType("STOP"));
+                }
+
+                // in case of virtual channels store the current value string
+                if (device.isVirtual()) {
+                    logger.info("refresh virtual device state device: {} ch: {} val: {}", deviceID,
+                            channelUID.getAsString(), valueString);
+
+                    mapChannelUIDVal.put(channelUID, valueString);
+                }
             }
 
+            if (device.isScene()) {
+                // the scene can be triggered only therefore reset after 5 seconds
+                scheduler.execute(() -> {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
+                                channelUID.getAsString(), command.toFullString());
+                    }
+
+                    updateState(channelUID, OnOffType.OFF);
+                });
+            }
+
+            logger.debug("Handle command for device {} - at channel {} - full command {}", deviceID,
+                    channelUID.getAsString(), command.toFullString());
+        }
+    }
+
+    public void handleEventBasedUpdate(ChannelUID channelUID, State state) {
+        this.updateState(channelUID, state);
+    }
+
+    public void feedbackForVirtualDevice(ChannelUID channelUID, String valueString) {
+        FreeAtHomeBridgeHandler freeAtHomeBridge = null;
+
+        FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+
+        Bridge bridge = this.getBridge();
+
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+
+            if (handler instanceof FreeAtHomeBridgeHandler) {
+                freeAtHomeBridge = (FreeAtHomeBridgeHandler) handler;
+            }
+        }
+
+        if (freeAtHomeBridge != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+
+        if ((dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT)
+                || (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUTOUTPUT)) {
             freeAtHomeBridge.setDatapoint(deviceID, dpg.getInputDatapoint().channelId,
                     dpg.getInputDatapoint().getDatapointId(), valueString);
 
-            if (state != null) {
-                updateState(channelUID, state);
-            } else {
-                updateState(channelUID, new StringType("STOP"));
-            }
+            logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", deviceID,
+                    channelUID.getAsString(), valueString);
+        } else {
+            logger.debug("Handle feedback for virtual device {} - at channel {} - but only ubout DPG", deviceID,
+                    channelUID.getAsString());
         }
-
-        if (device.isScene()) {
-            // the scene can be triggered only therefore reset after 5 seconds
-            scheduler.execute(() -> {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
-                            channelUID.getAsString(), command.toFullString());
-                }
-
-                updateState(channelUID, OnOffType.OFF);
-            });
-        }
-
-        logger.debug("Handle command switch {} - at channel {} - full command {}", deviceID, channelUID.getAsString(),
-                command.toFullString());
     }
 
     public ChannelTypeUID createChannelTypeForDatapointgroup(FreeAtHomeDatapointGroup dpg,
@@ -406,5 +476,9 @@ public class FreeAtHomeDeviceHandler extends FreeAtHomeSystemBaseHandler {
         }
 
         mapChannelUID.clear();
+    }
+
+    public boolean isThingHandlesVirtualDevice() {
+        return device.isVirtual();
     }
 }

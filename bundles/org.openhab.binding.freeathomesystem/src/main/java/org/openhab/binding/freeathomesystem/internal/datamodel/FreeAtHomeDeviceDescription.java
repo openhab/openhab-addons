@@ -113,10 +113,14 @@ public class FreeAtHomeDeviceDescription {
             for (String nextChannel : jsonObjectOfChannels.keySet()) {
                 FreeAtHomeDeviceChannel newChannel = new FreeAtHomeDeviceChannel();
 
-                newChannel.createChannelFromJson(deviceLabel, nextChannel, jsonObjectOfChannels, sceneIsDetected,
-                        ruleIsDetected);
+                if (newChannel.createChannelFromJson(deviceLabel, nextChannel, jsonObjectOfChannels, sceneIsDetected,
+                        ruleIsDetected)) {
+                    if (interfaceType == DEVICE_INTERFACE_VIRTUAL_TYPE) {
+                        newChannel.applyChangesForVirtualDevice();
+                    }
 
-                listOfChannels.add(newChannel);
+                    listOfChannels.add(newChannel);
+                }
             }
         }
     }
@@ -127,6 +131,10 @@ public class FreeAtHomeDeviceDescription {
 
     public boolean isScene() {
         return sceneIsDetected;
+    }
+
+    public boolean isVirtual() {
+        return (interfaceType == DEVICE_INTERFACE_VIRTUAL_TYPE) ? true : false;
     }
 
     public int getNumberOfChannels() {

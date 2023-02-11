@@ -57,10 +57,11 @@ public class FreeAtHomeDatapointGroup {
     boolean addDatapointToGroup(int direction, int neededPairingId, String channelId, JsonObject jsonObjectOfChannel) {
         FreeAtHomeDatapoint newDatapoint = new FreeAtHomeDatapoint();
 
-        boolean result = newDatapoint.searchForDatapoint(direction, neededPairingId, channelId, jsonObjectOfChannel);
+        int resultingDirection = newDatapoint.searchForDatapoint(direction, neededPairingId, channelId,
+                jsonObjectOfChannel);
 
-        if (result) {
-            switch (direction) {
+        if (resultingDirection != DATAPOINT_DIRECTION_UNKNOWN) {
+            switch (resultingDirection) {
                 case DATAPOINT_DIRECTION_INPUT: {
                     inputDatapoint = newDatapoint;
 
@@ -94,7 +95,32 @@ public class FreeAtHomeDatapointGroup {
             }
         }
 
-        return true;
+        return (resultingDirection != DATAPOINT_DIRECTION_UNKNOWN) ? true : false;
+    }
+
+    public void applyChangesForVirtualDevice() {
+        // The input and output datapoints are ment from the device point of view. Because the virtual dvices are
+        // outside of the free@home system the input and output datapoint must be switched
+        FreeAtHomeDatapoint localDatapoint = inputDatapoint;
+
+        inputDatapoint = outputDatapoint;
+        outputDatapoint = localDatapoint;
+
+        if (inputDatapoint != null && outputDatapoint != null) {
+            datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUTOUTPUT;
+        } else {
+            if (inputDatapoint == null && outputDatapoint != null) {
+                datapointGroupDirection = DATAPOINTGROUP_DIRECTION_OUTPUT;
+            } else {
+                if (inputDatapoint != null && outputDatapoint == null) {
+                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUT;
+                } else {
+                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_UNDEFINED;
+                }
+            }
+        }
+
+        return;
     }
 
     public FreeAtHomeDatapoint getInputDatapoint() {
@@ -156,7 +182,17 @@ public class FreeAtHomeDatapointGroup {
     }
 
     public boolean isReadOnly() {
-        return (DATAPOINTGROUP_DIRECTION_INPUTOUTPUT == datapointGroupDirection) ? false : true;
+        boolean result = true;
+
+        if (DATAPOINTGROUP_DIRECTION_INPUTOUTPUT == datapointGroupDirection) {
+            result = false;
+        }
+
+        if (DATAPOINTGROUP_DIRECTION_INPUT == datapointGroupDirection) {
+            result = false;
+        }
+
+        return result;
     }
 
     public int getMax() {

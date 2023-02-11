@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -122,6 +123,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      * @author Andras Uhrin
      *
      */
+    @SuppressWarnings("deprecation")
     public @Nullable List<String> getDeviceDeviceList() {
         boolean ret = false;
 
@@ -542,12 +544,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         try {
             // Start socket client
             if ((websocketClient != null) && (socket != null)) {
+                websocketClient.setMaxTextMessageBufferSize(8 * 1024);
+                websocketClient.setMaxIdleTimeout(BRIDGE_WEBSOCKET_RECONNECT_DELAY * 60 * 1000);
                 websocketClient.start();
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
                 request.setTimeout(BRIDGE_WEBSOCKET_RECONNECT_DELAY, TimeUnit.SECONDS);
                 websocketClient.connect(socket, uri, request);
-                websocketClient.setMaxIdleTimeout(3000000);
 
                 logger.debug("Websocket connection to SysAP is OK");
 
@@ -633,7 +636,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         }
 
         if (websocketClient == null) {
-            websocketClient = new WebSocketClient();
+            websocketClient = new WebSocketClient(httpClient);
 
             if (websocketClient != null) {
                 websocketClient.setExecutor(jettyThreadPool);
@@ -723,6 +726,17 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
         FreeAtHomeBridgeHandler.freeAtHomeSystemHandler = this;
+    }
+
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+
+        // load configuration
+        FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
+
+        ipAddress = locConfig.ipaddress;
+        password = locConfig.password;
+        username = locConfig.username;
     }
 
     /**

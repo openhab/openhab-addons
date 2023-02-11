@@ -92,7 +92,15 @@ public class ChannelUpdateHandler {
         if (datapointElement != null) {
             State state = datapointElement.valueStateConverter.convertToState(valueString);
 
-            datapointElement.thingHandler.handleEventBasedUpdate(datapointElement.channelUID, state);
+            FreeAtHomeDeviceHandler deviceHandler = (FreeAtHomeDeviceHandler) datapointElement.thingHandler;
+
+            // Handle state change
+            deviceHandler.handleEventBasedUpdate(datapointElement.channelUID, state);
+
+            // if it is virtual device, give a feedback to free@home also
+            if (deviceHandler.isThingHandlesVirtualDevice()) {
+                deviceHandler.feedbackForVirtualDevice(datapointElement.channelUID, valueString);
+            }
 
             ret = true;
         }
