@@ -1,0 +1,50 @@
+[
+    {
+        "appVehicleType": "DEMO",
+        "attributes": {
+            "a4aType": "BLUETOOTH",
+            "bodyType": "G70",
+            "brand": "BMW",
+            "color": 4284900182,
+            "countryOfOrigin": "DE",
+            "driveTrain": "ELECTRIC",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            },
+            "headUnitRaw": "MGU_02_L",
+            "headUnitType": "MGU",
+            "hmiVersion": "ID8",
+            "lastFetched": "2023-01-04T15:03:07.150Z",
+            "model": "i7 xDrive60",
+            "softwareVersionCurrent": {
+                "iStep": 505,
+                "puStep": {
+                    "month": 7,
+                    "year": 22
+                },
+                "seriesCluster": "G070"
+            },
+            "softwareVersionExFactory": {
+                "iStep": 450,
+                "puStep": {
+                    "month": 7,
+                    "year": 22
+                },
+                "seriesCluster": "G070"
+            },
+            "telematicsUnit": "WAVE01",
+            "year": 2022
+        },
+        "mappingInfo": {
+            "isAssociated": false,
+            "isLmmEnabled": false,
+            "isPrimaryUser": true,
+            "lmmStatusReasons": [],
+            "mappingStatus": "CONFIRMED"
+        },
+        "vin": "anonymousBEV5"
+    }
+]

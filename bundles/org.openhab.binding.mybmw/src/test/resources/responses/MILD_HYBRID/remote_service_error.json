@@ -1,0 +1,11 @@
+{
+    "eventStatus": "ERROR",
+    "errorDetails": {
+        "title": null,
+        "description": null,
+        "presentationType": "DIALOG",
+        "iconId": null,
+        "isRetriable": false,
+        "errorDetails": "<no error returned>"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "description": "januari 2023",
+    "optStateType": "OPT_IN_WITH_SESSIONS",
+    "statistics": {
+        "totalEnergyCharged": 142,
+        "totalEnergyChargedSemantics": "In totaal circa 142 kilowattuur geladen",
+        "symbol": "~",
+        "numberOfChargingSessions": 7,
+        "numberOfChargingSessionsSemantics": "7 laadprocessen"
+    }
+}
