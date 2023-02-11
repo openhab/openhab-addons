@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataMenu;
+import org.openhab.binding.siemenshvac.internal.Metadata.SiemensHvacMetadataPointChild;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -123,9 +124,43 @@ public class UidUtils {
      */
     public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) {
 
-        String shortDesc = sanetizeId(dpt.getShortDesc());
-        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID,
-                String.format("%s_%s_%s", dpt.getDptType(), dpt.getId(), shortDesc));
+        String type = dpt.getDptType();
+        String id = "";
+
+        if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(type)) {
+            StringBuilder builder = new StringBuilder();
+            int idx = 0;
+            for (SiemensHvacMetadataPointChild child : dpt.getChild()) {
+
+                if (idx > 0) {
+                    builder.append("_");
+                }
+
+                String opt = child.getText();
+                String[] subParts = opt.split(" ");
+                for (String subPart : subParts) {
+                    if (subPart.length() > 0) {
+                        builder.append(subPart.charAt(0));
+                    }
+                }
+                idx++;
+
+            }
+            String token = sanetizeId(builder.toString());
+
+            id = String.format("%s_%s", type, token);
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_NUMERIC.equals(type)) {
+            id = sanetizeId(String.format("%s_%s_%s_%s_%s_%s", type, dpt.getDptUnit(), dpt.getMin(), dpt.getMax(),
+                    dpt.getFieldWitdh(), dpt.getResolution()));
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_STRING.equals(type)) {
+            id = String.format("%s_%s", type, dpt.getMaxLength());
+        } else {
+            id = String.format("%s", dpt.getDptType());
+        }
+
+        // dpt.Display();
+
+        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, id);
     }
 
     /**
