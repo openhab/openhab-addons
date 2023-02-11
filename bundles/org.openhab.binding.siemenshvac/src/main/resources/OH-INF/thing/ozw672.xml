@@ -29,5 +29,70 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+	
+	 <channel-type id="Numeric">
+        <item-type>Number</item-type>
+        <label>Numeric</label>
+        <description>A numeric value</description>
+     </channel-type>
+     <channel-type id="String_16">
+        <item-type>String</item-type>
+        <label>String 16 char</label>
+        <description>A string with 16 characters</description>
+     </channel-type>
+     <channel-type id="String">
+        <item-type>String</item-type>
+        <label>String</label>
+        <description>A string with unlimited characters</description>
+     </channel-type>
+     <channel-type id="TimeOfDay">
+        <item-type>TimeOfDay</item-type>
+        <label>TimeOfDay</label>
+        <description>TimeOfDay</description>
+     </channel-type>
+      <channel-type id="Datetime">
+        <item-type>DateTime</item-type>
+        <label>DateTime</label>
+        <description>DateTime</description>
+     </channel-type>
+     <channel-type id="RadioButton">
+        <item-type>RadioButton</item-type>
+        <label>RadioButton</label>
+        <description>RadioButton</description>
+     </channel-type>
+     <channel-type id="Scheduler">
+        <item-type>Scheduler</item-type>
+        <label>Scheduler</label>
+        <description>Scheduler</description>
+     </channel-type>
+     <channel-type id="Temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current temperature in degrees celsius</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f °C" min="-100" max="+100" step="0.1">
+        </state>
+      </channel-type>
+     <channel-type id="Setpoint">
+        <item-type>Number</item-type>
+        <label>Setpoint</label>
+        <description>Current setpoint temperature in degrees Celsius</description>
+        <category>Temperature</category> 
+        <state readOnly="true" pattern="%.1f °C" min="0" max="+30" step="0.5">
+        </state>
+      </channel-type>
+      <channel-type id="Regime">
+        <item-type>Number</item-type>
+        <label>Regime</label>
+        <command>
+            <options>
+                <option value="0">Mode protection</option>
+                <option value="1">Automatique</option>
+                <option value="2">Réduit</option>
+                <option value="3">Confort</option>                
+            </options>
+        </command>
+       </channel-type>
+     
 
 </thing:thing-descriptions>
