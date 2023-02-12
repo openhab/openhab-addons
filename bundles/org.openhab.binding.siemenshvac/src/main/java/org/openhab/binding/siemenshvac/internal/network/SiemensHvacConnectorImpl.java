@@ -238,7 +238,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         if (config.containsKey("baseUrl")) {
             baseUrl = (String) config.get("baseUrl");
-
+        }
 
         if (config.containsKey("userName")) {
             userName = (String) config.get("userName");
@@ -365,7 +365,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 mUri = mUri + "SessionId=" + sessionId;
             }
 
-            logger.info("Execute request: {}", uri);
+            logger.debug("Execute request: {}", uri);
             CookieStore c = httpClient.getCookieStore();
             java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
             cookie.setPath("/");
