@@ -100,7 +100,6 @@ Import-Package: \
 	org.openhab.binding.mqtt.homie;version='[4.0.0,4.0.1)',\
 	org.openhab.binding.mqtt.homie.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
-	org.openhab.core.binding.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.xml;version='[4.0.0,4.0.1)',\
