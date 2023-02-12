@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.discovery;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
-
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.HomeNode;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
@@ -49,15 +48,20 @@ public class NodeConfigurationBuilder {
     public Optional<DiscoveryResultBuilder> configure(ThingUID bridgeUID, HomeNode node) {
         DiscoveryResultBuilder discoveryResultBuilder = null;
         try {
-            if (THING_BASIC_SHUTTER.equals(node.category())) {
-                ThingUID basicShutterUID = new ThingUID(THING_TYPE_BASIC_SHUTTER, bridgeUID,
-                        Integer.toString(node.id()));
-                discoveryResultBuilder = DiscoveryResultBuilder.create(basicShutterUID);
-                BasicShutterConfiguration.configure(discoveryResultBuilder, node);
-            } else if (THING_SHUTTER.equals(node.category())) {
-                ThingUID shutterUID = new ThingUID(THING_TYPE_SHUTTER, bridgeUID, Integer.toString(node.id()));
-                discoveryResultBuilder = DiscoveryResultBuilder.create(shutterUID);
-                ShutterConfiguration.configure(discoveryResultBuilder, node);
+            if (node.category() != Category.UNKNOWN) {
+                String id = Integer.toString(node.id());
+                ThingUID thingUID = new ThingUID(node.category().getThingTypeUID(), bridgeUID, id);
+                discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID);
+                switch (node.category()) {
+                    case BASIC_SHUTTER:
+                        BasicShutterConfiguration.configure(discoveryResultBuilder, node);
+                        break;
+                    case SHUTTER:
+                        ShutterConfiguration.configure(discoveryResultBuilder, node);
+                        break;
+                    default:
+                        break;
+                }
             }
         } catch (FreeboxException e) {
             logger.warn("Error while requesting data for home things discovery : {}", e.getMessage());

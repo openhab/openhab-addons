@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.BINDING_ID;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,7 +21,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointUi.AccessType;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointUi.DisplayType;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.JsonElement;
 
@@ -40,7 +45,24 @@ public class HomeManager extends RestManager {
     public static class HomeNodesResponse extends Response<HomeNode> {
     }
 
-    private static record EndpointUi(String access) {
+    public static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
+        public static enum AccessType {
+            R,
+            W,
+            RW,
+            UNKNOWN;
+        }
+
+        public static enum DisplayType {
+            TEXT,
+            ICON,
+            BUTTON,
+            SLIDER,
+            TOGGLE,
+            COLOR,
+            WARNING,
+            UNKNOWN;
+        }
     }
 
     public static record EndpointValue<T> (T value) {
@@ -79,8 +101,8 @@ public class HomeManager extends RestManager {
         UNKNOWN;
     }
 
-    public static record Endpoint(int id, @Nullable String name, @Nullable String label, EpType epType,
-            Visibility visibility, int refresh, ValueType valueType, EndpointUi ui) {
+    public static record Endpoint(int id, String name, String label, EpType epType, Visibility visibility, int refresh,
+            ValueType valueType, EndpointUi ui, @Nullable String category, Object value) {
         private static enum Visibility {
             INTERNAL,
             NORMAL,
@@ -97,7 +119,26 @@ public class HomeManager extends RestManager {
         UNKNOWN;
     }
 
-    public static record HomeNode(int id, @Nullable String name, @Nullable String label, @Nullable String category,
+    public static enum Category {
+        BASIC_SHUTTER,
+        SHUTTER,
+        ALARM,
+        KFB,
+        CAMERA,
+        UNKNOWN;
+
+        private final ThingTypeUID thingTypeUID;
+
+        Category() {
+            thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase());
+        }
+
+        public ThingTypeUID getThingTypeUID() {
+            return thingTypeUID;
+        }
+    }
+
+    public static record HomeNode(int id, @Nullable String name, @Nullable String label, Category category,
             Status status, List<Endpoint> showEndpoints) {
     }
 
@@ -107,6 +148,10 @@ public class HomeManager extends RestManager {
 
     public List<HomeNode> getHomeNodes() throws FreeboxException {
         return get(HomeNodesResponse.class, NODES_PATH);
+    }
+
+    public HomeNode getHomeNode(int nodeId) throws FreeboxException {
+        return getSingle(HomeNodesResponse.class, NODES_PATH, Integer.toString(nodeId));
     }
 
     public <T> @Nullable EndpointState getEndpointsState(int nodeId, int stateSignalId) throws FreeboxException {

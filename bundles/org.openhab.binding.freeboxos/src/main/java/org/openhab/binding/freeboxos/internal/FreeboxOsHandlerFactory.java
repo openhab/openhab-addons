@@ -23,14 +23,18 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
+import org.openhab.binding.freeboxos.internal.handler.AlarmHandler;
 import org.openhab.binding.freeboxos.internal.handler.BasicShutterHandler;
 import org.openhab.binding.freeboxos.internal.handler.CallHandler;
+import org.openhab.binding.freeboxos.internal.handler.CameraHandler;
 import org.openhab.binding.freeboxos.internal.handler.DectHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeplugHandler;
 import org.openhab.binding.freeboxos.internal.handler.FxsHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
+import org.openhab.binding.freeboxos.internal.handler.KeyfobHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
 import org.openhab.binding.freeboxos.internal.handler.RevolutionHandler;
@@ -145,10 +149,16 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             return new ActivePlayerHandler(thing);
         } else if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             return new PlayerHandler(thing);
-        } else if (THING_TYPE_BASIC_SHUTTER.equals(thingTypeUID)) {
+        } else if (Category.BASIC_SHUTTER.getThingTypeUID().equals(thingTypeUID)) {
             return new BasicShutterHandler(thing);
-        } else if (THING_TYPE_SHUTTER.equals(thingTypeUID)) {
+        } else if (Category.SHUTTER.getThingTypeUID().equals(thingTypeUID)) {
             return new ShutterHandler(thing);
+        } else if (Category.ALARM.getThingTypeUID().equals(thingTypeUID)) {
+            return new AlarmHandler(thing);
+        } else if (Category.KFB.getThingTypeUID().equals(thingTypeUID)) {
+            return new KeyfobHandler(thing);
+        } else if (Category.CAMERA.getThingTypeUID().equals(thingTypeUID)) {
+            return new CameraHandler(thing);
         }
 
         return null;

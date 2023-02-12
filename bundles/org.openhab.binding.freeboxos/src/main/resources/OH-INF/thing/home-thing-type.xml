@@ -37,4 +37,27 @@
 
 		<config-description-ref uri="thing-type:freeboxos:shutter"/>
 	</thing-type>
+
+	<thing-type id="alarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Alarm</label>
+		<description>The Alarm system configured in your Freebox Delta Server</description>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds which is used to poll given virtual machine</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>ID</label>
+				<description>Id of the Virtual Machine</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>
