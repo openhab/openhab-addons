@@ -5,7 +5,6 @@ Fragment-Host: org.openhab.binding.hue
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.hue.tests',\
-	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml',\
 	bnd.identity;id='org.eclipse.jdt.annotation'
 
@@ -70,7 +69,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.binding.hue;version='[4.0.0,4.0.1)',\
 	org.openhab.binding.hue.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
-	org.openhab.core.binding.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery.mdns;version='[4.0.0,4.0.1)',\

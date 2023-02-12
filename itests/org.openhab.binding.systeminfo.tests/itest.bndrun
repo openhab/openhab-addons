@@ -5,7 +5,6 @@ Fragment-Host: org.openhab.binding.systeminfo
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.systeminfo.tests',\
-	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml'
 
 # We would like to use the "volatile" storage only
@@ -68,7 +67,6 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.openhab.binding.systeminfo;version='[4.0.0,4.0.1)',\
 	org.openhab.binding.systeminfo.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
-	org.openhab.core.binding.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.xml;version='[4.0.0,4.0.1)',\

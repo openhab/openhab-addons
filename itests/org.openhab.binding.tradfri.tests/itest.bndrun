@@ -5,7 +5,6 @@ Fragment-Host: org.openhab.binding.tradfri
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.tradfri.tests',\
-	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml'
 
 # We would like to use the "volatile" storage only
@@ -69,7 +68,6 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.openhab.binding.tradfri;version='[4.0.0,4.0.1)',\
 	org.openhab.binding.tradfri.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
-	org.openhab.core.binding.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery.mdns;version='[4.0.0,4.0.1)',\

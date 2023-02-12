@@ -13,7 +13,6 @@ Import-Package: \
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.mqtt.homie.tests',\
-	bnd.identity;id='org.openhab.core.binding.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml'
 
 # We would like to use the "volatile" storage only
