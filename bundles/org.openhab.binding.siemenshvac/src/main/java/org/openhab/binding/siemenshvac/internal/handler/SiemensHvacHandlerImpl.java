@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.siemenshvac.internal.handler;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -42,6 +43,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,6 +299,46 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
         }
     }
 
+    private Command applyState(ChannelType tp, Command command) {
+        StateDescription sd = tp.getState();
+        Command result = command;
+
+        if (sd != null) {
+            BigDecimal maxb = sd.getMaximum();
+            BigDecimal minb = sd.getMinimum();
+            BigDecimal step = sd.getStep();
+
+            if (command instanceof DecimalType) {
+                DecimalType bdc = (DecimalType) command;
+                double v1 = bdc.doubleValue();
+                if (step != null) {
+                    int divider = 1;
+                    if (step.floatValue() == 0.5) {
+                        divider = 2;
+                    } else if (step.floatValue() == 0.1) {
+                        divider = 10;
+                    } else if (step.floatValue() == 0.01) {
+                        divider = 100;
+                    }
+                    v1 = v1 * divider;
+                    v1 = Math.floor(v1);
+                    v1 = v1 / divider;
+                }
+
+                if (minb != null && v1 < minb.floatValue()) {
+                    v1 = minb.floatValue();
+                }
+                if (maxb != null && v1 > maxb.floatValue()) {
+                    v1 = maxb.floatValue();
+                }
+
+                result = new DecimalType("" + v1);
+
+            }
+        }
+        return result;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
@@ -312,6 +354,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
                 return;
             }
 
+            Command commandVar = command;
             ChannelType tp = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
 
             if (tp == null) {
@@ -336,12 +379,15 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler implements SiemensH
             }
 
             if (command instanceof State) {
-                State state = (State) command;
+
+                commandVar = applyState(tp, commandVar);
+                State state = (State) commandVar;
+
                 this.updateState(channelUID, state);
             }
 
             if (id != null && type != null) {
-                WriteDp(id, command, dptType);
+                WriteDp(id, commandVar, dptType);
             }
         }
     }
