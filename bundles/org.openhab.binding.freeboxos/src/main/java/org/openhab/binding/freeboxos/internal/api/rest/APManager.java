@@ -223,8 +223,15 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
     public List<Station> getStations() throws FreeboxException {
         List<Station> hosts = new ArrayList<>();
         for (WifiAp ap : getDevices()) {
+<<<<<<< Upstream, based on origin/main
             hosts.addAll(getApStations(ap.id));
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+            List<Station> stations = getApStations(ap.id);
+            if (stations != null) {
+                hosts.addAll(stations);
+            }
+>>>>>>> 6340384 Commiting work
         }
         return hosts;
     }

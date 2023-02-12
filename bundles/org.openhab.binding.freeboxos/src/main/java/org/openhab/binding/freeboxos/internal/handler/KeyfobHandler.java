@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
+<<<<<<< Upstream, based on origin/main
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,5 +61,38 @@ public class KeyfobHandler extends HomeNodeHandler {
             return getManager(HomeManager.class).putCommand(getClientId(), intValue, onOff);
         }
         return false;
+=======
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
+
+/**
+ * The {@link KeyfobHandler} is responsible for handling everything associated to
+ * any Freebox Home keyfob thing type.
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class KeyfobHandler extends ApiConsumerHandler {
+
+    public KeyfobHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+    }
+
+    @Override
+    protected void internalPoll() throws FreeboxException {
+    }
+
+    @Override
+    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
+        return super.internalHandleCommand(channelId, command);
+>>>>>>> 6340384 Commiting work
     }
 }

@@ -43,7 +43,7 @@ public class ShutterConfiguration extends ClientConfiguration {
             throws FreeboxException {
         for (Endpoint endPoint : homeNode.showEndpoints()) {
             String name = endPoint.name();
-            if (EpType.SLOT.equals(endPoint.epType()) && name != null) {
+            if (EpType.SLOT.equals(endPoint.epType())) {
                 switch (name) {
                     case "position_set":
                         discoveryResultBuilder.withProperty(POSITION_SLOT_ID, endPoint.id());
@@ -57,7 +57,7 @@ public class ShutterConfiguration extends ClientConfiguration {
                     default:
                         throw new FreeboxException("Unexpected endpoint name :" + name);
                 }
-            } else if (EpType.SIGNAL.equals(endPoint.epType()) && name != null) {
+            } else if (EpType.SIGNAL.equals(endPoint.epType())) {
                 switch (name) {
                     case "position_set":
                         discoveryResultBuilder.withProperty(POSITION_SIGNAL_ID, endPoint.id());

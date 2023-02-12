@@ -41,7 +41,7 @@ public class BasicShutterConfiguration extends ClientConfiguration {
             throws FreeboxException {
         for (Endpoint endPoint : homeNode.showEndpoints()) {
             String name = endPoint.name();
-            if (EpType.SLOT.equals(endPoint.epType()) && name != null) {
+            if (EpType.SLOT.equals(endPoint.epType())) {
                 switch (name) {
                     case "up":
                         discoveryResultBuilder.withProperty(UP_SLOT_ID, endPoint.id());

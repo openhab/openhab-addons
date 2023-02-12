@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
+<<<<<<< Upstream, based on origin/main
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.UpDownType;
@@ -197,6 +198,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+=======
+>>>>>>> 6340384 Commiting work
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.UpDownType;
@@ -216,7 +219,7 @@ public class FreeboxOsBindingConstants {
     // List of all Bridge Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
 
-    //
+    // Thing Types ID strings
     public static String THING_FREEPLUG = "freeplug";
     public static String THING_VM = "vm";
     public static String THING_DECT = "dect";
@@ -225,8 +228,6 @@ public class FreeboxOsBindingConstants {
     public static String THING_HOST = "host";
     public static String THING_PLAYER = "player";
     public static String THING_REPEATER = "repeater";
-    public static String THING_BASIC_SHUTTER = "basic_shutter";
-    public static String THING_SHUTTER = "shutter";
     public static String THING_REVOLUTION = "revolution";
     public static String THING_DELTA = "delta";
     public static String THING_WIFI_HOST = "wifihost";
@@ -245,18 +246,18 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACTIVE_PLAYER = new ThingTypeUID(BINDING_ID, THING_ACTIVE_PLAYER);
     public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, THING_VM);
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, THING_REPEATER);
-    public static final ThingTypeUID THING_TYPE_BASIC_SHUTTER = new ThingTypeUID(BINDING_ID, THING_BASIC_SHUTTER);
-    public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, THING_SHUTTER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UIDS = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
             THING_TYPE_HOST, THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA,
-            THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG,
-            THING_TYPE_BASIC_SHUTTER, THING_TYPE_SHUTTER);
+            THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG);
+    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.getThingTypeUID(),
+            Category.SHUTTER.getThingTypeUID(), Category.KFB.getThingTypeUID(), Category.CAMERA.getThingTypeUID(),
+            Category.ALARM.getThingTypeUID());
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(BRIDGE_TYPE_UIDS.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
+            .of(BRIDGE_TYPE_UIDS, THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet());
 
     // Thing properties
     // public static final String LAST_CALL_TIMESTAMP = "lastCallTimestamp";
