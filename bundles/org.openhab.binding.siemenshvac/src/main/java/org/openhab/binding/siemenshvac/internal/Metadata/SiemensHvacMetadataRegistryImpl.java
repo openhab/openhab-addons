@@ -263,7 +263,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if (root == null && lcHvacConnector != null) {
-            logger.info("siemensHvac:Initialization():Begin");
+            logger.info("siemensHvac:Initialization():Begin_0001");
 
             logger.info("siemensHvac:Initialization():ReadCache");
             LoadMetaDataFromCache();
@@ -380,8 +380,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                         if (channelType != null) {
                                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id,
                                                     channelType.getUID()).withLabel(dataPoint.getShortDesc())
-                                                            .withDescription(dataPoint.getLongDesc())
-                                                            .withProperties(props).build();
+                                                    .withDescription(dataPoint.getLongDesc()).withProperties(props)
+                                                    .build();
 
                                             channelDefinitions.add(channelDef);
                                         }
