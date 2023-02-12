@@ -143,12 +143,12 @@ public class DeviceThingHandler extends BaseThingHandler {
 
         Resource newResource;
         switch (channelUID.getId()) {
-            case HueBindingConstants.CHANNEL_COLORTEMPERATURE:
+            case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
                 newResource = new Resource(ResourceType.LIGHT).setColorTemperaturePercent(command,
                         mirekSchemaFrom(ResourceType.LIGHT));
                 break;
 
-            case HueBindingConstants.CHANNEL_COLORTEMPERATURE_ABS:
+            case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS:
                 newResource = new Resource(ResourceType.LIGHT).setColorTemperatureKelvin(command);
                 break;
 
@@ -164,15 +164,15 @@ public class DeviceThingHandler extends BaseThingHandler {
                 newResource = new Resource(ResourceType.LIGHT).setSwitch(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_TEMPERATURE_ENABLED:
+            case HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED:
                 newResource = new Resource(ResourceType.TEMPERATURE).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_MOTION_ENABLED:
+            case HueBindingConstants.CHANNEL_2_MOTION_ENABLED:
                 newResource = new Resource(ResourceType.MOTION).setEnabled(command);
                 break;
 
-            case HueBindingConstants.CHANNEL_LIGHT_LEVEL_ENABLED:
+            case HueBindingConstants.CHANNEL_2_LIGHT_LEVEL_ENABLED:
                 newResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
@@ -313,59 +313,59 @@ public class DeviceThingHandler extends BaseThingHandler {
         switch (resource.getType()) {
             case BUTTON:
                 if (fullUpdate) {
-                    supportedChannelIds.add(HueBindingConstants.CHANNEL_BUTTON_LAST_EVENT);
+                    supportedChannelIds.add(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT);
                 }
                 resource.addControlIdToMap(controlIds);
                 State buttonState = resource.getButtonEventState(controlIds);
-                updateState(HueBindingConstants.CHANNEL_BUTTON_LAST_EVENT, buttonState, fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_BUTTON_LAST_EVENT, buttonState, fullUpdate);
                 break;
 
             case DEVICE_POWER:
-                updateState(HueBindingConstants.CHANNEL_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
                 break;
 
             case LIGHT:
-                updateState(HueBindingConstants.CHANNEL_COLORTEMPERATURE,
+                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE,
                         resource.getColorTemperaturePercentState(mirekSchemaFrom(resource)), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_COLORTEMPERATURE_ABS, resource.getColorTemperatureKelvinState(),
-                        fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS,
+                        resource.getColorTemperatureKelvinState(), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_COLOR, resource.getColorState(), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_SWITCH, resource.getSwitch(), fullUpdate);
                 break;
 
             case LIGHT_LEVEL:
-                updateState(HueBindingConstants.CHANNEL_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_LIGHT_LEVEL_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case MOTION:
-                updateState(HueBindingConstants.CHANNEL_MOTION, resource.getMotionState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_MOTION_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case RELATIVE_ROTARY:
                 if (fullUpdate) {
-                    supportedChannelIds.add(HueBindingConstants.CHANNEL_ROTARY_STEPS);
+                    supportedChannelIds.add(HueBindingConstants.CHANNEL_2_ROTARY_STEPS);
                 }
-                updateState(HueBindingConstants.CHANNEL_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_ROTARY_STEPS, resource.getRotaryStepsState(), fullUpdate);
                 break;
 
             case TEMPERATURE:
                 updateState(HueBindingConstants.CHANNEL_TEMPERATURE, resource.getTemperatureState(), fullUpdate);
-                updateState(HueBindingConstants.CHANNEL_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
-                updateState(HueBindingConstants.CHANNEL_ZIGBEE_STATUS, resource.getZigBeeState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS, resource.getZigBeeState(), fullUpdate);
                 break;
 
             default:
                 return false;
         }
-        updateState(HueBindingConstants.CHANNEL_LAST_UPDATED, new DateTimeType(), fullUpdate);
+        updateState(HueBindingConstants.CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         return true;
     }
 
@@ -387,7 +387,7 @@ public class DeviceThingHandler extends BaseThingHandler {
                             "@text/offline.clip2.communication-error.zigbee-connectivity-issue");
                     // change all channel states, except the ZigBee channel itself, to undefined
                     for (String channelId : supportedChannelIds) {
-                        if (!HueBindingConstants.CHANNEL_ZIGBEE_STATUS.equals(channelId)) {
+                        if (!HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS.equals(channelId)) {
                             updateState(channelId, UnDefType.UNDEF);
                         }
                     }
@@ -395,7 +395,7 @@ public class DeviceThingHandler extends BaseThingHandler {
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 // one single refresh command will update all channels
-                Channel zigBeeChannel = thing.getChannel(HueBindingConstants.CHANNEL_ZIGBEE_STATUS);
+                Channel zigBeeChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS);
                 if (Objects.nonNull(zigBeeChannel)) {
                     handleCommand(zigBeeChannel.getUID(), RefreshType.REFRESH);
                 }

@@ -121,11 +121,17 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // channels for CLIP 2
-    public static final String CHANNEL_BUTTON_LAST_EVENT = "buttonLastEvent";
-    public static final String CHANNEL_TEMPERATURE_ENABLED = "temperatureEnabled";
-    public static final String CHANNEL_MOTION = "motion";
-    public static final String CHANNEL_MOTION_ENABLED = "motionEnabled";
-    public static final String CHANNEL_LIGHT_LEVEL_ENABLED = "lightLevelEnabled";
-    public static final String CHANNEL_ZIGBEE_STATUS = "zigbeeStatus";
-    public static final String CHANNEL_ROTARY_STEPS = "rotarySteps";
+    public static final String CHANNEL_2_BATTERY_LEVEL = "batterylevel";
+    public static final String CHANNEL_2_BATTERY_LOW = "batterylow";
+    public static final String CHANNEL_2_BUTTON_LAST_EVENT = "buttonLastEvent";
+    public static final String CHANNEL_2_COLOR_TEMPERATURE = "colorTemperature";
+    public static final String CHANNEL_2_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
+    public static final String CHANNEL_2_LAST_UPDATED = "lastUpdated";
+    public static final String CHANNEL_2_LIGHT_LEVEL = "lightLevel";
+    public static final String CHANNEL_2_LIGHT_LEVEL_ENABLED = "lightLevelEnabled";
+    public static final String CHANNEL_2_MOTION = "motion";
+    public static final String CHANNEL_2_MOTION_ENABLED = "motionEnabled";
+    public static final String CHANNEL_2_ROTARY_STEPS = "rotarySteps";
+    public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperatureEnabled";
+    public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbeeStatus";
 }

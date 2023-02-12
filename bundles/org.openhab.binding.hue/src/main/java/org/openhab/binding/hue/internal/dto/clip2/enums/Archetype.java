@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2.enums;
 
-import java.util.NoSuchElementException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -67,6 +65,7 @@ public enum Archetype {
     HUE_LIGHTSTRIP_TV,
     HUE_TUBE,
     HUE_SIGNE,
+    STRING_LIGHT,
     // room archetypes
     LIVING_ROOM,
     KITCHEN,
@@ -113,7 +112,7 @@ public enum Archetype {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
-            } catch (NoSuchElementException e) {
+            } catch (IllegalArgumentException e) {
                 // fall through
             }
         }

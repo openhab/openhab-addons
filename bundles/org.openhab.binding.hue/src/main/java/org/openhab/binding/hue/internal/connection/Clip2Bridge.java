@@ -112,7 +112,7 @@ public class Clip2Bridge implements Closeable {
             TIMEOUT,
             RESET,
             IDLE,
-            GOAWAY,
+            GO_AWAY,
             UNAUTHORIZED;
         }
 
@@ -315,7 +315,7 @@ public class Clip2Bridge implements Closeable {
 
         @Override
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
-            fatalError(Error.GOAWAY);
+            fatalError(Error.GO_AWAY);
         }
 
         @Override

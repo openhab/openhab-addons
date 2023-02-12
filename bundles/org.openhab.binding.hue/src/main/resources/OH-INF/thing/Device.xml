@@ -15,21 +15,21 @@
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color" typeId="system.color"/>
-			<channel id="color_temperature" typeId="system.color-temperature"/>
-			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="buttonLastEvent" typeId="buttonLastEvent"/>
 			<channel id="rotarySteps" typeId="rotarySteps"/>
 			<channel id="motion" typeId="system.motion"/>
 			<channel id="motionEnabled" typeId="motionEnabled"/>
-			<channel id="light_level" typeId="light_level"/>
+			<channel id="lightLevel" typeId="light_level"/>
 			<channel id="lightLevelEnabled" typeId="lightLevelEnabled"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="temperatureEnabled" typeId="temperatureEnabled"/>
-			<channel id="battery_level" typeId="system.battery-level"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
 			<channel id="zigbeeStatus" typeId="zigbeeStatus"/>
-			<channel id="last_updated" typeId="last_updated"/>
+			<channel id="lastUpdated" typeId="last_updated"/>
 		</channels>
 
 		<representation-property>resourceId</representation-property>

@@ -48,7 +48,7 @@ device officelamp "Lamp 1" @ "Office" [ resourceId="d1ae958e-8908-449a-9897-7f10
 You can get a list of all devices in the bridge and their respective Resource Ids by entering the following console command: `openhab:hue <bridgeUID> devices`
 See [console command](#console-command-for-finding-resourceids)
 
-The configuration of all devices (as decribed above) is the same regardless of whther the device is a light, a button, or a sensor.
+The configuration of all devices (as described above) is the same regardless of whether the device is a light, a button, or a sensor.
 
 ### Channels for Devices
 
