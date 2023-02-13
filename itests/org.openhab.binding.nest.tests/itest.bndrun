@@ -5,7 +5,6 @@ Fragment-Host: org.openhab.binding.nest
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.nest.tests',\
-	bnd.identity;id='org.openhab.core.addon.xml',\
 	bnd.identity;id='org.openhab.core.thing.xml'
 
 # We would like to use the "volatile" storage only
@@ -106,5 +105,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.openhab.core.thing.xml;version='[4.0.0,4.0.1)',\
 	com.google.gson;version='[2.9.1,2.9.2)',\
 	org.objectweb.asm;version='[9.4.0,9.4.1)',\
-	com.fasterxml.woodstox.woodstox-core;version='[6.4.0,6.4.1)',\
-	org.openhab.core.addon.xml;version='[4.0.0,4.0.1)'
+	io.methvin.directory-watcher;version='[0.17.1,0.17.2)',\
+	com.sun.jna;version='[5.12.1,5.12.2)',\
+	com.fasterxml.woodstox.woodstox-core;version='[6.4.0,6.4.1)'

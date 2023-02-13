@@ -32,6 +32,7 @@ import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptExtensionManagerWrapper;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.service.WatchService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -57,9 +58,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
     private final List<String> scriptTypes = Stream.concat(Objects.requireNonNull(factory.getExtensions()).stream(),
-            Objects.requireNonNull(factory.getMimeTypes()).stream()).collect(Collectors.toUnmodifiableList());
+            Objects.requireNonNull(factory.getMimeTypes()).stream()).toList();
 
-    private JRubyDependencyTracker jrubyDependencyTracker;
+    private final JRubyDependencyTracker jrubyDependencyTracker;
 
     // Adds $ in front of a set of variables so that Ruby recognizes them as global
     // variables
@@ -73,8 +74,9 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     }
 
     @Activate
-    public JRubyScriptEngineFactory(Map<String, Object> config) {
-        jrubyDependencyTracker = new JRubyDependencyTracker(this);
+    public JRubyScriptEngineFactory(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
+            Map<String, Object> config) {
+        jrubyDependencyTracker = new JRubyDependencyTracker(watchService, this);
         modified(config);
     }
 
