@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.dto.clip2.enums;
 
 import java.util.EnumSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,7 +62,7 @@ public enum ResourceType {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
-            } catch (NoSuchElementException e) {
+            } catch (IllegalArgumentException e) {
                 // fall through
             }
         }

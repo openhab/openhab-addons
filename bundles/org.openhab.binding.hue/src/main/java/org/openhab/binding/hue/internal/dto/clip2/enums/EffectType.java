@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2.enums;
 
-import java.util.NoSuchElementException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -33,7 +31,7 @@ public enum EffectType {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
-            } catch (NoSuchElementException e) {
+            } catch (IllegalArgumentException e) {
                 // fall through
             }
         }
