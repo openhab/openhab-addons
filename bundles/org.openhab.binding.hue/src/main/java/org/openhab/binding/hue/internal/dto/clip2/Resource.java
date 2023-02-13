@@ -105,6 +105,7 @@ public class Resource {
 
     private @Nullable String type;
     private @Nullable String id;
+    private @Nullable @SerializedName("bridge_id") String bridgeId;
     private @Nullable @SerializedName("id_v1") String idV1;
     private @Nullable ResourceReference owner;
     private @Nullable MetaData metadata;
@@ -216,6 +217,10 @@ public class Resource {
 
     public @Nullable Button getButton() {
         return button;
+    }
+
+    public @Nullable String getBridgeId() {
+        return bridgeId;
     }
 
     /**

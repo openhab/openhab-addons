@@ -512,6 +512,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 Map<String, @Nullable String> properties = new HashMap<>(thing.getProperties());
 
                 // set resource properties
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getBridgeId());
                 properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, device.getId());
                 properties.put(HueBindingConstants.PROPERTY_RESOURCE_TYPE, device.getType().toString());
 
