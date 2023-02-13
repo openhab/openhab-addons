@@ -167,7 +167,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     logger.warn("Failed to store item {} in InfluxDB point {}", point, item);
                 }
             } else {
-                logger.trace("Ignoring item {}, conversion to a InfluxDB point failed.", item);
+                logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item);
             }
         } else {
             logger.debug("store ignored, InfluxDB is not connected");
