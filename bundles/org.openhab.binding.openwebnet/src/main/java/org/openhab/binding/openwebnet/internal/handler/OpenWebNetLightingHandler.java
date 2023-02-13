@@ -364,7 +364,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                         channelId = CHANNEL_SWITCH_01;
                     }
                 }
-                updateState(channelId, (msg.isOn() ? OnOffType.ON : OnOffType.OFF));
+                updateState(channelId, OnOffType.from(msg.isOn()));
             } else {
                 logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}", getThing().getUID(),
                         msg.getFrameValue());
