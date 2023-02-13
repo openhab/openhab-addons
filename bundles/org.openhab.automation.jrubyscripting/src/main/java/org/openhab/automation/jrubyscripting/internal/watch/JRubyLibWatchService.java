@@ -53,8 +53,7 @@ public class JRubyLibWatchService implements JRubyWatchService, WatchService.Wat
     @Override
     public void processWatchEvent(Kind kind, Path path) {
         File file = path.toFile();
-        if (!file.isHidden()
-                && (kind.equals(DELETE) || (file.canRead() && (kind.equals(CREATE) || kind.equals(MODIFY))))) {
+        if (!file.isHidden() && (kind == DELETE || (file.canRead() && (kind == CREATE || kind == MODIFY)))) {
             dependencyTracker.dependencyChanged(file.getPath());
         }
     }
