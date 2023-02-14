@@ -128,6 +128,7 @@ public class GoogleTVConnectionManager {
     private boolean isLoggedIn = false;
     private String statusMessage = "";
     private String pinHash = "";
+    private String shimPinHash = "";
 
     private String hostName = "";
     private String currentApp = "";
@@ -324,6 +325,7 @@ public class GoogleTVConnectionManager {
 
             @Override
             public X509Certificate @Nullable [] getAcceptedIssuers() {
+                logger.debug("Returning empty certificate for getAcceptedIssuers");
                 return new X509Certificate[0];
             }
         } };
@@ -477,6 +479,9 @@ public class GoogleTVConnectionManager {
             logger.debug("Opening GoogleTV shim on port {}", config.port);
             SSLServerSocket sslServerSocket = (SSLServerSocket) this.sslServerSocketFactory
                     .createServerSocket(config.port);
+            if (this.config.mode.equals(DEFAULT_MODE)) {
+                sslServerSocket.setNeedClientAuth(true);
+            }
             sslServerSocket.setWantClientAuth(true);
             // sslServerSocket.setEnabledCipherSuites(new String[] { "TLS_AES_128_GCM_SHA256" });
             // sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.2", "TLSv1.3" });
@@ -495,58 +500,65 @@ public class GoogleTVConnectionManager {
                 }
                 SSLSocket serverSocket = (SSLSocket) sslServerSocket.accept();
                 logger.trace("shimInitalize accepted {}", config.port);
-                serverSocket.startHandshake();
-                logger.trace("shimInitalize startHandshake {}", config.port);
-                // disconnect(true);
-                connect();
-                logger.trace("shimInitalize connected {}", config.port);
+                try {
+                    serverSocket.startHandshake();
+                    logger.trace("shimInitalize startHandshake {}", config.port);
+                    // disconnect(true);
+                    connect();
+                    logger.trace("shimInitalize connected {}", config.port);
 
-                SSLSession session = serverSocket.getSession();
-                Certificate[] cchain2 = session.getPeerCertificates();
-                this.shimClientChain = cchain2;
-                Certificate[] cchain3 = session.getLocalCertificates();
-                this.shimClientLocalChain = cchain3;
+                    SSLSession session = serverSocket.getSession();
+                    Certificate[] cchain2 = session.getPeerCertificates();
+                    this.shimClientChain = cchain2;
+                    Certificate[] cchain3 = session.getLocalCertificates();
+                    this.shimClientLocalChain = cchain3;
 
-                if (cchain2 != null) {
-                    for (int i = 0; i < cchain2.length; i++) {
-                        logger.trace("Connection from: {}", ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                    if (cchain2 != null) {
+                        for (int i = 0; i < cchain2.length; i++) {
+                            logger.trace("Connection from: {}",
+                                    ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                        }
                     }
-                }
 
-                if (cchain3 != null) {
-                    for (int i = 0; i < cchain3.length; i++) {
-                        logger.trace("Connection from: {}", ((X509Certificate) cchain3[i]).getSubjectX500Principal());
+                    if (cchain3 != null) {
+                        for (int i = 0; i < cchain3.length; i++) {
+                            logger.trace("Connection from: {}",
+                                    ((X509Certificate) cchain3[i]).getSubjectX500Principal());
+                        }
                     }
+
+                    logger.trace("Peer host is {}", session.getPeerHost());
+                    logger.trace("Cipher is {}", session.getCipherSuite());
+                    logger.trace("Protocol is {}", session.getProtocol());
+                    logger.trace("ID is {}", new BigInteger(session.getId()));
+                    logger.trace("Session created in {}", session.getCreationTime());
+                    logger.trace("Session accessed in {}", session.getLastAccessedTime());
+
+                    shimWriter = new BufferedWriter(
+                            new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                    shimReader = new BufferedReader(
+                            new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                    this.shimServerSocket = serverSocket;
+
+                    Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
+                    readerThread.setDaemon(true);
+                    readerThread.start();
+                    this.shimReaderThread = readerThread;
+
+                    Thread senderThread = new Thread(this::shimSenderThreadJob, "GoogleTV shim sender");
+                    senderThread.setDaemon(true);
+                    senderThread.start();
+                    this.shimSenderThread = senderThread;
+                } catch (Exception e) {
+                    logger.trace("Shim initalization exception {}", config.port);
+                    logger.trace("Shim initalization exception", e);
+
                 }
-
-                logger.trace("Peer host is {}", session.getPeerHost());
-                logger.trace("Cipher is {}", session.getCipherSuite());
-                logger.trace("Protocol is {}", session.getProtocol());
-                logger.trace("ID is {}", new BigInteger(session.getId()));
-                logger.trace("Session created in {}", session.getCreationTime());
-                logger.trace("Session accessed in {}", session.getLastAccessedTime());
-
-                shimWriter = new BufferedWriter(
-                        new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-                shimReader = new BufferedReader(
-                        new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-                this.shimServerSocket = serverSocket;
-
-                Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
-                readerThread.setDaemon(true);
-                readerThread.start();
-                this.shimReaderThread = readerThread;
-
-                Thread senderThread = new Thread(this::shimSenderThreadJob, "GoogleTV shim sender");
-                senderThread.setDaemon(true);
-                senderThread.start();
-                this.shimSenderThread = senderThread;
-
             }
         } catch (Exception e) {
             logger.trace("Shim initalization exception {}", config.port);
-
             logger.trace("Shim initalization exception", e);
+
             return;
         }
     }
@@ -757,7 +769,8 @@ public class GoogleTVConnectionManager {
                     logger.trace("GoogleTV Message: {} {}", length, sbReader.toString());
                     messageParser.handleMessage(sbReader.toString());
                     if (config.shim) {
-                        shimQueue.add(new GoogleTVCommand(GoogleTVRequest.encodeMessage(sbReader.toString())));
+                        String thisCommand = interceptMessages(sbReader.toString());
+                        shimQueue.add(new GoogleTVCommand(GoogleTVRequest.encodeMessage(thisCommand)));
                     }
                     length = 0;
                 }
@@ -802,10 +815,22 @@ public class GoogleTVConnectionManager {
     private String interceptMessages(String message) {
         if (message.startsWith("080210c801c202", 2)) {
             // intercept PIN hash and replace with valid shim hash
-            String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(this.pinHash.length() + 2));
-            String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(this.pinHash.length()));
+            int length = this.pinHash.length() / 2;
+            String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(length + 2));
+            String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(length));
             String reply = "080210c801c202" + len1 + "0a" + len2 + this.pinHash;
-            String replyLength = GoogleTVRequest.fixMessage(Integer.toHexString(reply.length()));
+            String replyLength = GoogleTVRequest.fixMessage(Integer.toHexString(reply.length() / 2));
+            String finalReply = replyLength + reply;
+            logger.trace("Message Intercepted: {}", message);
+            logger.trace("Message chagnged to: {}", finalReply);
+            return finalReply;
+        } else if (message.startsWith("080210c801ca02", 2)) {
+            // intercept PIN hash and replace with valid shim hash
+            int length = this.shimPinHash.length() / 2;
+            String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(length + 2));
+            String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(length));
+            String reply = "080210c801ca02" + len1 + "0a" + len2 + this.shimPinHash;
+            String replyLength = GoogleTVRequest.fixMessage(Integer.toHexString(reply.length() / 2));
             String finalReply = replyLength + reply;
             logger.trace("Message Intercepted: {}", message);
             logger.trace("Message chagnged to: {}", finalReply);
@@ -1141,7 +1166,8 @@ public class GoogleTVConnectionManager {
                         this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
                                 shimServerChain[0]);
 
-                        GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0], shimClientLocalChain[0]);
+                        this.shimPinHash = GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0],
+                                shimClientLocalChain[0]);
 
                     } catch (Exception e) {
                         logger.trace("PIN CertificateException", e);

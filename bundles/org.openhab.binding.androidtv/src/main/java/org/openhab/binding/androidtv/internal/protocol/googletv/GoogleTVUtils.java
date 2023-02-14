@@ -107,7 +107,7 @@ public class GoogleTVUtils {
     public static String byteArrayToString(byte[] array) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < array.length; i++) {
-            sb.append(Byte.toUnsignedInt(array[i]));
+            sb.append((char) (array[i] & 0xFF));
         }
         return sb.toString();
     }
