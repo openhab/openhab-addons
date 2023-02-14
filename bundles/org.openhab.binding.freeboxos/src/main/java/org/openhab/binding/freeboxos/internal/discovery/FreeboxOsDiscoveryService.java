@@ -17,9 +17,11 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -73,7 +75,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     private @Nullable FreeboxOsHandler bridgeHandler;
 
     public FreeboxOsDiscoveryService() {
-        super(THINGS_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
+        super(Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
+                DISCOVERY_TIME_SECONDS);
     }
 
     @Override

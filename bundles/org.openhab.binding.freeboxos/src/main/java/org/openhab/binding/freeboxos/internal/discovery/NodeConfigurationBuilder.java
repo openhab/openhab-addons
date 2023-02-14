@@ -20,7 +20,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.HomeNode;
 import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
-import org.openhab.binding.freeboxos.internal.config.ShutterConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -56,9 +55,9 @@ public class NodeConfigurationBuilder {
                     case BASIC_SHUTTER:
                         BasicShutterConfiguration.configure(discoveryResultBuilder, node);
                         break;
-                    case SHUTTER:
-                        ShutterConfiguration.configure(discoveryResultBuilder, node);
-                        break;
+                    // case SHUTTER:
+                    // ShutterConfiguration.configure(discoveryResultBuilder, node);
+                    // break;
                     default:
                         break;
                 }

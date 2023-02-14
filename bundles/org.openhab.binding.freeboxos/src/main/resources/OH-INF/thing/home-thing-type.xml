@@ -35,7 +35,17 @@
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:shutter"/>
+        <config-description>
+            <parameter name="id" type="integer" required="true">
+                <label>ID</label>
+                <description>Id of the Home Node</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
+        </config-description>
 	</thing-type>
 
 	<thing-type id="alarm">
@@ -49,15 +59,38 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="refreshInterval" type="integer" min="1" unit="s">
-				<label>Refresh Interval</label>
-				<description>The refresh interval in seconds which is used to poll given virtual machine</description>
-				<default>30</default>
-			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>ID</label>
-				<description>Id of the Virtual Machine</description>
+				<description>Id of the Home Node</description>
 			</parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
 		</config-description>
 	</thing-type>
+	
+    <thing-type id="kfb">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="api"/>
+        </supported-bridge-type-refs>
+
+        <label>Freebox Keyfob</label>
+        <description>A keyfob configured for your Freebox Security system</description>
+
+        <representation-property>id</representation-property>
+
+        <config-description>
+            <parameter name="id" type="integer" required="true">
+                <label>ID</label>
+                <description>Id of the Home Node</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
+        </config-description>
+    </thing-type>
 </thing:thing-descriptions>

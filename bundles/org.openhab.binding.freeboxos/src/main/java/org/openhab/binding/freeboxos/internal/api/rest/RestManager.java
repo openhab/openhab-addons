@@ -90,4 +90,8 @@ public class RestManager {
             throws FreeboxException {
         return controlSingleton(session.execute(buildUri(pathElements), PUT, clazz, payload));
     }
+
+    protected <F, T extends Response<F>> void put(F payload, String... pathElements) throws FreeboxException {
+        session.execute(buildUri(pathElements), PUT, GenericResponse.class, payload);
+    }
 }

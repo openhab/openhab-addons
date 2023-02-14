@@ -26,7 +26,7 @@ import org.openhab.core.types.Command;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class KeyfobHandler extends ApiConsumerHandler {
+public class KeyfobHandler extends AlarmHandler {
 
     public KeyfobHandler(Thing thing) {
         super(thing);
@@ -34,10 +34,12 @@ public class KeyfobHandler extends ApiConsumerHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        super.initializeProperties(properties);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
+        super.internalPoll();
     }
 
     @Override

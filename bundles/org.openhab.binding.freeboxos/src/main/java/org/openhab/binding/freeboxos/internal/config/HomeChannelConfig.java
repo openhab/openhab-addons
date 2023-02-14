@@ -13,19 +13,22 @@
 package org.openhab.binding.freeboxos.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The {@link HomeChannelConfig} is responsible for holding configuration informations for a dynamically create home
+ * endpoint channel
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ApiConsumerConfiguration {
-    public static final String PASSWORD = "password";
-    public static final String PORT = "port";
-    public static final String REFRESH_INTERVAL = "refreshInterval";
+public class HomeChannelConfig {
+    public int id = -1;
+    public String unit = "";
 
-    public int refreshInterval = 30;
-    public String password = "";
-    public int port = 24322;
-    public boolean acceptAllMp3 = true;
+    public HomeChannelConfig(int id, @Nullable String unit) {
+        super();
+        this.id = id;
+        this.unit = unit != null ? unit : "";
+    }
 }

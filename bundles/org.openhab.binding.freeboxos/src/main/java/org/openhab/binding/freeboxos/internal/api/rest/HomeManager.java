@@ -21,12 +21,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointUi.AccessType;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointUi.DisplayType;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link HomeManager} is the Java class used to handle api requests related to home
@@ -45,23 +44,28 @@ public class HomeManager extends RestManager {
     public static class HomeNodesResponse extends Response<HomeNode> {
     }
 
-    public static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
-        public static enum AccessType {
-            R,
-            W,
-            RW,
-            UNKNOWN;
-        }
+    public static enum AccessType {
+        R,
+        W,
+        RW,
+        UNKNOWN;
+    }
 
-        public static enum DisplayType {
-            TEXT,
-            ICON,
-            BUTTON,
-            SLIDER,
-            TOGGLE,
-            COLOR,
-            WARNING,
-            UNKNOWN;
+    public static enum DisplayType {
+        TEXT,
+        ICON,
+        BUTTON,
+        SLIDER,
+        TOGGLE,
+        COLOR,
+        WARNING,
+        UNKNOWN;
+    }
+
+    public static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
+
+        public @Nullable String unit() {
+            return unit;
         }
     }
 
@@ -78,20 +82,24 @@ public class HomeManager extends RestManager {
             UNKNOWN;
         }
 
-        public @Nullable Boolean asBoolean() {
+        private @Nullable JsonPrimitive getAsPrimitive() {
             final JsonElement theValue = value;
-            if (theValue != null && theValue.isJsonPrimitive() && theValue.getAsJsonPrimitive().isBoolean()) {
-                return theValue.getAsBoolean();
-            }
-            return null;
+            return theValue != null && theValue.isJsonPrimitive() ? theValue.getAsJsonPrimitive() : null;
+        }
+
+        public @Nullable Boolean asBoolean() {
+            final JsonPrimitive theValue = getAsPrimitive();
+            return theValue != null && theValue.isBoolean() ? theValue.getAsBoolean() : null;
         }
 
         public @Nullable Integer asInt() {
-            final JsonElement theValue = value;
-            if (theValue != null && theValue.isJsonPrimitive() && theValue.getAsJsonPrimitive().isNumber()) {
-                return theValue.getAsInt();
-            }
-            return null;
+            final JsonPrimitive theValue = getAsPrimitive();
+            return theValue != null && theValue.isNumber() ? theValue.getAsInt() : null;
+        }
+
+        public @Nullable String asString() {
+            final JsonPrimitive theValue = getAsPrimitive();
+            return theValue != null && theValue.isString() ? theValue.getAsString() : null;
         }
     }
 
@@ -160,7 +168,6 @@ public class HomeManager extends RestManager {
     }
 
     public <T> void putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
-        put(GenericResponse.class, new EndpointValue<T>(value), ENDPOINTS_PATH, String.valueOf(nodeId),
-                String.valueOf(stateSignalId));
+        put(new EndpointValue<T>(value), ENDPOINTS_PATH, String.valueOf(nodeId), String.valueOf(stateSignalId));
     }
 }

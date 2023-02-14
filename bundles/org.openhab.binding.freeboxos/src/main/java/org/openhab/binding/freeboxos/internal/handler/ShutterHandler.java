@@ -12,17 +12,10 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
-
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
-import org.openhab.binding.freeboxos.internal.config.ShutterConfiguration;
-import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
@@ -32,7 +25,7 @@ import org.openhab.core.types.Command;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ShutterHandler extends BasicShutterHandler {
+public class ShutterHandler extends AlarmHandler {
 
     public ShutterHandler(Thing thing) {
         super(thing);
@@ -40,40 +33,46 @@ public class ShutterHandler extends BasicShutterHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        super.initializeProperties(properties);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
-        ShutterConfiguration config = getConfiguration();
-        EndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
-        EndpointState position = getManager(HomeManager.class).getEndpointsState(config.id, config.positionSignalId);
-        Double percent = null;
-        if (state != null && position != null) {
-            if (ValueType.BOOL.equals(position.valueType())) {
-                percent = Boolean.TRUE.equals(position.asBoolean()) ? 1.0 : 0.0;
-            } else if (ValueType.INT.equals(position.valueType())) {
-                Integer inValue = position.asInt();
-                if (inValue != null) {
-                    percent = inValue.doubleValue() / 100.0;
-                }
-            }
-        }
-        updateChannelDecimal(BASIC_SHUTTER, BASIC_SHUTTER_CMD, percent);
+        super.internalPoll();
+        /*
+         * ShutterConfiguration config = getConfiguration();
+         * EndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
+         * EndpointState position = getManager(HomeManager.class).getEndpointsState(config.id, config.positionSignalId);
+         * Double percent = null;
+         * if (state != null && position != null) {
+         * if (ValueType.BOOL.equals(position.valueType())) {
+         * percent = Boolean.TRUE.equals(position.asBoolean()) ? 1.0 : 0.0;
+         * } else if (ValueType.INT.equals(position.valueType())) {
+         * Integer inValue = position.asInt();
+         * if (inValue != null) {
+         * percent = inValue.doubleValue() / 100.0;
+         * }
+         * }
+         * }
+         * updateChannelDecimal(BASIC_SHUTTER, BASIC_SHUTTER_CMD, percent);
+         */
     }
 
-    private ShutterConfiguration getConfiguration() {
-        return getConfigAs(ShutterConfiguration.class);
-    }
+    // private ShutterConfiguration getConfiguration() {
+    // return getConfigAs(ShutterConfiguration.class);
+    // }
 
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
-        if (BASIC_SHUTTER_CMD.equals(channelId)) {
-            ShutterConfiguration config = getConfiguration();
-            if (StopMoveType.STOP.equals(command)) {
-                getManager(HomeManager.class).putCommand(config.id, config.stopSlotId, true);
-                return true;
-            }
-        }
+        /*
+         * if (BASIC_SHUTTER_CMD.equals(channelId)) {
+         * ShutterConfiguration config = getConfiguration();
+         * if (StopMoveType.STOP.equals(command)) {
+         * getManager(HomeManager.class).putCommand(config.id, config.stopSlotId, true);
+         * return true;
+         * }
+         * }
+         */
         return super.internalHandleCommand(channelId, command);
     }
 }
