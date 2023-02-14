@@ -52,9 +52,9 @@ public class GoogleTVRequest {
         if (pin.equals("REQUEST")) {
             return loginRequest(3);
         } else {
-		// 080210c801c202 22 0a 20 0e066c3d1c3a6686edb6b2648ff25fcb3f0bf9cc81deeee9fad1a26073645e17
-                // 080210c801c202 22 0a 20 530bb7c7ba06069997285aff6e0106adfb19ab23c18a7422f5f643b35a6467b3
-                //-------------------------SHA HASH OF PIN
+            // 080210c801c202 22 0a 20 0e066c3d1c3a6686edb6b2648ff25fcb3f0bf9cc81deeee9fad1a26073645e17
+            // 080210c801c202 22 0a 20 530bb7c7ba06069997285aff6e0106adfb19ab23c18a7422f5f643b35a6467b3
+            // -------------------------SHA HASH OF PIN
             String prefix = "080a121f08d108121a0a06";
             String encodedPin = decodeMessage(pin);
             String suffix = "121036646564646461326639366635646261";
@@ -95,7 +95,7 @@ public class GoogleTVRequest {
         return message;
     }
 
-    private static String fixMessage(String tempMsg) {
+    public static String fixMessage(String tempMsg) {
         if (tempMsg.length() % 2 > 0) {
             tempMsg = "0" + tempMsg;
         }
