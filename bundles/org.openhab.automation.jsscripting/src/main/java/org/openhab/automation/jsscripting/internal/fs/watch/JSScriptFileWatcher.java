@@ -49,7 +49,7 @@ public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        if (!scriptFilePath.startsWith(watchPath.resolve("node_modules"))
+        if (!scriptFilePath.startsWith(getWatchPath().resolve("node_modules"))
                 && "js".equals(super.getScriptType(scriptFilePath).orElse(null))) {
             return Optional.of(GraalJSScriptEngineFactory.MIME_TYPE);
         } else {
