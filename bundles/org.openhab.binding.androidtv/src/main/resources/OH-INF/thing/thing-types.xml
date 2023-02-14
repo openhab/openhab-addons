@@ -62,6 +62,64 @@
 
 	</thing-type>
 
+	<thing-type id="googletv">
+
+		<label>GoogleTV</label>
+		<description>GoogleTV</description>
+
+		<channels>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="keyboard" typeId="keyboard"/>
+			<channel id="pincode" typeId="pincode"/>
+			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appurl" typeId="appurl"/>
+			<channel id="raw" typeId="raw"/>
+			<channel id="rawmsg" typeId="rawmsg"/>
+
+		</channels>
+
+		<properties>
+			<property name="Device Name">unknown</property>
+			<property name="Device ID">unknown</property>
+			<property name="Architectures">unknown</property>
+		</properties>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port to connect to</description>
+			</parameter>
+			<parameter name="keystoreFileName" type="text">
+				<label>Keystore File Name</label>
+				<description>Java keystore containing key and certs</description>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+			</parameter>
+			<parameter name="reconnect" type="integer">
+				<label>Reconnect Delay</label>
+				<description>Delay between reconnection attempts</description>
+			</parameter>
+			<parameter name="heartbeat" type="integer">
+				<label>Hearbeat Frequency</label>
+				<description>Frequency of heartbeats</description>
+			</parameter>
+			<parameter name="delay" type="integer">
+				<label>Delay</label>
+				<description>Delay between messages</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
 	<channel-type id="raw" advanced="true">
 		<item-type>String</item-type>
 		<label>RAW Command</label>

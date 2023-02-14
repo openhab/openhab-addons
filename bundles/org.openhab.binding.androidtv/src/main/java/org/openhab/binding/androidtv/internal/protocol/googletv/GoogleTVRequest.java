@@ -52,6 +52,9 @@ public class GoogleTVRequest {
         if (pin.equals("REQUEST")) {
             return loginRequest(3);
         } else {
+		// 080210c801c202 22 0a 20 0e066c3d1c3a6686edb6b2648ff25fcb3f0bf9cc81deeee9fad1a26073645e17
+                // 080210c801c202 22 0a 20 530bb7c7ba06069997285aff6e0106adfb19ab23c18a7422f5f643b35a6467b3
+                //-------------------------SHA HASH OF PIN
             String prefix = "080a121f08d108121a0a06";
             String encodedPin = decodeMessage(pin);
             String suffix = "121036646564646461326639366635646261";
@@ -63,12 +66,20 @@ public class GoogleTVRequest {
         String message = "";
         if (messageId == 1) {
             // Send app and device name
+            // 080210c801522d 0a 19 636f6d2e676f6f676c652e616e64726f69642e766964656f73 12 10
+            // 73616d73756e6720534d2d4739393855
+            // ------------------LEN com.google.android.videos----------------------------LEN samsung SM-G998U
             message = "080210c801522d0a19636f6d2e676f6f676c652e616e64726f69642e766964656f73121073616d73756e6720534d2d4739393855";
         } else if (messageId == 2) {
             // Unknown but required
+            // 080210c801a201 0e 0a 04 08031006 0a 04 08031004 1802
+            // ---------------LEN---LEN------------LEN
             message = "080210c801a2010e0a04080310060a04080310041802";
         } else if (messageId == 3) {
             // Trigger PIN OSD
+            // ---------------LEN---LEN
+            // 080210c801a201 08 12 04 08031006 1801
+            // 080210c801f201 08 0a 04 08031006 1001
             message = "080210c801f201080a04080310061001";
         } else if (messageId == 4) {
             // This may mean disconnect?

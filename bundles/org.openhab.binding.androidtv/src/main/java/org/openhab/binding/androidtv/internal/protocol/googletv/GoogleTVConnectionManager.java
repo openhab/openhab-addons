@@ -120,6 +120,10 @@ public class GoogleTVConnectionManager {
     private StringBuffer sbShimReader = new StringBuffer();
     private String thisMsg = "";
 
+    Certificate @Nullable [] shimClientChain;
+    Certificate @Nullable [] shimServerChain;
+    Certificate @Nullable [] shimClientLocalChain;
+
     private boolean disposing = false;
     private boolean isLoggedIn = false;
     private String statusMessage = "";
@@ -397,6 +401,7 @@ public class GoogleTVConnectionManager {
             logger.debug("Opening GoogleTV SSL connection to {}:{}", config.ipAddress, config.port);
             SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
             sslSocket.startHandshake();
+            this.shimServerChain = ((SSLSocket) sslSocket).getSession().getPeerCertificates();
             writer = new BufferedWriter(
                     new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
             reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
@@ -497,9 +502,19 @@ public class GoogleTVConnectionManager {
 
                 SSLSession session = serverSocket.getSession();
                 Certificate[] cchain2 = session.getPeerCertificates();
+                this.shimClientChain = cchain2;
+                Certificate[] cchain3 = session.getLocalCertificates();
+                this.shimClientLocalChain = cchain3;
+
                 if (cchain2 != null) {
                     for (int i = 0; i < cchain2.length; i++) {
                         logger.trace("Connection from: {}", ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                    }
+                }
+
+                if (cchain3 != null) {
+                    for (int i = 0; i < cchain3.length; i++) {
+                        logger.trace("Connection from: {}", ((X509Certificate) cchain3[i]).getSubjectX500Principal());
                     }
                 }
 
@@ -1103,13 +1118,34 @@ public class GoogleTVConnectionManager {
             }
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                if (!isLoggedIn) {
-                    // Do PIN for googletv protocol
-                    logger.trace("GoogleTV PIN Process Started");
-                    String pin = GoogleTVRequest.pinRequest(command.toString());
-                    String message = GoogleTVRequest.encodeMessage(pin);
-                    sendCommand(new GoogleTVCommand(message));
+                if ((config.mode.equals(DEFAULT_MODE)) && (config.shim)) {
+                    childConnectionManager.handleCommand(channelUID, command);
+                } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
+                    try {
+                        GoogleTVUtils serverutils = new GoogleTVUtils(androidtvPKI.getCert(), shimServerChain[0]);
+
+                        GoogleTVUtils clientutils = new GoogleTVUtils(shimClientChain[0], shimClientLocalChain[0]);
+                        GoogleTVUtils shimutils = new GoogleTVUtils(shimClientChain[0], shimServerChain[0]);
+
+                        serverutils.validatePIN(command.toString());
+
+                        clientutils.validatePIN(command.toString());
+
+                        //shimutils.validatePIN(command.toString());
+
+                    } catch (Exception e) {
+                        logger.trace("PIN CertificateException", e);
+                    }
                 }
+                /*
+                 * if (!isLoggedIn) {
+                 * // Do PIN for googletv protocol
+                 * logger.trace("GoogleTV PIN Process Started");
+                 * String pin = GoogleTVRequest.pinRequest(command.toString());
+                 * String message = GoogleTVRequest.encodeMessage(pin);
+                 * sendCommand(new GoogleTVCommand(message));
+                 * }
+                 */
             }
         } else if (CHANNEL_RAW.equals(channelUID.getId())) {
             if (command instanceof StringType) {

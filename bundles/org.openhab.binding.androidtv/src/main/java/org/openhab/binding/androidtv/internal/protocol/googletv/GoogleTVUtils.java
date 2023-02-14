@@ -87,23 +87,26 @@ public class GoogleTVUtils {
                 final byte[] byteArray2 = clientRSAPublicKey.getPublicExponent().abs().toByteArray();
                 final byte[] byteArray3 = serverRSAPublicKey.getModulus().abs().toByteArray();
                 final byte[] byteArray4 = serverRSAPublicKey.getPublicExponent().abs().toByteArray();
+                // logger.trace("processDigest byteArray1-4 {} {} {} {}", byteArray1, byteArray2, byteArray3,
+                // byteArray4);
                 final byte[] r1 = processDigestArray(byteArray1);
                 final byte[] r2 = processDigestArray(byteArray2);
                 final byte[] r3 = processDigestArray(byteArray3);
                 final byte[] r4 = processDigestArray(byteArray4);
+                // logger.trace("processDigest r1-4 {} {} {} {}", r1, r2, r3, r4);
                 processMag(r1);
                 processMag(r2);
                 processMag(r3);
                 processMag(r4);
                 processMag(digest);
+                // logger.trace("processDigest processMag {} {} {} {} {}", r1, r2, r3, r4, digest);
                 instance.update(r1);
                 instance.update(r2);
                 instance.update(r3);
                 instance.update(r4);
                 instance.update(digest);
-                logger.trace("processDigest byte[] instance {}", instance.toString());
-
                 digest = instance.digest();
+                logger.trace("processDigest digest {}", digest);
                 processMag(digest);
                 logger.trace("processDigest byte[] processMag(digest) {}", digest);
 
@@ -136,12 +139,52 @@ public class GoogleTVUtils {
     }
 
     private byte[] appendSecretArray(final int n, final byte[] array) {
+        // logger.trace("appendSecretArray {} {}", n, array);
         final byte[] digest = processDigest(array);
+        // logger.trace("appendSecretArray digest {}", digest);
         final int length = array.length;
         final byte[] array2 = new byte[n + length];
+        // logger.trace("appendSecretArray array2a {} {}", length, array2);
         System.arraycopy(digest, 0, array2, 0, n);
+        // logger.trace("appendSecretArray array2b {} {}", length, array2);
         System.arraycopy(array, 0, array2, n, length);
+        // logger.trace("appendSecretArray array2c {} {}", length, array2);
         return array2;
+    }
+
+    public void validatePIN(String pin) {
+        char[] charArray = pin.toCharArray();
+        byte[] byteArray = pin.getBytes();
+
+        String s1 = "" + charArray[0] + charArray[1];
+        String s2 = "" + charArray[2] + charArray[3];
+        String s3 = "" + charArray[4] + charArray[5];
+        int si1 = Integer.parseInt(s1, 16);
+        int si2 = Integer.parseInt(s2, 16);
+        int si3 = Integer.parseInt(s3, 16);
+        /*
+         * byte[] sb1 = new byte[] { (byte) si1 };
+         * processDigest(sb1);
+         * 
+         * byte[] sb2 = new byte[] { (byte) si2 };
+         * processDigest(sb2);
+         * 
+         * byte[] sb3 = new byte[] { (byte) si3 };
+         * processDigest(sb3);
+         * 
+         * byte[] sb12 = new byte[] { (byte) si1, (byte) si2 };
+         * processDigest(sb12);
+         */
+        byte[] sb23 = new byte[] { (byte) si2, (byte) si3 };
+        byte[] digest = processDigest(sb23);
+
+        byte[] sb123 = new byte[] { (byte) si1, (byte) si2, (byte) si3 };
+        // processDigest(sb123);
+
+        byte[] validPinB = new byte[] { digest[0], (byte) si2, (byte) si3 };
+        String validPin = new String(validPinB);
+        logger.trace("validatePIN {} {} {} {} {}", sb123, digest[0], sb23, validPinB,
+                GoogleTVRequest.decodeMessage(validPin));
     }
 
     public boolean validateSecret(int secret) {
@@ -158,6 +201,8 @@ public class GoogleTVUtils {
                 processMag(secretByte);
                 final int n = length - length2;
                 processMag(appendSecretArray(n, byteShifted));
+                logger.trace("validateSecret left {}", secretByte);
+                logger.trace("validateSecret right {}", appendSecretArray(n, byteShifted));
                 if (Arrays.equals(secretByte, appendSecretArray(n, byteShifted))) {
                     final byte[] digest = processDigest(processSecretArray(secretByte));
                     logger.trace("validateSecret byte[] digest success {}", digest);
@@ -174,6 +219,7 @@ public class GoogleTVUtils {
         logger.debug("Invalid secret.");
         return false;
     }
+
     /*
      * public boolean inbandSecret(int secret) {
      * final int n2 = secret / 2;
@@ -186,9 +232,9 @@ public class GoogleTVUtils {
      * final byte[] bytes = new byte[secret - n3];
      * try {
      * SecureRandom.getInstance("SHA1PRNG").nextBytes(bytes);
-     * this.j.u(n3, bytes);
+     * appendSecretArray(n3, bytes);
      * final ovl ovl = (ovl) this.f(7);
-     * final byte[] t = this.j.t(bytes);
+     * final byte[] t = processDigest(bytes);
      * final byte[] a = ovl.a;
      * if (!Arrays.equals(t, a)) {
      * final String z = processMag(t);
@@ -199,11 +245,12 @@ public class GoogleTVUtils {
      * sb.append("], got [");
      * sb.append(z2);
      * sb.append("]");
-     * throw new ouw(sb.toString());
+     * logger.trace("inbandSecret sb {}", sb.toString());
+     * } else {
+     * logger.trace("Unable to store peer association {} {}", t, a);
      * }
-     * throw new ouy("Unable to store peer association");
      * } catch (NoSuchAlgorithmException ex) {
-     * throw new ouy(ex);
+     * logger.debug("inbandSecret NSA", e);
      * }
      * }
      */
