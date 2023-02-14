@@ -527,7 +527,8 @@ public class FreeboxOsSession {
             if (!response.isSuccess()) {
                 throw new FreeboxException("Api request failed : %s", response.getMsg());
             }
-            return response.getResult();
+            List<F> result = response.getResult();
+            return result == null ? List.of() : result;
         } catch (FreeboxException e) {
             if (ErrorCode.AUTH_REQUIRED.equals(e.getErrorCode())) {
                 initiateConnection();

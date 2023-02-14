@@ -29,7 +29,11 @@ public class ApiConsumerConfiguration {
 =======
     public static final String PASSWORD = "password";
     public static final String PORT = "port";
+<<<<<<< Upstream, based on origin/main
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+    public static final String REFRESH_INTERVAL = "refreshInterval";
+>>>>>>> cff27ca Saving work
 
     public int refreshInterval = 30;
     public String password = "";

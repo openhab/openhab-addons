@@ -819,16 +819,4 @@
 		<category>Blinds</category>
 	</channel-type>
 
-	<channel-type id="home-string">
-		<item-type>String</item-type>
-		<label>Home String Channel</label>
-		<description>String channel for FreeboxOs Home</description>
-	</channel-type>
-
-	<channel-type id="home-number">
-		<item-type>Number</item-type>
-		<label>Home Number Channel</label>
-		<description>Number channel for FreeboxOs Home</description>
-	</channel-type>
-
 </thing:thing-descriptions>

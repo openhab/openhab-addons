@@ -119,7 +119,7 @@ public class BasicShutterHandler extends ApiConsumerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         BasicShutterConfiguration config = getConfiguration();
-        EndpointState state = getManager(HomeManager.class).getEndpointsState(config.id, config.stateSignalId);
+        EndpointState state = getManager(HomeManager.class).getEndpointsState(getClientId(), config.stateSignalId);
         Double percent = null;
         if (state != null) {
             if (ValueType.BOOL.equals(state.valueType())) {
@@ -143,13 +143,13 @@ public class BasicShutterHandler extends ApiConsumerHandler {
         if (BASIC_SHUTTER_CMD.equals(channelId)) {
             BasicShutterConfiguration config = getConfiguration();
             if (UpDownType.UP.equals(command)) {
-                getManager(HomeManager.class).putCommand(config.id, config.upSlotId, true);
+                getManager(HomeManager.class).putCommand(getClientId(), config.upSlotId, true);
                 return true;
             } else if (UpDownType.DOWN.equals(command)) {
-                getManager(HomeManager.class).putCommand(config.id, config.downSlotId, true);
+                getManager(HomeManager.class).putCommand(getClientId(), config.downSlotId, true);
                 return true;
             } else if (StopMoveType.STOP.equals(command)) {
-                getManager(HomeManager.class).putCommand(config.id, config.stopSlotId, true);
+                getManager(HomeManager.class).putCommand(getClientId(), config.stopSlotId, true);
                 return true;
             }
         }

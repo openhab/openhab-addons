@@ -146,11 +146,25 @@
 		<representation-property>id</representation-property>
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
         <config-description-ref uri="thing-type:freeboxos:shutter"/>
     </thing-type>
 >>>>>>> e4c7780 Implementing SHUTTER Home Node
 =======
 		<config-description-ref uri="thing-type:freeboxos:shutter"/>
+=======
+        <config-description>
+            <parameter name="id" type="integer" required="true">
+                <label>ID</label>
+                <description>Id of the Home Node</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
+        </config-description>
+>>>>>>> cff27ca Saving work
 	</thing-type>
 <<<<<<< Upstream, based on origin/main
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
@@ -167,16 +181,42 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="refreshInterval" type="integer" min="1" unit="s">
-				<label>Refresh Interval</label>
-				<description>The refresh interval in seconds which is used to poll given virtual machine</description>
-				<default>30</default>
-			</parameter>
 			<parameter name="id" type="integer" required="true">
 				<label>ID</label>
-				<description>Id of the Virtual Machine</description>
+				<description>Id of the Home Node</description>
 			</parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
 		</config-description>
 	</thing-type>
+<<<<<<< Upstream, based on origin/main
 >>>>>>> 6340384 Commiting work
+=======
+	
+    <thing-type id="kfb">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="api"/>
+        </supported-bridge-type-refs>
+
+        <label>Freebox Keyfob</label>
+        <description>A keyfob configured for your Freebox Security system</description>
+
+        <representation-property>id</representation-property>
+
+        <config-description>
+            <parameter name="id" type="integer" required="true">
+                <label>ID</label>
+                <description>Id of the Home Node</description>
+            </parameter>
+            <parameter name="refreshInterval" type="integer" min="1" unit="s">
+                <label>Refresh Interval</label>
+                <description>The refresh interval in seconds which is used to poll the Node</description>
+                <default>30</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+>>>>>>> cff27ca Saving work
 </thing:thing-descriptions>
