@@ -42,13 +42,16 @@
 		<description>Tapo Smart Plug Power Outlet</description>
 		<channels>
 			<channel id="output1" typeId="outputChannel">
-				<label>Output Switch #1</label>
+				<label>Output Switch 1</label>
+				<description>Switches the power state on/off of the first socket</description>
 			</channel>
 			<channel id="output2" typeId="outputChannel">
-				<label>Output Switch #2</label>
+				<label>Output Switch 2</label>
+				<description>Switches the power state on/off of the second socket</description>
 			</channel>
 			<channel id="output3" typeId="outputChannel">
-				<label>Output Switch #3</label>
+				<label>Output Switch 3</label>
+				<description>Switches the power state on/off of the third socket</description>
 			</channel>
 		</channels>
 	</channel-group-type>

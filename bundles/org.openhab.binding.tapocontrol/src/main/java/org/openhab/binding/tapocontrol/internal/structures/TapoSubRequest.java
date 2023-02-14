@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@TapoSubRequest} hols data sent to device in order to act on a child
+ * {@TapoSubRequest} holds data sent to device in order to act on a child
  *
  * @author Gaël L'hopital - Initial contribution
  */

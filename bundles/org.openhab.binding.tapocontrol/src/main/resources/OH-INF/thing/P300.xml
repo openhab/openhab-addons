@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- P115 THING-TYPE (SOCKET) -->
+	<!-- P300 THING-TYPE (POWER STRIP) -->
 	<thing-type id="P300">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>

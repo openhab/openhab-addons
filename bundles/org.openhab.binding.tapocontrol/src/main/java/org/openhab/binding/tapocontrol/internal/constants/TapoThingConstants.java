@@ -88,7 +88,7 @@ public class TapoThingConstants {
     /*** THINGS WITH ENERGY DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
 
-    /*** THINGS WITH CHIDS DATA ***/
+    /*** THINGS WITH CHILDS DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_CHILDS_DATA_UIDS = Set.of(P300_THING_TYPE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/

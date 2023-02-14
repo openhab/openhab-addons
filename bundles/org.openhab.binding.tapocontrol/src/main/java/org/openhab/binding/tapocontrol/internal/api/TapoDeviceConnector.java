@@ -175,7 +175,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
                 sendSecurePasstrhroug(GSON.toJson(request), request.method());
             });
         } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastSent);
+            logger.debug("({}) command not sent because of min_gap: {}", uid, now + " <- " + lastSent);
         }
     }
 
@@ -235,8 +235,6 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
     /**
      * Query Info from Child Devices and refresh deviceInfo
-     *
-     * @param ignoreGap ignore gap to last query. query anyway
      */
     @Override
     public void queryChildDevices() {
