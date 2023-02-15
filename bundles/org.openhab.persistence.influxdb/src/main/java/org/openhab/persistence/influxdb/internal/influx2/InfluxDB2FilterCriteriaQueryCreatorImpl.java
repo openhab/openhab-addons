@@ -20,11 +20,10 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtil
 import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
-import org.openhab.persistence.influxdb.internal.InfluxDBMetadataUtils;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 import com.influxdb.query.dsl.Flux;
@@ -37,15 +36,14 @@ import com.influxdb.query.dsl.functions.restriction.Restrictions;
  * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
-public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
+public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
+    private final InfluxDBConfiguration configuration;
+    private final InfluxDBMetadataService influxDBMetadataService;
 
-    private InfluxDBConfiguration configuration;
-    private MetadataRegistry metadataRegistry;
-
-    public Influx2FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
-            MetadataRegistry metadataRegistry) {
+    public InfluxDB2FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
+            InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
-        this.metadataRegistry = metadataRegistry;
+        this.influxDBMetadataService = influxDBMetadataService;
     }
 
     @Override
@@ -54,26 +52,22 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
         RangeFlux range = flux.range();
         if (criteria.getBeginDate() != null) {
-            range = range.withStart(criteria.getBeginDate().toInstant());
+            range.withStart(criteria.getBeginDate().toInstant());
         } else {
             range = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
         }
         if (criteria.getEndDate() != null) {
-            range = range.withStop(criteria.getEndDate().toInstant());
+            range.withStop(criteria.getEndDate().toInstant());
         }
         flux = range;
 
         String itemName = criteria.getItemName();
         if (itemName != null) {
-            String measurementName = calculateMeasurementName(itemName);
-            boolean needsToUseItemTagName = !measurementName.equals(itemName);
-
+            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+            String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
             flux = flux.filter(measurement().equal(measurementName));
-            if (needsToUseItemTagName) {
+            if (!measurementName.equals(itemName)) {
                 flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
-            }
-
-            if (needsToUseItemTagName) {
                 flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2,
                         TAG_ITEM_NAME });
             } else {
@@ -111,17 +105,5 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
             }
         }
         return flux;
-    }
-
-    private String calculateMeasurementName(String itemName) {
-        String name = itemName;
-
-        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name, itemName);
-
-        if (configuration.isReplaceUnderscore()) {
-            name = name.replace('_', '.');
-        }
-
-        return name;
     }
 }
