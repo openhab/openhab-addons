@@ -41,7 +41,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,13 +64,15 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     private static final String CONFIG_PROPERTY_REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeMDNSDiscoveryParticipant.class);
+    protected final ThingRegistry thingRegistry;
 
     private long removalGracePeriod = 0L;
-
     private boolean isAutoDiscoveryEnabled = true;
 
-    @Reference(cardinality = ReferenceCardinality.MANDATORY)
-    protected @Nullable ThingRegistry thingRegistry;
+    @Activate
+    public HueBridgeMDNSDiscoveryParticipant(final @Reference ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -164,14 +165,10 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
      * @return Optional of a legacy bridge thing.
      */
     private Optional<Thing> getLegacyBridge(String ipAddress) {
-        ThingRegistry thingRegistry = this.thingRegistry;
-        if (Objects.nonNull(thingRegistry)) {
-            return thingRegistry.getAll().stream()
-                    .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
-                            && ipAddress.equals(thing.getConfiguration().get(HOST)))
-                    .findFirst();
-        }
-        return Optional.empty();
+        return thingRegistry.getAll().stream()
+                .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
+                        && ipAddress.equals(thing.getConfiguration().get(HOST)))
+                .findFirst();
     }
 
     @Override
