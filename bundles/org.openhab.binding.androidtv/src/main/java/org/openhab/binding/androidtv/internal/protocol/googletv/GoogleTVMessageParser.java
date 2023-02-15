@@ -53,7 +53,14 @@ public class GoogleTVMessageParser {
 
         try {
             logger.debug("Unknown payload received. {} {}", length, msg);
-        } catch (Exception e) {
+//First message on connection from GTV
+//0a5b08ff041256 0a 11  534849454c4420416e64726f6964205456 12 06  4e5649444941 18 01 220231312a
+//------------------LEN-SHIELD Android TV---------------------LEN-NVIDIA
+//24  636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32 0d  352e322e343733323534313333
+//LEN-com.google.android.tv.remote.service----------------------------------------LEN-5.2.473254133
+
+
+	} catch (Exception e) {
             logger.debug("Message Parser Caught Exception", e);
         } finally {
             return;
