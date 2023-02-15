@@ -55,7 +55,7 @@ public class PayloadBuilder {
 
     /**
      * Get JSON Payload (STRING)
-     * 
+     *
      * @return String JSON-Payload
      */
     public String getPayload() {
@@ -66,7 +66,7 @@ public class PayloadBuilder {
 
     /**
      * Get JSON Payload (JSON-Object)
-     * 
+     *
      * @return JsonObject JSON-Payload
      */
     public JsonObject getJsonPayload() {
@@ -87,6 +87,6 @@ public class PayloadBuilder {
      * remove all parameters
      */
     public void flushParameters(String command) {
-        this.parameters = new JsonObject();
+        parameters = new JsonObject();
     }
 }

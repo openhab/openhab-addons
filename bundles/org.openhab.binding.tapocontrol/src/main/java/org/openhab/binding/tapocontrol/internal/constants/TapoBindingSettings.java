@@ -52,5 +52,8 @@ public class TapoBindingSettings {
     public static final String DEVICE_CMD_GETINFO = "get_device_info";
     public static final String DEVICE_CMD_SETINFO = "set_device_info";
     public static final String DEVICE_CMD_GETENERGY = "get_energy_usage";
+    public static final String DEVICE_CMD_CHILD_DEVICE_LIST = "get_child_device_list";
+    public static final String DEVICE_CMD_CONTROL_CHILD = "control_child";
+    public static final String DEVICE_CMD_MULTIPLE_REQ = "multipleRequest";
     public static final String DEVICE_CMD_CUSTOM = "custom_command";
 }
