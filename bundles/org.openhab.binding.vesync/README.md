@@ -10,7 +10,7 @@ Air Humidifier models supported are Dual 200S, Classic 300S, 600S.
 ### Awaiting User Verification Models
 
 Air Filtering models supported are Core200S and Core600S.
-Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks)
+Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks), OasisMist Smart Humidifier
 
 ## Supported Things
 
@@ -92,21 +92,21 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### AirHumidifier Thing
 
-| Channel                    | Type                 | Description                                                   | Model's Supported          | Controllable Values |
-|----------------------------|----------------------|---------------------------------------------------------------|----------------------------|---------------------|
-| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| **display**                | Switch               | Whether the display is enabled (display is shown)             | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| waterLacking               | Switch               | Indicator whether the unit is lacking water                   | 200S, Dual200S, 300S, 600S |                     |
-| humidityHigh               | Switch               | Indicator for high humidity                                   | 200S, Dual200S, 300S, 600S |                     |
-| waterTankLifted            | Switch               | Indicator for whether the water tank is removed               | 200S, Dual200S, 300S, 600S |                     |
-| **stopAtHumiditySetpoint** | Switch               | Whether the unit is set to stop when the set point is reached | 200S, Dual200S, 300S, 600S | [ON, OFF]           |
-| humidity                   | Number:Dimensionless | Indicator for the currently measured humidity % level         | 200S, Dual200S, 300S, 600S |                     |
-| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 300S                       | [1...2]             |
-| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 200S, Dual200S, 600S       | [1...3]             |
-| **humidifierMode**         | String               | The current mode of operation                                 | 200S, Dual200S, 300S, 600S | [auto, sleep]       |
-| **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S       | [on, dim, off]      |
-| **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S | [30...80]           |
-| warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S                       |                     |
+| Channel                    | Type                 | Description                                                   | Model's Supported                     | Controllable Values |
+|----------------------------|----------------------|---------------------------------------------------------------|---------------------------------------|---------------------|
+| **enabled**                | Switch               | Whether the hardware device is enabled (Switched on)          | 200S, Dual200S, 300S, 600S, OasisMist | [ON, OFF]           |
+| **display**                | Switch               | Whether the display is enabled (display is shown)             | 200S, Dual200S, 300S, 600S, OasisMist | [ON, OFF]           |
+| waterLacking               | Switch               | Indicator whether the unit is lacking water                   | 200S, Dual200S, 300S, 600S, OasisMist |                     |
+| humidityHigh               | Switch               | Indicator for high humidity                                   | 200S, Dual200S, 300S, 600S, OasisMist |                     |
+| waterTankLifted            | Switch               | Indicator for whether the water tank is removed               | 200S, Dual200S, 300S, 600S, OasisMist |                     |
+| **stopAtHumiditySetpoint** | Switch               | Whether the unit is set to stop when the set point is reached | 200S, Dual200S, 300S, 600S, OasisMist | [ON, OFF]           |
+| humidity                   | Number:Dimensionless | Indicator for the currently measured humidity % level         | 200S, Dual200S, 300S, 600S, OasisMist |                     |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 300S                                  | [1...2]             |
+| **mistLevel**              | Number:Dimensionless | The current mist level set                                    | 200S, Dual200S, 600S, OasisMist       | [1...3]             |
+| **humidifierMode**         | String               | The current mode of operation                                 | 200S, Dual200S, 300S, 600S, OasisMist | [auto, sleep]       |
+| **nightLightMode**         | String               | The night light mode                                          | 200S, Dual200S, 300S                  | [on, dim, off]      |
+| **humiditySetpoint**       | Number:Dimensionless | Humidity % set point to reach                                 | 200S, Dual200S, 300S, 600S, OasisMist | [30...80]           |
+| warmEnabled                | Switch               | Indicator for warm mist mode                                  | 600S, OasisMist                       |                     |
 
 
 ## Full Example
@@ -128,17 +128,17 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 #### Air Purifier Core 400S / 600S Model
 
 ```
-Switch               LoungeAPPower        	        "Lounge Air Purifier Power"                                 { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	        "Lounge Air Purifier Display"                               { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                 { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                               { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f% %unit%]"             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
-Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+Number:Density       LoungeAPAirQuality            "Lounge Air Purifier Air Quality [%.0f% %unit%]"             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQualityPM25" }
+Number               LoungeAPErrorCode             "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode              "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize          "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft             "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
@@ -146,18 +146,18 @@ Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules C
 #### Air Purifier Core 200S/300S Model
 
 ```
-Switch               LoungeAPPower        	       "Lounge Air Purifier Power"                                  { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay      	       "Lounge Air Purifier Display"                                { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                  { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                                { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
 String               LoungeAPNightLightMode        "Lounge Air Purifier Night Light Mode"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:nightLightMode" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
 Number:Dimensionless LoungeAPManualFanSpeed        "Lounge Air Purifier Manual Fan Speed"                       { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:manualFanSpeed" }
-Number:Density       LoungeAPAirQuality		       "Lounge Air Purifier Air Quality [%.0f%]"                    { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQuality" }
-Number               LoungeAPErrorCode     	       "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
-String               LoungeAPAutoMode		       "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
-Number               LoungeAPAutoRoomSize 	       "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft		       "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
+Number:Density       LoungeAPAirQuality            "Lounge Air Purifier Air Quality [%.0f%]"                    { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:airQuality" }
+Number               LoungeAPErrorCode             "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
+String               LoungeAPAutoMode              "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
+Number               LoungeAPAutoRoomSize          "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
+Number:Time          LoungeAPTimerLeft             "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount 	   "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
@@ -194,6 +194,21 @@ Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level
 ```
 
 #### Air Humidifier 600S Model
+
+```
+Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
+Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
+String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
+Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
+Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
+Switch               LoungeAHWaterTankRemoved  "Lounge Air Humidifier Water Tank Removed"                     { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterTankLifted" }
+Number:Dimensionless LoungeAHHumidity          "Lounge Air Humidifier Measured Humidity [%.0f %unit%]"        { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidity" }
+Switch               LoungeAHTargetStop        "Lounge Air Humidifier Stop at target"                         { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:stopAtTargetLevel" }
+Number:Dimensionless LoungeAHTarget            "Lounge Air Humidifier Target Humidity [%.0f %unit%]"          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humiditySetpoint" }
+Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level"                             { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:mistLevel" }
+```
+
+#### Air Humidifier Oasis Mist Smart Model
 
 ```
 Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
@@ -279,6 +294,23 @@ Frame {
 ```
 
 #### Air Humidifier 600S Model
+
+```
+Frame {
+   Switch item=LoungeAHPower
+   Switch item=LoungeAHDisplay
+   Switch item=LoungeAHMode label="Mode" mappings=[auto="Auto", sleep="Sleeping"] icon="settings"
+   Text   icon="none" item=LoungeAHWaterLacking
+   Text   icon="none" item=LoungeAHHighHumidity
+   Text   icon="none" item=LoungeAHWaterTankRemoved
+   Text   icon="none" item=LoungeAHHumidity
+   Switch item=LoungeAHTargetStop
+   Slider item=LoungeAHTarget minValue=30 maxValue=80
+   Slider item=LoungeAHMistLevel minValue=1 maxValue=3
+}
+```
+
+#### Air Humidifier Oasis Mist Smart Model
 
 ```
 Frame {
