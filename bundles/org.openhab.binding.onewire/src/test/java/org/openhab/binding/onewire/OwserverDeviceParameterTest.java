@@ -37,6 +37,7 @@ public class OwserverDeviceParameterTest {
         assertEquals("/1F.0123456789ab/main/00.1234567890ab/humidity", owserverDeviceParameter.getPath(sensorId));
     }
 
+    @Test
     public void withPrefixTest() {
         OwserverDeviceParameter owserverDeviceParameter = new OwserverDeviceParameter("uncached", "/humidity");
         assertEquals("/uncached/1F.0123456789ab/main/00.1234567890ab/humidity",
