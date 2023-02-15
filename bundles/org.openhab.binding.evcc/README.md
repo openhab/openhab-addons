@@ -42,8 +42,8 @@ Please note that some of them are only available when evcc is properly configure
 |----------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------|
 | general#batteryCapacity    | Number:Energy        | R          | Capacity of (home) battery.                                                                                  |
 | general#batteryPower       | Number:Power         | R          | Current power from battery.                                                                                  |
-| general#batterySoC         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
-| general#batteryPrioritySoC | Number:Dimensionless | R          | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
+| general#batterySoc         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
+| general#batteryPrioritySoc | Number:Dimensionless | R          | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
 | general#gridPower          | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
 | general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
 | general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |
@@ -67,10 +67,10 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#hasVehicle               | Switch                 | R          | Whether vehicle is configured for loadpoint                                                         |
 | loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum amperage per connected phase with which the car should be charged                           |
 | loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum amperage per connected phase with which the car should be charged                           |
-| loadpointN#minSoC                   | Number:Dimensionless   | RW         | Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off" |
+| loadpointN#minSoc                   | Number:Dimensionless   | RW         | Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off" |
 | loadpointN#mode                     | String                 | RW         | Charging mode: "off", "now", "minpv", "pv"                                                          |
 | loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                                                      |
-| loadpointN#targetSoC                | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                     |
+| loadpointN#targetSoc                | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                     |
 | loadpointN#targetTime               | DateTime               | RW         | When the target SoC should be reached                                                               |
 | loadpointN#targetTimeEnabled        | Switch                 | RW         | Target time for charging enabled                                                                    |
 | loadpointN#title                    | String                 | R          | Title of loadpoint                                                                                  |
@@ -80,7 +80,7 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#vehicleOdometer          | Number:Length          | R          | Total distance travelled by EV                                                                      |
 | loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle                                                       |
 | loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV                                                                                |
-| loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV                                                                       |
+| loadpointN#vehicleSoc               | Number:Dimensionless   | R          | Current State of Charge of EV                                                                       |
 | loadpointN#vehicleTitle             | String                 | R          | Name of EV                                                                                          |
 
 ## Full Example
@@ -97,8 +97,8 @@ Thing evcc:device:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=
 // General
 Number:General            evcc_batteryCapacity                        "Battery Capacity [%.0f kWH]"                     <energy>          {channel="evcc:device:demo:general#batteryCapacity"}
 Number:Power              evcc_batteryPower                           "Battery Power [%.1f kW]"                         <energy>          {channel="evcc:device:demo:general#batteryPower"}
-Number:Dimensionless      evcc_batterySoC                             "Battery SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
-Number:Dimensionless      evcc_batteryPrioritySoC                     "Battery Priority SoC [%d %%]"                    <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoC"}
+Number:Dimensionless      evcc_batterySoc                             "Battery SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:general#batterySoc"}
+Number:Dimensionless      evcc_batteryPrioritySoc                     "Battery Priority SoC [%d %%]"                    <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoc"}
 Number:Power              evcc_gridPower                              "Grid Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#gridPower"}
 Number:Power              evcc_homePower                              "Home Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#homePower"}
 Number:Power              evcc_pvPower                                "PV Power [%.1f kW]"                              <energy>          {channel="evcc:device:demo:general#pvPower"}
@@ -116,10 +116,10 @@ Switch                    evcc_loadpoint0_enabled                     "Charging 
 Switch                    evcc_loadpoint0_hasVehicle                  "Vehicle configured [%s]"                         <switch>          {channel="evcc:device:demo:loadpoint0#hasVehicle"}
 Number:ElectricCurrent    evcc_loadpoint0_maxCurrent                  "Maximum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#maxCurrent"}
 Number:ElectricCurrent    evcc_loadpoint0_minCurrent                  "Minimum current [%.0f A]"                        <energy>          {channel="evcc:device:demo:loadpoint0#minCurrent"}
-Number:Dimensionless      evcc_loadpoint0_minSoC                      "Minimum SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#minSoC"}
+Number:Dimensionless      evcc_loadpoint0_minSoc                      "Minimum SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#minSoc"}
 String                    evcc_loadpoint0_mode                        "Mode [%s]"                                                         {channel="evcc:device:demo:loadpoint0#mode"}
 Number                    evcc_loadpoint0_phases                      "Enabled phases [%d]"                                               {channel="evcc:device:demo:loadpoint0#phases"}
-Number:Dimensionless      evcc_loadpoint0_targetSoC                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoC"}
+Number:Dimensionless      evcc_loadpoint0_targetSoc                   "Target SoC [%d %%]"                              <batterylevel>    {channel="evcc:device:demo:loadpoint0#targetSoc"}
 DateTime                  evcc_loadpoint0_targetTime                  "Target time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"    <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
 Switch                    evcc_loadpoint0_targetTimeEnabled           "Target time enabled [%s]"                        <switch>          {channel="evcc:device:demo:loadpoint0#targetTimeEnabled"}
 String                    evcc_loadpoint0_title                       "Loadpoint title [%s]"                            <text>            {channel="evcc:device:demo:loadpoint0#title"}
@@ -130,7 +130,7 @@ Number:Energy             evcc_loadpoint0_vehicleCapacity             "Vehicle c
 Number:Length             evcc_loadpoint0_vehicleOdometer             "Vehicle odometer [%.1f km]"                                        {channel="evcc:device:demo:loadpoint0#vehicleOdometer"}
 Switch                    evcc_loadpoint0_vehiclePresent              "Vehicle present [%s]"                            <switch>          {channel="evcc:device:demo:loadpoint0#vehiclePresent"}
 Number:Length             evcc_loadpoint0_vehicleRange                "Vehicle Range [%.0f km]"                                           {channel="evcc:device:demo:loadpoint0#vehicleRange"}
-Number:Dimensionless      evcc_loadpoint0_vehicleSoC                  "Vehicle SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleSoC"}
+Number:Dimensionless      evcc_loadpoint0_vehicleSoc                  "Vehicle SoC [%d %%]"                             <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleSoc"}
 String                    evcc_loadpoint0_vehicleName                 "Vehicle name [%s]"                               <text>            {channel="evcc:device:demo:loadpoint0#vehicleTitle"}
 ```
 
@@ -140,7 +140,7 @@ String                    evcc_loadpoint0_vehicleName                 "Vehicle n
 sitemap evcc label="evcc Demo" {
     Frame label="General" {
         Text item=evcc_batteryPower
-        Text item=evcc_batterySoC
+        Text item=evcc_batterySoc
         Text item=evcc_gridPower
         Text item=evcc_homePower
         Text item=evcc_pvPower
@@ -158,17 +158,17 @@ sitemap evcc label="evcc Demo" {
         }
         Switch item=evcc_loadpoint0_mode mappings=["off"="Stop","now"="Now","minpv"="Min + PV", "pv"="Only PV"]
         Text label="Charging settings" icon="settings" {
-            Setpoint item=evcc_loadpoint0_targetSoC minValue=5 maxValue=100 step=5
+            Setpoint item=evcc_loadpoint0_targetSoc minValue=5 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_minCurrent minValue=6 maxValue=96 step=2
             Setpoint item=evcc_loadpoint0_maxCurrent minValue=6 maxValue=96 step=2
-            Setpoint item=evcc_loadpoint0_minSoC minValue=0 maxValue=100 step=5
+            Setpoint item=evcc_loadpoint0_minSoc minValue=0 maxValue=100 step=5
             Setpoint item=evcc_loadpoint0_phases minValue=1 maxValue=3 step=2
         }
         Text item=evcc_loadpoint0_vehicleName label="Vehicle" {
             Text item=evcc_loadpoint0_vehicleCapacity
             Text item=evcc_loadpoint0_vehicleOdometer
             Text item=evcc_loadpoint0_vehicleRange
-            Text item=evcc_loadpoint0_vehicleSoC
+            Text item=evcc_loadpoint0_vehicleSoc
         }
     }
 }
