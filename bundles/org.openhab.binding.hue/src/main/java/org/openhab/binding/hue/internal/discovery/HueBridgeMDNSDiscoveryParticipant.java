@@ -16,7 +16,8 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.HOST;
 
 import java.io.IOException;
 import java.util.Dictionary;
-import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -24,6 +25,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
+import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -31,12 +33,15 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +69,9 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     private long removalGracePeriod = 0L;
 
     private boolean isAutoDiscoveryEnabled = true;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    protected @Nullable ThingRegistry thingRegistry;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -107,22 +115,63 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (isAutoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
-            if (uid != null) {
+            if (Objects.nonNull(uid)) {
                 String host = service.getHostAddresses()[0];
-                String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
-                String friendlyName = String.format("%s (%s)", service.getName(), host);
-                return DiscoveryResultBuilder.create(uid) //
-                        .withProperties(Map.of( //
-                                HOST, host, //
-                                Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID), //
-                                Thing.PROPERTY_SERIAL_NUMBER, id.toLowerCase())) //
-                        .withLabel(friendlyName) //
+                String serial = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
+                String label = String.format("%s (%s)", service.getName(), host);
+                String applicationKey = null;
+                String location = null;
+
+                if (uid.getAsString().startsWith(HueBindingConstants.CLIP2_THING_TYPE_PREFIX)) {
+                    Optional<Thing> legacyBridgeOptional = getLegacyBridge(host);
+                    if (legacyBridgeOptional.isPresent()) {
+                        Thing legacyBridge = legacyBridgeOptional.get();
+                        String label2 = legacyBridge.getLabel();
+                        label = Objects.nonNull(label2) ? label2 : label;
+                        Object userName = legacyBridge.getConfiguration().get(HueBindingConstants.USER_NAME);
+                        applicationKey = userName instanceof String ? (String) userName : null;
+                        location = legacyBridge.getLocation();
+                        location = Objects.nonNull(location) && !location.isBlank() ? location : null;
+                    }
+                    serial = serial + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
+                    label = label + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
+                }
+
+                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid) //
+                        .withLabel(label) //
+                        .withProperty(HOST, host) //
+                        .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID)) //
+                        .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial.toLowerCase()) //
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                        .withTTL(120L) //
-                        .build();
+                        .withTTL(120L);
+
+                if (Objects.nonNull(applicationKey)) {
+                    builder = builder.withProperty(Clip2BridgeConfig.APPLICATION_KEY, applicationKey);
+                }
+                if (Objects.nonNull(location)) {
+                    builder = builder.withProperty(HueBindingConstants.PROPERTY_LOCATION, location);
+                }
+                return builder.build();
             }
         }
         return null;
+    }
+
+    /**
+     * Get the legacy Hue bridge (if any) on the given IP address.
+     *
+     * @param ipAddress the IP address.
+     * @return Optional of a legacy bridge thing.
+     */
+    private Optional<Thing> getLegacyBridge(String ipAddress) {
+        ThingRegistry thingRegistry = this.thingRegistry;
+        if (Objects.nonNull(thingRegistry)) {
+            return thingRegistry.getAll().stream()
+                    .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
+                            && ipAddress.equals(thing.getConfiguration().get(HOST)))
+                    .findFirst();
+        }
+        return Optional.empty();
     }
 
     @Override

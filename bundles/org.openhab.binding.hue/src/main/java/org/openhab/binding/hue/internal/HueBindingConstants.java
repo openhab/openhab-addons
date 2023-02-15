@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -53,6 +55,12 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_GEOFENCE_SENSOR = new ThingTypeUID(BINDING_ID, "geofencesensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "0302");
     public static final ThingTypeUID THING_TYPE_LIGHT_LEVEL_SENSOR = new ThingTypeUID(BINDING_ID, "0106");
+
+    public static final Set<ThingTypeUID> V1_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_LIGHT,
+            THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
+            THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG, THING_TYPE_DIMMER_SWITCH,
+            THING_TYPE_TAP_SWITCH, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
+            THING_TYPE_LIGHT_LEVEL_SENSOR);
 
     public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
 
@@ -106,6 +114,7 @@ public class HueBindingConstants {
     public static final String PROPERTY_RESOURCE_ARCHETYPE = "resourceArchetype";
     public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
     public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
+    public static final String PROPERTY_LOCATION = "location";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -134,4 +143,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_ROTARY_STEPS = "rotarySteps";
     public static final String CHANNEL_2_TEMPERATURE_ENABLED = "temperatureEnabled";
     public static final String CHANNEL_2_ZIGBEE_STATUS = "zigbeeStatus";
+
+    public static final String CLIP2_THING_TYPE_PREFIX = "hue:clip2:";
+    public static final String CLIP2_PROPERTY_SUFFIX = " (api2)";
 }

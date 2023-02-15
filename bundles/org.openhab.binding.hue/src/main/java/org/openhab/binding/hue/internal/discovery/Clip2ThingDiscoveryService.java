@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,17 +25,18 @@ import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
-import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 
 /**
  * Discovery service to find resource things on a Hue Bridge that is running CLIP 2.
@@ -40,49 +44,34 @@ import org.openhab.core.thing.ThingUID;
  * @author Andrew Fiddian-Green - Initial Contribution
  */
 @NonNullByDefault
-public class Clip2ThingDiscoveryService extends AbstractDiscoveryService {
+public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
-    public static final int DISCOVERY_TIMEOUT_SECONDS = 10;
-    public static final int DISCOVERY_START_DELAY_SECONDS = 30;
-    public static final int DISCOVERY_REFRESH_PERIOD_SECONDS = 600;
+    public static final int DISCOVERY_TIMEOUT_SECONDS = 20;
+    public static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
-    private final Clip2BridgeHandler bridgeHandler;
+    private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
-    public Clip2ThingDiscoveryService(Clip2BridgeHandler bridgeHandler) {
-        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE), DISCOVERY_TIMEOUT_SECONDS);
-        this.bridgeHandler = bridgeHandler;
+    public Clip2ThingDiscoveryService() {
+        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE), DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
+    @Override
     public void activate() {
+        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+        if (Objects.nonNull(bridgeHandler)) {
+            bridgeHandler.registerDiscoveryService(this);
+        }
         super.activate(null);
     }
 
     @Override
     public void deactivate() {
         super.deactivate();
-    }
-
-    @Override
-    protected void startScan() {
-        discoverDevices();
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        ScheduledFuture<?> discoveryTask = this.discoveryTask;
-        if (discoveryTask == null || discoveryTask.isCancelled()) {
-            this.discoveryTask = scheduler.scheduleWithFixedDelay(this::discoverDevices, DISCOVERY_START_DELAY_SECONDS,
-                    DISCOVERY_REFRESH_PERIOD_SECONDS, TimeUnit.SECONDS);
-        }
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> discoveryTask = this.discoveryTask;
-        if (discoveryTask != null) {
-            discoveryTask.cancel(true);
-            this.discoveryTask = null;
+        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+        if (Objects.nonNull(bridgeHandler)) {
+            bridgeHandler.registerDiscoveryService(null);
+            removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getBridgeUID());
         }
     }
 
@@ -91,35 +80,117 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService {
      * as OH things, and announce those respective things by calling the core 'thingDiscovered()' method.
      */
     private synchronized void discoverDevices() {
-        if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        try {
-            Resources resources = bridgeHandler.getResources(new ResourceReference().setType(ResourceType.DEVICE));
-            for (Resource resource : resources.getResources()) {
-                MetaData metaData = resource.getMetaData();
-                if (metaData != null) {
-                    if (metaData.getArchetype() == Archetype.BRIDGE_V2) {
-                        // the bridge device resource itself is already in the bridge thing handler
-                        continue;
+        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+        if (Objects.nonNull(bridgeHandler) && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
+                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                for (Resource resource : bridgeHandler
+                        .getResources(new ResourceReference().setType(ResourceType.DEVICE)).getResources()) {
+
+                    MetaData metaData = resource.getMetaData();
+                    if (Objects.nonNull(metaData)) {
+                        if (metaData.getArchetype() == Archetype.BRIDGE_V2) {
+                            // the bridge device resource itself is already in the bridge thing handler
+                            continue;
+                        }
+
+                        String resId = resource.getId();
+                        String resType = resource.getType().toString();
+                        String label = resource.getName();
+                        String location = null;
+
+                        Optional<Thing> legacyThingOptional = getLegacyThing(resource.getIdV1());
+                        if (legacyThingOptional.isPresent()) {
+                            Thing legacyThing = legacyThingOptional.get();
+                            String label2 = legacyThing.getLabel();
+                            label = Objects.nonNull(label2) && !label2.isBlank() ? label2 : label;
+                            location = legacyThing.getLocation();
+                            location = Objects.nonNull(location) && !location.isBlank() ? location : null;
+                        }
+
+                        DiscoveryResultBuilder builder = DiscoveryResultBuilder
+                                .create(new ThingUID(HueBindingConstants.THING_TYPE_DEVICE, bridgeUID, resId))
+                                .withBridge(bridgeUID) //
+                                .withLabel(label) //
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resId)
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_TYPE, resType)
+                                .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, label)
+                                .withRepresentationProperty(HueBindingConstants.PROPERTY_RESOURCE_ID);
+
+                        if (Objects.nonNull(location)) {
+                            builder = builder.withProperty(HueBindingConstants.PROPERTY_LOCATION, location);
+                        }
+                        thingDiscovered(builder.build());
                     }
-                    String resId = resource.getId();
-                    String resType = resource.getType().toString();
-                    String label = resource.getName();
-                    ThingUID thingUID = new ThingUID(HueBindingConstants.THING_TYPE_DEVICE, bridgeUID, resId);
-
-                    DiscoveryResult thing = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                            .withLabel(label).withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resId)
-                            .withProperty(HueBindingConstants.PROPERTY_RESOURCE_TYPE, resType)
-                            .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, label)
-                            .withRepresentationProperty(HueBindingConstants.PROPERTY_RESOURCE_ID).build();
-
-                    thingDiscovered(thing);
                 }
+            } catch (ApiException | AssetNotLoadedException e) {
+                // bridge is offline or in a bad state
             }
-        } catch (ApiException | AssetNotLoadedException e) {
-            // bridge is offline or in a bad state
+        }
+        stopScan();
+    }
+
+    /**
+     * Get the v1 legacy Hue thing (if any) which has an Id that matches the idV1 attribute of a v2 thing.
+     *
+     * @param targetId the idV1 attribute value of a v2 thing.
+     * @return Optional result containing the legacy thing (if found).
+     */
+    private Optional<Thing> getLegacyThing(String targetId) {
+        String config;
+        if (targetId.startsWith("/lights/")) {
+            config = HueBindingConstants.LIGHT_ID;
+        } else if (targetId.startsWith("/sensors/")) {
+            config = HueBindingConstants.SENSOR_ID;
+        } else {
+            config = null;
+        }
+        if (Objects.nonNull(config)) {
+            Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+            if (Objects.nonNull(bridgeHandler)) {
+                return bridgeHandler.getThingRegistry().getAll().stream() //
+                        .filter(thing -> HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
+                        .filter(thing -> {
+                            Object id = thing.getConfiguration().get(config);
+                            return id instanceof String && targetId.endsWith((String) id);
+                        }).findFirst();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof Clip2BridgeHandler) {
+            bridgeHandler = (Clip2BridgeHandler) handler;
+        }
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        ScheduledFuture<?> discoveryTask = this.discoveryTask;
+        if (Objects.isNull(discoveryTask) || discoveryTask.isCancelled()) {
+            this.discoveryTask = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, DISCOVERY_INTERVAL_SECONDS,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void startScan() {
+        scheduler.execute(this::discoverDevices);
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        ScheduledFuture<?> discoveryTask = this.discoveryTask;
+        if (Objects.nonNull(discoveryTask)) {
+            discoveryTask.cancel(true);
+            this.discoveryTask = null;
         }
     }
 }

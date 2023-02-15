@@ -206,6 +206,7 @@ public class DeviceThingHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         thisResource.setId(resourceId);
+        updateThingLocation();
 
         disposing = false;
         hasConnectivityIssue = false;
@@ -468,9 +469,7 @@ public class DeviceThingHandler extends BaseThingHandler {
      */
     private void updateProperties(Resource resource) {
         logger.debug("updateProperties() {}", resource);
-
-        // actualise the properties
-        Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
 
         // resource data
         properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, thisResource.getId());
@@ -535,6 +534,19 @@ public class DeviceThingHandler extends BaseThingHandler {
         }
         if (fullUpdate && isDefined) {
             supportedChannelIds.add(channelID);
+        }
+    }
+
+    /**
+     * Check if the discovery process found a thing location property, and if so apply it to the thing itself.
+     */
+    private void updateThingLocation() {
+        Map<String, String> properties = thing.getProperties();
+        String location = properties.get(HueBindingConstants.PROPERTY_LOCATION);
+        if (Objects.nonNull(location) && !location.isBlank()) {
+            Map<String, String> newProperties = new HashMap<>(properties);
+            newProperties.remove(HueBindingConstants.PROPERTY_LOCATION);
+            updateThing(editThing().withLocation(location).withProperties(newProperties).build());
         }
     }
 }
