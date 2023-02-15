@@ -25,6 +25,7 @@ import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScri
 import org.openhab.core.automation.module.script.rulesupport.loader.ScriptFileWatcher;
 import org.openhab.core.service.ReadyService;
 import org.openhab.core.service.StartLevelService;
+import org.openhab.core.service.WatchService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * Monitors <openHAB-conf>/automation/ruby for Ruby files, but not libraries in lib or gems
  *
  * @author Cody Cutrer - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
 @Component(immediate = true, service = { ScriptFileWatcher.class, ScriptDependencyTracker.Listener.class })
 @NonNullByDefault
@@ -50,8 +52,9 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
     public JRubyScriptFileWatcher(final @Reference ScriptEngineManager manager,
             final @Reference ReadyService readyService, final @Reference StartLevelService startLevelService,
             final @Reference(target = "(" + Constants.SERVICE_PID
-                    + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory) {
-        super(manager, readyService, startLevelService, FILE_DIRECTORY);
+                    + "=org.openhab.automation.jrubyscripting)") ScriptEngineFactory scriptEngineFactory,
+            final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
+        super(watchService, manager, readyService, startLevelService, FILE_DIRECTORY, true);
 
         this.scriptEngineFactory = (JRubyScriptEngineFactory) scriptEngineFactory;
     }
