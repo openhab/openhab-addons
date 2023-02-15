@@ -55,10 +55,14 @@ public class GoogleTVRequest {
             // 080210c801c202 22 0a 20 0e066c3d1c3a6686edb6b2648ff25fcb3f0bf9cc81deeee9fad1a26073645e17
             // 080210c801c202 22 0a 20 530bb7c7ba06069997285aff6e0106adfb19ab23c18a7422f5f643b35a6467b3
             // -------------------------SHA HASH OF PIN
-            String prefix = "080a121f08d108121a0a06";
-            String encodedPin = decodeMessage(pin);
-            String suffix = "121036646564646461326639366635646261";
-            return prefix + encodedPin + suffix;
+
+            int length = pin.length() / 2;
+            String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(length + 2));
+            String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(length));
+            String reply = "080210c801c202" + len1 + "0a" + len2 + pin;
+            String replyLength = GoogleTVRequest.fixMessage(Integer.toHexString(reply.length() / 2));
+            String finalReply = replyLength + reply;
+            return finalReply;
         }
     }
 
@@ -81,10 +85,6 @@ public class GoogleTVRequest {
             // 080210c801a201 08 12 04 08031006 1801
             // 080210c801f201 08 0a 04 08031006 1001
             message = "080210c801f201080a04080310061001";
-        } else if (messageId == 4) {
-            // This may mean disconnect?
-            message = "0802109203";
-
         }
         return message;
     }

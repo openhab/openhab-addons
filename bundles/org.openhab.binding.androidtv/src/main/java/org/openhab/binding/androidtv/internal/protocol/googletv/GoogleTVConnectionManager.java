@@ -29,6 +29,7 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
@@ -545,8 +546,8 @@ public class GoogleTVConnectionManager {
                     SSLSession session = serverSocket.getSession();
                     Certificate[] cchain2 = session.getPeerCertificates();
                     this.shimClientChain = cchain2;
-		    this.shimX509ClientChain = session.getPeerCertificateChain();
-		    Certificate[] cchain3 = session.getLocalCertificates();
+                    // this.shimX509ClientChain = session.getPeerCertificateChain();
+                    Certificate[] cchain3 = session.getLocalCertificates();
                     this.shimClientLocalChain = cchain3;
 
                     if (cchain2 != null) {
@@ -787,6 +788,7 @@ public class GoogleTVConnectionManager {
                 thisMsg = GoogleTVRequest.fixMessage(Integer.toHexString(reader.read()));
                 if (thisMsg.equals("ffffffff")) {
                     // Google has crashed the connection. Disconnect hard.
+                    logger.trace("readerThreadJob received ffffffff.  Disconnecting hard.");
                     reconnect();
                     break;
                 }
@@ -978,9 +980,10 @@ public class GoogleTVConnectionManager {
 
     public void sendCommand(GoogleTVCommand command) {
         if ((!config.shim) && (!command.toString().equals(""))) {
-            int length = command.toString().length() / 2;
-            String hexLength = GoogleTVRequest.fixMessage(Integer.toHexString(length));
-            String message = GoogleTVRequest.encodeMessage(hexLength + command.toString());
+            int length = command.toString().length();
+            String hexLength = GoogleTVRequest.encodeMessage(GoogleTVRequest.fixMessage(Integer.toHexString(length)));
+            String message = hexLength + command.toString();
+            logger.trace("sendCommand {}", message);
             GoogleTVCommand lenCommand = new GoogleTVCommand(message);
             sendQueue.add(lenCommand);
         }
@@ -1191,33 +1194,30 @@ public class GoogleTVConnectionManager {
             }
         } else if (CHANNEL_PINCODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                if ((config.mode.equals(DEFAULT_MODE)) && (config.shim)) {
-                    childConnectionManager.handleCommand(channelUID, command);
-                } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
-                    try {
-                        // GoogleTVUtils serverutils = new GoogleTVUtils(androidtvPKI.getCert(), shimServerChain[0]);
-
-                        // GoogleTVUtils clientutils = new GoogleTVUtils(shimClientChain[0], shimClientLocalChain[0]);
-
+                try {
+                    if (config.mode.equals(DEFAULT_MODE)) {
+                        childConnectionManager.handleCommand(channelUID, command);
+                    } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
+                        if (!isLoggedIn) {
+                            if (command.toString().equals("REQUEST")) {
+                                sendCommand(new GoogleTVCommand(GoogleTVRequest.pinRequest(command.toString())));
+                            } else {
+                                this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
+                                        shimServerChain[0]);
+                                sendCommand(new GoogleTVCommand(GoogleTVRequest.pinRequest(this.pinHash)));
+                            }
+                        }
+                    } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
                         this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
                                 shimServerChain[0]);
 
                         this.shimPinHash = GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0],
                                 shimClientLocalChain[0]);
 
-                    } catch (Exception e) {
-                        logger.trace("PIN CertificateException", e);
                     }
+                } catch (CertificateException e) {
+                    logger.trace("PIN CertificateException", e);
                 }
-                /*
-                 * if (!isLoggedIn) {
-                 * // Do PIN for googletv protocol
-                 * logger.trace("GoogleTV PIN Process Started");
-                 * String pin = GoogleTVRequest.pinRequest(command.toString());
-                 * String message = GoogleTVRequest.encodeMessage(pin);
-                 * sendCommand(new GoogleTVCommand(message));
-                 * }
-                 */
             }
         } else if (CHANNEL_RAW.equals(channelUID.getId())) {
             if (command instanceof StringType) {
