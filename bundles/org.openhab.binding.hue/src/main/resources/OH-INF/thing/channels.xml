@@ -213,8 +213,8 @@
 
 	<channel-type id="zigbeeStatus">
 		<item-type>String</item-type>
-		<label>ZigBee Status</label>
-		<description>ZigBee connection status.</description>
+		<label>Zigbee Status</label>
+		<description>Zigbee connection status.</description>
 		<category>QualityOfService</category>
 		<state readOnly="true">
 			<options>
