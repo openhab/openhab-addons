@@ -50,6 +50,12 @@ public class LocationMessage {
     private String trackerId = "";
 
     /**
+     * Altitude (iOS, Android/integer/meters/optional)
+     */
+    @SerializedName("alt")
+    private Integer altitude = Integer.MIN_VALUE;
+
+    /**
      * Latitude (iOS, Android/float/meters/required)
      */
     @SerializedName("lat")
@@ -97,13 +103,23 @@ public class LocationMessage {
         return UnDefType.UNDEF;
     }
 
+    public State getAltitude() {
+        if (altitude != Integer.MIN_VALUE) {
+            return new DecimalType(altitude);
+        }
+        return UnDefType.UNDEF;
+    }
+    
     /**
      * Converts tracker coordinates into PointType
      *
      * @return Conversion result
      */
     public State getTrackerLocation() {
-        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
+        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude) && Integer.MIN_VALUE != altitude) {
+            return new PointType(new DecimalType(latitude), new DecimalType(longitude), new DecimalType(altitude));
+        }
+        else if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
         }
         return UnDefType.UNDEF;
