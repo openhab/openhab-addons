@@ -341,14 +341,17 @@ public class EvccHandler extends BaseThingHandler {
         if (batteryConfigured) {
             float batteryCapacity = result.getBatteryCapacity();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_CAPACITY);
-            updateState(channel, new QuantityType<>(batteryCapacity, Units.WATT_HOUR));
+            updateState(channel, new QuantityType<>(batteryCapacity, Units.KILOWATT_HOUR));
+
             float batteryPower = result.getBatteryPower();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_POWER);
             updateState(channel, new QuantityType<>(batteryPower, Units.WATT));
+
             float batterySoC = result.getBatterySoC();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_SOC);
             updateState(channel, new QuantityType<>(batterySoC, Units.PERCENT));
-            float batteryPrioritySoC = result.getBatterySoC();
+
+            float batteryPrioritySoC = result.getBatteryPrioritySoC();
             channel = new ChannelUID(uid, "general", CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
         }
@@ -378,60 +381,79 @@ public class EvccHandler extends BaseThingHandler {
         final String loadpointName = "loadpoint" + loadpointId;
         ChannelUID channel;
         Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
+
         int activePhases = loadpoint.getActivePhases();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ACTIVE_PHASES);
         updateState(channel, new DecimalType(activePhases));
+
         float chargeCurrent = loadpoint.getChargeCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_CURRENT);
         updateState(channel, new QuantityType<>(chargeCurrent, Units.AMPERE));
+
         long chargeDuration = loadpoint.getChargeDuration();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_DURATION);
         updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
+
         float chargePower = loadpoint.getChargePower();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_POWER);
         updateState(channel, new QuantityType<>(chargePower, Units.WATT));
+
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
         updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
+
         float chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
         updateState(channel, new QuantityType<>(chargeRemainingEnergy, Units.WATT_HOUR));
+
         float chargedEnergy = loadpoint.getChargedEnergy();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGED_ENERGY);
         updateState(channel, new QuantityType<>(chargedEnergy, Units.WATT_HOUR));
+
         boolean charging = loadpoint.getCharging();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CHARGING);
         updateState(channel, OnOffType.from(charging));
+
         boolean connected = loadpoint.getConnected();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CONNECTED);
         updateState(channel, OnOffType.from(connected));
+
         long connectedDuration = loadpoint.getConnectedDuration();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_CONNECTED_DURATION);
         updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
+
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_ENABLED);
         updateState(channel, OnOffType.from(enabled));
+
         boolean hasVehicle = loadpoint.getHasVehicle();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_HAS_VEHICLE);
         updateState(channel, OnOffType.from(hasVehicle));
+
         float maxCurrent = loadpoint.getMaxCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MAX_CURRENT);
         updateState(channel, new QuantityType<>(maxCurrent, Units.AMPERE));
+
         float minCurrent = loadpoint.getMinCurrent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MIN_CURRENT);
         updateState(channel, new QuantityType<>(minCurrent, Units.AMPERE));
+
         float minSoC = loadpoint.getMinSoC();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MIN_SOC);
         updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
+
         String mode = loadpoint.getMode();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_MODE);
         updateState(channel, new StringType(mode));
+
         int phases = loadpoint.getPhases();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_PHASES);
         updateState(channel, new DecimalType(phases));
+
         targetSoC = loadpoint.getTargetSoC();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_SOC);
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
+
         String targetTime = loadpoint.getTargetTime();
         if (targetTime == null) {
             channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
@@ -445,24 +467,31 @@ public class EvccHandler extends BaseThingHandler {
             updateState(channel, OnOffType.ON);
             targetTimeEnabled = true;
         }
+
         String title = loadpoint.getTitle();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TITLE);
         updateState(channel, new StringType(title));
+
         float vehicleCapacity = loadpoint.getVehicleCapacity();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
-        updateState(channel, new QuantityType<>(vehicleCapacity, Units.WATT_HOUR));
+        updateState(channel, new QuantityType<>(vehicleCapacity, Units.KILOWATT_HOUR));
+
         float vehicleOdometer = loadpoint.getVehicleOdometer();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
         updateState(channel, new QuantityType<>(vehicleOdometer, MetricPrefix.KILO(SIUnits.METRE)));
+
         boolean vehiclePresent = loadpoint.getVehiclePresent();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_PRESENT);
         updateState(channel, OnOffType.from(vehiclePresent));
+
         float vehicleRange = loadpoint.getVehicleRange();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_RANGE);
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
+
         float vehicleSoC = loadpoint.getVehicleSoC();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_SOC);
         updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
+
         String vehicleTitle = loadpoint.getVehicleTitle();
         channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_VEHICLE_TITLE);
         updateState(channel, new StringType(vehicleTitle));
