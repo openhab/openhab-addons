@@ -16,7 +16,6 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
@@ -55,8 +54,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
-        var httpClient = new HttpClient(new SslContextFactory.Client(true));
-        this.webSocketClient = new WebSocketClient(httpClient);
+        this.webSocketClient = webSocketFactory.createWebSocketClient(BINDING_ID, new SslContextFactory.Client(true));
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
