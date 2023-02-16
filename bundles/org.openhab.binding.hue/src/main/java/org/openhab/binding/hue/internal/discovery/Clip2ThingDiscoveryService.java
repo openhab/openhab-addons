@@ -97,15 +97,14 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                         String resId = resource.getId();
                         String resType = resource.getType().toString();
                         String label = resource.getName();
-                        String location = null;
+                        String legacyThingUID = null;
 
                         Optional<Thing> legacyThingOptional = getLegacyThing(resource.getIdV1());
                         if (legacyThingOptional.isPresent()) {
                             Thing legacyThing = legacyThingOptional.get();
+                            legacyThingUID = legacyThing.getUID().getAsString();
                             String label2 = legacyThing.getLabel();
-                            label = Objects.nonNull(label2) && !label2.isBlank() ? label2 : label;
-                            location = legacyThing.getLocation();
-                            location = Objects.nonNull(location) && !location.isBlank() ? location : null;
+                            label = Objects.nonNull(label2) ? label2 : label;
                         }
 
                         DiscoveryResultBuilder builder = DiscoveryResultBuilder
@@ -117,8 +116,9 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                                 .withProperty(HueBindingConstants.PROPERTY_RESOURCE_NAME, label)
                                 .withRepresentationProperty(HueBindingConstants.PROPERTY_RESOURCE_ID);
 
-                        if (Objects.nonNull(location)) {
-                            builder = builder.withProperty(HueBindingConstants.PROPERTY_LOCATION, location);
+                        if (Objects.nonNull(legacyThingUID)) {
+                            builder = builder.withProperty(HueBindingConstants.PROPERTY_LEGACY_THING_UID,
+                                    legacyThingUID);
                         }
                         thingDiscovered(builder.build());
                     }

@@ -114,7 +114,7 @@ public class HueBindingConstants {
     public static final String PROPERTY_RESOURCE_ARCHETYPE = "resourceArchetype";
     public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
     public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
-    public static final String PROPERTY_LOCATION = "location";
+    public static final String PROPERTY_LEGACY_THING_UID = "legacyThingUID";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 

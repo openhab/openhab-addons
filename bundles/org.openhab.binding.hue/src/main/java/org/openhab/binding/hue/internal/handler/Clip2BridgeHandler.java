@@ -53,9 +53,11 @@ import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.framework.FrameworkUtil;
@@ -354,11 +356,17 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize() {} called", this);
+        updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
-        updateThingLocation();
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
         connectRetriesRemaining = RECONNECT_MAX_TRIES;
         scheduler.submit(() -> initializeAssets());
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        // TODO Auto-generated method stub
+        super.handleConfigurationUpdate(configurationParameters);
     }
 
     /**
@@ -612,15 +620,38 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Check if the discovery process found a thing location property, and if so apply it to the thing itself.
+     * Check if a PROPERTY_LEGACY_THING_UID value was set by the discovery process, and if so, clone the legacy thing's
+     * settings into this thing.
      */
-    private void updateThingLocation() {
+    private void updateThingFromLegacy() {
+        if (isInitialized()) {
+            logger.warn("updateThingFromLegacy() was called after handler was initialized.");
+            return;
+        }
         Map<String, String> properties = thing.getProperties();
-        String location = properties.get(HueBindingConstants.PROPERTY_LOCATION);
-        if (Objects.nonNull(location) && !location.isBlank()) {
-            Map<String, String> newProperties = new HashMap<>(properties);
-            newProperties.remove(HueBindingConstants.PROPERTY_LOCATION);
-            updateThing(editThing().withLocation(location).withProperties(newProperties).build());
+        String legacyThingUID = properties.get(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+        if (Objects.nonNull(legacyThingUID)) {
+            Thing legacyThing = thingRegistry.get(new ThingUID(legacyThingUID));
+            if (Objects.nonNull(legacyThing)) {
+                BridgeBuilder editBuilder = editThing();
+
+                String location = legacyThing.getLocation();
+                if (Objects.nonNull(location) && !location.isBlank()) {
+                    editBuilder = editBuilder.withLocation(location);
+                }
+
+                Object userName = legacyThing.getConfiguration().get(HueBindingConstants.USER_NAME);
+                if (userName instanceof String) {
+                    Configuration configuration = thing.getConfiguration();
+                    configuration.put(Clip2BridgeConfig.APPLICATION_KEY, userName);
+                    editBuilder = editBuilder.withConfiguration(configuration);
+                }
+
+                Map<String, String> newProperties = new HashMap<>(properties);
+                newProperties.remove(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+
+                updateThing(editBuilder.withProperties(newProperties).build());
+            }
         }
     }
 }

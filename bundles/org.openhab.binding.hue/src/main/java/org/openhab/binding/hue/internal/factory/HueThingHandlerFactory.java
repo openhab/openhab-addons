@@ -169,7 +169,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return new Clip2BridgeHandler((Bridge) thing, httpClient, thingRegistry);
         } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceThingHandler(thing);
+            return new DeviceThingHandler(thing, thingRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
                     localeProvider);

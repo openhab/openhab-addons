@@ -42,11 +42,14 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -71,6 +74,7 @@ public class DeviceThingHandler extends BaseThingHandler {
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
     private final Set<String> supportedChannelIds = ConcurrentHashMap.newKeySet(32);
+    private final ThingRegistry thingRegistry;
 
     private boolean disposing;
     private boolean hasConnectivityIssue;
@@ -79,8 +83,9 @@ public class DeviceThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
-    public DeviceThingHandler(Thing thing) {
+    public DeviceThingHandler(Thing thing, ThingRegistry thingRegistry) {
         super(thing);
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -202,11 +207,10 @@ public class DeviceThingHandler extends BaseThingHandler {
                     "@text/offline.clip2.conf-error-resource-id-bad");
             return;
         }
-
-        updateStatus(ThingStatus.UNKNOWN);
-
         thisResource.setId(resourceId);
-        updateThingLocation();
+
+        updateThingFromLegacy();
+        updateStatus(ThingStatus.UNKNOWN);
 
         disposing = false;
         hasConnectivityIssue = false;
@@ -538,15 +542,33 @@ public class DeviceThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Check if the discovery process found a thing location property, and if so apply it to the thing itself.
+     * Check if a PROPERTY_LEGACY_THING_UID value was set by the discovery process, and if so, clone the legacy thing's
+     * settings into this thing.
      */
-    private void updateThingLocation() {
+    private void updateThingFromLegacy() {
+        if (isInitialized()) {
+            logger.warn("updateThingFromLegacy() was called after handler was initialized.");
+            return;
+        }
         Map<String, String> properties = thing.getProperties();
-        String location = properties.get(HueBindingConstants.PROPERTY_LOCATION);
-        if (Objects.nonNull(location) && !location.isBlank()) {
-            Map<String, String> newProperties = new HashMap<>(properties);
-            newProperties.remove(HueBindingConstants.PROPERTY_LOCATION);
-            updateThing(editThing().withLocation(location).withProperties(newProperties).build());
+        String legacyThingUID = properties.get(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+        if (Objects.nonNull(legacyThingUID)) {
+            Thing legacyThing = thingRegistry.get(new ThingUID(legacyThingUID));
+            if (Objects.nonNull(legacyThing)) {
+                ThingBuilder editBuilder = editThing();
+
+                String location = legacyThing.getLocation();
+                if (Objects.nonNull(location) && !location.isBlank()) {
+                    editBuilder = editBuilder.withLocation(location);
+                }
+
+                // TODO clone the legacy thing's channel/item links for this thing
+
+                Map<String, String> newProperties = new HashMap<>(properties);
+                newProperties.remove(HueBindingConstants.PROPERTY_LEGACY_THING_UID);
+
+                updateThing(editBuilder.withProperties(newProperties).build());
+            }
         }
     }
 }

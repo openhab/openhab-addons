@@ -25,7 +25,6 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
-import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -120,19 +119,15 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                 String host = service.getHostAddresses()[0];
                 String serial = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
                 String label = String.format("%s (%s)", service.getName(), host);
-                String applicationKey = null;
-                String location = null;
+                String legacyThingUID = null;
 
                 if (uid.getAsString().startsWith(HueBindingConstants.CLIP2_THING_TYPE_PREFIX)) {
-                    Optional<Thing> legacyBridgeOptional = getLegacyBridge(host);
-                    if (legacyBridgeOptional.isPresent()) {
-                        Thing legacyBridge = legacyBridgeOptional.get();
-                        String label2 = legacyBridge.getLabel();
+                    Optional<Thing> legacyThingOptional = getLegacyThing(host);
+                    if (legacyThingOptional.isPresent()) {
+                        Thing legacyThing = legacyThingOptional.get();
+                        legacyThingUID = legacyThing.getUID().getAsString();
+                        String label2 = legacyThing.getLabel();
                         label = Objects.nonNull(label2) ? label2 : label;
-                        Object userName = legacyBridge.getConfiguration().get(HueBindingConstants.USER_NAME);
-                        applicationKey = userName instanceof String ? (String) userName : null;
-                        location = legacyBridge.getLocation();
-                        location = Objects.nonNull(location) && !location.isBlank() ? location : null;
                     }
                     serial = serial + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
                     label = label + HueBindingConstants.CLIP2_PROPERTY_SUFFIX;
@@ -146,11 +141,8 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
                         .withTTL(120L);
 
-                if (Objects.nonNull(applicationKey)) {
-                    builder = builder.withProperty(Clip2BridgeConfig.APPLICATION_KEY, applicationKey);
-                }
-                if (Objects.nonNull(location)) {
-                    builder = builder.withProperty(HueBindingConstants.PROPERTY_LOCATION, location);
+                if (Objects.nonNull(legacyThingUID)) {
+                    builder = builder.withProperty(HueBindingConstants.PROPERTY_LEGACY_THING_UID, legacyThingUID);
                 }
                 return builder.build();
             }
@@ -164,7 +156,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
      * @param ipAddress the IP address.
      * @return Optional of a legacy bridge thing.
      */
-    private Optional<Thing> getLegacyBridge(String ipAddress) {
+    private Optional<Thing> getLegacyThing(String ipAddress) {
         return thingRegistry.getAll().stream()
                 .filter(thing -> HueBindingConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())
                         && ipAddress.equals(thing.getConfiguration().get(HOST)))
