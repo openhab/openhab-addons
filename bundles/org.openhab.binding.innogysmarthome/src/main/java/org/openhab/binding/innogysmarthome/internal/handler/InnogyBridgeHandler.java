@@ -954,7 +954,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             isReinitialize = false;
             Thread.currentThread().interrupt();
         } else if (e instanceof ExecutionException) {
-            logger.debug("ExecutionException: {}", ExceptionUtils.getRootThrowable(e));
+            logger.debug("ExecutionException: {}", ExceptionUtils.getRootThrowable(e).getMessage());
             updateStatus(ThingStatus.OFFLINE);
         } else {
             logger.debug("Unknown exception", e);
