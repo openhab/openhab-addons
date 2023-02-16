@@ -144,10 +144,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sleepGoalMinutesType">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Sleep Goal</label>
 		<description>The goal for the amount of sleep per night (in minutes)</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="privacyMode">
 		<item-type>Switch</item-type>
@@ -180,10 +180,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="todaySleepDurationSecondsType">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Duration</label>
 		<description>The total duration of sleep for today in seconds</description>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="monthlySleepIQType">
 		<item-type>Number</item-type>

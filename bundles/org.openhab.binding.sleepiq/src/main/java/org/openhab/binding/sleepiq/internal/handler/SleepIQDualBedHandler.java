@@ -29,7 +29,9 @@ import org.openhab.binding.sleepiq.internal.api.enums.Side;
 import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -163,11 +165,11 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         if (sleeper.getSide().equals(Side.LEFT)) {
             sleeperLeft = sleeper;
             updateState(CHANNEL_LEFT_FIRST_NAME, new StringType(sleeper.getFirstName()));
-            updateState(CHANNEL_LEFT_SLEEP_GOAL_MINUTES, new DecimalType(sleeper.getSleepGoal()));
+            updateState(CHANNEL_LEFT_SLEEP_GOAL_MINUTES, new QuantityType<>(sleeper.getSleepGoal(), Units.MINUTE));
         } else {
             sleeperRight = sleeper;
             updateState(CHANNEL_RIGHT_FIRST_NAME, new StringType(sleeper.getFirstName()));
-            updateState(CHANNEL_RIGHT_SLEEP_GOAL_MINUTES, new DecimalType(sleeper.getSleepGoal()));
+            updateState(CHANNEL_RIGHT_SLEEP_GOAL_MINUTES, new QuantityType<>(sleeper.getSleepGoal(), Units.MINUTE));
         }
     }
 
@@ -255,7 +257,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
                     new DecimalType(sleepData.getAverageRespirationRate()));
             updateState(CHANNEL_LEFT_TODAY_MESSAGE, new StringType(sleepData.getSleepDataDays().get(0).getMessage()));
             updateState(CHANNEL_LEFT_TODAY_SLEEP_DURATION_SECONDS,
-                    new DecimalType(sleepData.getTotalSleepSessionTime()));
+                    new QuantityType<>(sleepData.getTotalSleepSessionTime(), Units.SECOND));
         } else if (sleeper.getSide().equals(Side.RIGHT)) {
             updateState(CHANNEL_RIGHT_TODAY_SLEEP_IQ, new DecimalType(sleepData.getAverageSleepIQ()));
             updateState(CHANNEL_RIGHT_TODAY_AVG_HEART_RATE, new DecimalType(sleepData.getAverageHeartRate()));
@@ -263,7 +265,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
                     new DecimalType(sleepData.getAverageRespirationRate()));
             updateState(CHANNEL_RIGHT_TODAY_MESSAGE, new StringType(sleepData.getSleepDataDays().get(0).getMessage()));
             updateState(CHANNEL_RIGHT_TODAY_SLEEP_DURATION_SECONDS,
-                    new DecimalType(sleepData.getTotalSleepSessionTime()));
+                    new QuantityType<>(sleepData.getTotalSleepSessionTime(), Units.SECOND));
         }
     }
 

@@ -128,11 +128,11 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         SleepIQCloudConfiguration config = getConfigAs(SleepIQCloudConfiguration.class);
         String username = config.username;
         String password = config.password;
-        if (username.isEmpty()) {
+        if (username.isBlank()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(USERNAME)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.USERNAME_MISSING).withArguments(USERNAME).build());
         }
-        if (password.isEmpty()) {
+        if (password.isBlank()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(PASSWORD)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.PASSWORD_MISSING).withArguments(PASSWORD).build());
         }
@@ -392,7 +392,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      */
     private void stopStatusPollingJob() {
         ScheduledFuture<?> localPollingJob = statusPollingJob;
-        if (localPollingJob != null && !localPollingJob.isCancelled()) {
+        if (localPollingJob != null) {
             logger.debug("CloudHandler: Canceling bed status polling job");
             localPollingJob.cancel(true);
             statusPollingJob = null;
