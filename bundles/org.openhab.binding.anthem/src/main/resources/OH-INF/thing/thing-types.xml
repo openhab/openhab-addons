@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="anthem">
-		<label>anthem</label>
+		<label>Anthem</label>
 		<description>Thing for Anthem AV processor</description>
 
 		<channel-groups>
@@ -27,21 +27,21 @@
 				<context>network-address</context>
 			</parameter>
 
-			<parameter name="port" type="integer" required="true">
+			<parameter name="port" type="integer">
 				<label>Network Port</label>
 				<description>Network port number of the Anthem AV processor</description>
 				<default>14999</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="reconnectIntervalMinutes" type="integer" required="true">
+			<parameter name="reconnectIntervalMinutes" type="integer">
 				<label>Reconnect Interval</label>
 				<description>The time to wait between reconnection attempts (in minutes)</description>
 				<default>2</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="comandDelayMsec" type="integer" required="true">
+			<parameter name="commandDelayMsec" type="integer">
 				<label>Command Delay</label>
 				<description>The delay between commands sent to the processor (in milliseconds)</description>
 				<default>100</default>
