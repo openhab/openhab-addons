@@ -37,7 +37,6 @@ public class AnthemBindingConstants {
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_VOLUME_DB = "volumeDB";
     public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_MUTE_TOGGLE = "muteToggle";
     public static final String CHANNEL_ACTIVE_INPUT = "activeInput";
     public static final String CHANNEL_ACTIVE_INPUT_SHORT_NAME = "activeInputShortName";
     public static final String CHANNEL_ACTIVE_INPUT_LONG_NAME = "activeInputLongName";

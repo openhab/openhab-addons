@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.anthem.name</name>
-	<description>@text/addon.anthem.description</description>
+	<name>Anthem Binding</name>
+	<description>This is the binding for Anthem AV preamp/processors</description>
 
 </addon:addon>

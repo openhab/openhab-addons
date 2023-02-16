@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AnthemCommand {
-    private static final String commandTerminator = String.valueOf(COMMAND_TERMINATION_CHAR);
+    private static final String COMMAND_TERMINATOR = String.valueOf(COMMAND_TERMINATION_CHAR);
 
     private String command = "";
 
@@ -58,10 +58,6 @@ public class AnthemCommand {
 
     public static AnthemCommand muteOff(Zone zone) {
         return new AnthemCommand(String.format("Z%sMUT0", zone.getValue()));
-    }
-
-    public static AnthemCommand muteToggle(Zone zone) {
-        return new AnthemCommand(String.format("Z%sMUTt", zone.getValue()));
     }
 
     public static AnthemCommand activeInput(Zone zone, int input) {
@@ -121,7 +117,7 @@ public class AnthemCommand {
     }
 
     public String getCommand() {
-        return command + commandTerminator;
+        return command + COMMAND_TERMINATOR;
     }
 
     @Override

@@ -45,15 +45,15 @@ public class AnthemCommandParser {
 
     private Logger logger = LoggerFactory.getLogger(AnthemCommandParser.class);
 
-    private AnthemConnectionManager connectionManager;
+    private AnthemHandler handler;
 
     private Map<Integer, String> inputShortNamesMap = new HashMap<>();
     private Map<Integer, String> inputLongNamesMap = new HashMap<>();
 
     private int numAvailableInputs;
 
-    public AnthemCommandParser(AnthemConnectionManager anthemConnectionManager) {
-        this.connectionManager = anthemConnectionManager;
+    public AnthemCommandParser(AnthemHandler anthemHandler) {
+        this.handler = anthemHandler;
     }
 
     public int getNumAvailableInputs() {
@@ -129,22 +129,22 @@ public class AnthemCommandParser {
         String value = command.substring(3, command.length());
         switch (command.substring(2, 3)) {
             case "M":
-                connectionManager.setModel(value);
+                handler.setModel(value);
                 break;
             case "R":
-                connectionManager.setRegion(value);
+                handler.setRegion(value);
                 break;
             case "S":
-                connectionManager.setSoftwareVersion(value);
+                handler.setSoftwareVersion(value);
                 break;
             case "B":
-                connectionManager.setSoftwareBuildDate(value);
+                handler.setSoftwareBuildDate(value);
                 break;
             case "H":
-                connectionManager.setHardwareVersion(value);
+                handler.setHardwareVersion(value);
                 break;
             case "N":
-                connectionManager.setMacAddress(value);
+                handler.setMacAddress(value);
                 break;
             case "Q":
                 // Ignore
@@ -162,7 +162,7 @@ public class AnthemCommandParser {
                 matcher.find();
                 String numAvailableInputsStr = matcher.group(1);
                 DecimalType numAvailableInputs = DecimalType.valueOf(numAvailableInputsStr);
-                connectionManager.setNumAvailableInputs(numAvailableInputs.intValue());
+                handler.setNumAvailableInputs(numAvailableInputs.intValue());
                 this.numAvailableInputs = numAvailableInputs.intValue();
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
@@ -202,9 +202,8 @@ public class AnthemCommandParser {
                 mmatcher.find();
                 String zone = mmatcher.group(1);
                 String power = mmatcher.group(2);
-                connectionManager.updateChannelState(zone, CHANNEL_POWER,
-                        "1".equals(power) ? OnOffType.ON : OnOffType.OFF);
-                connectionManager.checkPowerStatusChange(zone, power);
+                handler.updateChannelState(zone, CHANNEL_POWER, "1".equals(power) ? OnOffType.ON : OnOffType.OFF);
+                handler.checkPowerStatusChange(zone, power);
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
@@ -218,7 +217,7 @@ public class AnthemCommandParser {
                 matcher.find();
                 String zone = matcher.group(1);
                 String volume = matcher.group(2);
-                connectionManager.updateChannelState(zone, CHANNEL_VOLUME_DB, DecimalType.valueOf(volume));
+                handler.updateChannelState(zone, CHANNEL_VOLUME_DB, DecimalType.valueOf(volume));
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
@@ -232,8 +231,7 @@ public class AnthemCommandParser {
                 matcher.find();
                 String zone = matcher.group(1);
                 String mute = matcher.group(2);
-                connectionManager.updateChannelState(zone, CHANNEL_MUTE,
-                        "1".equals(mute) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannelState(zone, CHANNEL_MUTE, "1".equals(mute) ? OnOffType.ON : OnOffType.OFF);
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
@@ -247,15 +245,15 @@ public class AnthemCommandParser {
                 matcher.find();
                 String zone = matcher.group(1);
                 DecimalType activeInput = DecimalType.valueOf(matcher.group(2));
-                connectionManager.updateChannelState(zone, CHANNEL_ACTIVE_INPUT, activeInput);
+                handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT, activeInput);
                 String name;
                 name = inputShortNamesMap.get(activeInput.intValue());
                 if (name != null) {
-                    connectionManager.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_SHORT_NAME, new StringType(name));
+                    handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_SHORT_NAME, new StringType(name));
                 }
                 name = inputShortNamesMap.get(activeInput.intValue());
                 if (name != null) {
-                    connectionManager.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_LONG_NAME, new StringType(name));
+                    handler.updateChannelState(zone, CHANNEL_ACTIVE_INPUT_LONG_NAME, new StringType(name));
                 }
             } catch (NumberFormatException | IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
