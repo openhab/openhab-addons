@@ -17,7 +17,6 @@ import java.util.concurrent.Callable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link LcdManager} is the Java class used to handle api requests related to lcd screen of the server
@@ -30,14 +29,15 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
 public class LcdManager extends ConfigurableRest<LcdManager.Config, LcdManager.ConfigResponse> {
     private static final String PATH = "lcd";
 
-    public static class ConfigResponse extends Response<Config> {
+    protected static class ConfigResponse extends Response<Config> {
     }
 
     public static record Config(int brightness, int orientation, boolean orientationForced) {
     }
 
     public LcdManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+        super(session, LoginManager.Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH),
+                CONFIG_PATH);
     }
 
     private void setBrightness(int brightness) throws FreeboxException {

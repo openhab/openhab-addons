@@ -36,8 +36,8 @@ public class PlayerActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof PlayerHandler) {
-            this.handler = (PlayerHandler) handler;
+        if (handler instanceof PlayerHandler playerHandler) {
+            this.handler = playerHandler;
         }
     }
 

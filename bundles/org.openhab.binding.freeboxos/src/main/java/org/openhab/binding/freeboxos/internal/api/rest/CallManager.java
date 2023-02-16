@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests related to calls
@@ -58,7 +57,7 @@ public class CallManager extends RestManager {
     }
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, session.getUriBuilder().path(THING_CALL));
+        super(session, LoginManager.Permission.CALLS, session.getUriBuilder().path(THING_CALL));
     }
 
     // Retrieves a sorted list of all call entries

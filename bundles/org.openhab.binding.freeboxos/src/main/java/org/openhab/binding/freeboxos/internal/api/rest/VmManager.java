@@ -17,7 +17,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.T
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -29,7 +28,7 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.VirtualMachineResponse> {
 
-    public class VirtualMachineResponse extends Response<VirtualMachine> {
+    protected class VirtualMachineResponse extends Response<VirtualMachine> {
     }
 
     public static enum Status {
@@ -42,7 +41,8 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
     }
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(THING_VM));
+        super(session, LoginManager.Permission.VM, VirtualMachineResponse.class,
+                session.getUriBuilder().path(THING_VM));
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {

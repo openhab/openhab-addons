@@ -20,8 +20,10 @@ This binding supports the following thing types:
 | vm            (*) | Thing      | A virtual machine hosted on the server               |
 | freeplug          | Thing      | A virtual machine hosted on the server               |
 | repeater          | Thing      | A Free wifi repeater                                 |
-| shutter       (*) | Thing      | IO Home Control shutter configured in Freebox Home   |
 | basic_shutter (*) | Thing      | RTS Shutter configured in Freebox Home               |
+| shutter       (*) | Thing      | IO Home Control shutter configured in Freebox Home   |
+| kfb (*)           | Thing      | A keyfob associated with your alarm system           |
+| alarm (*)         | Thing      | The Freebox Home Alarm System                        |
 
 (*) For servers >= Delta
 

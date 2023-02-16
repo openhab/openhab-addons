@@ -30,7 +30,6 @@ import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +187,7 @@ public class FreeboxOsSession {
         return manager;
     }
 
-    boolean hasPermission(Permission required) {
+    boolean hasPermission(LoginManager.Permission required) {
         Session currentSession = session;
         return currentSession != null ? currentSession.hasPermission(required) : false;
     }

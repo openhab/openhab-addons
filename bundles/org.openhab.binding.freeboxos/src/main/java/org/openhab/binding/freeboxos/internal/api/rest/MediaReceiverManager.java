@@ -20,10 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.Action;
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
 
 /**
  * The {@link MediaReceiverManager} is the Java class used to handle api requests related to air media receivers
@@ -32,7 +29,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Requ
  */
 @NonNullByDefault
 public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverManager.ReceiverResponse> {
-    public static final String SUB_PATH = "receivers";
+    private static final String SUB_PATH = "receivers";
 
     public static record Receiver(boolean passwordProtected, //
             Map<MediaType, Boolean> capabilities, //
@@ -40,28 +37,29 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     ) {
     }
 
-    public static record Request(String password, Action action, MediaType mediaType, @Nullable String media,
-            int position) {
-        public static enum Action {
-            START,
-            STOP,
-            UNKNOWN;
-        }
-
-        public static enum MediaType {
-            VIDEO,
-            PHOTO,
-            AUDIO,
-            SCREEN,
-            UNKNOWN;
-        }
-    }
-
     protected static class ReceiverResponse extends Response<Receiver> {
     }
 
+    public static enum Action {
+        START,
+        STOP,
+        UNKNOWN;
+    }
+
+    public static enum MediaType {
+        VIDEO,
+        PHOTO,
+        AUDIO,
+        SCREEN,
+        UNKNOWN;
+    }
+
+    private static record Request(String password, Action action, MediaType mediaType, @Nullable String media,
+            int position) {
+    }
+
     public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, Permission.NONE, ReceiverResponse.class, uriBuilder.path(SUB_PATH));
+        super(session, LoginManager.Permission.NONE, ReceiverResponse.class, uriBuilder.path(SUB_PATH));
     }
 
     public @Nullable Receiver getReceiver(String receiverName) throws FreeboxException {

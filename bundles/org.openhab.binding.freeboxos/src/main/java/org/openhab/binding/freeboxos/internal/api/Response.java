@@ -15,7 +15,7 @@ package org.openhab.binding.freeboxos.internal.api;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 
 /**
  * Defines an API result that returns a single object
@@ -95,7 +95,7 @@ public class Response<ResultType> {
     }
 
     private ErrorCode errorCode = ErrorCode.NONE;
-    private Permission missingRight = Permission.NONE;
+    private LoginManager.Permission missingRight = LoginManager.Permission.NONE;
     private String msg = "";
     private List<ResultType> result = List.of();
     private boolean success;
@@ -108,7 +108,7 @@ public class Response<ResultType> {
         return success;
     }
 
-    public Permission getMissingRight() {
+    public LoginManager.Permission getMissingRight() {
         return missingRight;
     }
 

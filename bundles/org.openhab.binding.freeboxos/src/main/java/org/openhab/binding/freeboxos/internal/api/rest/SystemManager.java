@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -30,7 +29,7 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class SystemManager extends ConfigurableRest<SystemManager.Config, SystemManager.ConfigurationResponse> {
 
-    public static class ConfigurationResponse extends Response<Config> {
+    protected static class ConfigurationResponse extends Response<Config> {
     }
 
     public static record Sensor(String id, String name, int value) {
@@ -94,7 +93,8 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
     }
 
     public SystemManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, ConfigurationResponse.class, session.getUriBuilder().path(SYSTEM_PATH), null);
+        super(session, LoginManager.Permission.NONE, ConfigurationResponse.class,
+                session.getUriBuilder().path(SYSTEM_PATH), null);
     }
 
     public void reboot() throws FreeboxException {

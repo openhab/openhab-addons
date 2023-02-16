@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
-import java.util.Map;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link KeyfobHandler} is responsible for handling everything associated to
@@ -26,24 +33,32 @@ import org.openhab.core.types.Command;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class KeyfobHandler extends AlarmHandler {
+public class KeyfobHandler extends HomeNodeHandler {
 
     public KeyfobHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
+    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+        String value = state.value();
+        if (value != null) {
+            switch (channelId) {
+                case KEYFOB_ENABLE:
+                    return OnOffType.from(state.asBoolean());
+                case NODE_BATTERY:
+                    return DecimalType.valueOf(value);
+            }
+        }
+        return UnDefType.NULL;
     }
 
     @Override
-    protected void internalPoll() throws FreeboxException {
-        super.internalPoll();
-    }
-
-    @Override
-    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
-        return super.internalHandleCommand(channelId, command);
+    protected boolean executeSlotCommand(HomeManager homeManager, String channelId, Command command,
+            Configuration config, int intValue) throws FreeboxException {
+        if (KEYFOB_ENABLE.equals(channelId) && command instanceof OnOffType onOff) {
+            return getManager(HomeManager.class).putCommand(getClientId(), intValue, onOff);
+        }
+        return false;
     }
 }

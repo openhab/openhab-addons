@@ -16,12 +16,10 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.T
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -66,12 +64,12 @@ public class FreeplugManager extends RestManager {
     }
 
     public FreeplugManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, session.getUriBuilder().path(THING_FREEPLUG));
+        super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(THING_FREEPLUG));
     }
 
     // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
     public List<Freeplug> getPlugs() throws FreeboxException {
-        return get(Networks.class).stream().map(Network::members).flatMap(List::stream).collect(Collectors.toList());
+        return get(Networks.class).stream().map(Network::members).flatMap(List::stream).toList();
     }
 
     public Optional<Freeplug> getPlug(MACAddress mac) throws FreeboxException {

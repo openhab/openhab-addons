@@ -25,7 +25,6 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostsResponse;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -37,23 +36,22 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, RepeaterManager.RepeaterResponse> {
 
-    public static class RepeaterResponse extends Response<Repeater> {
+    protected static class RepeaterResponse extends Response<Repeater> {
     }
 
-    private static class RepeaterLedResponse extends Response<RepeaterLed> {
+    protected static class RepeaterLedResponse extends Response<RepeaterLed> {
     }
 
     public static record RepeaterLed(int id, boolean ledActivated) {
-
     }
 
-    public static enum Connection {
+    private static enum Connection {
         CONNECTED,
         DISCONNECTED,
         UNKNOWN;
     }
 
-    public static enum Status {
+    private static enum Status {
         STARTING,
         RUNNING,
         REBOOTING,
@@ -78,7 +76,8 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
     }
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, RepeaterResponse.class, session.getUriBuilder().path(THING_REPEATER));
+        super(session, LoginManager.Permission.NONE, RepeaterResponse.class,
+                session.getUriBuilder().path(THING_REPEATER));
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {

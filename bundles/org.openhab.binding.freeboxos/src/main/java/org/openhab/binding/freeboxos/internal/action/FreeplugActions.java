@@ -35,8 +35,8 @@ public class FreeplugActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof FreeplugHandler) {
-            this.handler = (FreeplugHandler) handler;
+        if (handler instanceof FreeplugHandler plugHandler) {
+            this.handler = plugHandler;
         }
     }
 

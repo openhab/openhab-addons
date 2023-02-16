@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link AfpManager} is the Java class used to handle api requests related to Afp shares
@@ -29,10 +28,10 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
 public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.ConfigResponse> {
     private static final String AFP_PATH = "afp";
 
-    public static class ConfigResponse extends Response<Afp> {
+    protected static class ConfigResponse extends Response<Afp> {
     }
 
-    public static record Afp(boolean enabled, boolean guestAllow, ServerType serverType, @Nullable String loginName,
+    protected static record Afp(boolean enabled, boolean guestAllow, ServerType serverType, @Nullable String loginName,
             @Nullable String loginPassword) {
         private static enum ServerType {
             POWERBOOK,
@@ -51,7 +50,7 @@ public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.Conf
     }
 
     public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(AFP_PATH), null);
+        super(session, LoginManager.Permission.NONE, ConfigResponse.class, uriBuilder.path(AFP_PATH), null);
     }
 
     public boolean getStatus() throws FreeboxException {

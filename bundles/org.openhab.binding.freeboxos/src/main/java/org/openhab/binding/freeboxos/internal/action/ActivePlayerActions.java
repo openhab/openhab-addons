@@ -35,8 +35,8 @@ public class ActivePlayerActions extends PlayerActions {
     public void reboot() {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
-        if (localHandler instanceof ActivePlayerHandler) {
-            ((ActivePlayerHandler) localHandler).reboot();
+        if (localHandler instanceof ActivePlayerHandler apHandler) {
+            apHandler.reboot();
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null");
         }

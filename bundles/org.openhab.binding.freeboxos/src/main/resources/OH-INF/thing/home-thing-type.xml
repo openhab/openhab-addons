@@ -12,40 +12,13 @@
 		<label>Freebox Home Basic Shutter</label>
 		<description>The Basic Shutter (UP,DOWN,STOP) configured in your Freebox Delta Server</description>
 
-		<channel-groups>
-			<channel-group typeId="basic-shutter" id="basic-shutter"/>
-		</channel-groups>
+		<channels>
+			<channel id="state" typeId="basic-shutter"/>
+		</channels>
 
 		<representation-property>id</representation-property>
 
-		<config-description-ref uri="thing-type:freeboxos:basic_shutter"/>
-	</thing-type>
-
-	<thing-type id="shutter">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="api"/>
-		</supported-bridge-type-refs>
-
-		<label>Freebox Home Shutter</label>
-		<description>The Shutter configured in your Freebox Delta Server</description>
-
-		<channel-groups>
-			<channel-group typeId="shutter" id="shutter"/>
-		</channel-groups>
-
-		<representation-property>id</representation-property>
-
-        <config-description>
-            <parameter name="id" type="integer" required="true">
-                <label>ID</label>
-                <description>Id of the Home Node</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" min="1" unit="s">
-                <label>Refresh Interval</label>
-                <description>The refresh interval in seconds which is used to poll the Node</description>
-                <default>30</default>
-            </parameter>
-        </config-description>
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
 	</thing-type>
 
 	<thing-type id="alarm">
@@ -56,41 +29,64 @@
 		<label>Freebox Alarm</label>
 		<description>The Alarm system configured in your Freebox Delta Server</description>
 
+		<channels>
+			<channel id="pin" typeId="alarm-pin"/>
+			<channel id="sound" typeId="alarm-volume">
+				<label>Bips Volume</label>
+			</channel>
+			<channel id="volume" typeId="alarm-volume">
+				<label>Alarm Volume</label>
+			</channel>
+			<channel id="timeout1" typeId="alarm-timeout">
+				<label>Alarm Activation Duration</label>
+			</channel>
+			<channel id="timeout2" typeId="alarm-timeout">
+				<label>Safe Zone Alert Timeout</label>
+			</channel>
+			<channel id="timeout3" typeId="alarm-timeout">
+				<label>Alert Duration</label>
+			</channel>
+			<channel id="battery" typeId="system.battery-level"/>
+		</channels>
+
 		<representation-property>id</representation-property>
 
-		<config-description>
-			<parameter name="id" type="integer" required="true">
-				<label>ID</label>
-				<description>Id of the Home Node</description>
-			</parameter>
-            <parameter name="refreshInterval" type="integer" min="1" unit="s">
-                <label>Refresh Interval</label>
-                <description>The refresh interval in seconds which is used to poll the Node</description>
-                <default>30</default>
-            </parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
 	</thing-type>
-	
-    <thing-type id="kfb">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="api"/>
-        </supported-bridge-type-refs>
 
-        <label>Freebox Keyfob</label>
-        <description>A keyfob configured for your Freebox Security system</description>
+	<thing-type id="kfb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
 
-        <representation-property>id</representation-property>
 
-        <config-description>
-            <parameter name="id" type="integer" required="true">
-                <label>ID</label>
-                <description>Id of the Home Node</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" min="1" unit="s">
-                <label>Refresh Interval</label>
-                <description>The refresh interval in seconds which is used to poll the Node</description>
-                <default>30</default>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<label>Freebox Keyfob</label>
+		<description>A keyfob configured for your Freebox Security system</description>
+
+		<channels>
+			<channel id="enable" typeId="keyfob-enable"/>
+			<channel id="battery" typeId="system.battery-level"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+	</thing-type>
+
+	<thing-type id="shutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Home Shutter</label>
+		<description>The Shutter configured in your Freebox Delta Server</description>
+
+		<channels>
+			<channel id="position_set" typeId="shutter"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+	</thing-type>
 </thing:thing-descriptions>

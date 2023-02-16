@@ -14,18 +14,20 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
-import org.openhab.binding.freeboxos.internal.config.BasicShutterConfiguration;
-import org.openhab.core.library.types.StopMoveType;
-import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link BasicShutterHandler} is responsible for handling everything associated to
@@ -34,53 +36,34 @@ import org.openhab.core.types.Command;
  * @author ben12 - Initial contribution
  */
 @NonNullByDefault
-public class BasicShutterHandler extends ApiConsumerHandler {
+public class BasicShutterHandler extends HomeNodeHandler {
+    private final static Set<String> SHUTTER_ENDPOINTS = Set.of(SHUTTER_STOP, BASIC_SHUTTER_UP, BASIC_SHUTTER_DOWN);
 
     public BasicShutterHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+    protected void internalConfigureChannel(String channelId, Configuration conf, List<Endpoint> endpoints) {
+        endpoints.stream().filter(ep -> channelId.equals(BASIC_SHUTTER_STATE) && SHUTTER_ENDPOINTS.contains(ep.name()))
+                .forEach(endPoint -> conf.put(endPoint.name(), endPoint.id()));
     }
 
     @Override
-    protected void internalPoll() throws FreeboxException {
-        BasicShutterConfiguration config = getConfiguration();
-        EndpointState state = getManager(HomeManager.class).getEndpointsState(getClientId(), config.stateSignalId);
-        Double percent = null;
-        if (state != null) {
-            if (ValueType.BOOL.equals(state.valueType())) {
-                percent = Boolean.TRUE.equals(state.asBoolean()) ? 1.0 : 0.0;
-            } else if (ValueType.INT.equals(state.valueType())) {
-                Integer inValue = state.asInt();
-                if (inValue != null) {
-                    percent = inValue.doubleValue() / 100.0;
-                }
-            }
-        }
-        updateChannelDecimal(BASIC_SHUTTER, BASIC_SHUTTER_CMD, percent);
-    }
-
-    private BasicShutterConfiguration getConfiguration() {
-        return getConfigAs(BasicShutterConfiguration.class);
+    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+        String value = state.value();
+        return value != null && channelId.equals(BASIC_SHUTTER_STATE)
+                ? state.asBoolean() ? OpenClosedType.CLOSED : OpenClosedType.OPEN
+                : UnDefType.NULL;
     }
 
     @Override
-    protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
-        if (BASIC_SHUTTER_CMD.equals(channelId)) {
-            BasicShutterConfiguration config = getConfiguration();
-            if (UpDownType.UP.equals(command)) {
-                getManager(HomeManager.class).putCommand(getClientId(), config.upSlotId, true);
-                return true;
-            } else if (UpDownType.DOWN.equals(command)) {
-                getManager(HomeManager.class).putCommand(getClientId(), config.downSlotId, true);
-                return true;
-            } else if (StopMoveType.STOP.equals(command)) {
-                getManager(HomeManager.class).putCommand(getClientId(), config.stopSlotId, true);
-                return true;
-            }
+    protected boolean executeChannelCommand(HomeManager homeManager, String channelId, Command command,
+            Configuration config) throws FreeboxException {
+        Integer slot = getSlotId(config, command.toString().toLowerCase());
+        if (BASIC_SHUTTER_STATE.equals(channelId) && slot != null) {
+            return homeManager.putCommand(getClientId(), slot, true);
         }
-        return super.internalHandleCommand(channelId, command);
+        return false;
     }
 }

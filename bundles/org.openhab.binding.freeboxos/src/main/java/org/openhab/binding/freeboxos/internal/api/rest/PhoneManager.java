@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
@@ -32,13 +31,13 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     private static final String FXS_RING_ACTION = "fxs_ring_%s";
     private static final String PATH = "phone";
 
-    public class ConfigResponse extends Response<Config> {
+    protected class ConfigResponse extends Response<Config> {
     }
 
-    private class StatusResponse extends Response<Status> {
+    protected class StatusResponse extends Response<Status> {
     }
 
-    public static enum NetworkStatus {
+    private static enum NetworkStatus {
         WORKING,
         UNKNOWN;
     }
@@ -63,7 +62,8 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     }
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+        super(session, LoginManager.Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH),
+                CONFIG_PATH);
     }
 
     public List<Status> getPhoneStatuses() throws FreeboxException {

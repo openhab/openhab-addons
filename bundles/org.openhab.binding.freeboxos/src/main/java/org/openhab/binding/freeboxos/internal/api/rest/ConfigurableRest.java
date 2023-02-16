@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link ConfigurableRest} is the Java class used to handle portions of the Api that accept to get and set
@@ -33,8 +32,8 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
     private final Class<Y> responseClazz;
     private final @Nullable String configPath;
 
-    public ConfigurableRest(FreeboxOsSession session, Permission required, Class<Y> responseClazz, UriBuilder uri,
-            @Nullable String configPath) throws FreeboxException {
+    protected ConfigurableRest(FreeboxOsSession session, LoginManager.Permission required, Class<Y> responseClazz,
+            UriBuilder uri, @Nullable String configPath) throws FreeboxException {
         super(session, required, uri);
         this.responseClazz = responseClazz;
         this.configPath = configPath;
@@ -44,7 +43,7 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
         return configPath != null ? getSingle(responseClazz, configPath) : getSingle(responseClazz);
     }
 
-    public T setConfig(T config) throws FreeboxException {
+    protected T setConfig(T config) throws FreeboxException {
         return configPath != null ? put(responseClazz, config, configPath) : put(responseClazz, config);
     }
 }

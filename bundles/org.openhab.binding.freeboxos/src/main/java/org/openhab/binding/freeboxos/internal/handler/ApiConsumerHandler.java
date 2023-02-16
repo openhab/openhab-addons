@@ -27,8 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.MediaType;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
 import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
@@ -245,7 +245,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
 
     protected abstract void internalPoll() throws FreeboxException;
 
-    protected void updateIfActive(String group, String channelId, State state) {
+    private void updateIfActive(String group, String channelId, State state) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
         if (isLinked(id)) {
             updateState(id, state);
@@ -311,9 +311,9 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
         updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
     }
 
-    protected void updateChannelDecimal(String group, String channelId, @Nullable Double value) {
-        updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
-    }
+    // protected void updateChannelDecimal(String group, String channelId, @Nullable Double value) {
+    // updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
+    // }
 
     protected void updateChannelQuantity(String group, String channelId, QuantityType<?> qtty, Unit<?> unit) {
         updateChannelQuantity(group, channelId, qtty.toUnit(unit));

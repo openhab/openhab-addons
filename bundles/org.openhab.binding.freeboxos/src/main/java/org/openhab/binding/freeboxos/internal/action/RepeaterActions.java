@@ -35,8 +35,8 @@ public class RepeaterActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof RepeaterHandler) {
-            this.handler = (RepeaterHandler) handler;
+        if (handler instanceof RepeaterHandler repeaterHandler) {
+            this.handler = repeaterHandler;
         }
     }
 

@@ -15,7 +15,6 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link AirMediaManager} is the Java class used to handle api requests related to air media global configuration
@@ -33,7 +32,8 @@ public class AirMediaManager extends ConfigurableRest<AirMediaManager.Config, Ai
     }
 
     public AirMediaManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+        super(session, LoginManager.Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH),
+                CONFIG_PATH);
         session.addManager(MediaReceiverManager.class, new MediaReceiverManager(session, getUriBuilder()));
     }
 

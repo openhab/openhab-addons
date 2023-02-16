@@ -35,8 +35,8 @@ public class HostActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HostHandler) {
-            this.handler = (HostHandler) handler;
+        if (handler instanceof HostHandler hostHandler) {
+            this.handler = hostHandler;
         }
     }
 

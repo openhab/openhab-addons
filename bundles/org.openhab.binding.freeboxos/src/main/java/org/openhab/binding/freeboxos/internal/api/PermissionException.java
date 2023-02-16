@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 
 /**
  * Exception for errors when Session require missing permission
@@ -24,14 +24,14 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
 public class PermissionException extends FreeboxException {
     private static final long serialVersionUID = 3965810786699311126L;
 
-    private final Permission permission;
+    private final LoginManager.Permission permission;
 
-    public PermissionException(Permission permission, String format, Object... args) {
+    public PermissionException(LoginManager.Permission permission, String format, Object... args) {
         super(format, args);
         this.permission = permission;
     }
 
-    public Permission getPermission() {
+    public LoginManager.Permission getPermission() {
         return permission;
     }
 }
