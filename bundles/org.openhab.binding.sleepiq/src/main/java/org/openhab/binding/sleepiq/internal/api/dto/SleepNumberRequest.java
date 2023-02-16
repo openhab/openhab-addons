@@ -69,7 +69,7 @@ public class SleepNumberRequest {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((bedId == null) ? 0 : bedId.hashCode());
-        result = prime * result + ((bedId == null) ? 0 : bedId.hashCode());
+        result = prime * result + ((sleepNumber == null) ? 0 : sleepNumber.hashCode());
         result = prime * result + ((side == null) ? 0 : side.hashCode());
         return result;
     }

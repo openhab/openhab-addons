@@ -15,7 +15,8 @@ package org.openhab.binding.sleepiq.internal.api.enums;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SleepDataInterval} represents the possible sides of the bed (i.e. left and right).
+ * The {@link SleepDataInterval} represents the time periods that can be
+ * used for sleep data requests.
  *
  * @author Mark Hilbush - Initial contribution
  */
@@ -41,7 +42,7 @@ public enum SleepDataInterval {
                 return s;
             }
         }
-        throw new IllegalArgumentException("Invalid side: " + value);
+        throw new IllegalArgumentException("Invalid sleep data interval: " + value);
     }
 
     @Override
