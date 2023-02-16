@@ -35,7 +35,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
@@ -277,8 +276,8 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 if (channel.getChannelTypeUID() != null
                         && channel.getChannelTypeUID().getId().equals(IRtransBindingConstants.BLASTER_CHANNEL_TYPE)) {
                     if (command instanceof StringType) {
-                        String remoteName = StringUtils.substringBefore(command.toString(), ",");
-                        String irCommandName = StringUtils.substringAfter(command.toString(), ",");
+                        String remoteName = command.toString().substring(0, command.toString().indexOf(","));
+                        String irCommandName = command.toString().substring(command.toString().indexOf(",") + 1);
 
                         IrCommand ircommand = new IrCommand();
                         ircommand.setRemote(remoteName);
@@ -831,7 +830,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
     protected int getByteCount(ByteBuffer byteBuffer) {
         String response = new String(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
-        response = StringUtils.chomp(response);
+        response = response.replaceAll("\r", "").replaceAll("\n", "");
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
@@ -845,7 +844,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         String message = null;
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
-        response = StringUtils.chomp(response);
+        response = response.replaceAll("\r", "").replaceAll("\n", "");
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
