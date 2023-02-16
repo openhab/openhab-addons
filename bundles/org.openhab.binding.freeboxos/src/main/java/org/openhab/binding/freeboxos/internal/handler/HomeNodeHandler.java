@@ -134,5 +134,4 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
     }
 
     protected abstract State getChannelState(HomeManager homeManager, String channelId, EndpointState state);
-
 }

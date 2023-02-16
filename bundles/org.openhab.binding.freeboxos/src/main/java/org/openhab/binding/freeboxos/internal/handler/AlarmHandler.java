@@ -54,5 +54,4 @@ public class AlarmHandler extends HomeNodeHandler {
         }
         return UnDefType.NULL;
     }
-
 }
