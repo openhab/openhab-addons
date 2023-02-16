@@ -51,10 +51,10 @@ public class AnthemHandler extends BaseThingHandler {
         if (!configuration.isValid()) {
             logger.debug("AnthemHandler: Config of thing '{}' is invalid", thing.getUID().getId());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid Anthem thing configuration.");
+                    "@text/thing-status-detail-invalidconfig");
             return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/thing-status-detail-connecting");
         anthemConnectionManager = new AnthemConnectionManager(this, configuration);
     }
 

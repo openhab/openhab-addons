@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.anthem.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,7 @@ public class AnthemBindingConstants {
     public static final ThingTypeUID THING_TYPE_ANTHEM = new ThingTypeUID(BINDING_ID, "anthem");
 
     // List of all Thing Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ANTHEM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ANTHEM);
 
     // Channel Ids
     public static final String CHANNEL_POWER = "power";

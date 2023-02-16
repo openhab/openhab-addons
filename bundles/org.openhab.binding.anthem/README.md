@@ -8,14 +8,10 @@ The following thing type is supported:
 
 | Thing    | ID       | Discovery | Description |
 |----------|----------|-----------|-------------|
-| Anthem   | anthem   | Manual | Represents a Anthem AV processor |
+| Anthem   | anthem   | Manual    | Represents a Anthem AV processor |
 
 Tested models include the AVM-60 11.2-channel preamp/processor.
 
-## Discovery
-
-There is no automatic discovery.
-Things must be added manually using the user interface or a `.things` file.
 
 ## Thing Configuration
 

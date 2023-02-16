@@ -54,10 +54,10 @@
 		<label>Zone Control</label>
 		<description>Channels for a zone of this processor</description>
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="volumeDB" typeId="volumeDB"/>
-			<channel id="mute" typeId="mute"/>
+			<channel id="mute" typeId="system.mute"/>
 			<channel id="muteToggle" typeId="muteToggle"/>
 			<channel id="activeInput" typeId="activeInput"/>
 			<channel id="activeInputShortName" typeId="activeInputShortName"/>
@@ -66,33 +66,12 @@
 	</channel-group-type>
 
 	<!-- Channel types -->
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.anthem.power.label</label>
-		<description>@text/channel-type.anthem.power.description</description>
-		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.anthem.volume.label</label>
-		<description>@text/channel-type.anthem.volume.description</description>
-		<category>SoundVolume</category>
-	</channel-type>
-
 	<channel-type id="volumeDB" advanced="true">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.anthem.volumedb.label</label>
 		<description>@text/channel-type.anthem.volumedb.description</description>
 		<category>SoundVolume</category>
 		<state min="-90" max="0" step="1" pattern="%.0f dB"/>
-	</channel-type>
-
-	<channel-type id="mute">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.anthem.mute.label</label>
-		<description>@text/channel-type.anthem.mute.description</description>
-		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="muteToggle" advanced="true">

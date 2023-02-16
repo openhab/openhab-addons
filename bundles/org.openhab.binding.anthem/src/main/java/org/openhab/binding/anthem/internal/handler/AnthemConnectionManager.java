@@ -247,7 +247,8 @@ public class AnthemConnectionManager {
     }
 
     private synchronized void connect() {
-        handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initializing");
+        handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                "@text/thing-status-detail-initializing");
         logger.debug("Opening connection to Anthem host {} on port {}", configuration.host, configuration.port);
         try {
             Socket socket = new Socket(configuration.host, configuration.port);
@@ -255,11 +256,12 @@ public class AnthemConnectionManager {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1));
             this.socket = socket;
         } catch (UnknownHostException e) {
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing-status-detail-unknownhost");
             return;
         } catch (IllegalArgumentException e) {
             handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid port number");
+                    "@text/thing-status-detail-invalidport");
             return;
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while establishing Anthem connection");
@@ -267,7 +269,7 @@ public class AnthemConnectionManager {
             return;
         } catch (IOException e) {
             handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error opening Anthem connection. Check log.");
+                    "@text/thing-status-detail-openerror");
             logger.info("Error opening Anthem connection: {}", e.getMessage());
             disconnect();
             scheduleConnectRetry(reconnectIntervalMinutes);
@@ -419,13 +421,16 @@ public class AnthemConnectionManager {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/thing-status-detail-interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from socket: {}", e.getMessage());
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "I/O Error");
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/thing-status-detail-ioexception");
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Runtime exception");
+            handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/thing-status-detail-runtimeexception");
         } finally {
             logger.debug("Reader thread exiting");
         }
