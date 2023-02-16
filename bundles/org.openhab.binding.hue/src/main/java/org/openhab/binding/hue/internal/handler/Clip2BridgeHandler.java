@@ -363,12 +363,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         scheduler.submit(() -> initializeAssets());
     }
 
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        // TODO Auto-generated method stub
-        super.handleConfigurationUpdate(configurationParameters);
-    }
-
     /**
      * Initialize the bridge handler's assets.
      */
