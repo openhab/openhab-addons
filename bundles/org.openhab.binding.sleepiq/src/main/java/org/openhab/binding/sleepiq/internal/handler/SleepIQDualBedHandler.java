@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sleepiq.api.enums.Side;
-import org.openhab.binding.sleepiq.api.model.Bed;
-import org.openhab.binding.sleepiq.api.model.BedSideStatus;
-import org.openhab.binding.sleepiq.api.model.BedStatus;
-import org.openhab.binding.sleepiq.api.model.SleepDataResponse;
-import org.openhab.binding.sleepiq.api.model.Sleeper;
+import org.openhab.binding.sleepiq.internal.api.dto.Bed;
+import org.openhab.binding.sleepiq.internal.api.dto.BedSideStatus;
+import org.openhab.binding.sleepiq.internal.api.dto.BedStatus;
+import org.openhab.binding.sleepiq.internal.api.dto.SleepDataResponse;
+import org.openhab.binding.sleepiq.internal.api.dto.Sleeper;
+import org.openhab.binding.sleepiq.internal.api.enums.Side;
 import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;

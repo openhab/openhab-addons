@@ -14,8 +14,8 @@ package org.openhab.binding.sleepiq.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sleepiq.api.model.BedStatus;
-import org.openhab.binding.sleepiq.api.model.Sleeper;
+import org.openhab.binding.sleepiq.internal.api.dto.BedStatus;
+import org.openhab.binding.sleepiq.internal.api.dto.Sleeper;
 
 /**
  * The {@link BedStatusListener} is notified when a chamber is updated.

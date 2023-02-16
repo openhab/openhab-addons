@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sleepiq.api.model.Bed;
 import org.openhab.binding.sleepiq.internal.SleepIQBindingConstants;
+import org.openhab.binding.sleepiq.internal.api.dto.Bed;
 import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQDualBedHandler;
