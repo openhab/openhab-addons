@@ -79,7 +79,7 @@ public class ZoneState {
         this.inTxDelay = inTxDelay;
     }
 
-    public boolean isShuttedDown() {
+    public boolean isShutdown() {
         return shuttedDown;
     }
 

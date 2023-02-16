@@ -93,6 +93,15 @@ public class ParadoxAlarmBindingConstants {
     public static final String ZONE_TAMPERED_CHANNEL_UID = "tampered";
     public static final String ZONE_LOW_BATTERY_CHANNEL_UID = "lowBattery";
 
+    public static final String ZONE_SUPERVISION_TROUBLE_UID = "supervisionTrouble";
+    public static final String ZONE_IN_TX_DELAY_UID = "inTxDelay";
+    public static final String ZONE_SHUTDOWN_UID = "shutdown";
+    public static final String ZONE_BYPASSED_UID = "bypassed";
+    public static final String ZONE_HAS_ACTIVATED_INTELLIZONE_DELAY_UID = "hasActivatedIntellizoneDelay";
+    public static final String ZONE_HAS_ACTIVATED_ENTRY_DELAY_UID = "hasActivatedEntryDelay";
+    public static final String ZONE_PRESENTLY_IN_ALARM_UID = "presentlyInAlarm";
+    public static final String ZONE_GENERATED_ALARM_UID = "generatedAlarm";
+
     // Misc constants
     public static final StringType STATE_OFFLINE = new StringType("Offline");
     public static final StringType STATE_ONLINE = new StringType("Online");

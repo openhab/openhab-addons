@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
+import org.openhab.binding.paradoxalarm.internal.model.ZoneState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -61,9 +62,23 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
         Zone zone = zones.get(index);
         if (zone != null) {
             updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
-            updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
-            updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
-            updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().hasLowBattery()));
+            ZoneState zoneState = zone.getZoneState();
+            if (zoneState != null) {
+                updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zoneState.isOpened()));
+                updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zoneState.isTampered()));
+                updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zoneState.hasLowBattery()));
+
+                updateState(ZONE_SUPERVISION_TROUBLE_UID, booleanToSwitchState(zoneState.isSupervisionTrouble()));
+                updateState(ZONE_IN_TX_DELAY_UID, booleanToSwitchState(zoneState.isInTxDelay()));
+                updateState(ZONE_SHUTDOWN_UID, booleanToSwitchState(zoneState.isShutdown()));
+                updateState(ZONE_BYPASSED_UID, booleanToSwitchState(zoneState.isBypassed()));
+                updateState(ZONE_HAS_ACTIVATED_INTELLIZONE_DELAY_UID,
+                        booleanToSwitchState(zoneState.isHasActivatedIntellizoneDelay()));
+                updateState(ZONE_HAS_ACTIVATED_ENTRY_DELAY_UID,
+                        booleanToSwitchState(zoneState.isHasActivatedEntryDelay()));
+                updateState(ZONE_PRESENTLY_IN_ALARM_UID, booleanToSwitchState(zoneState.isPresentlyInAlarm()));
+                updateState(ZONE_GENERATED_ALARM_UID, booleanToSwitchState(zoneState.isGeneratedAlarm()));
+            }
         }
     }
 
