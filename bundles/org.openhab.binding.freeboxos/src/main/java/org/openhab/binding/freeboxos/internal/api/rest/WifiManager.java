@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link WifiManager} is the Java class used to handle api requests related to wifi
@@ -37,6 +38,8 @@ public class WifiManager extends ConfigurableRest<WifiManager.Config, WifiManage
                 CONFIG_PATH);
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 /**
  * The {@link WifiManager} is the Java class used to handle api requests related to wifi
@@ -47,15 +50,20 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
 public class WifiManager extends ConfigurableRest<WifiManager.Config, WifiManager.ConfigResponse> {
     private static final String PATH = "wifi";
 
-    public static class ConfigResponse extends Response<Config> {
+    protected static class ConfigResponse extends Response<Config> {
     }
 
     protected static record Config(boolean enabled) {
     }
 
     public WifiManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        super(session, LoginManager.Permission.NONE, ConfigResponse.class, session.getUriBuilder().path(PATH),
+                CONFIG_PATH);
+>>>>>>> 9aef877 Rebooting Home Node part
         session.addManager(APManager.class, new APManager(session, getUriBuilder()));
     }
 

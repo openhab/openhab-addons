@@ -84,8 +84,8 @@ public class CallActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CallHandler) {
-            this.handler = (CallHandler) handler;
+        if (handler instanceof CallHandler callHandler) {
+            this.handler = callHandler;
         }
     }
 

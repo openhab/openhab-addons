@@ -238,7 +238,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * Base class for the various rest managers available through the API
@@ -250,16 +249,17 @@ public class RestManager {
     protected static final String REBOOT_ACTION = "reboot";
     protected static final String SYSTEM_PATH = "system";
 
-    public class GenericResponse extends Response<Object> {
+    protected class GenericResponse extends Response<Object> {
     }
 
     private final UriBuilder uriBuilder;
     protected final FreeboxOsSession session;
 
-    public RestManager(FreeboxOsSession session, Permission required, UriBuilder uri) throws FreeboxException {
+    public RestManager(FreeboxOsSession session, LoginManager.Permission required, UriBuilder uri)
+            throws FreeboxException {
         this.uriBuilder = uri;
         this.session = session;
-        if (required != Permission.NONE && !session.hasPermission(required)) {
+        if (required != LoginManager.Permission.NONE && !session.hasPermission(required)) {
             throw new PermissionException(required, "Permission missing : %s", required.toString());
         }
     }

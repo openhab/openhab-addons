@@ -39,6 +39,7 @@ public class HostActions implements ThingActions {
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof HostHandler hostHandler) {
             this.handler = hostHandler;
+<<<<<<< Upstream, based on origin/main
         }
     }
 
@@ -97,6 +98,8 @@ public class HostActions implements ThingActions {
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof HostHandler) {
             this.handler = (HostHandler) handler;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
         }
     }
 

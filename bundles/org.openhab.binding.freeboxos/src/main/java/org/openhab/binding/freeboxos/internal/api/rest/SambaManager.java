@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link SambaManager} is the Java class used to handle api requests related to Samba shares
@@ -56,6 +57,8 @@ public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaMana
     }
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 /**
  * The {@link SambaManager} is the Java class used to handle api requests related to Samba shares
@@ -64,9 +67,9 @@ import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Perm
  */
 @NonNullByDefault
 public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaManager.ConfigResponse> {
-    public static final String PATH = "samba";
+    private static final String PATH = "samba";
 
-    public static class ConfigResponse extends Response<Samba> {
+    protected static class ConfigResponse extends Response<Samba> {
     }
 
     public static record Samba(boolean fileShareEnabled, boolean printShareEnabled, boolean logonEnabled,
@@ -75,7 +78,7 @@ public class SambaManager extends ConfigurableRest<SambaManager.Samba, SambaMana
     }
 
     public SambaManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, Permission.NONE, ConfigResponse.class, uriBuilder.path(PATH), null);
+        super(session, LoginManager.Permission.NONE, ConfigResponse.class, uriBuilder.path(PATH), null);
     }
 
     public boolean setFileShare(boolean enable) throws FreeboxException {

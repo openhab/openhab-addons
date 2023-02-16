@@ -26,6 +26,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.InterfacesResponse;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -224,6 +225,8 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
                     target.get().intf.name);
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
@@ -243,7 +246,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private static final String INTERFACES = "interfaces";
     private static final String WOL_ACTION = "wol";
 
-    public static class HostsResponse extends Response<LanHost> {
+    protected static class HostsResponse extends Response<LanHost> {
     }
 
     protected static class InterfacesResponse extends Response<Interface> {
@@ -273,10 +276,10 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
         UNKNOWN;
     }
 
-    protected static record L2Ident(MACAddress id, Type type) {
+    private static record L2Ident(MACAddress id, Type type) {
     }
 
-    public static record L3Connectivity(String addr, Af af, boolean active, boolean reachable,
+    private static record L3Connectivity(String addr, Af af, boolean active, boolean reachable,
             ZonedDateTime lastActivity, ZonedDateTime lastTimeReachable, String model) {
 
         private static enum Af {
@@ -296,7 +299,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     public static record HostIntf(LanHost host, Interface intf) {
     }
 
-    public static enum HostType {
+    private static enum HostType {
         WORKSTATION,
         LAPTOP,
         SMARTPHONE,
@@ -376,7 +379,7 @@ public class LanBrowserManager extends ListableRest<LanBrowserManager.Interface,
     private final List<Interface> interfaces = new ArrayList<>();
 
     public LanBrowserManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, Permission.NONE, InterfacesResponse.class, uriBuilder.path(PATH));
+        super(session, LoginManager.Permission.NONE, InterfacesResponse.class, uriBuilder.path(PATH));
         listSubPath = INTERFACES;
     }
 

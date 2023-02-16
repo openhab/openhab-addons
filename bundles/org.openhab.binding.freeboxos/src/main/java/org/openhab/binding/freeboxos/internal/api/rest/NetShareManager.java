@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link NetShareManager} is the Java class used to handle api requests related to network shares
@@ -32,6 +33,8 @@ public class NetShareManager extends RestManager {
     }
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 /**
  * The {@link NetShareManager} is the Java class used to handle api requests related to network shares
@@ -43,7 +46,7 @@ public class NetShareManager extends RestManager {
     private static final String PATH = "netshare";
 
     public NetShareManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, session.getUriBuilder().path(PATH));
+        super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));
         session.addManager(SambaManager.class, new SambaManager(session, getUriBuilder()));
         session.addManager(AfpManager.class, new AfpManager(session, getUriBuilder()));
     }

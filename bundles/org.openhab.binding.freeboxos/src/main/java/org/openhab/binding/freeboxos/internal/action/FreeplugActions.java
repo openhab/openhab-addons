@@ -36,6 +36,7 @@ public class FreeplugActions implements ThingActions {
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
         if (handler instanceof FreeplugHandler plugHandler) {
             this.handler = plugHandler;
         }
@@ -57,6 +58,10 @@ public class FreeplugActions implements ThingActions {
 =======
         if (handler instanceof FreeplugHandler) {
             this.handler = (FreeplugHandler) handler;
+=======
+        if (handler instanceof FreeplugHandler plugHandler) {
+            this.handler = plugHandler;
+>>>>>>> 9aef877 Rebooting Home Node part
         }
     }
 

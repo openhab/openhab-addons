@@ -22,6 +22,7 @@
 		<representation-property>id</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+<<<<<<< Upstream, based on origin/main
 	</thing-type>
 
 	<thing-type id="alarm">
@@ -165,6 +166,8 @@
             </parameter>
         </config-description>
 >>>>>>> cff27ca Saving work
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 	</thing-type>
 <<<<<<< Upstream, based on origin/main
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
@@ -178,20 +181,31 @@
 		<label>Freebox Alarm</label>
 		<description>The Alarm system configured in your Freebox Delta Server</description>
 
+		<channels>
+			<channel id="pin" typeId="alarm-pin"/>
+			<channel id="sound" typeId="alarm-volume">
+				<label>Bips Volume</label>
+			</channel>
+			<channel id="volume" typeId="alarm-volume">
+				<label>Alarm Volume</label>
+			</channel>
+			<channel id="timeout1" typeId="alarm-timeout">
+				<label>Alarm Activation Duration</label>
+			</channel>
+			<channel id="timeout2" typeId="alarm-timeout">
+				<label>Safe Zone Alert Timeout</label>
+			</channel>
+			<channel id="timeout3" typeId="alarm-timeout">
+				<label>Alert Duration</label>
+			</channel>
+			<channel id="battery" typeId="system.battery-level"/>
+		</channels>
+
 		<representation-property>id</representation-property>
 
-		<config-description>
-			<parameter name="id" type="integer" required="true">
-				<label>ID</label>
-				<description>Id of the Home Node</description>
-			</parameter>
-            <parameter name="refreshInterval" type="integer" min="1" unit="s">
-                <label>Refresh Interval</label>
-                <description>The refresh interval in seconds which is used to poll the Node</description>
-                <default>30</default>
-            </parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
 	</thing-type>
+<<<<<<< Upstream, based on origin/main
 <<<<<<< Upstream, based on origin/main
 >>>>>>> 6340384 Commiting work
 =======
@@ -200,12 +214,16 @@
         <supported-bridge-type-refs>
             <bridge-type-ref id="api"/>
         </supported-bridge-type-refs>
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
-        <label>Freebox Keyfob</label>
-        <description>A keyfob configured for your Freebox Security system</description>
+	<thing-type id="kfb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
 
-        <representation-property>id</representation-property>
 
+<<<<<<< Upstream, based on origin/main
         <config-description>
             <parameter name="id" type="integer" required="true">
                 <label>ID</label>
@@ -219,4 +237,35 @@
         </config-description>
     </thing-type>
 >>>>>>> cff27ca Saving work
+=======
+		<label>Freebox Keyfob</label>
+		<description>A keyfob configured for your Freebox Security system</description>
+
+		<channels>
+			<channel id="enable" typeId="keyfob-enable"/>
+			<channel id="battery" typeId="system.battery-level"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+	</thing-type>
+
+	<thing-type id="shutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Home Shutter</label>
+		<description>The Shutter configured in your Freebox Delta Server</description>
+
+		<channels>
+			<channel id="position_set" typeId="shutter"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home_node"/>
+	</thing-type>
+>>>>>>> 9aef877 Rebooting Home Node part
 </thing:thing-descriptions>

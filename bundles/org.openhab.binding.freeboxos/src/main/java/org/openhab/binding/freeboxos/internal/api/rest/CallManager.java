@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests related to calls
@@ -61,6 +62,8 @@ public class CallManager extends RestManager {
         super(session, LoginManager.Permission.CALLS, session.getUriBuilder().path(THING_CALL));
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests related to calls
@@ -96,11 +99,15 @@ public class CallManager extends RestManager {
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.CALLS, session.getUriBuilder().path(PATH));
 >>>>>>> e4ef5cc Switching to Java 17 records
 =======
         super(session, Permission.CALLS, session.getUriBuilder().path(THING_CALL));
 >>>>>>> f468f3b Enhance usage of global variables
+=======
+        super(session, LoginManager.Permission.CALLS, session.getUriBuilder().path(THING_CALL));
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 
     // Retrieves a sorted list of all call entries

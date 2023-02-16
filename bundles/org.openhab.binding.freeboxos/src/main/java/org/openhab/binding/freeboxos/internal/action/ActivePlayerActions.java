@@ -38,6 +38,9 @@ public class ActivePlayerActions extends PlayerActions {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
         if (localHandler instanceof ActivePlayerHandler apHandler) {
             apHandler.reboot();
         } else {

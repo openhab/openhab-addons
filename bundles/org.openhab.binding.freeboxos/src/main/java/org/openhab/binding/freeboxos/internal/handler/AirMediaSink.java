@@ -171,8 +171,8 @@ import org.openhab.binding.freeboxos.internal.api.ApiConstants.MediaType;
 >>>>>>> e4ef5cc Switching to Java 17 records
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.Action;
-import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Request.MediaType;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Action;
+import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.MediaType;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;

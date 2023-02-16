@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -46,6 +47,8 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
                 session.getUriBuilder().path(THING_VM));
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -57,7 +60,7 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.VirtualMachineResponse> {
 
-    public class VirtualMachineResponse extends Response<VirtualMachine> {
+    protected class VirtualMachineResponse extends Response<VirtualMachine> {
     }
 
     public static enum Status {
@@ -71,11 +74,16 @@ public class VmManager extends ListableRest<VmManager.VirtualMachine, VmManager.
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(PATH));
 >>>>>>> e4ef5cc Switching to Java 17 records
 =======
         super(session, Permission.VM, VirtualMachineResponse.class, session.getUriBuilder().path(THING_VM));
 >>>>>>> f468f3b Enhance usage of global variables
+=======
+        super(session, LoginManager.Permission.VM, VirtualMachineResponse.class,
+                session.getUriBuilder().path(THING_VM));
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {

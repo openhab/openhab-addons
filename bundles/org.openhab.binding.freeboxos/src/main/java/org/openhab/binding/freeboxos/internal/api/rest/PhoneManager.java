@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
@@ -67,6 +68,8 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
                 CONFIG_PATH);
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
@@ -79,13 +82,13 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     private static final String FXS_RING_ACTION = "fxs_ring_%s";
     private static final String PATH = "phone";
 
-    public class ConfigResponse extends Response<Config> {
+    protected class ConfigResponse extends Response<Config> {
     }
 
-    private class StatusResponse extends Response<Status> {
+    protected class StatusResponse extends Response<Status> {
     }
 
-    public static enum NetworkStatus {
+    private static enum NetworkStatus {
         WORKING,
         UNKNOWN;
     }
@@ -110,8 +113,13 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     }
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        super(session, LoginManager.Permission.CALLS, ConfigResponse.class, session.getUriBuilder().path(PATH),
+                CONFIG_PATH);
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public List<Status> getPhoneStatuses() throws FreeboxException {

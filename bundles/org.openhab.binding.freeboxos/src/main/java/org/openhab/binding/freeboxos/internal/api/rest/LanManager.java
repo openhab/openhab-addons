@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 
@@ -49,6 +50,8 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
     }
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.IPAddress;
 
@@ -63,10 +66,10 @@ import inet.ipaddr.IPAddress;
 public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManager.Config> {
     private static final String PATH = "lan";
 
-    static class Config extends Response<LanConfig> {
+    protected static class Config extends Response<LanConfig> {
     }
 
-    public static enum Mode {
+    private static enum Mode {
         ROUTER,
         BRIDGE,
         UNKNOWN;
@@ -77,7 +80,7 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
     }
 
     public LanManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
+        super(session, LoginManager.Permission.NONE, Config.class, session.getUriBuilder().path(PATH), CONFIG_PATH);
         session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
 <<<<<<< Upstream, based on origin/main

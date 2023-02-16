@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.IPAddress;
 
@@ -75,6 +76,8 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
         super(session, LoginManager.Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.IPAddress;
 
@@ -87,12 +90,12 @@ import inet.ipaddr.IPAddress;
  */
 @NonNullByDefault
 public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status, ConnectionManager.StatusResponse> {
-    public static final String PATH = "connection";
+    private static final String PATH = "connection";
 
     protected static class StatusResponse extends Response<Status> {
     }
 
-    public static enum State {
+    private static enum State {
         GOING_UP,
         UP,
         GOING_DOWN,
@@ -100,14 +103,14 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
         UNKNOWN;
     }
 
-    public static enum Type {
+    private static enum Type {
         ETHERNET,
         RFC2684,
         PPPOATM,
         UNKNOWN;
     }
 
-    public static enum Media {
+    private static enum Media {
         FTTH,
         ETHERNET,
         XDSL,
@@ -128,7 +131,11 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
     }
 
     public ConnectionManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        super(session, LoginManager.Permission.NONE, StatusResponse.class, session.getUriBuilder().path(PATH), null);
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 }

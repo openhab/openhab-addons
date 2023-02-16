@@ -25,6 +25,7 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -127,6 +128,8 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
             }
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -141,7 +144,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
     private static final String PATH = "ap";
     private static final String STATIONS_PATH = "stations";
 
-    public static record WifiInformation(String ssid, String band, int signal) { // Valid RSSI goes from -120 to 0
+    protected static record WifiInformation(String ssid, String band, int signal) { // Valid RSSI goes from -120 to 0
     }
 
     public static record LanAccessPoint(String mac, String type, String uid, @Nullable String connectivityType,
@@ -160,7 +163,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
         }
     }
 
-    public static enum State {
+    private static enum State {
         ASSOCIATED,
         AUTHENTICATED,
         UNKNOWN;
@@ -184,7 +187,7 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
         }
     }
 
-    public static record ApStatus(ApState state, int channelWidth, int primaryChannel, int secondaryChannel,
+    protected static record ApStatus(ApState state, int channelWidth, int primaryChannel, int secondaryChannel,
             int dfsCacRemainingTime, boolean dfsDisabled) {
         private static enum ApState {
             SCANNING, // Ap is probing wifi channels
@@ -203,17 +206,17 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
         }
     }
 
-    public static record WifiAp(int id, String name, ApStatus status) {
+    protected static record WifiAp(int id, String name, ApStatus status) {
     }
 
     private class ApHostsResponse extends Response<Station> {
     }
 
-    public class APResponse extends Response<WifiAp> {
+    protected class APResponse extends Response<WifiAp> {
     }
 
     public APManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
-        super(session, Permission.NONE, APResponse.class, uriBuilder.path(PATH));
+        super(session, LoginManager.Permission.NONE, APResponse.class, uriBuilder.path(PATH));
     }
 
     private List<Station> getApStations(int apId) throws FreeboxException {

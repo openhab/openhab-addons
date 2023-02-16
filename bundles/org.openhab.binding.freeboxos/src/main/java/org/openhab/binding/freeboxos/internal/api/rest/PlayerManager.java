@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.PlaybackState;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.SubtitleTrack;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.VideoTrack;
@@ -232,6 +233,8 @@ import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel
 =======
 >>>>>>> 6eeb4fa Some code enhancement for base classes
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.PlaybackState;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.SubtitleTrack;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.Metadata.VideoTrack;
@@ -249,9 +252,9 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerManager.PlayerResponse> {
-    public static final String STATUS_PATH = "status";
+    private static final String STATUS_PATH = "status";
 
-    public static class PlayerResponse extends Response<Player> {
+    protected static class PlayerResponse extends Response<Player> {
     }
 
     public static enum DeviceModel {
@@ -280,7 +283,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         /**
          * @return a string like eg : '17/api/v8'
          */
-        public @Nullable String baseUrl() {
+        private @Nullable String baseUrl() {
             String api = apiVersion;
             return api != null ? "%d/api/v%s/".formatted(id, api.split("\\.")[0]) : null;
         }
@@ -307,7 +310,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @SerializedName(value = "package") String _package) {
     }
 
-    public static record StatusInformation(String name, ZonedDateTime lastActivity) {
+    private static record StatusInformation(String name, ZonedDateTime lastActivity) {
     }
 
     private static class ConfigurationResponse extends Response<Configuration> {
@@ -317,42 +320,44 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
             @Nullable ModelInfo modelInfo, String serial, String uptime, long uptimeVal) {
     }
 
-    public enum MediaState {
+    private enum MediaState {
         READY,
         UNKNOWN;
     }
 
-    public static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
+    private static record AudioTrack(int bitrate, @SerializedName("channelCount") int channelCount,
             @Nullable String codec, @SerializedName("codecId") @Nullable String codecId, @Nullable String language,
             @SerializedName("metadataId") @Nullable String metadataId, int pid, int samplerate, long uid) {
     }
 
-    public static enum Type {
+    private static enum Type {
         NORMAL,
         HEARINGIMPAIRED,
         UNKNOWN;
     }
 
-    public static record Metadata(@Nullable String album, @SerializedName("albumArtist") @Nullable String albumArtist,
-            @Nullable String artist, @Nullable String author, int bpm, @Nullable String comment, boolean compilation,
-            @Nullable String composer, @Nullable String container, @Nullable String copyright, long date,
+    protected static record Metadata(@Nullable String album,
+            @SerializedName("albumArtist") @Nullable String albumArtist, @Nullable String artist,
+            @Nullable String author, int bpm, @Nullable String comment, boolean compilation, @Nullable String composer,
+            @Nullable String container, @Nullable String copyright, long date,
             @SerializedName("discId") @Nullable String discId, @SerializedName("discNumber") int discNumber,
             @SerializedName("discTotal") int discTotal, @Nullable String genre,
             @SerializedName("musicbrainzDiscId") @Nullable String musicbrainzDiscId, @Nullable String performer,
             @Nullable String title, @SerializedName("trackNumber") int trackNumber,
             @SerializedName("trackTotal") int trackTotal, @Nullable String url) {
 
-        public static enum PlaybackState {
+        protected static enum PlaybackState {
             PLAY,
             PAUSE,
             UNKNOWN;
         }
 
-        public static record SubtitleTrack(@Nullable String codec, @Nullable String language, @Nullable String pid,
+        protected static record SubtitleTrack(@Nullable String codec, @Nullable String language, @Nullable String pid,
                 Type type, @Nullable String uid) {
         }
 
-        public static record VideoTrack(int bitrate, @Nullable String codec, int height, int pid, int uid, int width) {
+        protected static record VideoTrack(int bitrate, @Nullable String codec, int height, int pid, int uid,
+                int width) {
         }
     }
 
@@ -368,24 +373,24 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
     }
 
-    public static enum BouquetType {
+    private static enum BouquetType {
         ADSL,
         UNKNOWN;
     }
 
-    public static enum ChannelType {
+    private static enum ChannelType {
         REGULAR,
         UNKNOWN;
     }
 
-    public static record Service(long id, @Nullable String name,
+    private static record Service(long id, @Nullable String name,
             @SerializedName("qualityLabel") @Nullable String qualityLabel,
             @SerializedName("qualityName") @Nullable String qualityName, @SerializedName("sortInfo") int sortInfo,
             @SerializedName("typeLabel") @Nullable String typeLabel,
             @SerializedName("typeName") @Nullable String typeName, @Nullable String url) {
     }
 
-    public static record Channel(@SerializedName("bouquetId") long bouquetId,
+    private static record Channel(@SerializedName("bouquetId") long bouquetId,
             @SerializedName("bouquetName") @Nullable String bouquetName,
             @SerializedName("bouquetType") BouquetType bouquetType,
             @SerializedName("channelName") @Nullable String channelName,
@@ -404,11 +409,16 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.PLAYER, PlayerResponse.class, session.getUriBuilder().path(THING_PLAYER));
 <<<<<<< Upstream, based on origin/main
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> subPaths.put(player.id, player.baseUrl()));
 >>>>>>> e4ef5cc Switching to Java 17 records
 =======
+=======
+        super(session, LoginManager.Permission.PLAYER, PlayerResponse.class,
+                session.getUriBuilder().path(THING_PLAYER));
+>>>>>>> 9aef877 Rebooting Home Node part
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> {
             String baseUrl = player.baseUrl();
             if (baseUrl != null) {

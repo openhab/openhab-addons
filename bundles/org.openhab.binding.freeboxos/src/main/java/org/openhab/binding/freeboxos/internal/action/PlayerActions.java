@@ -40,6 +40,7 @@ public class PlayerActions implements ThingActions {
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof PlayerHandler playerHandler) {
             this.handler = playerHandler;
+<<<<<<< Upstream, based on origin/main
         }
     }
 
@@ -132,6 +133,8 @@ public class PlayerActions implements ThingActions {
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof PlayerHandler) {
             this.handler = (PlayerHandler) handler;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
         }
     }
 

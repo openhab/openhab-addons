@@ -132,7 +132,7 @@ package org.openhab.binding.freeboxos.internal.api;
 =======
 >>>>>>> b74f3ab Enhanced deserialization to simplify code
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 
 /**
  * Defines an API result that returns a single object
@@ -212,7 +212,7 @@ public class Response<ResultType> {
     }
 
     private ErrorCode errorCode = ErrorCode.NONE;
-    private Permission missingRight = Permission.NONE;
+    private LoginManager.Permission missingRight = LoginManager.Permission.NONE;
     private String msg = "";
     private List<ResultType> result = List.of();
     private boolean success;
@@ -226,11 +226,15 @@ public class Response<ResultType> {
     }
 
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
     public @Nullable Permission getMissingRight() {
 >>>>>>> 46dadb1 SAT warnings handling
 =======
     public Permission getMissingRight() {
 >>>>>>> 006a813 Saving work before instroduction of ArrayListDeserializer
+=======
+    public LoginManager.Permission getMissingRight() {
+>>>>>>> 9aef877 Rebooting Home Node part
         return missingRight;
     }
 

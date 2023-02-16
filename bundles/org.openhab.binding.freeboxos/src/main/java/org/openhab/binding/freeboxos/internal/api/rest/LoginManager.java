@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -146,6 +147,8 @@ public class LoginManager extends RestManager {
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.AuthorizationStatus.Status;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -169,15 +172,16 @@ public class LoginManager extends RestManager {
     private static class AuthStatus extends Response<AuthorizationStatus> {
     }
 
-    public static record AuthorizationStatus(Status status, boolean loggedIn, String challenge,
+    private static enum Status {
+        PENDING, // the user has not confirmed the autorization request yet
+        TIMEOUT, // the user did not confirmed the authorization within the given time
+        GRANTED, // the app_token is valid and can be used to open a session
+        DENIED, // the user denied the authorization request
+        UNKNOWN; // the app_token is invalid or has been revoked
+    }
+
+    private static record AuthorizationStatus(Status status, boolean loggedIn, String challenge,
             @Nullable String passwordSalt, boolean passwordSet) {
-        public static enum Status {
-            PENDING, // the user has not confirmed the autorization request yet
-            TIMEOUT, // the user did not confirmed the authorization within the given time
-            GRANTED, // the app_token is valid and can be used to open a session
-            DENIED, // the user denied the authorization request
-            UNKNOWN; // the app_token is invalid or has been revoked
-        }
     }
 
     private static class AuthResponse extends Response<Authorization> {
@@ -189,28 +193,29 @@ public class LoginManager extends RestManager {
     private static class SessionResponse extends Response<Session> {
     }
 
-    public static record Session(Map<Permission, @Nullable Boolean> permissions, @Nullable String sessionToken) {
+    public static enum Permission {
+        PARENTAL,
+        CONTACTS,
+        EXPLORER,
+        TV,
+        WDO,
+        DOWNLOADER,
+        PROFILE,
+        CAMERA,
+        SETTINGS,
+        CALLS,
+        HOME,
+        PVR,
+        VM,
+        PLAYER,
+        NONE,
+        UNKNOWN;
+    }
 
-        public static enum Permission {
-            PARENTAL,
-            CONTACTS,
-            EXPLORER,
-            TV,
-            WDO,
-            DOWNLOADER,
-            PROFILE,
-            CAMERA,
-            SETTINGS,
-            CALLS,
-            HOME,
-            PVR,
-            VM,
-            PLAYER,
-            NONE,
-            UNKNOWN;
-        }
+    public static record Session(Map<LoginManager.Permission, @Nullable Boolean> permissions,
+            @Nullable String sessionToken) {
 
-        public boolean hasPermission(Permission checked) {
+        protected boolean hasPermission(LoginManager.Permission checked) {
             return Boolean.TRUE.equals(permissions.get(checked));
         }
     }
@@ -227,7 +232,7 @@ public class LoginManager extends RestManager {
     }
 
     public LoginManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, session.getUriBuilder().path(PATH));
+        super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(PATH));
         try {
             mac = Mac.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {

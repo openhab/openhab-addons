@@ -19,6 +19,7 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession.BoxModel;
 <<<<<<< Upstream, based on origin/main
+<<<<<<< Upstream, based on origin/main
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -98,6 +99,8 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
                 session.getUriBuilder().path(SYSTEM_PATH), null);
 =======
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import inet.ipaddr.mac.MACAddress;
 
@@ -109,7 +112,7 @@ import inet.ipaddr.mac.MACAddress;
 @NonNullByDefault
 public class SystemManager extends ConfigurableRest<SystemManager.Config, SystemManager.ConfigurationResponse> {
 
-    public static class ConfigurationResponse extends Response<Config> {
+    protected static class ConfigurationResponse extends Response<Config> {
     }
 
     public static record Sensor(String id, String name, int value) {
@@ -173,8 +176,13 @@ public class SystemManager extends ConfigurableRest<SystemManager.Config, System
     }
 
     public SystemManager(FreeboxOsSession session) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         super(session, Permission.NONE, ConfigurationResponse.class, session.getUriBuilder().path(SYSTEM_PATH), null);
 >>>>>>> e4ef5cc Switching to Java 17 records
+=======
+        super(session, LoginManager.Permission.NONE, ConfigurationResponse.class,
+                session.getUriBuilder().path(SYSTEM_PATH), null);
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 
     public void reboot() throws FreeboxException {

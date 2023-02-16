@@ -18,6 +18,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.B
 
 import java.util.List;
 import java.util.Map;
+<<<<<<< Upstream, based on origin/main
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -179,17 +180,16 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.B
 
 >>>>>>> 6340384 Commiting work
 import java.util.List;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState.ValueType;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 import org.openhab.core.thing.ThingTypeUID;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HomeManager} is the Java class used to handle api requests related to home
@@ -202,20 +202,20 @@ public class HomeManager extends RestManager {
     private static final String NODES_PATH = "nodes";
     private static final String ENDPOINTS_PATH = "endpoints";
 
-    public static class EndpointStateResponse extends Response<EndpointState> {
+    private static class EndpointStateResponse extends Response<EndpointState> {
     }
 
-    public static class HomeNodesResponse extends Response<HomeNode> {
+    private static class HomeNodesResponse extends Response<HomeNode> {
     }
 
-    public static enum AccessType {
+    private static enum AccessType {
         R,
         W,
         RW,
         UNKNOWN;
     }
 
-    public static enum DisplayType {
+    private static enum DisplayType {
         TEXT,
         ICON,
         BUTTON,
@@ -226,44 +226,35 @@ public class HomeManager extends RestManager {
         UNKNOWN;
     }
 
-    public static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
-
-        public @Nullable String unit() {
-            return unit;
-        }
+    private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
     }
 
-    public static record EndpointValue<T> (T value) {
+    private static record EndpointValue<T> (T value) {
     }
 
-    public static record EndpointState(@Nullable JsonElement value, ValueType valueType, long refresh) {
-        public static enum ValueType {
-            BOOL,
-            INT,
-            FLOAT,
-            VOID,
-            STRING,
-            UNKNOWN;
+    private static enum ValueType {
+        BOOL,
+        INT,
+        FLOAT,
+        VOID,
+        STRING,
+        UNKNOWN;
+    }
+
+    public static record EndpointState(@Nullable String value, ValueType valueType, long refresh) {
+
+        public boolean asBoolean() {
+            String local = value;
+            return local != null ? Boolean.valueOf(local) : false;
         }
 
-        private @Nullable JsonPrimitive getAsPrimitive() {
-            final JsonElement theValue = value;
-            return theValue != null && theValue.isJsonPrimitive() ? theValue.getAsJsonPrimitive() : null;
+        public int asInt() {
+            String local = value;
+            return local != null ? Integer.valueOf(local) : Integer.MIN_VALUE;
         }
 
-        public @Nullable Boolean asBoolean() {
-            final JsonPrimitive theValue = getAsPrimitive();
-            return theValue != null && theValue.isBoolean() ? theValue.getAsBoolean() : null;
-        }
-
-        public @Nullable Integer asInt() {
-            final JsonPrimitive theValue = getAsPrimitive();
-            return theValue != null && theValue.isNumber() ? theValue.getAsInt() : null;
-        }
-
-        public @Nullable String asString() {
-            final JsonPrimitive theValue = getAsPrimitive();
-            return theValue != null && theValue.isString() ? theValue.getAsString() : null;
+        public @Nullable String value() {
+            return value;
         }
     }
 
@@ -271,10 +262,18 @@ public class HomeManager extends RestManager {
         SIGNAL,
         SLOT,
         UNKNOWN;
+
+        public String asConfId() {
+            return name().toLowerCase();
+        }
+    }
+
+    private static record LogEntry(long timestamp, int value) {
+
     }
 
     public static record Endpoint(int id, String name, String label, EpType epType, Visibility visibility, int refresh,
-            ValueType valueType, EndpointUi ui, @Nullable String category, Object value) {
+            ValueType valueType, EndpointUi ui, @Nullable String category, Object value, List<LogEntry> history) {
         private static enum Visibility {
             INTERNAL,
             NORMAL,
@@ -283,7 +282,7 @@ public class HomeManager extends RestManager {
         }
     }
 
-    public static enum Status {
+    private static enum Status {
         UNREACHABLE,
         DISABLED,
         ACTIVE,
@@ -310,12 +309,16 @@ public class HomeManager extends RestManager {
         }
     }
 
+    public static record NodeType(@SerializedName("abstract") boolean _abstract, List<Endpoint> endpoints,
+            boolean generic, String icon, String inherit, String label, String name, boolean physical) {
+    }
+
     public static record HomeNode(int id, @Nullable String name, @Nullable String label, Category category,
-            Status status, List<Endpoint> showEndpoints) {
+            Status status, List<Endpoint> showEndpoints, Map<String, String> props, NodeType type) {
     }
 
     public HomeManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.HOME, session.getUriBuilder().path(PATH));
+        super(session, LoginManager.Permission.HOME, session.getUriBuilder().path(PATH));
     }
 
     public List<HomeNode> getHomeNodes() throws FreeboxException {
@@ -331,13 +334,21 @@ public class HomeManager extends RestManager {
                 String.valueOf(stateSignalId));
     }
 
+<<<<<<< Upstream, based on origin/main
     public <T> void putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
 <<<<<<< Upstream, based on origin/main
         put(GenericResponse.class, new EndpointValue<T>(value), ENDPOINTS_PATH, String.valueOf(nodeId),
                 String.valueOf(stateSignalId));
 >>>>>>> e4ef5cc Switching to Java 17 records
 =======
+=======
+    public <T> boolean putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
+>>>>>>> 9aef877 Rebooting Home Node part
         put(new EndpointValue<T>(value), ENDPOINTS_PATH, String.valueOf(nodeId), String.valueOf(stateSignalId));
+<<<<<<< Upstream, based on origin/main
 >>>>>>> cff27ca Saving work
+=======
+        return true;
+>>>>>>> 9aef877 Rebooting Home Node part
     }
 }

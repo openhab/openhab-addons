@@ -31,6 +31,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
+<<<<<<< Upstream, based on origin/main
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
@@ -207,6 +208,8 @@ import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
+=======
+>>>>>>> 9aef877 Rebooting Home Node part
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
@@ -243,7 +246,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     }
 
     public WebSocketManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, Permission.NONE, session.getUriBuilder().path(WS_PATH));
+        super(session, LoginManager.Permission.NONE, session.getUriBuilder().path(WS_PATH));
         this.apiHandler = session.getApiHandler();
     }
 

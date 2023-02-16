@@ -150,7 +150,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session.Permission;
 
 /**
  * The {@link ListableRest} is the Java class used to handle rest answers holding a list of known equipments
@@ -163,7 +162,7 @@ public class ListableRest<T, Z extends Response<T>> extends RestManager {
 
     protected @Nullable String listSubPath = null;
 
-    public ListableRest(FreeboxOsSession session, Permission required, Class<Z> respClass, UriBuilder uri)
+    public ListableRest(FreeboxOsSession session, LoginManager.Permission required, Class<Z> respClass, UriBuilder uri)
             throws FreeboxException {
         super(session, required, uri);
         this.deviceResponseClass = respClass;
