@@ -113,5 +113,4 @@ public class AlarmHandler extends HomeNodeHandler {
         return UnDefType.NULL;
 >>>>>>> 9aef877 Rebooting Home Node part
     }
-
 }

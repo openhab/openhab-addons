@@ -64,6 +64,7 @@ public class ShutterHandler extends HomeNodeHandler {
     @Override
     protected boolean executeSlotCommand(HomeManager homeManager, String channelId, Command command,
             Configuration config, int positionSlot) throws FreeboxException {
+<<<<<<< Upstream, based on origin/main
         Integer stopSlot = getSlotId(config, SHUTTER_STOP);
         if (SHUTTER_POSITION.equals(channelId) && stopSlot instanceof Integer) {
             if (command instanceof UpDownType upDownCmd) {
@@ -184,6 +185,8 @@ public class ShutterHandler extends HomeNodeHandler {
 =======
     protected boolean executeSlotCommand(HomeManager homeManager, String channelId, Command command, Configuration config,
             int positionSlot) throws FreeboxException {
+=======
+>>>>>>> 95a189b Spotless apply
         Integer stopSlot = getSlotId(config, SHUTTER_STOP);
         if (SHUTTER_POSITION.equals(channelId) && stopSlot instanceof Integer) {
             if (command instanceof UpDownType upDownCmd) {

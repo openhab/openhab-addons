@@ -216,6 +216,9 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
     }
 
     protected abstract State getChannelState(HomeManager homeManager, String channelId, EndpointState state);
+<<<<<<< Upstream, based on origin/main
 
 >>>>>>> 9aef877 Rebooting Home Node part
+=======
+>>>>>>> 95a189b Spotless apply
 }
