@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -189,10 +188,8 @@ public class EnturNoConnection {
     }
 
     private List<DisplayData> processData(StopPlace stopPlace, String lineCode) {
-        Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream()
-                .filter(call -> StringUtils.equalsIgnoreCase(
-                        StringUtils.trimToEmpty(call.serviceJourney.journeyPattern.line.publicCode),
-                        StringUtils.trimToEmpty(lineCode)))
+        Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream().filter(
+                call -> call.serviceJourney.journeyPattern.line.publicCode.strip().equalsIgnoreCase(lineCode.strip()))
                 .collect(groupingBy(call -> call.quay.id));
 
         List<DisplayData> processedData = new ArrayList<>();
@@ -235,11 +232,10 @@ public class EnturNoConnection {
     }
 
     private String getIsoDateTime(String dateTimeWithoutColonInZone) {
-        String dateTime = StringUtils.substringBeforeLast(dateTimeWithoutColonInZone, "+");
-        String offset = StringUtils.substringAfterLast(dateTimeWithoutColonInZone, "+");
+        String dateTime = dateTimeWithoutColonInZone.substring(0, dateTimeWithoutColonInZone.lastIndexOf("+"));
+        String offset = dateTimeWithoutColonInZone.substring(dateTimeWithoutColonInZone.lastIndexOf("+"));
 
         StringBuilder builder = new StringBuilder();
-        return builder.append(dateTime).append("+").append(StringUtils.substring(offset, 0, 2)).append(":00")
-                .toString();
+        return builder.append(dateTime).append("+").append(offset.substring(0, 2)).append(":00").toString();
     }
 }
