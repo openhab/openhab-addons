@@ -1,6 +1,6 @@
 # Shelly Binding
 
-This Binding integrates [Shelly devices](https://shelly.cloud) devloped by Allterco.
+This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
 
 Allterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API.
 The binding is officially acknowledged by Allterco and openHAB is listed as a reference and directly supports the openHAB community.
