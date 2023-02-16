@@ -32,7 +32,6 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -237,7 +236,7 @@ public class KeContactHandler extends BaseThingHandler {
         }
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
-        response = StringUtils.chomp(response);
+        response = response.replaceAll("\r", "").replaceAll("\n", "");
 
         if (response.contains("TCH-OK")) {
             // ignore confirmation messages which are not JSON
