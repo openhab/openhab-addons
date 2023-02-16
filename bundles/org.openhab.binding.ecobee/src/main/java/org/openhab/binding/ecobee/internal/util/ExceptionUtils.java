@@ -15,14 +15,18 @@ package org.openhab.binding.ecobee.internal.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ExceptionUtils} class defines static Exception related methods
  *
  * @author Leo Siepel - Initial contribution
  */
+@NonNullByDefault
 public class ExceptionUtils {
 
-    public static Throwable getRootThrowable(Throwable throwable) {
+    public static @Nullable Throwable getRootThrowable(@Nullable Throwable throwable) {
         List<Throwable> list = new ArrayList<>();
         while (throwable != null && !list.contains(throwable)) {
             list.add(throwable);
