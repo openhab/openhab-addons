@@ -160,7 +160,7 @@ void setupStaticConfigMode() {
     // Early connect to WiFi
     initializeEthernet();
     #if defined(ENABLE_DEBUG)
-      telnet.begin();
+      telnetServer.begin();
     #endif
     #if defined(ENABLE_OTA)
       initializeOTA();
@@ -289,7 +289,7 @@ void loopNormalMode() {
   if (!ethInitialized && now >= config.eth.initDelay) {
     initializeEthernet();
     #ifdef ENABLE_DEBUG
-      telnet.begin();
+      telnetServer.begin();
     #endif
   }
 
@@ -535,25 +535,27 @@ void printInfo() {
 
 #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
 void handleTelnet() {
-  EthernetClient client = telnet.available();
+  if (telnetServer.hasClient()) {
+    telnetClient = telnetServer.available();
+  }
   
-  if (client) {
-    char c = client.read();
+  if (telnetClient && telnetClient.available()) {
+    char c = telnetClient.read();
 
     switch (c) {
 
       case '?':
       case 'h':
-        client.println(config.boardName.c_str());
-        client.println("Commands:");
-        client.println(" E -> exit");
-        client.println(" i -> info");
+        telnetClient.println(config.boardName.c_str());
+        telnetClient.println("Commands:");
+        telnetClient.println(" E -> exit");
+        telnetClient.println(" i -> info");
         #ifdef ENABLE_DEBUG
-        client.println(" 1 -> set verbose level to 1");
-        client.println(" 2 -> set verbose level to 2");
-        client.println(" 3 -> set verbose level to 3");
-        client.println(" 4 -> set verbose level to 4");
-        client.println(" 5 -> set verbose level to 5");
+        telnetClient.println(" 1 -> set verbose level to 1");
+        telnetClient.println(" 2 -> set verbose level to 2");
+        telnetClient.println(" 3 -> set verbose level to 3");
+        telnetClient.println(" 4 -> set verbose level to 4");
+        telnetClient.println(" 5 -> set verbose level to 5");
         #endif
         break;
         
@@ -566,9 +568,9 @@ void handleTelnet() {
         break;
 
       case 'E':
-        client.println("Connection closed");
-        client.flush();
-        client.stop();
+        telnetClient.println("Connection closed");
+        telnetClient.flush();
+        telnetClient.stop();
         break;
 
       #ifdef ENABLE_DEBUG
@@ -577,8 +579,8 @@ void handleTelnet() {
       case '3':
       case '4':
       case '5': 
-        client.print("Setting verbose level to ");
-        client.println(c);
+        telnetClient.print("Setting verbose level to ");
+        telnetClient.println(c);
         config.debug.verboseLevel = c - 0x30;
         break;
       #endif
@@ -588,8 +590,8 @@ void handleTelnet() {
         break;
 
       default:
-        client.print("Unknown command ");
-        client.println(c);
+        telnetClient.print("Unknown command ");
+        telnetClient.println(c);
     }
   }
 }

@@ -26,9 +26,9 @@
   #define DEBUG_PRINT_VARS(level, message, ...) if (config.debug.verboseLevel >= level) { sprintf(debugBuf, message, __VA_ARGS__); debugPrint(debugBuf); }
   #define DEBUG_PRINT_ARRAY(level, data, len) if (config.debug.verboseLevel >= level) { NIBE_FORMAT_HEX(debugBuf, DEBUG_BUFFER_SIZE, data, len); debugPrint(debugBuf); }
 
-
   #ifdef ENABLE_REMOTE_DEBUG
-    EthernetServer telnet(23);
+    EthernetServer telnetServer(23);
+    EthernetClient telnetClient;
   #endif
   
   void debugPrint(char* data) {
@@ -37,7 +37,9 @@
     #endif
   
     #ifdef ENABLE_REMOTE_DEBUG
-      telnet.print(data);
+      if (telnetClient) {
+        telnetClient.print(data);
+      }
     #endif
   }
 
