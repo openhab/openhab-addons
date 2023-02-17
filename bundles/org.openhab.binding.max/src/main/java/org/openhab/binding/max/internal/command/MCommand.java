@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.RoomInformation;
+import org.openhab.binding.max.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
