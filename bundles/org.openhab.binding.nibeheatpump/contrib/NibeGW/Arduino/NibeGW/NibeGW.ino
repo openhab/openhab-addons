@@ -316,6 +316,7 @@ void initializeEthernet() {
   #if defined(ESP8266_BOARD)
     WiFi.mode(WIFI_STA);
     WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    WiFi.hostname(config.eth.hostName.c_str());
     WiFi.config(ip, gw, mask, gw);
     WiFi.begin(WIFI_SSID, WIFI_PSK);
   #else

@@ -56,6 +56,7 @@
 #define DNS_SERVER              "192.168.1.1"
 #define GATEWAY_IP              "192.168.1.1"
 #define NETWORK_MASK            "255.255.255.0"
+#define HOST_NAME               "nibegw"
 
 #ifdef ESP8266_BOARD
   // WiFi configuration
@@ -127,6 +128,7 @@
       persistentStringVar(dns, DNS_SERVER);
       persistentStringVar(gateway, GATEWAY_IP);
       persistentStringVar(mask, NETWORK_MASK);
+      persistentStringVar(hostName, HOST_NAME);
       persistentIntVar(initDelay, ETH_INIT_DELAY);
   };
 
@@ -185,6 +187,7 @@
       String    dns;
       String    gateway;
       String    mask;
+      String    hostName;
       uint16_t  initDelay;
     } eth;
 
@@ -226,6 +229,7 @@
       DNS_SERVER,
       GATEWAY_IP,
       NETWORK_MASK,
+      HOST_NAME,
       ETH_INIT_DELAY
     },
 
