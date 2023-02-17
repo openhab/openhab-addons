@@ -56,8 +56,12 @@ void NibeGw::connect()
     #else
       RS485->begin(9600, SERIAL_8N1);
     #endif
-    
+
     connectionState = true;
+#ifdef ENABLE_NIBE_DEBUG
+    if (debug)
+      debug(4, "Started serial connection\n");
+#endif
   }
 }
 
@@ -67,6 +71,10 @@ void NibeGw::disconnect()
   {
     RS485->end();
     connectionState = false;
+#ifdef ENABLE_NIBE_DEBUG
+    if (debug)
+      debug(4, "Stopped serial connection\n");
+#endif
   }
 }
 
