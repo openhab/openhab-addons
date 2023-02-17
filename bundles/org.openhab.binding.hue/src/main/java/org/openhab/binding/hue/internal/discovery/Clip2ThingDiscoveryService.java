@@ -152,7 +152,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                         .filter(thing -> HueBindingConstants.V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
                         .filter(thing -> {
                             Object id = thing.getConfiguration().get(config);
-                            return id instanceof String && targetId.endsWith((String) id);
+                            return id instanceof String && targetId.endsWith("/" + (String) id);
                         }).findFirst();
             }
         }
