@@ -684,6 +684,7 @@ public class ShieldTVConnectionManager {
                 thisMsg = fixMessage(Integer.toHexString(reader.read()));
                 if (thisMsg.equals("ffffffff")) {
                     // Shield has crashed the connection. Disconnect hard.
+                    logger.trace("readerThreadJob received ffffffff.  Disconnecting hard.");
                     reconnect();
                     break;
                 }
@@ -824,7 +825,9 @@ public class ShieldTVConnectionManager {
         logger.trace("Sending ShieldTV keepalive query");
         String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
         sendCommand(new ShieldTVCommand(keepalive));
-        sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08ec0712020806"))); // Get App
+        if (isLoggedIn) {
+            sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08ec0712020806"))); // Get App
+        }
         reconnectTaskSchedule();
         if (this.periodicUpdate <= 1) {
             sendPeriodicUpdate();
