@@ -319,7 +319,6 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data) {
         DEBUG_PRINT_VARS(2, "Send read command to nibe, len=%d, ", len);
         DEBUG_PRINT_MSG(1, " data in: ");
         DEBUG_PRINT_ARRAY(1, data, len)
-        DEBUG_PRINT_MSG(1, "\n");
         
         #if defined(TRANSPORT_ETH_ENC28J60)
           udp4readCmnds.flush();
@@ -339,7 +338,6 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data) {
         DEBUG_PRINT_VARS(2, "Send write command to nibe, len=%d, ", len);
         DEBUG_PRINT_MSG(1, " data in: ");
         DEBUG_PRINT_ARRAY(1, data, len)
-        DEBUG_PRINT_MSG(1, "\n");
         
         #if defined(TRANSPORT_ETH_ENC28J60)
           udp4writeCmnds.flush();
@@ -365,7 +363,6 @@ void sendUdpPacket(const byte* const data, int len) {
     DEBUG_PRINT_VARS(2, "Sending UDP packet to %s:%d, len=%d", IPtoString(targetIp).c_str(), config.nibe.targetPort, len);
     DEBUG_PRINT_MSG(1, " data out: ");
     DEBUG_PRINT_ARRAY(1, data, len)
-    DEBUG_PRINT_MSG(1, "\n");
   #endif
 
   #if defined(PRODINO_BOARD_ESP32)

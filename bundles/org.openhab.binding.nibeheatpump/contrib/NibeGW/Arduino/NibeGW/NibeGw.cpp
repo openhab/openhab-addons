@@ -322,12 +322,8 @@ void NibeGw::sendData(const byte* const data, byte len)
   if (debug)
   {
     debug(1, "Send message to heat pump: ");
-    for (int i = 0; i < len; i++)
-    {
-      sprintf(debug_buf, "%02X", data[i]);
-      debug(1, debug_buf);
-    }
-    debug(1, "\n");
+    NIBE_FORMAT_HEX(debug_buf, sizeof(debug_buf), data, len);
+    debug(1, debug_buf);
   }
 #endif
 

@@ -16,13 +16,16 @@
 #ifndef Debug_h
 #define Debug_h
 
+#include "NibeGw.h"
+
 #ifdef ENABLE_DEBUG
+  #define DEBUG_BUFFER_SIZE (MAX_DATA_LEN * 2 + 2)  // hex chars + newline + null
+  char debugBuf[DEBUG_BUFFER_SIZE];
+
   #define DEBUG_PRINT_MSG(level, message) if (config.debug.verboseLevel >= level) { debugPrint(message); }
   #define DEBUG_PRINT_VARS(level, message, ...) if (config.debug.verboseLevel >= level) { sprintf(debugBuf, message, __VA_ARGS__); debugPrint(debugBuf); }
-  #define DEBUG_PRINT_ARRAY(level, data, len) if (config.debug.verboseLevel >= level) { for (int i = 0; i < len; i++) { sprintf(debugBuf, "%02X", data[i]); debugPrint(debugBuf); }}
+  #define DEBUG_PRINT_ARRAY(level, data, len) if (config.debug.verboseLevel >= level) { NIBE_FORMAT_HEX(debugBuf, DEBUG_BUFFER_SIZE, data, len); debugPrint(debugBuf); }
 
-  #define DEBUG_BUFFER_SIZE   80
-  char debugBuf[DEBUG_BUFFER_SIZE];
 
   #ifdef ENABLE_REMOTE_DEBUG
     EthernetServer telnet(23);

@@ -66,7 +66,16 @@ enum eTokenType
 #define NIBE_CALLBACK_MSG_RECEIVED_TOKEN int (*callback_msg_token_received)(eTokenType token, byte* data)
 
 #ifdef ENABLE_NIBE_DEBUG
-#define NIBE_CALLBACK_MSG_RECEIVED_DEBUG void (*debug)(byte verbose, char* data)
+  #define NIBE_CALLBACK_MSG_RECEIVED_DEBUG void (*debug)(byte verbose, char* data)
+  #define NIBE_FORMAT_HEX(buf, bufsize, data, len) do { \
+    char *p = buf; \
+    char *end = p + bufsize - 2; \
+    for (int i = 0; i < len && p < end; i++) { \
+      p += sprintf(p, "%02X", data[i]); \
+    }; \
+    sprintf(p, "\n"); \
+  } while(0)
+
 #endif
 
 #define SMS40     0x16
@@ -106,7 +115,7 @@ class NibeGw
 
     #ifdef ENABLE_NIBE_DEBUG
     NIBE_CALLBACK_MSG_RECEIVED_DEBUG;
-    char debug_buf[100];
+    char debug_buf[MAX_DATA_LEN*2+2];
     #endif
 
   public:
