@@ -28,7 +28,7 @@ public class StringUtilsTest {
 
     @Test
     public void splitByCharacterType() {
-        assertNull(StringUtils.splitByCharacterType(null));
+        assertArrayEquals(new String[0], StringUtils.splitByCharacterType(null));
         assertArrayEquals(new String[0], StringUtils.splitByCharacterType(""));
         assertArrayEquals(new String[] { "ab", " ", "de", " ", "fg" }, StringUtils.splitByCharacterType("ab de fg"));
         assertArrayEquals(new String[] { "ab", "   ", "de", " ", "fg" },

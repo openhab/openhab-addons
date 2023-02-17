@@ -45,9 +45,9 @@ public class StringUtils {
         return input;
     }
 
-    public static @Nullable String @Nullable [] splitByCharacterType(@Nullable String input) {
+    public static String[] splitByCharacterType(@Nullable String input) {
         if (input == null) {
-            return null;
+            return new String[0];
         }
         if (input.isBlank()) {
             return new String[0];
