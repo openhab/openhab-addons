@@ -16,8 +16,8 @@ import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConst
 
 import java.time.LocalTime;
 
-import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
-import org.openhab.binding.lametrictime.api.model.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
+import org.openhab.binding.lametrictime.internal.api.model.CoreApps;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;

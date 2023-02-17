@@ -29,7 +29,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.openhab.binding.lametrictime.api.common.impl.GsonGenerator;
+import org.openhab.binding.lametrictime.internal.api.common.impl.GsonGenerator;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.Gson;

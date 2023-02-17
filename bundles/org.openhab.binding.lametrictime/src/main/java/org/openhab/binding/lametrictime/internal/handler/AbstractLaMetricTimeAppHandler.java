@@ -14,11 +14,11 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import java.util.SortedMap;
 
-import org.openhab.binding.lametrictime.api.LaMetricTime;
-import org.openhab.binding.lametrictime.api.local.ApplicationNotFoundException;
-import org.openhab.binding.lametrictime.api.local.model.Application;
-import org.openhab.binding.lametrictime.api.local.model.Widget;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
+import org.openhab.binding.lametrictime.internal.api.LaMetricTime;
+import org.openhab.binding.lametrictime.internal.api.local.ApplicationNotFoundException;
+import org.openhab.binding.lametrictime.internal.api.local.model.Application;
+import org.openhab.binding.lametrictime.internal.api.local.model.Widget;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;

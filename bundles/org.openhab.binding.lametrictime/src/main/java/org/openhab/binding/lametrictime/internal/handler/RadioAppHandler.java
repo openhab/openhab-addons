@@ -14,8 +14,8 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.CHANNEL_APP_CONTROL;
 
-import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
-import org.openhab.binding.lametrictime.api.model.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
+import org.openhab.binding.lametrictime.internal.api.model.CoreApps;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
