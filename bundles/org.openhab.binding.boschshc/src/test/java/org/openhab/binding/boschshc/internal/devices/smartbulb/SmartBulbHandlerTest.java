@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -44,16 +45,14 @@ import com.google.gson.JsonParser;
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHandler> {
 
-    @Captor
-    private ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
 
-    @Captor
-    private ArgumentCaptor<MultiLevelSwitchServiceState> multiLevelSwitchServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<MultiLevelSwitchServiceState> multiLevelSwitchServiceStateCaptor;
 
-    @Captor
-    private ArgumentCaptor<HSBColorActuatorServiceState> hsbColorActuatorServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<HSBColorActuatorServiceState> hsbColorActuatorServiceStateCaptor;
 
     @Override
     protected SmartBulbHandler createFixture() {

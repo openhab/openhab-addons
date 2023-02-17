@@ -14,8 +14,7 @@ package org.openhab.binding.boschshc.internal.devices;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -28,9 +27,14 @@ import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.SmokeDetectorCheckState;
 import org.openhab.binding.boschshc.internal.services.smokedetectorcheck.dto.SmokeDetectorCheckServiceState;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -92,6 +96,19 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
                 smokeDetectorCheckStateCaptor.capture());
         SmokeDetectorCheckServiceState state = smokeDetectorCheckStateCaptor.getValue();
         assertSame(SmokeDetectorCheckState.SMOKE_TEST_REQUESTED, state.value);
+    }
+
+    @Test
+    public void testHandleCommand_UnknownCommand()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
+                OnOffType.ON);
+        ThingStatusInfo expectedThingStatusInfo = ThingStatusInfoBuilder
+                .create(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR)
+                .withDescription(
+                        "Error when service SmokeDetectorCheck should handle command org.openhab.core.library.types.OnOffType: SmokeDetectorCheck: Can not handle command org.openhab.core.library.types.OnOffType")
+                .build();
+        verify(getCallback()).statusUpdated(getThing(), expectedThingStatusInfo);
     }
 
     @Test
