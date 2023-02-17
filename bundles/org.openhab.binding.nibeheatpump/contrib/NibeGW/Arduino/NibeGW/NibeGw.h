@@ -82,6 +82,13 @@ enum eTokenType
 #define RMU40     0x19
 #define MODBUS40  0x20
 
+#define MSG_START 0x5C
+#define MSG_ACK   0x06
+#define MSG_NACK  0x15
+#define MSG_READ_TOKEN  0x69
+#define MSG_WRITE_TOKEN 0x6B
+
+
 class NibeGw
 {
   private:
@@ -89,6 +96,8 @@ class NibeGw
     boolean connectionState;
     byte directionPin;
     byte buffer[MAX_DATA_LEN];
+    byte *msg_address = &buffer[2];
+    byte *msg_type = &buffer[3];
     byte index;
     #if defined(HARDWARE_SERIAL_WITH_PINS)
       HardwareSerial* RS485;
