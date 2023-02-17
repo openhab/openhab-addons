@@ -47,6 +47,9 @@
   #include <Esp.h>
   #include <ESP8266WiFi.h>
   #include <WiFiUdp.h>
+  #if defined(ENABLE_OTA)
+    #include <ArduinoOTA.h>
+  #endif
   #define EthernetClient WiFiClient
   #define EthernetServer WiFiServer
 #else
@@ -158,6 +161,9 @@ void setupStaticConfigMode() {
     initializeEthernet();
     #if defined(ENABLE_DEBUG)
       telnet.begin();
+    #endif
+    #if defined(ENABLE_OTA)
+      initializeOTA();
     #endif
   #endif
 
@@ -275,6 +281,9 @@ void loopNormalMode() {
         WiFi.reconnect();
       }
     }
+    #if defined(ENABLE_OTA)
+      ArduinoOTA.handle();
+    #endif
   #endif
 
   if (!ethInitialized && now >= config.eth.initDelay) {
@@ -299,6 +308,48 @@ void loopDynamicConfigMode() {
 #endif
 
 // ######### FUNCTIONS #######################
+
+#if defined(ENABLE_OTA)
+void initializeOTA()
+{
+  // Port defaults to 8266
+  ArduinoOTA.setHostname(config.eth.hostName.c_str());
+
+  // Callbacks
+  ArduinoOTA.onStart([]() {
+    String type;
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else { // U_FS
+      type = "filesystem";
+    }
+
+    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+    DEBUG_PRINT_VARS(0, "OTA Start updating %s\n", type);
+  });
+  ArduinoOTA.onEnd([]() {
+    DEBUG_PRINT_MSG(0, "\nOTA End\n");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    DEBUG_PRINT_VARS(0, "OTA Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    DEBUG_PRINT_VARS(0, "OTA Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) {
+      DEBUG_PRINT_MSG(0, "Auth Failed\n");
+    } else if (error == OTA_BEGIN_ERROR) {
+      DEBUG_PRINT_MSG(0, "Begin Failed\n");
+    } else if (error == OTA_CONNECT_ERROR) {
+      DEBUG_PRINT_MSG(0, "Connect Failed\n");
+    } else if (error == OTA_RECEIVE_ERROR) {
+      DEBUG_PRINT_MSG(0, "Receive Failed\n");
+    } else if (error == OTA_END_ERROR) {
+      DEBUG_PRINT_MSG(0, "End Failed\n");
+    }
+  });
+  ArduinoOTA.begin();
+}
+#endif
 
 void initializeEthernet() {
   DEBUG_PRINT_MSG(1, "Initializing Ethernet\n");

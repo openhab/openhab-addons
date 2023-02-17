@@ -62,6 +62,8 @@
   // WiFi configuration
   #define WIFI_SSID             ""
   #define WIFI_PSK              ""
+  // OTA
+  #define ENABLE_OTA
 #endif
 
 // UDP ports for incoming messages
