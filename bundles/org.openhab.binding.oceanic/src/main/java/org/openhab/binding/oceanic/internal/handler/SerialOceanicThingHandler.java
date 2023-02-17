@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.oceanic.internal.SerialOceanicBindingConfiguration;
 import org.openhab.binding.oceanic.internal.Throttler;
 import org.openhab.core.thing.Thing;
@@ -291,7 +290,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler {
                                         logger.trace("The resulting line is '{}'",
                                                 new String(Arrays.copyOf(dataBuffer, index)));
                                     }
-                                    line = StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index)));
+
+                                    line = new String(Arrays.copyOf(dataBuffer, index)).replaceAll("\r", "")
+                                            .replaceAll("\n", "");
                                     line = line.replace(",", ".");
                                     line = line.trim();
                                     index = 0;

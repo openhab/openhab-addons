@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.oceanic.internal.NetworkOceanicBindingConfiguration;
@@ -184,7 +183,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                                     if (index > 0) {
                                         line = new String(Arrays.copyOf(dataBuffer, index));
                                         logger.debug("Received response '{}'", line);
-                                        line = StringUtils.chomp(line);
+                                        line = line.replaceAll("\r", "").replaceAll("\n", "");
                                         line = line.replace(",", ".");
                                         line = line.trim();
                                         index = 0;
