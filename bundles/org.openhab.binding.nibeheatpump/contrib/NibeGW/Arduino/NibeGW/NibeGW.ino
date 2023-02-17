@@ -42,14 +42,20 @@
   #include "KMPProDinoESP32.h"
   #include "KMPCommon.h"
 #elif defined(TRANSPORT_ETH_ENC28J60)
- #include <UIPEthernet.h>
+  #include <UIPEthernet.h>
+#elif defined(ESP8266_BOARD)
+  #include <Esp.h>
+  #include <ESP8266WiFi.h>
+  #include <WiFiUdp.h>
+  #define EthernetClient WiFiClient
+  #define EthernetServer WiFiServer
 #else
- #include <SPI.h>
- #include <Ethernet.h>
- #include <EthernetUdp.h>
+  #include <SPI.h>
+  #include <Ethernet.h>
+  #include <EthernetUdp.h>
 #endif
  
-#if !defined(PRODINO_BOARD_ESP32)
+#if !defined(PRODINO_BOARD_ESP32) && !defined(ESP8266_BOARD)
   #include <avr/wdt.h>
 #endif
 
@@ -66,8 +72,15 @@ IPAddress targetIp;
 unsigned long ledflash = 0;
 #endif
 
+#if defined(ESP8266_BOARD)
+WiFiUDP udp;
+WiFiUDP udp4writeCmnds;
+#define WIFI_CHECK_INTERVAL 5000
+unsigned long lastWifiCheck = 0;
+#else
 EthernetUDP udp;
 EthernetUDP udp4writeCmnds;
+#endif
 
 #if defined(PRODINO_BOARD_ESP32)
   HardwareSerial RS485_PORT(1);
@@ -88,7 +101,6 @@ EthernetUDP udp4writeCmnds;
         String(value.newValue).c_str());
     }
   };
-
 #endif
 
 // ######### SETUP #######################
@@ -139,6 +151,14 @@ void setupStaticConfigMode() {
   #if defined(LED_FLASH_ENABLED)
     // Initialize the LED_BUILTIN pin as an output
     pinMode(LED_BUILTIN, OUTPUT);
+  #endif
+
+  #if defined(ESP8266_BOARD)
+    // Early connect to WiFi
+    initializeEthernet();
+    #if defined(ENABLE_DEBUG)
+      telnet.begin();
+    #endif
   #endif
 
   // Start watchdog
@@ -247,6 +267,16 @@ void loopNormalMode() {
     } while (nibegw.messageStillOnProgress());
   }
 
+  #if defined(ESP8266_BOARD)
+    if (now - lastWifiCheck > WIFI_CHECK_INTERVAL) {
+      lastWifiCheck = now;
+      if (!WiFi.isConnected()) {
+        DEBUG_PRINT_VARS(0, "Lost WiFi connection (%d)\n", WiFi.status());
+        WiFi.reconnect();
+      }
+    }
+  #endif
+
   if (!ethInitialized && now >= config.eth.initDelay) {
     initializeEthernet();
     #ifdef ENABLE_DEBUG
@@ -273,9 +303,6 @@ void loopDynamicConfigMode() {
 void initializeEthernet() {
   DEBUG_PRINT_MSG(1, "Initializing Ethernet\n");
 
-  uint8_t   mac[6];
-  sscanf(config.eth.mac.c_str(), "%x:%x:%x:%x:%x:%x", mac, mac+1, mac+2, mac+3, mac+4, mac+5);
-  
   IPAddress ip;
   IPAddress dns;
   IPAddress gw;
@@ -286,14 +313,22 @@ void initializeEthernet() {
   gw.fromString(config.eth.gateway);
   mask.fromString(config.eth.mask);
   
-  Ethernet.begin(mac, ip, dns, gw, mask);
-
-  #if defined(PRODINO_BOARD_ESP32)
-    Ethernet.setRetransmissionCount(1);
-    Ethernet.setRetransmissionTimeout(50);
-  #elif defined(PRODINO_BOARD)
-    W5100.setRetransmissionCount(1);
-    W5100.setRetransmissionTime(50);
+  #if defined(ESP8266_BOARD)
+    WiFi.mode(WIFI_STA);
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    WiFi.config(ip, gw, mask, gw);
+    WiFi.begin(WIFI_SSID, WIFI_PSK);
+  #else
+    uint8_t   mac[6];
+    sscanf(config.eth.mac.c_str(), "%x:%x:%x:%x:%x:%x", mac, mac+1, mac+2, mac+3, mac+4, mac+5);
+    Ethernet.begin(mac, ip, gw, mask);
+    #if defined(PRODINO_BOARD_ESP32)
+      Ethernet.setRetransmissionCount(1);
+      Ethernet.setRetransmissionTimeout(50);
+    #elif defined(PRODINO_BOARD)
+      W5100.setRetransmissionCount(1);
+      W5100.setRetransmissionTime(50);
+    #endif
   #endif
   
   ethInitialized = true;
@@ -394,7 +429,6 @@ void sendUdpPacket(const byte* const data, int len) {
   #endif
     
   udp.beginPacket(targetIp, config.nibe.targetPort);
-  
   udp.write(data, len);
   int retval = udp.endPacket();
   if (retval) {
@@ -411,7 +445,11 @@ String IPtoString(const IPAddress& address) {
 void printInfo() {
   #ifdef ENABLE_DEBUG
   DEBUG_PRINT_VARS(0, "%s version %s\nUsing configuration:\n", config.boardName.c_str(), VERSION);
-  DEBUG_PRINT_VARS(0, "MAC=%s\n", config.eth.mac.c_str());
+  #if defined(ESP8266_BOARD)
+    DEBUG_PRINT_VARS(0, "MAC=%s\n", WiFi.macAddress().c_str());
+  #else
+    DEBUG_PRINT_VARS(0, "MAC=%s\n", config.eth.mac.c_str());
+  #endif
   DEBUG_PRINT_VARS(0, "IP=%s\n", config.eth.ip.c_str());
   DEBUG_PRINT_VARS(0, "DNS=%s\n", config.eth.dns.c_str());
   DEBUG_PRINT_VARS(0, "MASK=%s\n", config.eth.mask.c_str());
@@ -469,6 +507,10 @@ void handleTelnet() {
         
       case 'i':
         printInfo();
+        #if defined(ESP8266_BOARD)
+          telnetClient.println("\nWiFi status:");
+          WiFi.printDiag(telnetClient);
+        #endif
         break;
 
       case 'E':

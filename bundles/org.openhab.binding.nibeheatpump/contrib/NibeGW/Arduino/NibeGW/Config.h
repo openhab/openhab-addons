@@ -27,6 +27,9 @@
 // Enable if ENC28J60 LAN module is used
 //#define TRANSPORT_ETH_ENC28J60
 
+// Enable if you use ESP8266 board (WiFi)
+// #define ESP8266_BOARD
+
 // ######### CONFIGURATION #######################
 
 // Enable dynamic configuration mode via WiFi connection (supported only by the PRODINO_BOARD_ESP32 board)
@@ -53,6 +56,12 @@
 #define DNS_SERVER              "192.168.1.1"
 #define GATEWAY_IP              "192.168.1.1"
 #define NETWORK_MASK            "255.255.255.0"
+
+#ifdef ESP8266_BOARD
+  // WiFi configuration
+  #define WIFI_SSID             ""
+  #define WIFI_PSK              ""
+#endif
 
 // UDP ports for incoming messages
 #define INCOMING_PORT_READCMDS  9999
@@ -102,7 +111,6 @@
 #endif
 
 
-
 // ######### VARIABLES #######################
 
 #if defined(PRODINO_BOARD_ESP32) && defined(ENABLE_DYNAMIC_CONFIG)
@@ -121,6 +129,14 @@
       persistentStringVar(mask, NETWORK_MASK);
       persistentIntVar(initDelay, ETH_INIT_DELAY);
   };
+
+  #ifdef ESP8266_BOARD
+  class WifiConfig: public Configuration {
+    public:
+      persistentStringVar(ssid, WIFI_SSID);
+      persistentStringVar(psk, WIFI_PSK);
+  };
+  #endif
 
   class NibeAckConfig: public Configuration {
     public:
@@ -150,6 +166,9 @@
     public:
       persistentStringVar(boardName, BOARD_NAME);
       subconfig(EthConfig, eth);
+      #ifdef ESP8266_BOARD
+      subconfig(WifiConfig, wifi);
+      #endif
       subconfig(NibeConfig, nibe);
       #ifdef ENABLE_DEBUG
       subconfig(DebugConfig, debug);
@@ -168,7 +187,14 @@
       String    mask;
       uint16_t  initDelay;
     } eth;
-    
+
+    #ifdef ESP8266_BOARD
+    struct {
+      String    ssid;
+      String    psk;
+    } wifi;
+    #endif
+
     struct {
       String    targetIp;
       uint16_t  targetPort;
@@ -202,7 +228,14 @@
       NETWORK_MASK,
       ETH_INIT_DELAY
     },
-  
+
+    #ifdef ESP8266_BOARD
+    {
+      WIFI_SSID,
+      WIFI_PSK,
+    },
+    #endif
+
     {
       TARGET_IP,
       TARGET_PORT,
@@ -217,7 +250,6 @@
       },
     },
   
-    
     #ifdef ENABLE_DEBUG
     {
       VERBOSE_LEVEL
