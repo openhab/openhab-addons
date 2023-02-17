@@ -535,6 +535,8 @@ void printInfo() {
 
 #if defined(ENABLE_DEBUG) && defined(ENABLE_REMOTE_DEBUG)
 void handleTelnet() {
+  static const byte sample[] = { 0x5C, 0x00, 0x19, 0x60, 0x00, 0x79 };
+
   if (telnetServer.hasClient()) {
     telnetClient = telnetServer.available();
   }
@@ -551,6 +553,7 @@ void handleTelnet() {
         telnetClient.println(" E -> exit");
         telnetClient.println(" i -> info");
         #ifdef ENABLE_DEBUG
+        telnetClient.println(" t -> test (simulate) message");
         telnetClient.println(" 1 -> set verbose level to 1");
         telnetClient.println(" 2 -> set verbose level to 2");
         telnetClient.println(" 3 -> set verbose level to 3");
@@ -574,6 +577,12 @@ void handleTelnet() {
         break;
 
       #ifdef ENABLE_DEBUG
+      case 't':
+        telnetClient.println("Simulate incoming message");
+        nibeCallbackMsgReceived(sample, sizeof(sample));
+        telnetClient.println("Simulation done");
+        break;
+
       case '1':
       case '2':
       case '3':
