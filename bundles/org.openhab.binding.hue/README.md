@@ -51,29 +51,40 @@ Once the binding is authorized, it automatically reads all devices (and groups) 
 
 ## Migration from API v1 to API v2
 
+You can create new API v2 things either via the automatic discovery services, via a `.things` file, or manually in the UI.
+If things are created manually in the UI then you will have to enter all configuration parameters by hand.
+You can use the [console command](doc/readme_v2.md#console-command-for-finding-resourceids) to discover the `resourceId` of all the things in the bridge.
+You might also need to edit the names and types of your items, depending on the individual circumstances below.
+
+### Migration via Automatic Discovery Services
+
+When new API v2 things are created via the discovery services, then if a matching legacy API v1 thing exists, the new v2 thing will clone some of the the attributes of the existing API v1 thing.
+And also, if a legacy API v1 thing exists and has items linked to its channels, then the new API v2 thing will replicate the links between those items and the respective new API v2 thing's channels.
+
+### Migration via a `.things` File
+
 You need to manually edit your bridge and thing definitions as shown below..
 
 - Bridge definitions change from `hue:bridge:bridgename` to `hue:clip2:bridgename`.
 - Bridge configuration parameters change `userName` to `applicationKey`.
 - Thing definitions change from `hue:0100:thingname` or `hue:0210:thingname` etc. to `hue:resource:thingname`.
-- Thing configuration parameters change from `lightId` or `sesorId` etc. to `resourceId`.
+- Thing configuration parameters change from `lightId` or `sensorId` etc. to `resourceId`.
 
 Notes:
 
 1. In API v1 different things have different types (`0100`, `0220`, `0830`, etc.) but in API v2 all things have the same type `device`.
 1. In API v1 different things are configured by different parameters (`sensorId`, `lightId`, etc.) but in API v2 all things are configured via the same `resourceId` parameter.
-1. You can use the [console command](doc/readme_v2.md#console-command-for-finding-resourceids) to discover the `resourceId` of all the things in the bridge.
+
+Examples:
 
 ```java
 // old (API v1) ..
-Bridge hue:bridge:g24 "Philips Hue Hub (CLIP 1)" @ "Under Stairs" [ipAddress="192.168.1.234", userName="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
+Bridge hue:bridge:g24 "Philips Hue Hub" @ "Under Stairs" [ipAddress="192.168.1.234", userName="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
    Thing 0210 b01 "Living Room Standard Lamp Left" @ "Living Room" [lightId="1"]
 }
 
 // new (API v2) ...
-Bridge hue:clip2:g24 "Philips Hue Hub (CLIP 2)" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
+Bridge hue:clip2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
     Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"]
 }
 ```
-
-You might also need to edit the names and types of your items, depending on individual circumstances.
