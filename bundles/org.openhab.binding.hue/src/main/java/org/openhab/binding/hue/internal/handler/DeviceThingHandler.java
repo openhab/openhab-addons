@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -69,13 +72,15 @@ public class DeviceThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
 
-    private Resource thisResource = new Resource(ResourceType.DEVICE);
     private final Map<String, Resource> contributorsCache = new ConcurrentHashMap<>();
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
     private final Set<String> supportedChannelIds = ConcurrentHashMap.newKeySet(32);
     private final ThingRegistry thingRegistry;
+    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private final List<ChannelUID> legacyLinkedChannelUIDs = new ArrayList<>();
 
+    private Resource thisResource = new Resource(ResourceType.DEVICE);
     private boolean disposing;
     private boolean hasConnectivityIssue;
     private boolean updatePropertiesDone;
@@ -83,9 +88,11 @@ public class DeviceThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
-    public DeviceThingHandler(Thing thing, ThingRegistry thingRegistry) {
+    public DeviceThingHandler(Thing thing, ThingRegistry thingRegistry,
+            ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
         this.thingRegistry = thingRegistry;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @Override
@@ -287,6 +294,35 @@ public class DeviceThingHandler extends BaseThingHandler {
     }
 
     /**
+     * If this v2 thing has a matching v1 legacy thing in the system, then for each channel in the v1 thing that
+     * corresponds to an equivalent channel in this v2 thing, and for all items that are linked to the v1 channel,
+     * create a new channel/item link between that item and the respective v2 channel in this thing.
+     */
+    private void updateChannelItemLinksFromLegacy() {
+        if (!disposing) {
+            synchronized (legacyLinkedChannelUIDs) {
+                legacyLinkedChannelUIDs.forEach(legacyLinkedChannelUID -> {
+                    String targetChannelId = HueBindingConstants.EQUIVALENT_CHANNEL_ID_MAP
+                            .get(legacyLinkedChannelUID.getId());
+                    if (Objects.nonNull(targetChannelId)) {
+                        Channel targetChannel = thing.getChannel(targetChannelId);
+                        if (Objects.nonNull(targetChannel)) {
+                            ChannelUID targetChannelUID = targetChannel.getUID();
+                            itemChannelLinkRegistry.getLinkedItems(legacyLinkedChannelUID).forEach(linkedItem -> {
+                                logger.info("Created link between Channel:{} and Item:{}", targetChannelUID,
+                                        linkedItem.getName());
+                                itemChannelLinkRegistry
+                                        .add(new ItemChannelLink(linkedItem.getName(), targetChannelUID));
+                            });
+                        }
+                    }
+                });
+                legacyLinkedChannelUIDs.clear();
+            }
+        }
+    }
+
+    /**
      * Set the active list of channels by removing any that had initially been created by the thing XML declaration, but
      * which in fact did not have data returned from the bridge i.e. channels which are not in the supportedChannelIds
      * set.
@@ -434,6 +470,7 @@ public class DeviceThingHandler extends BaseThingHandler {
                 updateLookups();
                 updateContributors();
                 updateChannelList();
+                updateChannelItemLinksFromLegacy();
                 updateDependenciesDone = true;
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
@@ -562,7 +599,14 @@ public class DeviceThingHandler extends BaseThingHandler {
                     editBuilder = editBuilder.withLocation(location);
                 }
 
-                // TODO clone the legacy thing's channel/item links for this thing
+                // save list of legacyLinkedChannelUIDs for use after channel list is initialised
+                synchronized (legacyLinkedChannelUIDs) {
+                    legacyLinkedChannelUIDs.clear();
+                    legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
+                            .filter(legacyChannelUID -> HueBindingConstants.EQUIVALENT_CHANNEL_ID_MAP.containsKey(
+                                    legacyChannelUID.getId()) && itemChannelLinkRegistry.isLinked(legacyChannelUID))
+                            .toList());
+                }
 
                 Map<String, String> newProperties = new HashMap<>(properties);
                 newProperties.remove(HueBindingConstants.PROPERTY_LEGACY_THING_UID);

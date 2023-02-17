@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,17 +82,20 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final ThingRegistry thingRegistry;
+    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Activate
     public HueThingHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference HueStateDescriptionProvider stateDescriptionProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference ThingRegistry thingRegistry) {
+            final @Reference ThingRegistry thingRegistry,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.thingRegistry = thingRegistry;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @Override
@@ -169,7 +173,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return new Clip2BridgeHandler((Bridge) thing, httpClient, thingRegistry);
         } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceThingHandler(thing, thingRegistry);
+            return new DeviceThingHandler(thing, thingRegistry, itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
                     localeProvider);
