@@ -61,6 +61,11 @@
 boolean ethInitialized = false;
 
 IPAddress targetIp;
+
+#if defined(LED_FLASH_ENABLED)
+unsigned long ledflash = 0;
+#endif
+
 EthernetUDP udp;
 EthernetUDP udp4writeCmnds;
 
@@ -130,7 +135,12 @@ void setupStaticConfigMode() {
     Serial.begin(115200, SERIAL_8N1);
     DinoInit();
   #endif
-   
+
+  #if defined(LED_FLASH_ENABLED)
+    // Initialize the LED_BUILTIN pin as an output
+    pinMode(LED_BUILTIN, OUTPUT);
+  #endif
+
   // Start watchdog
   #if defined(PRODINO_BOARD_ESP32)
     esp_task_wdt_init(WDT_TIMEOUT, true);
@@ -217,7 +227,14 @@ void loopNormalMode() {
     wdt_reset();
   #endif
   
-  long now = millis() / 1000;
+  unsigned long now = millis();
+
+  #if defined(LED_FLASH_ENABLED)
+    if (ledflash && now - ledflash > LED_FLASH_DURATION) {
+      digitalWrite(LED_BUILTIN, LOW);  // Turn the LED on again (normal)
+      ledflash = 0;
+    }
+  #endif
 
   if (!nibegw.connected()) {
     nibegw.connect();
@@ -293,8 +310,11 @@ void initializeEthernet() {
 void nibeCallbackMsgReceived(const byte* const data, int len) {
   #if defined(PRODINO_BOARD_ESP32)
     KMPProDinoESP32.setStatusLed(green);
+  #elif defined(LED_FLASH_ENABLED)
+    digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off
+    ledflash = millis();
   #endif
-    
+
   if (ethInitialized) {
     sendUdpPacket(data, len);
   }

@@ -62,8 +62,8 @@
 #define TARGET_IP               "192.168.1.101"
 #define TARGET_PORT             9999
 
-// Delay before initialize ethernet on startup in seconds
-#define ETH_INIT_DELAY          5
+// Delay before initialize ethernet on startup in milliseconds
+#define ETH_INIT_DELAY          5000
 
 // Send acknowledge PDU's to Nibe
 #define SEND_ACK                true
@@ -73,6 +73,9 @@
 #define ACK_SMS40               false
 #define ACK_RMU40               false
 
+// Flash LED off when message received from Nibe
+// LED flash duration in milliseconds. 0 turns flash off
+#define LED_FLASH_DURATION      20
 
 
 // Used serial port and direction change pin for RS-485 port
@@ -90,6 +93,13 @@
 #endif
 
 
+
+// ######### DERIVED DEFINES ##################
+
+// LED flash
+#if !defined(PRODINO_BOARD) && !defined(PRODINO_BOARD_ESP32) && defined(LED_BUILTIN) && LED_FLASH_DURATION > 0
+  #define LED_FLASH_ENABLED
+#endif
 
 
 
