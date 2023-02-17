@@ -17,6 +17,7 @@ import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
@@ -26,9 +27,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -121,10 +124,10 @@ public class GoogleTVConnectionManager {
     private StringBuffer sbShimReader = new StringBuffer();
     private String thisMsg = "";
 
-    X509Certificate @Nullable [] shimX509ClientChain;
-    Certificate @Nullable [] shimClientChain;
-    Certificate @Nullable [] shimServerChain;
-    Certificate @Nullable [] shimClientLocalChain;
+    private X509Certificate @Nullable [] shimX509ClientChain;
+    private Certificate @Nullable [] shimClientChain;
+    private Certificate @Nullable [] shimServerChain;
+    private Certificate @Nullable [] shimClientLocalChain;
 
     private boolean disposing = false;
     private boolean isLoggedIn = false;
@@ -277,6 +280,24 @@ public class GoogleTVConnectionManager {
         handler.updateCDP(CHANNEL_APP, this.appNameDB);
     }
 
+    private void setShimX509ClientChain(X509Certificate @Nullable [] shimX509ClientChain) {
+        try {
+            this.shimX509ClientChain = shimX509ClientChain;
+            logger.trace("Setting shimX509ClientChain {}", this.config.port);
+            if (shimX509ClientChain != null && logger.isTraceEnabled()) {
+                for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
+                    logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
+                    logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
+                    logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
+                    logger.trace("Cert: {}", GoogleTVRequest
+                            .decodeMessage(GoogleTVUtils.byteArrayToString(shimX509ClientChain[cert].getEncoded())));
+                }
+            }
+        } catch (CertificateEncodingException e) {
+            logger.trace("setShimX509ClientChain CertificateEncodingException", e);
+        }
+    }
+
     private void startChildConnectionManager(int port, String mode) {
         GoogleTVConfiguration childConfig = new GoogleTVConfiguration();
         childConfig.ipAddress = config.ipAddress;
@@ -327,8 +348,19 @@ public class GoogleTVConnectionManager {
 
             @Override
             public X509Certificate @Nullable [] getAcceptedIssuers() {
-                logger.debug("Returning empty certificate for getAcceptedIssuers");
-                return new X509Certificate[0];
+                if (shimX509ClientChain != null && logger.isTraceEnabled()) {
+                    logger.debug("Returning shimX509ClientChain for getAcceptedIssuers");
+                    for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
+                        logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
+                        logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
+                    }
+
+                    return shimX509ClientChain;
+                } else {
+                    logger.debug("Returning empty certificate for getAcceptedIssuers");
+                    return new X509Certificate[0];
+                }
             }
         } };
     }
@@ -362,6 +394,13 @@ public class GoogleTVConnectionManager {
             @Override
             public X509Certificate @Nullable [] getAcceptedIssuers() {
                 logger.debug("Returning shimX509ClientChain for getAcceptedIssuers");
+                if (shimX509ClientChain != null && logger.isTraceEnabled()) {
+                    for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
+                        logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
+                        logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
+                        logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
+                    }
+                }
                 return shimX509ClientChain;
             }
         } };
@@ -502,10 +541,19 @@ public class GoogleTVConnectionManager {
 
         try {
             shimPKI.generateNewKeyPair(shimEncryptionKey);
+            KeyStore keystore = KeyStore.getInstance("JKS");
+            FileInputStream keystoreInputStream = new FileInputStream(config.keystoreFileName);
+            keystore.load(keystoreInputStream, config.keystorePassword.toCharArray());
+
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(shimPKI.getKeyStore(config.keystorePassword, shimEncryptionKey),
-                    config.keystorePassword.toCharArray());
-            TrustManager[] trustManagers = shimTrustManager();
+            kmf.init(keystore, config.keystorePassword.toCharArray());
+            TrustManager[] trustManagers;
+
+            // if (this.config.mode.equals(PIN_MODE)) {
+            trustManagers = defineNoOpTrustManager();
+            // } else {
+            // trustManagers = shimTrustManager();
+            // }
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(kmf.getKeyManagers(), trustManagers, null);
             this.sslServerSocketFactory = sslContext.getServerSocketFactory();
@@ -517,8 +565,11 @@ public class GoogleTVConnectionManager {
                     .createServerSocket(config.port);
             if (this.config.mode.equals(DEFAULT_MODE)) {
                 sslServerSocket.setNeedClientAuth(true);
+            } else {
+
+                // if (this.config.mode.equals(PIN_MODE)) {
+                sslServerSocket.setWantClientAuth(true);
             }
-            sslServerSocket.setWantClientAuth(true);
             // sslServerSocket.setEnabledCipherSuites(new String[] { "TLS_AES_128_GCM_SHA256" });
             // sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.2", "TLSv1.3" });
 
@@ -550,11 +601,19 @@ public class GoogleTVConnectionManager {
                     Certificate[] cchain3 = session.getLocalCertificates();
                     this.shimClientLocalChain = cchain3;
 
+                    X509Certificate[] shimX509ClientChain = new X509Certificate[cchain2.length];
+
                     if (cchain2 != null) {
                         for (int i = 0; i < cchain2.length; i++) {
                             logger.trace("Connection from: {}",
                                     ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                            shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
                         }
+                    }
+
+                    if (this.config.mode.equals(PIN_MODE)) {
+                        this.shimX509ClientChain = shimX509ClientChain;
+                        connectionManager.setShimX509ClientChain(shimX509ClientChain);
                     }
 
                     if (cchain3 != null) {
