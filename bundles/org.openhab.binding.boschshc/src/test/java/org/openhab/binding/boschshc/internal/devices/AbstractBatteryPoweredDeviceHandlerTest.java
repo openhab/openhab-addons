@@ -56,7 +56,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testProcessUpdate_BatteryLevel_LowBattery() {
+    public void testProcessUpdateBatteryLevelLowBattery() {
         JsonElement deviceServiceData = JsonParser.parseString("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
                 + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
                 + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\",\n"
@@ -70,7 +70,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testProcessUpdate_BatteryLevel_CriticalLow() {
+    public void testProcessUpdateBatteryLevelCriticalLow() {
         JsonElement deviceServiceData = JsonParser.parseString("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
                 + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
                 + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\",\n"
@@ -84,7 +84,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testProcessUpdate_BatteryLevel_CriticallyLowBattery() {
+    public void testProcessUpdateBatteryLevelCriticallyLowBattery() {
         JsonElement deviceServiceData = JsonParser.parseString("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
                 + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
                 + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\",\n"
@@ -98,7 +98,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testProcessUpdate_BatteryLevel_OK() {
+    public void testProcessUpdateBatteryLevelOK() {
         JsonElement deviceServiceData = JsonParser.parseString("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
                 + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
                 + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\" }");
@@ -111,7 +111,7 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testProcessUpdate_BatteryLevel_NotAvailable() {
+    public void testProcessUpdateBatteryLevelNotAvailable() {
         JsonElement deviceServiceData = JsonParser.parseString("{ \n" + "    \"@type\":\"DeviceServiceData\",\n"
                 + "    \"path\":\"/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel\",\n"
                 + "    \"id\":\"BatteryLevel\",\n" + "    \"deviceId\":\"hdm:ZigBee:000d6f0004b93361\",\n"
@@ -125,14 +125,14 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
     }
 
     @Test
-    public void testHandleCommand_RefreshBatteryLevelChannel() {
+    public void testHandleCommandRefreshBatteryLevelChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL),
                 new DecimalType(100));
     }
 
     @Test
-    public void testHandleCommand_RefreshLowBatteryChannel() {
+    public void testHandleCommandRefreshLowBatteryChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), OnOffType.OFF);
     }

@@ -55,7 +55,7 @@ public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandl
     }
 
     @Test
-    public void testUpdateChannels_TemperatureLevelService() {
+    public void testUpdateChannelsTemperatureLevelService() {
         JsonElement jsonObject = JsonParser.parseString(
                 "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
         getFixture().processUpdate("TemperatureLevel", jsonObject);
@@ -65,7 +65,7 @@ public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandl
     }
 
     @Test
-    public void testUpdateChannels_HumidityLevelService() {
+    public void testUpdateChannelsHumidityLevelService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"humidityLevelState\",\n" + "   \"humidity\": 42.5\n" + " }");
         getFixture().processUpdate("HumidityLevel", jsonObject);

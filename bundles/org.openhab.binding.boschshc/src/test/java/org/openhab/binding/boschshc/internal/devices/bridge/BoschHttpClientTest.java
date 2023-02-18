@@ -105,7 +105,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void isOnline_ErrorResponse() throws InterruptedException, IllegalArgumentException, IllegalAccessException,
+    void isOnlineErrorResponse() throws InterruptedException, IllegalArgumentException, IllegalAccessException,
             TimeoutException, ExecutionException {
         BoschHttpClient mockedHttpClient = mock(BoschHttpClient.class);
         when(mockedHttpClient.isOnline()).thenCallRealMethod();
@@ -128,7 +128,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void isOnline_MockedResponse() throws InterruptedException, TimeoutException, ExecutionException,
+    void isOnlineMockedResponse() throws InterruptedException, TimeoutException, ExecutionException,
             IllegalArgumentException, IllegalAccessException {
         BoschHttpClient mockedHttpClient = mock(BoschHttpClient.class);
         when(mockedHttpClient.isOnline()).thenCallRealMethod();
@@ -187,7 +187,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void sendRequest_ResponseError()
+    void sendRequestResponseError()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Request request = mock(Request.class);
         ContentResponse response = mock(ContentResponse.class);
@@ -199,7 +199,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void sendRequest_ResponseError_WithErrorHandler()
+    void sendRequestResponseErrorWithErrorHandler()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Request request = mock(Request.class);
         ContentResponse response = mock(ContentResponse.class);
@@ -216,7 +216,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void sendRequest_EmptyResponse()
+    void sendRequestEmptyResponse()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Request request = mock(Request.class);
         ContentResponse response = mock(ContentResponse.class);
@@ -230,7 +230,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void sendRequest_InvalidResponse()
+    void sendRequestInvalidResponse()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Request request = mock(Request.class);
         ContentResponse response = mock(ContentResponse.class);
@@ -248,7 +248,7 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void sendRequest_InvalidSyntaxInResponse()
+    void sendRequestInvalidSyntaxInResponse()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Request request = mock(Request.class);
         ContentResponse response = mock(ContentResponse.class);

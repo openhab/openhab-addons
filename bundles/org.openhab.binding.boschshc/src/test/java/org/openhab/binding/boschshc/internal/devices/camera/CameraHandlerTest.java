@@ -66,9 +66,8 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testHandleCommand_PrivacyMode()
+    public void testHandleCommandPrivacyMode()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("PrivacyMode"),
@@ -85,9 +84,8 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testHandleCommand_CameraNotification()
+    public void testHandleCommandCameraNotification()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION),
                 OnOffType.ON);
@@ -106,7 +104,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testUpdateChannels_PrivacyModeState() {
+    public void testUpdateChannelsPrivacyModeState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"privacyModeState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("PrivacyMode", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -119,7 +117,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testUpdateChannels_CameraNotificationState() {
+    public void testUpdateChannelsCameraNotificationState() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\"@type\":\"cameraNotificationState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("CameraNotification", jsonObject);

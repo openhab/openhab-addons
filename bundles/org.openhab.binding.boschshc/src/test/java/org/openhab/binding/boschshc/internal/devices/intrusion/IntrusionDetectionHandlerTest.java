@@ -56,7 +56,7 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testHandleCommand_ArmAction() throws InterruptedException, TimeoutException, ExecutionException {
+    public void testHandleCommandArmAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARM_ACTION),
                 new StringType("0"));
         verify(getBridgeHandler()).postAction(eq("intrusion/actions/arm"), armActionRequestCaptor.capture());
@@ -65,21 +65,21 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testHandleCommand_DisarmAction() throws InterruptedException, TimeoutException, ExecutionException {
+    public void testHandleCommandDisarmAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISARM_ACTION),
                 OnOffType.ON);
         verify(getBridgeHandler()).postAction("intrusion/actions/disarm");
     }
 
     @Test
-    public void testHandleCommand_MuteAction() throws InterruptedException, TimeoutException, ExecutionException {
+    public void testHandleCommandMuteAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_MUTE_ACTION),
                 OnOffType.ON);
         verify(getBridgeHandler()).postAction("intrusion/actions/mute");
     }
 
     @Test
-    public void testUpdateChannels_IntrusionDetectionSystemState() {
+    public void testUpdateChannelsIntrusionDetectionSystemState() {
         JsonElement jsonObject = JsonParser.parseString("{\n" + "     \"@type\": \"systemState\",\n"
                 + "     \"systemAvailability\": {\n" + "         \"@type\": \"systemAvailabilityState\",\n"
                 + "         \"available\": true,\n" + "         \"deleted\": false\n" + "     },\n"
@@ -108,7 +108,7 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testUpdateChannels_IntrusionDetectionControlState() {
+    public void testUpdateChannelsIntrusionDetectionControlState() {
         JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"intrusionDetectionControlState\",\n"
                 + "   \"activeProfile\": \"0\",\n" + "   \"alarmActivationDelayTime\": 30,\n" + "   \"actuators\": [\n"
                 + "     {\n" + "       \"readonly\": false,\n" + "       \"active\": true,\n"
@@ -125,7 +125,7 @@ public class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<I
     }
 
     @Test
-    public void testUpdateChannels_SurveillanceAlarmState() {
+    public void testUpdateChannelsSurveillanceAlarmState() {
         JsonElement jsonObject = JsonParser.parseString("{\n" + "   \"@type\": \"surveillanceAlarmState\",\n"
                 + "   \"incidents\": [\n" + "     {\n" + "       \"triggerName\": \"Motion Detector\",\n"
                 + "       \"locationId\": \"hz_5\",\n" + "       \"location\": \"Living Room\",\n"

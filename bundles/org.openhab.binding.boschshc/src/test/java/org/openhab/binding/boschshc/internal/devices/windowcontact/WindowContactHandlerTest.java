@@ -50,7 +50,7 @@ public class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandle
     }
 
     @Test
-    public void testUpdateChannels_ShutterContactService() {
+    public void testUpdateChannelsShutterContactService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"shutterContactState\",\n" + "   \"value\": \"OPEN\"\n" + " }");
         getFixture().processUpdate("ShutterContact", jsonObject);

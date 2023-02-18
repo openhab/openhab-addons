@@ -64,9 +64,8 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testHandleCommand_RoomClimateControlService()
+    public void testHandleCommandRoomClimateControlService()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         QuantityType<Temperature> temperature = new QuantityType<>(21.5, SIUnits.CELSIUS);
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE),
@@ -78,7 +77,7 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testUpdateChannels_TemperatureLevelService() {
+    public void testUpdateChannelsTemperatureLevelService() {
         JsonElement jsonObject = JsonParser.parseString(
                 "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
         getFixture().processUpdate("TemperatureLevel", jsonObject);
@@ -88,7 +87,7 @@ public class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest
     }
 
     @Test
-    public void testUpdateChannels_RoomClimateControlService() {
+    public void testUpdateChannelsRoomClimateControlService() {
         JsonElement jsonObject = JsonParser.parseString(
                 "{\n" + "   \"@type\": \"climateControlState\",\n" + "   \"setpointTemperature\": 21.5\n" + " }");
         getFixture().processUpdate("RoomClimateControl", jsonObject);

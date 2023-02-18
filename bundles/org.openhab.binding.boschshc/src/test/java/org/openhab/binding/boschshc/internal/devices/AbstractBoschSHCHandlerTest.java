@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,25 +44,26 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @param <T> type of the handler to be tested
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     private T fixture;
 
-    @Mock
-    private Thing thing;
+    private @Mock @NonNullByDefault({}) Thing thing;
 
-    @Mock
-    private Bridge bridge;
+    private @Mock @NonNullByDefault({}) Bridge bridge;
 
-    @Mock
-    protected BridgeHandler bridgeHandler;
+    protected @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
 
-    @Mock
-    private ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+
+    protected AbstractBoschSHCHandlerTest() {
+        this.fixture = createFixture();
+    }
 
     @BeforeEach
-    public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         fixture = createFixture();
         lenient().when(thing.getUID()).thenReturn(getThingUID());
         when(thing.getBridgeUID()).thenReturn(new ThingUID("boschshc", "shc", "myBridgeUID"));
@@ -97,11 +99,11 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
         return thing;
     }
 
-    public BridgeHandler getBridgeHandler() {
+    protected BridgeHandler getBridgeHandler() {
         return bridgeHandler;
     }
 
-    public ThingHandlerCallback getCallback() {
+    protected ThingHandlerCallback getCallback() {
         return callback;
     }
 

@@ -247,7 +247,7 @@ public class LongPollingTest {
     }
 
     @Test
-    void start_subscriptionFailure()
+    void startSubscriptionFailure()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any()))
                 .thenThrow(new ExecutionException("Subscription failed.", null));
@@ -257,7 +257,7 @@ public class LongPollingTest {
     }
 
     @Test
-    void start_longPollFailure() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startLongPollFailure() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
@@ -290,7 +290,7 @@ public class LongPollingTest {
     }
 
     @Test
-    void start_subscriptionInvalid()
+    void startSubscriptionInvalid()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 

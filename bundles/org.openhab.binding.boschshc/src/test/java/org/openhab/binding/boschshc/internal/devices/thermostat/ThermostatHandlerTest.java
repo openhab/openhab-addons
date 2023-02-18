@@ -73,7 +73,6 @@ public class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTe
     @Test
     public void testHandleCommand()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("Thermostat"), childLockServiceStateCaptor.capture());
@@ -82,7 +81,7 @@ public class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTe
     }
 
     @Test
-    public void testHandleCommand_UnknownCommand() {
+    public void testHandleCommandUnknownCommand() {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK),
                 new DecimalType(42));
         ThingStatusInfo expectedThingStatusInfo = ThingStatusInfoBuilder
@@ -94,7 +93,7 @@ public class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTe
     }
 
     @Test
-    public void testUpdateChannels_TemperatureLevelService() {
+    public void testUpdateChannelsTemperatureLevelService() {
         JsonElement jsonObject = JsonParser.parseString(
                 "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
         getFixture().processUpdate("TemperatureLevel", jsonObject);
@@ -104,7 +103,7 @@ public class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTe
     }
 
     @Test
-    public void testUpdateChannels_ValveTappetService() {
+    public void testUpdateChannelsValveTappetService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"valveTappetState\",\n" + "   \"position\": 42\n" + " }");
         getFixture().processUpdate("ValveTappet", jsonObject);
@@ -114,7 +113,7 @@ public class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTe
     }
 
     @Test
-    public void testUpdateChannels_ChildLockService() {
+    public void testUpdateChannelsChildLockService() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "   \"@type\": \"childLockState\",\n" + "   \"childLock\": \"ON\"\n" + " }");
         getFixture().processUpdate("Thermostat", jsonObject);

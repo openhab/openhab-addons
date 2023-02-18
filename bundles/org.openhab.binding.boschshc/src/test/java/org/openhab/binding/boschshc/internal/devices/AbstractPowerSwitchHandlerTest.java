@@ -74,9 +74,8 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testHandleCommand_PowerSwitchChannel()
+    public void testHandleCommandPowerSwitchChannel()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("PowerSwitch"), serviceStateCaptor.capture());
         PowerSwitchServiceState state = serviceStateCaptor.getValue();
@@ -90,7 +89,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testUpdateChannel_PowerSwitchState() {
+    public void testUpdateChannelPowerSwitchState() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
         getFixture().processUpdate("PowerSwitch", jsonObject);
@@ -103,7 +102,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testUpdateChannel_PowerMeterServiceState() {
+    public void testUpdateChannelPowerMeterServiceState() {
         JsonElement jsonObject = JsonParser.parseString("{\n" + "  \"@type\": \"powerMeterState\",\n"
                 + "  \"powerConsumption\": \"23\",\n" + "  \"energyConsumption\": 42\n" + "}");
         getFixture().processUpdate("PowerMeter", jsonObject);
@@ -120,13 +119,13 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testHandleCommand_RefreshPowerSwitchChannel() {
+    public void testHandleCommandRefreshPowerSwitchChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
     }
 
     @Test
-    public void testHandleCommand_RefreshPowerConsumptionChannel() {
+    public void testHandleCommandRefreshPowerConsumptionChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
@@ -134,7 +133,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testHandleCommand_RefreshEnergyConsumptionChannel() {
+    public void testHandleCommandRefreshEnergyConsumptionChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),

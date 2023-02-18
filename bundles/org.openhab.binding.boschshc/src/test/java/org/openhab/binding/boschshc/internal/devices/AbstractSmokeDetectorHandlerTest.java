@@ -55,7 +55,6 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     @Test
     public void testHandleCommand()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         // valid commands with valid thing & channel
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
                 new StringType(SmokeDetectorCheckState.SMOKE_TEST_REQUESTED.toString()));
@@ -87,9 +86,8 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testHandleCommand_PlayPauseType()
+    public void testHandleCommandPlayPauseType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
                 PlayPauseType.PLAY);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("SmokeDetectorCheck"),
@@ -99,7 +97,7 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testHandleCommand_UnknownCommand()
+    public void testHandleCommandUnknownCommand()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SMOKE_CHECK),
                 OnOffType.ON);
@@ -112,7 +110,7 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testUpdateChannel_SmokeDetectorCheckServiceState_none() {
+    public void testUpdateChannelSmokeDetectorCheckServiceStateNone() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"smokeDetectorCheckState\",\"value\":NONE}");
         getFixture().processUpdate("SmokeDetectorCheck", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -121,7 +119,7 @@ public abstract class AbstractSmokeDetectorHandlerTest<T extends AbstractSmokeDe
     }
 
     @Test
-    public void testUpdateChannel_SmokeDetectorCheckServiceState_Requests() {
+    public void testUpdateChannelSmokeDetectorCheckServiceStateRequests() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\"@type\":\"smokeDetectorCheckState\",\"value\":SMOKE_TEST_REQUESTED}");
         getFixture().processUpdate("SmokeDetectorCheck", jsonObject);

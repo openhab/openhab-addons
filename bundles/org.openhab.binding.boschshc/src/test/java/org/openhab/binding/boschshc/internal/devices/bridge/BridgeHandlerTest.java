@@ -91,7 +91,7 @@ class BridgeHandlerTest {
         fixture.setCallback(thingHandlerCallback);
 
         Configuration bridgeConfiguration = new Configuration();
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("ipAddress", "localhost");
         properties.put("password", "test");
         bridgeConfiguration.setProperties(properties);
@@ -127,18 +127,18 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void initialAccess_HttpClientOffline() {
+    void initialAccessHttpClientOffline() {
         fixture.initialAccess(httpClient);
     }
 
     @Test
-    void initialAccess_HttpClientOnline() throws InterruptedException {
+    void initialAccessHttpClientOnline() throws InterruptedException {
         when(httpClient.isOnline()).thenReturn(true);
         fixture.initialAccess(httpClient);
     }
 
     @Test
-    void initialAccess_AccessPossible()
+    void initialAccessAccessPossible()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.isOnline()).thenReturn(true);
         when(httpClient.isAccessPossible()).thenReturn(true);
@@ -253,7 +253,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void getDeviceInfo_errorCases()
+    void getDeviceInfoErrorCases()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
@@ -318,7 +318,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void getServiceData_error() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void getServiceDataError() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
         when(httpClient.getServiceUrl(anyString(), anyString())).thenCallRealMethod();
@@ -342,7 +342,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void getServiceData_error_noRestExceptionResponse()
+    void getServiceDataErrorNoRestExceptionResponse()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
