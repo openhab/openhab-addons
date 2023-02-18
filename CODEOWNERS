@@ -242,7 +242,7 @@
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.omnilink/ @ecdye
 /bundles/org.openhab.binding.onebusaway/ @sdwilsh
-/bundles/org.openhab.binding.onewire/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /bundles/org.openhab.binding.opengarage/ @psmedley
@@ -308,7 +308,7 @@
 /bundles/org.openhab.binding.smhi/ @pacive
 /bundles/org.openhab.binding.smsmodem/ @dalgwen
 /bundles/org.openhab.binding.sncf/ @clinique
-/bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.snmp/ @J-N-K
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
 /bundles/org.openhab.binding.solarmax/ @jamietownsend

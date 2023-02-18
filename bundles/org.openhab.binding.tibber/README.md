@@ -44,6 +44,7 @@ Tibber Pulse (optional):
 | Last Meter Consumption  | Last Recorded Meter Consumption          | True      |
 | Accumulated Consumption | Accumulated Consumption since Midnight   | True      |
 | Accumulated Cost        | Accumulated Cost since Midnight          | True      |
+| Accumulated Reward      | Accumulated Reward since Midnight        | True      |
 | Currency                | Currency of Cost                         | True      |
 | Min Power               | Min Power Consumption since Midnight     | True      |
 | Average Power           | Average Power Consumption since Midnight | True      |
@@ -69,7 +70,7 @@ The following input is required for initialization:
 Note: Tibber token is retrieved from your Tibber account:
 [Tibber Account](https://developer.tibber.com/settings/accesstoken)
 
-Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibber.com/explorer): 
+Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.tibber.com/explorer): 
 
 * Sign in (Tibber user account) and "load" personal token.
 * Copy query from below and paste into the Tibber API Explorer, and run query. 
@@ -99,7 +100,7 @@ Retrieve personal token and HomeId from description above, and initialize/start 
 
 Tibber API will be auto discovered if provided input is correct.
 
-## Tomorrow and Today prices
+## Tomorrow and Today Prices
 
 Example of tomorrow and today prices data structure - an array of tuples:
 
@@ -231,6 +232,7 @@ Number:Power               TibberAPILivePower                    "Live Power Con
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
 Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
 Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
+Number:Dimensionless       TibberAPILiveAccumulatedReward        "Accumulated Reward [%.2f NOK]"             {channel="tibber:tibberapi:7cfae492:live_accumulatedReward"}
 String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
 Number:Power               TibberAPILiveMinPower                 "Min Power Consumption [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_minPower"}
 Number:Power               TibberAPILiveAveragePower             "Average Power Consumption [%.0f W]"        {channel="tibber:tibberapi:7cfae492:live_averagePower"}

@@ -65,6 +65,8 @@ public class ComponentFactory {
                 return new Fan(componentConfiguration);
             case "climate":
                 return new Climate(componentConfiguration);
+            case "device_automation":
+                return new DeviceTrigger(componentConfiguration);
             case "light":
                 return Light.create(componentConfiguration);
             case "lock":
