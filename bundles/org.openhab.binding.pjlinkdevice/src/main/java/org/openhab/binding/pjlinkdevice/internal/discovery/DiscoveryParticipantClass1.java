@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
+import org.openhab.binding.pjlinkdevice.internal.util.IPUtils;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.osgi.service.component.annotations.Component;
@@ -57,9 +57,9 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
         if (i.getNetworkPrefixLength() < 24) {
             return;
         }
-
-        SubnetUtils utils = new SubnetUtils(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
-        for (String addressToScan : utils.getInfo().getAllAddresses()) {
+        String[] addresses = IPUtils
+                .getAllIPv4Addresses(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
+        for (String addressToScan : addresses) {
             try {
                 logger.debug("Add address to scan: {}", addressToScan);
                 addressesToScan.add(InetAddress.getByName(addressToScan));
