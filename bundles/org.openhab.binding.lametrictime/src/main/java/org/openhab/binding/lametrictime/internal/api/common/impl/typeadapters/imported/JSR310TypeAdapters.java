@@ -29,6 +29,8 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.GsonBuilder;
 
 /**
@@ -36,6 +38,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class JSR310TypeAdapters {
 
     private JSR310TypeAdapters() {

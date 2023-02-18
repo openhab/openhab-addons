@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.lametrictime.internal.api.impl;
 
-import org.openhab.binding.lametrictime.internal.api.model.Icon;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lametrictime.internal.api.dto.Icon;
 
 /**
  * Implementation class for key icons.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class KeyIcon implements Icon {
     private final String key;
 

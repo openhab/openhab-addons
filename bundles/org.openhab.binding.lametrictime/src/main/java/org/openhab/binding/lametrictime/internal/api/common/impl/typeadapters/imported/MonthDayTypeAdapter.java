@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.MonthDay;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link MonthDay} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class MonthDayTypeAdapter extends TemporalTypeAdapter<MonthDay> {
 
     public MonthDayTypeAdapter() {

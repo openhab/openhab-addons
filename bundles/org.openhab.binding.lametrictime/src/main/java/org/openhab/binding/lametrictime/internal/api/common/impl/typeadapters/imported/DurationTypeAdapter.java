@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link Duration} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class DurationTypeAdapter extends TemporalTypeAdapter<Duration> {
 
     public DurationTypeAdapter() {

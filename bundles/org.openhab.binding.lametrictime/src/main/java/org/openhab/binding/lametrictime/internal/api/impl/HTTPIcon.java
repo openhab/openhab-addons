@@ -18,11 +18,14 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Implementation class for http icons.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class HTTPIcon extends AbstractDataIcon {
     private final URI uri;
 

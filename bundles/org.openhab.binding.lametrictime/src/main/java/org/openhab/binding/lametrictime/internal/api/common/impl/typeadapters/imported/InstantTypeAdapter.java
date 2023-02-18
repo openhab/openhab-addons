@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link Instant} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class InstantTypeAdapter extends DateTimeTypeAdapter<Instant> {
 
     public InstantTypeAdapter() {

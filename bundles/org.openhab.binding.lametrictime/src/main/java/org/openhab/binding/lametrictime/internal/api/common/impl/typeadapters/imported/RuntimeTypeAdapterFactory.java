@@ -26,6 +26,9 @@ import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -163,6 +166,7 @@ import com.google.gson.stream.MalformedJsonException;
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;
@@ -224,7 +228,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     }
 
     @Override
-    public <R> TypeAdapter<R> create(Gson gson, TypeToken<R> type) {
+    public @Nullable <R> TypeAdapter<R> create(@Nullable Gson gson, @Nullable TypeToken<R> type) {
         if (type.getRawType() != baseType) {
             return null;
         }
@@ -239,7 +243,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
         return new TypeAdapter<R>() {
             @Override
-            public R read(JsonReader in) throws IOException {
+            public @Nullable R read(JsonReader in) throws IOException {
                 JsonElement jsonElement = RuntimeTypeAdapterFactory.parse(in);
                 JsonElement labelJsonElement = jsonElement.getAsJsonObject().remove(typeFieldName);
                 if (labelJsonElement == null) {
@@ -257,7 +261,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
             }
 
             @Override
-            public void write(JsonWriter out, R value) throws IOException {
+            public void write(JsonWriter out, @Nullable R value) throws IOException {
                 Class<?> srcType = value.getClass();
                 String label = subtypeToLabel.get(srcType);
                 @SuppressWarnings("unchecked") // registration requires that subtype extends T
@@ -284,7 +288,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     /**
      * Takes a reader in any state and returns the next value as a JsonElement.
      */
-    private static JsonElement parse(JsonReader reader) throws JsonParseException {
+    private static @Nullable JsonElement parse(JsonReader reader) throws JsonParseException {
         boolean isEmpty = true;
         try {
             reader.peek();
@@ -318,7 +322,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     private static final TypeAdapter<JsonElement> JSON_ELEMENT = new TypeAdapter<JsonElement>() {
         @Override
-        public JsonElement read(JsonReader in) throws IOException {
+        public @Nullable JsonElement read(@Nullable JsonReader in) throws IOException {
             switch (in.peek()) {
                 case STRING:
                     return new JsonPrimitive(in.nextString());
@@ -356,7 +360,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         }
 
         @Override
-        public void write(JsonWriter out, JsonElement value) throws IOException {
+        public void write(JsonWriter out, @Nullable JsonElement value) throws IOException {
             if (value == null || value.isJsonNull()) {
                 out.nullValue();
             } else if (value.isJsonPrimitive()) {

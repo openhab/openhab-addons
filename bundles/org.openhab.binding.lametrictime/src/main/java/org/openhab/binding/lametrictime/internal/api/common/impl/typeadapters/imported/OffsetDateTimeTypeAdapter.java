@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.OffsetDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link OffsetDateTime} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class OffsetDateTimeTypeAdapter extends DateTimeTypeAdapter<OffsetDateTime> {
 
     public OffsetDateTimeTypeAdapter() {

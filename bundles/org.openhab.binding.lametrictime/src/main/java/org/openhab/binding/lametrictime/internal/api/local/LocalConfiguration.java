@@ -15,13 +15,20 @@ package org.openhab.binding.lametrictime.internal.api.local;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for local access.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LocalConfiguration {
+    @Nullable
     private String host;
+
+    @Nullable
     private String apiKey;
 
     private boolean secure = true;
@@ -42,7 +49,7 @@ public class LocalConfiguration {
     private String logLevel = "INFO";
     private int logMax = 104857600; // 100kb
 
-    public String getHost() {
+    public @Nullable String getHost() {
         return host;
     }
 
@@ -50,12 +57,12 @@ public class LocalConfiguration {
         this.host = host;
     }
 
-    public LocalConfiguration withHost(String host) {
+    public LocalConfiguration withHost(@Nullable String host) {
         this.host = host;
         return this;
     }
 
-    public String getApiKey() {
+    public @Nullable String getApiKey() {
         return apiKey;
     }
 
@@ -63,7 +70,7 @@ public class LocalConfiguration {
         this.apiKey = apiKey;
     }
 
-    public LocalConfiguration withApiKey(String apiKey) {
+    public LocalConfiguration withApiKey(@Nullable String apiKey) {
         this.apiKey = apiKey;
         return this;
     }
@@ -230,7 +237,7 @@ public class LocalConfiguration {
         try {
             return new URI(scheme, null, host, port, basePath, null, null);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Invalid configuration", e);
+            throw new IllegalStateException("Invalid configuration", e);
         }
     }
 }

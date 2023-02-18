@@ -18,11 +18,15 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Abstract type adapter for jsr310 date-time types.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 abstract class DateTimeTypeAdapter<T> extends TemporalTypeAdapter<T> {
 
     DateTimeTypeAdapter(Function<String, T> parseFunction) {
@@ -30,7 +34,7 @@ abstract class DateTimeTypeAdapter<T> extends TemporalTypeAdapter<T> {
     }
 
     @Override
-    public String preProcess(String in) {
+    public String preProcess(@Nullable String in) {
         if (in.endsWith("+0000")) {
             return in.substring(0, in.length() - 5) + "Z";
         }

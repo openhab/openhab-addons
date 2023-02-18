@@ -14,11 +14,14 @@ package org.openhab.binding.lametrictime.internal.api.cloud;
 
 import java.net.URI;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Cloud configuration class for LaMetric Time.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class CloudConfiguration {
     private URI baseUri = URI.create("https://developer.lametric.com/api/v2");
 

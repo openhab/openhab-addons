@@ -14,8 +14,10 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.CHANNEL_APP_CONTROL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
-import org.openhab.binding.lametrictime.internal.api.model.CoreApps;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
     private static final String PACKAGE_NAME = "com.lametric.radio";
 
@@ -107,7 +110,7 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
     }
 
     @Override
-    protected String getPackageName(LaMetricTimeAppConfiguration config) {
+    protected @Nullable String getPackageName(LaMetricTimeAppConfiguration config) {
         return PACKAGE_NAME;
     }
 }

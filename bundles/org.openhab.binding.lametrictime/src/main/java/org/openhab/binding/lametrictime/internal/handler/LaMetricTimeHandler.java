@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
@@ -32,17 +34,17 @@ import org.openhab.binding.lametrictime.internal.StateDescriptionOptionsProvider
 import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.openhab.binding.lametrictime.internal.api.Configuration;
 import org.openhab.binding.lametrictime.internal.api.LaMetricTime;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.BrightnessMode;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActivationException;
 import org.openhab.binding.lametrictime.internal.api.local.LaMetricTimeLocal;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationCreationException;
 import org.openhab.binding.lametrictime.internal.api.local.UpdateException;
-import org.openhab.binding.lametrictime.internal.api.local.model.Application;
-import org.openhab.binding.lametrictime.internal.api.local.model.Audio;
-import org.openhab.binding.lametrictime.internal.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.internal.api.local.model.Device;
-import org.openhab.binding.lametrictime.internal.api.local.model.Display;
-import org.openhab.binding.lametrictime.internal.api.local.model.Widget;
-import org.openhab.binding.lametrictime.internal.api.model.enums.BrightnessMode;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Device;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
@@ -68,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregory Moyer - Initial contribution
  * @author Kai Kreuzer - Improved status handling, introduced refresh job and app state update
  */
+@NonNullByDefault
 public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private static final long CONNECTION_CHECK_INTERVAL = 60;
@@ -78,8 +81,10 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private final ClientBuilder clientBuilder;
 
+    @NonNullByDefault({})
     private LaMetricTime clock;
 
+    @Nullable
     private ScheduledFuture<?> connectionJob;
 
     public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider,
@@ -87,10 +92,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         super(bridge);
         this.clientBuilder = clientBuilder;
         this.stateDescriptionProvider = stateDescriptionProvider;
-
-        if (stateDescriptionProvider == null) {
-            logger.warn("State description provider is null");
-        }
     }
 
     @Override

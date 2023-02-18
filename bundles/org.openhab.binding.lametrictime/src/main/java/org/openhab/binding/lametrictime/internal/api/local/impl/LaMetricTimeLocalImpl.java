@@ -23,7 +23,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -35,6 +34,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.GsonProvider;
 import org.openhab.binding.lametrictime.internal.api.authentication.HttpAuthenticationFeature;
 import org.openhab.binding.lametrictime.internal.api.cloud.impl.LaMetricTimeCloudImpl;
@@ -48,21 +49,23 @@ import org.openhab.binding.lametrictime.internal.api.local.LocalConfiguration;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationCreationException;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationNotFoundException;
 import org.openhab.binding.lametrictime.internal.api.local.UpdateException;
-import org.openhab.binding.lametrictime.internal.api.local.model.Api;
-import org.openhab.binding.lametrictime.internal.api.local.model.Application;
-import org.openhab.binding.lametrictime.internal.api.local.model.Audio;
-import org.openhab.binding.lametrictime.internal.api.local.model.AudioUpdateResult;
-import org.openhab.binding.lametrictime.internal.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.internal.api.local.model.BluetoothUpdateResult;
-import org.openhab.binding.lametrictime.internal.api.local.model.Device;
-import org.openhab.binding.lametrictime.internal.api.local.model.Display;
-import org.openhab.binding.lametrictime.internal.api.local.model.DisplayUpdateResult;
-import org.openhab.binding.lametrictime.internal.api.local.model.Failure;
-import org.openhab.binding.lametrictime.internal.api.local.model.Notification;
-import org.openhab.binding.lametrictime.internal.api.local.model.NotificationResult;
-import org.openhab.binding.lametrictime.internal.api.local.model.UpdateAction;
-import org.openhab.binding.lametrictime.internal.api.local.model.WidgetUpdates;
-import org.openhab.binding.lametrictime.internal.api.local.model.Wifi;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Api;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.AudioUpdateResult;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.BluetoothUpdateResult;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Device;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.DisplayUpdateResult;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Failure;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Notification;
+import org.openhab.binding.lametrictime.internal.api.local.dto.NotificationResult;
+import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
+import org.openhab.binding.lametrictime.internal.api.local.dto.WidgetUpdates;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Wifi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -71,11 +74,15 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTimeLocal {
+    private final Logger logger = LoggerFactory.getLogger(LaMetricTimeLocalImpl.class);
+
     private static final String HEADER_ACCESS_TOKEN = "X-Access-Token";
 
     private final LocalConfiguration config;
 
+    @Nullable
     private volatile Api api;
 
     public LaMetricTimeLocalImpl(LocalConfiguration config) {
@@ -89,22 +96,21 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
 
     @Override
     public Api getApi() {
-        if (api == null) {
+        Api localApi = api;
+        if (localApi == null) {
             synchronized (this) {
-                if (api == null) {
-                    api = getClient().target(config.getBaseUri()).request(MediaType.APPLICATION_JSON_TYPE)
-                            .get(Api.class);
+                localApi = getClient().target(config.getBaseUri()).request(MediaType.APPLICATION_JSON_TYPE)
+                        .get(Api.class);
+                // remove support for v2.0.0 which has several errors in returned endpoints
+                if ("2.0.0".equals(localApi.getApiVersion())) {
+                    throw new IllegalStateException(
+                            "API version 2.0.0 detected, but 2.1.0 or greater is required. Please upgrade LaMetric Time firmware to version 1.7.7 or later. See http://lametric.com/firmware for more information.");
                 }
+                return localApi;
             }
+        } else {
+            return localApi;
         }
-
-        // remove support for v2.0.0 which has several errors in returned endpoints
-        if ("2.0.0".equals(api.getApiVersion())) {
-            throw new IllegalStateException(
-                    "API version 2.0.0 detected, but 2.1.0 or greater is required. Please upgrade LaMetric Time firmware to version 1.7.7 or later. See http://lametric.com/firmware for more information.");
-        }
-
-        return api;
     }
 
     @Override
@@ -114,7 +120,7 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
     }
 
     @Override
-    public String createNotification(Notification notification) throws NotificationCreationException {
+    public String createNotification(@Nullable Notification notification) throws NotificationCreationException {
         Response response = getClient().target(getApi().getEndpoints().getNotificationsUrl())
                 .request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(notification));
 
@@ -143,7 +149,7 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
     }
 
     @Override
-    public Notification getCurrentNotification() {
+    public @Nullable Notification getCurrentNotification() {
         Notification notification = getClient().target(getApi().getEndpoints().getCurrentNotificationUrl())
                 .request(MediaType.APPLICATION_JSON_TYPE).get(Notification.class);
 
@@ -271,15 +277,20 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
     }
 
     @Override
-    public Application getApplication(String packageName) throws ApplicationNotFoundException {
-        Response response = getClient().target(getApi().getEndpoints().getAppsGetUrl().replace("{:id}", packageName))
-                .request(MediaType.APPLICATION_JSON_TYPE).get();
+    public @Nullable Application getApplication(@Nullable String packageName) throws ApplicationNotFoundException {
+        if (packageName != null) {
+            Response response = getClient()
+                    .target(getApi().getEndpoints().getAppsGetUrl().replace("{:id}", packageName))
+                    .request(MediaType.APPLICATION_JSON_TYPE).get();
 
-        if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
-            throw new ApplicationNotFoundException(response.readEntity(Failure.class));
+            if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+                throw new ApplicationNotFoundException(response.readEntity(Failure.class));
+            }
+
+            return response.readEntity(Application.class);
+        } else {
+            return null;
         }
-
-        return response.readEntity(Application.class);
     }
 
     @Override
@@ -308,7 +319,8 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
     }
 
     @Override
-    public void doAction(String packageName, String widgetId, UpdateAction action) throws ApplicationActionException {
+    public void doAction(String packageName, String widgetId, @Nullable UpdateAction action)
+            throws ApplicationActionException {
         Response response = getClient().target(getApi().getEndpoints().getAppsActionUrl().replace("{:id}", packageName)
                 .replace("{:widget_id}", widgetId)).request(MediaType.APPLICATION_JSON_TYPE).post(Entity.json(action));
 
@@ -342,13 +354,13 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
                     SSLContext sslcontext = SSLContext.getInstance("TLS");
                     sslcontext.init(null, new TrustManager[] { new X509TrustManager() {
                         @Override
-                        public void checkClientTrusted(X509Certificate[] arg0, String arg1)
+                        public void checkClientTrusted(X509Certificate @Nullable [] arg0, @Nullable String arg1)
                                 throws CertificateException {
                             // noop
                         }
 
                         @Override
-                        public void checkServerTrusted(X509Certificate[] arg0, String arg1)
+                        public void checkServerTrusted(X509Certificate @Nullable [] arg0, @Nullable String arg1)
                                 throws CertificateException {
                             // noop
                         }
@@ -360,7 +372,7 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
                     } }, new java.security.SecureRandom());
                     builder.sslContext(sslcontext);
                 } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                    throw new RuntimeException("Failed to setup secure communication", e);
+                    logger.error("Failed to setup secure communication", e);
                 }
             }
 
@@ -381,8 +393,8 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
 
         // turn on logging if requested
         if (config.isLogging()) {
-            builder.register(
-                    new LoggingFilter(Logger.getLogger(LaMetricTimeCloudImpl.class.getName()), config.getLogMax()));
+            builder.register(new LoggingFilter(
+                    java.util.logging.Logger.getLogger(LaMetricTimeCloudImpl.class.getName()), config.getLogMax()));
         }
 
         // setup basic auth

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lametrictime.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.runner.RunWith;
 
 import com.googlecode.junittoolbox.SuiteClasses;
@@ -24,6 +25,7 @@ import com.googlecode.junittoolbox.WildcardPatternSuite;
  */
 @RunWith(WildcardPatternSuite.class)
 @SuiteClasses({ "**/*IT.class" })
+@NonNullByDefault
 public class AllIntegrationTestsSuite {
     // Execute all integration tests
 }

@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.lametrictime.internal.api.local;
 
-import org.openhab.binding.lametrictime.internal.api.local.model.Failure;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Failure;
 
 /**
  * Implementation class for application activation exceptions.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class ApplicationActivationException extends LaMetricTimeException {
     private static final long serialVersionUID = 1L;
 

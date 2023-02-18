@@ -14,14 +14,16 @@ package org.openhab.binding.lametrictime.internal.api.local;
 
 import java.util.List;
 
-import org.openhab.binding.lametrictime.internal.api.local.model.Error;
-import org.openhab.binding.lametrictime.internal.api.local.model.Failure;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Error;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Failure;
 
 /**
  * Parent class for LaMetricTime exceptions.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeException extends Exception {
     private static final long serialVersionUID = 1L;
 

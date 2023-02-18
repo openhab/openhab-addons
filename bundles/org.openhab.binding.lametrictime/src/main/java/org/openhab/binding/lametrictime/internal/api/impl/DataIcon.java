@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lametrictime.internal.api.impl;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Implementation class for data icons.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class DataIcon extends AbstractDataIcon {
     public DataIcon(String mimeType, byte[] data) {
         setType(mimeType);

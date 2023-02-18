@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link ZonedDateTime} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class ZonedDateTimeTypeAdapter extends DateTimeTypeAdapter<ZonedDateTime> {
 
     public ZonedDateTimeTypeAdapter() {

@@ -14,18 +14,24 @@ package org.openhab.binding.lametrictime.internal.api.impl;
 
 import java.util.Base64;
 
-import org.openhab.binding.lametrictime.internal.api.model.Icon;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lametrictime.internal.api.dto.Icon;
 
 /**
  * Implementation class for icons.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractDataIcon implements Icon {
+    @Nullable
     private volatile Object CONFIGURE_FLAG;
 
+    @Nullable
     private String type;
-    private byte[] data;
+
+    private byte @Nullable [] data;
 
     protected void configure() {
         if (CONFIGURE_FLAG == null) {
@@ -37,7 +43,7 @@ public abstract class AbstractDataIcon implements Icon {
         }
     }
 
-    protected String getType() {
+    protected @Nullable String getType() {
         configure();
         return type;
     }
@@ -46,7 +52,7 @@ public abstract class AbstractDataIcon implements Icon {
         this.type = type;
     }
 
-    protected byte[] getData() {
+    protected byte @Nullable [] getData() {
         configure();
         return data;
     }

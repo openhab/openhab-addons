@@ -14,8 +14,17 @@ package org.openhab.binding.lametrictime.internal.api;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.cloud.CloudConfiguration;
 import org.openhab.binding.lametrictime.internal.api.cloud.LaMetricTimeCloud;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreAction;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApplication;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.dto.Icon;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.BrightnessMode;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.Priority;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.Sound;
 import org.openhab.binding.lametrictime.internal.api.impl.LaMetricTimeImpl;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActivationException;
@@ -24,25 +33,19 @@ import org.openhab.binding.lametrictime.internal.api.local.LaMetricTimeLocal;
 import org.openhab.binding.lametrictime.internal.api.local.LocalConfiguration;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationCreationException;
 import org.openhab.binding.lametrictime.internal.api.local.UpdateException;
-import org.openhab.binding.lametrictime.internal.api.local.model.Application;
-import org.openhab.binding.lametrictime.internal.api.local.model.Audio;
-import org.openhab.binding.lametrictime.internal.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.internal.api.local.model.Display;
-import org.openhab.binding.lametrictime.internal.api.local.model.UpdateAction;
-import org.openhab.binding.lametrictime.internal.api.local.model.Widget;
-import org.openhab.binding.lametrictime.internal.api.model.CoreAction;
-import org.openhab.binding.lametrictime.internal.api.model.CoreApplication;
-import org.openhab.binding.lametrictime.internal.api.model.CoreApps;
-import org.openhab.binding.lametrictime.internal.api.model.Icon;
-import org.openhab.binding.lametrictime.internal.api.model.enums.BrightnessMode;
-import org.openhab.binding.lametrictime.internal.api.model.enums.Priority;
-import org.openhab.binding.lametrictime.internal.api.model.enums.Sound;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 
 /**
  * Interface for LaMetric Time devices.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public interface LaMetricTime {
     /**
      * Get the version identifier reported by the device.
@@ -134,7 +137,7 @@ public interface LaMetricTime {
      *
      * @return the clock app
      */
-    public Application getClock();
+    public @Nullable Application getClock();
 
     /**
      * Get the built-in countdown timer application. This application counts
@@ -143,7 +146,7 @@ public interface LaMetricTime {
      *
      * @return the countdown app
      */
-    public Application getCountdown();
+    public @Nullable Application getCountdown();
 
     /**
      * Get the built-in radio application. The radio can play streams from the
@@ -152,7 +155,7 @@ public interface LaMetricTime {
      *
      * @return the radio app
      */
-    public Application getRadio();
+    public @Nullable Application getRadio();
 
     /**
      * Get the built-in stopwatch application. The stopwatch counts time
@@ -160,7 +163,7 @@ public interface LaMetricTime {
      *
      * @return the stopwatch app
      */
-    public Application getStopwatch();
+    public @Nullable Application getStopwatch();
 
     /**
      * Get the built-in weather application. This application displays the
@@ -169,7 +172,7 @@ public interface LaMetricTime {
      *
      * @return the weather app
      */
-    public Application getWeather();
+    public @Nullable Application getWeather();
 
     /**
      * Get any of the built-in applications.
@@ -178,7 +181,7 @@ public interface LaMetricTime {
      *            the app to retrieve
      * @return the requested app
      */
-    public Application getApplication(CoreApplication coreApp);
+    public @Nullable Application getApplication(CoreApplication coreApp);
 
     /**
      * Get any application installed on the device.
@@ -189,7 +192,7 @@ public interface LaMetricTime {
      * @throws ApplicationNotFoundException
      *             if the requested app is not found on the device
      */
-    public Application getApplication(String name) throws ApplicationNotFoundException;
+    public @Nullable Application getApplication(@Nullable String name) throws ApplicationNotFoundException;
 
     /**
      * Display the given built-in application on the device.
@@ -261,7 +264,7 @@ public interface LaMetricTime {
      * @throws ApplicationActionException
      *             if the action cannot be performed
      */
-    public void doAction(Widget widget, CoreAction action) throws ApplicationActionException;
+    public void doAction(@Nullable Widget widget, CoreAction action) throws ApplicationActionException;
 
     /**
      * Perform the given action on the given widget. A widget is simply an

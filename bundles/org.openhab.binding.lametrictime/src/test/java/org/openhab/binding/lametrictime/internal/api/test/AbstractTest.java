@@ -17,11 +17,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * abstract test class.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractTest {
     protected File getTestDataFile(String name) {
         return getTestDataPath(name).toFile();

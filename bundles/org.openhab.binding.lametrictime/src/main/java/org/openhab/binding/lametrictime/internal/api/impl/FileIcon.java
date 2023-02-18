@@ -19,12 +19,19 @@ import java.nio.file.Path;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implementation class for file icons.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class FileIcon extends AbstractDataIcon {
+    private final Logger logger = LoggerFactory.getLogger(FileIcon.class);
+
     private final MimetypesFileTypeMap mimeTypeMap = new MimetypesFileTypeMap();
 
     private final Path path;
@@ -44,7 +51,7 @@ public class FileIcon extends AbstractDataIcon {
         try {
             setData(Files.readAllBytes(path));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.warn("Failed reading icon content.", e);
         }
     }
 }

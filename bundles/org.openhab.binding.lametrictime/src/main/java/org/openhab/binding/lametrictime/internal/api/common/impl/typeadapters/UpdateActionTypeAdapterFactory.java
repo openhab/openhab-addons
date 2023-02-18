@@ -14,8 +14,10 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters;
 
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.imported.CustomizedTypeAdapterFactory;
-import org.openhab.binding.lametrictime.internal.api.local.model.UpdateAction;
+import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -25,6 +27,7 @@ import com.google.gson.JsonObject;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class UpdateActionTypeAdapterFactory extends CustomizedTypeAdapterFactory<UpdateAction> {
     private static final String PROPERTY_PARAMETERS = "params";
     private static final String PROPERTY_VALUE = "value";
@@ -59,7 +62,7 @@ public class UpdateActionTypeAdapterFactory extends CustomizedTypeAdapterFactory
     }
 
     @Override
-    protected void afterRead(JsonElement deserialized) {
+    protected void afterRead(@Nullable JsonElement deserialized) {
         throw new UnsupportedOperationException(UpdateAction.class.getName() + " cannot be derialized");
     }
 }

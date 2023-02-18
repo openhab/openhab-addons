@@ -18,11 +18,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Test utility class.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class TestUtil {
     private static final String RESOURCES_PATH = "src/test/resources/";
 

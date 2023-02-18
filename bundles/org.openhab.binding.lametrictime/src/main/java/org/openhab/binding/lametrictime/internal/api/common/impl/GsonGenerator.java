@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.lametrictime.internal.api.common.impl;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.ActionTypeAdapterFactory;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.ApplicationTypeAdapterFactory;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.UpdateActionTypeAdapterFactory;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.imported.JSR310TypeAdapters;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.imported.RuntimeTypeAdapterFactory;
-import org.openhab.binding.lametrictime.internal.api.local.model.BooleanParameter;
-import org.openhab.binding.lametrictime.internal.api.local.model.IntegerParameter;
-import org.openhab.binding.lametrictime.internal.api.local.model.Parameter;
-import org.openhab.binding.lametrictime.internal.api.local.model.StringParameter;
+import org.openhab.binding.lametrictime.internal.api.local.dto.BooleanParameter;
+import org.openhab.binding.lametrictime.internal.api.local.dto.IntegerParameter;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Parameter;
+import org.openhab.binding.lametrictime.internal.api.local.dto.StringParameter;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class GsonGenerator {
     public static Gson create() {
         return create(false);

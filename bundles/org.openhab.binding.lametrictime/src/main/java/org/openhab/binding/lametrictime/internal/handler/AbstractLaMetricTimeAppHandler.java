@@ -14,11 +14,13 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import java.util.SortedMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
 import org.openhab.binding.lametrictime.internal.api.LaMetricTime;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationNotFoundException;
-import org.openhab.binding.lametrictime.internal.api.local.model.Application;
-import org.openhab.binding.lametrictime.internal.api.local.model.Widget;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -39,10 +41,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler implements LaMetricTimeAppHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractLaMetricTimeAppHandler.class);
 
+    @Nullable
     private Widget widget;
 
     public AbstractLaMetricTimeAppHandler(Thing thing) {
@@ -78,7 +82,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
         }
     }
 
-    private void updateWidget(ThingHandler handler) {
+    private void updateWidget(@Nullable ThingHandler handler) {
         if (!(handler instanceof LaMetricTimeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
             return;
@@ -116,7 +120,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
         ((LaMetricTimeHandler) getBridge().getHandler()).updateActiveApp(widgetId);
     }
 
-    protected String getPackageName(LaMetricTimeAppConfiguration config) {
+    protected @Nullable String getPackageName(LaMetricTimeAppConfiguration config) {
         return config.packageName;
     }
 
@@ -126,7 +130,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
     }
 
     @Override
-    public Widget getWidget() {
+    public @Nullable Widget getWidget() {
         if (widget == null) {
             getBridge().getHandler().initialize();
         }

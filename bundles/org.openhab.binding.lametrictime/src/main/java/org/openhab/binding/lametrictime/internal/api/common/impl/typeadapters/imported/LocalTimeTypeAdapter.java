@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.LocalTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link LocalTime} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class LocalTimeTypeAdapter extends TemporalTypeAdapter<LocalTime> {
 
     public LocalTimeTypeAdapter() {

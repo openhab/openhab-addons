@@ -15,6 +15,9 @@ package org.openhab.binding.lametrictime.internal.api.common.impl;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.Gson;
 
 /**
@@ -22,10 +25,13 @@ import com.google.gson.Gson;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractClient {
     protected final ClientBuilder clientBuilder;
 
+    @Nullable
     private volatile Client client;
+    @Nullable
     private volatile Gson gson;
 
     public AbstractClient() {
@@ -36,7 +42,7 @@ public abstract class AbstractClient {
         this.clientBuilder = clientBuilder;
     }
 
-    protected Client getClient() {
+    protected @Nullable Client getClient() {
         if (client == null) {
             synchronized (this) {
                 if (client == null) {
@@ -48,7 +54,7 @@ public abstract class AbstractClient {
         return client;
     }
 
-    protected Gson getGson() {
+    protected @Nullable Gson getGson() {
         if (gson == null) {
             synchronized (this) {
                 if (gson == null) {

@@ -21,9 +21,15 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.BrightnessMode;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.Priority;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.SoundCategory;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationActivationException;
 import org.openhab.binding.lametrictime.internal.api.local.ApplicationNotFoundException;
@@ -31,18 +37,14 @@ import org.openhab.binding.lametrictime.internal.api.local.LocalConfiguration;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationCreationException;
 import org.openhab.binding.lametrictime.internal.api.local.NotificationNotFoundException;
 import org.openhab.binding.lametrictime.internal.api.local.UpdateException;
-import org.openhab.binding.lametrictime.internal.api.local.model.Audio;
-import org.openhab.binding.lametrictime.internal.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.internal.api.local.model.Display;
-import org.openhab.binding.lametrictime.internal.api.local.model.Frame;
-import org.openhab.binding.lametrictime.internal.api.local.model.GoalData;
-import org.openhab.binding.lametrictime.internal.api.local.model.Notification;
-import org.openhab.binding.lametrictime.internal.api.local.model.NotificationModel;
-import org.openhab.binding.lametrictime.internal.api.local.model.Sound;
-import org.openhab.binding.lametrictime.internal.api.model.CoreApps;
-import org.openhab.binding.lametrictime.internal.api.model.enums.BrightnessMode;
-import org.openhab.binding.lametrictime.internal.api.model.enums.Priority;
-import org.openhab.binding.lametrictime.internal.api.model.enums.SoundCategory;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Frame;
+import org.openhab.binding.lametrictime.internal.api.local.dto.GoalData;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Notification;
+import org.openhab.binding.lametrictime.internal.api.local.dto.NotificationModel;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Sound;
 import org.openhab.binding.lametrictime.internal.api.test.TestUtil;
 
 /**
@@ -64,10 +66,12 @@ import org.openhab.binding.lametrictime.internal.api.test.TestUtil;
  * @author Gregory Moyer - Initial contribution
  */
 @Disabled
+@NonNullByDefault
 public class LaMetricTimeLocalImplIT {
     private static final String PROP_HOST = "host";
     private static final String PROP_API_KEY = "apiKey";
 
+    @Nullable
     private static LaMetricTimeLocalImpl local;
 
     @BeforeAll
@@ -244,7 +248,7 @@ public class LaMetricTimeLocalImplIT {
         return new Notification().withPriority(Priority.CRITICAL.toRaw()).withModel(new NotificationModel()
                 .withCycles(cycles)
                 .withSound(new Sound().withCategory(SoundCategory.NOTIFICATIONS.toRaw())
-                        .withId(org.openhab.binding.lametrictime.internal.api.model.enums.Sound.CAT.toRaw()))
+                        .withId(org.openhab.binding.lametrictime.internal.api.dto.enums.Sound.CAT.toRaw()))
                 .withFrames(Arrays.asList(new Frame().withText("CAT!").withIcon(
                         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAUklEQVQYlWNUVFBgYGBgYBC98uE/AxJ4rSPAyMDAwMCETRJZjAnGgOlAZote+fCfCV0nOmA0+yKAYTwygJuAzQoGBgYGRkUFBQZ0dyDzGQl5EwCTESNpFb6zEwAAAABJRU5ErkJggg=="))));
     }

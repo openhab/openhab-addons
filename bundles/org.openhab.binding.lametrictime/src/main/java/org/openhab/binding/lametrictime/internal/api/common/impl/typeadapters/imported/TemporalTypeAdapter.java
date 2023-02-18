@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -30,6 +33,7 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 abstract class TemporalTypeAdapter<T> extends TypeAdapter<T> {
 
     Function<String, T> parseFunction;
@@ -40,7 +44,7 @@ abstract class TemporalTypeAdapter<T> extends TypeAdapter<T> {
     }
 
     @Override
-    public void write(JsonWriter out, T value) throws IOException {
+    public void write(JsonWriter out, @Nullable T value) throws IOException {
         if (value == null) {
             out.nullValue();
         } else {
@@ -49,7 +53,7 @@ abstract class TemporalTypeAdapter<T> extends TypeAdapter<T> {
     }
 
     @Override
-    public T read(JsonReader in) throws IOException {
+    public @Nullable T read(JsonReader in) throws IOException {
         if (in.peek() == JsonToken.NULL) {
             in.nextNull();
             return null;

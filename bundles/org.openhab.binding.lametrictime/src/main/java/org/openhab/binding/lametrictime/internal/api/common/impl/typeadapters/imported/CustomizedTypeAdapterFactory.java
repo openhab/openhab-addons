@@ -18,6 +18,9 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
@@ -31,6 +34,7 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public abstract class CustomizedTypeAdapterFactory<C> implements TypeAdapterFactory {
     private final Class<C> customizedClass;
 
@@ -40,25 +44,26 @@ public abstract class CustomizedTypeAdapterFactory<C> implements TypeAdapterFact
 
     @Override
     @SuppressWarnings("unchecked") // we use a runtime check to guarantee that 'C' and 'T' are equal
-    public final <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+    @Nullable
+    public final <T> TypeAdapter<T> create(@Nullable Gson gson, @Nullable TypeToken<T> type) {
         return type.getRawType() == customizedClass
                 ? (TypeAdapter<T>) customizeMyClassAdapter(gson, (TypeToken<C>) type)
                 : null;
     }
 
-    private TypeAdapter<C> customizeMyClassAdapter(Gson gson, TypeToken<C> type) {
+    private TypeAdapter<C> customizeMyClassAdapter(@Nullable Gson gson, TypeToken<C> type) {
         final TypeAdapter<C> delegate = gson.getDelegateAdapter(this, type);
         final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
         return new TypeAdapter<C>() {
             @Override
-            public void write(JsonWriter out, C value) throws IOException {
+            public void write(JsonWriter out, @Nullable C value) throws IOException {
                 JsonElement tree = delegate.toJsonTree(value);
                 beforeWrite(value, tree);
                 elementAdapter.write(out, tree);
             }
 
             @Override
-            public C read(JsonReader in) throws IOException {
+            public @Nullable C read(JsonReader in) throws IOException {
                 JsonElement tree = elementAdapter.read(in);
                 afterRead(tree);
                 if (tree == null) {
@@ -80,6 +85,6 @@ public abstract class CustomizedTypeAdapterFactory<C> implements TypeAdapterFact
      * Override this to muck with {@code deserialized} before it parsed into the
      * application type.
      */
-    protected void afterRead(JsonElement deserialized) {
+    protected void afterRead(@Nullable JsonElement deserialized) {
     }
 }

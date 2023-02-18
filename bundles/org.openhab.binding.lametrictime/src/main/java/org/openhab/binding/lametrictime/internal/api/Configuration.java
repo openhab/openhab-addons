@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lametrictime.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.cloud.CloudConfiguration;
 import org.openhab.binding.lametrictime.internal.api.local.LocalConfiguration;
 
@@ -20,8 +22,11 @@ import org.openhab.binding.lametrictime.internal.api.local.LocalConfiguration;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class Configuration {
+    @Nullable
     private String deviceHost;
+    @Nullable
     private String deviceApiKey;
 
     private boolean ignoreDeviceCertificateValidation = true;
@@ -31,7 +36,7 @@ public class Configuration {
     private String logLevel = "INFO";
     private int logMax = 104857600; // 100kb
 
-    public String getDeviceHost() {
+    public @Nullable String getDeviceHost() {
         return deviceHost;
     }
 
@@ -39,12 +44,12 @@ public class Configuration {
         this.deviceHost = deviceHost;
     }
 
-    public Configuration withDeviceHost(String deviceHost) {
+    public Configuration withDeviceHost(@Nullable String deviceHost) {
         this.deviceHost = deviceHost;
         return this;
     }
 
-    public String getDeviceApiKey() {
+    public @Nullable String getDeviceApiKey() {
         return deviceApiKey;
     }
 
@@ -52,7 +57,7 @@ public class Configuration {
         this.deviceApiKey = deviceApiKey;
     }
 
-    public Configuration withDeviceApiKey(String deviceApiKey) {
+    public Configuration withDeviceApiKey(@Nullable String deviceApiKey) {
         this.deviceApiKey = deviceApiKey;
         return this;
     }

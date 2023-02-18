@@ -18,11 +18,13 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.GsonProvider;
 import org.openhab.binding.lametrictime.internal.api.cloud.CloudConfiguration;
 import org.openhab.binding.lametrictime.internal.api.cloud.LaMetricTimeCloud;
-import org.openhab.binding.lametrictime.internal.api.cloud.model.IconFilter;
-import org.openhab.binding.lametrictime.internal.api.cloud.model.Icons;
+import org.openhab.binding.lametrictime.internal.api.cloud.dto.IconFilter;
+import org.openhab.binding.lametrictime.internal.api.cloud.dto.Icons;
 import org.openhab.binding.lametrictime.internal.api.common.impl.AbstractClient;
 import org.openhab.binding.lametrictime.internal.api.filter.LoggingFilter;
 
@@ -31,6 +33,7 @@ import org.openhab.binding.lametrictime.internal.api.filter.LoggingFilter;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeCloudImpl extends AbstractClient implements LaMetricTimeCloud {
     private final CloudConfiguration config;
 
@@ -50,7 +53,7 @@ public class LaMetricTimeCloudImpl extends AbstractClient implements LaMetricTim
     }
 
     @Override
-    public Icons getIcons(IconFilter filter) {
+    public Icons getIcons(@Nullable IconFilter filter) {
         return getClient().target(config.getBaseUri()).path("/icons").queryParam("page", filter.getPage())
                 .queryParam("page_size", filter.getPageSize()).queryParam("fields", filter.getFieldsString())
                 .queryParam("order", filter.getOrderString()).request(MediaType.APPLICATION_JSON_TYPE).get(Icons.class);

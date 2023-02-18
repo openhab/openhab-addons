@@ -17,23 +17,26 @@ import java.util.SortedMap;
 
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Api;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Device;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Notification;
+import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
+import org.openhab.binding.lametrictime.internal.api.local.dto.WidgetUpdates;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Wifi;
 import org.openhab.binding.lametrictime.internal.api.local.impl.LaMetricTimeLocalImpl;
-import org.openhab.binding.lametrictime.internal.api.local.model.Api;
-import org.openhab.binding.lametrictime.internal.api.local.model.Application;
-import org.openhab.binding.lametrictime.internal.api.local.model.Audio;
-import org.openhab.binding.lametrictime.internal.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.internal.api.local.model.Device;
-import org.openhab.binding.lametrictime.internal.api.local.model.Display;
-import org.openhab.binding.lametrictime.internal.api.local.model.Notification;
-import org.openhab.binding.lametrictime.internal.api.local.model.UpdateAction;
-import org.openhab.binding.lametrictime.internal.api.local.model.WidgetUpdates;
-import org.openhab.binding.lametrictime.internal.api.local.model.Wifi;
 
 /**
  * Interface for local device access.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public interface LaMetricTimeLocal {
     public Api getApi();
 
@@ -43,7 +46,7 @@ public interface LaMetricTimeLocal {
 
     public List<Notification> getNotifications();
 
-    public Notification getCurrentNotification();
+    public @Nullable Notification getCurrentNotification();
 
     public Notification getNotification(String id) throws NotificationNotFoundException;
 
@@ -68,7 +71,7 @@ public interface LaMetricTimeLocal {
 
     public SortedMap<String, Application> getApplications();
 
-    public Application getApplication(String packageName) throws ApplicationNotFoundException;
+    public @Nullable Application getApplication(String packageName) throws ApplicationNotFoundException;
 
     public void activatePreviousApplication();
 
@@ -76,7 +79,8 @@ public interface LaMetricTimeLocal {
 
     public void activateApplication(String packageName, String widgetId) throws ApplicationActivationException;
 
-    public void doAction(String packageName, String widgetId, UpdateAction action) throws ApplicationActionException;
+    public void doAction(String packageName, String widgetId, @Nullable UpdateAction action)
+            throws ApplicationActionException;
 
     public static LaMetricTimeLocal create(LocalConfiguration config) {
         return new LaMetricTimeLocalImpl(config);

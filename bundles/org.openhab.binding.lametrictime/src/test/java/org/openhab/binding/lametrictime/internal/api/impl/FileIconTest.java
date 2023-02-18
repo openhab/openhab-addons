@@ -14,6 +14,7 @@ package org.openhab.binding.lametrictime.internal.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lametrictime.internal.api.test.AbstractTest;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.lametrictime.internal.api.test.AbstractTest;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class FileIconTest extends AbstractTest {
     @Test
     public void testLocalPathGif() {

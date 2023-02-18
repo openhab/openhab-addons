@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.imported.CustomizedTypeAdapterFactory;
-import org.openhab.binding.lametrictime.internal.api.local.model.Action;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Action;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,6 +29,7 @@ import com.google.gson.JsonObject;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class ActionTypeAdapterFactory extends CustomizedTypeAdapterFactory<Action> {
     private static final String PROPERTY_ID = "id";
     private static final String PROPERTY_PARAMETERS = "params";
@@ -59,7 +62,7 @@ public class ActionTypeAdapterFactory extends CustomizedTypeAdapterFactory<Actio
     }
 
     @Override
-    protected void afterRead(JsonElement deserialized) {
+    protected void afterRead(@Nullable JsonElement deserialized) {
         if (deserialized == null || deserialized.isJsonNull()) {
             return;
         }

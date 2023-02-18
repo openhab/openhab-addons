@@ -18,11 +18,14 @@ package org.openhab.binding.lametrictime.internal.api.common.impl.typeadapters.i
 
 import java.time.Year;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type adapter for jsr310 {@link Year} class.
  *
  * @author Christophe Bornet - Initial contribution
  */
+@NonNullByDefault
 public class YearTypeAdapter extends TemporalTypeAdapter<Year> {
 
     public YearTypeAdapter() {
