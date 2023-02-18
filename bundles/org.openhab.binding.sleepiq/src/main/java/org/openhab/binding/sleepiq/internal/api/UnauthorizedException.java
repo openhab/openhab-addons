@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sleepiq.internal.config;
+package org.openhab.binding.sleepiq.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration class for a SleepIQ bed.
+ * The {@link UnauthorizedException} is thrown when a login to the sleepiq service
+ * is unauthorized to use the API.
  *
- * @author Gregory Moyer - Initial contribution
+ * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class SleepIQBedConfiguration {
-    public static final String BED_ID = "bedId";
+public class UnauthorizedException extends LoginException {
+    private static final long serialVersionUID = 1L;
 
-    public @Nullable String bedId;
+    public UnauthorizedException(String message) {
+        super(message);
+    }
 }

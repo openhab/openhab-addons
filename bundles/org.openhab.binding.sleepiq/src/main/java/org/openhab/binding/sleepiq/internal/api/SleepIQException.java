@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sleepiq.internal.config;
+package org.openhab.binding.sleepiq.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration class for a SleepIQ bed.
+ * The {@link SleepIQException} is the base exception class from which other
+ * sleepiq exceptions are derived.
  *
- * @author Gregory Moyer - Initial contribution
+ * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class SleepIQBedConfiguration {
-    public static final String BED_ID = "bedId";
+public class SleepIQException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public @Nullable String bedId;
+    public SleepIQException(String message) {
+        super(message);
+    }
 }

@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sleepiq.internal.config;
+package org.openhab.binding.sleepiq.internal.api.impl.typeadapters;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sleepiq.internal.api.dto.TimeSince;
 
 /**
- * Configuration class for a SleepIQ bed.
+ * The {@link TimeSinceTypeAdapter} handles the parsing of the TimeSince.
  *
  * @author Gregory Moyer - Initial contribution
  */
 @NonNullByDefault
-public class SleepIQBedConfiguration {
-    public static final String BED_ID = "bedId";
-
-    public @Nullable String bedId;
+public class TimeSinceTypeAdapter extends TemporalTypeAdapter<TimeSince> {
+    public TimeSinceTypeAdapter() {
+        super(TimeSince::parse);
+    }
 }
