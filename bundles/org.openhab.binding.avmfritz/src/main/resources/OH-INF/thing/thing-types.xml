@@ -353,6 +353,7 @@
 
 		<channels>
 			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
 		</channels>
 
 		<representation-property>ain</representation-property>
