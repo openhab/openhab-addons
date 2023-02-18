@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.upnpcontrol.internal.util.StringUtils;
 
 /**
  *
@@ -178,7 +178,7 @@ public class UpnpEntry {
      * @return the URI for the album art.
      */
     public String getAlbumArtUri() {
-        return StringUtils.unEscapeXml(albumArtUri);
+        return StringEscapeUtils.unescapeXml(albumArtUri);
     }
 
     /**
