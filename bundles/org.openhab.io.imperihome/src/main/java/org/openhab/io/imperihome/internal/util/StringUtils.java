@@ -22,21 +22,20 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class StringUtils {
-    
-     /**
+
+    /**
      * Simple method to create boolean from string.
      * 'true', 'on', 'y', 't' or 'yes' (case insensitive) will return true. Otherwise, false is returned.
      */
-     public static boolean toBoolean(@Nullable String input) {
-         if (input != null) {
-             input = input.toLowerCase();
+    public static boolean toBoolean(@Nullable String input) {
+        if (input != null) {
+            input = input.toLowerCase();
+        }
+        return "true".equals(input) || "on".equals(input) || "y".equals(input) || "t".equals(input)
+                || "yes".equals(input);
+    }
 
-         }
-         return "true".equals(input) || "on".equals(input) || "y".equals(input) || "t".equals(input)
-                 || "yes".equals(input);
-     }
-    
-     public static String padLeft(@Nullable String input, int minSize, String padString) {
+    public static String padLeft(@Nullable String input, int minSize, String padString) {
         if (input == null) {
             input = "";
         }
