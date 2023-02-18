@@ -29,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
@@ -289,7 +288,7 @@ public class ExecHandler extends BaseThingHandler {
 
             outputBuilder.append(errorBuilder.toString());
 
-            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
+            String transformedResponse = outputBuilder.toString().replaceAll("\r", "").replaceAll("\n", "");
             String transformation = (String) getConfig().get(TRANSFORM);
 
             if (transformation != null && transformation.length() > 0) {
