@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ForecastRequest extends Request {
 
-    public static final String STORED_QUERY_ID = "fmi::forecast::hirlam::surface::point::multipointcoverage";
+    public static final String STORED_QUERY_ID = "fmi::forecast::harmonie::surface::point::multipointcoverage";
 
     // For description of variables: http://opendata.fmi.fi/meta?observableProperty=forecast
     public static final String PARAM_TEMPERATURE = "Temperature";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,8 +41,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +58,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     private final HomeApi api;
 
     private @Nullable Long homeId;
-    private @Nullable TadoBatteryChecker batteryChecker;
+    private final TadoBatteryChecker batteryChecker;
     private @Nullable ScheduledFuture<?> initializationFuture;
 
     public TadoHomeHandler(Bridge bridge) {
@@ -194,8 +192,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         }
     }
 
-    public State getBatteryLowAlarm(long zoneId) {
-        TadoBatteryChecker batteryChecker = this.batteryChecker;
-        return batteryChecker != null ? batteryChecker.getBatteryLowAlarm(zoneId) : UnDefType.UNDEF;
+    public TadoBatteryChecker getBatteryChecker() {
+        return this.batteryChecker;
     }
 }

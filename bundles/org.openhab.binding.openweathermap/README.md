@@ -39,6 +39,12 @@ It requires coordinates of the location of your interest.
 Air pollution forecast is available for 5 days with hourly granularity.
 You can add as much `air-pollution` things for different locations to your setup as you like to observe.
 
+#### One Call API Version
+
+New Subscribers to the One Call API will require setting the API version to 3.0 (The API key will not work with 2.5). Existing subscribers can continue to use their existing API key with version 2.5.
+
+ One Call API Version 3.0 [requires payment details](https://openweathermap.org/price) for future forecast information. However, it is possible to set a [daily API call limit to 1000](https://openweathermap.org/faq#onecall), which will avoid charges.
+
 ### One Call API Weather and Forecast
 
 The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API.

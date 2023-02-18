@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:shelly:relay-gen2">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:roller-gen2">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="favoriteUP" type="integer" min="0" max="4" required="false">
+			<label>@text/thing-type.config.shelly.roller.favoriteUP.label</label>
+			<description>@text/thing-type.config.shelly.roller.favoriteUP.description</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="favoriteDOWN" type="integer" min="0" max="4" required="false">
+			<label>@text/thing-type.config.shelly.roller.favoriteDOWN.label</label>
+			<description>@text/thing-type.config.shelly.roller.favoriteDOWN.description</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<default>60</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:battery-gen2">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>@text/thing-type.config.shelly.password.label</label>
+			<description>@text/thing-type.config.shelly.password.description</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="lowBattery" type="integer" required="false">
+			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
+			<description>@text/thing-type.config.shelly.battery.lowBattery.description</description>
+			<default>20</default>
+			<unitLabel>%</unitLabel>
+		</parameter>
+		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
+			<label>@text/thing-type.config.shelly.updateInterval.label</label>
+			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<default>900</default>
+			<unitLabel>seconds</unitLabel>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_BRIDGE_ACCOUNT;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +24,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.groheondus.internal.AccountsServlet;
 import org.openhab.binding.groheondus.internal.discovery.GroheOndusDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.storage.StorageService;
@@ -39,7 +40,6 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
@@ -50,16 +50,12 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private HttpService httpService;
     private StorageService storageService;
-    private AccountsServlet accountsServlet;
+    private int thingCounter = 0;
 
     @Activate
-    public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
-            @Reference AccountsServlet accountsServlet) {
-        this.httpService = httpService;
+    public GroheOndusHandlerFactory(@Reference StorageService storageService) {
         this.storageService = storageService;
-        this.accountsServlet = accountsServlet;
     }
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
@@ -75,15 +71,15 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
-            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing, httpService,
+            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing,
                     storageService.getStorage(thing.getUID().toString(),
                             FrameworkUtil.getBundle(getClass()).adapt(BundleWiring.class).getClassLoader()));
             onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
-            return new GroheOndusSenseGuardHandler(thing);
+            return new GroheOndusSenseGuardHandler(thing, thingCounter++);
         } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
-            return new GroheOndusSenseHandler(thing);
+            return new GroheOndusSenseHandler(thing, thingCounter++);
         }
 
         return null;
@@ -91,9 +87,6 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private void onAccountCreated(Thing thing, GroheOndusAccountHandler handler) {
         registerDeviceDiscoveryService(handler);
-        if (this.accountsServlet != null) {
-            this.accountsServlet.addAccount(thing);
-        }
     }
 
     @Override

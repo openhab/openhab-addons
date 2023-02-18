@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.hamcrest.core.Is.is;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,6 +104,6 @@ public class TradfriHandlerOSGiTest extends JavaOSGiTest {
         Configuration configuration = thing.getConfiguration();
         assertThat(configuration, is(notNullValue()));
 
-        assertThat(configuration.get(CONFIG_ID), is("65537"));
+        assertThat(configuration.get(CONFIG_ID), is(BigDecimal.valueOf(65537)));
     }
 }

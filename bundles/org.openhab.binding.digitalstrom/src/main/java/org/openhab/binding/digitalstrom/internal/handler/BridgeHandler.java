@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -632,7 +632,7 @@ public class BridgeHandler extends BaseBridgeHandler
                 case WRONG_APP_TOKEN:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "User defined Application-Token is wrong. "
-                                    + "Please set user name and password to generate an Application-Token or set an valid Application-Token.");
+                                    + "Please set user name and password to generate an Application-Token or set a valid Application-Token.");
                     stopServices();
                     return;
                 case WRONG_USER_OR_PASSWORD:

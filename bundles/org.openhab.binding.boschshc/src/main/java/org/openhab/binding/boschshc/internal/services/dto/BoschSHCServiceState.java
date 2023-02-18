@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Base Bosch Smart Home Controller service state.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 public class BoschSHCServiceState {
@@ -40,7 +40,7 @@ public class BoschSHCServiceState {
     private @Nullable String stateType = null;
 
     @SerializedName("@type")
-    private final String type;
+    public final String type;
 
     protected BoschSHCServiceState(String type) {
         this.type = type;

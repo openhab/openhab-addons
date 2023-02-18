@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,8 @@ public enum LifxProduct {
     PRODUCT_118(118, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_119(119, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_120(120, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_121(121, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_122(122, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
     PRODUCT_123(123, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_124(124, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_125(125, "LIFX White to Warm", new Features(TR_1500_9000)),

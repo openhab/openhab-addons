@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class JSonPathTransformationService implements TransformationService {
      *
      * @param function JsonPath expression
      * @param source String which contains JSON
-     * @throws TransformationException If the JsonPath expression is invalid, a {@link InvalidPathException} is thrown,
+     * @throws TransformationException If the JsonPath expression is invalid, an {@link InvalidPathException} is thrown,
      *             which is encapsulated in a {@link TransformationException}.
      */
     @Override

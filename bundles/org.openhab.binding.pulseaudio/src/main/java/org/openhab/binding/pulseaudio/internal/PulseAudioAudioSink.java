@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,6 +66,7 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
         if (audioStream == null) {
             return;
         }
+        addClientCount();
         try (ConvertedInputStream normalizedPCMStream = new ConvertedInputStream(audioStream)) {
             for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
                 try {
@@ -73,7 +74,6 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                     final Socket clientSocketLocal = clientSocket;
                     if (clientSocketLocal != null) {
                         // send raw audio to the socket and to pulse audio
-                        setIdle(false);
                         Instant start = Instant.now();
                         normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
                         if (normalizedPCMStream.getDuration() != -1) { // ensure, if the sound has a duration
@@ -108,9 +108,8 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
             throw new UnsupportedAudioFormatException("Cannot send sound to the pulseaudio sink",
                     audioStream.getFormat(), e);
         } finally {
-            scheduleDisconnect();
+            minusClientCount();
         }
-        setIdle(true);
     }
 
     @Override

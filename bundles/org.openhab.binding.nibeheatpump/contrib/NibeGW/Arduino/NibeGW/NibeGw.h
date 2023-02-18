@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,16 @@
  * ----------------------------------------------------------------------------
  *
  * Frame format:
- * +----+----+------+-----+-----+----+----+-----+
- * | 5C | 00 | ADDR | CMD | LEN |  DATA   | CHK |
- * +----+----+------+-----+-----+----+----+-----+
- *           |------------ CHK -----------|
+ * +----+------+------+-----+-----+----+----+-----+
+ * | 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
+ * +----+------+------+-----+-----+----+----+-----+
+ *
+ *      |------------ CHK ------------------|
  *
  *  Address: 
- *    0x16 = SMS40
- *    0x19 = RMU40
- *    0x20 = MODBUS40
+ *    0x0016 = SMS40
+ *    0x0019 = RMU40
+ *    0x0020 = MODBUS40
  * 
  *  Checksum: XOR
  *

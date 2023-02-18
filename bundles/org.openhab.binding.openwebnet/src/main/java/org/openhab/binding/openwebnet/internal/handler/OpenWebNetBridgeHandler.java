@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,7 @@ import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.USBGateway;
 import org.openwebnet4j.communication.OWNAuthException;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.Alarm;
 import org.openwebnet4j.message.Automation;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.BaseOpenMessage;
@@ -57,6 +58,7 @@ import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.OpenMessage;
+import org.openwebnet4j.message.Scenario;
 import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
@@ -66,11 +68,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetBridgeHandler} is responsible for handling communication with gateways and handling events.
+ * The {@link OpenWebNetBridgeHandler} is responsible for handling communication
+ * with gateways and handling events.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, Lighting, Automation, Scenario
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Giovanni Fabiani - Aux
  */
 @NonNullByDefault
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
@@ -93,7 +97,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
-    // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
+    // association is: ownId (String) -> OpenWebNetThingHandler, with ownId =
+    // WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
 
@@ -157,14 +162,14 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Init a ZigBee gateway based on config
+     * Init a Zigbee gateway based on config
      */
     private @Nullable OpenGateway initZigBeeGateway() {
-        logger.debug("Initializing ZigBee USB Gateway");
+        logger.debug("Initializing Zigbee USB Gateway");
         OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
-            logger.warn("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
+            logger.warn("Cannot connect Zigbee USB Gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
@@ -294,10 +299,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onNewDevice(@Nullable Where w, @Nullable OpenDeviceType deviceType, @Nullable BaseOpenMessage message) {
         OpenWebNetDeviceDiscoveryService discService = deviceDiscoveryService;
         if (discService != null) {
-            if (w != null && deviceType != null) {
+            if (deviceType != null) {
                 discService.newDiscoveryResult(w, deviceType, message);
             } else {
-                logger.warn("onNewDevice with null where/deviceType, msg={}", message);
+                logger.warn("onNewDevice with null deviceType, msg={}", message);
             }
         } else {
             logger.warn("onNewDevice but null deviceDiscoveryService");
@@ -310,7 +315,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Notifies that the scan has been stopped/aborted by OpenWebNetDeviceDiscoveryService
+     * Notifies that the scan has been stopped/aborted by
+     * OpenWebNetDeviceDiscoveryService
      */
     public void scanStopped() {
         scanIsActive = false;
@@ -326,7 +332,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // we support these types only
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Scenario
+                || baseMsg instanceof Alarm) {
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
@@ -431,7 +438,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     return;
                 }
             } else if (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC) {
-                // a device has been registered with the bridge just now, let's wait for other devices: re-schedule
+                // a device has been registered with the bridge just now, let's wait for other
+                // devices: re-schedule
                 // refreshAllDevices
                 logger.debug("--- REGISTER device just called... re-scheduling refreshAllBridgeDevices()");
                 refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
@@ -498,7 +506,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
+                || baseMsg instanceof Scenario || baseMsg instanceof Alarm) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
@@ -530,7 +539,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
         if (gw instanceof USBGateway) {
-            logger.info("---- CONNECTED to ZigBee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
+            logger.info("---- CONNECTED to Zigbee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
                     ((USBGateway) gw).getSerialPortName());
         } else {
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
@@ -662,7 +671,16 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     public String ownIdFromMessage(BaseOpenMessage baseMsg) {
-        return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWhere());
+        @Nullable
+        Where w = baseMsg.getWhere();
+        if (w != null) {
+            return baseMsg.getWho().value() + "." + normalizeWhere(w);
+        } else if (baseMsg instanceof Alarm) { // null and Alarm
+            return baseMsg.getWho().value() + "." + "0"; // Alarm System --> where=0
+        } else {
+            logger.warn("ownIdFromMessage with null where: {}", baseMsg);
+            return "";
+        }
     }
 
     /**
@@ -687,7 +705,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
-                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
+                                             // Alarm Zone (#Z) --> Z
                     str = str.substring(1);
                 } else if (str.indexOf('#') > 0) { // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z
                     str = str.substring(0, str.indexOf('#'));

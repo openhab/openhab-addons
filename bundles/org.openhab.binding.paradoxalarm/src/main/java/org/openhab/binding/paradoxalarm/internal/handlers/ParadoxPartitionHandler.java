@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,9 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
 
     protected Partition getPartition() {
         int index = calculateEntityIndex();
-        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
+        List<Partition> partitions = panel.getPartitions();
         if (partitions == null) {
             logger.debug(
                     "Partitions collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,18 @@ public class AlertModel {
 
     public void setState(BigDecimal state) {
         this.state = state;
+    }
+
+    public boolean hasObstructionAlarmOccurred() {
+        return (state.intValue() & 1) != 0;
+    }
+
+    public boolean hasTemperaturAlarmOccurred() {
+        return (state.intValue() & 2) != 0;
+    }
+
+    public boolean hasUnknownAlarmOccurred() {
+        return ((state.intValue() & 255) >> 2) != 0;
     }
 
     @Override

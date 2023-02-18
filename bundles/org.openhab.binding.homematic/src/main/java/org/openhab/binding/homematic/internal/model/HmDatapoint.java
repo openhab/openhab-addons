@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns the index of the value in a option list.
+     * Returns the index of the value in an option list.
      */
     public int getOptionIndex(String option) {
         if (options != null && option != null) {
@@ -147,7 +147,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns the value of a option list.
+     * Returns the value of an option list.
      */
     public @Nullable String getOptionValue() {
         Integer idx = getIntegerValue();
@@ -318,7 +318,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a action.
+     * Returns true, if the datapoint is an action.
      */
     public boolean isActionType() {
         return type == HmValueType.ACTION;
@@ -339,7 +339,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a integer.
+     * Returns true, if the datapoint is an integer.
      */
     public boolean isIntegerType() {
         return type == HmValueType.INTEGER;
@@ -360,7 +360,7 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
-     * Returns true, if the datapoint is a enum.
+     * Returns true, if the datapoint is an enum.
      */
     public boolean isEnumType() {
         return type == HmValueType.ENUM;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An type enumerator to indicate whether a Command Tag is of type BEGIN or END; as in the following examples:
+ * A type enumerator to indicate whether a Command Tag is of type BEGIN or END; as in the following examples:
  *
  * BEGIN:<item_name>:<new_state>
  * END:<item_name>:<new_state>

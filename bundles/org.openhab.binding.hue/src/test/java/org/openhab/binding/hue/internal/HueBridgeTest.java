@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,35 +14,47 @@ package org.openhab.binding.hue.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.openhab.binding.hue.internal.HttpClient.Result;
+import org.openhab.binding.hue.internal.config.HueBridgeConfig;
+import org.openhab.binding.hue.internal.connection.HueBridge;
+import org.openhab.binding.hue.internal.dto.Scene;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 
 /**
  * @author Hengrui Jiang - initial contribution
  */
+@NonNullByDefault
 public class HueBridgeTest {
 
     @Test
     public void testGetScenesExcludeRecycleScenes() throws IOException, ApiException {
-        HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
-
-        HueBridge hueBridge = new HueBridge("ip", "baseUrl", "username", Executors.newScheduledThreadPool(1),
-                mockHttpClient);
-
-        List<Scene> testScenes = Arrays.asList(new Scene("id1", "name1", "group1", Collections.emptyList(), true), //
-                new Scene("id2", "name2", "group2", Collections.emptyList(), false));
-        when(mockHttpClient.get("baseUrl/username/scenes")).thenReturn(new Result(createMockResponse(testScenes), 200));
+        HueBridge hueBridge = new HueBridge(mock(HttpClient.class), "ip", 443, HueBridgeConfig.HTTPS, "username",
+                Executors.newScheduledThreadPool(1)) {
+            @Override
+            public HueResult get(String address) throws ConfigurationException, CommunicationException {
+                if ("https://ip:443/api/username/lights".equals(address)) {
+                    return new HueResult("{}", HttpStatus.OK_200);
+                } else if ("https://ip:443/api/username/scenes".equals(address)) {
+                    List<Scene> testScenes = List.of( //
+                            new Scene("id1", "name1", "group1", List.of(), true), //
+                            new Scene("id2", "name2", "group2", List.of(), false));
+                    return new HueResult(createMockResponse(testScenes), HttpStatus.OK_200);
+                }
+                return super.get(address);
+            }
+        };
 
         List<Scene> scenes = hueBridge.getScenes();
         assertThat(scenes.size(), is(1));
@@ -51,15 +63,22 @@ public class HueBridgeTest {
 
     @Test
     public void testGetScenesOrderByGroup() throws IOException, ApiException {
-        HttpClient mockHttpClient = Mockito.mock(HttpClient.class);
-
-        HueBridge hueBridge = new HueBridge("ip", "baseUrl", "username", Executors.newScheduledThreadPool(1),
-                mockHttpClient);
-
-        List<Scene> testScenes = Arrays.asList(new Scene("id1", "name1", "group1", Collections.emptyList(), false), //
-                new Scene("id2", "name2", "group2", Collections.emptyList(), false),
-                new Scene("id3", "name3", "group1", Collections.emptyList(), false));
-        when(mockHttpClient.get("baseUrl/username/scenes")).thenReturn(new Result(createMockResponse(testScenes), 200));
+        HueBridge hueBridge = new HueBridge(mock(HttpClient.class), "ip", 443, HueBridgeConfig.HTTPS, "username",
+                Executors.newScheduledThreadPool(1)) {
+            @Override
+            public HueResult get(String address) throws ConfigurationException, CommunicationException {
+                if ("https://ip:443/api/username/lights".equals(address)) {
+                    return new HueResult("{}", HttpStatus.OK_200);
+                } else if ("https://ip:443/api/username/scenes".equals(address)) {
+                    List<Scene> testScenes = List.of( //
+                            new Scene("id1", "name1", "group1", List.of(), false), //
+                            new Scene("id2", "name2", "group2", List.of(), false), //
+                            new Scene("id3", "name3", "group1", List.of(), false));
+                    return new HueResult(createMockResponse(testScenes), HttpStatus.OK_200);
+                }
+                return super.get(address);
+            }
+        };
 
         List<Scene> scenes = hueBridge.getScenes();
         assertThat(scenes.size(), is(3));
@@ -92,8 +111,7 @@ public class HueBridgeTest {
                 "        \"version\": 2,\n" + //
                 "        \"group\": \"%s\"\n" + //
                 "    }";
-        String lights = String.join(",",
-                scene.getLightIds().stream().map(id -> "\"" + id + "\"").collect(Collectors.toList()));
+        String lights = scene.getLightIds().stream().map(id -> "\"" + id + "\"").collect(Collectors.joining(","));
         return String.format(template, scene.getId(), scene.getName(), lights, scene.isRecycle(), scene.getGroupId());
     }
 }

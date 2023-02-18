@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -389,9 +389,6 @@ public abstract class Packet {
     }
 
     public boolean isFulfilled(Packet somePacket) {
-        if (isExpectedResponse(somePacket.getPacketType())) {
-            return true;
-        }
-        return false;
+        return isExpectedResponse(somePacket.getPacketType());
     }
 }

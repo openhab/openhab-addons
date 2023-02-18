@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.BROWSE_ITEM_BY_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.BROWSE_ITEM_BY_TERMS_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.MEDIA_CONTROL_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_EPISODE_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_GENRES_CHANNEL;
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_NAME_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_PERCENTAGE_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_SEASON_CHANNEL;
@@ -24,13 +26,18 @@ import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLA
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_SERIES_NAME_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAYING_ITEM_TYPE_CHANNEL;
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_BY_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_BY_TERMS_CHANNEL;
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_LAST_BY_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_LAST_BY_TERMS_CHANNEL;
+import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_NEXT_BY_ID_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_NEXT_BY_TERMS_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.SEND_NOTIFICATION_CHANNEL;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -39,6 +46,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jellyfin.sdk.api.client.exception.ApiClientException;
 import org.jellyfin.sdk.model.api.BaseItemDto;
+import org.jellyfin.sdk.model.api.BaseItemKind;
 import org.jellyfin.sdk.model.api.PlayCommand;
 import org.jellyfin.sdk.model.api.PlayerStateInfo;
 import org.jellyfin.sdk.model.api.PlaystateCommand;
@@ -141,6 +149,55 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     }
                     runItemSearch(command.toFullString(), null);
                     break;
+                case PLAY_BY_ID_CHANNEL:
+                    if (command instanceof RefreshType) {
+                        return;
+                    }
+                    UUID itemUUID;
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_NOW);
+                    break;
+                case PLAY_NEXT_BY_ID_CHANNEL:
+                    if (command instanceof RefreshType) {
+                        return;
+                    }
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_NEXT);
+                    break;
+                case PLAY_LAST_BY_ID_CHANNEL:
+                    if (command instanceof RefreshType) {
+                        return;
+                    }
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
+                        return;
+                    }
+                    runItemById(itemUUID, PlayCommand.PLAY_LAST);
+                    break;
+                case BROWSE_ITEM_BY_ID_CHANNEL:
+                    if (command instanceof RefreshType) {
+                        return;
+                    }
+                    try {
+                        itemUUID = parseItemUUID(command);
+                    } catch (NumberFormatException e) {
+                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
+                        return;
+                    }
+                    runItemById(itemUUID, null);
+                    break;
                 case PLAYING_ITEM_SECOND_CHANNEL:
                     if (command instanceof RefreshType) {
                         refreshState();
@@ -161,6 +218,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     }
                     seekToPercentage(Integer.parseInt(command.toFullString()));
                     break;
+                case PLAYING_ITEM_ID_CHANNEL:
                 case PLAYING_ITEM_NAME_CHANNEL:
                 case PLAYING_ITEM_GENRES_CHANNEL:
                 case PLAYING_ITEM_SEASON_CHANNEL:
@@ -181,6 +239,13 @@ public class JellyfinClientHandler extends BaseThingHandler {
         } catch (ApiClientException e) {
             getServerHandler().handleApiException(e);
         }
+    }
+
+    private UUID parseItemUUID(Command command) throws NumberFormatException {
+        var itemId = command.toFullString().replace("-", "");
+        UUID itemUUID = new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
+                new BigInteger(itemId.substring(16), 16).longValue());
+        return itemUUID;
     }
 
     @Override
@@ -236,6 +301,14 @@ public class JellyfinClientHandler extends BaseThingHandler {
                 cleanChannel(PLAYING_ITEM_TOTAL_SECOND_CHANNEL);
             }
         }
+        if (isLinked(PLAYING_ITEM_ID_CHANNEL)) {
+            if (playingItem != null) {
+                updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_ID_CHANNEL),
+                        new StringType(playingItem.getId().toString()));
+            } else {
+                cleanChannel(PLAYING_ITEM_ID_CHANNEL);
+            }
+        }
         if (isLinked(PLAYING_ITEM_NAME_CHANNEL)) {
             if (playingItem != null) {
                 updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_NAME_CHANNEL),
@@ -253,7 +326,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
             }
         }
         if (isLinked(PLAYING_ITEM_SEASON_NAME_CHANNEL)) {
-            if (playingItem != null && "Episode".equals(playingItem.getType())) {
+            if (playingItem != null && BaseItemKind.EPISODE.equals(playingItem.getType())) {
                 updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_SEASON_NAME_CHANNEL),
                         new StringType(playingItem.getSeasonName()));
             } else {
@@ -261,7 +334,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
             }
         }
         if (isLinked(PLAYING_ITEM_SEASON_CHANNEL)) {
-            if (playingItem != null && "Episode".equals(playingItem.getType())) {
+            if (playingItem != null && BaseItemKind.EPISODE.equals(playingItem.getType())) {
                 updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_SEASON_CHANNEL),
                         new DecimalType(Objects.requireNonNull(playingItem.getParentIndexNumber())));
             } else {
@@ -269,7 +342,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
             }
         }
         if (isLinked(PLAYING_ITEM_EPISODE_CHANNEL)) {
-            if (playingItem != null && "Episode".equals(playingItem.getType())) {
+            if (playingItem != null && BaseItemKind.EPISODE.equals(playingItem.getType())) {
                 updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_EPISODE_CHANNEL),
                         new DecimalType(Objects.requireNonNull(playingItem.getIndexNumber())));
             } else {
@@ -287,7 +360,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
         if (isLinked(PLAYING_ITEM_TYPE_CHANNEL)) {
             if (playingItem != null) {
                 updateState(new ChannelUID(this.thing.getUID(), PLAYING_ITEM_TYPE_CHANNEL),
-                        new StringType(playingItem.getType()));
+                        new StringType(playingItem.getType().toString()));
             } else {
                 cleanChannel(PLAYING_ITEM_TYPE_CHANNEL);
             }
@@ -322,9 +395,10 @@ public class JellyfinClientHandler extends BaseThingHandler {
     private void runItemSearchByType(String terms, @Nullable PlayCommand playCommand, boolean movieSearchEnabled,
             boolean seriesSearchEnabled, boolean episodeSearchEnabled)
             throws SyncCallback.SyncCallbackError, ApiClientException {
-        var seriesItem = seriesSearchEnabled ? getServerHandler().searchItem(terms, "Series", null) : null;
-        var movieItem = movieSearchEnabled ? getServerHandler().searchItem(terms, "Movie", null) : null;
-        var episodeItem = episodeSearchEnabled ? getServerHandler().searchItem(terms, "Episode", null) : null;
+        var seriesItem = seriesSearchEnabled ? getServerHandler().searchItem(terms, BaseItemKind.SERIES, null) : null;
+        var movieItem = movieSearchEnabled ? getServerHandler().searchItem(terms, BaseItemKind.MOVIE, null) : null;
+        var episodeItem = episodeSearchEnabled ? getServerHandler().searchItem(terms, BaseItemKind.EPISODE, null)
+                : null;
         if (movieItem != null) {
             logger.debug("Found movie: '{}'", movieItem.getName());
         }
@@ -337,30 +411,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
         if (movieItem != null) {
             runItem(movieItem, playCommand);
         } else if (seriesItem != null) {
-            if (playCommand != null) {
-                var resumeEpisodeItem = getServerHandler().getSeriesResumeItem(seriesItem.getId());
-                var nextUpEpisodeItem = getServerHandler().getSeriesNextUpItem(seriesItem.getId());
-                var firstEpisodeItem = getServerHandler().getSeriesEpisodeItem(seriesItem.getId(), 1, 1);
-                if (resumeEpisodeItem != null) {
-                    logger.debug("Resuming series '{}' episode '{}'", seriesItem.getName(),
-                            resumeEpisodeItem.getName());
-                    playItem(resumeEpisodeItem, playCommand,
-                            Objects.requireNonNull(resumeEpisodeItem.getUserData()).getPlaybackPositionTicks());
-                } else if (nextUpEpisodeItem != null) {
-                    logger.debug("Playing next series '{}' episode '{}'", seriesItem.getName(),
-                            nextUpEpisodeItem.getName());
-                    playItem(nextUpEpisodeItem, playCommand);
-                } else if (firstEpisodeItem != null) {
-                    logger.debug("Playing series '{}' first episode '{}'", seriesItem.getName(),
-                            firstEpisodeItem.getName());
-                    playItem(firstEpisodeItem, playCommand);
-                } else {
-                    logger.warn("Unable to found episode for series");
-                }
-            } else {
-                logger.debug("Browse series '{}'", seriesItem.getName());
-                browseItem(seriesItem);
-            }
+            runSeriesItem(seriesItem, playCommand);
         } else if (episodeItem != null) {
             runItem(episodeItem, playCommand);
         } else {
@@ -368,10 +419,37 @@ public class JellyfinClientHandler extends BaseThingHandler {
         }
     }
 
+    private void runSeriesItem(BaseItemDto seriesItem, @Nullable PlayCommand playCommand)
+            throws SyncCallback.SyncCallbackError, ApiClientException {
+        if (playCommand != null) {
+            var resumeEpisodeItem = getServerHandler().getSeriesResumeItem(seriesItem.getId());
+            var nextUpEpisodeItem = getServerHandler().getSeriesNextUpItem(seriesItem.getId());
+            var firstEpisodeItem = getServerHandler().getSeriesEpisodeItem(seriesItem.getId(), 1, 1);
+            if (resumeEpisodeItem != null) {
+                logger.debug("Resuming series '{}' episode '{}'", seriesItem.getName(), resumeEpisodeItem.getName());
+                playItem(resumeEpisodeItem, playCommand,
+                        Objects.requireNonNull(resumeEpisodeItem.getUserData()).getPlaybackPositionTicks());
+            } else if (nextUpEpisodeItem != null) {
+                logger.debug("Playing next series '{}' episode '{}'", seriesItem.getName(),
+                        nextUpEpisodeItem.getName());
+                playItem(nextUpEpisodeItem, playCommand);
+            } else if (firstEpisodeItem != null) {
+                logger.debug("Playing series '{}' first episode '{}'", seriesItem.getName(),
+                        firstEpisodeItem.getName());
+                playItem(firstEpisodeItem, playCommand);
+            } else {
+                logger.warn("Unable to found episode for series");
+            }
+        } else {
+            logger.debug("Browse series '{}'", seriesItem.getName());
+            browseItem(seriesItem);
+        }
+    }
+
     private void runSeriesEpisode(String terms, int season, int episode, @Nullable PlayCommand playCommand)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         logger.debug("{} series episode mode", playCommand != null ? "Play" : "Browse");
-        var seriesItem = getServerHandler().searchItem(terms, "Series", null);
+        var seriesItem = getServerHandler().searchItem(terms, BaseItemKind.SERIES, null);
         if (seriesItem != null) {
             logger.debug("Searching series {} episode {}x{}", seriesItem.getName(), season, episode);
             var episodeItem = getServerHandler().getSeriesEpisodeItem(seriesItem.getId(), season, episode);
@@ -388,8 +466,8 @@ public class JellyfinClientHandler extends BaseThingHandler {
     private void runItem(BaseItemDto item, @Nullable PlayCommand playCommand)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var itemType = Objects.requireNonNull(item.getType());
-        logger.debug("{} {} '{}'", playCommand == null ? "Browsing" : "Playing", itemType.toLowerCase(),
-                "Episode".equals(itemType) ? item.getSeriesName() + ": " + item.getName() : item.getName());
+        logger.debug("{} {} '{}'", playCommand == null ? "Browsing" : "Playing", itemType.toString().toLowerCase(),
+                BaseItemKind.EPISODE.equals(itemType) ? item.getSeriesName() + ": " + item.getName() : item.getName());
         if (playCommand == null) {
             browseItem(item);
         } else {
@@ -421,6 +499,20 @@ public class JellyfinClientHandler extends BaseThingHandler {
     private void playItemInternal(BaseItemDto item, PlayCommand playCommand, @Nullable Long startPositionTicks)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         getServerHandler().playItem(lastSessionId, playCommand, item.getId().toString(), startPositionTicks);
+    }
+
+    private void runItemById(UUID itemId, @Nullable PlayCommand playCommand)
+            throws SyncCallback.SyncCallbackError, ApiClientException {
+        var item = getServerHandler().getItem(itemId, null);
+        if (item == null) {
+            logger.warn("Unable to find item with id: {}", itemId);
+            return;
+        }
+        if (BaseItemKind.SERIES.equals(item.getType())) {
+            runSeriesItem(item, playCommand);
+        } else {
+            runItem(item, playCommand);
+        }
     }
 
     private void browseItem(BaseItemDto item) throws SyncCallback.SyncCallbackError, ApiClientException {
@@ -517,10 +609,11 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void cleanChannels() {
-        List.of(MEDIA_CONTROL_CHANNEL, PLAYING_ITEM_PERCENTAGE_CHANNEL, PLAYING_ITEM_NAME_CHANNEL,
-                PLAYING_ITEM_SERIES_NAME_CHANNEL, PLAYING_ITEM_SEASON_NAME_CHANNEL, PLAYING_ITEM_SEASON_CHANNEL,
-                PLAYING_ITEM_EPISODE_CHANNEL, PLAYING_ITEM_GENRES_CHANNEL, PLAYING_ITEM_TYPE_CHANNEL,
-                PLAYING_ITEM_SECOND_CHANNEL, PLAYING_ITEM_TOTAL_SECOND_CHANNEL).forEach(this::cleanChannel);
+        List.of(MEDIA_CONTROL_CHANNEL, PLAYING_ITEM_PERCENTAGE_CHANNEL, PLAYING_ITEM_ID_CHANNEL,
+                PLAYING_ITEM_NAME_CHANNEL, PLAYING_ITEM_SERIES_NAME_CHANNEL, PLAYING_ITEM_SEASON_NAME_CHANNEL,
+                PLAYING_ITEM_SEASON_CHANNEL, PLAYING_ITEM_EPISODE_CHANNEL, PLAYING_ITEM_GENRES_CHANNEL,
+                PLAYING_ITEM_TYPE_CHANNEL, PLAYING_ITEM_SECOND_CHANNEL, PLAYING_ITEM_TOTAL_SECOND_CHANNEL)
+                .forEach(this::cleanChannel);
     }
 
     private void cleanChannel(String channelId) {

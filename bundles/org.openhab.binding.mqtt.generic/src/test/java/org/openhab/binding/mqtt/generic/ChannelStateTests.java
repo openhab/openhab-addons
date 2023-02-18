@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -261,8 +261,8 @@ public class ChannelStateTests {
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue(null), is("13,20,225"));
-        assertThat(value.getMQTTpublishValue("%3$d,%2$d,%1$d"), is("225,20,13"));
+        assertThat(value.getMQTTpublishValue(null), is("13,20,229"));
+        assertThat(value.getMQTTpublishValue("%3$d,%2$d,%1$d"), is("229,20,13"));
     }
 
     @Test

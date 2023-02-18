@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecowatt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="signals">
+		<label>Electricity Forecast</label>
+		<description>The French electricity consumption forecasts</description>
+
+		<channels>
+			<channel id="todaySignal" typeId="signal">
+				<label>Today Signal</label>
+				<description>The signal relating to the forecast consumption level for today. Values are 1 for normal consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="tomorrowSignal" typeId="signal">
+				<label>Tomorrow Signal</label>
+				<description>The signal relating to the forecast consumption level for tomorrow. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="inTwoDaysSignal" typeId="signal">
+				<label>In Two Days Signal</label>
+				<description>The signal relating to the forecast consumption level in two days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="inThreeDaysSignal" typeId="signal">
+				<label>In Three Days Signal</label>
+				<description>The signal relating to the forecast consumption level in three days. Values are 1 for normal
+					consumption
+					(green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+			<channel id="currentHourSignal" typeId="signal">
+				<label>Current Hour Signal</label>
+				<description>The signal relating to the forecast consumption level for the current hour. Values are 1 for normal
+					consumption (green), 2 for strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="idClient" type="text" required="true">
+				<label>ID Client</label>
+				<description>ID client provided with the application you created in the RTE portal.</description>
+			</parameter>
+			<parameter name="idSecret" type="text" required="true">
+				<context>password</context>
+				<label>ID Secret</label>
+				<description>ID secret provided with the application you created in the RTE portal.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="signal">
+		<item-type>Number</item-type>
+		<label>Consumption Signal</label>
+		<description>The signal relating to the forecast consumption level. Values are 1 for normal consumption (green), 2 for
+			strained electrical system (orange) and 3 for very strained electrical system (red).</description>
+		<state readOnly="true">
+			<options>
+				<option value="1">Green</option>
+				<option value="2">Orange</option>
+				<option value="3">Red</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

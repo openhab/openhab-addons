@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,26 +12,29 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_CONFIG_TIMEFRAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PRESSURE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE_GUARD;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_VALVE_OPEN;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import javax.measure.quantity.Volume;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.grohe.ondus.api.OndusService;
-import org.grohe.ondus.api.model.BaseApplianceCommand;
-import org.grohe.ondus.api.model.BaseApplianceData;
-import org.grohe.ondus.api.model.guard.Appliance;
-import org.grohe.ondus.api.model.guard.ApplianceCommand;
-import org.grohe.ondus.api.model.guard.ApplianceData;
-import org.grohe.ondus.api.model.guard.ApplianceData.Data;
-import org.grohe.ondus.api.model.guard.ApplianceData.Measurement;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -43,9 +46,20 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
+import io.github.floriansw.ondus.api.model.BaseApplianceCommand;
+import io.github.floriansw.ondus.api.model.BaseApplianceData;
+import io.github.floriansw.ondus.api.model.guard.Appliance;
+import io.github.floriansw.ondus.api.model.guard.ApplianceCommand;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData.Data;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData.Measurement;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
@@ -58,8 +72,8 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
 
-    public GroheOndusSenseGuardHandler(Thing thing) {
-        super(thing, Appliance.TYPE);
+    public GroheOndusSenseGuardHandler(Thing thing, int thingCounter) {
+        super(thing, Appliance.TYPE, thingCounter);
     }
 
     @Override
@@ -73,35 +87,52 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     @Override
     protected void updateChannel(ChannelUID channelUID, Appliance appliance, Data dataPoint) {
         String channelId = channelUID.getIdWithoutGroup();
-        State newState;
+        State newState = UnDefType.UNDEF;
+        Measurement lastMeasurement = getLastMeasurement(dataPoint);
         switch (channelId) {
             case CHANNEL_NAME:
                 newState = new StringType(appliance.getName());
                 break;
             case CHANNEL_PRESSURE:
-                newState = new QuantityType<>(getLastMeasurement(dataPoint).getPressure(), Units.BAR);
+                newState = new QuantityType<>(lastMeasurement.getPressure(), Units.BAR);
                 break;
             case CHANNEL_TEMPERATURE_GUARD:
-                newState = new QuantityType<>(getLastMeasurement(dataPoint).getTemperatureGuard(), SIUnits.CELSIUS);
+                newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
                 break;
             case CHANNEL_VALVE_OPEN:
-                newState = getValveOpenType(appliance);
+
+                OnOffType valveOpenType = getValveOpenType(appliance);
+                if (valveOpenType != null) {
+                    newState = valveOpenType;
+                }
                 break;
             case CHANNEL_WATERCONSUMPTION:
-                newState = sumWaterCosumption(dataPoint);
+                newState = sumWaterConsumption(dataPoint);
+                break;
+            case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT:
+                newState = sumWaterConsumptionSinceMidnight(dataPoint);
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
-        if (newState != null) {
-            updateState(channelUID, newState);
-        }
+        updateState(channelUID, newState);
     }
 
-    private DecimalType sumWaterCosumption(Data dataPoint) {
+    private QuantityType<Volume> sumWaterConsumptionSinceMidnight(Data dataPoint) {
+        ZonedDateTime earliestWithdrawal = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
+
+        Double waterConsumption = dataPoint.getWithdrawals().stream()
+                .filter(e -> earliestWithdrawal.isBefore(e.starttime.toInstant().atZone(ZoneId.systemDefault()))
+                        && latestWithdrawal.isAfter(e.starttime.toInstant().atZone(ZoneId.systemDefault())))
+                .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
+        return new QuantityType<>(waterConsumption, Units.LITRE);
+    }
+
+    private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new DecimalType(waterConsumption);
+        return new QuantityType<Volume>(waterConsumption, Units.LITRE);
     }
 
     private Measurement getLastMeasurement(Data dataPoint) {
@@ -126,8 +157,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             return null;
         }
         if (commandOptional.get().getType() != Appliance.TYPE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thing is not a GROHE SENSE Guard device.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
             return null;
         }
         return ((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen() ? OnOffType.ON : OnOffType.OFF;
@@ -136,37 +166,46 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     @Override
     protected Data getLastDataPoint(Appliance appliance) {
         if (getOndusService() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             return new Data();
         }
 
         ApplianceData applianceData = getApplianceData(appliance);
         if (applianceData == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not load data from API.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
             return new Data();
         }
-        return applianceData.getData();
+        Data data = applianceData.getData();
+        Collections.sort(data.measurement, Comparator.comparing(e -> ZonedDateTime.parse(e.timestamp)));
+        Collections.sort(data.withdrawals, Comparator.comparing(e -> e.starttime));
+        return data;
     }
 
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
         Instant from = fromTime();
-        Instant to = Instant.now();
+        // Truncated to date only inside api package
+        Instant to = Instant.now().plus(1, ChronoUnit.DAYS);
 
         OndusService service = getOndusService();
         if (service == null) {
             return null;
         }
         try {
+            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), from, to);
             BaseApplianceData applianceData = service.applianceData(appliance, from, to).orElse(null);
-            if (applianceData.getType() != Appliance.TYPE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Thing is not a GROHE SENSE Guard device.");
-                return null;
+            if (applianceData != null) {
+                if (applianceData.getType() != Appliance.TYPE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/error.notsenseguard");
+                    return null;
+                }
+                return (ApplianceData) applianceData;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/error.failedtoloaddata");
             }
-            return (ApplianceData) applianceData;
         } catch (IOException e) {
-            logger.debug("Could not load appliance data", e);
+            logger.debug("Could not load appliance data for {}", thing.getUID(), e);
         }
         return null;
     }
@@ -196,6 +235,11 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            updateChannels();
+            return;
+        }
+
         if (!CHANNEL_VALVE_OPEN.equals(channelUID.getIdWithoutGroup())) {
             return;
         }

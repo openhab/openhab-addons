@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:broadlinkthermostat:floureonandhysenthermostat">
+	<config-description uri="thing-type:broadlinkthermostat:deviceconfig">
 		<parameter name="host" type="text" required="true">
 			<label>Hostname</label>
 			<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
@@ -16,5 +16,4 @@
 			<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
 		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>

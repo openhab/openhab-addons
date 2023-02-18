@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetLightingHandler} is responsible for handling commands/messages for a Lighting OpenWebNet device.
+ * The {@link OpenWebNetLightingHandler} is responsible for handling
+ * commands/messages for a Lighting OpenWebNet device.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
@@ -57,8 +58,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     // interval to interpret ON as response to requestStatus
     private static final int BRIGHTNESS_STATUS_REQUEST_INTERVAL_MSEC = 250;
 
-    // time to wait before sending a statusRequest, to avoid repeated requests and ensure dimmer has reached its final
-    // level
+    // time to wait before sending a statusRequest, to avoid repeated requests and
+    // ensure dimmer has reached its final level
     private static final int BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC = 900;
 
     private static final int UNKNOWN_STATE = 1000;
@@ -72,8 +73,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
 
     private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
-
-    private int sw[] = { UNKNOWN_STATE, UNKNOWN_STATE }; // current switch(es) state
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
@@ -112,9 +111,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
             ThingTypeUID thingType = thing.getThingTypeUID();
             if (THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS.equals(thingType)) {
-                // Unfortunately using USB Gateway OpenWebNet both switch endpoints cannot be requested at the same
-                // time using UNIT 00 because USB stick returns NACK, so we need to send a request status for both
-                // endpoints
+                /*
+                 * Unfortunately using USB Gateway OpenWebNet both switch endpoints cannot be
+                 * requested at the same time using UNIT 00 because USB stick returns NACK,
+                 * so we need to send a request status for both endpoints
+                 */
                 requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_SWITCH_02));
             }
             requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_SWITCH_01));
@@ -266,17 +267,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC);
         } else {
             if (msg.isOn()) {
-                // if we have not just sent a requestStatus, on ON event we send requestStatus to know current level
+                // if we have not just sent a requestStatus, on ON event we send requestStatus
+                // to know current level
                 long deltaStatusReq = now - lastStatusRequestSentTS;
                 if (deltaStatusReq > BRIGHTNESS_STATUS_REQUEST_INTERVAL_MSEC) {
                     logger.debug("  $BRI 'ON' is new notification from network, scheduling requestStatus...");
-                    // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has reached its final level
+                    // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has
+                    // reached its final level
                     scheduler.schedule(() -> {
                         requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_BRIGHTNESS));
                     }, BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC, TimeUnit.MILLISECONDS);
                     return;
                 } else {
-                    // otherwise we interpret this ON event as the requestStatus response event with level=1
+                    // otherwise we interpret this ON event as the requestStatus response event with
+                    // level=1
                     // so we proceed to call updateBrightnessState()
                     logger.debug("  $BRI 'ON' is the requestStatus response level");
                 }
@@ -310,7 +314,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light brightness state based on a OWN Lighting message
+     * Updates light brightness state based on an OWN Lighting message
      *
      * @param msg the Lighting message received
      */
@@ -341,7 +345,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light on/off state based on a OWN Lighting event message received
+     * Updates light on/off state based on an OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */
@@ -350,27 +354,17 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         if (brH != null) {
             if (msg.isOn() || msg.isOff()) {
                 String channelId;
-                int switchId = 0;
                 if (brH.isBusGateway()) {
                     channelId = CHANNEL_SWITCH;
                 } else {
                     WhereZigBee w = (WhereZigBee) (msg.getWhere());
                     if (WhereZigBee.UNIT_02.equals(w.getUnit())) {
                         channelId = CHANNEL_SWITCH_02;
-                        switchId = 1;
                     } else {
                         channelId = CHANNEL_SWITCH_01;
                     }
                 }
-                int currentSt = sw[switchId];
-                int newSt = (msg.isOn() ? 1 : 0);
-                if (newSt != currentSt) {
-                    updateState(channelId, (newSt == 1 ? OnOffType.ON : OnOffType.OFF));
-                    sw[switchId] = newSt;
-                    logger.debug("  {} ONOFF CHANGED to {}", ownId, newSt);
-                } else {
-                    logger.debug("  {} ONOFF no change", ownId);
-                }
+                updateState(channelId, OnOffType.from(msg.isOn()));
             } else {
                 logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}", getThing().getUID(),
                         msg.getFrameValue());

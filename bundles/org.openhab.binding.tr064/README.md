@@ -7,10 +7,12 @@ Even though textual configuration is possible, it is strongly recommended to use
 ## Supported Things
 
 Two Bridge things are supported:
+
 - `generic`: the internet gateway device itself (generic device)
 - `fritzbox`: similar to `generic` with extensions for AVM FritzBox devices.
 
 Two kind of Things are supported:
+
 - `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface) 
 - `subDeviceLan`: a special type of sub-device that supports MAC-detection
 
@@ -68,7 +70,9 @@ If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phoneb
 The `phonebookInterval` is used to set the refresh cycle for phonebooks.
 It defaults to 600 seconds, and it can be set to 0 if phonebooks are not used.
 
-Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
+Some parameters (e.g. `macOnline`, `wanBlockIPs`) accept lists. 
+List items are configured one per line in the UI, or are comma separated values when using textual config.
+These parameters that accept list can also contain comments.
 Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
 The full string is used for the channel label.
 
@@ -198,6 +202,7 @@ Example (use all phonebooks, match 5 digits from right):
 val tr064Actions = getActions("tr064","tr064:fritzbox:2a28aee1ee")
 val result = tr064Actions.phonebookLookup("49157712341234", 5)
 ```
+
 ## A note on textual configuration
 
 Textual configuration through a `.things` file is possible but, at present, strongly discouraged because it is significantly more error-prone
@@ -208,6 +213,7 @@ an automatic scan through the user interface first in order to extract the requi
 needed subdevices).
 
 The definition of the bridge and of the subdevices things is the following
+
 ```
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
                                                          phonebookInterval="0"]{

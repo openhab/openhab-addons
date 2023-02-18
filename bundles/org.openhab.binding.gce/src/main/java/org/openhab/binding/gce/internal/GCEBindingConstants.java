@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,4 @@ public class GCEBindingConstants {
     public static final String EVENT_SHORT_PRESS = "SHORT_PRESS";
     public static final String EVENT_LONG_PRESS = "LONG_PRESS";
     public static final String EVENT_PULSE = "PULSE";
-
-    // Adressable thing
 }

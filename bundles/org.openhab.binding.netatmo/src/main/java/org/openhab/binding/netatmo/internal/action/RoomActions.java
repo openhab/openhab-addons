@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,10 +42,17 @@ public class RoomActions implements ThingActions {
             SetpointMode.HOME);
 
     private @Nullable CommonInterface handler;
-    private Optional<EnergyCapability> energy = Optional.empty();
 
     public RoomActions() {
         logger.debug("Netatmo RoomActions service created");
+    }
+
+    private Optional<EnergyCapability> getEnergyCapability() {
+        CommonInterface localHandler = handler;
+        if (localHandler != null) {
+            return localHandler.getHomeCapability(EnergyCapability.class);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -53,7 +60,6 @@ public class RoomActions implements ThingActions {
         if (handler instanceof CommonInterface) {
             CommonInterface commonHandler = (CommonInterface) handler;
             this.handler = commonHandler;
-            energy = commonHandler.getHomeCapability(EnergyCapability.class);
         }
     }
 
@@ -77,7 +83,8 @@ public class RoomActions implements ThingActions {
             logger.info("Temperature provided but no endtime given, action ignored");
             return;
         }
-        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), temp, endTime, SetpointMode.MANUAL));
+        getEnergyCapability()
+                .ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), temp, endTime, SetpointMode.MANUAL));
     }
 
     @RuleAction(label = "@text/actionSetThermRoomModeSetpointLabel", description = "@text/actionSetThermRoomModeSetpointDesc")
@@ -116,7 +123,7 @@ public class RoomActions implements ThingActions {
 
         long setpointEnd = targetEndTime;
         SetpointMode setpointMode = targetMode;
-        energy.ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), 0, setpointEnd, setpointMode));
+        getEnergyCapability().ifPresent(cap -> cap.setRoomThermTemp(roomHandler.getId(), 0, setpointEnd, setpointMode));
     }
 
     public static void setThermRoomTempSetpoint(ThingActions actions, @Nullable Double temp, @Nullable Long endTime) {

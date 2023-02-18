@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -114,6 +115,7 @@ public class OnvifConnection {
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
     private @Nullable Bootstrap bootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(2);
+    private ReentrantLock connecting = new ReentrantLock();
     private String ipAddress = "";
     private String user = "";
     private String password = "";
@@ -308,7 +310,12 @@ public class OnvifConnection {
         } else if (message.contains("RenewResponse")) {
             sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
-            isConnected = true;
+            connecting.lock();
+            try {
+                isConnected = true;
+            } finally {
+                connecting.unlock();
+            }
             sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
             logger.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
@@ -355,7 +362,8 @@ public class OnvifConnection {
         } else if (message.contains("GetSnapshotUriResponse")) {
             snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
             logger.debug("GetSnapshotUri:{}", snapshotUri);
-            if (ipCameraHandler.snapshotUri.isEmpty()) {
+            if (ipCameraHandler.snapshotUri.isEmpty()
+                    && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
                 ipCameraHandler.snapshotUri = snapshotUri;
             }
         } else if (message.contains("GetStreamUriResponse")) {
@@ -401,7 +409,7 @@ public class OnvifConnection {
         request.headers().add("Content-Type",
                 "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
         request.headers().add("Charset", "utf-8");
-        request.headers().set("Host", extractIPportFromUrl(xAddr));
+        request.headers().set("Host", ipAddress + ":" + onvifPort);
         request.headers().set("Connection", HttpHeaderValues.CLOSE);
         request.headers().set("Accept-Encoding", "gzip, deflate");
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
@@ -512,6 +520,7 @@ public class OnvifConnection {
     @SuppressWarnings("null")
     public void sendOnvifRequest(HttpRequest request) {
         if (bootstrap == null) {
+            mainEventLoopGroup = new NioEventLoopGroup(2);
             bootstrap = new Bootstrap();
             bootstrap.group(mainEventLoopGroup);
             bootstrap.channel(NioSocketChannel.class);
@@ -530,24 +539,28 @@ public class OnvifConnection {
                 }
             });
         }
-        bootstrap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
+        if (!mainEventLoopGroup.isShuttingDown()) {
+            bootstrap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
 
-            @Override
-            public void operationComplete(@Nullable ChannelFuture future) {
-                if (future == null) {
-                    return;
-                }
-                if (future.isDone() && future.isSuccess()) {
-                    Channel ch = future.channel();
-                    ch.writeAndFlush(request);
-                } else { // an error occured
-                    logger.debug("Camera is not reachable on ONVIF port:{} or the port may be wrong.", onvifPort);
-                    if (isConnected) {
-                        disconnect();
+                @Override
+                public void operationComplete(@Nullable ChannelFuture future) {
+                    if (future == null) {
+                        return;
+                    }
+                    if (future.isSuccess()) {
+                        Channel ch = future.channel();
+                        ch.writeAndFlush(request);
+                    } else { // an error occured
+                        logger.debug("Camera is not reachable on ONVIF port:{} or the port may be wrong.", onvifPort);
+                        if (isConnected) {
+                            disconnect();
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            logger.debug("ONVIF message not sent as connection is shutting down");
+        }
     }
 
     OnvifConnection getHandle() {
@@ -565,8 +578,11 @@ public class OnvifConnection {
             onvifPort = Integer.parseInt(url.substring(beginIndex + 1, endIndex));
         } else {// 192.168.1.1
             ipAddress = url;
+            deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
             logger.debug("No Onvif Port found when parsing:{}", url);
+            return;
         }
+        deviceXAddr = "http://" + ipAddress + ":" + onvifPort + "/onvif/device_service";
     }
 
     public void gotoPreset(int index) {
@@ -833,42 +849,59 @@ public class OnvifConnection {
     }
 
     public void connect(boolean useEvents) {
-        if (!isConnected) {
-            sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
-            usingEvents = useEvents;
+        connecting.lock();
+        try {
+            if (!isConnected) {
+                logger.debug("Connecting {} to ONVIF", ipAddress);
+                threadPool = Executors.newScheduledThreadPool(2);
+                sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
+                usingEvents = useEvents;
+            }
+        } finally {
+            connecting.unlock();
         }
     }
 
     public boolean isConnected() {
-        return isConnected;
+        connecting.lock();
+        try {
+            return isConnected;
+        } finally {
+            connecting.unlock();
+        }
     }
 
     private void cleanup() {
-        mainEventLoopGroup.shutdownGracefully();
-        isConnected = false;
-        if (!mainEventLoopGroup.isShutdown()) {
+        if (!isConnected && !mainEventLoopGroup.isShuttingDown()) {
             try {
+                mainEventLoopGroup.shutdownGracefully();
                 mainEventLoopGroup.awaitTermination(3, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 logger.warn("ONVIF was not cleanly shutdown, due to being interrupted");
             } finally {
                 logger.debug("Eventloop is shutdown:{}", mainEventLoopGroup.isShutdown());
                 bootstrap = null;
+                threadPool.shutdown();
             }
         }
-        threadPool.shutdown();
     }
 
     public void disconnect() {
-        if (bootstrap != null) {
-            if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
-                // Some cameras may continue to send events even when they can't reach a server.
-                sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+        connecting.lock();// Lock out multiple disconnect()/connect() attempts as we try to send Unsubscribe.
+        try {
+            isConnected = false;// isConnected is not thread safe, connecting.lock() used as fix.
+            if (bootstrap != null) {
+                if (usingEvents && !mainEventLoopGroup.isShuttingDown()) {
+                    // Some cameras may continue to send events even when they can't reach a server.
+                    sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+                }
+                // give time for the Unsubscribe request to be sent, shutdownGracefully will try to send it first.
+                threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);
+            } else {
+                cleanup();
             }
-            // give time for the Unsubscribe request to be sent to the camera.
-            threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);
-        } else {
-            cleanup();
+        } finally {
+            connecting.unlock();
         }
     }
 }

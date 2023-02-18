@@ -79,6 +79,11 @@
 			<channel id="artist" typeId="artist"/>
 			<channel id="year" typeId="year"/>
 			<channel id="genre" typeId="genre"/>
+			<channel id="albumArtist" typeId="albumArtist"/>
+			<channel id="trackArtist" typeId="trackArtist"/>
+			<channel id="band" typeId="band"/>
+			<channel id="composer" typeId="composer"/>
+			<channel id="conductor" typeId="conductor"/>
 			<channel id="coverartdata" typeId="coverartdata"/>
 			<channel id="ircode" typeId="ircode"/>
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks"/>
@@ -121,7 +126,7 @@
 		<description>Comma-separated list of favorites of form favoriteId=favoriteName</description>
 		<state readOnly="true" pattern="%s"></state>
 		<config-description>
-			<parameter name="quoteList" type="boolean" required="true">
+			<parameter name="quoteList" type="boolean">
 				<label>Quote Favorites</label>
 				<description>Wrap the right hand side of the favorites in quotes</description>
 				<default>false</default>
@@ -280,6 +285,36 @@
 		<item-type>String</item-type>
 		<label>Genre</label>
 		<description>Genre name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="albumArtist" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Artist</label>
+		<description>Main artist for the album</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="trackArtist" advanced="true">
+		<item-type>String</item-type>
+		<label>Track Artist</label>
+		<description>Main artist for the track</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="band" advanced="true">
+		<item-type>String</item-type>
+		<label>Band/Orchestra</label>
+		<description>Band/orchestra performing the work</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="composer" advanced="true">
+		<item-type>String</item-type>
+		<label>Composer</label>
+		<description>Original composer of the work</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="conductor" advanced="true">
+		<item-type>String</item-type>
+		<label>Conductor</label>
+		<description>Conductor</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="coverartdata">

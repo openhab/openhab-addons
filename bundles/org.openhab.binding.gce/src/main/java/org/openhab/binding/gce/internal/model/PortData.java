@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,10 @@
 package org.openhab.binding.gce.internal.model;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link PortData} is responsible for holding data regarding current status of a port.
@@ -27,16 +27,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PortData {
     private double value = -1;
     private ZonedDateTime timestamp = ZonedDateTime.now();
-    private @Nullable ScheduledFuture<?> pulsing;
+    private Optional<ScheduledFuture<?>> pulsing = Optional.empty();
 
     public void cancelPulsing() {
-        if (pulsing != null) {
-            pulsing.cancel(true);
-        }
-        pulsing = null;
+        pulsing.ifPresent(pulse -> pulse.cancel(true));
+        pulsing = Optional.empty();
     }
 
-    public void destroy() {
+    public void dispose() {
         cancelPulsing();
     }
 
@@ -54,7 +52,7 @@ public class PortData {
     }
 
     public void setPulsing(ScheduledFuture<?> pulsing) {
-        this.pulsing = pulsing;
+        this.pulsing = Optional.of(pulsing);
     }
 
     public boolean isInitializing() {

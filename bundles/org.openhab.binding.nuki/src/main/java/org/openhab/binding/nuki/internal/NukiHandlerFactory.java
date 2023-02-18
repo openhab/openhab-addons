@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -54,14 +55,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
+    private final ManagedThingProvider managedThingProvider;
     private NukiApiServlet nukiApiServlet;
 
     @Activate
     public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
-            @Reference NetworkAddressService networkAddressService) {
+            @Reference NetworkAddressService networkAddressService,
+            @Reference ManagedThingProvider managedThingProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
         this.nukiApiServlet = new NukiApiServlet(httpService);
+        this.managedThingProvider = managedThingProvider;
     }
 
     @Override
@@ -72,6 +76,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        boolean readOnly = managedThingProvider.get(thing.getUID()) == null;
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl(InstanceUUID.get());
@@ -79,9 +84,9 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             nukiApiServlet.add(nukiBridgeHandler);
             return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
-            return new NukiSmartLockHandler(thing);
+            return new NukiSmartLockHandler(thing, readOnly);
         } else if (NukiBindingConstants.THING_TYPE_OPENER_UIDS.contains(thingTypeUID)) {
-            return new NukiOpenerHandler(thing);
+            return new NukiOpenerHandler(thing, readOnly);
         }
         logger.warn("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;

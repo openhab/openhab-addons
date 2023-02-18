@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms an value in an openHAB type.
+     * Transforms a value in an openHAB type.
      *
      * @param multilevel sensor value
      * @return transformed openHAB state
@@ -104,7 +104,7 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms an value in an openHAB type.
+     * Transforms a value in an openHAB type.
      *
      * @param binary switch value
      * @return transformed openHAB state
@@ -121,7 +121,7 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms an value in an openHAB type.
+     * Transforms a value in an openHAB type.
      * - ON to OPEN
      * - OFF to CLOSED
      *
@@ -140,7 +140,7 @@ public class ZWayDeviceStateConverter {
     }
 
     /**
-     * Transforms an value in an openHAB type.
+     * Transforms a value in an openHAB type.
      *
      * @param Z-Way color value
      * @return transformed openHAB state

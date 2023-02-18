@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,8 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     private void initializeDelayed() {
         logger.debug("Start initializeDelayed() in {}", getThing().getUID());
-        ParadoxPanel panel = ParadoxPanel.getInstance();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
         // Asynchronous update not yet done
         if (panel.getPanelInformation() == null) {
             // Retry until reach MAX_WAIT_TIME

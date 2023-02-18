@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.Collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ContentItemMaker} class makes ContentItems for sources
  *
  * @author Thomas Traunbauer - Initial contribution
  */
+@NonNullByDefault
 public class ContentItemMaker {
 
     private final PresetContainer presetContainer;

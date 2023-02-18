@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -100,9 +101,10 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
         }
         TargetDoorStateEnum mode;
 
-        if (item instanceof SwitchItem) {
+        final Item baseItem = HomekitOHItemProxy.getBaseItem(item);
+        if (baseItem instanceof SwitchItem) {
             mode = item.getState() == OnOffType.ON ? TargetDoorStateEnum.OPEN : TargetDoorStateEnum.CLOSED;
-        } else if (item instanceof StringItem) {
+        } else if (baseItem instanceof StringItem) {
             final HomekitSettings settings = getSettings();
             final String stringValue = item.getState().toString();
             if (stringValue.equalsIgnoreCase(settings.doorTargetStateClosed)) {
@@ -116,7 +118,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
                 mode = TargetDoorStateEnum.CLOSED;
             }
         } else {
-            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported", item.getType(),
+            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported", baseItem.getType(),
                     item.getName());
             mode = TargetDoorStateEnum.CLOSED;
         }
@@ -131,24 +133,24 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     @Override
     public CompletableFuture<Void> setTargetDoorState(TargetDoorStateEnum targetDoorStateEnum) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
-        Item item;
+        final HomekitTaggedItem taggedItem;
         if (characteristic.isPresent()) {
-            item = characteristic.get().getItem();
+            taggedItem = characteristic.get();
         } else {
             logger.warn("Missing mandatory characteristic {}", TARGET_DOOR_STATE);
             return CompletableFuture.completedFuture(null);
         }
 
-        if (item instanceof SwitchItem) {
-            ((SwitchItem) item).send(OnOffType.from(targetDoorStateEnum == TargetDoorStateEnum.OPEN));
-        } else if (item instanceof StringItem) {
+        if (taggedItem.getBaseItem() instanceof SwitchItem) {
+            taggedItem.send(OnOffType.from(targetDoorStateEnum == TargetDoorStateEnum.OPEN));
+        } else if (taggedItem.getBaseItem() instanceof StringItem) {
             final HomekitSettings settings = getSettings();
-            ((StringItem) item)
+            taggedItem
                     .send(new StringType(targetDoorStateEnum == TargetDoorStateEnum.OPEN ? settings.doorTargetStateOpen
                             : settings.doorTargetStateClosed));
         } else {
-            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported", item.getType(),
-                    item.getName());
+            logger.warn("Unsupported item type {} for {}. Only Switch and String are supported",
+                    taggedItem.getBaseItem().getType(), taggedItem.getName());
         }
         return CompletableFuture.completedFuture(null);
     }

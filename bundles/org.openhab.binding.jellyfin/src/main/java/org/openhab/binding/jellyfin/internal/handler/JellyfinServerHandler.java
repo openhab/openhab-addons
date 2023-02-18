@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,7 @@ import org.jellyfin.sdk.model.api.AuthenticateUserByName;
 import org.jellyfin.sdk.model.api.AuthenticationResult;
 import org.jellyfin.sdk.model.api.BaseItemDto;
 import org.jellyfin.sdk.model.api.BaseItemDtoQueryResult;
+import org.jellyfin.sdk.model.api.BaseItemKind;
 import org.jellyfin.sdk.model.api.ItemFields;
 import org.jellyfin.sdk.model.api.MessageCommand;
 import org.jellyfin.sdk.model.api.PlayCommand;
@@ -63,6 +64,9 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.ktor.http.URLBuilder;
+import io.ktor.http.URLProtocol;
 
 /**
  * The {@link JellyfinServerHandler} is responsible for handling commands, which are
@@ -118,7 +122,16 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
     }
 
     public String getServerUrl() {
-        return (config.ssl ? "https" : "http") + "://" + config.hostname + ":" + config.port;
+        var builder = new URLBuilder();
+        builder.setHost(config.hostname);
+        if (config.ssl) {
+            builder.setProtocol(URLProtocol.Companion.getHTTPS());
+        } else {
+            builder.setProtocol(URLProtocol.Companion.getHTTP());
+        }
+        builder.setPort(config.port);
+        builder.setEncodedPath(config.path);
+        return builder.buildString();
     }
 
     public boolean isOnline() {
@@ -271,7 +284,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         awaiter.awaitResponse();
     }
 
-    public void browseToItem(String sessionId, String itemType, String itemId, String itemName)
+    public void browseToItem(String sessionId, BaseItemKind itemType, String itemId, String itemName)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var awaiter = new EmptySyncResponse();
         new SessionApi(jellyApiClient).displayContent(sessionId, itemType, itemId, itemName, awaiter);
@@ -287,7 +300,7 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         new TvShowsApi(jellyApiClient).getNextUp(jellyApiClient.getUserId(), null, limit, null, seriesId.toString(),
-                null, null, null, null, null, null, null, asyncContinuation);
+                null, null, null, null, null, null, null, null, null, asyncContinuation);
         var result = asyncContinuation.awaitContent();
         return Objects.requireNonNull(result.getItems());
     }
@@ -301,7 +314,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
             throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         new ItemsApi(jellyApiClient).getResumeItems(Objects.requireNonNull(jellyApiClient.getUserId()), null, limit,
-                null, seriesId, null, null, true, null, null, null, List.of("Episode"), null, null, asyncContinuation);
+                null, seriesId, null, null, true, null, null, null, List.of(BaseItemKind.EPISODE), null, null, null,
+                asyncContinuation);
         var result = asyncContinuation.awaitContent();
         return Objects.requireNonNull(result.getItems());
     }
@@ -320,21 +334,34 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
         return Objects.requireNonNull(result.getItems());
     }
 
-    public @Nullable BaseItemDto searchItem(@Nullable String searchTerm, @Nullable String itemType,
+    public @Nullable BaseItemDto getItem(UUID id, @Nullable List<ItemFields> fields)
+            throws SyncCallback.SyncCallbackError, ApiClientException {
+        var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
+        new ItemsApi(jellyApiClient).getItems(jellyApiClient.getUserId(), null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, 1, true, null, null, null, fields, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, 1, null, null, null, null, null, null, null,
+                null, null, null, null, null, List.of(id), null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, false, false, asyncContinuation);
+        var response = asyncContinuation.awaitContent();
+        return Objects.requireNonNull(response.getItems()).stream().findFirst().orElse(null);
+    }
+
+    public @Nullable BaseItemDto searchItem(@Nullable String searchTerm, @Nullable BaseItemKind itemType,
             @Nullable List<ItemFields> fields) throws SyncCallback.SyncCallbackError, ApiClientException {
         return searchItems(searchTerm, itemType, fields, 1).stream().findFirst().orElse(null);
     }
 
-    public List<BaseItemDto> searchItems(@Nullable String searchTerm, @Nullable String itemType,
+    public List<BaseItemDto> searchItems(@Nullable String searchTerm, @Nullable BaseItemKind itemType,
             @Nullable List<ItemFields> fields, int limit) throws SyncCallback.SyncCallbackError, ApiClientException {
         var asyncContinuation = new SyncResponse<BaseItemDtoQueryResult>();
         var itemTypes = itemType != null ? List.of(itemType) : null;
         new ItemsApi(jellyApiClient).getItems(jellyApiClient.getUserId(), null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, limit, true, searchTerm, null, null, fields, null, itemTypes, null, null, null, null,
-                null, null, null, null, null, null, null, 1, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, limit, true, searchTerm, null, null, fields, null,
+                itemTypes, null, null, null, null, null, null, null, null, null, null, null, 1, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, false, false, asyncContinuation);
+                null, null, null, null, null, null, null, null, null, false, false, asyncContinuation);
         var response = asyncContinuation.awaitContent();
         return Objects.requireNonNull(response.getItems());
     }

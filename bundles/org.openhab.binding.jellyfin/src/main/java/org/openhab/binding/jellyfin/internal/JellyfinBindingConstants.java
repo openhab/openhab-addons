@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ public class JellyfinBindingConstants {
     public static final String SEND_NOTIFICATION_CHANNEL = "send-notification";
     public static final String MEDIA_CONTROL_CHANNEL = "media-control";
     public static final String PLAYING_ITEM_PERCENTAGE_CHANNEL = "playing-item-percentage";
+    public static final String PLAYING_ITEM_ID_CHANNEL = "playing-item-id";
     public static final String PLAYING_ITEM_NAME_CHANNEL = "playing-item-name";
     public static final String PLAYING_ITEM_SERIES_NAME_CHANNEL = "playing-item-series-name";
     public static final String PLAYING_ITEM_SEASON_NAME_CHANNEL = "playing-item-season-name";
@@ -50,7 +51,10 @@ public class JellyfinBindingConstants {
     public static final String PLAY_NEXT_BY_TERMS_CHANNEL = "play-next-by-terms";
     public static final String PLAY_LAST_BY_TERMS_CHANNEL = "play-last-by-terms";
     public static final String BROWSE_ITEM_BY_TERMS_CHANNEL = "browse-by-terms";
-
+    public static final String PLAY_BY_ID_CHANNEL = "play-by-id";
+    public static final String PLAY_NEXT_BY_ID_CHANNEL = "play-next-by-id";
+    public static final String PLAY_LAST_BY_ID_CHANNEL = "play-last-by-id";
+    public static final String BROWSE_ITEM_BY_ID_CHANNEL = "browse-by-id";
     // Discovery
     public static final int DISCOVERY_RESULT_TTL_SEC = 600;
 }

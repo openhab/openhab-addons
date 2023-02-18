@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.Color;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewRepeaterConfiguration;
+import org.openhab.binding.hdpowerview.internal.dto.Color;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;

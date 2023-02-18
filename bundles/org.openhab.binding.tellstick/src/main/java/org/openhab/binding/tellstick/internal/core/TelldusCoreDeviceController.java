@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -241,7 +241,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     /**
      * This class is a worker which execute the commands sent to the TelldusCoreDeviceController.
      * This enables separation between Telldus Core and openHAB for preventing latency on the bus.
-     * The Tellstick have an send pace of 4 Hz which is far slower then the bus itself.
+     * The Tellstick have a send pace of 4 Hz which is far slower then the bus itself.
      *
      * @author Elias Gabrielsson
      *

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -204,5 +204,14 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
     public void addBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {
         telldusBridgeHandlers.add(tellstickBridgeHandler);
         tellstickBridgeHandler.registerDeviceStatusListener(this);
+    }
+
+    public void removeBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {
+        telldusBridgeHandlers.remove(tellstickBridgeHandler);
+        tellstickBridgeHandler.unregisterDeviceStatusListener(this);
+    }
+
+    public boolean isOnlyForOneBridgeHandler() {
+        return telldusBridgeHandlers.size() == 1;
     }
 }

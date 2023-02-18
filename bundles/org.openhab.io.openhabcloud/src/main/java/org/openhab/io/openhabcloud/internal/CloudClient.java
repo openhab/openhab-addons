@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,16 +43,23 @@ import org.eclipse.jetty.util.URIUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.socket.backo.Backoff;
 import io.socket.client.IO;
+import io.socket.client.IO.Options;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
-import io.socket.thread.EventThread;
+import io.socket.engineio.client.transports.WebSocket;
+import io.socket.parser.Packet;
+import io.socket.parser.Parser;
+import okhttp3.OkHttpClient.Builder;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.logging.HttpLoggingInterceptor.Level;
 
 /**
  * This class provides communication between openHAB and the openHAB Cloud service.
@@ -60,6 +72,15 @@ import io.socket.thread.EventThread;
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
 public class CloudClient {
+
+    private static final long RECONNECT_MIN = 2_000;
+
+    private static final long RECONNECT_MAX = 60_000;
+
+    private static final double RECONNECT_JITTER = 0.75;
+
+    private static final long READ_TIMEOUT = 60_0000;
+
     /*
      * Logger for this class
      */
@@ -101,11 +122,6 @@ public class CloudClient {
     private boolean isConnected;
 
     /*
-     * This variable holds version of local openHAB
-     */
-    private String openHABVersion;
-
-    /*
      * This variable holds instance of Socket.IO client class which provides communication
      * with the openHAB Cloud
      */
@@ -129,6 +145,17 @@ public class CloudClient {
      */
     private final Backoff reconnectBackoff = new Backoff();
 
+    /*
+     * Delay reconnect scheduler pool
+     *
+     */
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
+    @SuppressWarnings("null")
+    private final AtomicReference<Optional<ScheduledFuture<?>>> reconnectFuture = new AtomicReference<>(
+            Optional.empty());
+
     /**
      * Constructor of CloudClient
      *
@@ -146,9 +173,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
-        reconnectBackoff.setMin(1000);
-        reconnectBackoff.setMax(30_000);
-        reconnectBackoff.setJitter(0.5);
+        reconnectBackoff.setMin(RECONNECT_MIN);
+        reconnectBackoff.setMax(RECONNECT_MAX);
+        reconnectBackoff.setJitter(RECONNECT_JITTER);
     }
 
     /**
@@ -157,159 +184,181 @@ public class CloudClient {
 
     public void connect() {
         try {
-            socket = IO.socket(baseURL);
+            Options options = new Options();
+            options.transports = new String[] { WebSocket.NAME };
+            options.reconnection = true;
+            options.reconnectionAttempts = Integer.MAX_VALUE;
+            options.reconnectionDelay = RECONNECT_MIN;
+            options.reconnectionDelayMax = RECONNECT_MAX;
+            options.randomizationFactor = RECONNECT_JITTER;
+            options.timeout = READ_TIMEOUT;
+            Builder okHttpBuilder = new Builder();
+            okHttpBuilder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+            if (logger.isTraceEnabled()) {
+                // When trace level logging is enabled, we activate further logging of HTTP calls
+                // of the Socket.IO library
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(Level.BASIC);
+                okHttpBuilder.addInterceptor(loggingInterceptor);
+                okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
+            }
+            options.callFactory = okHttpBuilder.build();
+            options.webSocketFactory = okHttpBuilder.build();
+            socket = IO.socket(baseURL, options);
             URL parsed = new URL(baseURL);
             protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
+            return;
         } catch (MalformedURLException e) {
             logger.error("Error parsing baseURL to get protocol, assuming https. Error: {}", e.getMessage());
+            return;
         }
-        socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.trace("Manager.EVENT_TRANSPORT");
-                Transport transport = (Transport) args[0];
-                transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
-                    @Override
-                    public void call(Object... args) {
-                        logger.trace("Transport.EVENT_REQUEST_HEADERS");
-                        @SuppressWarnings("unchecked")
-                        Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
-                        headers.put("uuid", List.of(uuid));
-                        headers.put("secret", List.of(secret));
-                        headers.put("openhabversion", List.of(OpenHAB.getVersion()));
-                        headers.put("clientversion", List.of(CloudService.clientVersion));
-                        headers.put("remoteaccess", List.of(((Boolean) remoteAccessEnabled).toString()));
-                    }
-                });
-            }
-        }).on(Manager.EVENT_CONNECT_ERROR, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                if (args.length > 0) {
-                    if (args[0] instanceof Exception) {
-                        Exception e = (Exception) args[0];
-                        logger.debug(
-                                "Error connecting to the openHAB Cloud instance: {} {}. Should reconnect automatically.",
-                                e.getClass().getSimpleName(), e.getMessage());
-                    } else {
-                        logger.debug(
-                                "Error connecting to the openHAB Cloud instance: {}. Should reconnect automatically.",
-                                args[0]);
-                    }
-                } else {
-                    logger.debug("Error connecting to the openHAB Cloud instance. Should reconnect automatically.");
-                }
-            }
-        });
-        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.debug("Socket.IO connected");
-                isConnected = true;
-                onConnect();
-            }
-        }).on(Socket.EVENT_CONNECTING, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.debug("Socket.IO connecting");
-            }
-        }).on(Socket.EVENT_RECONNECTING, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.debug("Socket.IO re-connecting (attempt {})", args[0]);
-            }
-        }).on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.debug("Socket.IO re-connected successfully (attempt {})", args[0]);
-            }
-        }).on(Socket.EVENT_RECONNECT_ERROR, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                if (args[0] instanceof Exception) {
-                    Exception e = (Exception) args[0];
-                    logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
-                            e.getMessage());
-                } else {
-                    logger.debug("Socket.IO re-connect attempt error: {}", args[0]);
-                }
-            }
-        }).on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection.");
-            }
-        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                if (args.length > 0) {
-                    logger.debug("Socket.IO disconnected: {}", args[0]);
-                } else {
-                    logger.debug("Socket.IO disconnected");
-                }
-                isConnected = false;
-                onDisconnect();
-            }
-        }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                if (CloudClient.this.socket.connected()) {
-                    if (logger.isDebugEnabled() && args.length > 0) {
-                        logger.error("Error during communication: {}", args[0]);
-                    } else {
-                        logger.error("Error during communication");
-                    }
-                } else {
-                    // We are not connected currently, manual reconnection is needed to keep trying to (re-)establish
-                    // connection.
-                    //
-                    // Socket.IO 1.x java client: 'error' event is emitted from Socket on connection errors that are not
-                    // retried, but also with error that are automatically retried. If we
-                    //
-                    // Note how this is different in Socket.IO 2.x java client, Socket emits 'connect_error' event.
-                    // OBS: Don't get confused with Socket IO 2.x docs online, in 1.x connect_error is emitted also on
-                    // errors that are retried by the library automatically!
-                    long delay = reconnectBackoff.duration();
-                    // Try reconnecting on connection errors
-                    if (logger.isDebugEnabled() && args.length > 0) {
+        //
+        // socket manager events
+        //
+        socket.io()//
+                .on(Manager.EVENT_TRANSPORT, args -> {
+                    logger.trace("Manager.EVENT_TRANSPORT");
+                    Transport transport = (Transport) args[0];
+                    transport.on(Transport.EVENT_REQUEST_HEADERS, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            logger.trace("Transport.EVENT_REQUEST_HEADERS");
+                            @SuppressWarnings("unchecked")
+                            Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
+                            headers.put("uuid", List.of(uuid));
+                            headers.put("secret", List.of(secret));
+                            headers.put("openhabversion", List.of(OpenHAB.getVersion()));
+                            headers.put("clientversion", List.of(CloudService.clientVersion));
+                            headers.put("remoteaccess", List.of(((Boolean) remoteAccessEnabled).toString()));
+                        }
+                    });
+                })//
+                .on(Manager.EVENT_CONNECT_ERROR, args -> {
+                    if (args.length > 0) {
                         if (args[0] instanceof Exception) {
                             Exception e = (Exception) args[0];
-                            logger.error(
-                                    "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
-                                    e.getClass().getSimpleName(), e.getMessage(), delay);
+                            logger.debug(
+                                    "Error connecting to the openHAB Cloud instance: {} {}. Should reconnect automatically.",
+                                    e.getClass().getSimpleName(), e.getMessage());
                         } else {
-                            logger.error(
-                                    "Error connecting to the openHAB Cloud instance: {}. Reconnecting after {} ms.",
-                                    args[0], delay);
+                            logger.debug(
+                                    "Error connecting to the openHAB Cloud instance: {}. Should reconnect automatically.",
+                                    args[0]);
                         }
                     } else {
-                        logger.error("Error connecting to the openHAB Cloud instance. Reconnecting.");
+                        logger.debug("Error connecting to the openHAB Cloud instance. Should reconnect automatically.");
                     }
-                    socket.close();
-                    sleepSocketIO(delay);
-                    socket.connect();
-                }
-            }
-        }).on("request", new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                onEvent("request", (JSONObject) args[0]);
-            }
-        }).on("cancel", new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                onEvent("cancel", (JSONObject) args[0]);
-            }
-        }).on("command", new Emitter.Listener() {
+                })//
+                .on(Manager.EVENT_OPEN, args -> logger.debug("Socket.IO OPEN"))//
+                .on(Manager.EVENT_CLOSE, args -> logger.debug("Socket.IO CLOSE: {}", args[0]))//
+                .on(Manager.EVENT_PACKET, args -> {
+                    int packetTypeIndex = -1;
+                    String type = "<unexpected packet type>";
+                    if (args.length == 1 && args[0] instanceof Packet<?>) {
+                        packetTypeIndex = ((Packet<?>) args[0]).type;
 
-            @Override
-            public void call(Object... args) {
-                onEvent("command", (JSONObject) args[0]);
-            }
-        });
+                        if (packetTypeIndex < Parser.types.length) {
+                            type = Parser.types[packetTypeIndex];
+                        } else {
+                            type = "<unknown type>";
+                        }
+                    }
+                    logger.trace("Socket.IO Packet: {} ({})", type, packetTypeIndex);
+                })//
+        ;
+
+        //
+        // socket events
+        //
+        socket.on(Socket.EVENT_CONNECT, args -> {
+            logger.debug("Socket.IO connected");
+            isConnected = true;
+            onConnect();
+        })//
+                .on(Socket.EVENT_CONNECTING, args -> logger.debug("Socket.IO connecting"))//
+                .on(Socket.EVENT_RECONNECTING, args -> logger.debug("Socket.IO re-connecting (attempt {})", args[0]))//
+                .on(Socket.EVENT_RECONNECT,
+                        args -> logger.debug("Socket.IO re-connected successfully (attempt {})", args[0]))//
+                .on(Socket.EVENT_RECONNECT_ERROR, args -> {
+                    if (args[0] instanceof Exception) {
+                        Exception e = (Exception) args[0];
+                        logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
+                                e.getMessage());
+                    } else {
+                        logger.debug("Socket.IO re-connect attempt error: {}", args[0]);
+                    }
+                })//
+                .on(Socket.EVENT_RECONNECT_FAILED,
+                        args -> logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection."))//
+                .on(Socket.EVENT_DISCONNECT, args -> {
+                    String message = args.length > 0 ? args[0].toString() : "";
+                    logger.warn("Socket.IO disconnected: {}", message);
+                    isConnected = false;
+                    onDisconnect();
+                    // https://github.com/socketio/socket.io-client/commit/afb952d854e1d8728ce07b7c3a9f0dee2a61ef4e
+                    if ("io server disconnect".equals(message)) {
+                        socket.close();
+                        long delay = reconnectBackoff.duration();
+                        logger.warn("Reconnecting after {} ms.", delay);
+                        scheduleReconnect(delay);
+                    }
+                })//
+                .on(Socket.EVENT_ERROR, args -> {
+                    if (CloudClient.this.socket.connected()) {
+                        if (args.length > 0) {
+                            if (args[0] instanceof Exception) {
+                                Exception e = (Exception) args[0];
+                                logger.warn("Error during communication: {} {}", e.getClass().getSimpleName(),
+                                        e.getMessage());
+                            } else {
+                                logger.warn("Error during communication: {}", args[0]);
+                            }
+                        } else {
+                            logger.warn("Error during communication");
+                        }
+                    } else {
+                        // We are not connected currently, manual reconnection is needed to keep trying to
+                        // (re-)establish
+                        // connection.
+                        //
+                        // Socket.IO 1.x java client: 'error' event is emitted from Socket on connection errors that
+                        // are not
+                        // retried, but also with error that are automatically retried. If we
+                        //
+                        // Note how this is different in Socket.IO 2.x java client, Socket emits 'connect_error'
+                        // event.
+                        // OBS: Don't get confused with Socket IO 2.x docs online, in 1.x connect_error is emitted
+                        // also on
+                        // errors that are retried by the library automatically!
+                        long delay = reconnectBackoff.duration();
+                        // Try reconnecting on connection errors
+                        if (args.length > 0) {
+                            if (args[0] instanceof Exception) {
+                                Exception e = (Exception) args[0];
+                                logger.warn(
+                                        "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
+                                        e.getClass().getSimpleName(), e.getMessage(), delay);
+                            } else {
+                                logger.warn(
+                                        "Error connecting to the openHAB Cloud instance: {}. Reconnecting after {} ms.",
+                                        args[0], delay);
+                            }
+                        } else {
+                            logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
+                        }
+                        socket.close();
+                        scheduleReconnect(delay);
+                    }
+                })//
+
+                .on(Socket.EVENT_PING, args -> logger.debug("Socket.IO ping"))//
+                .on(Socket.EVENT_PONG, args -> logger.debug("Socket.IO pong: {} ms", args[0]))//
+                .on("request", args -> onEvent("request", (JSONObject) args[0]))//
+                .on("cancel", args -> onEvent("cancel", (JSONObject) args[0]))//
+                .on("command", args -> onEvent("command", (JSONObject) args[0]))//
+        ;
         socket.connect();
     }
 
@@ -318,7 +367,8 @@ public class CloudClient {
      */
 
     public void onConnect() {
-        logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", this.uuid, this.localBaseUrl);
+        logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", censored(this.uuid),
+                this.localBaseUrl);
         reconnectBackoff.reset();
         isConnected = true;
     }
@@ -328,19 +378,11 @@ public class CloudClient {
      */
 
     public void onDisconnect() {
-        logger.info("Disconnected from the openHAB Cloud service (UUID = {}, base URL = {})", this.uuid,
+        logger.info("Disconnected from the openHAB Cloud service (UUID = {}, base URL = {})", censored(this.uuid),
                 this.localBaseUrl);
         isConnected = false;
         // And clean up the list of running requests
         runningRequests.clear();
-    }
-
-    /**
-     * Callback method for socket.io client which is called when an error occurs
-     */
-
-    public void onError(IOException error) {
-        logger.debug("{}", error.getMessage());
     }
 
     /**
@@ -648,19 +690,21 @@ public class CloudClient {
      */
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
+        reconnectFuture.get().ifPresent(future -> future.cancel(true));
         socket.disconnect();
-    }
-
-    public String getOpenHABVersion() {
-        return openHABVersion;
-    }
-
-    public void setOpenHABVersion(String openHABVersion) {
-        this.openHABVersion = openHABVersion;
     }
 
     public void setListener(CloudClientListener listener) {
         this.listener = listener;
+    }
+
+    private void scheduleReconnect(long delay) {
+        reconnectFuture.getAndSet(Optional.of(scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                socket.connect();
+            }
+        }, delay, TimeUnit.MILLISECONDS))).ifPresent(future -> future.cancel(true));
     }
 
     private JSONObject getJSONHeaders(HttpFields httpFields) {
@@ -675,13 +719,10 @@ public class CloudClient {
         return headersJSON;
     }
 
-    private void sleepSocketIO(long delay) {
-        EventThread.exec(() -> {
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-
-            }
-        });
+    private static String censored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 }

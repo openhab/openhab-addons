@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,14 +15,12 @@ package org.openhab.binding.onewire.internal.handler;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +41,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -64,8 +63,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
     protected static final int PROPERTY_UPDATE_INTERVAL = 5000; // in ms
     protected static final int PROPERTY_UPDATE_MAX_RETRY = 5;
 
-    private static final Set<String> REQUIRED_PROPERTIES = Collections
-            .unmodifiableSet(Stream.of(PROPERTY_MODELID, PROPERTY_VENDOR).collect(Collectors.toSet()));
+    private static final Set<String> REQUIRED_PROPERTIES = Set.of(PROPERTY_MODELID, PROPERTY_VENDOR);
 
     protected List<String> requiredProperties = new ArrayList<>(REQUIRED_PROPERTIES);
     protected Set<OwSensorType> supportedSensorTypes;
@@ -137,7 +135,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             return false;
         }
 
-        refreshInterval = configuration.refresh * 1000;
+        refreshInterval = configuration.refresh * 1000L;
 
         // check if all required properties are present. update if not
         for (String property : requiredProperties) {
@@ -166,13 +164,13 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         // remove unwanted channels
         Set<String> existingChannelIds = thing.getChannels().stream().map(channel -> channel.getUID().getId())
                 .collect(Collectors.toSet());
-        Set<String> wantedChannelIds = SENSOR_TYPE_CHANNEL_MAP.get(sensorType).stream()
+        Set<String> wantedChannelIds = SENSOR_TYPE_CHANNEL_MAP.getOrDefault(sensorType, Set.of()).stream()
                 .map(channelConfig -> channelConfig.channelId).collect(Collectors.toSet());
         existingChannelIds.stream().filter(channelId -> !wantedChannelIds.contains(channelId))
                 .forEach(channelId -> removeChannelIfExisting(thingBuilder, channelId));
 
         // add or update wanted channels
-        SENSOR_TYPE_CHANNEL_MAP.get(sensorType).stream().forEach(channelConfig -> {
+        SENSOR_TYPE_CHANNEL_MAP.getOrDefault(sensorType, Set.of()).stream().forEach(channelConfig -> {
             addChannelIfMissingAndEnable(thingBuilder, channelConfig);
         });
 
@@ -325,8 +323,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * called by the bridge handler
      *
      * @param bridgeHandler the bridge handler to be used
-     * @return properties to be added to the properties map
-     * @throws OwException
+     * @throws OwException in case an error occurs
      */
     public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) throws OwException {
         Map<String, String> properties = editProperties();
@@ -365,10 +362,9 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      *
      * @param thingBuilder ThingBuilder of the edited thing
      * @param channelConfig a OwChannelConfig for the new channel
-     * @return the newly created channel
      */
-    protected Channel addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig) {
-        return addChannelIfMissingAndEnable(thingBuilder, channelConfig, null, 0);
+    protected void addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig) {
+        addChannelIfMissingAndEnable(thingBuilder, channelConfig, null, 0);
     }
 
     /**
@@ -377,11 +373,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @param thingBuilder ThingBuilder of the edited thing
      * @param channelConfig a OwChannelConfig for the new channel
      * @param configuration the new Configuration for this channel
-     * @return the newly created channel
      */
-    protected Channel addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
+    protected void addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
             Configuration configuration) {
-        return addChannelIfMissingAndEnable(thingBuilder, channelConfig, configuration, 0);
+        addChannelIfMissingAndEnable(thingBuilder, channelConfig, configuration, 0);
     }
 
     /**
@@ -390,11 +385,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @param thingBuilder ThingBuilder of the edited thing
      * @param channelConfig a OwChannelConfig for the new channel
      * @param sensorNo number of sensor that provides this channel
-     * @return the newly created channel
      */
-    protected Channel addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
+    protected void addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
             int sensorNo) {
-        return addChannelIfMissingAndEnable(thingBuilder, channelConfig, null, sensorNo);
+        addChannelIfMissingAndEnable(thingBuilder, channelConfig, null, sensorNo);
     }
 
     /**
@@ -404,9 +398,8 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @param channelConfig a OwChannelConfig for the new channel
      * @param configuration the new Configuration for this channel
      * @param sensorNo number of sensor that provides this channel
-     * @return the newly created channel
      */
-    protected Channel addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
+    protected void addChannelIfMissingAndEnable(ThingBuilder thingBuilder, OwChannelConfig channelConfig,
             @Nullable Configuration configuration, int sensorNo) {
         Channel channel = thing.getChannel(channelConfig.channelId);
         Configuration config = configuration;
@@ -423,23 +416,28 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         // create channel if missing
         if (channel == null) {
-            ChannelBuilder channelBuilder = ChannelBuilder
-                    .create(new ChannelUID(thing.getUID(), channelConfig.channelId),
-                            ACCEPTED_ITEM_TYPES_MAP.get(channelConfig.channelId))
-                    .withType(channelConfig.channelTypeUID);
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelConfig.channelId);
+
+            ThingHandlerCallback callback = getCallback();
+            if (callback == null) {
+                logger.warn("Could not get callback, adding '{}' failed.", channelUID);
+                return;
+            }
+
+            ChannelBuilder channelBuilder = callback.createChannelBuilder(channelUID, channelConfig.channelTypeUID);
+
             if (label != null) {
                 channelBuilder.withLabel(label);
             }
             if (config != null) {
                 channelBuilder.withConfiguration(config);
             }
+
             channel = channelBuilder.build();
             thingBuilder.withChannel(channel);
         }
 
         // enable channel in sensor
         sensors.get(sensorNo).enableChannel(channelConfig.channelId);
-
-        return channel;
     }
 }

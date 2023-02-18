@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,8 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+    private static final String JINJA_PREFIX = "JINJA:";
+
     // Component location fields
     private final ComponentConfiguration componentConfiguration;
     protected final ChannelGroupTypeUID channelGroupTypeUID;
@@ -88,9 +90,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
         if (availabilityTopic != null) {
+            String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+            if (availabilityTemplate != null) {
+                availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+            }
             componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
-                    this.channelConfiguration.getPayloadAvailable(),
-                    this.channelConfiguration.getPayloadNotAvailable());
+                    this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
+                    availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
         }
     }
 
@@ -114,7 +120,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().parallelStream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
+        return channels.values().stream().map(cChannel -> cChannel.start(connection, scheduler, timeout))
                 .collect(FutureCollector.allOf());
     }
 
@@ -125,7 +131,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().parallelStream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
+        return channels.values().stream().map(ComponentChannel::stop).collect(FutureCollector.allOf());
     }
 
     /**
@@ -232,5 +238,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     @Nullable
     public TransformationServiceProvider getTransformationServiceProvider() {
         return componentConfiguration.getTransformationServiceProvider();
+    }
+
+    public boolean isEnabledByDefault() {
+        return channelConfiguration.isEnabledByDefault();
     }
 }

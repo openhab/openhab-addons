@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,11 +25,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class LGWebOSConfiguration {
     @Nullable
     String host; // name has to match LGWebOSBindingConstants.CONFIG_HOST
-    int port = 3000; // 3001 for TLS
     @Nullable
     String key; // name has to match LGWebOSBindingConstants.CONFIG_KEY
     @Nullable
     String macAddress; // name has to match LGWebOSBindingConstants.CONFIG_MAC_ADDRESS
+    boolean useTLS = true;
 
     public String getHost() {
         String h = host;
@@ -41,8 +41,8 @@ public class LGWebOSConfiguration {
         return k == null ? "" : k;
     }
 
-    public int getPort() {
-        return port;
+    public boolean getUseTLS() {
+        return useTLS;
     }
 
     public String getMacAddress() {
@@ -52,7 +52,7 @@ public class LGWebOSConfiguration {
 
     @Override
     public String toString() {
-        return "WebOSConfiguration [host=" + host + ", port=" + port + ", key.length=" + getKey().length()
+        return "WebOSConfiguration [host=" + host + ", useTLS=" + useTLS + ", key.length=" + getKey().length()
                 + ", macAddress=" + macAddress + "]";
     }
 }

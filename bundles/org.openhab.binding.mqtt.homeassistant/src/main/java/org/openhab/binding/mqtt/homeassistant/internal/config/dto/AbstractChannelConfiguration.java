@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,6 +52,11 @@ public abstract class AbstractChannelConfiguration {
     protected String payloadAvailable = "online";
     @SerializedName("payload_not_available")
     protected String payloadNotAvailable = "offline";
+    @SerializedName("availability_template")
+    protected @Nullable String availabilityTemplate;
+
+    @SerializedName("enabled_by_default")
+    protected boolean enabledByDefault = true;
 
     /**
      * A list of MQTT topics subscribed to receive availability (online/offline) updates. Must not be used together with
@@ -65,7 +70,7 @@ public abstract class AbstractChannelConfiguration {
     protected @Nullable Device device;
 
     /**
-     * Parse the base properties of the configJSON into a {@link AbstractChannelConfiguration}
+     * Parse the base properties of the configJSON into an {@link AbstractChannelConfiguration}
      *
      * @param configJSON channels configuration in JSON
      * @param gson parser
@@ -159,6 +164,15 @@ public abstract class AbstractChannelConfiguration {
 
     public String getPayloadNotAvailable() {
         return payloadNotAvailable;
+    }
+
+    @Nullable
+    public String getAvailabilityTemplate() {
+        return availabilityTemplate;
+    }
+
+    public boolean isEnabledByDefault() {
+        return enabledByDefault;
     }
 
     @Nullable

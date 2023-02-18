@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link VicANMoinsUn} is the Java class used to map the JSON
- * response to an vigicrue api endpoint request.
+ * response to a vigicrue api endpoint request.
  *
  * @author Gaël L'hopital - Initial contribution
  */

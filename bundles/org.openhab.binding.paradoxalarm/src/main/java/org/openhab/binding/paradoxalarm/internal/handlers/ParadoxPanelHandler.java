@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,8 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        ParadoxPanel panel = ParadoxPanel.getInstance();
+        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
+        ParadoxPanel panel = bridge.getPanel();
         StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
         updateState(PANEL_STATE_CHANNEL_UID, panelState);
         ParadoxInformation panelInformation = panel.getPanelInformation();

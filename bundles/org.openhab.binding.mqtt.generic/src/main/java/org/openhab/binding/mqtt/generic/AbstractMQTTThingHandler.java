@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
@@ -103,7 +104,13 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        return availabilityStates.values().stream().map(cChannel -> {
+            final CompletableFuture<@Nullable Void> fut = cChannel == null ? CompletableFuture.completedFuture(null)
+                    : cChannel.start(connection, scheduler, 0);
+            return fut;
+        }).collect(FutureCollector.allOf());
+    }
 
     /**
      * Called when the MQTT connection disappeared.
@@ -291,12 +298,13 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
         addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
     }
 
+    @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
             @Nullable String transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
-            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availablility");
+            ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
             ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
                     channelUID, value, new ChannelStateUpdateListener() {

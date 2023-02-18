@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class ComponentChannel {
 
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        // Make sure we set the callback again which might have been nulled during an stop
+        // Make sure we set the callback again which might have been nulled during a stop
         channelState.setChannelStateUpdateListener(this.channelStateUpdateListener);
 
         return channelState.start(connection, scheduler, timeout);
@@ -135,6 +135,8 @@ public class ComponentChannel {
 
         private @Nullable String templateIn;
         private @Nullable String templateOut;
+
+        private String format = "%s";
 
         public Builder(AbstractComponent<?> component, String channelID, Value valueState, String label,
                 ChannelStateUpdateListener channelStateUpdateListener) {
@@ -206,6 +208,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withFormat(String format) {
+            this.format = format;
+            return this;
+        }
+
         public ComponentChannel build() {
             return build(true);
         }
@@ -222,11 +229,15 @@ public class ComponentChannel {
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new HomeAssistantChannelState(
                     ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
-                            .withCommandTopic(commandTopic).makeTrigger(trigger).build(),
+                            .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
                     channelUID, valueState, channelStateUpdateListener, commandFilter);
 
-            String localStateTopic = stateTopic;
-            if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
+            // disabled by default components should always show up as advanced
+            if (!component.isEnabledByDefault()) {
+                isAdvanced = true;
+            }
+
+            if (this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
                         .isAdvanced(isAdvanced).build();

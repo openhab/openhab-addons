@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,7 @@ public enum VeluxProductType {
         private String description;
         private VeluxProductType typeClass;
 
-        // Reverse-lookup map for getting a ActuatorType from an TypeId
+        // Reverse-lookup map for getting an ActuatorType from a TypeId
         private static final Map<Integer, ActuatorType> LOOKUPTYPEID2ENUM = Stream.of(ActuatorType.values())
                 .collect(Collectors.toMap(ActuatorType::getNodeType, Function.identity()));
 

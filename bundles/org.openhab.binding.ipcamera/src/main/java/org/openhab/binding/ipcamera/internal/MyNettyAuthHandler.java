@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     // First run it should not have authenticate as null
     // nonce is reused if authenticate is null so the NC needs to increment to allow this//
     public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
-        if (authenticate.contains("Basic realm=\"")) {
+        if (authenticate.contains("Basic realm=")) {
             if (ipCameraHandler.useDigestAuth) {
                 // Possible downgrade authenticate attack avoided.
                 return;

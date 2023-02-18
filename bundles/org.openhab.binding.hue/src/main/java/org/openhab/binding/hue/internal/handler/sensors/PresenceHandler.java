@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.hue.internal.handler.sensors;
 
-import static org.openhab.binding.hue.internal.FullSensor.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.binding.hue.internal.dto.FullSensor.*;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.PresenceConfigUpdate;
-import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.dto.PresenceConfigUpdate;
+import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueClient;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
@@ -43,7 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PresenceHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PRESENCE_SENSOR);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PRESENCE_SENSOR);
 
     private final Logger logger = LoggerFactory.getLogger(PresenceHandler.class);
 
@@ -55,13 +55,13 @@ public class PresenceHandler extends HueSensorHandler {
     public void handleCommand(String channel, Command command) {
         HueClient hueBridge = getHueClient();
         if (hueBridge == null) {
-            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            logger.warn("Hue Bridge handler not found. Cannot handle command without bridge.");
             return;
         }
 
         final FullSensor sensor = lastFullSensor;
         if (sensor == null) {
-            logger.debug("hue sensor not known on bridge. Cannot handle command.");
+            logger.debug("Hue sensor not known on bridge. Cannot handle command.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-wrong-sensor-id");
             return;

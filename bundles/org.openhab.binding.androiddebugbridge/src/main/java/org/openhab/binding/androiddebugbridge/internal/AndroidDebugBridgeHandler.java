@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AndroidDebugBridgeHandler extends BaseThingHandler {
-
     public static final String KEY_EVENT_PLAY = "126";
     public static final String KEY_EVENT_PAUSE = "127";
     public static final String KEY_EVENT_NEXT = "87";
@@ -321,8 +320,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
             loadMediaStateConfig(mediaStateJSONConfig);
         }
-        adbConnection.configure(currentConfig.ip, currentConfig.port, currentConfig.timeout,
-                currentConfig.recordDuration);
+        adbConnection.configure(currentConfig);
+        var androidVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+        if (androidVersion != null) {
+            // configure android implementation to use
+            adbConnection.setAndroidVersion(androidVersion);
+        }
         updateStatus(ThingStatus.UNKNOWN);
         connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(this::checkConnection, 0,
                 currentConfig.refreshTime, TimeUnit.SECONDS);
@@ -360,8 +363,11 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {
+                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    // refresh properties only on state changes
+                    refreshProperties();
+                }
                 updateStatus(ThingStatus.ONLINE);
-                refreshProperties();
                 refreshStatus();
             } else {
                 try {
@@ -394,7 +400,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             Map<String, String> editProperties = editProperties();
             editProperties.put(Thing.PROPERTY_SERIAL_NUMBER, adbConnection.getSerialNo());
             editProperties.put(Thing.PROPERTY_MODEL_ID, adbConnection.getModel());
-            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, adbConnection.getAndroidVersion());
+            var androidVersion = adbConnection.getAndroidVersion();
+            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, androidVersion);
+            // refresh android version to use
+            adbConnection.setAndroidVersion(androidVersion);
             editProperties.put(Thing.PROPERTY_VENDOR, adbConnection.getBrand());
             try {
                 editProperties.put(Thing.PROPERTY_MAC_ADDRESS, adbConnection.getMacAddress());

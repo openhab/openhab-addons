@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ public abstract class BaseZoneIdentifier implements ZoneIdentifier {
     protected String zoneName;
 
     /**
-     * Creates a new {@link BaseZoneIdentifier} with an zone id and zone name.
+     * Creates a new {@link BaseZoneIdentifier} with a zone id and zone name.
      *
      * @param zoneID must not be null
      * @param zoneName can be null
@@ -39,7 +39,7 @@ public abstract class BaseZoneIdentifier implements ZoneIdentifier {
     }
 
     /**
-     * Creates a new {@link BaseZoneIdentifier} through the {@link JsonObject} of the response of an digitalSTROM-API
+     * Creates a new {@link BaseZoneIdentifier} through the {@link JsonObject} of the response of a digitalSTROM-API
      * apartment call.
      *
      * @param jObject must not be null

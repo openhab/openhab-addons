@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_TEMPERATURE_GUARD = "temperature_guard";
     public static final String CHANNEL_VALVE_OPEN = "valve_open";
     public static final String CHANNEL_WATERCONSUMPTION = "waterconsumption";
+    public static final String CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT = "waterconsumption_since_midnight";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_BATTERY = "battery";

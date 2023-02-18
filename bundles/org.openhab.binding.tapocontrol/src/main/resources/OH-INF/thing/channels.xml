@@ -7,7 +7,7 @@
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
 	<!-- CHANNEL GROUP TYPES -->
-	<!--Device-Statuss Channel Type -->
+	<!--Device-Status Channel Type -->
 	<channel-group-type id="deviceState">
 		<label>Device State</label>
 		<description>Information about the device</description>
@@ -18,12 +18,41 @@
 		</channels>
 	</channel-group-type>
 
+	<!--Device-Status Channel Type (Small) -->
+	<channel-group-type id="deviceStateS">
+		<label>Device State</label>
+		<description>Information about the device</description>
+		<channels>
+			<channel id="wifiSignal" typeId="system.signal-strength"/>
+			<channel id="overheated" typeId="overheated"/>
+		</channels>
+	</channel-group-type>
+
 	<!--Actor Channel Type -->
 	<channel-group-type id="smartPlug">
 		<label>SmartPlug</label>
 		<description>Tapo Smart Plug Power Outlet</description>
 		<channels>
 			<channel id="output" typeId="outputChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="powerStrip">
+		<label>SmartPlug</label>
+		<description>Tapo Smart Plug Power Outlet</description>
+		<channels>
+			<channel id="output1" typeId="outputChannel">
+				<label>Output Switch 1</label>
+				<description>Switches the power state on/off of the first socket</description>
+			</channel>
+			<channel id="output2" typeId="outputChannel">
+				<label>Output Switch 2</label>
+				<description>Switches the power state on/off of the second socket</description>
+			</channel>
+			<channel id="output3" typeId="outputChannel">
+				<label>Output Switch 3</label>
+				<description>Switches the power state on/off of the third socket</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

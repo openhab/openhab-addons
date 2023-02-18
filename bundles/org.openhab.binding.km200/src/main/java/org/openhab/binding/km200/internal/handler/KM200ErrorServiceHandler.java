@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The KM200ErrorService representing a error service with its all capabilities
+ * The KM200ErrorService representing an error service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
  */
@@ -112,7 +112,7 @@ public class KM200ErrorServiceHandler {
     }
 
     /**
-     * This function returns a error string with all parameters
+     * This function returns an error string with all parameters
      */
     public @Nullable String getErrorString() {
         String value = "";

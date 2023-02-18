@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="shelly1">
-		<label>Shelly 1 (SHSW-1)</label>
+		<label>Shelly 1</label>
 		<description>@text/thing-type.shelly.shelly1.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -18,7 +18,7 @@
 	</thing-type>
 
 	<thing-type id="shelly1l">
-		<label>Shelly 1L (SHSW-L)</label>
+		<label>Shelly 1L</label>
 		<description>@text/thing-type.shelly.shelly1l.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -32,7 +32,7 @@
 	</thing-type>
 
 	<thing-type id="shelly1pm">
-		<label>Shelly 1PM (SHSW-PM)</label>
+		<label>Shelly 1PM</label>
 		<description>@text/thing-type.shelly.shelly1pm.description</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -46,7 +46,7 @@
 	</thing-type>
 
 	<thing-type id="shellyem">
-		<label>Shelly EM (SHEM)</label>
+		<label>Shelly EM</label>
 		<description>@text/thing-type.shelly.shellyem.description</description>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
@@ -65,7 +65,7 @@
 
 	<!-- Shelly 3EM - device reports wrong service name: shellyem3, see README -->
 	<thing-type id="shellyem3">
-		<label>Shelly 3EM (SHEM-3)</label>
+		<label>Shelly EM3</label>
 		<description>@text/thing-type.shelly.shellyem3.description</description>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
@@ -86,7 +86,7 @@
 	</thing-type>
 
 	<thing-type id="shelly2-relay">
-		<label>Shelly 2 Relay (SHSW-21)</label>
+		<label>Shelly 2 Relay</label>
 		<description>@text/thing-type.shelly.shelly2-relay.description</description>
 
 		<channel-groups>
@@ -105,7 +105,7 @@
 	</thing-type>
 
 	<thing-type id="shelly2-roller">
-		<label>Shelly 2 Roller (SHSW-21)</label>
+		<label>Shelly 2 Roller</label>
 		<description>@text/thing-type.shelly.shelly2-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
@@ -119,7 +119,7 @@
 	</thing-type>
 
 	<thing-type id="shelly25-relay">
-		<label>Shelly 2.5 Relay (SHSW-25)</label>
+		<label>Shelly 2.5 Relay</label>
 		<description>@text/thing-type.shelly.shelly25-relay.description</description>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
@@ -142,7 +142,7 @@
 	</thing-type>
 
 	<thing-type id="shelly25-roller">
-		<label>Shelly 2.5 Roller (SHSW-25)</label>
+		<label>Shelly 2.5 Roller</label>
 		<description>@text/thing-type.shelly.shelly25-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
@@ -156,7 +156,7 @@
 	</thing-type>
 
 	<thing-type id="shelly4pro">
-		<label>Shelly 4 Pro Relay (SHSW-44)</label>
+		<label>Shelly 4 Pro Relay</label>
 		<description>@text/thing-type.shelly.shelly4pro.description</description>
 
 		<channel-groups>
@@ -192,7 +192,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplug">
-		<label>Shelly Plug (SHPLG-1)</label>
+		<label>Shelly Plug</label>
 		<description>@text/thing-type.shelly.shellyplug.description</description>
 		<category>PowerOutlet</category>
 		<channel-groups>
@@ -206,7 +206,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplugs">
-		<label>Shelly Plug-S (SHPLG-S)</label>
+		<label>Shelly Plug-S</label>
 		<description>@text/thing-type.shelly.shellyplugs.description</description>
 		<category>PowerOutlet</category>
 		<channel-groups>
@@ -220,7 +220,7 @@
 	</thing-type>
 
 	<thing-type id="shellyplugu1">
-		<label>Shelly Plug US (SHPLG-U1)</label>
+		<label>Shelly Plug US</label>
 		<description>@text/thing-type.shelly.shellyplugu1.description</description>
 		<category>PowerOutlet</category>
 		<channel-groups>
@@ -234,7 +234,7 @@
 	</thing-type>
 
 	<thing-type id="shellyuni">
-		<label>Shelly UNI (SHUNI-1)</label>
+		<label>Shelly UNI</label>
 		<description>@text/thing-type.shelly.shellyuni.description</description>
 
 		<channel-groups>
@@ -253,7 +253,7 @@
 	</thing-type>
 
 	<thing-type id="shellydimmer">
-		<label>Shelly Dimmer (SHDM-1)</label>
+		<label>Shelly Dimmer</label>
 		<description>@text/thing-type.shelly.shellydimmer.description</description>
 		<category>DimmableLight</category>
 		<channel-groups>
@@ -267,7 +267,7 @@
 	</thing-type>
 
 	<thing-type id="shellydimmer2">
-		<label>Shelly Dimmer 2 (SHDM-2)</label>
+		<label>Shelly Dimmer 2</label>
 		<description>@text/thing-type.shelly.shellydimmer2.description</description>
 		<category>DimmableLight</category>
 		<channel-groups>
@@ -281,17 +281,17 @@
 	</thing-type>
 
 	<thing-type id="shellyix3">
-		<label>Shelly ix3 (SHIX3-1)</label>
+		<label>Shelly ix3</label>
 		<description>@text/thing-type.shelly.shellyix3.description</description>
 		<channel-groups>
-			<channel-group id="status1" typeId="ix3Channel">
-				<label>@text/channel-group-type.shelly.ix3Channel1.label</label>
+			<channel-group id="status1" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.ixChannel1.label</label>
 			</channel-group>
-			<channel-group id="status2" typeId="ix3Channel">
-				<label>@text/channel-group-type.shelly.ix3Channel2.label</label>
+			<channel-group id="status2" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.ixChannel2.label</label>
 			</channel-group>
-			<channel-group id="status3" typeId="ix3Channel">
-				<label>@text/channel-group-type.shelly.ix3Channel3.label</label>
+			<channel-group id="status3" typeId="ixChannel">
+				<label>@text/channel-group-type.shelly.ixChannel3.label</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -315,9 +315,9 @@
 		<description>@text/channel-group-type.shelly.dimmerChannel.description</description>
 	</channel-group-type>
 
-	<channel-group-type id="ix3Channel">
-		<label>@text/channel-group-type.shelly.ix3Channel.label</label>
-		<description>@text/channel-group-type.shelly.ix3Channel.description</description>
+	<channel-group-type id="ixChannel">
+		<label>@text/channel-group-type.shelly.ixChannel.label</label>
+		<description>@text/channel-group-type.shelly.ixChannel.description</description>
 	</channel-group-type>
 
 	<channel-group-type id="rollerControl">
@@ -576,7 +576,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
 		<description>@text/channel-type.shelly.meterPowerFactor.description</description>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -371,14 +371,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             switch (evtKey) {
                 case DEFAULT_RESOURCE:
                     rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
-                    updateAllChannels();
+                    // if thermostat returned -1 for temperature, skip this update
+                    if (rthermData.getThermostatData().getTemperature() >= 0) {
+                        updateAllChannels();
+                    }
                     break;
                 case HUMIDITY_RESOURCE:
                     RadioThermostatHumidityDTO dto = gson.fromJson(evtVal, RadioThermostatHumidityDTO.class);
-                    if (dto != null) {
+                    // if thermostat returned -1 for humidity, skip this update
+                    if (dto != null && dto.getHumidity() >= 0) {
                         rthermData.setHumidity(dto.getHumidity());
+                        updateChannel(HUMIDITY, rthermData);
                     }
-                    updateChannel(HUMIDITY, rthermData);
                     break;
                 case RUNTIME_RESOURCE:
                     rthermData.setRuntime(gson.fromJson(evtVal, RadioThermostatRuntimeDTO.class));

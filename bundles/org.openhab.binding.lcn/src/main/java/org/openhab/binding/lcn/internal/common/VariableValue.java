@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,6 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class VariableValue {
-    private static final String SENSOR_DEFECTIVE_STATE = "DEFECTIVE";
-
     /** The absolute, native LCN value. */
     private final long nativeValue;
 
@@ -88,9 +86,9 @@ public class VariableValue {
     public State getState(Variable variable) {
         State stateValue;
         if (variable.useLcnSpecialValues() && isSensorDefective()) {
-            stateValue = new StringType(SENSOR_DEFECTIVE_STATE);
+            stateValue = new StringType("Sensor defective: " + variable);
         } else if (variable.useLcnSpecialValues() && !isConfigured()) {
-            stateValue = new StringType("Not configured in LCN-PRO");
+            stateValue = new StringType("Not configured in LCN-PRO: " + variable);
         } else {
             stateValue = new DecimalType(toNative(variable.useLcnSpecialValues()));
         }

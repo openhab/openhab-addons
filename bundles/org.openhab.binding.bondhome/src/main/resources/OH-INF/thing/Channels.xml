@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bondhome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Individual Channels -->
+
+	<channel-type id="commandChannelType">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Sends a command to a device</description>
+		<command>
+			<options>
+				<option value="STOP">Stop Dimming</option>
+				<option value="HOLD">Hold Rollershutter</option>
+				<option value="PRESET">Send shade to preset</option>
+				<option value="DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="DIM_DECREASE">Decrease Brightness Until Stopped</option>
+				<option value="UP_LIGHT_DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="UP_LIGHT_DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="UP_LIGHT_DIM_DECREASE">Decrease Brightness Until Stopped</option>
+				<option value="DOWN_LIGHT_DIM_START_STOP">Start/Stop Dimming</option>
+				<option value="DOWN_LIGHT_DIM_INCREASE">Increase Brightness Until Stopped</option>
+				<option value="DOWN_LIGHT_DIM_DECREASE">Decrease Brightness Until Stopped</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="fanSpeedChannelType">
+		<item-type>Dimmer</item-type>
+		<label>Fan Speed</label>
+		<description>Sets fan speed</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="rawFanSpeedChannelType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Raw Fan Speed</label>
+		<description>Sets fan speed using raw Bond values</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="breezeStateChannelType">
+		<item-type>Switch</item-type>
+		<label>Breeze Mode</label>
+		<description>Enables or disables breeze mode</description>
+	</channel-type>
+
+	<channel-type id="breezeMeanChannelType">
+		<item-type>Dimmer</item-type>
+		<label>Mean Breeze Speed</label>
+		<description>Sets the average speed in breeze mode. 0 = minimum average speed (calm), 100 = maximum average speed
+			(storm)</description>
+	</channel-type>
+
+	<channel-type id="breezeVariabilityChannelType">
+		<item-type>Dimmer</item-type>
+		<label>Breeze Variability</label>
+		<description>Sets the variability of the speed in breeze mode. 0 = minimum variation (steady), 100 = maximum
+			variation
+			(gusty)</description>
+	</channel-type>
+
+	<channel-type id="directionChannelType">
+		<item-type>String</item-type>
+		<label>Fan Direction</label>
+		<description>Sets the fan direction; forward or reverse. The forward and reverse modes are sometimes called Summer
+			and
+			Winter</description>
+		<state readOnly="false">
+			<options>
+				<option value="summer">Summer</option>
+				<option value="winter">Winter</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timerChannelType">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Starts a timer for s seconds. If power if off, device is implicitly turned on</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="lightChannelType">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>Turns the light on the ceiling fan on or off</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="enableChannelType">
+		<item-type>Switch</item-type>
+		<label>Enable Up or Down Light</label>
+		<description>Enables or disables the up or down light of the ceiling fan. The light must also be on to turn on the up
+			light.</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="flameChannelType">
+		<item-type>Dimmer</item-type>
+		<label>Flame Level</label>
+		<description>Turns on or adjust the flame level</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="fpFanSpeedChannelType">
+		<item-type>Dimmer</item-type>
+		<label>Fireplace Fan Speed</label>
+		<description>Adjusts the speed of the fireplace fan</description>
+		<category>Heating</category>
+	</channel-type>
+
+	<channel-type id="rollershutterChannelType">
+		<item-type>Rollershutter</item-type>
+		<label>Shade</label>
+		<description>Opens, closes, or stops motorized shades</description>
+		<category>Rollershutter</category>
+	</channel-type>
+
+</thing:thing-descriptions>

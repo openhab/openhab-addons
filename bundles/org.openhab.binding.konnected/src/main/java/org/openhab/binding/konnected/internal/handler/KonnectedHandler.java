@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -328,53 +328,49 @@ public class KonnectedHandler extends BaseThingHandler {
         payload.setDiscovery(config.discovery);
         this.getThing().getChannels().forEach(channel -> {
             // ChannelUID channelId = channel.getUID();
-            if (isLinked(channel.getUID())) {
-                // adds linked channels to list based on last value of Channel ID
-                // which is set to a number
-                // get the zone number in integer form
-                ZoneConfiguration zoneConfig = channel.getConfiguration().as(ZoneConfiguration.class);
-                // if the pin is an actuator add to actuator string
-                // else add to sensor string
-                // This is determined based off of the accepted item type, contact types are sensors
-                // switch types are actuators
-                String channelType = channel.getChannelTypeUID().getAsString();
-                logger.debug("The channeltypeID is: {}", channelType);
-                KonnectedModuleGson module = new KonnectedModuleGson();
-                module.setZone(thingID, zoneConfig.zone);
-                if (channelType.contains(CHANNEL_SWITCH)) {
-                    payload.addSensor(module);
-                    logger.trace("Channel {} will be configured on the konnected alarm panel as a switch", channel);
-                } else if (channelType.contains(CHANNEL_ACTUATOR)) {
-                    payload.addActuators(module);
-                    logger.trace("Channel {} will be configured on the konnected alarm panel as an actuator", channel);
-                } else if (channelType.contains(CHANNEL_HUMIDITY)) {
-                    // the humidity channels do not need to be added because the supported sensor (dht22) is added under
-                    // the temp sensor
-                    logger.trace("Channel {} is a humidity channel.", channel);
-                } else if (channelType.contains(CHANNEL_TEMPERATURE)) {
-                    logger.trace("Channel {} will be configured on the konnected alarm panel as a temperature sensor",
+            // adds channels to list based on last value of Channel ID
+            // which is set to a number
+            // get the zone number in integer form
+            ZoneConfiguration zoneConfig = channel.getConfiguration().as(ZoneConfiguration.class);
+            // if the pin is an actuator add to actuator string
+            // else add to sensor string
+            // This is determined based off of the accepted item type, contact types are sensors
+            // switch types are actuators
+            String channelType = channel.getChannelTypeUID().getAsString();
+            logger.debug("The channeltypeID is: {}", channelType);
+            KonnectedModuleGson module = new KonnectedModuleGson();
+            module.setZone(thingID, zoneConfig.zone);
+            if (channelType.contains(CHANNEL_SWITCH)) {
+                payload.addSensor(module);
+                logger.trace("Channel {} will be configured on the konnected alarm panel as a switch", channel);
+            } else if (channelType.contains(CHANNEL_ACTUATOR)) {
+                payload.addActuators(module);
+                logger.trace("Channel {} will be configured on the konnected alarm panel as an actuator", channel);
+            } else if (channelType.contains(CHANNEL_HUMIDITY)) {
+                // the humidity channels do not need to be added because the supported sensor (dht22) is added under
+                // the temp sensor
+                logger.trace("Channel {} is a humidity channel.", channel);
+            } else if (channelType.contains(CHANNEL_TEMPERATURE)) {
+                logger.trace("Channel {} will be configured on the konnected alarm panel as a temperature sensor",
+                        channel);
+                module.setPollInterval(zoneConfig.pollInterval);
+                logger.trace("The Temperature Sensor Type is: {} ", zoneConfig.dht22);
+                if (zoneConfig.dht22) {
+                    // add it as a dht22 module
+                    payload.addDht22(module);
+                    logger.trace(
+                            "Channel {} will be configured on the konnected alarm panel as a DHT22 temperature sensor",
                             channel);
-                    module.setPollInterval(zoneConfig.pollInterval);
-                    logger.trace("The Temperature Sensor Type is: {} ", zoneConfig.dht22);
-                    if (zoneConfig.dht22) {
-                        // add it as a dht22 module
-                        payload.addDht22(module);
-                        logger.trace(
-                                "Channel {} will be configured on the konnected alarm panel as a DHT22 temperature sensor",
-                                channel);
-                    } else {
-                        // add to payload as a DS18B20 module if the parameter is false
-                        payload.addDs18b20(module);
-                        logger.trace(
-                                "Channel {} will be configured on the konnected alarm panel as a DS18B20 temperature sensor",
-                                channel);
-                    }
                 } else {
-                    logger.debug("Channel {} is of type {} which is not supported by the konnected binding", channel,
-                            channelType);
+                    // add to payload as a DS18B20 module if the parameter is false
+                    payload.addDs18b20(module);
+                    logger.trace(
+                            "Channel {} will be configured on the konnected alarm panel as a DS18B20 temperature sensor",
+                            channel);
                 }
             } else {
-                logger.debug("The Channel {} is not linked to an item", channel.getUID());
+                logger.debug("Channel {} is of type {} which is not supported by the konnected binding", channel,
+                        channelType);
             }
         });
         // Create Json to Send to Konnected Module

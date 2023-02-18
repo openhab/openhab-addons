@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -352,7 +352,7 @@ public class Parser {
     private static int parseVolume(String vol) {
         int volumeTotal = 0;
         int nChannels = 0;
-        for (String channel : vol.split(", ")) {
+        for (String channel : vol.split(",")) {
             Matcher matcher = VOLUME_PATTERN.matcher(channel.trim());
             if (matcher.find()) {
                 volumeTotal += Integer.valueOf(matcher.group(3));

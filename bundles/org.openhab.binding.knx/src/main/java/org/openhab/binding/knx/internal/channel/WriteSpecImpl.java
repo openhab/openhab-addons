@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.core.types.Type;
@@ -25,6 +26,7 @@ import tuwien.auto.calimero.KNXFormatException;
  * @author Simon Kaufmann - initial contribution and API.
  *
  */
+@NonNullByDefault
 public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
 
     private final Type type;

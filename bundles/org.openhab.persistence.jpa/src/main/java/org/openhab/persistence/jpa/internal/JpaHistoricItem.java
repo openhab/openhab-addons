@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,10 @@ import java.text.DateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
@@ -37,6 +38,7 @@ import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
 
 /**
@@ -45,6 +47,7 @@ import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
  * @author Manfred Bergmann - Initial contribution
  *
  */
+@NonNullByDefault
 public class JpaHistoricItem implements HistoricItem {
 
     private final String name;
@@ -78,25 +81,20 @@ public class JpaHistoricItem implements HistoricItem {
     }
 
     /**
-     * This method maps a jpa result item to this historic item.
+     * This method maps {@link JpaPersistentItem}s to {@link HistoricItem}s.
      *
-     * @param jpaQueryResult the result which jpa items
+     * @param jpaQueryResult the result with jpa items
      * @param item used for query information, like the state (State)
      * @return list of historic items
      */
     public static List<HistoricItem> fromResultList(List<JpaPersistentItem> jpaQueryResult, Item item) {
-        List<HistoricItem> ret = new ArrayList<>();
-        for (JpaPersistentItem i : jpaQueryResult) {
-            HistoricItem hi = fromPersistedItem(i, item);
-            ret.add(hi);
-        }
-        return ret;
+        return jpaQueryResult.stream().map(pItem -> fromPersistedItem(pItem, item)).collect(Collectors.toList());
     }
 
     /**
-     * Converts the string value of the persisted item to the state of a HistoricItem.
+     * Converts the string value of the persisted item to the state of a {@link HistoricItem}.
      *
-     * @param pItem the persisted JpaPersistentItem
+     * @param pItem the persisted {@link JpaPersistentItem}
      * @param item the source reference Item
      * @return historic item
      */
@@ -105,7 +103,7 @@ public class JpaHistoricItem implements HistoricItem {
         if (item instanceof NumberItem) {
             state = new DecimalType(Double.valueOf(pItem.getValue()));
         } else if (item instanceof DimmerItem) {
-            state = new PercentType(Integer.valueOf(pItem.getValue()));
+            state = new PercentType(Integer.parseInt(pItem.getValue()));
         } else if (item instanceof SwitchItem) {
             state = OnOffType.valueOf(pItem.getValue());
         } else if (item instanceof ContactItem) {
@@ -113,7 +111,7 @@ public class JpaHistoricItem implements HistoricItem {
         } else if (item instanceof RollershutterItem) {
             state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof DateTimeItem) {
-            state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.valueOf(pItem.getValue())),
+            state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(pItem.getValue())),
                     ZoneId.systemDefault()));
         } else if (item instanceof LocationItem) {
             PointType pType = null;
@@ -125,7 +123,7 @@ public class JpaHistoricItem implements HistoricItem {
                     pType.setAltitude(new DecimalType(comps[2]));
                 }
             }
-            state = pType;
+            state = pType == null ? UnDefType.UNDEF : pType;
         } else if (item instanceof StringListType) {
             state = new StringListType(pItem.getValue());
         } else {

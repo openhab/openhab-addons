@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -203,6 +203,7 @@ public final class MieleCloudConfigService {
         unregisterWebResource(RESULT_ALIAS);
         unregisterWebResource(SUCCESS_ALIAS);
         unregisterWebResource(CREATE_BRIDGE_THING_ALIAS);
+        unregisterWebResource(FAILURE_ALIAS);
         unregisterWebResource(CSS_ALIAS);
         unregisterWebResource(JS_ALIAS);
         unregisterWebResource(IMG_ALIAS);

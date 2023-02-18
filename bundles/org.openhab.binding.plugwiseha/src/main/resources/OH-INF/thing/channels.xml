@@ -9,6 +9,10 @@
 		<label>Setpoint Temperature</label>
 		<description>Gets or sets the set point of this zone</description>
 		<category>heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -17,6 +21,10 @@
 		<label>Zone Temperature</label>
 		<description>Gets the temperature of this zone</description>
 		<category>heating</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -73,6 +81,10 @@
 	<channel-type id="powerUsage">
 		<item-type>Number:Power</item-type>
 		<label>Power Usage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -153,6 +165,10 @@
 		<label>Domestic Hot Water Temperature</label>
 		<description>Gets the temperature of the domestic hot water</description>
 		<category>heating</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -169,6 +185,22 @@
 		<label>Boiler Temperature</label>
 		<description>Gets the temperature of this boiler</description>
 		<category>heating</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="returnWaterTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Water Temperature</label>
+		<description>Gets the temperature of the return water</description>
+		<category>heating</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -183,7 +215,7 @@
 	<channel-type id="maxBoilerTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Boiler Temperature</label>
-		<description>Gets the maximum temperature ofthis boiler</description>
+		<description>Gets the maximum temperature of this boiler</description>
 		<category>heating</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -193,6 +225,10 @@
 		<label>Water Pressure</label>
 		<description>Gets the water pressure of the boiler</description>
 		<category>heating</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -217,6 +253,10 @@
 		<label>Valve Position</label>
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 

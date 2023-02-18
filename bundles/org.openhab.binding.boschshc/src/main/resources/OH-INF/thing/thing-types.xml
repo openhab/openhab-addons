@@ -12,6 +12,8 @@
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
+	<!-- Things -->
+
 	<thing-type id="in-wall-switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -30,12 +32,30 @@
 
 	</thing-type>
 
+	<thing-type id="smart-plug-compact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Compact Smart Plug</label>
+		<description>A compact smart plug with energy monitoring capabilities.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="twinguard">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>TwinGuard</label>
+		<label>Twinguard</label>
 		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
 
 		<channels>
@@ -47,6 +67,9 @@
 			<channel id="air-description" typeId="air-description"/>
 			<channel id="purity-rating" typeId="purity-rating"/>
 			<channel id="combined-rating" typeId="combined-rating"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="smoke-check" typeId="smoke-check"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -63,6 +86,8 @@
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -80,6 +105,8 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -114,6 +141,8 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -149,6 +178,8 @@
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -208,6 +239,43 @@
 		</channels>
 
 	</thing-type>
+
+	<thing-type id="smart-bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Bulb</label>
+		<description>A smart bulb connected via Zigbee.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="smoke-detector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smoke Detector</label>
+		<description>The smoke detector warns you in case of fire.</description>
+
+		<channels>
+			<channel id="smoke-check" typeId="smoke-check"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
+	<!-- Channels -->
 
 	<channel-type id="system-availability">
 		<item-type>Switch</item-type>
@@ -384,6 +452,20 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="smoke-check">
+		<item-type>String</item-type>
+		<label>Smoke Check State</label>
+		<description>State of last smoke detector check.</description>
+		<state readOnly="false">
+			<options>
+				<option value="NONE">None</option>
+				<option value="SMOKE_TEST_REQUESTED">Test requested</option>
+				<option value="SMOKE_TEST_OK">Test successful</option>
+				<option value="SMOKE_TEST_FAILED">Test failed</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
@@ -416,7 +498,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
-		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="child-lock">

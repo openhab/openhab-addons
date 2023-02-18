@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,9 @@ package org.openhab.binding.tado.internal.handler;
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.terminationConditionTemplateToTerminationCondition;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.CapabilitiesSupport;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
@@ -281,7 +284,13 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_NAME, zoneDetails.getName());
                 updateProperty(TadoBindingConstants.PROPERTY_ZONE_TYPE, zoneDetails.getType().name());
+
                 this.capabilities = capabilities;
+
+                CapabilitiesSupport capabilitiesSupport = new CapabilitiesSupport(capabilities,
+                        getHomeHandler().getBatteryChecker().getZone(getZoneId()));
+
+                updateDynamicChannels(capabilitiesSupport);
             } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
@@ -350,7 +359,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         }
 
         updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
-                getHomeHandler().getBatteryLowAlarm(getZoneId()));
+                getHomeHandler().getBatteryChecker().getBatteryLowAlarm(getZoneId()));
     }
 
     /**
@@ -473,5 +482,63 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             gson = this.gson = GsonBuilderFactory.defaultGsonBuilder().setPrettyPrinting().create();
         }
         return gson.toJson(object);
+    }
+
+    /**
+     * If the given channel exists in the thing, but is NOT required in the thing, then add it to a list of channels to
+     * be removed. Or if the channel does NOT exist in the thing, but is required in the thing, then log a warning.
+     *
+     * @param removeList the list of channels to be removed from the thing.
+     * @param channelId the id of the channel to be (eventually) removed.
+     * @param channelRequired true if the thing requires this channel.
+     */
+    private void removeListProcessChannel(List<Channel> removeList, String channelId, boolean channelRequired) {
+        Channel channel = thing.getChannel(channelId);
+        if (!channelRequired && channel != null) {
+            removeList.add(channel);
+        } else if (channelRequired && channel == null) {
+            logger.warn("Thing {} does not have a '{}' channel => please reinitialize it", thing.getUID(), channelId);
+        }
+    }
+
+    /**
+     * Remove previously statically created channels if the device does not support them.
+     *
+     * @param capabilitiesSupport a CapabilitiesSupport instance which summarizes the device's capabilities.
+     * @throws IllegalStateException if any of the channel builders failed.
+     */
+    private void updateDynamicChannels(CapabilitiesSupport capabilitiesSupport) {
+        List<Channel> removeList = new ArrayList<>();
+
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
+                capabilitiesSupport.batteryLowAlarm());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED,
+                capabilitiesSupport.openWindow());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_LIGHT, capabilitiesSupport.light());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING,
+                capabilitiesSupport.horizontalSwing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_VERTICAL_SWING,
+                capabilitiesSupport.verticalSwing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_SWING, capabilitiesSupport.swing());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_FAN_SPEED,
+                capabilitiesSupport.fanSpeed());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_FAN_LEVEL,
+                capabilitiesSupport.fanLevel());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_AC_POWER, capabilitiesSupport.acPower());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HEATING_POWER,
+                capabilitiesSupport.heatingPower());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HUMIDITY,
+                capabilitiesSupport.humidity());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_CURRENT_TEMPERATURE,
+                capabilitiesSupport.currentTemperature());
+
+        if (!removeList.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                StringJoiner joiner = new StringJoiner(", ");
+                removeList.forEach(c -> joiner.add(c.getUID().getId()));
+                logger.debug("Removing unsupported channels for {}: {}", thing.getUID(), joiner.toString());
+            }
+            updateThing(editThing().withoutChannels(removeList).build());
+        }
     }
 }

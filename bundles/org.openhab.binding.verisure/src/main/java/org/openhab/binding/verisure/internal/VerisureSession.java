@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -82,7 +82,7 @@ public class VerisureSession {
     private final Map<String, VerisureThingHandler<?>> verisureHandlers = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
-    private final List<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = new CopyOnWriteArrayList<>();
+    private final Set<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = ConcurrentHashMap.newKeySet();
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");

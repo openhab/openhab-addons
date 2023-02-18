@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,7 +44,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions", "unchecked" })
+@SuppressWarnings({ "unchecked" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
@@ -52,6 +53,14 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
     @BeforeEach
     public void beforeEach() {
         discovery = new TestHomeAssistantDiscovery(channelTypeProvider);
+    }
+
+    @Test
+    public void testComponentNameSummary() {
+        assertThat(
+                HomeAssistantDiscovery.getComponentNamesSummary(
+                        Stream.of("Sensor", "Switch", "Sensor", "Foobar", "Foobar", "Foobar")), //
+                is("3x Foobar, 2x Sensor, Switch"));
     }
 
     @Test
@@ -79,6 +88,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         assertThat(result.getProperties().get(Thing.PROPERTY_VENDOR), is("TuYa"));
         assertThat(result.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), is("Zigbee2MQTT 1.18.2"));
         assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_BASETOPIC), is("homeassistant"));
+        assertThat(result.getLabel(), is("th1 (Climate Control, Switch)"));
         assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS), hasItems(
                 "climate/0x847127fffe11dd6a_climate_zigbee2mqtt", "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt"));
     }

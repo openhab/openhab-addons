@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,14 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAlarmHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAutomationHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAuxiliaryHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetEnergyHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetGenericHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioBasicHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioHandler;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetThermoregulationHandler;
 import org.openhab.core.thing.Bridge;
@@ -37,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OpenWebNetHandlerFactory} is responsible for creating thing handlers.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution, updates
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
  * @author Giovanni Fabiani - Auxiliary support
@@ -79,6 +81,12 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetAuxiliaryHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Creating NEW AUXILIARY Handler");
             return new OpenWebNetAuxiliaryHandler(thing);
+        } else if (OpenWebNetScenarioBasicHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Creating NEW BASIC SCENARIO Handler");
+            return new OpenWebNetScenarioBasicHandler(thing);
+        } else if (OpenWebNetAlarmHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("creating NEW ALARM Handler");
+            return new OpenWebNetAlarmHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;

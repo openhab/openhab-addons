@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,9 +63,9 @@ public class WledApiV0110 extends WledApiV084 {
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
             if (preset != null && counter > 0) {
                 if (preset.bri == 0) {
-                    playlistsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                    playlistsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 } else {
-                    presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                    presetsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 }
             }
             counter++;

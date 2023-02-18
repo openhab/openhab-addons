@@ -37,6 +37,7 @@
 			<channel id="boilerTemperature" typeId="boilerTemperature"/>
 			<channel id="dhwSetpoint" typeId="dhwSetpoint"/>
 			<channel id="maxBoilerTemperature" typeId="maxBoilerTemperature"/>
+			<channel id="returnWaterTemperature" typeId="returnWaterTemperature"/>
 		</channels>
 
 		<representation-property>id</representation-property>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +33,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTest
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Climate;
+import org.openhab.binding.mqtt.homeassistant.internal.component.Sensor;
 import org.openhab.binding.mqtt.homeassistant.internal.component.Switch;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
@@ -40,7 +43,6 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
@@ -60,6 +62,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
     private @NonNullByDefault({}) HomeAssistantThingHandler thingHandler;
+    private @NonNullByDefault({}) HomeAssistantThingHandler nonSpyThingHandler;
 
     @BeforeEach
     public void setup() {
@@ -74,6 +77,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
+        nonSpyThingHandler = thingHandler;
         thingHandler = spy(thingHandler);
     }
 
@@ -115,6 +119,108 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         assertThat(haThing.getChannels().size(), CoreMatchers.is(7));
         verify(channelTypeProvider, times(7)).setChannelType(any(), any());
         verify(channelTypeProvider, times(2)).setChannelGroupType(any(), any());
+    }
+
+    /**
+     * Test where the same component is published twice to MQTT. The binding should handle this.
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void testDuplicateComponentPublish() throws InterruptedException {
+        thingHandler.initialize();
+
+        verify(callbackMock).statusUpdated(eq(haThing), any());
+        // Expect a call to the bridge status changed, the start, the propertiesChanged method
+        verify(thingHandler).bridgeStatusChanged(any());
+        verify(thingHandler, timeout(SUBSCRIBE_TIMEOUT)).start(any());
+
+        // Expect subscription on each topic from config
+        MQTT_TOPICS.forEach(t -> {
+            verify(bridgeConnection, timeout(SUBSCRIBE_TIMEOUT)).subscribe(eq(t), any());
+        });
+
+        verify(thingHandler, never()).componentDiscovered(any(), any());
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+
+        //
+        //
+        // Publish sensor components with identical payload except for
+        // change in "name" field. The binding should respect the latest discovery result.
+        //
+        // This simulates how multiple OpenMQTTGateway devices would publish
+        // the same discovery topics for a particular Bluetooth sensor, and thus "competing" with similar but slightly
+        // different discovery topics.
+        //
+        // In fact, only difference is actually "via_device" additional metadata field telling which OpenMQTTGateway
+        // published the discovery topic.
+        //
+        //
+
+        //
+        // 1. publish corridor temperature sensor
+        //
+        var configTopicTempCorridor = "homeassistant/sensor/tempCorridor/config";
+        thingHandler.discoverComponents.processMessage(configTopicTempCorridor, new String("{"//
+                + "\"temperature_state_topic\": \"+/+/BTtoMQTT/mysensor\","//
+                + "\"temperature_state_template\": \"{{ value_json.temperature }}\", "//
+                + "\"name\": \"CorridorTemp\", "//
+                + "\"unit_of_measurement\": \"°C\" "//
+                + "}").getBytes(StandardCharsets.UTF_8));
+        verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
+        thingHandler.delayedProcessing.forceProcessNow();
+        waitForAssert(() -> {
+            assertThat("1 channel created", thingHandler.getThing().getChannels().size() == 1);
+        });
+
+        //
+        // 2. publish outside temperature sensor
+        //
+        var configTopicTempOutside = "homeassistant/sensor/tempOutside/config";
+        thingHandler.discoverComponents.processMessage(configTopicTempOutside, new String("{"//
+                + "\"temperature_state_topic\": \"+/+/BTtoMQTT/mysensor\","//
+                + "\"temperature_state_template\": \"{{ value_json.temperature }}\", " //
+                + "\"name\": \"OutsideTemp\", "//
+                + "\"source\": \"gateway2\" "//
+                + "}").getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopicTempOutside)), any(Sensor.class));
+        waitForAssert(() -> {
+            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+        });
+
+        //
+        // 3. publish corridor temperature sensor, this time with different name (openHAB channel label)
+        //
+        thingHandler.discoverComponents.processMessage(configTopicTempCorridor, new String("{"//
+                + "\"temperature_state_topic\": \"+/+/BTtoMQTT/mysensor\","//
+                + "\"temperature_state_template\": \"{{ value_json.temperature }}\", "//
+                + "\"name\": \"CorridorTemp NEW\", "//
+                + "\"unit_of_measurement\": \"°C\" "//
+                + "}").getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+        });
+
+        //
+        // verify that both channels are there and the label corresponds to newer discovery topic payload
+        //
+        Channel corridorTempChannel = nonSpyThingHandler.getThing().getChannel("tempCorridor_5Fsensor#sensor");
+        assertThat("Corridor temperature channel is created", corridorTempChannel, CoreMatchers.notNullValue());
+        Objects.requireNonNull(corridorTempChannel); // for compiler
+        assertThat("Corridor temperature channel is having the updated label from 2nd discovery topic publish",
+                corridorTempChannel.getLabel(), CoreMatchers.is("CorridorTemp NEW"));
+
+        Channel outsideTempChannel = nonSpyThingHandler.getThing().getChannel("tempOutside_5Fsensor#sensor");
+        assertThat("Outside temperature channel is created", outsideTempChannel, CoreMatchers.notNullValue());
+
+        verify(thingHandler, times(2)).componentDiscovered(eq(new HaID(configTopicTempCorridor)), any(Sensor.class));
+
+        waitForAssert(() -> {
+            assertThat("2 channel created", thingHandler.getThing().getChannels().size() == 2);
+        });
     }
 
     @Test

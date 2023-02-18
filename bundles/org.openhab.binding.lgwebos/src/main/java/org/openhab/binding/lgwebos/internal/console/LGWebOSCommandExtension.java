@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,15 @@ package org.openhab.binding.lgwebos.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
@@ -36,11 +41,13 @@ import org.osgi.service.component.annotations.Reference;
 
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
+public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String APPLICATIONS = "applications";
     private static final String CHANNELS = "channels";
     private static final String ACCESS_KEY = "accesskey";
+    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(
+            List.of(APPLICATIONS, CHANNELS, ACCESS_KEY), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -53,13 +60,7 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            Thing thing = null;
-            try {
-                ThingUID thingUID = new ThingUID(args[0]);
-                thing = thingRegistry.get(thingUID);
-            } catch (IllegalArgumentException e) {
-                thing = null;
-            }
+            Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
             LGWebOSHandler handler = null;
             if (thing != null) {
@@ -103,5 +104,37 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(new String[] { buildCommandUsage("<thingUID> " + APPLICATIONS, "list applications"),
                 buildCommandUsage("<thingUID> " + CHANNELS, "list channels"),
                 buildCommandUsage("<thingUID> " + ACCESS_KEY, "show the access key") });
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        if (cursorArgumentIndex <= 0) {
+            return new StringsCompleter(thingRegistry.getAll().stream()
+                    .filter(t -> LGWebOSBindingConstants.THING_TYPE_WEBOSTV.equals(t.getThingTypeUID()))
+                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true).complete(args,
+                            cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1) {
+            Thing thing = getThing(args[0]);
+            if (thing != null && LGWebOSBindingConstants.THING_TYPE_WEBOSTV.equals(thing.getThingTypeUID())) {
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
+        }
+        return false;
+    }
+
+    private @Nullable Thing getThing(String uid) {
+        Thing thing = null;
+        try {
+            ThingUID thingUID = new ThingUID(uid);
+            thing = thingRegistry.get(thingUID);
+        } catch (IllegalArgumentException e) {
+            thing = null;
+        }
+        return thing;
     }
 }

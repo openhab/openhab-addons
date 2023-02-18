@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class ConverterFactory {
     private static Map<String, TypeConverter<?>> converterCache = new HashMap<>();
 
     /**
-     * Returns the converter for a itemType.
+     * Returns the converter for an itemType.
      */
     public static TypeConverter<?> createConverter(String itemType) throws ConverterException {
         Class<? extends TypeConverter<?>> converterClass = null;

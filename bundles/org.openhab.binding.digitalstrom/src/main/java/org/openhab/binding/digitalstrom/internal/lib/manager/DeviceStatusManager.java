@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
 /**
  * <p>
  * The {@link DeviceStatusManager} is responsible for the synchronization between the internal model of the
- * digitalSTROM-devices and the real existing digitalSTROM-devices. You can change the state of an device by sending a
+ * digitalSTROM-devices and the real existing digitalSTROM-devices. You can change the state of a device by sending a
  * direct command to the devices or by calling a scene. Furthermore the {@link DeviceStatusManager} get informed over
  * the {@link SceneManager} by the {@link EventListener} if scenes are called by external sources. All
  * configurations of the physically device will be synchronized to the internally managed model and updated as required.

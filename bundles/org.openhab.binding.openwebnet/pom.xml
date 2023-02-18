@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.openwebnet</artifactId>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>io.github.openwebnet4j</groupId>
       <artifactId>openwebnet4j</artifactId>
-      <version>0.8.1</version>
+      <version>0.9.1</version>
       <scope>compile</scope>
     </dependency>
 

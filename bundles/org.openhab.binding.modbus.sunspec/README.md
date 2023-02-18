@@ -6,7 +6,7 @@ SunSpec is a format for inverters and smart meters to communicate over the Modbu
 It defines how common parameters like AC/DC voltage and current, lifetime produced energy, device temperature etc can be read from the device.
 
 SunSpec is supported by several manufacturers like ABB, Fronius, LG, SMA, SolarEdge, Schneider Electric.
-For a list of certified products see this page: https://sunspec.org/sunspec-certified-products/
+For a list of certified products see this page: <https://sunspec.org/sunspec-certified-products/>
 
 ## Supported Things
 
@@ -34,7 +34,7 @@ You can set the `enableDiscovery=true` parameter in your bridge.
 
 A typical bridge configuration would look like this:
 
-```
+```java
 Bridge modbus:tcp:modbusBridgeName [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
 ```
 
@@ -65,13 +65,14 @@ Different things support a subset of the following groups.
 
 This group contains general operational information about the device.
 
-| Channel ID              | Item Type             | Description                                                                        |
-|-------------------------|-----------------------|------------------------------------------------------------------------------------|
-| cabinet-temperature     | Number:Temperature    | Temperature of the cabinet if supported in Celsius                                 |
-| heatsink-temperature    | Number:Temperature    | Device heat sink temperature in Celsius                                            |
-| transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                          |
-| other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius |
-| status                  | String                | Device status: OFF=Off, SLEEP=Sleeping/night mode, ON=On - producing power         |
+| Channel ID              | Item Type             | Description                                                                                                                                                                                                                                                                                                     |
+|-------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cabinet-temperature     | Number:Temperature    | Temperature of the cabinet if supported in Celsius                                                                                                                                                                                                                                                              |
+| heatsink-temperature    | Number:Temperature    | Device heat sink temperature in Celsius                                                                                                                                                                                                                                                                         |
+| transformer-temperature | Number:Temperature    | Temperature of the transformer in Celsius                                                                                                                                                                                                                                                                       |
+| other-temperature       | Number:Temperature    | Any other temperature reading not covered by the above items if available. Celsius                                                                                                                                                                                                                              |
+| status                  | String                | Device status: <ul><li>OFF=Off</li><li>SLEEP=Sleeping/night mode</li><li>STARTING=Grid Monitoring/wake-up</li><li>ON=On - producing power (also called MPPT by Specification)</li><li>THROTTLED=Production (curtailed)<li>SHUTTING_DOWN=Shutting down<li>FAULT=Fault<li> STANDBY=Standby/Maintenance/Setup</ul> |
+| status-vendor           | Number                | Vendor Specific Status Code                                                                                                                                                                                                                                                                                     |
 
 Supported by: all inverter things
 
@@ -157,8 +158,8 @@ acPhaseC: available only for meter-wye-phase and meter-delta-phase meters type i
 | ac-voltage-to-n                | Number:ElectricPotential | Voltage of this line relative to the neutral line                   |
 | ac-voltage-to-next             | Number:ElectricPotential | Voltage of this line relative to the next line                      |
 | ac-real-power                  | Number:Power             | AC Real Power value (W)                                             |
-| ac-apparent-power              | Number:Power             | AC Apparent Power value                                             |
-| ac-reactive-power              | Number:Power             | AC Reactive Power value                                             |
+| ac-apparent-power              | Number:Power             | AC Apparent Power value (VA)                                        |
+| ac-reactive-power              | Number:Power             | AC Reactive Power value (VAR)                                       |
 | ac-power-factor                | Number:Dimensionless     | AC Power Factor (%)                                                 |
 | ac-exported-real-energy        | Number:Energy            | Real Energy Exported (Wh                                            |
 | ac-imported-real-energy        | Number:Energy            | Real Energy Imported (Wh)                                           |
@@ -188,7 +189,7 @@ Supported by: all inverter things
 
 ### Thing Configuration
 
-```
+```java
 Bridge modbus:tcp:modbusBridgeName [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
 Thing modbus:inverter-single-phase:bridge:myInverter "SE4000h" (modbus:tcp:modbusBridgeName) [ address=40069, length=52, refresh=15 ]
 ```
@@ -197,7 +198,7 @@ Note: Make sure that refresh, port and id values are numerical, without quotes.
 
 ### Item Configuration
 
-```
+```java
 Number Inverter_Temperature "Temperature [%.1f C]"  {channel="modbus:inverter-single-phase:bridge:se4000h:deviceInformation#heatsink-temperature"}
 
 Number Inverter_AC_Power "AC Power [%d W]" {channel="modbus:inverter-single-phase:bridge:se4000h:acGeneral#ac-power"}
@@ -208,12 +209,12 @@ Number Inverter_AC1_A "AC Current Phase 1 [%0.2f A]" {channel="modbus:inverter-s
 
 ### Sitemap Configuration
 
-```
-                        Text item=Inverter_Temperature
-                        Text item=Inverter_AC_Current
-                        Text item=Inverter_AC_Power
-                        Chart item=Inverter_Temperature period=D refresh=600000
-                        Chart item=Inverter_AC_Power period=D refresh=30000
+```perl
+Text item=Inverter_Temperature
+Text item=Inverter_AC_Current
+Text item=Inverter_AC_Power
+Chart item=Inverter_Temperature period=D refresh=600000
+Chart item=Inverter_AC_Power period=D refresh=30000
 
 ```
 
@@ -222,6 +223,6 @@ Number Inverter_AC1_A "AC Current Phase 1 [%0.2f A]" {channel="modbus:inverter-s
 ### SolarEdge
 
 Newer models of SolarEdge inverters can be monitored over TCP, but you need to enable support in the inverter first.
-Refer to the "Modbus over TCP Configuration" chapter in this documentation: https://www.solaredge.com/sites/default/files/sunspec-implementation-technical-note.pdf
+Refer to the "Modbus over TCP Configuration" chapter in this documentation: <https://www.solaredge.com/sites/default/files/sunspec-implementation-technical-note.pdf>
 
 Modbus connection is limited to a single client at a time, so make sure no other clients are using the port.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,14 +82,15 @@ public class LcnModuleVariableSubHandlerTest extends AbstractTestLcnModuleSubHan
     @Test
     public void testStatusVariable10SensorDefective() {
         tryParseAllHandlers("=M000005.A01032512");
-        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "10", new StringType("DEFECTIVE"));
+        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "10", new StringType("Sensor defective: VARIABLE10"));
         verify(handler).updateChannel(any(), any(), any());
     }
 
     @Test
     public void testStatusVariable8NotConfigured() {
         tryParseAllHandlers("=M000005.A00865535");
-        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "8", new StringType("Not configured in LCN-PRO"));
+        verify(handler).updateChannel(LcnChannelGroup.VARIABLE, "8",
+                new StringType("Not configured in LCN-PRO: VARIABLE8"));
         verify(handler).updateChannel(any(), any(), any());
     }
 }

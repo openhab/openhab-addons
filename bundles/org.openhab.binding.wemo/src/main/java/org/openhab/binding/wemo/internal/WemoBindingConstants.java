@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,7 +110,7 @@ public class WemoBindingConstants {
     public static final String DEVICE_ID = "deviceID";
     public static final String POLLING_INTERVAL = "pollingInterval";
     public static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
-    public static final int SUBSCRIPTION_DURATION_SECONDS = 600;
+    public static final int SUBSCRIPTION_DURATION_SECONDS = 1800;
     public static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
     public static final String HTTP_CALL_CONTENT_HEADER = "text/xml; charset=utf-8";
 

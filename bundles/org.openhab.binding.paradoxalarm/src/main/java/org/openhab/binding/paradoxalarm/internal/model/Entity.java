@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,10 +24,12 @@ import org.slf4j.LoggerFactory;
 public abstract class Entity {
     private final Logger logger = LoggerFactory.getLogger(Entity.class);
 
+    private ParadoxPanel panel;
     private int id;
     private String label;
 
-    public Entity(int id, String label) {
+    public Entity(ParadoxPanel panel, int id, String label) {
+        this.panel = panel;
         this.id = id;
         this.label = label.trim();
         logger.debug("Creating entity with label: {} and ID: {}", label, id);
@@ -47,6 +49,10 @@ public abstract class Entity {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public ParadoxPanel getPanel() {
+        return panel;
     }
 
     @Override

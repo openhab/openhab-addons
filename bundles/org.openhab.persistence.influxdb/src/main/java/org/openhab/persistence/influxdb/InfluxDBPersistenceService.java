@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.persistence.influxdb;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
@@ -37,18 +35,19 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBHistoricItem;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBPersistentItemInfo;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
 import org.openhab.persistence.influxdb.internal.ItemToStorePointCreator;
-import org.openhab.persistence.influxdb.internal.RepositoryFactory;
+import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
+import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
+import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,43 +85,38 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     // External dependencies
     private final ItemRegistry itemRegistry;
-    private final MetadataRegistry metadataRegistry;
+    private final InfluxDBMetadataService influxDBMetadataService;
 
-    // Internal dependencies/state
-    private InfluxDBConfiguration configuration = InfluxDBConfiguration.NO_CONFIGURATION;
-
-    // Relax rules because can only be null if component is not active
-    private @NonNullByDefault({}) ItemToStorePointCreator itemToStorePointCreator;
-    private @NonNullByDefault({}) InfluxDBRepository influxDBRepository;
+    private final InfluxDBConfiguration configuration;
+    private final ItemToStorePointCreator itemToStorePointCreator;
+    private final InfluxDBRepository influxDBRepository;
+    private boolean tryReconnection;
 
     @Activate
     public InfluxDBPersistenceService(final @Reference ItemRegistry itemRegistry,
-            final @Reference MetadataRegistry metadataRegistry) {
+            final @Reference InfluxDBMetadataService influxDBMetadataService, Map<String, Object> config) {
         this.itemRegistry = itemRegistry;
-        this.metadataRegistry = metadataRegistry;
-    }
-
-    /**
-     * Connect to database when service is activated
-     */
-    @Activate
-    public void activate(final @Nullable Map<String, Object> config) {
-        logger.debug("InfluxDB persistence service is being activated");
-
-        if (loadConfiguration(config)) {
-            itemToStorePointCreator = new ItemToStorePointCreator(configuration, metadataRegistry);
-            influxDBRepository = createInfluxDBRepository();
-            influxDBRepository.connect();
+        this.influxDBMetadataService = influxDBMetadataService;
+        this.configuration = new InfluxDBConfiguration(config);
+        if (configuration.isValid()) {
+            this.influxDBRepository = createInfluxDBRepository();
+            this.influxDBRepository.connect();
+            this.itemToStorePointCreator = new ItemToStorePointCreator(configuration, influxDBMetadataService);
+            tryReconnection = true;
         } else {
-            logger.error("Cannot load configuration, persistence service wont work");
+            throw new IllegalArgumentException("Configuration invalid.");
         }
 
-        logger.debug("InfluxDB persistence service is now activated");
+        logger.info("InfluxDB persistence service started.");
     }
 
     // Visible for testing
-    protected InfluxDBRepository createInfluxDBRepository() {
-        return RepositoryFactory.createRepository(configuration);
+    protected InfluxDBRepository createInfluxDBRepository() throws IllegalArgumentException {
+        return switch (configuration.getVersion()) {
+            case V1 -> new InfluxDB1RepositoryImpl(configuration, influxDBMetadataService);
+            case V2 -> new InfluxDB2RepositoryImpl(configuration, influxDBMetadataService);
+            default -> throw new IllegalArgumentException("Failed to instantiate repository.");
+        };
     }
 
     /**
@@ -130,47 +124,9 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
      */
     @Deactivate
     public void deactivate() {
-        logger.debug("InfluxDB persistence service deactivated");
-        if (influxDBRepository != null) {
-            influxDBRepository.disconnect();
-            influxDBRepository = null;
-        }
-        if (itemToStorePointCreator != null) {
-            itemToStorePointCreator = null;
-        }
-    }
-
-    /**
-     * Rerun deactivation/activation code each time configuration is changed
-     */
-    @Modified
-    protected void modified(@Nullable Map<String, Object> config) {
-        if (config != null) {
-            logger.debug("Config has been modified will deactivate/activate with new config");
-
-            deactivate();
-            activate(config);
-        } else {
-            logger.warn("Null configuration, ignoring");
-        }
-    }
-
-    private boolean loadConfiguration(@Nullable Map<String, Object> config) {
-        boolean configurationIsValid;
-        if (config != null) {
-            configuration = new InfluxDBConfiguration(config);
-            configurationIsValid = configuration.isValid();
-            if (configurationIsValid) {
-                logger.debug("Loaded configuration {}", config);
-            } else {
-                logger.warn("Some configuration properties are not valid {}", config);
-            }
-        } else {
-            configuration = InfluxDBConfiguration.NO_CONFIGURATION;
-            configurationIsValid = false;
-            logger.warn("Ignoring configuration because it's null");
-        }
-        return configurationIsValid;
+        tryReconnection = false;
+        influxDBRepository.disconnect();
+        logger.info("InfluxDB persistence service stopped.");
     }
 
     @Override
@@ -185,65 +141,80 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        if (influxDBRepository != null && influxDBRepository.isConnected()) {
-            return influxDBRepository.getStoredItemsCount().entrySet().stream()
-                    .map(entry -> new InfluxDBPersistentItemInfo(entry.getKey(), entry.getValue()))
+        if (checkConnection()) {
+            return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
-            logger.info("getItemInfo ignored, InfluxDB is not yet connected");
-            return Collections.emptySet();
+            logger.info("getItemInfo ignored, InfluxDB is not connected");
+            return Set.of();
         }
     }
 
     @Override
     public void store(Item item) {
-        store(item, item.getName());
+        store(item, null);
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        if (influxDBRepository != null && influxDBRepository.isConnected()) {
+        if (checkConnection()) {
             InfluxPoint point = itemToStorePointCreator.convert(item, alias);
             if (point != null) {
-                logger.trace("Storing item {} in InfluxDB point {}", item, point);
-                influxDBRepository.write(point);
+                try {
+                    influxDBRepository.write(point);
+                    logger.trace("Stored item {} in InfluxDB point {}", item, point);
+                } catch (UnexpectedConditionException e) {
+                    logger.warn("Failed to store item {} in InfluxDB point {}", point, item);
+                }
             } else {
-                logger.trace("Ignoring item {} as is cannot be converted to a InfluxDB point", item);
+                logger.trace("Ignoring item {}, conversion to an InfluxDB point failed.", item);
             }
         } else {
-            logger.debug("store ignored, InfluxDB is not yet connected");
+            logger.debug("store ignored, InfluxDB is not connected");
         }
     }
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
-        logger.debug("Got a query for historic points!");
-
-        if (influxDBRepository != null && influxDBRepository.isConnected()) {
+        if (checkConnection()) {
             logger.trace(
-                    "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
+                    "Query-Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
-
-            String query = RepositoryFactory.createQueryCreator(configuration, metadataRegistry).createQuery(filter,
+            String query = influxDBRepository.createQueryCreator().createQuery(filter,
                     configuration.getRetentionPolicy());
             logger.trace("Query {}", query);
-            List<InfluxRow> results = influxDBRepository.query(query);
-            return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());
+            List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(query);
+            return results.stream().map(this::mapRowToHistoricItem).collect(Collectors.toList());
         } else {
-            logger.debug("query ignored, InfluxDB is not yet connected");
-            return Collections.emptyList();
+            logger.debug("Query for persisted data ignored, InfluxDB is not connected");
+            return List.of();
         }
     }
 
-    private HistoricItem mapRow2HistoricItem(InfluxRow row) {
-        State state = InfluxDBStateConvertUtils.objectToState(row.getValue(), row.getItemName(), itemRegistry);
-        return new InfluxDBHistoricItem(row.getItemName(), state,
-                ZonedDateTime.ofInstant(row.getTime(), ZoneId.systemDefault()));
+    private HistoricItem mapRowToHistoricItem(InfluxDBRepository.InfluxRow row) {
+        State state = InfluxDBStateConvertUtils.objectToState(row.value(), row.itemName(), itemRegistry);
+        return new InfluxDBHistoricItem(row.itemName(), state,
+                ZonedDateTime.ofInstant(row.time(), ZoneId.systemDefault()));
     }
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
+    }
+
+    /**
+     * check connection and try reconnect
+     *
+     * @return true if connected
+     */
+    private boolean checkConnection() {
+        if (influxDBRepository.isConnected()) {
+            return true;
+        } else if (tryReconnection) {
+            logger.debug("Connection lost, trying re-connection");
+            return influxDBRepository.connect();
+        }
+        return false;
     }
 }

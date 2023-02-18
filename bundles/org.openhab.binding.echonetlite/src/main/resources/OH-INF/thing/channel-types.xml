@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="echonetlite"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="operationStatus">
+		<item-type>Switch</item-type>
+		<label>Operation Status</label>
+		<description>Operation Status</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="installationLocation">
+		<item-type>String</item-type>
+		<label>Installation Location</label>
+		<description>Installation Location</description>
+		<category>Text</category>
+		<state>
+			<options>
+				<option value="Not specified">Not specified</option>
+
+				<option value="Living Room">Living Room</option>
+				<option value="Living Room 1">Living Room 1</option>
+				<option value="Living Room 2">Living Room 2</option>
+				<option value="Living Room 3">Living Room 3</option>
+				<option value="Living Room 4">Living Room 4</option>
+				<option value="Living Room 5">Living Room 5</option>
+				<option value="Living Room 6">Living Room 6</option>
+				<option value="Living Room 7">Living Room 7</option>
+
+				<option value="Dining Room">Dining Room</option>
+				<option value="Dining Room 1">Dining Room 1</option>
+				<option value="Dining Room 2">Dining Room 2</option>
+				<option value="Dining Room 3">Dining Room 3</option>
+				<option value="Dining Room 4">Dining Room 4</option>
+				<option value="Dining Room 5">Dining Room 5</option>
+				<option value="Dining Room 6">Dining Room 6</option>
+				<option value="Dining Room 7">Dining Room 7</option>
+
+				<option value="Kitchen">"Kitchen"</option>
+				<option value="Kitchen 1">Kitchen 1</option>
+				<option value="Kitchen 2">Kitchen 2</option>
+				<option value="Kitchen 3">Kitchen 3</option>
+				<option value="Kitchen 4">Kitchen 4</option>
+				<option value="Kitchen 5">Kitchen 5</option>
+				<option value="Kitchen 6">Kitchen 6</option>
+				<option value="Kitchen 7">Kitchen 7</option>
+
+				<option value="Lavatory">"Lavatory"</option>
+				<option value="Lavatory 1">Lavatory 1</option>
+				<option value="Lavatory 2">Lavatory 2</option>
+				<option value="Lavatory 3">Lavatory 3</option>
+				<option value="Lavatory 4">Lavatory 4</option>
+				<option value="Lavatory 5">Lavatory 5</option>
+				<option value="Lavatory 6">Lavatory 6</option>
+				<option value="Lavatory 7">Lavatory 7</option>
+
+				<option value="Washroom/changing room">Washroom/changing room</option>
+				<option value="Washroom/changing room 1">Washroom/changing room 1</option>
+				<option value="Washroom/changing room 2">Washroom/changing room 2</option>
+				<option value="Washroom/changing room 3">Washroom/changing room 3</option>
+				<option value="Washroom/changing room 4">Washroom/changing room 4</option>
+				<option value="Washroom/changing room 5">Washroom/changing room 5</option>
+				<option value="Washroom/changing room 6">Washroom/changing room 6</option>
+				<option value="Washroom/changing room 7">Washroom/changing room 7</option>
+
+				<option value="Passageway">"Passageway"</option>
+				<option value="Passageway 1">Passageway 1</option>
+				<option value="Passageway 2">Passageway 2</option>
+				<option value="Passageway 3">Passageway 3</option>
+				<option value="Passageway 4">Passageway 4</option>
+				<option value="Passageway 5">Passageway 5</option>
+				<option value="Passageway 6">Passageway 6</option>
+				<option value="Passageway 7">Passageway 7</option>
+
+				<option value="Room">"Room"</option>
+				<option value="Room 1">Room 1</option>
+				<option value="Room 2">Room 2</option>
+				<option value="Room 3">Room 3</option>
+				<option value="Room 4">Room 4</option>
+				<option value="Room 5">Room 5</option>
+				<option value="Room 6">Room 6</option>
+				<option value="Room 7">Room 7</option>
+
+				<option value="Stairway">"Stairway"</option>
+				<option value="Stairway 1">Stairway 1</option>
+				<option value="Stairway 2">Stairway 2</option>
+				<option value="Stairway 3">Stairway 3</option>
+				<option value="Stairway 4">Stairway 4</option>
+				<option value="Stairway 5">Stairway 5</option>
+				<option value="Stairway 6">Stairway 6</option>
+				<option value="Stairway 7">Stairway 7</option>
+
+				<option value="Front door">Front door</option>
+				<option value="Front door 1">Front door 1</option>
+				<option value="Front door 2">Front door 2</option>
+				<option value="Front door 3">Front door 3</option>
+				<option value="Front door 4">Front door 4</option>
+				<option value="Front door 5">Front door 5</option>
+				<option value="Front door 6">Front door 6</option>
+				<option value="Front door 7">Front door 7</option>
+
+				<option value="Storeroom">"Storeroom"</option>
+				<option value="Storeroom 1">Storeroom 1</option>
+				<option value="Storeroom 2">Storeroom 2</option>
+				<option value="Storeroom 3">Storeroom 3</option>
+				<option value="Storeroom 4">Storeroom 4</option>
+				<option value="Storeroom 5">Storeroom 5</option>
+				<option value="Storeroom 6">Storeroom 6</option>
+				<option value="Storeroom 7">Storeroom 7</option>
+
+				<option value="Garden/perimeter">Garden/perimeter</option>
+				<option value="Garden/perimeter 1">Garden/perimeter 1</option>
+				<option value="Garden/perimeter 2">Garden/perimeter 2</option>
+				<option value="Garden/perimeter 3">Garden/perimeter 3</option>
+				<option value="Garden/perimeter 4">Garden/perimeter 4</option>
+				<option value="Garden/perimeter 5">Garden/perimeter 5</option>
+				<option value="Garden/perimeter 6">Garden/perimeter 6</option>
+				<option value="Garden/perimeter 7">Garden/perimeter 7</option>
+
+				<option value="Garage">"Garage"</option>
+				<option value="Garage 1">Garage 1</option>
+				<option value="Garage 2">Garage 2</option>
+				<option value="Garage 3">Garage 3</option>
+				<option value="Garage 4">Garage 4</option>
+				<option value="Garage 5">Garage 5</option>
+				<option value="Garage 6">Garage 6</option>
+				<option value="Garage 7">Garage 7</option>
+
+				<option value="Veranda/balcony">Veranda/balcony</option>
+				<option value="Veranda/balcony 1">Veranda/balcony 1</option>
+				<option value="Veranda/balcony 2">Veranda/balcony 2</option>
+				<option value="Veranda/balcony 3">Veranda/balcony 3</option>
+				<option value="Veranda/balcony 4">Veranda/balcony 4</option>
+				<option value="Veranda/balcony 5">Veranda/balcony 5</option>
+				<option value="Veranda/balcony 6">Veranda/balcony 6</option>
+				<option value="Veranda/balcony 7">Veranda/balcony 7</option>
+
+				<option value="Others">"Others"</option>
+				<option value="Others 1">Others 1</option>
+				<option value="Others 2">Others 2</option>
+				<option value="Others 3">Others 3</option>
+				<option value="Others 4">Others 4</option>
+				<option value="Others 5">Others 5</option>
+				<option value="Others 6">Others 6</option>
+				<option value="Others 7">Others 7</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="standardVersionInformation">
+		<item-type>String</item-type>
+		<label>Standard Version Information</label>
+		<description>Standard Version Information</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="identificationNumber">
+		<item-type>String</item-type>
+		<label>Identification Number</label>
+		<description>Identification Number</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manufacturerFaultCode">
+		<item-type>String</item-type>
+		<label>Manufacturer Fault Code</label>
+		<description>Manufacturer Fault Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="faultStatus">
+		<item-type>Switch</item-type>
+		<label>Fault Status</label>
+		<description>Fault Status</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="faultDescription">
+		<item-type>String</item-type>
+		<label>Fault Description</label>
+		<description>Fault Description</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manufacturerCode">
+		<item-type>String</item-type>
+		<label>Manufacturer Code</label>
+		<description>Manufacturer Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="businessFacilityCode">
+		<item-type>String</item-type>
+		<label>Business Facility Code</label>
+		<description>Business Facility Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerSavingOperationSetting">
+		<item-type>Switch</item-type>
+		<label>Power Saving</label>
+		<description>Controls whether the unit is in power saving operation or not</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="cumulativeOperatingTime">
+		<item-type>Number:Time</item-type>
+		<label>Cumulative Operating Time</label>
+		<description>Cumulative time the unit has been operating in seconds</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="airFlowRate">
+		<item-type>String</item-type>
+		<label>Air Flow Rate</label>
+		<description>Air Flow Rate</description>
+		<category>Flow</category>
+		<state>
+			<options>
+				<option value="Auto">Auto</option>
+				<option value="Rate 1">Rate 1</option>
+				<option value="Rate 2">Rate 2</option>
+				<option value="Rate 3">Rate 3</option>
+				<option value="Rate 4">Rate 4</option>
+				<option value="Rate 5">Rate 5</option>
+				<option value="Rate 6">Rate 6</option>
+				<option value="Rate 7">Rate 7</option>
+				<option value="Rate 8">Rate 8</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="automaticControlOfAirFlowDirection">
+		<item-type>String</item-type>
+		<label>Automatic Air Flow Direction</label>
+		<description>The type of automatic control applied to the air flow direction, if any</description>
+		<state>
+			<options>
+				<option value="Automatic">Automatic</option>
+				<option value="Non-automatic">Non-automatic</option>
+				<option value="Automatic (vertical)">Automatic (vertical)</option>
+				<option value="Automatic (horizontal)">Automatic (horizontal)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="automaticSwingOfAirFlow">
+		<item-type>String</item-type>
+		<label>Automatic Swing Of Air Flow</label>
+		<description>Automatic Swing Of Air Flow</description>
+		<state>
+			<options>
+				<option value="Not used">Not used</option>
+				<option value="Used (vertical)">Used (vertical)</option>
+				<option value="Used (horizontal)">Used (horizontal)</option>
+				<option value="Used (vertical and horizontal)">Used (vertical and horizontal)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airFlowDirectionVertical">
+		<item-type>String</item-type>
+		<label>Air Flow Direction Vertical</label>
+		<description>Air Flow Direction Vertical</description>
+		<state>
+			<options>
+				<option value="Uppermost">Uppermost</option>
+				<option value="Lowermost">Lowermost</option>
+				<option value="Mid-uppermost">Mid-uppermost</option>
+				<option value="Mid-lowermost">Mid-lowermost</option>
+				<option value="Central">Central</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airFlowDirectionHorizontal">
+		<item-type>String</item-type>
+		<label>Air Flow Direction Horizontal</label>
+		<description>Air Flow Direction Horizontal</description>
+		<state>
+			<options>
+				<option value="XXXOO">XXXOO</option>
+				<option value="OOXXX">OOXXX</option>
+				<option value="XOOOX">XOOOX</option>
+				<option value="OOXOO">OOXOO</option>
+				<option value="XXXXO">XXXXO</option>
+				<option value="XXXOX">XXXOX</option>
+				<option value="XXOXX">XXOXX</option>
+				<option value="XXOXO">XXOXO</option>
+				<option value="XXOOX">XXOOX</option>
+				<option value="XXOOO">XXOOO</option>
+				<option value="XOXXX">XOXXX</option>
+				<option value="XOXXO">XOXXO</option>
+				<option value="XOXOX">XOXOX</option>
+				<option value="XOXOO">XOXOO</option>
+				<option value="XOOXX">XOOXX</option>
+				<option value="XOOXO">XOOXO</option>
+				<option value="XOOOO">XOOOO</option>
+				<option value="OXXXX">OXXXX</option>
+				<option value="OXXXO">OXXXO</option>
+				<option value="OXXOX">OXXOX</option>
+				<option value="OXXOO">OXXOO</option>
+				<option value="OXOXX">OXOXX</option>
+				<option value="OXOXO">OXOXO</option>
+				<option value="OXOOX">OXOOX</option>
+				<option value="OXOOO">OXOOO</option>
+				<option value="OOXXO">OOXXO</option>
+				<option value="OOXOX">OOXOX</option>
+				<option value="OOOXX">OOOXX</option>
+				<option value="OOOXO">OOOXO</option>
+				<option value="OOOOX">OOOOX</option>
+				<option value="OOOOO">OOOOO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operationMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>The current mode for the Home AC unit (heating, cooling, etc.)</description>
+		<state>
+			<options>
+				<option value="Automatic">Automatic</option>
+				<option value="Cooling">Cooling</option>
+				<option value="Heating">Heating</option>
+				<option value="Dry">Dry</option>
+				<option value="Fan">Fan</option>
+				<option value="Other">Other</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature</label>
+		<description>Desired target room temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="50" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="measuredRoomTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Measured Room Temperature</label>
+		<description>Measured Room Temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="measuredOutdoorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Measured Outdoor Temperature</label>
+		<description>Measured Outdoor Temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

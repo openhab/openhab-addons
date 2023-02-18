@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.siemensrds.points;
 
+import javax.measure.MetricPrefix;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,6 +44,12 @@ public abstract class BasePoint {
     public static final String DEGREES_KELVIN = "K";
     public static final String PERCENT_RELATIVE_HUMIDITY = "%r.H.";
 
+    private static final String PARTS_PER_MILLION = "ppm";
+    private static final String MILLI_SECOND = "ms";
+    private static final String MINUTE = "min";
+    private static final String HOUR = "h";
+    private static final String AMPERE = "A";
+
     public static final int UNDEFINED_VALUE = -1;
 
     @SerializedName("rep")
@@ -68,7 +75,7 @@ public abstract class BasePoint {
     @SerializedName("presentPriority")
     protected int presentPriority;
 
-    private String @Nullable [] enumVals;
+    private String[] enumVals = {};
     private boolean enumParsed = false;
     protected boolean isEnum = false;
 
@@ -79,7 +86,8 @@ public abstract class BasePoint {
         if (!enumParsed) {
             String descr = this.descr;
             if (descr != null && descr.contains("*")) {
-                enumVals = descr.split("\\*");
+                String[] values = descr.split("\\*");
+                enumVals = values;
                 isEnum = true;
             }
         }
@@ -107,8 +115,7 @@ public abstract class BasePoint {
     public State getEnum() {
         if (isEnum()) {
             int index = asInt();
-            String[] enumVals = this.enumVals;
-            if (index >= 0 && enumVals != null && index < enumVals.length) {
+            if (index >= 0 && index < enumVals.length) {
                 return new StringType(enumVals[index]);
             }
         }
@@ -127,8 +134,7 @@ public abstract class BasePoint {
      */
     public Unit<?> getUnit() {
         /*
-         * determine the Units of Measure if available; note that other possible units
-         * (Ampere, hours, milliseconds, minutes) are currently not implemented
+         * determine the Units of Measure if available
          */
         String descr = this.descr;
         if (descr != null) {
@@ -145,6 +151,21 @@ public abstract class BasePoint {
                 case PERCENT_RELATIVE_HUMIDITY: {
                     return Units.PERCENT;
                 }
+                case AMPERE: {
+                    return Units.AMPERE;
+                }
+                case HOUR: {
+                    return Units.HOUR;
+                }
+                case MINUTE: {
+                    return Units.MINUTE;
+                }
+                case MILLI_SECOND: {
+                    return MetricPrefix.MILLI(Units.SECOND);
+                }
+                case PARTS_PER_MILLION: {
+                    return Units.PARTS_PER_MILLION;
+                }
             }
         }
         return Units.ONE;
@@ -155,12 +176,9 @@ public abstract class BasePoint {
      */
     public String commandJson(String newVal) {
         if (isEnum()) {
-            String[] enumVals = this.enumVals;
-            if (enumVals != null) {
-                for (int index = 0; index < enumVals.length; index++) {
-                    if (enumVals[index].equals(newVal)) {
-                        return String.format("{\"value\":%d}", index);
-                    }
+            for (int index = 0; index < enumVals.length; index++) {
+                if (enumVals[index].equals(newVal)) {
+                    return String.format("{\"value\":%d}", index);
                 }
             }
         }

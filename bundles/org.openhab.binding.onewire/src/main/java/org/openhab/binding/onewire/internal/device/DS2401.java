@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 
 /**
- * The {@link DS2401} class defines an DS2401 (iButton) device
+ * The {@link DS2401} class defines a DS2401 (iButton) device
  *
  * @author Jan N. Klug - Initial contribution
  */

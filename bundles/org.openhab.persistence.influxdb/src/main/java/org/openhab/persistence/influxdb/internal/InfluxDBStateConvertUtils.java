@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class InfluxDBStateConvertUtils {
     static final Number DIGITAL_VALUE_OFF = 0; // Visible for testing
     static final Number DIGITAL_VALUE_ON = 1; // Visible for testing
-    private static Logger logger = LoggerFactory.getLogger(InfluxDBStateConvertUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InfluxDBStateConvertUtils.class);
 
     /**
      * Converts {@link State} to objects fitting into influxdb values.
@@ -67,7 +67,7 @@ public class InfluxDBStateConvertUtils {
         if (state instanceof HSBType) {
             value = state.toString();
         } else if (state instanceof PointType) {
-            value = point2String((PointType) state);
+            value = state.toString();
         } else if (state instanceof DecimalType) {
             value = ((DecimalType) state).toBigDecimal();
         } else if (state instanceof QuantityType<?>) {
@@ -86,29 +86,22 @@ public class InfluxDBStateConvertUtils {
 
     /**
      * Converts a value to a {@link State} which is suitable for the given {@link Item}. This is
-     * needed for querying a {@link InfluxDBHistoricItem}.
+     * needed for querying an {@link InfluxDBHistoricItem}.
      *
      * @param value to be converted to a {@link State}
      * @param itemName name of the {@link Item} to get the {@link State} for
      * @return the state of the item represented by the itemName parameter, else the string value of
      *         the Object parameter
      */
-    public static State objectToState(@Nullable Object value, String itemName, @Nullable ItemRegistry itemRegistry) {
-        State state = null;
-        if (itemRegistry != null) {
-            try {
-                Item item = itemRegistry.getItem(itemName);
-                state = objectToState(value, item);
-            } catch (ItemNotFoundException e) {
-                logger.info("Could not find item '{}' in registry", itemName);
-            }
+    public static State objectToState(Object value, String itemName, ItemRegistry itemRegistry) {
+        try {
+            Item item = itemRegistry.getItem(itemName);
+            return objectToState(value, item);
+        } catch (ItemNotFoundException e) {
+            LOGGER.info("Could not find item '{}' in registry", itemName);
         }
 
-        if (state == null) {
-            state = new StringType(String.valueOf(value));
-        }
-
-        return state;
+        return new StringType(String.valueOf(value));
     }
 
     public static State objectToState(@Nullable Object value, Item itemToSetState) {
@@ -128,7 +121,7 @@ public class InfluxDBStateConvertUtils {
         } else if (item instanceof DimmerItem) {
             return new PercentType(valueStr);
         } else if (item instanceof SwitchItem) {
-            return toBoolean(valueStr) ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(toBoolean(valueStr));
         } else if (item instanceof ContactItem) {
             return toBoolean(valueStr) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
         } else if (item instanceof RollershutterItem) {
@@ -149,22 +142,10 @@ public class InfluxDBStateConvertUtils {
             if ("1".equals(object) || "1.0".equals(object)) {
                 return true;
             } else {
-                return Boolean.valueOf(String.valueOf(object));
+                return Boolean.parseBoolean(String.valueOf(object));
             }
         } else {
             return false;
         }
-    }
-
-    private static String point2String(PointType point) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(point.getLatitude().toString());
-        buf.append(",");
-        buf.append(point.getLongitude().toString());
-        if (!point.getAltitude().equals(DecimalType.ZERO)) {
-            buf.append(",");
-            buf.append(point.getAltitude().toString());
-        }
-        return buf.toString(); // latitude, longitude, altitude
     }
 }

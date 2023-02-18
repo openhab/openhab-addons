@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.hdpowerview.internal.handler;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
-import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
+import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,15 +29,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.api.BatteryKind;
-import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
-import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.SurveyData;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.dto.BatteryKind;
+import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.ShadeData;
+import org.openhab.binding.hdpowerview.internal.dto.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.dto.SurveyData;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;

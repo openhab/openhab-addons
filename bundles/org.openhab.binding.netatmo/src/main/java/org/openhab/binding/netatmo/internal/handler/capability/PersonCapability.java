@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,9 +89,9 @@ public class PersonCapability extends HomeSecurityThingCapability {
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
         securityCapability.ifPresent(cap -> {
-            Collection<HomeEvent> events = cap.getPersonEvents(handler.getId());
-            if (!events.isEmpty()) {
-                result.add(events.iterator().next());
+            HomeEvent event = cap.getLastPersonEvent(handler.getId());
+            if (event != null) {
+                result.add(event);
             }
         });
         return result;

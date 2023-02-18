@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +47,9 @@ import com.google.gson.JsonParseException;
 /**
  * The {@link RdsHandler} is the OpenHab Handler for Siemens RDS smart
  * thermostats
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class RdsHandler extends BaseThingHandler {
@@ -229,7 +230,15 @@ public class RdsHandler extends BaseThingHandler {
                     continue;
                 }
 
-                BasePoint point = points.getPointByClass(channel.clazz);
+                BasePoint point;
+                try {
+                    point = points.getPointByClass(channel.clazz);
+                } catch (RdsCloudException e) {
+                    logger.debug("{} \"{}\" not implemented; set state to UNDEF", channel.id, channel.clazz);
+                    updateState(channel.id, UnDefType.UNDEF);
+                    continue;
+                }
+
                 State state = null;
 
                 switch (channel.id) {

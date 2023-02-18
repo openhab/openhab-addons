@@ -1,6 +1,6 @@
 # Blukii
 
-This extension adds support for [Blukii](https://www.blukii.com/) Sensor Beacons. 
+This extension adds support for [Blukii](https://www.blukii.com/) Sensor Beacons.
 
 ## Supported Things
 
@@ -12,7 +12,7 @@ Only a single thing type is added by this extension:
 
 ## Discovery
 
-As any other Bluetooth device, Blukii Beacons are discovered automatically by the corresponding bridge. 
+As any other Bluetooth device, Blukii Beacons are discovered automatically by the corresponding bridge.
 
 ## Thing Configuration
 
@@ -36,13 +36,13 @@ A Blukii Smart Beacon has the following channels:
 
 demo.things:
 
-```
+```java
 bluetooth:blukii:hci0:beacon  "Blukii Sensor Beacon" (bluetooth:bluez:hci0) [ address="12:34:56:78:9A:BC" ]
 ```
 
 demo.items:
 
-```
+```java
 Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="bluetooth:blukii:hci0:beacon:temperature" }
 Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="bluetooth:blukii:hci0:beacon:humidity" }
 Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"     { channel="bluetooth:blukii:hci0:beacon:pressure" }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -228,7 +228,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
         }
 
-        logger.debug("UUID = {}, secret = {}", InstanceUUID.get(), getSecret());
+        logger.debug("UUID = {}, secret = {}", censored(InstanceUUID.get()), censored(getSecret()));
 
         if (cloudClient != null) {
             cloudClient.shutdown();
@@ -237,6 +237,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         if (!httpClient.isRunning()) {
             try {
                 httpClient.start();
+                // we act as a blind proxy, don't try to auto decode content
+                httpClient.getContentDecoderFactories().clear();
             } catch (Exception e) {
                 logger.error("Could not start Jetty http client", e);
             }
@@ -245,7 +247,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         String localBaseUrl = "http://localhost:" + localPort;
         cloudClient = new CloudClient(httpClient, InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl,
                 remoteAccessEnabled, exposedItems);
-        cloudClient.setOpenHABVersion(OpenHAB.getVersion());
         cloudClient.connect();
         cloudClient.setListener(this);
         NotificationAction.cloudService = this;
@@ -284,7 +285,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         file.getParentFile().mkdirs();
         try {
             Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
-            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
+            logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), censored(content));
         } catch (FileNotFoundException e) {
             logger.error("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
@@ -311,14 +312,21 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         if (!file.exists()) {
             newSecretString = randomString(20);
-            logger.debug("New secret = {}", newSecretString);
+            logger.debug("New secret = {}", censored(newSecretString));
             writeFile(file, newSecretString);
         } else {
             newSecretString = readFirstLine(file);
-            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), newSecretString);
+            logger.debug("Using secret at '{}' with content '{}'", file.getAbsolutePath(), censored(newSecretString));
         }
 
         return newSecretString;
+    }
+
+    private static String censored(String secret) {
+        if (secret.length() < 4) {
+            return "*******";
+        }
+        return secret.substring(0, 2) + "..." + secret.substring(secret.length() - 2, secret.length());
     }
 
     @Override

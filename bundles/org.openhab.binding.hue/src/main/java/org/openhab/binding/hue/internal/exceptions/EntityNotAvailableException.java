@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown when operating on a group, light or user that doesn't exist.
  *
@@ -19,6 +21,7 @@ package org.openhab.binding.hue.internal.exceptions;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class EntityNotAvailableException extends ApiException {
     public EntityNotAvailableException() {
     }

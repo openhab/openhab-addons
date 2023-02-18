@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
- * Filter that selects {@link TimetableStop}, if they have an departure or an arrival element (or both).
+ * Filter that selects {@link TimetableStop}, if they have a departure or an arrival element (or both).
  * 
  * @author Sönke Küper - initial contribution.
  */
@@ -35,7 +35,7 @@ public enum TimetableStopFilter implements TimetableStopPredicate {
     },
 
     /**
-     * Selects only stops with an departure.
+     * Selects only stops with a departure.
      */
     DEPARTURES {
         @Override

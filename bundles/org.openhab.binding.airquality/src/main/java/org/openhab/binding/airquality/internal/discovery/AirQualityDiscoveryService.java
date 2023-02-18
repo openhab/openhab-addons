@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable AirQualityBridgeHandler bridgeHandler;
 
     /**
-     * Creates a AirQualityDiscoveryService with enabled autostart.
+     * Creates an AirQualityDiscoveryService with enabled autostart.
      */
     public AirQualityDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
