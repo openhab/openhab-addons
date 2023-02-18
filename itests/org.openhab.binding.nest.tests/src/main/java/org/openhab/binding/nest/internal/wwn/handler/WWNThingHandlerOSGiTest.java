@@ -25,6 +25,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
@@ -36,6 +37,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.openhab.binding.nest.internal.wwn.config.WWNAccountConfiguration;
 import org.openhab.binding.nest.internal.wwn.test.WWNTestAccountHandler;
 import org.openhab.binding.nest.internal.wwn.test.WWNTestApiServlet;
@@ -61,6 +63,7 @@ import org.openhab.core.thing.ThingProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -171,6 +174,11 @@ public abstract class WWNThingHandlerOSGiTest extends JavaOSGiTest {
         nestTestHandlerFactory.activate(componentContext,
                 Map.of(WWNTestHandlerFactory.REDIRECT_URL_CONFIG_PROPERTY, REDIRECT_URL));
         registerService(nestTestHandlerFactory);
+
+        ThingTypeProvider thingTypeProvider = mock(ThingTypeProvider.class);
+        when(thingTypeProvider.getThingType(ArgumentMatchers.any(ThingTypeUID.class), nullable(Locale.class)))
+                .thenReturn(mock(ThingType.class));
+        registerService(thingTypeProvider);
 
         nestTestHandlerFactory = getService(ThingHandlerFactory.class, WWNTestHandlerFactory.class);
         assertThat("Could not get NestTestHandlerFactory", nestTestHandlerFactory, is(notNullValue()));
