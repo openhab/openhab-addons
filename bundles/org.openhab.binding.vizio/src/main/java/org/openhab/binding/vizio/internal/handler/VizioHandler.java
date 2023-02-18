@@ -86,6 +86,10 @@ public class VizioHandler extends BaseThingHandler {
     private List<VizioApp> userConfigApps = new ArrayList<VizioApp>();
     private Object sequenceLock = new Object();
 
+    private String tvHostPort = EMPTY;
+    private boolean certRegistered = false;
+    private boolean isAuthToken = false;
+
     private int pairingDeviceId = -1;
     private int pairingToken = -1;
     private Long currentInputHash = 0L;
@@ -115,6 +119,7 @@ public class VizioHandler extends BaseThingHandler {
         @Nullable
         String host = config.hostName;
         final @Nullable String authToken = config.authToken;
+        isAuthToken = authToken != null ? true : false;
         @Nullable
         String appListJson = config.appListJson;
 
@@ -127,18 +132,16 @@ public class VizioHandler extends BaseThingHandler {
             host = "[" + host + "]";
         }
 
+        tvHostPort = host + ":" + config.port;
+        registerTvCert();
+
         this.communicator = new VizioCommunicator(httpClient, host, config.port, authToken != null ? authToken : EMPTY);
 
-        // register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
-        VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(
-                host + ":" + config.port);
-        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
-                .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
-
-        if (authToken == null) {
+        if (!isAuthToken) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/offline.configuration-error-authtoken");
-            return;
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
         }
 
         // if app list is not supplied in thing configuration, populate it from the json db
@@ -171,10 +174,33 @@ public class VizioHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         startVizioStateRefresh();
-        startPeriodicRefresh();
+    }
+
+    /*
+     * Register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
+     */
+    private void registerTvCert() {
+        VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(tvHostPort);
+
+        // Check before registering that the PEM certificate can be downloaded
+        if (tlsTrustManagerProvider.getPEMTrustManager() == null) {
+            if (isAuthToken) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+            return;
+        }
+
+        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
+                .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
+
+        certRegistered = true;
+
+        // The periodic refresh job is started here since it only runs every 10 minutes and we want to be assured that
+        // the TV can be reached before trying
+        if (isAuthToken) {
+            startPeriodicRefresh();
+        }
     }
 
     /**
@@ -191,6 +217,17 @@ public class VizioHandler extends BaseThingHandler {
      * Get current status from the Vizio TV and update the channels
      */
     private void refreshVizioState() {
+        // If cert did not load during initialization (ie: TV was off in Eco mode) try to get the cert again.
+        if (!certRegistered) {
+            registerTvCert();
+            return;
+        }
+
+        // Stop if the pairing process has not been completed
+        if (!isAuthToken) {
+            return;
+        }
+
         synchronized (sequenceLock) {
             try {
                 PowerMode polledPowerMode = communicator.getPowerMode();
@@ -323,7 +360,7 @@ public class VizioHandler extends BaseThingHandler {
     private void startPeriodicRefresh() {
         ScheduledFuture<?> metadataRefreshJob = this.metadataRefreshJob;
         if (metadataRefreshJob == null || metadataRefreshJob.isCancelled()) {
-            this.metadataRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioMetadata, 1, 600,
+            this.metadataRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioMetadata, 5, 600,
                     TimeUnit.SECONDS);
         }
     }
@@ -363,16 +400,22 @@ public class VizioHandler extends BaseThingHandler {
             this.metadataRefreshJob = null;
         }
 
-        ServiceRegistration<?> localServiceRegistration = serviceRegistration;
-        if (localServiceRegistration != null) {
-            // remove trustmanager service
-            localServiceRegistration.unregister();
-            serviceRegistration = null;
+        if (certRegistered) {
+            ServiceRegistration<?> localServiceRegistration = serviceRegistration;
+            if (localServiceRegistration != null) {
+                // remove trustmanager service
+                localServiceRegistration.unregister();
+                serviceRegistration = null;
+            }
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!certRegistered || !isAuthToken) {
+            return;
+        }
+
         if (command instanceof RefreshType) {
             logger.debug("Unsupported refresh command: {}", command);
         } else {

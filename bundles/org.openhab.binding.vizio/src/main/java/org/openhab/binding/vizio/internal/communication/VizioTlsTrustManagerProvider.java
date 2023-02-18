@@ -18,6 +18,7 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.http.PEMTrustManager;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
@@ -37,6 +38,8 @@ public class VizioTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     private final Logger logger = LoggerFactory.getLogger(VizioTlsTrustManagerProvider.class);
 
+    private @Nullable PEMTrustManager trustManager;
+
     public VizioTlsTrustManagerProvider(String hostname) {
         this.hostname = hostname;
     }
@@ -48,12 +51,25 @@ public class VizioTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
+        PEMTrustManager localTrustManager = getPEMTrustManager();
+        if (localTrustManager == null) {
+            logger.debug("Cannot get the PEM certificate - returning a TrustAllTrustManager");
+        }
+        return localTrustManager != null ? localTrustManager : TrustAllTrustManager.getInstance();
+    }
+
+    public @Nullable PEMTrustManager getPEMTrustManager() {
+        PEMTrustManager localTrustManager = trustManager;
+        if (localTrustManager != null) {
+            return localTrustManager;
+        }
         try {
             logger.trace("Use self-signed certificate downloaded from Vizio TV.");
-            return PEMTrustManager.getInstanceFromServer("https://" + getHostName());
+            localTrustManager = PEMTrustManager.getInstanceFromServer("https://" + getHostName());
+            this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {
-            logger.debug("An unexpected exception occurred - returning a TrustAllTrustManager: {}", e.getMessage(), e);
+            logger.debug("Error retrieving certificate from the TV: {}", e.getMessage(), e);
         }
-        return TrustAllTrustManager.getInstance();
+        return localTrustManager;
     }
 }
