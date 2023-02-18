@@ -72,13 +72,43 @@ public class DeviceThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
 
+    /**
+     * A cached map of associated resource DTO objects whose state contributes to the overall state of this thing. It is
+     * a map between the resourceId (string) and an actual resource DTO object containing the last known state. e.g. the
+     * state of a LIGHT resource contributes to the overall state of a DEVICE thing.
+     */
     private final Map<String, Resource> contributorsCache = new ConcurrentHashMap<>();
+
+    /**
+     * A map of resourceIds which are targets for commands to be sent. It is a map between the type of command and the
+     * resourceId to which the command shall be sent. e.g. a LIGHT on command shall be sent to the respective LIGHT
+     * resourceId.
+     */
     private final Map<ResourceType, String> commandResourceIds = new ConcurrentHashMap<>();
+
+    /**
+     * Button devices contain one or more physical buttons, each of which is represented by a BUTTON resource DTO with
+     * its own unique resourceId, and a respective controlId that indicates which button it is in the device. e.g. a
+     * dimmer pad has four buttons (controlId's 1..4) each represented by a BUTTON resource DTO with a unique
+     * resourceId. This is a map between the resourceId and its respective controlId.
+     */
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
+
+    /**
+     * This is the set of channel ids that are actually supported by this device. e.g. an on/of light may support
+     * 'switch' and 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color
+     * temperature' and 'zigbeeStatus' channels.
+     */
     private final Set<String> supportedChannelIds = ConcurrentHashMap.newKeySet(32);
+
+    /**
+     * A list of v1 thing channel UIDs that are linked to items. It is used in the process of replicating the
+     * Item/Channel links from a legacy v1 thing to this v2 thing.
+     */
+    private final List<ChannelUID> legacyLinkedChannelUIDs = new ArrayList<>();
+
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private final List<ChannelUID> legacyLinkedChannelUIDs = new ArrayList<>();
 
     private Resource thisResource = new Resource(ResourceType.DEVICE);
     private boolean disposing;
