@@ -139,7 +139,7 @@ public class OpenhabGraalJSScriptEngine
      * lifecycle and provides hooks for scripts to do so too.
      */
     public OpenhabGraalJSScriptEngine(boolean injectionEnabled, boolean useIncludedLibrary,
-            JSScriptServiceUtil jsScriptServiceUtil) {
+            JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.injectionEnabled = injectionEnabled;
         this.useIncludedLibrary = useIncludedLibrary;
@@ -149,7 +149,8 @@ public class OpenhabGraalJSScriptEngine
 
         delegate = GraalJSScriptEngine.create(ENGINE,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
-                        .allowHostAccess(HOST_ACCESS).option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
+                        .allowHostAccess(HOST_ACCESS)
+                        .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString())
                         .option("js.nashorn-compat", "true") // Enable Nashorn compat mode as openhab-js relies on
                                                              // accessors, see
                                                              // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors
