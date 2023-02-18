@@ -246,11 +246,9 @@ public class AnthemHandler extends BaseThingHandler {
         sendCommand(AnthemCommand.queryActiveInput(zone));
     }
 
-    private void sendCommand(@Nullable AnthemCommand command) {
-        if (command != null) {
-            logger.debug("Adding command to queue: {}", command);
-            sendQueue.add(command);
-        }
+    private void sendCommand(AnthemCommand command) {
+        logger.debug("Adding command to queue: {}", command);
+        sendQueue.add(command);
     }
 
     private synchronized void connect() {
