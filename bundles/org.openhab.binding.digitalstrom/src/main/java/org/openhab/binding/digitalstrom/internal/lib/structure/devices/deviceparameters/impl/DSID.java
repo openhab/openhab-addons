@@ -35,7 +35,7 @@ public class DSID {
         if (trimmedDsid.length() == 24) {
             this.dsid = trimmedDsid;
         } else if (trimmedDsid.length() == 8) {
-            this.dsid = DSID.PRE + trimmedDsid;
+            this.dsid = PRE + trimmedDsid;
         } else if (trimmedDsid.toUpperCase().equals(ALL)) {
             this.dsid = ALL;
         } else {
