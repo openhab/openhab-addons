@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * The {@link IPUtilsTest} class defines some static string utility methods
+ * The {@link IPUtilsTest} class defines some static utility methods
  *
  * @author Leo Siepel - Initial contribution
  */
