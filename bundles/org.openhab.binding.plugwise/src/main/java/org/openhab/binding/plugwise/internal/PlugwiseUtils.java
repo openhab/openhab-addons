@@ -20,8 +20,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwise.internal.protocol.InformationResponseMessage;
@@ -102,7 +100,18 @@ public final class PlugwiseUtils {
     }
 
     public static String upperUnderscoreToLowerCamel(String text) {
-        String upperCamel = StringUtils.remove(WordUtils.capitalizeFully(text, new char[] { '_' }), "_");
+        final String delimiter = "_";
+        String upperCamel = "";
+        for (String str : text.split(delimiter)) {
+            String properlyCapitalized = "";
+            if (str.length() > 0) {
+                properlyCapitalized = str.substring(0, 1).toUpperCase();
+            }
+            if (str.length() > 1) {
+                properlyCapitalized = str.substring(1).toLowerCase();
+            }
+            upperCamel = upperCamel + properlyCapitalized;
+        }
         return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
     }
 
