@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="metofficedatahub"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+
+		<label>MetOffice DataHub Bridge</label>
+		<description>MetOffice DataHub API Bridge</description>
+
+		<properties>
+			<property name="Site Specific API Call Count"/>
+		</properties>
+
+		<config-description>
+			<parameter name="siteSpecificClientId" type="text" required="true">
+				<context>password</context>
+				<label>Site Specific Subscription Client Id</label>
+				<description>Site Specific Subscription API Client Id</description>
+			</parameter>
+			<parameter name="siteSpecificClientSecret" type="text" required="true">
+				<context>password</context>
+				<label>Site Specific Subscription Client Secret</label>
+				<description>Site Specific Subscription API Client Secret</description>
+			</parameter>
+			<parameter name="siteSpecificRateDailyLimit" type="integer" unit="s" min="1">
+				<label>Site Specific API Daily Limit</label>
+				<description>A limit to the number of site specific API requests</description>
+				<default>350</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="siteSpecificApi">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Forecast Data</label>
+		<description>Site Specific forecast data</description>
+
+		<channel-groups>
+			<channel-group id="commonResponseData" typeId="siteApiCommonDataGroup">
+				<label>Common Forecast Data</label>
+				<description>This is common data to all forecast data.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecast" typeId="siteApiHourlyForecastCurrentHourGroup">
+				<label>Forecast for the current hour</label>
+				<description>This is the weather forecast for the current hour.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus01" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +1 hour offset</label>
+				<description>This is the weather forecast in 1 hour.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus02" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +2 hours offset</label>
+				<description>This is the weather forecast in 2 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus03" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +3 hours offset</label>
+				<description>This is the weather forecast in 3 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus04" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +4 hours offset</label>
+				<description>This is the weather forecast in 4 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus05" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +5 hours offset</label>
+				<description>This is the weather forecast in 5 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus06" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +6 hours offset</label>
+				<description>This is the weather forecast in 6 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus07" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +7 hours offset</label>
+				<description>This is the weather forecast in 7 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus08" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +8 hours offset</label>
+				<description>This is the weather forecast in 8 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus09" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +9 hours offset</label>
+				<description>This is the weather forecast in 9 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus10" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +10 hours offset</label>
+				<description>This is the weather forecast in 10 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus11" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +11 hours offset</label>
+				<description>This is the weather forecast in 11 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus12" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +12 hours offset</label>
+				<description>This is the weather forecast in 12 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus13" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +13 hours offset</label>
+				<description>This is the weather forecast in 13 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus14" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +14 hours offset</label>
+				<description>This is the weather forecast in 14 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus15" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +15 hours offset</label>
+				<description>This is the weather forecast in 15 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus16" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +16 hours offset</label>
+				<description>This is the weather forecast in 16 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus17" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +17 hours offset</label>
+				<description>This is the weather forecast in 17 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus18" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +18 hours offset</label>
+				<description>This is the weather forecast in 18 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus19" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +19 hours offset</label>
+				<description>This is the weather forecast in 19 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus20" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +20 hours offset</label>
+				<description>This is the weather forecast in 20 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus21" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +21 hours offset</label>
+				<description>This is the weather forecast in 21 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus22" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +22 hours offset</label>
+				<description>This is the weather forecast in 22 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus23" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +23 hours offset</label>
+				<description>This is the weather forecast in 23 hours.</description>
+			</channel-group>
+			<channel-group id="currentHoursForecastPlus24" typeId="siteApiHourlyForecastGroup">
+				<label>Forecast +24 hours offset</label>
+				<description>This is the weather forecast in 24 hours.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecast" typeId="siteApiDailyForecastGroup">
+				<label>Forecast for the current day</label>
+				<description>This is the weather forecast for the current day.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus01" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +1 day offset</label>
+				<description>This is the weather forecast in 1 day.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus02" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +2 days offset</label>
+				<description>This is the weather forecast in 2 days.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus03" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +3 days offset</label>
+				<description>This is the weather forecast in 3 days.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus04" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +4 days offset</label>
+				<description>This is the weather forecast in 4 days.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus05" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +5 days offset</label>
+				<description>This is the weather forecast in 5 days.</description>
+			</channel-group>
+			<channel-group id="currentDailyForecastPlus06" typeId="siteApiDailyForecastGroup">
+				<label>Forecast +6 days offset</label>
+				<description>This is the weather forecast in 6 days.</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<context>location</context>
+				<label>Location of Weather</label>
+				<description>Location of weather forecast in geographical coordinates (latitude/longitude).</description>
+			</parameter>
+			<parameter name="siteSpecificHourlyForecastPollRate" type="integer" min="1" max="24">
+				<label>Hours between polls for Hourly Forecast data</label>
+				<description>The default number of hours to wait between retrieving hourly forecast data</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="siteSpecificDailyForecastPollRate" type="integer" min="1" max="24">
+				<label>Hours between polls for Daily Forecast data</label>
+				<description>The default number of hours to wait between retrieving hourly forecast data</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
