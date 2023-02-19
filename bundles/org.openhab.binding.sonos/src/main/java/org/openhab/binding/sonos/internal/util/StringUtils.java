@@ -12,12 +12,33 @@
  */
 package org.openhab.binding.sonos.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link StringUtils} class defines some static string utility methods
  *
  * @author Leo Siepel - Initial contribution
  */
+@NonNullByDefault
 public class StringUtils {
+
+    /**
+     * Simple method to escape XML special characters in String.
+     * There are five XML Special characters which needs to be escaped :
+     * & - &amp;
+     * < - &lt;
+     * > - &gt;
+     * " - &quot;
+     * ' - &apos;
+     */
+    public static String escapeXml(String xml) {
+        xml = xml.replaceAll("&", "&amp;");
+        xml = xml.replaceAll("<", "&lt;");
+        xml = xml.replaceAll(">", "&gt;");
+        xml = xml.replaceAll("\"", "&quot;");
+        xml = xml.replaceAll("'", "&apos;");
+        return xml;
+    }
 
     /**
      * Simple method to un escape XML special characters in String.
