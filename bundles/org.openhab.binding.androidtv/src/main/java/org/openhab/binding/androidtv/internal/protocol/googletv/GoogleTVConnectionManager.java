@@ -365,47 +365,6 @@ public class GoogleTVConnectionManager {
         } };
     }
 
-    private TrustManager[] shimTrustManager() {
-        return new TrustManager[] { new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
-                logger.debug("Assuming client certificate is valid");
-                if (chain != null && logger.isTraceEnabled()) {
-                    for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
-                    }
-                }
-            }
-
-            @Override
-            public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
-                logger.debug("Assuming server certificate is valid");
-                if (chain != null && logger.isTraceEnabled()) {
-                    for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
-                    }
-                }
-            }
-
-            @Override
-            public X509Certificate @Nullable [] getAcceptedIssuers() {
-                logger.debug("Returning shimX509ClientChain for getAcceptedIssuers");
-                if (shimX509ClientChain != null && logger.isTraceEnabled()) {
-                    for (int cert = 0; cert < shimX509ClientChain.length; cert++) {
-                        logger.trace("Subject DN: {}", shimX509ClientChain[cert].getSubjectX500Principal());
-                        logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
-                        logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
-                    }
-                }
-                return shimX509ClientChain;
-            }
-        } };
-    }
-
     private void initalize() {
         SSLContext sslContext;
 
@@ -515,15 +474,8 @@ public class GoogleTVConnectionManager {
         senderThread.start();
         this.senderThread = senderThread;
 
-        if ((!config.shim) && (!config.mode.equals(PIN_MODE))) {
+        if ((!config.shim) && (config.mode.equals(DEFAULT_MODE))) {
             this.periodicUpdate = 20;
-            logger.debug("Starting GoogleTV keepalive job with interval {}", config.heartbeat);
-            keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
-                    TimeUnit.SECONDS);
-
-            // DO LOGIN HERE
-            // String login = GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest());
-            // sendCommand(new GoogleTVCommand(login));
         } else if (config.mode.equals(PIN_MODE)) {
             // Send app name and device name
             sendCommand(new GoogleTVCommand(GoogleTVRequest.loginRequest(1)));
@@ -541,19 +493,15 @@ public class GoogleTVConnectionManager {
 
         try {
             shimPKI.generateNewKeyPair(shimEncryptionKey);
+            // Move this to PKI. Shim requires a trusted cert chain in the keystore.
             KeyStore keystore = KeyStore.getInstance("JKS");
             FileInputStream keystoreInputStream = new FileInputStream(config.keystoreFileName);
             keystore.load(keystoreInputStream, config.keystorePassword.toCharArray());
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(keystore, config.keystorePassword.toCharArray());
-            TrustManager[] trustManagers;
+            TrustManager[] trustManagers = defineNoOpTrustManager();
 
-            // if (this.config.mode.equals(PIN_MODE)) {
-            trustManagers = defineNoOpTrustManager();
-            // } else {
-            // trustManagers = shimTrustManager();
-            // }
             sslContext = SSLContext.getInstance("TLS");
             sslContext.init(kmf.getKeyManagers(), trustManagers, null);
             this.sslServerSocketFactory = sslContext.getServerSocketFactory();
@@ -566,12 +514,8 @@ public class GoogleTVConnectionManager {
             if (this.config.mode.equals(DEFAULT_MODE)) {
                 sslServerSocket.setNeedClientAuth(true);
             } else {
-
-                // if (this.config.mode.equals(PIN_MODE)) {
                 sslServerSocket.setWantClientAuth(true);
             }
-            // sslServerSocket.setEnabledCipherSuites(new String[] { "TLS_AES_128_GCM_SHA256" });
-            // sslServerSocket.setEnabledProtocols(new String[] { "TLSv1.2", "TLSv1.3" });
 
             logger.trace("sslServerSocket Cipher {}", sslServerSocket.getEnabledCipherSuites());
             logger.trace("sslServerSocket Protocols {}", sslServerSocket.getEnabledProtocols());
@@ -590,14 +534,12 @@ public class GoogleTVConnectionManager {
                 try {
                     serverSocket.startHandshake();
                     logger.trace("shimInitalize startHandshake {}", config.port);
-                    // disconnect(true);
                     connect();
                     logger.trace("shimInitalize connected {}", config.port);
 
                     SSLSession session = serverSocket.getSession();
                     Certificate[] cchain2 = session.getPeerCertificates();
                     this.shimClientChain = cchain2;
-                    // this.shimX509ClientChain = session.getPeerCertificateChain();
                     Certificate[] cchain3 = session.getLocalCertificates();
                     this.shimClientLocalChain = cchain3;
 
@@ -773,7 +715,6 @@ public class GoogleTVConnectionManager {
         try {
             while (!Thread.currentThread().isInterrupted() && writer != null) {
                 GoogleTVCommand command = sendQueue.take();
-                // logger.trace("Sending GoogleTV command {}", command);
 
                 try {
                     BufferedWriter writer = this.writer;
@@ -984,12 +925,10 @@ public class GoogleTVConnectionManager {
         }
     }
 
-    private void sendKeepAlive() {
+    public void sendKeepAlive(String request) {
         logger.trace("Sending GoogleTV keepalive query");
-        String keepalive = GoogleTVRequest.encodeMessage(GoogleTVRequest.keepAlive());
+        String keepalive = GoogleTVRequest.encodeMessage(GoogleTVRequest.keepAlive(request));
         sendCommand(new GoogleTVCommand(keepalive));
-        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08ec0712020806"))); // Get App
-        reconnectTaskSchedule();
         if (this.periodicUpdate <= 1) {
             sendPeriodicUpdate();
             this.periodicUpdate = 20;
@@ -1042,7 +981,6 @@ public class GoogleTVConnectionManager {
             int length = command.toString().length();
             String hexLength = GoogleTVRequest.encodeMessage(GoogleTVRequest.fixMessage(Integer.toHexString(length)));
             String message = hexLength + command.toString();
-            logger.trace("sendCommand {}", message);
             GoogleTVCommand lenCommand = new GoogleTVCommand(message);
             sendQueue.add(lenCommand);
         }
@@ -1269,10 +1207,8 @@ public class GoogleTVConnectionManager {
                     } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
                         this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
                                 shimServerChain[0]);
-
                         this.shimPinHash = GoogleTVUtils.validatePIN(command.toString(), shimClientChain[0],
                                 shimClientLocalChain[0]);
-
                     }
                 } catch (CertificateException e) {
                     logger.trace("PIN CertificateException", e);

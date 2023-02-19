@@ -13,6 +13,8 @@
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains static methods for constructing LEAP messages
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GoogleTVRequest {
+    private static final Logger logger = LoggerFactory.getLogger(GoogleTVRequest.class);
 
     public static String encodeMessage(String message) {
         String reply = new String();
@@ -85,14 +88,36 @@ public class GoogleTVRequest {
             // 080210c801a201 08 12 04 08031006 1801
             // 080210c801f201 08 0a 04 08031006 1001
             message = "080210c801f201080a04080310061001";
+        } else if (messageId == 4) {
+            // 0a41087e123d0a 08 534d2d4739393855 12 07 73616d73756e67 18 01 22 02 3133 2a
+            // ---------------LEN--SM-G998U----------LEN--samsung---------
+            // 19 636f6d2e676f6f676c652e616e64726f69642e766964656f73 32 07 342e33382e3138
+            // LEN-com.google.android.videos----------------------------LEN-4.38.18
+            message = "0a41087e123d0a08534d2d4739393855120773616d73756e671801220231332a19636f6d2e676f6f676c652e616e64726f69642e766964656f733207342e33382e3138";
+        } else if (messageId == 5) {
+            // Unknown. Sent after "1200" received
+            message = "1202087e";
         }
         return message;
     }
 
-    public static String keepAlive() {
-        // OLD
-        String message = "080028fae0a6c0d130";
-        return message;
+    public static String keepAlive(String request) {
+        // 0a 42 08 087f 10 b4908a a819
+        // 04 4a 02 087f
+
+        // 0b 42 09 088001 10 edb78a a819
+        // 05 4a 03 088001
+        logger.trace("keepAlive Request {}", request);
+        char[] charArray = request.toCharArray();
+        String lenString = "" + charArray[2] + charArray[3];
+        int length = (Integer.parseInt(lenString, 16) - 6) * 2;
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            sb.append(charArray[i + 4]);
+        }
+        String reply = "4a" + fixMessage(Integer.toHexString(sb.toString().length() / 2)) + sb.toString();
+        logger.trace("keepAlive Reply {}", reply);
+        return reply;
     }
 
     public static String fixMessage(String tempMsg) {

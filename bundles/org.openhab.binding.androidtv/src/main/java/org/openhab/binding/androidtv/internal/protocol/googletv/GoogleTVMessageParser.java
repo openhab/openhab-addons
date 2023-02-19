@@ -60,6 +60,22 @@ public class GoogleTVMessageParser {
                 // LEN-com.google.android.tv.remote.service
                 // 0d 352e322e343733323534313333
                 // LEN-5.2.473254133
+                callback.sendCommand(
+                        new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
+            } else if (msg.equals("1200")) {
+                callback.sendCommand(
+                        new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
+                callback.setLoggedIn(true);
+            } else if (msg.startsWith("92032108021002")) {
+                // 92032108021002 1a 11 534849454c4420416e64726f6964205456 20 02 2800 30 0f380e4000
+                // ------------------LEN-SHIELD Android TV
+            } else if (msg.startsWith("c2020208")) {
+                // Power State
+		// c202020800 - OFF
+		// c202020801 - ON
+            } else if (msg.startsWith("42")) {
+                // Keepalive request
+                callback.sendKeepAlive(msg);
             } else {
                 logger.debug("Unknown payload received. {} {}", length, msg);
             }
