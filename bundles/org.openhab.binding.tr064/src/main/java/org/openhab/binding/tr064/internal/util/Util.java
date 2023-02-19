@@ -18,8 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +62,10 @@ import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDDirection;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDScpdType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDStateVariableType;
 import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.util.UIDUtils;
@@ -82,7 +81,6 @@ import org.w3c.dom.NodeList;
 @NonNullByDefault
 public class Util {
     private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
-    private static final int HTTP_REQUEST_TIMEOUT = 5; // in s
     // cache XML content for 5s
     private static final ExpiringCacheMap<String, Object> XML_OBJECT_CACHE = new ExpiringCacheMap<>(
             Duration.ofMillis(3000));
@@ -169,8 +167,8 @@ public class Util {
      * @param deviceType the (SCPD) device-type for this thing
      * @param channels a (mutable) channel list for storing all channels
      */
-    public static void checkAvailableChannels(Thing thing, ThingBuilder thingBuilder, SCPDUtil scpdUtil,
-            String deviceId, String deviceType, Map<ChannelUID, Tr064ChannelConfig> channels) {
+    public static void checkAvailableChannels(Thing thing, ThingHandlerCallback callback, ThingBuilder thingBuilder,
+            SCPDUtil scpdUtil, String deviceId, String deviceType, Map<ChannelUID, Tr064ChannelConfig> channels) {
         Tr064BaseThingConfiguration thingConfig = Tr064RootHandler.SUPPORTED_THING_TYPES
                 .contains(thing.getThingTypeUID()) ? thing.getConfiguration().as(Tr064RootConfiguration.class)
                         : thing.getConfiguration().as(Tr064SubConfiguration.class);
@@ -179,13 +177,6 @@ public class Util {
                 .forEach(channelTypeDescription -> {
                     String channelId = channelTypeDescription.getName();
                     String serviceId = channelTypeDescription.getService().getServiceId();
-                    String typeId = channelTypeDescription.getTypeId();
-                    Map<String, String> channelProperties = new HashMap<String, String>();
-
-                    if (typeId != null) {
-                        channelProperties.put("typeId", typeId);
-                    }
-
                     Set<String> parameters = new HashSet<>();
                     try {
                         SCPDServiceType deviceService = scpdUtil.getDevice(deviceId)
@@ -199,6 +190,7 @@ public class Util {
                                 deviceService);
 
                         // get
+                        boolean fixedValue = false;
                         ActionType getAction = channelTypeDescription.getGetAction();
                         if (getAction != null) {
                             String actionName = getAction.getName();
@@ -208,7 +200,9 @@ public class Util {
                             SCPDStateVariableType relatedStateVariable = getStateVariable(serviceRoot, scpdArgument);
                             parameters.addAll(
                                     getAndCheckParameters(channelId, getAction, scpdAction, serviceRoot, thingConfig));
-
+                            if (getAction.getParameter() != null && getAction.getParameter().getFixedValue() != null) {
+                                fixedValue = true;
+                            }
                             channelConfig.setGetAction(scpdAction);
                             channelConfig.setDataType(relatedStateVariable.getDataType());
                         }
@@ -235,14 +229,16 @@ public class Util {
                         // everything is available, create the channel
                         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID,
                                 channelTypeDescription.getName());
-                        if (parameters.isEmpty()) {
+                        if (parameters.isEmpty() || fixedValue) {
                             // we have no parameters, so create a single channel
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                            ChannelBuilder channelBuilder = ChannelBuilder
-                                    .create(channelUID, channelTypeDescription.getItem().getType())
-                                    .withType(channelTypeUID).withProperties(channelProperties);
-                            thingBuilder.withChannel(channelBuilder.build());
-                            channels.put(channelUID, channelConfig);
+                            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
+                            thingBuilder.withChannel(channel);
+                            Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);
+                            if (fixedValue) {
+                                channelConfig1.setParameter(parameters.iterator().next());
+                            }
+                            channels.put(channelUID, channelConfig1);
                         } else {
                             // create a channel for each parameter
                             parameters.forEach(parameter -> {
@@ -252,11 +248,9 @@ public class Util {
                                 String normalizedParameter = UIDUtils.encode(rawParameter);
                                 ChannelUID channelUID = new ChannelUID(thing.getUID(),
                                         channelId + "_" + normalizedParameter);
-                                ChannelBuilder channelBuilder = ChannelBuilder
-                                        .create(channelUID, channelTypeDescription.getItem().getType())
-                                        .withType(channelTypeUID).withProperties(channelProperties)
-                                        .withLabel(channelTypeDescription.getLabel() + " " + parameter);
-                                thingBuilder.withChannel(channelBuilder.build());
+                                Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID)
+                                        .withLabel(channelTypeDescription.getLabel() + " " + parameter).build();
+                                thingBuilder.withChannel(channel);
                                 Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);
                                 channelConfig1.setParameter(rawParameter);
                                 channels.put(channelUID, channelConfig1);
@@ -272,8 +266,12 @@ public class Util {
             SCPDScpdType serviceRoot, Tr064BaseThingConfiguration thingConfig) throws ChannelConfigException {
         ParameterType parameter = action.getParameter();
         if (parameter == null) {
-            return Collections.emptySet();
+            return Set.of();
         }
+        if (parameter.getFixedValue() != null) {
+            return Set.of(parameter.getFixedValue());
+        }
+        // process list of thing parameters
         try {
             Set<String> parameters = new HashSet<>();
 
@@ -292,9 +290,12 @@ public class Util {
             String parameterPattern = parameter.getPattern();
             if (parameterPattern != null) {
                 parameters.removeIf(param -> {
-                    if (!param.matches(parameterPattern)) {
-                        LOGGER.warn("Removing {} while processing {}, does not match pattern {}, check config.", param,
-                                channelId, parameterPattern);
+                    if (param.isBlank()) {
+                        LOGGER.debug("Removing empty parameter while processing '{}'.", channelId);
+                        return true;
+                    } else if (!param.matches(parameterPattern)) {
+                        LOGGER.warn("Removing '{}' while processing '{}', does not match pattern '{}', check config.",
+                                param, channelId, parameterPattern);
                         return true;
                     } else {
                         return false;
@@ -344,16 +345,17 @@ public class Util {
      *
      * @param uri the uri of the XML file
      * @param clazz the class describing the XML file
+     * @param timeout timeout in s
      * @return unmarshalling result
      */
     @SuppressWarnings("unchecked")
-    public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
+    public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz, int timeout) {
         try {
             T returnValue = (T) XML_OBJECT_CACHE.putIfAbsentAndGet(uri, () -> {
                 try {
                     LOGGER.trace("Refreshing cache for '{}'", uri);
-                    ContentResponse contentResponse = httpClient.newRequest(uri)
-                            .timeout(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS).method(HttpMethod.GET).send();
+                    ContentResponse contentResponse = httpClient.newRequest(uri).timeout(timeout, TimeUnit.SECONDS)
+                            .method(HttpMethod.GET).send();
                     byte[] response = contentResponse.getContent();
                     if (LOGGER.isTraceEnabled()) {
                         LOGGER.trace("XML = {}", new String(response));
