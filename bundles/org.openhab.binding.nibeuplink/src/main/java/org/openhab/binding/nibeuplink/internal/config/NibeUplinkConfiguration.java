@@ -90,9 +90,9 @@ public class NibeUplinkConfiguration {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{ user=" + getUser() + ", password=" + getPassword() + ", nibeId='"
+        return getClass().getSimpleName() + "{ user=" + getUser() + ", password=" + getPassword() + ", nibeId="
                 + getNibeId() + ", pollingInterval=" + getPollingInterval() + ", houseKeepingInterval="
                 + getHouseKeepingInterval() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
-                + getSyncTimeout().toString() + "}";
+                + getSyncTimeout() + "}";
     }
 }
