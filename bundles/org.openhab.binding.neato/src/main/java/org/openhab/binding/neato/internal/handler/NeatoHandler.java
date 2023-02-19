@@ -146,7 +146,7 @@ public class NeatoHandler extends BaseThingHandler {
 
         updateState(CHANNEL_STATE, new StringType(neatoState.getRobotState().name()));
 
-        String error = neatoState.getError() != null ? (String) neatoState.getError() : "";
+        String error = neatoState.getError() != null ? neatoState.getError() : "";
         updateState(CHANNEL_ERROR, new StringType(error));
         updateState(CHANNEL_ACTION, new StringType(neatoState.getRobotAction().name()));
 
