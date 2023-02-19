@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import java.util.Enumeration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.io.transport.serial.SerialPortIdentifier;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.RXTXVersion;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
@@ -40,14 +40,16 @@ public class SerialClient extends AbstractKNXClient {
 
     private final Logger logger = LoggerFactory.getLogger(SerialClient.class);
 
+    private final SerialPortManager serialPortManager;
     private final String serialPort;
     private final boolean useCemi;
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCemi,
-            StatusUpdateCallback statusUpdateCallback) {
+            SerialPortManager serialPortManager, StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
+        this.serialPortManager = serialPortManager;
         this.serialPort = serialPort;
         this.useCemi = useCemi;
     }
@@ -55,7 +57,6 @@ public class SerialClient extends AbstractKNXClient {
     @Override
     protected KNXNetworkLink establishConnection() throws KNXException, InterruptedException {
         try {
-            RXTXVersion.getVersion();
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}{}.", serialPort,
                     (useCemi ? " using CEMI" : ""));
             // CEMI support by Calimero library, userful for newer serial devices like KNX RF sticks, kBerry,
@@ -73,17 +74,12 @@ public class SerialClient extends AbstractKNXClient {
             final String msg = e.getMessage();
             // TODO add a test for this string match; error message might change in later version of Calimero library
             if ((msg != null) && (msg.startsWith(CALIMERO_ERROR_CANNOT_OPEN_PORT))) {
-                StringBuilder sb = new StringBuilder("Available ports are:\n");
-                Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
-                while (portList.hasMoreElements()) {
-                    CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                    if ((id != null) && (id.getPortType() == CommPortIdentifier.PORT_SERIAL)) {
-                        sb.append(id.getName());
-                        sb.append("\n");
-                    }
+                String availablePorts = serialPortManager.getIdentifiers().map(SerialPortIdentifier::getName)
+                        .collect(Collectors.joining("\n"));
+                if (!availablePorts.isEmpty()) {
+                    availablePorts = " Available ports are:\n" + availablePorts;
                 }
-                sb.deleteCharAt(sb.length() - 1);
-                throw new KNXException("Serial port '" + serialPort + "' could not be opened. " + sb.toString());
+                throw new KNXException("Serial port '" + serialPort + "' could not be opened." + availablePorts);
             } else {
                 throw e;
             }
