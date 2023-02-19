@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vizio.internal.VizioConfiguration;
 import org.openhab.binding.vizio.internal.VizioException;
 import org.openhab.binding.vizio.internal.VizioStateDescriptionOptionProvider;
 import org.openhab.binding.vizio.internal.communication.VizioCommunicator;
-import org.openhab.binding.vizio.internal.communication.VizioTlsTrustManagerProvider;
 import org.openhab.binding.vizio.internal.dto.app.CurrentApp;
 import org.openhab.binding.vizio.internal.dto.applist.VizioApp;
 import org.openhab.binding.vizio.internal.dto.applist.VizioApps;
@@ -40,7 +40,7 @@ import org.openhab.binding.vizio.internal.dto.inputlist.InputList;
 import org.openhab.binding.vizio.internal.dto.power.PowerMode;
 import org.openhab.binding.vizio.internal.enums.KeyCommand;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.TlsTrustManagerProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -57,8 +57,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,21 +72,17 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VizioHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VizioHandler.class);
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
+    private @Nullable HttpClient httpClient;
     private final VizioStateDescriptionOptionProvider stateDescriptionProvider;
     private final String dbAppsJson;
 
-    private @Nullable ServiceRegistration<?> serviceRegistration;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> metadataRefreshJob;
 
     private VizioCommunicator communicator;
     private List<VizioApp> userConfigApps = new ArrayList<VizioApp>();
     private Object sequenceLock = new Object();
-
-    private String tvHostPort = EMPTY;
-    private boolean certRegistered = false;
-    private boolean isAuthToken = false;
 
     private int pairingDeviceId = -1;
     private int pairingToken = -1;
@@ -101,13 +95,13 @@ public class VizioHandler extends BaseThingHandler {
     private boolean powerOn = false;
     private boolean debounce = true;
 
-    public VizioHandler(Thing thing, HttpClient httpClient,
+    public VizioHandler(Thing thing, HttpClientFactory httpClientFactory,
             VizioStateDescriptionOptionProvider stateDescriptionProvider, String vizioAppsJson) {
         super(thing);
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.dbAppsJson = vizioAppsJson;
-        this.communicator = new VizioCommunicator(httpClient, EMPTY, -1, EMPTY);
+        this.communicator = new VizioCommunicator(httpClientFactory.getCommonHttpClient(), EMPTY, -1, EMPTY);
     }
 
     @Override
@@ -119,7 +113,6 @@ public class VizioHandler extends BaseThingHandler {
         @Nullable
         String host = config.hostName;
         final @Nullable String authToken = config.authToken;
-        isAuthToken = authToken != null ? true : false;
         @Nullable
         String appListJson = config.appListJson;
 
@@ -132,16 +125,28 @@ public class VizioHandler extends BaseThingHandler {
             host = "[" + host + "]";
         }
 
-        tvHostPort = host + ":" + config.port;
-        registerTvCert();
+        final String httpClientName = thing.getUID().getId();
+        try {
+            httpClient = httpClientFactory.createHttpClient(httpClientName, new SslContextFactory.Client(true));
+            final HttpClient localHttpClient = this.httpClient;
+            if (localHttpClient != null) {
+                localHttpClient.start();
+                this.communicator = new VizioCommunicator(localHttpClient, host, config.port,
+                        authToken != null ? authToken : EMPTY);
+            }
 
-        this.communicator = new VizioCommunicator(httpClient, host, config.port, authToken != null ? authToken : EMPTY);
+        } catch (Exception e) {
+            logger.error(
+                    "Long running HttpClient for Vizio handler {} cannot be started. Creating Handler failed. Exception: {}",
+                    httpClientName, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
 
-        if (!isAuthToken) {
+        if (authToken == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/offline.configuration-error-authtoken");
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
+            return;
         }
 
         // if app list is not supplied in thing configuration, populate it from the json db
@@ -174,33 +179,10 @@ public class VizioHandler extends BaseThingHandler {
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         startVizioStateRefresh();
-    }
-
-    /*
-     * Register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
-     */
-    private void registerTvCert() {
-        VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(tvHostPort);
-
-        // Check before registering that the PEM certificate can be downloaded
-        if (tlsTrustManagerProvider.getPEMTrustManager() == null) {
-            if (isAuthToken) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-            return;
-        }
-
-        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
-                .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
-
-        certRegistered = true;
-
-        // The periodic refresh job is started here since it only runs every 10 minutes and we want to be assured that
-        // the TV can be reached before trying
-        if (isAuthToken) {
-            startPeriodicRefresh();
-        }
+        startPeriodicRefresh();
     }
 
     /**
@@ -217,17 +199,6 @@ public class VizioHandler extends BaseThingHandler {
      * Get current status from the Vizio TV and update the channels
      */
     private void refreshVizioState() {
-        // If cert did not load during initialization (ie: TV was off in Eco mode) try to get the cert again.
-        if (!certRegistered) {
-            registerTvCert();
-            return;
-        }
-
-        // Stop if the pairing process has not been completed
-        if (!isAuthToken) {
-            return;
-        }
-
         synchronized (sequenceLock) {
             try {
                 PowerMode polledPowerMode = communicator.getPowerMode();
@@ -360,7 +331,7 @@ public class VizioHandler extends BaseThingHandler {
     private void startPeriodicRefresh() {
         ScheduledFuture<?> metadataRefreshJob = this.metadataRefreshJob;
         if (metadataRefreshJob == null || metadataRefreshJob.isCancelled()) {
-            this.metadataRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioMetadata, 5, 600,
+            this.metadataRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshVizioMetadata, 1, 600,
                     TimeUnit.SECONDS);
         }
     }
@@ -400,22 +371,18 @@ public class VizioHandler extends BaseThingHandler {
             this.metadataRefreshJob = null;
         }
 
-        if (certRegistered) {
-            ServiceRegistration<?> localServiceRegistration = serviceRegistration;
-            if (localServiceRegistration != null) {
-                // remove trustmanager service
-                localServiceRegistration.unregister();
-                serviceRegistration = null;
+        try {
+            final HttpClient localHttpClient = this.httpClient;
+            if (localHttpClient != null) {
+                localHttpClient.stop();
             }
+        } catch (Exception e) {
+            logger.debug("Unable to stop Vizio httpClient. Exception: {}", e.getMessage(), e);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!certRegistered || !isAuthToken) {
-            return;
-        }
-
         if (command instanceof RefreshType) {
             logger.debug("Unsupported refresh command: {}", command);
         } else {
