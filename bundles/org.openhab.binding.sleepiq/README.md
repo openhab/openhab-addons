@@ -84,6 +84,10 @@ All channels within this group are read-only, except for the sleepNumber and pri
 | todayAverageRespirationRate       | Number         | The average respiration rate for the current day |
 | todayMessage                      | String         | A description of the sleep quality for the current day |
 | todaySleepDurationSeconds         | Number:Time    | The duration of sleep for the current day |
+| todaySleepInBedSeconds            | Number:Time    | The duration of time in bed for the current day |
+| todaySleepOutOfBedSeconds         | Number:Time    | The duration of time out of bed for the current day |
+| todaySleepRestfulSeconds          | Number:Time    | The duration of restful sleep for the current day |
+| todaySleepRestlessSeconds         | Number:Time    | The duration of restless sleep for the current day |
 | monthlySleepIQ                    | Number         | The average Sleep IQ score for the current month |
 | monthlyAverageHeartRate           | Number         | The average heart rate for the current month |
 | monthlyAverageRespirationRate     | Number         | The average respiration rate for the current month |
@@ -105,8 +109,12 @@ Number      MasterBR_SleepIQ_DailySleepIQ_Alice      "Daily Sleep IQ [%.0f]"    
 Number      MasterBR_SleepIQ_DailyHeartRate_Alice    "Daily Heart Rate [%.0f]"         { channel="sleepiq:dualBed:1:master:left#todayAverageHeartRate" }
 Number      MasterBR_SleepIQ_DailyRespRate_Alice     "Daily Respiration Rate [%.0f]"   { channel="sleepiq:dualBed:1:master:left#todayAverageRespirationRate"}
 String      MasterBR_SleepIQ_DailyMessage_Alice      "Daily Message [%s]"              { channel="sleepiq:dualBed:1:master:left#todayMessage"}
-Number      MasterBR_SleepIQ_DailyDuration_Alice     "Daily Sleep Duration [%.0f]"     { channel="sleepiq:dualBed:1:master:left#todaySleepDurationSeconds"}
-Number:Time MasterBR_SleepIQ_MonthlySleepIQ_Alice    "Monthly Sleep IQ [%d s]"         { channel="sleepiq:dualBed:1:master:left#monthlySleepIQ"}
+Number:Time MasterBR_SleepIQ_DailyDuration_Alice     "Daily Sleep Duration [%.0f]"     { channel="sleepiq:dualBed:1:master:left#todaySleepDurationSeconds"}
+Number:Time MasterBR_SleepIQ_DailyInBed_Alice        "Daily Sleep In Bed [%.0f]"       { channel="sleepiq:dualBed:1:master:left#todaySleepInBedSeconds"}
+Number:Time MasterBR_SleepIQ_DailyOutOfBed_Alice     "Daily Sleep Out Of Bed [%.0f]"   { channel="sleepiq:dualBed:1:master:left#todaySleepOutOfBedSeconds"}
+Number:Time MasterBR_SleepIQ_DailyRestful_Alice      "Daily Sleep Restful [%.0f]"      { channel="sleepiq:dualBed:1:master:left#todaySleepRestfulSeconds"}
+Number:Time MasterBR_SleepIQ_DailyRestless_Alice     "Daily Sleep Restless [%.0f]"     { channel="sleepiq:dualBed:1:master:left#todaySleepRestlessSeconds"}
+Number      MasterBR_SleepIQ_MonthlySleepIQ_Alice    "Monthly Sleep IQ [%d s]"         { channel="sleepiq:dualBed:1:master:left#monthlySleepIQ"}
 Number      MasterBR_SleepIQ_MonthlyHeartRate_Alice  "Monthly Heart Rate [%.0f]"       { channel="sleepiq:dualBed:1:master:left#monthlyAverageHeartRate"}
 Number      MasterBR_SleepIQ_MonthlyRespRate_Alice   "Monthly Respiration Rate [%.0f]" { channel="sleepiq:dualBed:1:master:left#monthlyAverageRespirationRate"}
 
@@ -124,6 +132,10 @@ Number      MasterBR_SleepIQ_DailyHeartRate_Bob      "Daily Heart Rate [%.0f]"  
 Number      MasterBR_SleepIQ_DailyRespRate_Bob       "Daily Respiration Rate [%.0f]"   { channel="sleepiq:dualBed:1:master:right#todayAverageRespirationRate"}
 String      MasterBR_SleepIQ_DailyMessage_Bob        "Daily Message [%s]"              { channel="sleepiq:dualBed:1:master:right#todayMessage"}
 Number:Time MasterBR_SleepIQ_DailyDuration_Bob       "Daily Sleep Duration [%d s]"     { channel="sleepiq:dualBed:1:master:right#todaySleepDurationSeconds"}
+Number:Time MasterBR_SleepIQ_DailyInBed_Bob          "Daily Sleep In Bed [%.0f]"       { channel="sleepiq:dualBed:1:master:right#todaySleepInBedSeconds"}
+Number:Time MasterBR_SleepIQ_DailyOutOfBed_Bob       "Daily Sleep Out Of Bed [%.0f]"   { channel="sleepiq:dualBed:1:master:right#todaySleepOutOfBedSeconds"}
+Number:Time MasterBR_SleepIQ_DailyRestful_Bob        "Daily Sleep Restful [%.0f]"      { channel="sleepiq:dualBed:1:master:right#todaySleepRestfulSeconds"}
+Number:Time MasterBR_SleepIQ_DailyRestless_Bob       "Daily Sleep Restless [%.0f]"     { channel="sleepiq:dualBed:1:master:right#todaySleepRestlessSeconds"}
 Number      MasterBR_SleepIQ_MonthlySleepIQ_Bob      "Monthly Sleep IQ [%.0f]"         { channel="sleepiq:dualBed:1:master:right#monthlySleepIQ"}
 Number      MasterBR_SleepIQ_MonthlyHeartRate_Bob    "Monthly Heart Rate [%.0f]"       { channel="sleepiq:dualBed:1:master:right#monthlyAverageHeartRate"}
 Number      MasterBR_SleepIQ_MonthlyRespRate_Bob     "Monthly Respiration Rate [%.0f]" { channel="sleepiq:dualBed:1:master:right#monthlyAverageRespirationRate"}

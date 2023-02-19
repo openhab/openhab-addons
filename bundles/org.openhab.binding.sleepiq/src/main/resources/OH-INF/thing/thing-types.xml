@@ -18,12 +18,12 @@
 				<label>Username</label>
 				<description>Username of a registered SleepIQ account owner</description>
 			</parameter>
-			<parameter name="password" type="text" required="false">
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password of a registered SleepIQ account owner</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="30" step="30" required="true">
+			<parameter name="pollingInterval" type="integer" min="30" step="30">
 				<label>Polling Interval</label>
 				<description>Seconds between fetching values from the cloud service</description>
 				<default>120</default>
@@ -94,6 +94,10 @@
 			<channel id="todayAverageRespirationRate" typeId="todayAverageRespirationRateType"/>
 			<channel id="todayMessage" typeId="todayMessageType"/>
 			<channel id="todaySleepDurationSeconds" typeId="todaySleepDurationSecondsType"/>
+			<channel id="todaySleepInBedSeconds" typeId="todaySleepInBedSecondsType"/>
+			<channel id="todaySleepOutOfBedSeconds" typeId="todaySleepOutOfBedSecondsType"/>
+			<channel id="todaySleepRestfulSeconds" typeId="todaySleepRestfulSecondsType"/>
+			<channel id="todaySleepRestlessSeconds" typeId="todaySleepRestlessSecondsType"/>
 			<channel id="monthlySleepIQ" typeId="monthlySleepIQType"/>
 			<channel id="monthlyAverageHeartRate" typeId="monthlyAverageHeartRateType"/>
 			<channel id="monthlyAverageRespirationRate" typeId="monthlyAverageRespirationRateType"/>
@@ -183,6 +187,30 @@
 		<item-type>Number:Time</item-type>
 		<label>Today's Sleep Duration</label>
 		<description>The total duration of sleep for today in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepInBedSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep In Bed Duration</label>
+		<description>The total duration of time in bed in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepOutOfBedSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Out Of Bed Duration</label>
+		<description>The total duration of time out of bed in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepRestfulSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Restful Duration</label>
+		<description>The total duration of restful sleep for today in seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="todaySleepRestlessSecondsType">
+		<item-type>Number:Time</item-type>
+		<label>Today's Sleep Restless Duration</label>
+		<description>The total duration of restless sleep for today in seconds</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="monthlySleepIQType">

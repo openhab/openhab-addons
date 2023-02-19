@@ -76,6 +76,18 @@ public class SleepIQBindingConstants {
     public static final String CHANNEL_LEFT_TODAY_SLEEP_DURATION_SECONDS = "left#todaySleepDurationSeconds";
     public static final String CHANNEL_RIGHT_TODAY_SLEEP_DURATION_SECONDS = "right#todaySleepDurationSeconds";
 
+    public static final String CHANNEL_LEFT_TODAY_SLEEP_IN_BED_SECONDS = "left#todaySleepInBedSeconds";
+    public static final String CHANNEL_RIGHT_TODAY_SLEEP_IN_BED_SECONDS = "right#todaySleepInBedSeconds";
+
+    public static final String CHANNEL_LEFT_TODAY_SLEEP_OUT_OF_BED_SECONDS = "left#todaySleepOutOfBedSeconds";
+    public static final String CHANNEL_RIGHT_TODAY_SLEEP_OUT_OF_BED_SECONDS = "right#todaySleepOutOfBedSeconds";
+
+    public static final String CHANNEL_LEFT_TODAY_SLEEP_RESTFUL_SECONDS = "left#todaySleepRestfulSeconds";
+    public static final String CHANNEL_RIGHT_TODAY_SLEEP_RESTFUL_SECONDS = "right#todaySleepRestfulSeconds";
+
+    public static final String CHANNEL_LEFT_TODAY_SLEEP_RESTLESS_SECONDS = "left#todaySleepRestlessSeconds";
+    public static final String CHANNEL_RIGHT_TODAY_SLEEP_RESTLESS_SECONDS = "right#todaySleepRestlessSeconds";
+
     public static final String CHANNEL_LEFT_MONTHLY_SLEEP_IQ = "left#monthlySleepIQ";
     public static final String CHANNEL_RIGHT_MONTHLY_SLEEP_IQ = "right#monthlySleepIQ";
 
