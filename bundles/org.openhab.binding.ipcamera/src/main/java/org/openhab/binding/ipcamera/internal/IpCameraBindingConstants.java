@@ -43,7 +43,7 @@ public class IpCameraBindingConstants {
         SNAPSHOT
     }
 
-    public static final BigDecimal BIG_DECIMAL_SCALE_MOTION = new BigDecimal(5000);
+    public static final BigDecimal BIG_DECIMAL_SCALE_MOTION = new BigDecimal(100);
     public static final long HLS_STARTUP_DELAY_MS = 4500;
     @SuppressWarnings("null")
     public static final int SERVLET_PORT = Integer.getInteger("org.osgi.service.http.port", 8080);
