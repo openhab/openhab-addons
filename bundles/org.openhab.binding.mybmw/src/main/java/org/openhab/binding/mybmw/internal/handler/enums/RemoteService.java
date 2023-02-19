@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.mybmw.internal.handler.enums;
 
-import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_START;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_AIR_CONDITIONING_STOP;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_CHARGE;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_LOCK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_DOOR_UNLOCK;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_HORN;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_LIGHT_FLASH;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.REMOTE_SERVICE_VEHICLE_FINDER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
