@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.phc.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Leo Siepel - Initial contribution
  */
+@NonNullByDefault
 public class StringUtils {
 
     public static String padLeft(@Nullable String input, int minSize, String padString) {
