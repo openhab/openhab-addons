@@ -41,7 +41,6 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
-import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSinkReg;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlRendererConfiguration;

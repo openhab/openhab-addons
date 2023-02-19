@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.upnpcontrol.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link StringUtils} class defines some static string utility methods
  *
  * @author Leo Siepel - Initial contribution
  */
+@NonNullByDefault
 public class StringUtils {
 
     /**
