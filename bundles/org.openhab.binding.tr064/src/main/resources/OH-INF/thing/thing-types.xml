@@ -169,7 +169,7 @@
 			</parameter>
 			<parameter name="macOnline" type="text" multiple="true">
 				<label>MAC Online</label>
-				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11).</description>
+				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11). One MAC-Address per row.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
