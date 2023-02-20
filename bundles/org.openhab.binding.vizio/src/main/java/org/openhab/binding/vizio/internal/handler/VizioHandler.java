@@ -134,7 +134,6 @@ public class VizioHandler extends BaseThingHandler {
                 this.communicator = new VizioCommunicator(localHttpClient, host, config.port,
                         authToken != null ? authToken : EMPTY);
             }
-
         } catch (Exception e) {
             logger.error(
                     "Long running HttpClient for Vizio handler {} cannot be started. Creating Handler failed. Exception: {}",
