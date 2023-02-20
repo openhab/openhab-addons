@@ -11,6 +11,7 @@
 
 		<properties>
 			<property name="vendor">Select Comfort</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
