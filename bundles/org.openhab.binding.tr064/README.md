@@ -74,7 +74,9 @@ If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phoneb
 The `phonebookInterval` is used to set the refresh cycle for phonebooks.
 It defaults to 600 seconds, and it can be set to 0 if phonebooks are not used.
 
-Parameters that accept lists (e.g. `macOnline`, `wanBlockIPs`) can contain comments.
+Some parameters (e.g. `macOnline`, `wanBlockIPs`) accept lists.
+List items are configured one per line in the UI, or are comma separated values when using textual config.
+These parameters that accept list can also contain comments.
 Comments are separated from the value with a '#' (e.g. `192.168.0.77 # Daughter's iPhone`).
 The full string is used for the channel label.
 
