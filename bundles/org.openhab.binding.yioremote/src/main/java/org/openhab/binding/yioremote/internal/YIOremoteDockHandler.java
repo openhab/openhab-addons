@@ -270,7 +270,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.debug("Could not stop webSocketClient,  message {}", e.getMessage());
         }
-        webSocketClient.destroy();
     }
 
     @Override
