@@ -15,14 +15,20 @@ package org.openhab.binding.boschshc.internal.devices;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -38,32 +44,33 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @param <T> type of the handler to be tested
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-public abstract class AbstractSHCHandlerTest<T extends BoschSHCHandler> {
+public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     private T fixture;
 
-    @Mock
-    private Thing thing;
+    private @Mock @NonNullByDefault({}) Thing thing;
 
-    @Mock
-    private Bridge bridge;
+    private @Mock @NonNullByDefault({}) Bridge bridge;
 
-    @Mock
-    private BridgeHandler bridgeHandler;
+    protected @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
 
-    @Mock
-    private ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+
+    protected AbstractBoschSHCHandlerTest() {
+        this.fixture = createFixture();
+    }
 
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         fixture = createFixture();
         lenient().when(thing.getUID()).thenReturn(getThingUID());
         when(thing.getBridgeUID()).thenReturn(new ThingUID("boschshc", "shc", "myBridgeUID"));
         when(callback.getBridge(any())).thenReturn(bridge);
         fixture.setCallback(callback);
         when(bridge.getHandler()).thenReturn(bridgeHandler);
-        when(thing.getConfiguration()).thenReturn(getConfiguration());
+        lenient().when(thing.getConfiguration()).thenReturn(getConfiguration());
 
         fixture.initialize();
     }
@@ -80,6 +87,10 @@ public abstract class AbstractSHCHandlerTest<T extends BoschSHCHandler> {
 
     protected abstract ThingTypeUID getThingTypeUID();
 
+    protected ChannelUID getChannelUID(String channelID) {
+        return new ChannelUID(getThingUID(), channelID);
+    }
+
     protected Configuration getConfiguration() {
         return new Configuration();
     }
@@ -88,11 +99,11 @@ public abstract class AbstractSHCHandlerTest<T extends BoschSHCHandler> {
         return thing;
     }
 
-    public BridgeHandler getBridgeHandler() {
+    protected BridgeHandler getBridgeHandler() {
         return bridgeHandler;
     }
 
-    public ThingHandlerCallback getCallback() {
+    protected ThingHandlerCallback getCallback() {
         return callback;
     }
 
