@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -46,8 +47,9 @@ public class ColorTemperature2 {
      *
      * @param mirekSchema the reference MirekSchema.
      * @return the percentage of the mirekSchema range.
+     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable Integer getPercent(MirekSchema mirekSchema) {
+    public @Nullable Integer getPercent(MirekSchema mirekSchema) throws DTOPresentButEmptyException {
         Integer mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
             float min = mirekSchema.getMirekMinimum();
@@ -55,7 +57,7 @@ public class ColorTemperature2 {
             float percent = (100f * (mirek.floatValue() - min)) / (max - min);
             return Math.round(Math.max(0, Math.min(100, percent)));
         }
-        return null;
+        throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
 
     /**
@@ -70,12 +72,15 @@ public class ColorTemperature2 {
         setMirek(min + offset);
     }
 
-    public @Nullable Float getKelvin() {
+    /**
+     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
+     */
+    public @Nullable Float getKelvin() throws DTOPresentButEmptyException {
         Integer mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
             return getReciprocal(mirek.floatValue());
         }
-        return null;
+        throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
     }
 
     public void setKelvin(float kelvin) {

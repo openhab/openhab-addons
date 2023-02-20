@@ -43,4 +43,32 @@
 
 	</thing-type>
 
+	<!-- CLIP 2 light group thing -->
+	<thing-type id="groupedlight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="clip2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Light Group</label>
+		<description>A group of Hue API v2 lights that are commanded together.</description>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
+			<channel id="switch" typeId="system.power"/>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource Id</label>
+				<description>Unique Resource Id of the light group in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
 </thing:thing-descriptions>

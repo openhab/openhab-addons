@@ -13,6 +13,8 @@
 package org.openhab.binding.hue.internal.discovery;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -34,6 +36,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -48,6 +51,13 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
 
     public static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     public static final int DISCOVERY_INTERVAL_SECONDS = 600;
+
+    /**
+     * Map of resource types and respective thing types that shall be discovered.
+     */
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES = Map.of( //
+            ResourceType.DEVICE, HueBindingConstants.THING_TYPE_DEVICE, //
+            ResourceType.GROUPED_LIGHT, HueBindingConstants.THING_TYPE_GROUPED_LIGHT);
 
     private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
@@ -84,13 +94,13 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
         if (Objects.nonNull(bridgeHandler) && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-                for (Resource resource : bridgeHandler
-                        .getResources(new ResourceReference().setType(ResourceType.DEVICE)).getResources()) {
+                for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.entrySet()) {
+                    for (Resource resource : bridgeHandler.getResources(new ResourceReference().setType(entry.getKey()))
+                            .getResources()) {
 
-                    MetaData metaData = resource.getMetaData();
-                    if (Objects.nonNull(metaData)) {
-                        if (metaData.getArchetype() == Archetype.BRIDGE_V2) {
-                            // the bridge device resource itself is already in the bridge thing handler
+                        MetaData metaData = resource.getMetaData();
+                        if (Objects.nonNull(metaData) && (metaData.getArchetype() == Archetype.BRIDGE_V2)) {
+                            // the bridge device is handled by a bridge thing handler
                             continue;
                         }
 
@@ -98,6 +108,27 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                         String resType = resource.getType().toString();
                         String label = resource.getName();
                         String legacyThingUID = null;
+
+                        if (ResourceType.GROUPED_LIGHT == entry.getKey()) {
+                            ResourceReference owner = resource.getOwner();
+                            if (Objects.nonNull(owner)) {
+                                try {
+                                    Optional<Resource> ownerResource = bridgeHandler.getResources(owner).getResources()
+                                            .stream().findFirst();
+                                    if (ownerResource.isPresent()) {
+                                        Resource ownerRes = ownerResource.get();
+                                        ResourceType ownerType = ownerRes.getType();
+                                        if (ownerType == ResourceType.BRIDGE_HOME) {
+                                            label = "Bridge (Home)";
+                                        } else {
+                                            label = String.format("%s (%s)", ownerRes.getName(), ownerType.toString());
+                                        }
+                                    }
+                                } catch (ApiException e) {
+                                    // no valid owner resource
+                                }
+                            }
+                        }
 
                         Optional<Thing> legacyThingOptional = getLegacyThing(resource.getIdV1());
                         if (legacyThingOptional.isPresent()) {
@@ -108,7 +139,7 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
                         }
 
                         DiscoveryResultBuilder builder = DiscoveryResultBuilder
-                                .create(new ThingUID(HueBindingConstants.THING_TYPE_DEVICE, bridgeUID, resId))
+                                .create(new ThingUID(entry.getValue(), bridgeUID, resId)) //
                                 .withBridge(bridgeUID) //
                                 .withLabel(label) //
                                 .withProperty(HueBindingConstants.PROPERTY_RESOURCE_ID, resId)
@@ -142,6 +173,8 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             config = HueBindingConstants.LIGHT_ID;
         } else if (targetId.startsWith("/sensors/")) {
             config = HueBindingConstants.SENSOR_ID;
+        } else if (targetId.startsWith("/groups/")) {
+            config = HueBindingConstants.GROUP_ID;
         } else {
             config = null;
         }

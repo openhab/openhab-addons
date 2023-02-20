@@ -59,6 +59,6 @@ public class Rotation {
         if (Objects.nonNull(direction) && Objects.nonNull(steps)) {
             return new DecimalType(DirectionType.CLOCK_WISE.equals(direction) ? steps.intValue() : -steps.intValue());
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 }

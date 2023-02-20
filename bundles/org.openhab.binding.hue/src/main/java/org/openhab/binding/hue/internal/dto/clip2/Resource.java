@@ -24,6 +24,7 @@ import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ZigBeeStatus;
+import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -81,7 +82,7 @@ public class Resource {
      * @param command either a PercentType with the new value, an OnOffType to set it at 0 / 100 percent, or an
      *            IncreaseDecreaseType to increment the percentage value by a fixed amount.
      * @param old the current percent value.
-     * @return the new PercenType value, or null if the command was not recognised.
+     * @return the new PercentType value, or null if the command was not recognised.
      */
     private static State getPercentType(Command command, State current) {
         if (command instanceof PercentType) {
@@ -93,7 +94,7 @@ public class Resource {
             int percent = ((PercentType) current).intValue() + (sign * DELTA);
             return new PercentType(Math.min(100, Math.max(0, percent)));
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 
     /**
@@ -203,17 +204,21 @@ public class Resource {
 
     public State getBatteryLevelState() {
         Power powerState = this.powerState;
-        return Objects.nonNull(powerState) ? powerState.getBatteryLevelState() : UnDefType.UNDEF;
+        return Objects.nonNull(powerState) ? powerState.getBatteryLevelState() : UnDefType.NULL;
     }
 
     public State getBatteryLowState() {
         Power powerState = this.powerState;
-        return Objects.nonNull(powerState) ? powerState.getBatteryLowState() : UnDefType.UNDEF;
+        return Objects.nonNull(powerState) ? powerState.getBatteryLowState() : UnDefType.NULL;
     }
 
     public State getBrightnessState() {
         Dimming dimming = this.dimming;
-        return Objects.nonNull(dimming) ? new PercentType(dimming.getBrightness()) : UnDefType.UNDEF;
+        try {
+            return Objects.nonNull(dimming) ? new PercentType(dimming.getBrightness()) : UnDefType.NULL;
+        } catch (DTOPresentButEmptyException e) {
+            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+        }
     }
 
     public @Nullable Button getButton() {
@@ -244,12 +249,12 @@ public class Resource {
                 // fall through
             }
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 
     public State getButtonLastEventState() {
         Button button = this.button;
-        return Objects.nonNull(button) ? button.getLastEventState() : UnDefType.UNDEF;
+        return Objects.nonNull(button) ? button.getLastEventState() : UnDefType.NULL;
     }
 
     public List<ResourceReference> getChildren() {
@@ -264,14 +269,18 @@ public class Resource {
      * @return an HSBType containing the current color and brightness level.
      */
     public State getColorState() {
-        ColorXy col = color;
-        if (Objects.nonNull(col)) {
-            HSBType hsb = getColorHSB(col.getXY());
-            Dimming dim = dimming;
-            return new HSBType(hsb.getHue(), hsb.getSaturation(),
-                    new PercentType(Objects.nonNull(dim) ? Math.max(0, Math.min(100, dim.getBrightness())) : 50));
+        ColorXy color = this.color;
+        if (Objects.nonNull(color)) {
+            try {
+                HSBType hsb = getColorHSB(color.getXY());
+                Dimming dimming = this.dimming;
+                return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(
+                        Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50));
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            }
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 
     public @Nullable ColorTemperature2 getColorTemperature() {
@@ -281,12 +290,16 @@ public class Resource {
     public State getColorTemperatureKelvinState() {
         ColorTemperature2 colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
-            Float kelvin = colorTemp.getKelvin();
-            if (Objects.nonNull(kelvin)) {
-                return new QuantityType<>(kelvin, Units.KELVIN);
+            try {
+                Float kelvin = colorTemp.getKelvin();
+                if (Objects.nonNull(kelvin)) {
+                    return new QuantityType<>(kelvin, Units.KELVIN);
+                }
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 
     /**
@@ -298,12 +311,16 @@ public class Resource {
     public State getColorTemperaturePercentState(MirekSchema mirekSchema) {
         ColorTemperature2 colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
-            Integer percent = colorTemp.getPercent(mirekSchema);
-            if (Objects.nonNull(percent)) {
-                return new PercentType(percent);
+            try {
+                Integer percent = colorTemp.getPercent(mirekSchema);
+                if (Objects.nonNull(percent)) {
+                    return new PercentType(percent);
+                }
+            } catch (DTOPresentButEmptyException e) {
+                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
             }
         }
-        return UnDefType.UNDEF;
+        return UnDefType.NULL;
     }
 
     public @Nullable Effects getEffects() {
@@ -316,7 +333,7 @@ public class Resource {
 
     public State getEnabledState() {
         Boolean enabled = this.enabled;
-        return Objects.nonNull(enabled) ? OnOffType.from(enabled.booleanValue()) : UnDefType.UNDEF;
+        return Objects.nonNull(enabled) ? OnOffType.from(enabled.booleanValue()) : UnDefType.NULL;
     }
 
     public @Nullable ResourceReference getGroup() {
@@ -339,7 +356,7 @@ public class Resource {
 
     public State getLightLevelState() {
         LightLevel light = this.light;
-        return Objects.nonNull(light) ? light.getLightlevelState() : UnDefType.UNDEF;
+        return Objects.nonNull(light) ? light.getLightlevelState() : UnDefType.NULL;
     }
 
     public @Nullable MetaData getMetaData() {
@@ -360,12 +377,12 @@ public class Resource {
 
     public State getMotionState() {
         Motion motion = this.motion;
-        return Objects.nonNull(motion) ? motion.getMotionState() : UnDefType.UNDEF;
+        return Objects.nonNull(motion) ? motion.getMotionState() : UnDefType.NULL;
     }
 
     public State getMotionValidState() {
         Motion motion = this.motion;
-        return Objects.nonNull(motion) ? motion.getMotionValidState() : UnDefType.UNDEF;
+        return Objects.nonNull(motion) ? motion.getMotionValidState() : UnDefType.NULL;
     }
 
     public String getName() {
@@ -409,12 +426,12 @@ public class Resource {
 
     public State getRelativeRotaryActionState() {
         RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getActionState() : UnDefType.UNDEF;
+        return Objects.nonNull(relativeRotary) ? relativeRotary.getActionState() : UnDefType.NULL;
     }
 
     public State getRotaryStepsState() {
         RelativeRotary relativeRotary = this.relativeRotary;
-        return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.UNDEF;
+        return Objects.nonNull(relativeRotary) ? relativeRotary.getStepsState() : UnDefType.NULL;
     }
 
     public List<ResourceReference> getServiceReferences() {
@@ -423,8 +440,12 @@ public class Resource {
     }
 
     public State getSwitch() {
-        OnState on = this.on;
-        return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.UNDEF;
+        try {
+            OnState on = this.on;
+            return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.NULL;
+        } catch (DTOPresentButEmptyException e) {
+            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+        }
     }
 
     public @Nullable Temperature getTemperature() {
@@ -433,12 +454,12 @@ public class Resource {
 
     public State getTemperatureState() {
         Temperature temperature = this.temperature;
-        return Objects.nonNull(temperature) ? temperature.getTemperatureState() : UnDefType.UNDEF;
+        return Objects.nonNull(temperature) ? temperature.getTemperatureState() : UnDefType.NULL;
     }
 
     public State getTemperatureValidState() {
         Temperature temperature = this.temperature;
-        return Objects.nonNull(temperature) ? temperature.getTemperatureValidState() : UnDefType.UNDEF;
+        return Objects.nonNull(temperature) ? temperature.getTemperatureValidState() : UnDefType.NULL;
     }
 
     public @Nullable Effects getTimedEffects() {
@@ -451,7 +472,7 @@ public class Resource {
 
     public State getZigBeeState() {
         ZigBeeStatus zigBeeStatus = getZigBeeStatus();
-        return Objects.nonNull(zigBeeStatus) ? new StringType(zigBeeStatus.toString()) : UnDefType.UNDEF;
+        return Objects.nonNull(zigBeeStatus) ? new StringType(zigBeeStatus.toString()) : UnDefType.NULL;
     }
 
     public @Nullable ZigBeeStatus getZigBeeStatus() {

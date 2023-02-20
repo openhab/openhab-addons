@@ -212,10 +212,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof DeviceThingHandler)) {
+        if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
             logger.debug("childHandlerInitialized() {}", childThing.getUID());
             try {
-                ResourceReference reference = ((DeviceThingHandler) childHandler).getResourceReference();
+                ResourceReference reference = ((Clip2ThingHandler) childHandler).getResourceReference();
                 getClip2Bridge().getResources(reference).getResources().forEach(r -> onResource(r));
             } catch (ApiException | AssetNotLoadedException e) {
                 // exceptions should not occur here; but log anyway (just in case)
@@ -247,12 +247,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     /**
      * Return a list of resources for the console app.
      *
-     * @param type of resources to return.
+     * @param reference the resource reference to return.
      * @return list of resources of the given type.
      */
-    public List<Resource> consoleGetResources(ResourceType type) {
+    public List<Resource> consoleGetResources(ResourceReference reference) {
         try {
-            return getClip2Bridge().getResources(new ResourceReference().setType(type)).getResources();
+            return getClip2Bridge().getResources(reference).getResources();
         } catch (ApiException | AssetNotLoadedException e) {
         }
         return List.of();
@@ -460,8 +460,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("onResource() {}", resource);
         getThing().getThings().forEach(thing -> {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof DeviceThingHandler) {
-                ((DeviceThingHandler) handler).onResource(resource);
+            if (handler instanceof Clip2ThingHandler) {
+                ((Clip2ThingHandler) handler).onResource(resource);
             }
         });
     }

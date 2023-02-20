@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.hue.internal.dto.clip2;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 /**
  * DTO for dimming brightness of a light.
@@ -21,14 +25,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Dimming {
-    private float brightness;
+    private @Nullable Float brightness;
 
-    public int getBrightness() {
-        return Math.round(brightness);
+    /**
+     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
+     */
+    public int getBrightness() throws DTOPresentButEmptyException {
+        Float brightness = this.brightness;
+        if (Objects.nonNull(brightness)) {
+            return Math.round(brightness);
+        }
+        throw new DTOPresentButEmptyException("'dimming' DTO is present but empty");
     }
 
     public Dimming setBrightness(int brightness) {
-        this.brightness = brightness;
+        this.brightness = Float.valueOf(brightness);
         return this;
     }
 }

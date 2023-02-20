@@ -58,14 +58,13 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_GEOFENCE_SENSOR = new ThingTypeUID(BINDING_ID, "geofencesensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "0302");
     public static final ThingTypeUID THING_TYPE_LIGHT_LEVEL_SENSOR = new ThingTypeUID(BINDING_ID, "0106");
+    public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
 
     public static final Set<ThingTypeUID> V1_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_LIGHT,
             THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG, THING_TYPE_DIMMER_SWITCH,
             THING_TYPE_TAP_SWITCH, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
-            THING_TYPE_LIGHT_LEVEL_SENSOR);
-
-    public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
+            THING_TYPE_LIGHT_LEVEL_SENSOR, THING_TYPE_GROUP);
 
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
@@ -118,6 +117,8 @@ public class HueBindingConstants {
     public static final String PROPERTY_PRODUCT_ARCHETYPE = "productArchetype";
     public static final String PROPERTY_PRODUCT_CERTIFIED = "productCertified";
     public static final String PROPERTY_LEGACY_THING_UID = "legacyThingUID";
+    public static final String PROPERTY_OWNER = "owner";
+    public static final String PROPERTY_OWNER_TYPE = "ownerType";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -131,6 +132,7 @@ public class HueBindingConstants {
     // thing types for CLIP 2
     public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "clip2");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_GROUPED_LIGHT = new ThingTypeUID(BINDING_ID, "groupedlight");
 
     // channels for CLIP 2
     public static final String CHANNEL_2_BATTERY_LEVEL = "batterylevel";
@@ -151,10 +153,10 @@ public class HueBindingConstants {
     public static final String CLIP2_PROPERTY_SUFFIX = " (api2)";
 
     /*
-     * Map of API v1 channel id's against API v2 id's where, if the v1 channel exists in the system, then we should try
-     * to replicate the channel/item links from the v1 channel into the respective v2 channel.
+     * Map of API v1 channel id's against API v2 channel id's where, if the v1 channel exists in the system, then we
+     * should try to replicate the channel/item links from the v1 channel into the respective v2 channel.
      */
-    public static final Map<String, String> EQUIVALENT_CHANNEL_ID_MAP = Stream.of(new String[][] { //
+    public static final Map<String, String> REPLICATE_CHANNEL_ID_MAP = Stream.of(new String[][] { //
             { CHANNEL_BRIGHTNESS, CHANNEL_BRIGHTNESS }, //
             { CHANNEL_COLOR, CHANNEL_COLOR }, //
             { CHANNEL_COLORTEMPERATURE, CHANNEL_2_COLOR_TEMPERATURE }, //

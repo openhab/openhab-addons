@@ -38,7 +38,7 @@ public class RotationEvent {
 
     public State getActionState() {
         RotationEventType action = getAction();
-        return Objects.nonNull(action) ? new StringType(action.name()) : UnDefType.UNDEF;
+        return Objects.nonNull(action) ? new StringType(action.name()) : UnDefType.NULL;
     }
 
     public @Nullable Rotation getRotation() {
@@ -47,6 +47,6 @@ public class RotationEvent {
 
     public State getStepsState() {
         Rotation rotation = this.rotation;
-        return Objects.nonNull(rotation) ? rotation.getStepsState() : UnDefType.UNDEF;
+        return Objects.nonNull(rotation) ? rotation.getStepsState() : UnDefType.NULL;
     }
 }

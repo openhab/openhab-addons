@@ -16,11 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration for CLIP V2 device things.
+ * Configuration for CLIP V2 things.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class DeviceConfig {
+public class Clip2ThingConfig {
     public @Nullable String resourceId;
 }

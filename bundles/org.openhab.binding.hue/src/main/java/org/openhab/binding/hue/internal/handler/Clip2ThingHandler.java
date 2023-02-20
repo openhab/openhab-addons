@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
-import org.openhab.binding.hue.internal.config.DeviceConfig;
+import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.dto.clip2.ColorTemperature2;
 import org.openhab.binding.hue.internal.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
@@ -61,16 +61,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for things based on CLIP 2 device resources.
+ * Handler for things based on CLIP 2 'device' or 'grouped light' resources.
  *
  * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-public class DeviceThingHandler extends BaseThingHandler {
+public class Clip2ThingHandler extends BaseThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(HueBindingConstants.THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(HueBindingConstants.THING_TYPE_DEVICE,
+            HueBindingConstants.THING_TYPE_GROUPED_LIGHT);
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
     /**
      * A cached map of associated resource DTO objects whose state contributes to the overall state of this thing. It is
@@ -110,7 +111,8 @@ public class DeviceThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
 
-    private Resource thisResource = new Resource(ResourceType.DEVICE);
+    private Resource thisResource;
+
     private boolean disposing;
     private boolean hasConnectivityIssue;
     private boolean updatePropertiesDone;
@@ -118,9 +120,19 @@ public class DeviceThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> updateContributorsTask;
 
-    public DeviceThingHandler(Thing thing, ThingRegistry thingRegistry,
+    public Clip2ThingHandler(Thing thing, ThingRegistry thingRegistry,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
+
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.DEVICE);
+        } else if (HueBindingConstants.THING_TYPE_GROUPED_LIGHT.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.GROUPED_LIGHT);
+        } else {
+            throw new IllegalArgumentException("Wrong thing type " + thingTypeUID.getAsString());
+        }
+
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
@@ -183,49 +195,52 @@ public class DeviceThingHandler extends BaseThingHandler {
             return;
         }
 
-        Resource newResource;
+        Resource putResource;
+        ResourceType putResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
+                : ResourceType.GROUPED_LIGHT;
+
         switch (channelUID.getId()) {
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE:
-                newResource = new Resource(ResourceType.LIGHT).setColorTemperaturePercent(command,
-                        mirekSchemaFrom(ResourceType.LIGHT));
+                putResource = new Resource(putResourceType).setColorTemperaturePercent(command,
+                        mirekSchemaFrom(putResourceType));
                 break;
 
             case HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS:
-                newResource = new Resource(ResourceType.LIGHT).setColorTemperatureKelvin(command);
+                putResource = new Resource(putResourceType).setColorTemperatureKelvin(command);
                 break;
 
             case HueBindingConstants.CHANNEL_COLOR:
-                newResource = new Resource(ResourceType.LIGHT).setColor(command);
+                putResource = new Resource(putResourceType).setColor(command);
                 break;
 
             case HueBindingConstants.CHANNEL_BRIGHTNESS:
-                newResource = new Resource(ResourceType.LIGHT).setBrightness(command);
+                putResource = new Resource(putResourceType).setBrightness(command);
                 break;
 
             case HueBindingConstants.CHANNEL_SWITCH:
-                newResource = new Resource(ResourceType.LIGHT).setSwitch(command);
+                putResource = new Resource(putResourceType).setSwitch(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_TEMPERATURE_ENABLED:
-                newResource = new Resource(ResourceType.TEMPERATURE).setEnabled(command);
+                putResource = new Resource(ResourceType.TEMPERATURE).setEnabled(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_MOTION_ENABLED:
-                newResource = new Resource(ResourceType.MOTION).setEnabled(command);
+                putResource = new Resource(ResourceType.MOTION).setEnabled(command);
                 break;
 
             case HueBindingConstants.CHANNEL_2_LIGHT_LEVEL_ENABLED:
-                newResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
+                putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
                 break;
 
             default:
                 return; // <= nota bene !!
         }
 
-        String resourceId = commandResourceIds.get(newResource.getType());
-        if (Objects.nonNull(resourceId)) {
+        String putResourceId = commandResourceIds.get(putResource.getType());
+        if (Objects.nonNull(putResourceId)) {
             try {
-                getBridgeHandler().putResource(newResource.setId(resourceId));
+                getBridgeHandler().putResource(putResource.setId(putResourceId));
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.warn("handleCommand() error {}", e.getMessage(), e);
             }
@@ -235,7 +250,7 @@ public class DeviceThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("initialize() called");
-        DeviceConfig config = getConfigAs(DeviceConfig.class);
+        Clip2ThingConfig config = getConfigAs(Clip2ThingConfig.class);
 
         String resourceId = config.resourceId;
         if (Objects.isNull(resourceId) || resourceId.isEmpty()) {
@@ -311,14 +326,13 @@ public class DeviceThingHandler extends BaseThingHandler {
                 if (!updateDependenciesDone) {
                     scheduler.submit(() -> updateDependencies());
                 }
-            } else {
-                String cacheId = resource.getId();
-                Resource cacheResource = contributorsCache.get(cacheId);
-                if (Objects.nonNull(cacheResource)) {
-                    resource.copyMissingFieldsFrom(cacheResource);
-                    updateChannels(resource);
-                    contributorsCache.put(cacheId, resource);
-                }
+            }
+            String cacheId = resource.getId();
+            Resource cacheResource = contributorsCache.get(cacheId);
+            if (Objects.nonNull(cacheResource)) {
+                resource.copyMissingFieldsFrom(cacheResource);
+                updateChannels(resource);
+                contributorsCache.put(cacheId, resource);
             }
         }
     }
@@ -332,17 +346,18 @@ public class DeviceThingHandler extends BaseThingHandler {
         if (!disposing) {
             synchronized (legacyLinkedChannelUIDs) {
                 legacyLinkedChannelUIDs.forEach(legacyLinkedChannelUID -> {
-                    String targetChannelId = HueBindingConstants.EQUIVALENT_CHANNEL_ID_MAP
+                    String targetChannelId = HueBindingConstants.REPLICATE_CHANNEL_ID_MAP
                             .get(legacyLinkedChannelUID.getId());
                     if (Objects.nonNull(targetChannelId)) {
                         Channel targetChannel = thing.getChannel(targetChannelId);
                         if (Objects.nonNull(targetChannel)) {
-                            ChannelUID targetChannelUID = targetChannel.getUID();
+                            ChannelUID uid = targetChannel.getUID();
                             itemChannelLinkRegistry.getLinkedItems(legacyLinkedChannelUID).forEach(linkedItem -> {
-                                logger.info("Created link between Channel:{} and Item:{}", targetChannelUID,
-                                        linkedItem.getName());
-                                itemChannelLinkRegistry
-                                        .add(new ItemChannelLink(linkedItem.getName(), targetChannelUID));
+                                String item = linkedItem.getName();
+                                if (!itemChannelLinkRegistry.isLinked(item, uid)) {
+                                    logger.info("Created link between Channel:{} and Item:{}", uid, item);
+                                    itemChannelLinkRegistry.add(new ItemChannelLink(item, uid));
+                                }
                             });
                         }
                     }
@@ -397,6 +412,7 @@ public class DeviceThingHandler extends BaseThingHandler {
                 break;
 
             case LIGHT:
+            case GROUPED_LIGHT:
                 updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE,
                         resource.getColorTemperaturePercentState(mirekSchemaFrom(resource)), fullUpdate);
                 updateState(HueBindingConstants.CHANNEL_2_COLOR_TEMPERATURE_ABS,
@@ -524,6 +540,11 @@ public class DeviceThingHandler extends BaseThingHandler {
         if (!disposing) {
             logger.debug("updateLookups() called");
             List<ResourceReference> references = thisResource.getServiceReferences();
+            if (thisResource.getType() == ResourceType.GROUPED_LIGHT) {
+                // grouped light resource DTOs are directly their own contributor and command resources
+                references = new ArrayList<>(references);
+                references.add(new ResourceReference().setType(ResourceType.GROUPED_LIGHT).setId(thisResource.getId()));
+            }
             contributorsCache.clear();
             contributorsCache.putAll(references.stream()
                     .collect(Collectors.toMap(ResourceReference::getId, r -> new Resource(r.getType()))));
@@ -546,6 +567,17 @@ public class DeviceThingHandler extends BaseThingHandler {
         properties.put(HueBindingConstants.PROPERTY_RESOURCE_ID, thisResource.getId());
         properties.put(HueBindingConstants.PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
         properties.put(HueBindingConstants.PROPERTY_RESOURCE_NAME, thisResource.getName());
+
+        // owner information
+        ResourceReference owner = thisResource.getOwner();
+        if (Objects.nonNull(owner)) {
+            String ownerId = owner.getId();
+            if (Objects.nonNull(ownerId)) {
+                properties.put(HueBindingConstants.PROPERTY_OWNER, ownerId);
+            }
+            ResourceType ownerType = owner.getType();
+            properties.put(HueBindingConstants.PROPERTY_OWNER_TYPE, ownerType.toString());
+        }
 
         // metadata
         MetaData metaData = thisResource.getMetaData();
@@ -591,7 +623,9 @@ public class DeviceThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Update the channel state, and if appropriate add the channel id to the set of supportedChannelIds.
+     * Update the channel state, and if appropriate add the channel id to the set of supportedChannelIds. Note: the
+     * particular 'UnDefType.UNDEF' value of the state argument is used to specially indicate the undefined state, but
+     * yet that its channel shall nevertheless continue to be present in the thing.
      *
      * @param channelID the id of the channel.
      * @param state the new state of the channel.
@@ -599,7 +633,7 @@ public class DeviceThingHandler extends BaseThingHandler {
      */
     private void updateState(String channelID, State state, boolean fullUpdate) {
         logger.debug("updateState() channelID:{}, state:{}, fullUpdate:{}", channelID, state, fullUpdate);
-        boolean isDefined = state != UnDefType.UNDEF;
+        boolean isDefined = state != UnDefType.NULL;
         if (fullUpdate || isDefined) {
             updateState(channelID, state);
         }
@@ -633,7 +667,7 @@ public class DeviceThingHandler extends BaseThingHandler {
                 synchronized (legacyLinkedChannelUIDs) {
                     legacyLinkedChannelUIDs.clear();
                     legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
-                            .filter(legacyChannelUID -> HueBindingConstants.EQUIVALENT_CHANNEL_ID_MAP.containsKey(
+                            .filter(legacyChannelUID -> HueBindingConstants.REPLICATE_CHANNEL_ID_MAP.containsKey(
                                     legacyChannelUID.getId()) && itemChannelLinkRegistry.isLinked(legacyChannelUID))
                             .toList());
                 }

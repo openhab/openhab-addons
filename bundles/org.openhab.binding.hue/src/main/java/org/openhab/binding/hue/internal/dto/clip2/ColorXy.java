@@ -15,6 +15,8 @@ package org.openhab.binding.hue.internal.dto.clip2;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 /**
  * DTO for colour X/Y of a light.
@@ -23,15 +25,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ColorXy {
-    private @NonNullByDefault({}) PairXy xy;
+    private @Nullable PairXy xy;
 
-    public float[] getXY() {
-        return xy.getXY();
+    /**
+     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
+     */
+    public float[] getXY() throws DTOPresentButEmptyException {
+        PairXy xy = this.xy;
+        if (Objects.nonNull(xy)) {
+            return xy.getXY();
+        }
+        throw new DTOPresentButEmptyException("'color' DTO is present but empty");
     }
 
     public ColorXy setXY(float[] xyValues) {
-        xy = Objects.nonNull(xy) ? xy : new PairXy();
-        xy.setXY(xyValues);
+        PairXy xy = this.xy;
+        this.xy = Objects.nonNull(xy) ? xy : new PairXy();
+        this.xy.setXY(xyValues);
         return this;
     }
 }

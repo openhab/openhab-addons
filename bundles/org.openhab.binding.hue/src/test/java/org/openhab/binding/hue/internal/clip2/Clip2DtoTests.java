@@ -255,7 +255,7 @@ class Clip2DtoTests {
                 assertEquals(new PercentType(32), item.getColorTemperaturePercentState(mirekSchema));
                 assertEquals(QuantityType.valueOf("4000 K"), item.getColorTemperatureKelvinState());
 
-                assertEquals(UnDefType.UNDEF, item.getColorState());
+                assertEquals(UnDefType.NULL, item.getColorState());
                 Alerts alert = item.getAlert();
                 assertNotNull(alert);
                 for (ActionType actionValue : alert.getActionValues()) {
@@ -328,7 +328,7 @@ class Clip2DtoTests {
         }
 
         // confirm that brightness is no longer valid, and therefore that color has also changed
-        assertEquals(UnDefType.UNDEF, one.getBrightnessState());
+        assertEquals(UnDefType.NULL, one.getBrightnessState());
         assertEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)), one.getColorState());
 
         PercentType testBrightness = new PercentType(42);
@@ -337,7 +337,7 @@ class Clip2DtoTests {
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
         two.setBrightness(testBrightness);
-        assertEquals(UnDefType.UNDEF, two.getColorState());
+        assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
         // merge two => one

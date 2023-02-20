@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
-import org.openhab.binding.hue.internal.handler.DeviceThingHandler;
+import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
@@ -68,7 +68,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(Clip2BridgeHandler.SUPPORTED_THING_TYPES.stream(), DeviceThingHandler.SUPPORTED_THING_TYPES.stream(),
+            .of(Clip2BridgeHandler.SUPPORTED_THING_TYPES.stream(), Clip2ThingHandler.SUPPORTED_THING_TYPES.stream(),
                     HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     PresenceHandler.SUPPORTED_THING_TYPES.stream(),
@@ -103,7 +103,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
-        } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
+        } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
@@ -172,8 +172,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
             return new Clip2BridgeHandler((Bridge) thing, httpClient, thingRegistry);
-        } else if (HueBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceThingHandler(thing, thingRegistry, itemChannelLinkRegistry);
+        } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
                     localeProvider);

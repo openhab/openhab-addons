@@ -32,7 +32,7 @@ public class RelativeRotary {
 
     public State getActionState() {
         RotationEvent lastEvent = getLastEvent();
-        return Objects.nonNull(lastEvent) ? lastEvent.getActionState() : UnDefType.UNDEF;
+        return Objects.nonNull(lastEvent) ? lastEvent.getActionState() : UnDefType.NULL;
     }
 
     public @Nullable RotationEvent getLastEvent() {
@@ -41,6 +41,6 @@ public class RelativeRotary {
 
     public State getStepsState() {
         RotationEvent lastEvent = getLastEvent();
-        return Objects.nonNull(lastEvent) ? lastEvent.getStepsState() : UnDefType.UNDEF;
+        return Objects.nonNull(lastEvent) ? lastEvent.getStepsState() : UnDefType.NULL;
     }
 }
