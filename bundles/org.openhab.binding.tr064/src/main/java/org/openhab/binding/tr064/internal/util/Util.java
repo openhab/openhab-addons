@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -227,8 +228,10 @@ public class Util {
                         }
 
                         // everything is available, create the channel
-                        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID,
-                                channelTypeDescription.getName());
+                        String channelType = Objects.requireNonNullElse(channelTypeDescription.getTypeId(), "");
+                        ChannelTypeUID channelTypeUID = channelType.isBlank()
+                                ? new ChannelTypeUID(BINDING_ID, channelTypeDescription.getName())
+                                : new ChannelTypeUID(channelType);
                         if (parameters.isEmpty() || fixedValue) {
                             // we have no parameters, so create a single channel
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);

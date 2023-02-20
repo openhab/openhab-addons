@@ -86,7 +86,7 @@ public class SOAPValueConverter {
                 return Optional.empty();
             }
             switch (dataType) {
-                case "ui2" -> {
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
                 }
                 case "i4", "ui4" -> {
@@ -98,7 +98,7 @@ public class SOAPValueConverter {
         } else if (command instanceof DecimalType) {
             BigDecimal value = ((DecimalType) command).toBigDecimal();
             switch (dataType) {
-                case "ui2" -> {
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
                 }
                 case "i4", "ui4" -> {
@@ -144,7 +144,7 @@ public class SOAPValueConverter {
                 case "string" -> {
                     return new StringType(rawValue);
                 }
-                case "ui2", "i4", "ui4" -> {
+                case "ui1", "ui2", "i4", "ui4" -> {
                     BigDecimal decimalValue = new BigDecimal(rawValue);
                     if (factor != null) {
                         decimalValue = decimalValue.multiply(factor);
@@ -202,6 +202,35 @@ public class SOAPValueConverter {
         } else {
             return new QuantityType<>(bps * 8.0 / 1024.0, Units.KILOBIT_PER_SECOND);
         }
+    }
+
+    /**
+     * post processor to map mac device signal strength to system.signal-strength 0-4
+     *
+     * @param state with signalStrength
+     * @param channelConfig channel config of the mac signal strength
+     * @return the mapped system.signal-strength in range 0-4
+     */
+    @SuppressWarnings("unused")
+    private State processMacSignalStrength(State state, Tr064ChannelConfig channelConfig) {
+        State mappedSignalStrength = UnDefType.UNDEF;
+        DecimalType currentStateValue = state.as(DecimalType.class);
+
+        if (currentStateValue != null) {
+            if (currentStateValue.intValue() > 80) {
+                mappedSignalStrength = new DecimalType(4);
+            } else if (currentStateValue.intValue() > 60) {
+                mappedSignalStrength = new DecimalType(3);
+            } else if (currentStateValue.intValue() > 40) {
+                mappedSignalStrength = new DecimalType(2);
+            } else if (currentStateValue.intValue() > 20) {
+                mappedSignalStrength = new DecimalType(1);
+            } else {
+                mappedSignalStrength = new DecimalType(0);
+            }
+        }
+
+        return mappedSignalStrength;
     }
 
     /**
