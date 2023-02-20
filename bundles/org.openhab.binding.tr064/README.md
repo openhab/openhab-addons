@@ -128,14 +128,17 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 
 ### LAN `subdeviceLan` channels
 
-| channel                    | item-type                 | advanced | description                                                    |
-|----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
-| `wifi24GHzEnable`          | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                        |
-| `wifi5GHzEnable`           | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                        |
-| `wifiGuestEnable`          | `Switch`                  |          | Enable/Disable the guest WiFi.                                 |
-| `macOnline`                | `Switch`                  |     x    | Online status of the device with the given MAC                 |
-| `macOnlineIpAddress`       | `String`                  |     x    | IP of the MAC (uses same parameter as `macOnline`)             |
-
+| channel              | item-type                 | advanced | description                                                                                                  |
+|----------------------|---------------------------|:--------:|--------------------------------------------------------------------------------------------------------------|
+| `wifi24GHzEnable`    | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                                                                      |
+| `wifi5GHzEnable`     | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                                                                      |
+| `wifiGuestEnable`    | `Switch`                  |          | Enable/Disable the guest WiFi.                                                                               |
+| `macOnline`          | `Switch`                  |    x     | Online status of the device with the given MAC                                                               |
+| `macOnlineIpAddress` | `String`                  |    x     | IP of the MAC (uses same parameter as `macOnline`)                                                           |
+| `macSignalStrength1` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz |
+| `macSpeed1`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz           |
+| `macSignalStrength2` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
+| `macSpeed2`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
 Older FritzBox devices may not support 5 GHz WiFi.
 In this case you have to use the `wifi5GHzEnable` channel for switching the guest WiFi.
 
@@ -147,34 +150,34 @@ In this case you have to use the `wifi5GHzEnable` channel for switching the gues
 | `pppUptime`                | `Number:Time`             |          | Uptime (if using PPP)                                          |
 | `wanConnectionStatus`      | `String`                  |          | Connection Status                                              |
 | `wanPppConnectionStatus`   | `String`                  |          | Connection Status (if using PPP)                               |
-| `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
-| `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
+| `wanIpAddress`             | `String`                  |    x     | WAN IP Address                                                 |
+| `wanPppIpAddress`          | `String`                  |    x     | WAN IP Address (if using PPP)                                  |
 
 ### WAN `subdevice` channels
 
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
-| `dslCRCErrors`             | `Number:Dimensionless`    |     x    | DSL CRC Errors                                                 |
-| `dslDownstreamMaxRate`     | `Number:DataTransferRate` |     x    | DSL Max Downstream Rate                                        |
-| `dslDownstreamCurrRate`    | `Number:DataTransferRate` |     x    | DSL Curr. Downstream Rate                                      |
-| `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |     x    | DSL Downstream Noise Margin                                    |
-| `dslDownstreamAttenuation` | `Number:Dimensionless`    |     x    | DSL Downstream Attenuation                                     |
+| `dslCRCErrors`             | `Number:Dimensionless`    |    x     | DSL CRC Errors                                                 |
+| `dslDownstreamMaxRate`     | `Number:DataTransferRate` |    x     | DSL Max Downstream Rate                                        |
+| `dslDownstreamCurrRate`    | `Number:DataTransferRate` |    x     | DSL Curr. Downstream Rate                                      |
+| `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |    x     | DSL Downstream Noise Margin                                    |
+| `dslDownstreamAttenuation` | `Number:Dimensionless`    |    x     | DSL Downstream Attenuation                                     |
 | `dslEnable`                | `Switch`                  |          | DSL Enable                                                     |
-| `dslFECErrors`             | `Number:Dimensionless`    |     x    | DSL FEC Errors                                                 |
-| `dslHECErrors`             | `Number:Dimensionless`    |     x    | DSL HEC Errors                                                 |
+| `dslFECErrors`             | `Number:Dimensionless`    |    x     | DSL FEC Errors                                                 |
+| `dslHECErrors`             | `Number:Dimensionless`    |    x     | DSL HEC Errors                                                 |
 | `dslStatus`                | `String`                  |          | DSL Status                                                     |
-| `dslUpstreamMaxRate`       | `Number:DataTransferRate` |     x    | DSL Max Upstream Rate                                          |
-| `dslUpstreamCurrRate`      | `Number:DataTransferRate` |     x    | DSL Curr. Upstream Rate                                        |
-| `dslUpstreamNoiseMargin`   | `Number:Dimensionless`    |     x    | DSL Upstream Noise Margin                                      |
-| `dslUpstreamAttenuation`   | `Number:Dimensionless`    |     x    | DSL Upstream Attenuation                                       |
-| `wanAccessType`            | `String`                  |     x    | Access Type                                                    |
-| `wanMaxDownstreamRate`     | `Number:DataTransferRate` |     x    | Max. Downstream Rate                                           |
-| `wanMaxUpstreamRate`       | `Number:DataTransferRate` |     x    | Max. Upstream Rate                                             |
-| `wanCurrentDownstreamRate` | `Number:DataTransferRate` |     x    | Current Downstream Rate (average last 15 seconds)              |
-| `wanCurrentUpstreamRate`   | `Number:DataTransferRate` |     x    | Current Upstream Rate (average last 15 seconds)                |
-| `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
-| `wanTotalBytesReceived`    | `Number:DataAmount`       |     x    | Total Bytes Received                                           |
-| `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
+| `dslUpstreamMaxRate`       | `Number:DataTransferRate` |    x     | DSL Max Upstream Rate                                          |
+| `dslUpstreamCurrRate`      | `Number:DataTransferRate` |    x     | DSL Curr. Upstream Rate                                        |
+| `dslUpstreamNoiseMargin`   | `Number:Dimensionless`    |    x     | DSL Upstream Noise Margin                                      |
+| `dslUpstreamAttenuation`   | `Number:Dimensionless`    |    x     | DSL Upstream Attenuation                                       |
+| `wanAccessType`            | `String`                  |    x     | Access Type                                                    |
+| `wanMaxDownstreamRate`     | `Number:DataTransferRate` |    x     | Max. Downstream Rate                                           |
+| `wanMaxUpstreamRate`       | `Number:DataTransferRate` |    x     | Max. Upstream Rate                                             |
+| `wanCurrentDownstreamRate` | `Number:DataTransferRate` |    x     | Current Downstream Rate (average last 15 seconds)              |
+| `wanCurrentUpstreamRate`   | `Number:DataTransferRate` |    x     | Current Upstream Rate (average last 15 seconds)                |
+| `wanPhysicalLinkStatus`    | `String`                  |    x     | Link Status                                                    |
+| `wanTotalBytesReceived`    | `Number:DataAmount`       |    x     | Total Bytes Received                                           |
+| `wanTotalBytesSent`        | `Number:DataAmount`       |    x     | Total Bytes Sent                                               |
  
 **Note:** AVM FritzBox devices use 4-byte-unsigned-integers for `wanTotalBytesReceived` and `wanTotalBytesSent`, because of that the counters are reset after around 4GB data.
 
@@ -211,7 +214,7 @@ The return value is either the phonebook entry (if found) or the input number.
 
 Example (use all phonebooks, match 5 digits from right):
 
-```
+```java
 val tr064Actions = getActions("tr064","tr064:fritzbox:2a28aee1ee")
 val result = tr064Actions.phonebookLookup("49157712341234", 5)
 ```
@@ -229,7 +232,7 @@ When executed, the action requests a backup file with the given password in the 
 The backup file is names as `ThingFriendlyName dd.mm.yyyy HHMM.export` (e.g. `My FritzBox 18.06.2021 1720.export`).
 Files with the same name will be overwritten, so make sure that you trigger the rules at different times if your devices have the same friendly name.
 
-```
+```java
 val tr064Actions = getActions("tr064","tr064:fritzbox:2a28aee1ee")
 tr064Actions.createConfigurationBackup()
 ```
