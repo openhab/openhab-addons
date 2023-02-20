@@ -53,6 +53,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
@@ -125,7 +126,7 @@ public class VizioHandler extends BaseThingHandler {
             host = "[" + host + "]";
         }
 
-        final String httpClientName = thing.getUID().getId();
+        final String httpClientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         try {
             httpClient = httpClientFactory.createHttpClient(httpClientName, new SslContextFactory.Client(true));
             final HttpClient localHttpClient = this.httpClient;
@@ -371,10 +372,11 @@ public class VizioHandler extends BaseThingHandler {
         }
 
         try {
-            final HttpClient localHttpClient = this.httpClient;
+            HttpClient localHttpClient = this.httpClient;
             if (localHttpClient != null) {
                 localHttpClient.stop();
             }
+            localHttpClient = null;
         } catch (Exception e) {
             logger.debug("Unable to stop Vizio httpClient. Exception: {}", e.getMessage(), e);
         }
