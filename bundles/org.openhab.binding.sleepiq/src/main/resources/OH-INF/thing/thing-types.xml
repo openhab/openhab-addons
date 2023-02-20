@@ -11,7 +11,6 @@
 
 		<properties>
 			<property name="vendor">Select Comfort</property>
-			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -68,6 +67,10 @@
 			<channel-group id="left" typeId="chamberGroupType"/>
 			<channel-group id="right" typeId="chamberGroupType"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="bedId" type="text" required="true">
