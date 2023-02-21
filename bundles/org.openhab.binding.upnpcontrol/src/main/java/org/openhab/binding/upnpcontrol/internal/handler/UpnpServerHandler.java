@@ -191,7 +191,7 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link #onValueReceived}
      * method.
      *
      * @param objectID content directory object
@@ -233,7 +233,7 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
+     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link #onValueReceived}
      * method.
      *
      * @param containerID content directory container
@@ -543,7 +543,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Add a renderer to the renderer channel state option list.
-     * This method is called from the {@link UpnpControlHandlerFactory} class when creating a renderer handler.
+     * This method is called from the {@link org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory
+     * UpnpControlHandlerFactory} class when creating a renderer handler.
      *
      * @param key
      */
@@ -560,7 +561,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Remove a renderer from the renderer channel state option list.
-     * This method is called from the {@link UpnpControlHandlerFactory} class when removing a renderer handler.
+     * This method is called from the {@link org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory
+     * UpnpControlHandlerFactory} class when removing a renderer handler.
      *
      * @param key
      */
