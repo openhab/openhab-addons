@@ -147,8 +147,8 @@
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
-	<channel name="macOnlineIpAddress" label="MAC Online IP" description="IP of the device with the given MAC"
-		advanced="true">
+	<channel name="macOnlineIpAddress" label="MAC Online IP"
+		description="IP of the device with the given MAC (see macOnline)" advanced="true">
 		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1" serviceId="urn:LanDeviceHosts-com:serviceId:Hosts1"/>
 		<getAction name="GetSpecificHostEntry" argument="NewIPAddress">
@@ -172,7 +172,7 @@
 	</channel>
 	<channel name="macSpeed1" label="MAC Wifi Speed 2.4Ghz"
 		description="Wifi Speed of the device with
-		the given MAC. This is set in case the Device is connected to 2.4Ghz">
+		the given MAC (see macOnline). This is set in case the Device is connected to 2.4Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
@@ -185,7 +185,7 @@
 	<!-- WLAN Config 2 - 5 Ghz -->
 	<channel name="macSignalStrength2" label="MAC Wifi Signal Strength 5Ghz"
 		description="Wifi Signal Strength of the device with
-		the given MAC. This is set in case the Device is connected to 5Ghz"
+		the given MAC (see macOnline). This is set in case the Device is connected to 5Ghz"
 		typeId="system:signal-strength">
 		<item type="Number"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
@@ -198,7 +198,7 @@
 	</channel>
 	<channel name="macSpeed2" label="MAC Wifi Speed 5Ghz"
 		description="Wifi Speed of the device with
-		the given MAC. This is set in case the Device is connected to 5Ghz">
+		the given MAC (see macOnline). This is set in case the Device is connected to 5Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
