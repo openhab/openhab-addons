@@ -101,18 +101,18 @@ public final class PlugwiseUtils {
 
     public static String upperUnderscoreToLowerCamel(String text) {
         final String delimiter = "_";
-        String upperCamel = "";
+        StringBuilder upperCamelBuilder = new StringBuilder(text.length());
         for (String str : text.split(delimiter)) {
-            String properlyCapitalized = "";
-            if (str.length() > 0) {
-                properlyCapitalized = str.substring(0, 1).toUpperCase();
+            if (upperCamelBuilder.isEmpty() && str.length() > 0) {
+                upperCamelBuilder.append(str.substring(0, 1).toLowerCase());
+            } else if (str.length() > 0) {
+                upperCamelBuilder.append(str.substring(0, 1).toUpperCase());
             }
             if (str.length() > 1) {
-                properlyCapitalized = str.substring(1).toLowerCase();
+                upperCamelBuilder.append(str.substring(1).toLowerCase());
             }
-            upperCamel = upperCamel + properlyCapitalized;
         }
-        return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
+        return upperCamelBuilder.toString();
     }
 
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {
