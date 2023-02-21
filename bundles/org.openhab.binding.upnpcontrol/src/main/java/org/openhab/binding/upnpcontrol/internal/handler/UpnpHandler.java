@@ -416,7 +416,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     /**
-     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService.invokeAction invokeAction}. It
+     * This method wraps {@link org.openhab.core.io.transport.upnp.UpnpIOService#invokeAction invokeAction}. It
      * schedules and submits the call and calls {@link #onValueReceived} upon completion. All state updates or other
      * actions depending on the results should be triggered from {@link #onValueReceived} because the class fields with
      * results will be filled asynchronously.
