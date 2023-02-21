@@ -81,7 +81,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int RECONNECT_MAX_TRIES = 5;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
+    private static final ResourceReference GROUPED_LIGHT = new ResourceReference().setType(ResourceType.GROUPED_LIGHT);
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
+
+    private static final Set<ResourceReference> THING_SET = Set.of(DEVICE, GROUPED_LIGHT);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -210,6 +213,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         checkConnectionTask = scheduler.schedule(() -> checkConnection(), milliSeconds, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * If a child thing has been added, and the bridge is online, update the child's data.
+     */
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         if (thing.getStatus() == ThingStatus.ONLINE && (childHandler instanceof Clip2ThingHandler)) {
@@ -440,7 +446,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
             try {
-                updateDevices();
+                updateThings();
                 Clip2ThingDiscoveryService discoveryService = this.discoveryService;
                 if (Objects.nonNull(discoveryService)) {
                     discoveryService.startScan(null);
@@ -516,17 +522,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void registerDiscoveryService(@Nullable Clip2ThingDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
-    }
-
-    /**
-     * Get the data for all devices in the bridge, and inform all child thing handlers.
-     *
-     * @throws ApiException if a communication error occurred.
-     * @throws AssetNotLoadedException if one of the assets is not loaded.
-     */
-    private void updateDevices() throws ApiException, AssetNotLoadedException {
-        logger.debug("updateDevices() called");
-        getClip2Bridge().getResources(DEVICE).getResources().forEach(resource -> onResource(resource));
     }
 
     /**
@@ -646,6 +641,20 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
                 updateThing(editBuilder.withProperties(newProperties).build());
             }
+        }
+    }
+
+    /**
+     * Get the data for all things in the bridge, and inform all child thing handlers.
+     *
+     * @throws ApiException if a communication error occurred.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     */
+    private void updateThings() throws ApiException, AssetNotLoadedException {
+        logger.debug("updateDevices() called");
+        Clip2Bridge bridge = getClip2Bridge();
+        for (ResourceReference reference : THING_SET) {
+            bridge.getResources(reference).getResources().forEach(resource -> onResource(resource));
         }
     }
 }
