@@ -376,7 +376,6 @@ public class VizioHandler extends BaseThingHandler {
             if (localHttpClient != null) {
                 localHttpClient.stop();
             }
-            localHttpClient = null;
             this.httpClient = null;
         } catch (Exception e) {
             logger.debug("Unable to stop Vizio httpClient. Exception: {}", e.getMessage(), e);
