@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class StringUtils {
 
-    public static @Nullable String capitalizeWords(@Nullable String input) {
+    public static String capitalizeWords(@Nullable String input) {
         String output = "";
         if (input != null) {
             String[] splitted = input.split("\\s+");
