@@ -453,7 +453,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetTransportState on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getTransportState() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -463,7 +463,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getPositionInfo on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getPositionInfo() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -473,7 +473,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetMediaInfo on UPnP AV Transport.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      */
     protected void getMediaInfo() {
         Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
@@ -483,7 +483,9 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Retrieves the current volume known to the control point, gets updated by GENA events or after UPnP Rendering
-     * Control GetVolume call. This method is used to retrieve volume by {@link UpnpAudioSink.getVolume}.
+     * Control GetVolume call. This method is used to retrieve volume with the
+     * {@link org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink#getVolume UpnpAudioSink.getVolume}
+     * method.
      *
      * @return current volume
      */
@@ -493,7 +495,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke GetVolume on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
@@ -534,7 +536,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
@@ -563,7 +565,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     /**
      * Invoke getMute on UPnP Rendering Control.
-     * Result is received in {@link onValueReceived}.
+     * Result is received in {@link #onValueReceived}.
      *
      * @param channel
      */
