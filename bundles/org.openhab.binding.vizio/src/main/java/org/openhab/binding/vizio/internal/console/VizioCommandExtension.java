@@ -107,7 +107,7 @@ public class VizioCommandExtension extends AbstractConsoleCommandExtension {
                             Random rng = new Random();
 
                             int pairingDeviceId = rng.nextInt(100000);
-                            int pairingToken = communicator.starPairing(args[2], pairingDeviceId).getItem()
+                            int pairingToken = communicator.startPairing(args[2], pairingDeviceId).getItem()
                                     .getPairingReqToken();
                             if (pairingToken != -1) {
                                 handler.setPairingDeviceId(pairingDeviceId);

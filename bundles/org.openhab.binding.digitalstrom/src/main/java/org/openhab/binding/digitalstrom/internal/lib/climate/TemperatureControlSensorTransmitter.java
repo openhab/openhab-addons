@@ -16,8 +16,8 @@ package org.openhab.binding.digitalstrom.internal.lib.climate;
  * The {@link TemperatureControlSensorTransmitter} can be implement by subclasses to implement a
  * transmitter which can be used to push the target temperature or control value to a digitalSTROM zone.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public interface TemperatureControlSensorTransmitter {
 

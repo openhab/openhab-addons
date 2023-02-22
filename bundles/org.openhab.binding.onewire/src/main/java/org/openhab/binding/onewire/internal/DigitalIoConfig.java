@@ -14,8 +14,6 @@ package org.openhab.binding.onewire.internal;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
 
-import java.util.Arrays;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.openhab.core.library.types.DecimalType;
@@ -100,6 +98,6 @@ public class DigitalIoConfig {
 
     @Override
     public String toString() {
-        return String.format("path=%s, mode=%s, logic=%s", Arrays.asList(getParameter()), ioMode, ioLogic);
+        return String.format("path=%s, mode=%s, logic=%s", getParameter(), ioMode, ioLogic);
     }
 }
