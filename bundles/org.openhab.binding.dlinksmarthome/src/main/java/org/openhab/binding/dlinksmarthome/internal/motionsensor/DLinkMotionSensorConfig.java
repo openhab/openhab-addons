@@ -23,7 +23,6 @@ public class DLinkMotionSensorConfig {
      * Constants representing the configuration strings
      */
     public static final String IP_ADDRESS = "ipAddress";
-    public static final String PIN = "pin";
 
     /**
      * The IP address of the device
@@ -34,4 +33,9 @@ public class DLinkMotionSensorConfig {
      * The pin code of the device
      */
     public String pin;
+
+    /**
+     * The hour to reboot the device
+     */
+    public Integer rebootHour;
 }
