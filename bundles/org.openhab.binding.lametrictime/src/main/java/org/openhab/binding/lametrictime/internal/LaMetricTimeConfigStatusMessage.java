@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LaMetricTimeConfigStatusMessage} defines the keys to be used for configuration status messages.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeConfigStatusMessage {
     public static final String HOST_MISSING = "missing-host-configuration";
     public static final String API_KEY_MISSING = "missing-api-key-configuration";
