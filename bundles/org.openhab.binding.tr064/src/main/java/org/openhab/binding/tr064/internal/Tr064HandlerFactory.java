@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tr064.internal;
 
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_FRITZBOX;
+import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProfileFactory;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -61,11 +62,12 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public Tr064HandlerFactory(@Reference Tr064ChannelTypeProvider channelTypeProvider,
-            @Reference PhonebookProfileFactory phonebookProfileFactory) {
+            @Reference PhonebookProfileFactory phonebookProfileFactory,
+            final @Reference HttpClientFactory httpClientFactory) {
         this.channelTypeProvider = channelTypeProvider;
         this.phonebookProfileFactory = phonebookProfileFactory;
         // use an insecure client (i.e. without verifying the certificate)
-        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+        this.httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client(true));
         try {
             this.httpClient.start();
         } catch (Exception e) {
