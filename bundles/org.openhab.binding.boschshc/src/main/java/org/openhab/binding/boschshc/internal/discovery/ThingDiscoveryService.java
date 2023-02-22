@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -215,8 +219,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     }
 
     private String getNiceName(String name, String roomName) {
-        if (!name.startsWith("-"))
+        if (!name.startsWith("-")) {
             return name;
+        }
 
         // convert "-IntrusionDetectionSystem-" into "Intrusion Detection System"
         // convert "-RoomClimateControl-" into "Room Climate Control myRoomName"

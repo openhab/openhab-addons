@@ -37,10 +37,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,9 +51,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
-    private static final Gson GSON = new Gson();
 
-    private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String ipAddress;
     private final String systemPassword;
@@ -177,8 +176,10 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Online check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Online check failed because of {}!", e.getMessage());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.debug("Online check failed because of {}!", e.getMessage(), e);
             return false;
         }
     }
@@ -203,8 +204,10 @@ public class BoschHttpClient extends HttpClient {
                 logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Access check failed because of {}!", e.getMessage());
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.debug("Access check failed because of {}!", e.getMessage(), e);
             return false;
         }
     }
@@ -249,13 +252,13 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | NullPointerException e) {
-            logger.warn("Pairing failed with exception {}", e.getMessage());
+        } catch (TimeoutException | CertificateEncodingException | KeyStoreException | RuntimeException e) {
+            logger.warn("Pairing failed with exception {}", e.getMessage(), e);
             return false;
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
-            logger.trace("Pairing failed - Details: {}", e.getMessage());
+            logger.trace("Pairing failed - Details: {}", e.getMessage(), e);
             logger.warn("Pairing failed. Was the Bosch Smart Home Controller button pressed?");
             return false;
         }
@@ -281,15 +284,15 @@ public class BoschHttpClient extends HttpClient {
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        logger.trace("Create request for http client {}", this.toString());
+        logger.trace("Create request for http client {}", this);
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
                 .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
-            String body = GSON.toJson(content);
-            logger.trace("create request for {} and content {}", url, content.toString());
+            String body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
+            logger.trace("create request for {} and content {}", url, content);
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);
@@ -314,7 +317,7 @@ public class BoschHttpClient extends HttpClient {
             Predicate<TContent> contentValidator,
             @Nullable BiFunction<Integer, String, BoschSHCException> errorResponseHandler)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        logger.trace("Send request: {}", request.toString());
+        logger.trace("Send request: {}", request);
 
         ContentResponse contentResponse = request.send();
 
@@ -334,7 +337,7 @@ public class BoschHttpClient extends HttpClient {
 
         try {
             @Nullable
-            TContent content = GSON.fromJson(textContent, responseContentClass);
+            TContent content = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(textContent, responseContentClass);
             if (content == null) {
                 throw new ExecutionException(String.format("Received no content in response, expected type %s",
                         responseContentClass.getName()), null);
