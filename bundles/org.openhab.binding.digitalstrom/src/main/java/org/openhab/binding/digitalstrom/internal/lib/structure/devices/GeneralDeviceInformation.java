@@ -20,8 +20,8 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
  * identical for all device types. It also contains the methods to implement the mechanism of the
  * {@link DeviceStatusListener}.
  *
- * @author Michael Ochel - initial contributer
- * @author Matthias Siegele - initial contributer
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public interface GeneralDeviceInformation {
 
