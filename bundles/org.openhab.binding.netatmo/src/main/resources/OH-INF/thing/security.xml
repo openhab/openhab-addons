@@ -32,7 +32,7 @@
 	<channel-group-type id="siren">
 		<label>Siren Status</label>
 		<channels>
-			<channel id="status" typeId="siren-status"/>
+			<channel id="status" typeId="siren-status-ro"/>
 			<channel id="monitoring" typeId="siren-monitoring"/>
 		</channels>
 	</channel-group-type>
@@ -225,6 +225,7 @@
 	<channel-group-type id="presence">
 		<label>Presence Camera</label>
 		<channels>
+			<channel id="siren" typeId="siren-status-rw"/>
 			<channel id="floodlight" typeId="floodlight-mode"/>
 		</channels>
 	</channel-group-type>
