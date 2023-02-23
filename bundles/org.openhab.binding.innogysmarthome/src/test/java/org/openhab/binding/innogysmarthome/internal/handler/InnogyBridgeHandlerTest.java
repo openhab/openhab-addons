@@ -58,8 +58,8 @@ public class InnogyBridgeHandlerTest {
         final Logger loggerBridge = (Logger) LoggerFactory.getLogger(InnogyBridgeHandler.class);
         loggerBridge.setLevel(Level.OFF);
 
-        final Logger loggerBridgeAccessible = (Logger) LoggerFactory.getLogger(BaseThingHandler.class);
-        loggerBridgeAccessible.setLevel(Level.OFF);
+        final Logger logerBaseHandler = (Logger) LoggerFactory.getLogger(BaseThingHandler.class);
+        logerBaseHandler.setLevel(Level.OFF);
 
         bridgeMock = mock(Bridge.class);
         when(bridgeMock.getUID()).thenReturn(new ThingUID("innogysmarthome", "bridge"));
