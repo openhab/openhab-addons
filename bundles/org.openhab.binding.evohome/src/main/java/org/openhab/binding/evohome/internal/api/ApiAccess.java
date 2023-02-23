@@ -118,6 +118,8 @@ public class ApiAccess {
                 if (outClass != null) {
                     retVal = new Gson().fromJson(reply, outClass);
                 }
+            } else if ((response.getStatus() == HttpStatus.CREATED_201)) {
+                // success nothing to return ignore
             } else {
                 logger.debug("Request failed with unexpected response code {}", response.getStatus());
             }
