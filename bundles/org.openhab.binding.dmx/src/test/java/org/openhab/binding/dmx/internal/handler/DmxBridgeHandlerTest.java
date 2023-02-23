@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -49,6 +50,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DmxBridgeHandlerTest extends JavaTest {
 
     /**
@@ -85,14 +87,13 @@ public class DmxBridgeHandlerTest extends JavaTest {
     private static final int TEST_UNIVERSE = 1;
     private static final int TEST_CHANNEL = 100;
 
-    private final ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "testbridge");
-    private final ThingUID BRIDGE_UID_TEST = new ThingUID(THING_TYPE_TEST_BRIDGE, "testbridge");
-    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_TEST, CHANNEL_MUTE);
+    private static final ThingTypeUID THING_TYPE_TEST_BRIDGE = new ThingTypeUID(BINDING_ID, "testbridge");
+    private static final ThingUID BRIDGE_UID_TEST = new ThingUID(THING_TYPE_TEST_BRIDGE, "testbridge");
+    private static final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_TEST, CHANNEL_MUTE);
 
-    Map<String, Object> bridgeProperties;
-
-    private Bridge bridge;
-    private DmxBridgeHandlerImpl bridgeHandler;
+    private @NonNullByDefault({}) Map<String, Object> bridgeProperties;
+    private @NonNullByDefault({}) Bridge bridge;
+    private @NonNullByDefault({}) DmxBridgeHandlerImpl bridgeHandler;
 
     @BeforeEach
     public void setUp() {

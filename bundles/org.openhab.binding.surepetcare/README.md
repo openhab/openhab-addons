@@ -2,25 +2,25 @@
 
 This binding offers integration to the Sure Petcare API, supporting cloud-connected cat flaps and feeders.
 
-### Features
+## Features
 
 1. Read access to all attributes for households, devices (hubs, flaps) and pets through individual things/channels.
-2. Manual setting of pet location.
-3. Setting of LED Mode (hub), Locking Mode (flaps) and Curfews.
+1. Manual setting of pet location.
+1. Setting of LED Mode (hub), Locking Mode (flaps) and Curfews.
 
 ### Restrictions / TODO
 
 1. The Sure Petcare API is not publicly available and this binding has been based on observed interactions between their mobile phone app and the cloud API.
    If the Sure Petcare API changes, this binding might stop working.
-2. The current version of the binding supports only cat/pet flaps. Feeders are not yet supported as I don't own one yet.
+1. The current version of the binding supports only cat/pet flaps. Feeders are not yet supported as I don't own one yet.
 
 ### Credits
 
 The binding code is based on a lot of work done by other developers:
 
-- Holger Eisold (https://github.com/HerzScheisse) - Python use in openHAB and various PRs (https://github.com/HerzScheisse/SurePetcare-openHAB-JSR223-Rules)
-- Alex Toft (https://github.com/alextoft) - PHP implementation (https://github.com/alextoft/sureflap)
-- rcastberg (https://github.com/rcastberg) - Python implementation (https://github.com/rcastberg/sure_petcare)
+- Holger Eisold (<https://github.com/HerzScheisse>) - Python use in openHAB and various PRs (<https://github.com/HerzScheisse/SurePetcare-openHAB-JSR223-Rules>)
+- Alex Toft (<https://github.com/alextoft>) - PHP implementation (<https://github.com/alextoft/sureflap>)
+- rcastberg (<https://github.com/rcastberg>) - Python implementation (<https://github.com/rcastberg/sure_petcare>)
 
 ## Supported Things
 
@@ -152,7 +152,7 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Things configuration
 
-```
+```java
 Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refreshIntervalTopology=36000, refreshIntervalStatus=300 ]
 {
   Thing household     12345  "My Household" @ "SurePetcare"
@@ -165,7 +165,7 @@ Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="
 
 ### Items configuration
 
-```
+```java
 /* *****************************************
  * Bridge
  * *****************************************/
@@ -228,7 +228,7 @@ String      UR_1e_Species           "Pet Species [%s]"                      (dgP
 Image       UR_1e_Photo             "Pet Photo"                             (dgPet) {channel="surepetcare:pet:bridge1:12345:photo"}
 String      UR_1e_TagIdentifier     "Pet Tag Identifier [%s]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:tagIdentifier"}
 String      UR_1e_Location          "Pet Location [%s]"                     (dgPet) {channel="surepetcare:pet:bridge1:12345:location"}
-String      UR_1e_LocationTimeoffset"Pet Switch Location [%s]"              (gCats)	{channel="surepetcare:pet:bridge1:20584:locationTimeoffset"}
+String      UR_1e_LocationTimeoffset"Pet Switch Location [%s]"              (gCats) {channel="surepetcare:pet:bridge1:20584:locationTimeoffset"}
 DateTime    UR_1e_LocationChanged   "Pet Loc. Updated [%1$ta. %1$tH:%1$tM]" (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChanged"}
 String      UR_1e_LocationThrough   "Pet Entered / Left through [%s]"       (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChangedThrough"}
 Number:Mass UR_1e_Weight            "Pet Weight [%.1f %unit%]"              (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
@@ -265,7 +265,7 @@ Number      UR_1f_HubRSSI               "Feeder Hub Signal [%.2f dB]"           
 
 ### Sitemap Configuration
 
-```
+```perl
 sitemap surepetcare label="My home automation" {
   Frame label="Bridge" {
     Text item=UR_1a_Online valuecolor=[ON="green", OFF="red"]
@@ -362,24 +362,23 @@ Please Note: the location for each pet gets updated only if the current location
 This can be very useful if you have alot of pets that often enter the home by any window/door.
 Your .items file should contain this:
 
-```
-Group:String:OR(1,2)	gLocation		"Cats inside [%d]"								
-String					UR_1e_Location	"Pet Location [%s]"		(dgPet, gLocation)		{channel="surepetcare:pet:bridge1:12345:location"}
+```java
+Group:String:OR(1,2)  gLocation      "Cats inside [%d]"
+String                UR_1e_Location "Pet Location [%s]"  (dgPet, gLocation)  {channel="surepetcare:pet:bridge1:12345:location"}
 ```
 
 And your .sitemap file could look like this:
 
-```
+```perl
 Frame label="Group Pet/Cats items" {
   Selection item=gLocation label="Set ALL cats to:" mappings=[1="Inside", 2="Outside"] icon="text"
   Switch item=gLocation label="Set ALL cats to: []" mappings=[1="Inside", 2="Outside"]
   Group item=gLocation
 }
 ```
- 
+
 ## Troubleshooting
 
 | Problem                                     | Solution                                                                            |
 |---------------------------------------------|-------------------------------------------------------------------------------------|
 | Bridge cannot connect to Sure Petcare API    | Check if you can logon to the Sure Petcare app with the given username/password.    |
-

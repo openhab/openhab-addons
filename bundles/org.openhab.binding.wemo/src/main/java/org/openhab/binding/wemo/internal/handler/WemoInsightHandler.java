@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.openhab.binding.wemo.internal.InsightParser;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.WemoPowerBank;
@@ -52,9 +51,8 @@ public class WemoInsightHandler extends WemoHandler {
     private int currentPowerSlidingSeconds;
     private int currentPowerDeltaTrigger;
 
-    public WemoInsightHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, upnpService, wemoHttpCaller);
+    public WemoInsightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, upnpIOService, wemoHttpCaller);
     }
 
     @Override

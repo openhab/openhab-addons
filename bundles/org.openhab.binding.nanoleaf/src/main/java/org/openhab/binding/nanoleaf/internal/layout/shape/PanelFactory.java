@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -36,7 +37,7 @@ public class PanelFactory {
         List<Panel> result = new ArrayList<>(panels.size());
         Deque<PositionDatum> panelStack = new ArrayDeque<>(panels);
         while (!panelStack.isEmpty()) {
-            PositionDatum panel = panelStack.peek();
+            PositionDatum panel = Objects.requireNonNull(panelStack.peek());
             final ShapeType shapeType = ShapeType.valueOf(panel.getShapeType());
             Panel shape = createPanel(shapeType, takeFirst(shapeType.getNumLightsPerShape(), panelStack));
             result.add(shape);

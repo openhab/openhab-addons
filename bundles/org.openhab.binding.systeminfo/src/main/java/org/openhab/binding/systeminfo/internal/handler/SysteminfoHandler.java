@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -462,7 +462,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getBatteryName(deviceIndex);
                     break;
                 case CHANNEL_BATTERY_REMAINING_CAPACITY:
-                    state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
+                    state = new QuantityType<>(systeminfo.getBatteryRemainingCapacity(deviceIndex), Units.PERCENT);
                     break;
                 case CHANNEL_BATTERY_REMAINING_TIME:
                     state = systeminfo.getBatteryRemainingTime(deviceIndex);
@@ -511,10 +511,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getMemoryTotal();
                     break;
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
-                    state = systeminfo.getMemoryAvailablePercent();
+                    PercentType memoryAvailablePercent = systeminfo.getMemoryAvailablePercent();
+                    state = (memoryAvailablePercent != null) ? new QuantityType<>(memoryAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_MEMORY_USED_PERCENT:
-                    state = systeminfo.getMemoryUsedPercent();
+                    PercentType memoryUsedPercent = systeminfo.getMemoryUsedPercent();
+                    state = (memoryUsedPercent != null) ? new QuantityType<>(memoryUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_SWAP_AVAILABLE:
                     state = systeminfo.getSwapAvailable();
@@ -526,10 +529,13 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getSwapTotal();
                     break;
                 case CHANNEL_SWAP_AVAILABLE_PERCENT:
-                    state = systeminfo.getSwapAvailablePercent();
+                    PercentType swapAvailablePercent = systeminfo.getSwapAvailablePercent();
+                    state = (swapAvailablePercent != null) ? new QuantityType<>(swapAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_SWAP_USED_PERCENT:
-                    state = systeminfo.getSwapUsedPercent();
+                    PercentType swapUsedPercent = systeminfo.getSwapUsedPercent();
+                    state = (swapUsedPercent != null) ? new QuantityType<>(swapUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_DRIVE_MODEL:
                     state = systeminfo.getDriveModel(deviceIndex);
@@ -559,10 +565,14 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getStorageType(deviceIndex);
                     break;
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
-                    state = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    PercentType storageAvailablePercent = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    state = (storageAvailablePercent != null)
+                            ? new QuantityType<>(storageAvailablePercent, Units.PERCENT)
+                            : null;
                     break;
                 case CHANNEL_STORAGE_USED_PERCENT:
-                    state = systeminfo.getStorageUsedPercent(deviceIndex);
+                    PercentType storageUsedPercent = systeminfo.getStorageUsedPercent(deviceIndex);
+                    state = (storageUsedPercent != null) ? new QuantityType<>(storageUsedPercent, Units.PERCENT) : null;
                     break;
                 case CHANNEL_NETWORK_IP:
                     state = systeminfo.getNetworkIp(deviceIndex);

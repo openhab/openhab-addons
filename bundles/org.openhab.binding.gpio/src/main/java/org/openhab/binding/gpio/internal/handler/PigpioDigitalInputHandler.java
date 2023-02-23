@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,8 +66,9 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
         } else if (pullupdownStr.equals(GPIOBindingConstants.PUD_UP)) {
             pullupdown = JPigpio.PI_PUD_UP;
         } else {
-            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF))
+            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF)) {
                 throw new InvalidPullUpDownException();
+            }
         }
         gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_INPUT);
         jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {

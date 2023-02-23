@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,22 +15,22 @@ package org.openhab.binding.unifi.internal.api.util;
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonElement;
+import org.openhab.binding.unifi.internal.api.dto.UnfiPortOverrideJsonObject;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Serializer for {@link UnfiPortOverrideJsonElement}. Returns the content of the jsonObject in the class.
+ * Serializer for {@link UnfiPortOverrideJsonObject}. Returns the content of the jsonObject in the class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class UnfiPortOverrideJsonElementDeserializer implements JsonSerializer<UnfiPortOverrideJsonElement> {
+public class UnfiPortOverrideJsonElementDeserializer implements JsonSerializer<UnfiPortOverrideJsonObject> {
 
     @Override
-    public JsonElement serialize(final UnfiPortOverrideJsonElement src, final Type typeOfSrc,
+    public JsonElement serialize(final UnfiPortOverrideJsonObject src, final Type typeOfSrc,
             final JsonSerializationContext context) {
         return src.getJsonObject();
     }

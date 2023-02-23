@@ -28,12 +28,14 @@ Please consult their [website](https://sbb.ch/en).
 #### Textual configuration
 
 ##### Thing
-```
+
+```java
 Thing publictransportswitzerland:stationboard:zurich [ station="Zürich HB" ]
 ```
 
 ##### Items
-```
+
+```java
 String Next_Departure             "Next Departure"             { channel="publictransportswitzerland:stationboard:zurich:departures#1" }
 String Upcoming_Departures_TSV    "Upcoming_Departures_TSV"    { channel="publictransportswitzerland:stationboard:zurich:tsv" }
 ```

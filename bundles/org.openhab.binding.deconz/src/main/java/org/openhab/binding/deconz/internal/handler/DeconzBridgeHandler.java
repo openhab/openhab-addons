@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,12 +87,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         super(thing);
         this.http = http;
         this.gson = gson;
-        String websocketID = thing.getUID().getAsString().replace(':', '-');
-        if (websocketID.length() < 4) {
-            websocketID = "openHAB-deconz-" + websocketID;
-        } else if (websocketID.length() > 20) {
-            websocketID = websocketID.substring(websocketID.length() - 20);
-        }
+        String websocketID = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID), gson);
     }
 

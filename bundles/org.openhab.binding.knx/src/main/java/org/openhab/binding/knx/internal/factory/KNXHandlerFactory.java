@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,9 @@ import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
@@ -24,6 +27,7 @@ import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -42,18 +46,23 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Simon Kaufmann - Initial contribution and API
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
+    @Nullable
     private NetworkAddressService networkAddressService;
+    private final SerialPortManager serialPortManager;
 
     @Activate
     public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
-            final @Reference LocaleProvider localeProvider) {
+            final @Reference LocaleProvider localeProvider, final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+        this.serialPortManager = serialPortManager;
+        SerialTransportAdapter.setSerialPortManager(serialPortManager);
     }
 
     @Override
@@ -62,8 +71,8 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (THING_TYPE_IP_BRIDGE.equals(thingTypeUID)) {
             ThingUID ipBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, ipBridgeUID, null);
@@ -79,18 +88,19 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
             return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing);
+            return new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
             return new DeviceThingHandler(thing);
         }
         return null;
     }
 
-    private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getIPBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID != null) {
             return thingUID;
         }
@@ -98,7 +108,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         return new ThingUID(thingTypeUID, ipAddress);
     }
 
-    private ThingUID getSerialBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID,
+    private ThingUID getSerialBridgeThingUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
             Configuration configuration) {
         if (thingUID != null) {
             return thingUID;

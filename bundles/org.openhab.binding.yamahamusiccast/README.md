@@ -21,6 +21,8 @@ UDP events are captured to reflect changes in the binding for
 - Total Time
 - Musiccast Link
 
+If your Yamaha model doesn't support the MusicCast protocol, please try the [Yamaha Receiver Binding](https://www.openhab.org/addons/bindings/yamahareceiver/#yamaha-receiver-binding) instead.
+
 ## Supported Things
 
 Each model (AV Receiver, ...) is a Thing (Thing Type ID: yamahamusiccast:device). Things are linked to a Bridge (Thing Type ID: yamahamusiccast:bridge) for receiving UDP events.

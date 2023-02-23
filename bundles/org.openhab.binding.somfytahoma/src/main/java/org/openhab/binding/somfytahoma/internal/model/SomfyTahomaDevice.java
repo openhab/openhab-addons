@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaDevice {
 
-    private String uiClass = "";
-    private String widget = "";
     private String deviceURL = "";
     private String label = "";
     private String oid = "";
@@ -47,18 +45,6 @@ public class SomfyTahomaDevice {
 
     public String getOid() {
         return oid;
-    }
-
-    public String getUiClass() {
-        return uiClass;
-    }
-
-    public String getWidget() {
-        return widget;
-    }
-
-    public void setWidget(String widget) {
-        this.widget = widget;
     }
 
     public SomfyTahomaDeviceDefinition getDefinition() {

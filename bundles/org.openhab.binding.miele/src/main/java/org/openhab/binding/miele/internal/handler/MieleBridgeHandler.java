@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,17 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
@@ -69,7 +75,7 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Fixed lifecycle issues
  * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
- * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ * @author Jacob Laursen - Fixed multicast and protocol support (Zigbee/LAN)
  **/
 @NonNullByDefault
 public class MieleBridgeHandler extends BaseBridgeHandler {
@@ -79,10 +85,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private static final int POLLING_PERIOD = 15; // in seconds
+    private static final int POLLING_PERIOD_SECONDS = 15;
     private static final int JSON_RPC_PORT = 2810;
     private static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
     private static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
+    private static final int MULTICAST_TIMEOUT_MILLIS = 100;
+    private static final int MULTICAST_SLEEP_MILLIS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
@@ -308,116 +316,147 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private Runnable eventListenerRunnable = () -> {
-        if (IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
-            while (true) {
-                // Get the address that we are going to connect to.
-                InetAddress address1 = null;
-                InetAddress address2 = null;
-                try {
-                    address1 = InetAddress.getByName(JSON_RPC_MULTICAST_IP1);
-                    address2 = InetAddress.getByName(JSON_RPC_MULTICAST_IP2);
-                } catch (UnknownHostException e) {
-                    logger.debug("An exception occurred while setting up the multicast receiver: '{}'", e.getMessage());
+        String interfaceIpAddress = (String) getConfig().get(INTERFACE);
+        if (!IP_PATTERN.matcher(interfaceIpAddress).matches()) {
+            logger.debug("Invalid IP address for the multicast interface: '{}'", interfaceIpAddress);
+            return;
+        }
+
+        // Get the address that we are going to connect to.
+        InetSocketAddress address1 = null;
+        InetSocketAddress address2 = null;
+        try {
+            address1 = new InetSocketAddress(InetAddress.getByName(JSON_RPC_MULTICAST_IP1), JSON_RPC_PORT);
+            address2 = new InetSocketAddress(InetAddress.getByName(JSON_RPC_MULTICAST_IP2), JSON_RPC_PORT);
+        } catch (UnknownHostException e) {
+            // This can only happen if the hardcoded literal IP addresses are invalid.
+            logger.debug("An exception occurred while setting up the multicast receiver: '{}'", e.getMessage());
+            return;
+        }
+
+        while (!Thread.currentThread().isInterrupted()) {
+            MulticastSocket clientSocket = null;
+            try {
+                clientSocket = new MulticastSocket(JSON_RPC_PORT);
+                clientSocket.setSoTimeout(MULTICAST_TIMEOUT_MILLIS);
+
+                NetworkInterface networkInterface = getMulticastInterface(interfaceIpAddress);
+                if (networkInterface == null) {
+                    logger.warn("Unable to find network interface for address {}", interfaceIpAddress);
+                    return;
                 }
+                clientSocket.setNetworkInterface(networkInterface);
+                clientSocket.joinGroup(address1, null);
+                clientSocket.joinGroup(address2, null);
 
-                byte[] buf = new byte[256];
-                MulticastSocket clientSocket = null;
-
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        clientSocket = new MulticastSocket(JSON_RPC_PORT);
-                        clientSocket.setSoTimeout(100);
+                        byte[] buf = new byte[256];
+                        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                        clientSocket.receive(packet);
 
-                        clientSocket.setInterface(InetAddress.getByName((String) getConfig().get(INTERFACE)));
-                        clientSocket.joinGroup(address1);
-                        clientSocket.joinGroup(address2);
+                        String event = new String(packet.getData(), packet.getOffset(), packet.getLength(),
+                                StandardCharsets.ISO_8859_1);
+                        logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
+                                packet.getPort());
 
-                        while (true) {
-                            try {
-                                buf = new byte[256];
-                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                                clientSocket.receive(packet);
-
-                                String event = new String(packet.getData());
-                                logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
-                                        packet.getPort());
-
-                                String[] parts = event.split("&");
-                                String id = null, name = null, value = null;
-                                for (String p : parts) {
-                                    String[] subparts = p.split("=");
-                                    switch (subparts[0]) {
-                                        case "property": {
-                                            name = subparts[1];
-                                            break;
-                                        }
-                                        case "value": {
-                                            value = subparts[1].strip().trim();
-                                            break;
-                                        }
-                                        case "id": {
-                                            id = subparts[1];
-                                            break;
-                                        }
-                                    }
+                        String[] parts = event.split("&");
+                        String id = null, name = null, value = null;
+                        for (String p : parts) {
+                            String[] subparts = p.split("=");
+                            switch (subparts[0]) {
+                                case "property": {
+                                    name = subparts[1];
+                                    break;
                                 }
-
-                                if (id == null || name == null || value == null) {
-                                    continue;
+                                case "value": {
+                                    value = subparts[1];
+                                    break;
                                 }
-
-                                // In XGW 3000 firmware 2.03 this was changed from UID (hdm:ZigBee:0123456789abcdef#210)
-                                // to serial number (001234567890)
-                                FullyQualifiedApplianceIdentifier applianceIdentifier;
-                                if (id.startsWith("hdm:")) {
-                                    applianceIdentifier = new FullyQualifiedApplianceIdentifier(id);
-                                } else {
-                                    HomeDevice device = cachedHomeDevicesByRemoteUid.get(id);
-                                    if (device == null) {
-                                        logger.debug("Multicast event not handled as id {} is unknown.", id);
-                                        continue;
-                                    }
-                                    applianceIdentifier = device.getApplianceIdentifier();
-                                }
-                                var deviceProperty = new DeviceProperty();
-                                deviceProperty.Name = name;
-                                deviceProperty.Value = value;
-                                ApplianceStatusListener listener = applianceStatusListeners
-                                        .get(applianceIdentifier.getApplianceId());
-                                if (listener != null) {
-                                    listener.onAppliancePropertyChanged(deviceProperty);
-                                }
-                            } catch (SocketTimeoutException e) {
-                                try {
-                                    Thread.sleep(500);
-                                } catch (InterruptedException ex) {
-                                    logger.debug("Event listener has been interrupted.");
+                                case "id": {
+                                    id = subparts[1];
                                     break;
                                 }
                             }
                         }
-                    } catch (Exception ex) {
-                        logger.debug("An exception occurred while receiving multicast packets: '{}'", ex.getMessage());
-                    }
 
-                    // restart the cycle with a clean slate
-                    try {
-                        if (clientSocket != null) {
-                            clientSocket.leaveGroup(address1);
-                            clientSocket.leaveGroup(address2);
+                        if (id == null || name == null || value == null) {
+                            continue;
                         }
-                    } catch (IOException e) {
-                        logger.debug("An exception occurred while leaving multicast group: '{}'", e.getMessage());
-                    }
-                    if (clientSocket != null) {
-                        clientSocket.close();
+
+                        // In XGW 3000 firmware 2.03 this was changed from UID (hdm:ZigBee:0123456789abcdef#210)
+                        // to serial number (001234567890)
+                        FullyQualifiedApplianceIdentifier applianceIdentifier;
+                        if (id.startsWith("hdm:")) {
+                            applianceIdentifier = new FullyQualifiedApplianceIdentifier(id);
+                        } else {
+                            HomeDevice device = cachedHomeDevicesByRemoteUid.get(id);
+                            if (device == null) {
+                                logger.debug("Multicast event not handled as id {} is unknown.", id);
+                                continue;
+                            }
+                            applianceIdentifier = device.getApplianceIdentifier();
+                        }
+                        var deviceProperty = new DeviceProperty();
+                        deviceProperty.Name = name;
+                        deviceProperty.Value = value;
+                        ApplianceStatusListener listener = applianceStatusListeners
+                                .get(applianceIdentifier.getApplianceId());
+                        if (listener != null) {
+                            listener.onAppliancePropertyChanged(deviceProperty);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        try {
+                            Thread.sleep(MULTICAST_SLEEP_MILLIS);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            logger.debug("Event listener has been interrupted.");
+                            break;
+                        }
                     }
                 }
+            } catch (IOException e) {
+                logger.debug("An exception occurred while receiving multicast packets: '{}'", e.getMessage());
+            } finally {
+                // restart the cycle with a clean slate
+                try {
+                    if (clientSocket != null) {
+                        clientSocket.leaveGroup(address1, null);
+                        clientSocket.leaveGroup(address2, null);
+                    }
+                } catch (IOException e) {
+                    logger.debug("An exception occurred while leaving multicast group: '{}'", e.getMessage());
+                }
+                if (clientSocket != null) {
+                    clientSocket.close();
+                }
             }
-        } else {
-            logger.debug("Invalid IP address for the multicast interface: '{}'", getConfig().get(INTERFACE));
         }
     };
+
+    private @Nullable NetworkInterface getMulticastInterface(String interfaceIpAddress) throws SocketException {
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+
+        @Nullable
+        NetworkInterface networkInterface;
+        while (networkInterfaces.hasMoreElements()) {
+            networkInterface = networkInterfaces.nextElement();
+            if (networkInterface.isLoopback()) {
+                continue;
+            }
+            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Found interface address {} -> {}", interfaceAddress.toString(),
+                            interfaceAddress.getAddress().toString());
+                }
+                if (interfaceAddress.getAddress().toString().endsWith("/" + interfaceIpAddress)) {
+                    return networkInterface;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public JsonElement invokeOperation(String applianceId, String modelID, String methodName) throws MieleRpcException {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -437,8 +476,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         logger.debug("Scheduling the Miele polling job");
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.trace("Scheduling the Miele polling job period is {}", POLLING_PERIOD);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, POLLING_PERIOD, TimeUnit.SECONDS);
+            logger.trace("Scheduling the Miele polling job period is {}", POLLING_PERIOD_SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, POLLING_PERIOD_SECONDS, TimeUnit.SECONDS);
             this.pollingJob = pollingJob;
             logger.trace("Scheduling the Miele polling job Job is done ?{}", pollingJob.isDone());
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,10 +47,19 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     public CompletableFuture<Double> getCurrentAmbientLightLevel() {
         final @Nullable DecimalType state = getStateAs(LIGHT_LEVEL, DecimalType.class);
         return CompletableFuture
-                .completedFuture(state != null ? state.doubleValue()
-                        : getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
-                                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MIN_VALUE))
-                                        .doubleValue());
+                .completedFuture(state != null ? state.doubleValue() : getMinCurrentAmbientLightLevel());
+    }
+
+    @Override
+    public double getMinCurrentAmbientLightLevel() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+    }
+
+    @Override
+    public double getMaxCurrentAmbientLightLevel() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
     }
 
     @Override

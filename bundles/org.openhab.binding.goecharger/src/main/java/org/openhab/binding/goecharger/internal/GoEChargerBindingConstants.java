@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class GoEChargerBindingConstants {
 
     // List of all Channel ids
     public static final String MAX_CURRENT = "maxCurrent";
-    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemporary";
+    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemp";
     public static final String ACCESS_CONFIGURATION = "accessConfiguration";
     public static final String PWM_SIGNAL = "pwmSignal";
     public static final String ERROR = "error";

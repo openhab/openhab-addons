@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,23 @@
  */
 package org.openhab.binding.boschshc.internal.devices.wallthermostat;
 
+import static org.mockito.Mockito.verify;
+
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * Unit Tests for {@link WallThermostatHandler}.
@@ -39,5 +52,25 @@ public class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandl
     @Override
     protected ThingTypeUID getThingTypeUID() {
         return BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT;
+    }
+
+    @Test
+    public void testUpdateChannelsTemperatureLevelService() {
+        JsonElement jsonObject = JsonParser.parseString(
+                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
+        getFixture().processUpdate("TemperatureLevel", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
+                new QuantityType<Temperature>(21.5, SIUnits.CELSIUS));
+    }
+
+    @Test
+    public void testUpdateChannelsHumidityLevelService() {
+        JsonElement jsonObject = JsonParser
+                .parseString("{\n" + "   \"@type\": \"humidityLevelState\",\n" + "   \"humidity\": 42.5\n" + " }");
+        getFixture().processUpdate("HumidityLevel", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_HUMIDITY),
+                new QuantityType<Dimensionless>(42.5, Units.PERCENT));
     }
 }

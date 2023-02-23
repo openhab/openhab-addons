@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.knx.internal.config;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -25,23 +23,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BridgeConfiguration {
     private int autoReconnectPeriod = 0;
-    private BigDecimal readingPause = BigDecimal.valueOf(0);
-    private BigDecimal readRetriesLimit = BigDecimal.valueOf(0);
-    private BigDecimal responseTimeout = BigDecimal.valueOf(0);
+    private int readingPause = 0;
+    private int readRetriesLimit = 0;
+    private int responseTimeout = 0;
 
     public int getAutoReconnectPeriod() {
         return autoReconnectPeriod;
     }
 
-    public BigDecimal getReadingPause() {
+    public int getReadingPause() {
         return readingPause;
     }
 
-    public BigDecimal getReadRetriesLimit() {
+    public int getReadRetriesLimit() {
         return readRetriesLimit;
     }
 
-    public BigDecimal getResponseTimeout() {
+    public int getResponseTimeout() {
         return responseTimeout;
     }
 

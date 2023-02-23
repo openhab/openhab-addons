@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,27 @@
  */
 package org.openhab.binding.lametrictime.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for LaMetric Time apps.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class LaMetricTimeAppConfiguration {
 
     public static final String PACKAGE_NAME = "packageName";
     public static final String WIDGET_ID = "widgetId";
     public static final String ACCESS_TOKEN = "accessToken";
 
+    @Nullable
     public String packageName;
+
+    @Nullable
     public String widgetId;
+
+    @Nullable
     public String accessToken;
 }

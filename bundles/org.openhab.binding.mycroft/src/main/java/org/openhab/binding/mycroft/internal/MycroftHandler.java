@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -126,13 +127,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
         logger.debug("Start initializing Mycroft {}", thing.getUID());
 
-        String websocketID = thing.getUID().getAsString().replace(':', '-');
-        if (websocketID.length() < 4) {
-            websocketID = "mycroft-" + websocketID;
-        }
-        if (websocketID.length() > 20) {
-            websocketID = websocketID.substring(websocketID.length() - 20);
-        }
+        String websocketID = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
 
         config = getConfigAs(MycroftConfiguration.class);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.hue.internal.handler;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +27,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link LightStateConverter} is responsible for mapping to/from jue types.
@@ -161,14 +165,14 @@ public class LightStateConverter {
     }
 
     /**
-     * Transforms the given {@link DecimalType} into a light state containing
-     * the color temperature in Kelvin.
+     * Transforms the given color temperature in Kelvin into a Hue Light {@link State}.
      *
-     * @param decimalType color temperature in Kelvin
+     * @param kelvinValue color temperature in Kelvin
+     * @param capabilities color temperature capabilities (e.g. min and max values)
      * @return light state containing the color temperature
      */
-    public static StateUpdate toColorTemperatureLightState(DecimalType decimalType, ColorTemperature capabilities) {
-        return new StateUpdate().setColorTemperature(kelvinToMired(decimalType.intValue()), capabilities);
+    public static StateUpdate toColorTemperatureLightState(int kelvinValue, ColorTemperature capabilities) {
+        return new StateUpdate().setColorTemperature(kelvinToMired(kelvinValue), capabilities);
     }
 
     /**
@@ -207,14 +211,14 @@ public class LightStateConverter {
     }
 
     /**
-     * Transforms Hue Light {@link State} into {@link DecimalType} representing
+     * Transforms Hue Light {@link State} into {@link QuantityType} representing
      * the color temperature in Kelvin.
      *
      * @param lightState light state
-     * @return percent type representing the color temperature in Kelvin
+     * @return quantity type representing the color temperature in Kelvin
      */
-    public static DecimalType toColorTemperature(State lightState) {
-        return new DecimalType(miredToKelvin(lightState.getColorTemperature()));
+    public static QuantityType<Temperature> toColorTemperature(State lightState) {
+        return new QuantityType<>(miredToKelvin(lightState.getColorTemperature()), Units.KELVIN);
     }
 
     /**

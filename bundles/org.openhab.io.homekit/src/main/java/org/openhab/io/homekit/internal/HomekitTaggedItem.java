@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -49,18 +50,18 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String DELAY = "commandDelay";
-    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String DELAY = "commandDelay";
+    public static final String DIMMER_MODE = "dimmerMode";
     public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
-    public final static String INSTANCE = "instance";
-    public final static String INVERTED = "inverted";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String MIN_VALUE = "minValue";
-    public final static String PRIMARY_SERVICE = "primary";
-    public final static String STEP = "step";
-    public final static String UNIT = "unit";
-    public final static String EMULATE_STOP_STATE = "stop";
-    public final static String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
+    public static final String INSTANCE = "instance";
+    public static final String INVERTED = "inverted";
+    public static final String MAX_VALUE = "maxValue";
+    public static final String MIN_VALUE = "minValue";
+    public static final String PRIMARY_SERVICE = "primary";
+    public static final String STEP = "step";
+    public static final String UNIT = "unit";
+    public static final String EMULATE_STOP_STATE = "stop";
+    public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -218,6 +219,22 @@ public class HomekitTaggedItem {
             return;
         }
         logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send IncreaseDecreaseType command to a DimmerItem (or a Group:Dimmer)
+     */
+    public void send(IncreaseDecreaseType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof DimmerItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof DimmerItem) {
+            ((DimmerItem) getItem()).send(command);
+            return;
+        }
+        logger.warn(
+                "Received IncreaseDecreaseType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 

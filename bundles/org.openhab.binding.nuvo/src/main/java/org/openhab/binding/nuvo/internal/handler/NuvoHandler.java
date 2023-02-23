@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,7 +134,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private static final Pattern DISP_PATTERN = Pattern.compile("^DISPLINE(\\d{1}),\"(.*)\"$");
     private static final Pattern DISP_INFO_PATTERN = Pattern
             .compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$");
-    private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
+    private static final Pattern ZONE_CFG_EQ_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
+    private static final Pattern ZONE_CFG_PATTERN = Pattern.compile(
+            "^ENABLE1,NAME\"(.*)\",SLAVETO(.*),GROUP([0-4]),SOURCES(.*),XSRC(.*),IR(.*),DND(.*),LOCKED(.*),SLAVEEQ(.*)$");
 
     private final Logger logger = LoggerFactory.getLogger(NuvoHandler.class);
     private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
@@ -155,6 +157,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     private boolean isAnyOhNuvoNet = false;
     private NuvoMenu nuvoMenus = new NuvoMenu();
+    private HashMap<String, Set<NuvoEnum>> nuvoGroupMap = new HashMap<String, Set<NuvoEnum>>();
     private HashMap<String, Integer> nuvoNetSrcMap = new HashMap<String, Integer>();
     private HashMap<String, String> favPrefixMap = new HashMap<String, String>();
     private HashMap<String, String[]> favoriteMap = new HashMap<String, String[]>();
@@ -230,6 +233,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         nuvoNetSrcMap.put("4", config.nuvoNetSrc4);
         nuvoNetSrcMap.put("5", config.nuvoNetSrc5);
         nuvoNetSrcMap.put("6", config.nuvoNetSrc6);
+
+        nuvoGroupMap.put("1", new HashSet<NuvoEnum>());
+        nuvoGroupMap.put("2", new HashSet<NuvoEnum>());
+        nuvoGroupMap.put("3", new HashSet<NuvoEnum>());
+        nuvoGroupMap.put("4", new HashSet<NuvoEnum>());
 
         if (this.isMps4) {
             logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
@@ -370,7 +378,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         return Collections.singletonList(NuvoThingActions.class);
     }
 
-    public void handleRawCommand(@Nullable String command) {
+    public void handleRawCommand(String command) {
         synchronized (sequenceLock) {
             try {
                 connector.sendCommand(command);
@@ -419,6 +427,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             if (value >= 1 && value <= MAX_SRC) {
                                 logger.debug("Got source command {} zone {}", value, target);
                                 connector.sendCommand(target, NuvoCommand.SOURCE, String.valueOf(value));
+
+                                // update the other group member's selected source
+                                updateSrcForZoneGroup(target, String.valueOf(value));
                             }
                         }
                         break;
@@ -677,6 +688,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 activeZones.forEach(zoneNum -> {
                     updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum), CHANNEL_TYPE_POWER, OFF);
                 });
+
+                // Publish the ALLOFF event to all button channels for awareness in source rules
+                updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_BUTTONPRESS, ZERO + COMMA + ALLOFF);
+                NuvoEnum.VALID_SOURCES.forEach(source -> {
+                    updateChannelState(NuvoEnum.valueOf(source), CHANNEL_TYPE_BUTTONPRESS, ALLOFF);
+                });
+
                 break;
             case TYPE_ALLMUTE:
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_ALLMUTE, ONE.equals(updateData) ? ON : OFF);
@@ -733,6 +751,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     if (matcher.find()) {
                         updateChannelState(targetZone, CHANNEL_TYPE_POWER, ON);
                         updateChannelState(targetZone, CHANNEL_TYPE_SOURCE, matcher.group(1));
+
+                        // update the other group member's selected source
+                        updateSrcForZoneGroup(targetZone, matcher.group(1));
 
                         if (MUTE.equals(matcher.group(2))) {
                             updateChannelState(targetZone, CHANNEL_TYPE_MUTE, ON);
@@ -851,7 +872,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case TYPE_ZONE_CONFIG:
                 logger.debug("Zone Configuration: Zone: {} - Value: {}", zoneId, updateData);
                 // example: BASS1,TREB-2,BALR2,LOUDCMP1
-                Matcher matcher = ZONE_CFG_PATTERN.matcher(updateData);
+                Matcher matcher = ZONE_CFG_EQ_PATTERN.matcher(updateData);
                 if (matcher.find()) {
                     updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_BASS, matcher.group(1));
                     updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_TREBLE, matcher.group(2));
@@ -860,7 +881,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     updateChannelState(NuvoEnum.valueOf(ZONE + zoneId), CHANNEL_TYPE_LOUDNESS,
                             ONE.equals(matcher.group(4)) ? ON : OFF);
                 } else {
-                    logger.debug("no match on message: {}", updateData);
+                    matcher = ZONE_CFG_PATTERN.matcher(updateData);
+                    // example: ENABLE1,NAME"Great Room",SLAVETO0,GROUP1,SOURCES63,XSRC0,IR1,DND0,LOCKED0,SLAVEEQ0
+                    if (matcher.find()) {
+                        // TODO: utilize other info such as zone name, available sources bitmask, etc.
+
+                        // if this zone is a member of a group (1-4), add the zone's enum to the appropriate group map
+                        if (!ZERO.equals(matcher.group(3))) {
+                            nuvoGroupMap.get(matcher.group(3)).add(NuvoEnum.valueOf(ZONE + zoneId));
+                        }
+                    } else {
+                        logger.debug("no match on message: {}", updateData);
+                    }
                 }
                 break;
             case TYPE_NN_ALBUM_ART_REQ:
@@ -1145,6 +1177,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         try {
                             connector.sendQuery(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS_QUERY, BLANK);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.EQ_QUERY, BLANK);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         } catch (NuvoException | InterruptedException e) {
@@ -1344,6 +1378,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
         }
         updateState(channel, state);
+    }
+
+    /**
+     * For grouped zones, update the source channel for all group members
+     *
+     * @param zoneEnum the zone where the source was changed
+     * @param srcId the new source number that was selected
+     */
+    private void updateSrcForZoneGroup(NuvoEnum zoneEnum, String srcId) {
+        // check if this zone is in a group, if so update the other group member's selected source
+        nuvoGroupMap.forEach((groupId, groupZones) -> {
+            if (groupZones.contains(zoneEnum)) {
+                groupZones.forEach(z -> {
+                    if (!zoneEnum.equals(z)) {
+                        updateChannelState(z, CHANNEL_TYPE_SOURCE, srcId);
+                    }
+                });
+            }
+        });
     }
 
     /**

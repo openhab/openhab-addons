@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,6 +68,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private ClientUpgradeRequest yioremoteDockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI websocketAddress;
     private YioRemoteDockHandleStatus yioRemoteDockActualStatus = YioRemoteDockHandleStatus.UNINITIALIZED_STATE;
+    private @Nullable Future<?> initJob;
     private @Nullable Future<?> webSocketPollingJob;
     private @Nullable Future<?> webSocketReconnectionPollingJob;
     public String receivedMessage = "";
@@ -90,7 +91,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
+        initJob = scheduler.submit(() -> {
             try {
                 websocketAddress = new URI("ws://" + localConfig.host + ":946");
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_PROCESS;
@@ -257,8 +258,18 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        Future<?> job = initJob;
+        if (job != null) {
+            job.cancel(true);
+            initJob = null;
+        }
         disposeWebsocketPollingJob();
         disposeWebSocketReconnectionPollingJob();
+        try {
+            webSocketClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop webSocketClient,  message {}", e.getMessage());
+        }
     }
 
     @Override
@@ -342,21 +353,19 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     private void disposeWebsocketPollingJob() {
-        if (webSocketPollingJob != null) {
-            if (!webSocketPollingJob.isCancelled() && webSocketPollingJob != null) {
-                webSocketPollingJob.cancel(true);
-            }
+        Future<?> job = webSocketPollingJob;
+        if (job != null) {
+            job.cancel(true);
             webSocketPollingJob = null;
         }
     }
 
     private void disposeWebSocketReconnectionPollingJob() {
-        if (webSocketReconnectionPollingJob != null) {
-            if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
-                webSocketReconnectionPollingJob.cancel(true);
-            }
+        Future<?> job = webSocketReconnectionPollingJob;
+        if (job != null) {
+            job.cancel(true);
+            webSocketReconnectionPollingJob = null;
         }
-        webSocketReconnectionPollingJob = null;
         logger.debug("disposereconnection");
         reconnectionCounter = 0;
     }

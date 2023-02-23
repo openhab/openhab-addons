@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import static org.openhab.binding.dmx.test.TestBridgeHandler.THING_TYPE_TEST_BRI
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,22 +45,20 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
 
     private static final String TEST_CHANNEL = "100";
     private static final String TEST_STEPS_INFINITE = "1000:100:1000|1000:200:-1";
     private static final String TEST_STEPS_REPEAT = "1000:115:1000|1000:210:1000";
+    private static final ThingUID THING_UID_CHASER = new ThingUID(THING_TYPE_CHASER, "testchaser");
+    private static final ChannelUID CHANNEL_UID_SWITCH = new ChannelUID(THING_UID_CHASER, CHANNEL_SWITCH);
 
-    private final ThingUID THING_UID_CHASER = new ThingUID(THING_TYPE_CHASER, "testchaser");
-    private final ChannelUID CHANNEL_UID_SWITCH = new ChannelUID(THING_UID_CHASER, CHANNEL_SWITCH);
-
-    Map<String, Object> bridgeProperties;
-    Map<String, Object> thingProperties;
-
-    private Thing chaserThing;
-
-    private TestBridgeHandler dmxBridgeHandler;
-    private ChaserThingHandler chaserThingHandler;
+    private @NonNullByDefault({}) Map<String, Object> bridgeProperties;
+    private @NonNullByDefault({}) Map<String, Object> thingProperties;
+    private @NonNullByDefault({}) Thing chaserThing;
+    private @NonNullByDefault({}) TestBridgeHandler dmxBridgeHandler;
+    private @NonNullByDefault({}) ChaserThingHandler chaserThingHandler;
 
     @BeforeEach
     public void setUp() {
@@ -77,7 +76,7 @@ public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
     }
 
     @Test
-    public void testThingStatus_noBridge() {
+    public void testThingStatusNoBridge() {
         thingProperties.put(CONFIG_CHASER_STEPS, TEST_STEPS_INFINITE);
         initialize();
         // check that thing is offline if no bridge found

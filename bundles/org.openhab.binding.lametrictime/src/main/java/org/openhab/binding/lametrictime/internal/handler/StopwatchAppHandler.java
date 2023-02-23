@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,10 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.CHANNEL_APP_COMMAND;
 
-import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
-import org.openhab.binding.lametrictime.api.model.CoreApps;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lametrictime.internal.api.dto.CoreApps;
+import org.openhab.binding.lametrictime.internal.api.local.ApplicationActionException;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class StopwatchAppHandler extends AbstractLaMetricTimeAppHandler {
     private static final String PACKAGE_NAME = "com.lametric.stopwatch";
 
@@ -65,7 +68,7 @@ public class StopwatchAppHandler extends AbstractLaMetricTimeAppHandler {
     }
 
     @Override
-    protected String getPackageName(LaMetricTimeAppConfiguration config) {
+    protected @Nullable String getPackageName(LaMetricTimeAppConfiguration config) {
         return PACKAGE_NAME;
     }
 

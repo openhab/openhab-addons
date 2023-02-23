@@ -97,7 +97,7 @@ The binding supports the following authentication methods, which are selected au
 
 For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration.
 
-The acquired token will remain active for several weeks following the last succesful authentication with this token. If the connection is not established used during that period and the token expires, a user password has to be re-entered in the binding settings to acquire a new token.
+The acquired token will remain active for several weeks following the last successful authentication with this token. If the connection is not established used during that period and the token expires, a user password has to be re-entered in the binding settings to acquire a new token.
 
 In case a websocket connection to the Miniserver remains active for the whole duration of the token's life span, the binding will refresh the token one day before token expiration, without the need of providing the password.
 

@@ -37,6 +37,25 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="powerStrip">
+		<label>SmartPlug</label>
+		<description>Tapo Smart Plug Power Outlet</description>
+		<channels>
+			<channel id="output1" typeId="outputChannel">
+				<label>Output Switch 1</label>
+				<description>Switches the power state on/off of the first socket</description>
+			</channel>
+			<channel id="output2" typeId="outputChannel">
+				<label>Output Switch 2</label>
+				<description>Switches the power state on/off of the second socket</description>
+			</channel>
+			<channel id="output3" typeId="outputChannel">
+				<label>Output Switch 3</label>
+				<description>Switches the power state on/off of the third socket</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<!--Light-Bulb Channel Type -->
 	<channel-group-type id="lightBulb">
 		<label>Light Bulb</label>

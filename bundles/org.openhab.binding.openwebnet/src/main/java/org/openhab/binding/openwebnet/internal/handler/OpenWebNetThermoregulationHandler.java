@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,6 +128,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION, OnOffType.OFF);
             updateState(CHANNEL_CU_SCENARIO_PROGRAM_NUMBER, new DecimalType(programNumber));
             updateState(CHANNEL_CU_WEEKLY_PROGRAM_NUMBER, new DecimalType(programNumber));
+            updateState(CHANNEL_CU_FAILURE_DISCOVERED, OnOffType.OFF);
         }
     }
 

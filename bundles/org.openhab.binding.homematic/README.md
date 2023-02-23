@@ -176,9 +176,9 @@ If set to true, devices are automatically factory reset when their corresponding
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
 - **bufferSize**
-If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
-In this case, e.g. the discovery fails.
-With this setting the buffer size can be adjusted. The value is specified in kB.
+  If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
+  In this case, e.g. the discovery fails.
+  With this setting the buffer size can be adjusted. The value is specified in kB.
 
 The syntax for a bridge is:
 
@@ -743,3 +743,9 @@ stop org.openhab.binding.homematic
 log:set TRACE org.openhab.binding.homematic
 start org.openhab.binding.homematic
 ```
+
+### Running in Docker
+
+First of all you need to map the `XML-RPC` and `BIN-RPC` Callback Ports to the outside world.
+They must not be mapped to a different port number.
+Next make sure that you set the `Callback Network Address` to the IP where the homematic can reach the exposed ports.

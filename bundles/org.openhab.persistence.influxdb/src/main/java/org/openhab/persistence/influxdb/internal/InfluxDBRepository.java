@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public interface InfluxDBRepository {
     /**
      * Connect to InfluxDB server
      *
-     * @return True if successful, otherwise false
+     * @return <code>true</code> if successful, otherwise <code>false</code>
      */
     boolean connect();
 
@@ -46,12 +47,12 @@ public interface InfluxDBRepository {
     /**
      * Check if connection is currently ready
      *
-     * @return True if its ready, otherwise false
+     * @return True if it's ready, otherwise false
      */
     boolean checkConnectionStatus();
 
     /**
-     * Return all stored item names with it's count of stored points
+     * Return all stored item names with its count of stored points
      *
      * @return Map with <ItemName,ItemCount> entries
      */
@@ -62,6 +63,7 @@ public interface InfluxDBRepository {
      *
      * @param query Query
      * @return Query results
+     * 
      */
     List<InfluxRow> query(String query);
 
@@ -69,6 +71,17 @@ public interface InfluxDBRepository {
      * Write point to database
      *
      * @param influxPoint Point to write
+     * @throws UnexpectedConditionException when an error occurs
      */
-    void write(InfluxPoint influxPoint);
+    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
+
+    /**
+     * create a query creator on this repository
+     *
+     * @return the query creator for this repository
+     */
+    FilterCriteriaQueryCreator createQueryCreator();
+
+    record InfluxRow(Instant time, String itemName, Object value) {
+    }
 }

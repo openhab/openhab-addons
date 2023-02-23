@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes;
-import org.openhab.binding.digitalstrom.internal.lib.climate.constants.OperationModes;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.BaseSensorValues;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.AssignedSensors;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.SensorValues;
@@ -45,7 +43,7 @@ import com.google.gson.JsonObject;
  * digitalSTROM-API based on dSS-Version higher then 1.14.5.
  * digitalSTROM documentation can be found at http://developer.digitalstrom.org/Architecture/v1.1/dss-json.pdf
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  *
  * @author Michael Ochel - add missing java-doc, update digitalSTROM-JSON-API as far as possible to the pdf version from
  *         June 19, 2014 and add checkConnection method and ALL_METERS constant

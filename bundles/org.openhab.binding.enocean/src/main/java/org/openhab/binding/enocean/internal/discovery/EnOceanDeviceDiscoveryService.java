@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,9 +109,9 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
         String enoceanId = HexUtils.bytesToHex(eep.getSenderId());
 
-        bridgeHandler.getThing().getThings().stream()
-                .filter(t -> t.getConfiguration().getProperties().getOrDefault(PARAMETER_ENOCEANID, EMPTYENOCEANID)
-                        .toString().equals(enoceanId))
+        bridgeHandler
+                .getThing().getThings().stream().filter(t -> t.getConfiguration().getProperties()
+                        .getOrDefault(PARAMETER_ENOCEANID, EMPTYENOCEANID).toString().equals(enoceanId))
                 .findFirst().ifPresentOrElse(t -> {
                     // If repeated learn is not allowed => send teach out
                     // otherwise do nothing

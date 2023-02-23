@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.configuration.ICloudDeviceThingConfiguration;
-import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
+import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -36,6 +36,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -51,13 +53,14 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Helped with testing and feedback
  * @author Gaël L'hopital - Added low battery
+ * @author Simon Spielmann - Rework for new iCloud API
  *
  */
 @NonNullByDefault
 public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
+
     private @Nullable String deviceId;
-    private @Nullable ICloudAccountBridgeHandler icloudAccount;
 
     public ICloudDeviceHandler(Thing thing) {
         super(thing);
@@ -67,7 +70,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
-            if (deviceInformationRecord.getDeviceStatus() == 200 || deviceInformationRecord.getDeviceStatus() == 203) {
+            if (deviceInformationRecord.getDeviceStatus() == 200) {
                 updateStatus(ONLINE);
             } else {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
@@ -91,35 +94,42 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        Object bridgeStatus = (bridge == null) ? null : bridge.getStatus();
-        logger.debug("initializeThing thing [{}]; bridge status: [{}]", getThing().getUID(), bridgeStatus);
-
         ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
 
-        ICloudAccountBridgeHandler handler = getIcloudAccount();
-        if (handler != null) {
-            refreshData();
-        } else {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "Bridge not found");
-        }
-    }
-
-    private void refreshData() {
-        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        Bridge bridge = getBridge();
         if (bridge != null) {
-            bridge.refreshData();
+            ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
+            if (handler != null) {
+                handler.registerListener(this);
+                if (bridge.getStatus() == ThingStatus.ONLINE) {
+                    handler.refreshData();
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                        "Bridge handler is not configured");
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not configured");
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+        this.logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
-        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.debug("No bridge found, ignoring command");
+            this.logger.debug("No bridge found, ignoring command");
+            return;
+        }
+
+        ICloudAccountBridgeHandler bridgeHandler = (ICloudAccountBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            this.logger.debug("No bridge handler found, ignoring command");
             return;
         }
 
@@ -129,27 +139,30 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                 try {
                     final String deviceId = this.deviceId;
                     if (deviceId == null) {
-                        logger.debug("Can't send Find My Device request, because deviceId is null!");
+                        this.logger.debug("Can't send Find My Device request, because deviceId is null!");
                         return;
                     }
-                    bridge.findMyDevice(deviceId);
-                } catch (IOException e) {
-                    logger.warn("Unable to execute find my device request", e);
+                    bridgeHandler.findMyDevice(deviceId);
+                } catch (IOException | InterruptedException e) {
+                    this.logger.warn("Unable to execute find my device request", e);
                 }
                 updateState(FIND_MY_PHONE, OnOffType.OFF);
             }
         }
 
         if (command instanceof RefreshType) {
-            bridge.refreshData();
+            bridgeHandler.refreshData();
         }
     }
 
     @Override
     public void dispose() {
-        ICloudAccountBridgeHandler bridge = getIcloudAccount();
+        Bridge bridge = getBridge();
         if (bridge != null) {
-            bridge.unregisterListener(this);
+            ThingHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof ICloudAccountBridgeHandler) {
+                ((ICloudAccountBridgeHandler) bridgeHandler).unregisterListener(this);
+            }
         }
         super.dispose();
     }
@@ -169,7 +182,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
             List<ICloudDeviceInformation> deviceInformationList) {
-        logger.debug("Device: [{}]", deviceId);
+        this.logger.debug("Device: [{}]", this.deviceId);
 
         for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getId();
@@ -195,22 +208,5 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
 
         return dateTime;
-    }
-
-    private @Nullable ICloudAccountBridgeHandler getIcloudAccount() {
-        if (icloudAccount == null) {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                return null;
-            }
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof ICloudAccountBridgeHandler) {
-                icloudAccount = (ICloudAccountBridgeHandler) handler;
-                icloudAccount.registerListener(this);
-            } else {
-                return null;
-            }
-        }
-        return icloudAccount;
     }
 }

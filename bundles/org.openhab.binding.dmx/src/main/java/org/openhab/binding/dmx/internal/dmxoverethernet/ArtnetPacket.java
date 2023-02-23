@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dmx.internal.dmxoverethernet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dmx.internal.multiverse.Universe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ArtnetPacket extends DmxOverEthernetPacket {
     public static final int ARTNET_MAX_PACKET_LEN = 530;
     public static final int ARTNET_MAX_PAYLOAD_SIZE = 512;

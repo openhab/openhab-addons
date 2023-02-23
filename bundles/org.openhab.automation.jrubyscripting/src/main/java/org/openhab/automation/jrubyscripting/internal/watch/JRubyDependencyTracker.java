@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.jrubyscripting.internal.watch;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.jrubyscripting.internal.JRubyScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
-import org.openhab.core.service.AbstractWatchService;
+import org.openhab.core.service.WatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Tracks Ruby dependencies
  *
  * @author Cody Cutrer - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
 @NonNullByDefault
 public class JRubyDependencyTracker implements ScriptDependencyTracker {
@@ -40,29 +42,27 @@ public class JRubyDependencyTracker implements ScriptDependencyTracker {
     private final BidiSetBag<String, String> scriptToLibs = new BidiSetBag<>();
 
     private final JRubyScriptEngineFactory scriptEngineFactory;
-    private final List<AbstractWatchService> dependencyWatchServices = new ArrayList<>();
+    private final List<JRubyWatchService> dependencyWatchServices = new ArrayList<>();
+    private final WatchService watchService;
 
-    public JRubyDependencyTracker(final JRubyScriptEngineFactory scriptEngineFactory) {
+    public JRubyDependencyTracker(final WatchService watchService, final JRubyScriptEngineFactory scriptEngineFactory) {
+        this.watchService = watchService;
         this.scriptEngineFactory = scriptEngineFactory;
     }
 
     public void activate() {
         String gemHome = scriptEngineFactory.getGemHome();
         if (!gemHome.isEmpty()) {
-            dependencyWatchServices.add(new JRubyGemWatchService(gemHome, this));
+            dependencyWatchServices.add(new JRubyGemWatchService(watchService, gemHome, this));
         }
-        for (String libPath : scriptEngineFactory.getRubyLibPaths()) {
-            dependencyWatchServices.add(new JRubyLibWatchService(libPath, this));
-        }
-        for (AbstractWatchService dependencyWatchService : dependencyWatchServices) {
-            dependencyWatchService.activate();
-        }
+        List<Path> libPaths = scriptEngineFactory.getRubyLibPaths().stream().map(Path::of).toList();
+        dependencyWatchServices.add(new JRubyLibWatchService(watchService, libPaths, this));
+
+        dependencyWatchServices.forEach(JRubyWatchService::activate);
     }
 
     public void deactivate() {
-        for (AbstractWatchService dependencyWatchService : dependencyWatchServices) {
-            dependencyWatchService.deactivate();
-        }
+        dependencyWatchServices.forEach(JRubyWatchService::deactivate);
         dependencyWatchServices.clear();
     }
 

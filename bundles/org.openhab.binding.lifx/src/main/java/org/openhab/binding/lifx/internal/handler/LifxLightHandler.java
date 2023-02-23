@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -182,7 +184,7 @@ public class LifxLightHandler extends BaseThingHandler {
             updateStateIfChanged(CHANNEL_BRIGHTNESS, hsb.getBrightness());
             updateStateIfChanged(CHANNEL_TEMPERATURE,
                     kelvinToPercentType(updateColor.getKelvin(), features.getTemperatureRange()));
-            updateStateIfChanged(CHANNEL_ABS_TEMPERATURE, new DecimalType(updateColor.getKelvin()));
+            updateStateIfChanged(CHANNEL_ABS_TEMPERATURE, new QuantityType(updateColor.getKelvin(), Units.KELVIN));
 
             updateZoneChannels(powerState, colors);
         }
@@ -241,7 +243,8 @@ public class LifxLightHandler extends BaseThingHandler {
                 updateStateIfChanged(CHANNEL_COLOR_ZONE + i, updateColor.getHSB());
                 updateStateIfChanged(CHANNEL_TEMPERATURE_ZONE + i,
                         kelvinToPercentType(updateColor.getKelvin(), features.getTemperatureRange()));
-                updateStateIfChanged(CHANNEL_ABS_TEMPERATURE_ZONE + i, new DecimalType(updateColor.getKelvin()));
+                updateStateIfChanged(CHANNEL_ABS_TEMPERATURE_ZONE + i,
+                        new QuantityType(updateColor.getKelvin(), Units.KELVIN));
             }
         }
     }
@@ -558,8 +561,9 @@ public class LifxLightHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_ABS_TEMPERATURE:
             case CHANNEL_TEMPERATURE:
-                if (command instanceof DecimalType) {
-                    return () -> handleTemperatureCommand((DecimalType) command);
+                if (command instanceof DecimalType || (command instanceof QuantityType
+                        && ((QuantityType) command).toInvertibleUnit(Units.KELVIN) != null)) {
+                    return () -> handleTemperatureCommand(command);
                 } else if (command instanceof IncreaseDecreaseType) {
                     return () -> handleIncreaseDecreaseTemperatureCommand((IncreaseDecreaseType) command);
                 }
@@ -599,8 +603,9 @@ public class LifxLightHandler extends BaseThingHandler {
                 try {
                     if (channelUID.getId().startsWith(CHANNEL_ABS_TEMPERATURE_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_ABS_TEMPERATURE_ZONE, ""));
-                        if (command instanceof DecimalType) {
-                            return () -> handleTemperatureCommand((DecimalType) command, zoneIndex);
+                        if (command instanceof DecimalType || (command instanceof QuantityType
+                                && ((QuantityType) command).toInvertibleUnit(Units.KELVIN) != null)) {
+                            return () -> handleTemperatureCommand(command, zoneIndex);
                         }
                     } else if (channelUID.getId().startsWith(CHANNEL_COLOR_ZONE)) {
                         int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_COLOR_ZONE, ""));
@@ -670,14 +675,14 @@ public class LifxLightHandler extends BaseThingHandler {
         }
     }
 
-    private void handleTemperatureCommand(DecimalType temperature) {
+    private void handleTemperatureCommand(Command temperature) {
         HSBK newColor = getLightStateForCommand().getColor();
         newColor.setSaturation(PercentType.ZERO);
         newColor.setKelvin(commandToKelvin(temperature, features.getTemperatureRange()));
         getLightStateForCommand().setColor(newColor);
     }
 
-    private void handleTemperatureCommand(DecimalType temperature, int zoneIndex) {
+    private void handleTemperatureCommand(Command temperature, int zoneIndex) {
         HSBK newColor = getLightStateForCommand().getColor(zoneIndex);
         newColor.setSaturation(PercentType.ZERO);
         newColor.setKelvin(commandToKelvin(temperature, features.getTemperatureRange()));

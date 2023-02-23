@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Collections;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,24 +61,17 @@ public class NanoleafLayoutTest {
         assertNotNull(result, "Should be able to render the layout: " + fileName);
         assertTrue(result.length > 0, "Should get content back, but got " + result.length + "bytes");
 
-        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-r--r--");
-        FileAttribute<Set<PosixFilePermission>> attributes = PosixFilePermissions.asFileAttribute(permissions);
-        Path outFile = Files.createTempFile(temporaryDirectory, fileName.replace(".json", ""), ".png", attributes);
+        Path outFile = Files.createTempFile(temporaryDirectory, fileName.replace(".json", ""), ".png");
         Files.write(outFile, result);
 
         // For inspecting images on own computer
-        // Path permanentOutFile = Files.createFile(Path.of("/tmp", fileName.replace(".json", "") + ".png"),
-        // attributes);
+        // Path permanentOutFile = Files.createFile(Path.of("/tmp", fileName.replace(".json", "") + ".png"));
         // Files.write(permanentOutFile, result);
     }
 
-    private class TestPanelState extends PanelState {
+    private class TestPanelState implements PanelState {
         private final HSBType testColors[] = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
                 HSBType.fromRGB(120, 90, 30), HSBType.fromRGB(200, 150, 60) };
-
-        public TestPanelState() {
-            super(Collections.emptyList());
-        }
 
         @Override
         public HSBType getHSBForPanel(Integer panelId) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,11 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.openhab.binding.weathercompany.internal.config.WeatherCompanyBridgeConfig;
+import org.openhab.binding.weathercompany.internal.util.ExceptionUtils;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -58,7 +58,7 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 cancelValidateApiKeyJob();
             } catch (IOException e) {
-                Throwable rootcause = ExceptionUtils.getRootCause(e);
+                Throwable rootcause = ExceptionUtils.getRootThrowable(e);
                 if (rootcause instanceof HttpResponseException
                         && rootcause.getMessage().contains("Authentication challenge without")) {
                     logger.debug("Bridge: HttpResponseException: API key is not valid");

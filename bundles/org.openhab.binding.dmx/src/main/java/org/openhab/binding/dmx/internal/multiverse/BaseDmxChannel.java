@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     public static final int MIN_CHANNEL_ID = 1;
     public static final int MAX_CHANNEL_ID = 512;
@@ -75,7 +77,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     /**
      * get DMX universe
      *
-     * @return an integer for the DMX universe
+     * @return a integer for the DMX universe
      */
     public int getUniverseId() {
         return universeId;
@@ -91,14 +93,13 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
     }
 
     @Override
-    public int compareTo(BaseDmxChannel otherDmxChannel) {
+    public int compareTo(@Nullable BaseDmxChannel otherDmxChannel) {
         if (otherDmxChannel == null) {
             return -1;
         }
-        int universeCompare = Integer.valueOf(getUniverseId())
-                .compareTo(Integer.valueOf(otherDmxChannel.getUniverseId()));
+        int universeCompare = Integer.valueOf(getUniverseId()).compareTo(otherDmxChannel.getUniverseId());
         if (universeCompare == 0) {
-            return Integer.valueOf(getChannelId()).compareTo(Integer.valueOf(otherDmxChannel.getChannelId()));
+            return Integer.compare(getChannelId(), otherDmxChannel.getChannelId());
         } else {
             return universeCompare;
         }
@@ -125,9 +126,9 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
             Matcher channelMatch = CHANNEL_PATTERN.matcher(singleDmxChannelString);
             if (channelMatch.matches()) {
                 final int universeId = (channelMatch.group(1) == null) ? defaultUniverseId
-                        : Integer.valueOf(channelMatch.group(1));
-                dmxChannelWidth = channelMatch.group(3).equals("") ? 1 : Integer.valueOf(channelMatch.group(3));
-                dmxChannelId = Integer.valueOf(channelMatch.group(2));
+                        : Integer.parseInt(channelMatch.group(1));
+                dmxChannelWidth = channelMatch.group(3).equals("") ? 1 : Integer.parseInt(channelMatch.group(3));
+                dmxChannelId = Integer.parseInt(channelMatch.group(2));
                 LOGGER.trace("parsed channel string {} to universe {}, id {}, width {}", singleDmxChannelString,
                         universeId, dmxChannelId, dmxChannelWidth);
                 IntStream.range(dmxChannelId, dmxChannelId + dmxChannelWidth)

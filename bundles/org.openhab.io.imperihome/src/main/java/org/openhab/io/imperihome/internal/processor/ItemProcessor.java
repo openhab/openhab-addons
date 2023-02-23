@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
@@ -58,6 +57,7 @@ import org.openhab.io.imperihome.internal.model.device.WindDevice;
 import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.util.DigestUtil;
+import org.openhab.io.imperihome.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,7 +227,7 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     }
 
     private boolean isInverted(Map<TagType, List<String>> issTags) {
-        return issTags.containsKey(TagType.INVERT) && BooleanUtils.toBoolean(issTags.get(TagType.INVERT).get(0));
+        return issTags.containsKey(TagType.INVERT) && StringUtils.toBoolean(issTags.get(TagType.INVERT).get(0));
     }
 
     private void setDeviceRoom(AbstractDevice device, Map<TagType, List<String>> issTags) {

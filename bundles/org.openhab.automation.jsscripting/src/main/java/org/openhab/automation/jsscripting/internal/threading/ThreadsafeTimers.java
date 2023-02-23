@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.time.temporal.Temporal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
@@ -35,7 +36,7 @@ import org.openhab.core.scheduler.SchedulerTemporalAdjuster;
  *         Threadsafe reimplementation of the timer creation methods of {@link ScriptExecution}
  */
 public class ThreadsafeTimers {
-    private final Object lock;
+    private final Lock lock;
     private final Scheduler scheduler;
     private final ScriptExecution scriptExecution;
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
@@ -43,7 +44,7 @@ public class ThreadsafeTimers {
     private AtomicLong lastId = new AtomicLong();
     private String identifier = "noIdentifier";
 
-    public ThreadsafeTimers(Object lock, ScriptExecution scriptExecution, Scheduler scheduler) {
+    public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
         this.lock = lock;
         this.scheduler = scheduler;
         this.scriptExecution = scriptExecution;
@@ -79,8 +80,12 @@ public class ThreadsafeTimers {
      */
     public Timer createTimer(@Nullable String identifier, ZonedDateTime instant, Runnable closure) {
         return scriptExecution.createTimer(identifier, instant, () -> {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 closure.run();
+            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+                        // deadlocks
+                lock.unlock();
             }
         });
     }
@@ -108,12 +113,16 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay, Object... args) {
+    public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 callback.run();
                 idSchedulerMapping.remove(id);
+            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+                        // deadlocks
+                lock.unlock();
             }
         }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
@@ -157,11 +166,15 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay, Object... args) {
+    public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 callback.run();
+            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+                        // deadlocks
+                lock.unlock();
             }
         }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);

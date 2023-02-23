@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.automation.jsscripting.internal;
+
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
@@ -44,7 +46,7 @@ public class JSScriptServiceUtil {
         return scriptExecution;
     }
 
-    public JSRuntimeFeatures getJSRuntimeFeatures(Object lock) {
+    public JSRuntimeFeatures getJSRuntimeFeatures(Lock lock) {
         return new JSRuntimeFeatures(lock, this);
     }
 }
