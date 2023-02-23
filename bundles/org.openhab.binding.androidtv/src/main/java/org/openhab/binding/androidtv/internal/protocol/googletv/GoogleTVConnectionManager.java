@@ -821,10 +821,6 @@ public class GoogleTVConnectionManager {
                 setStatus(false, "PIN Process Incomplete");
                 logger.debug("GoogleTV PIN Process Incomplete");
                 reconnectTaskCancel(true);
-                ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
-                if (keepAliveJob != null) {
-                    keepAliveJob.cancel(true);
-                }
                 startChildConnectionManager(this.config.port + 1, PIN_MODE);
             } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
                 logger.debug("Shim cert_unknown I/O error while reading from stream: {}", e.getMessage());
@@ -929,6 +925,7 @@ public class GoogleTVConnectionManager {
         logger.trace("Sending GoogleTV keepalive query");
         String keepalive = GoogleTVRequest.encodeMessage(GoogleTVRequest.keepAlive(request));
         sendCommand(new GoogleTVCommand(keepalive));
+        reconnectTaskSchedule();
         if (this.periodicUpdate <= 1) {
             sendPeriodicUpdate();
             this.periodicUpdate = 20;
@@ -944,6 +941,7 @@ public class GoogleTVConnectionManager {
      */
     private void reconnectTaskSchedule() {
         synchronized (keepAliveReconnectLock) {
+            logger.trace("Scheduling Reconnect Job for {}", KEEPALIVE_TIMEOUT_SECONDS);
             keepAliveReconnectJob = scheduler.schedule(this::keepAliveTimeoutExpired, KEEPALIVE_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
         }
@@ -976,6 +974,16 @@ public class GoogleTVConnectionManager {
         reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
 
+    public void finishPinProcess() {
+        if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
+            disconnect(true);
+            connectionManager.finishPinProcess();
+        } else if ((config.mode.equals(DEFAULT_MODE)) && (!config.shim)) {
+            childConnectionManager.dispose();
+            reconnect();
+        }
+    }
+
     public void sendCommand(GoogleTVCommand command) {
         if ((!config.shim) && (!command.toString().equals(""))) {
             int length = command.toString().length();
@@ -1002,188 +1010,131 @@ public class GoogleTVConnectionManager {
                 // This probably needs to be handled separately for remote controls TODO
                 switch (command.toString()) {
                     case "KEY_UP":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202ce01")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202ce01")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408131003")));
                         break;
                     case "KEY_DOWN":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d801")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d801")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408141003")));
                         break;
                     case "KEY_RIGHT":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d401")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d401")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408161003")));
                         break;
                     case "KEY_LEFT":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d201")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d201")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408151003")));
                         break;
                     case "KEY_ENTER":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202c205")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202c205")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408171003")));
                         break;
                     case "KEY_HOME":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d802")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d802")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408031003")));
                         break;
                     case "KEY_BACK":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202bc02")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202bc02")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408041003")));
                         break;
                     case "KEY_MENU":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a280132029602")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a280232029602")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("")));
                         break;
                     case "KEY_PLAYPAUSE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202F604")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202F604")));
                         break;
                     case "KEY_REWIND":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202D002")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202D002")));
                         break;
                     case "KEY_FORWARD":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202A003")));
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
                         break;
                     case "KEY_UP_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202ce01")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408131001")));
                         break;
                     case "KEY_DOWN_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d801")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408141001")));
                         break;
                     case "KEY_RIGHT_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d401")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408161001")));
                         break;
                     case "KEY_LEFT_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d201")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408151001")));
                         break;
                     case "KEY_ENTER_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202c205")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408171001")));
                         break;
                     case "KEY_HOME_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202d802")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408031001")));
                         break;
                     case "KEY_BACK_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202bc02")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408041001")));
                         break;
                     case "KEY_MENU_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a280132029602")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("")));
                         break;
                     case "KEY_PLAYPAUSE_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202F604")));
                         break;
                     case "KEY_REWIND_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202D002")));
                         break;
                     case "KEY_FORWARD_PRESS":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28013202A003")));
                         break;
                     case "KEY_UP_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202ce01")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408131002")));
                         break;
                     case "KEY_DOWN_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d801")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408141002")));
                         break;
                     case "KEY_RIGHT_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d401")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408161002")));
                         break;
                     case "KEY_LEFT_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d201")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408151002")));
                         break;
                     case "KEY_ENTER_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202c205")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408171002")));
                         break;
                     case "KEY_HOME_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202d802")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408031002")));
                         break;
                     case "KEY_BACK_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202bc02")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408041002")));
                         break;
                     case "KEY_MENU_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a280232029602")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("")));
                         break;
                     case "KEY_PLAYPAUSE_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202F604")));
                         break;
                     case "KEY_REWIND_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202D002")));
                         break;
                     case "KEY_FORWARD_RELEASE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08e907120c08141001200a28023202A003")));
                         break;
                     case "KEY_POWER":
-                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08e907120808141005201e401e")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
                         break;
                     case "KEY_POWERON":
-                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08e907120808141005201e4010")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408101003")));
                         break;
                     case "KEY_GOOGLE":
-                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08e907120808141005201e401f")));
                         break;
                     case "KEY_VOLUP":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08f007120c08031208080110031a020102")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408181003")));
                         break;
                     case "KEY_VOLDOWN":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08f007120c08031208080110011a020102")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408191003")));
+                        break;
+                    case "KEY_VOLUP_PRESS":
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408181001")));
+                        break;
+                    case "KEY_VOLDOWN_PRESS":
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408191001")));
+                        break;
+                    case "KEY_VOLUP_RELEASE":
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408181002")));
+                        break;
+                    case "KEY_VOLDOWN_RELEASE":
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408191002")));
                         break;
                     case "KEY_MUTE":
-                        sendCommand(new GoogleTVCommand(
-                                GoogleTVRequest.encodeMessage("08f007120c08031208080110021a020102")));
+                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204085b1003")));
                         break;
                     case "KEY_SUBMIT":
-                        sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08e9071209081410012001320138")));
                         break;
                 }
                 if (command.toString().length() == 5) {
                     // Account for KEY_(ASCII Character)
-                    String keyPress = "08ec07120708011201"
-                            + GoogleTVRequest.decodeMessage(new String("" + command.toString().charAt(4))) + "1801";
+                    String keyPress = "aa01071a0512031a01"
+                            + GoogleTVRequest.decodeMessage(new String("" + command.toString().charAt(4)));
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(keyPress)));
                 } else {
                     logger.trace("Unknown Keypress: {}", command.toString());
@@ -1231,11 +1182,12 @@ public class GoogleTVConnectionManager {
             }
         } else if (CHANNEL_KEYBOARD.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                String entry = GoogleTVRequest.keyboardEntry(command.toString());
-                logger.trace("Keyboard Entry {}", entry);
-                String message = GoogleTVRequest.encodeMessage(entry);
-                sendCommand(new GoogleTVCommand(message));
-                sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08e9071209081410012001320138")));
+                String keyPress = "";
+                for (int i = 0; i < command.toString().length(); i++) {
+                    keyPress = "aa01071a0512031a01"
+                            + GoogleTVRequest.decodeMessage(new String("" + command.toString().charAt(i)));
+                    sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(keyPress)));
+                }
             }
         }
     }

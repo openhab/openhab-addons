@@ -63,19 +63,38 @@ public class GoogleTVMessageParser {
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
             } else if (msg.equals("1200")) {
+                // Second message on connection from GTV
+                // Login successful?
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
                 callback.setLoggedIn(true);
             } else if (msg.startsWith("92032108021002")) {
+                // Third message on connection from GTV
+                // Also sent on power state change (to ON only unless keypress triggers)
                 // 92032108021002 1a 11 534849454c4420416e64726f6964205456 20 02 2800 30 0f380e4000
                 // ------------------LEN-SHIELD Android TV
+            } else if (msg.startsWith("92031a08")) {
+                // 92031a08 f304 10 09 1a 11 534849454c4420416e64726f6964205456 2001
+                // 92031a08 8205 10 09 1a 11 534849454c4420416e64726f6964205456 2001
+                // -----------------------LEN-SHIELD Android TV
+            } else if (msg.startsWith("080210c801ca02")) {
+                // PIN Process Successful
+                logger.trace("PIN Process Successful!");
+                callback.finishPinProcess();
             } else if (msg.startsWith("c2020208")) {
                 // Power State
-		// c202020800 - OFF
-		// c202020801 - ON
+                // c202020800 - OFF
+                // c202020801 - ON
             } else if (msg.startsWith("42")) {
                 // Keepalive request
                 callback.sendKeepAlive(msg);
+            } else if (msg.startsWith("a201210a1f62")) {
+                // Current app name. Sent on keypress and power change.
+                // 01210a1f62 1d 636f6d2e676f6f676c652e616e64726f69642e796f75747562652e7476
+                // -----------LEN-com.google.android.youtube.tv
+                // a201210a1f62 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
+                // -------------LEN-com.google.android.tvlauncher
+
             } else {
                 logger.debug("Unknown payload received. {} {}", length, msg);
             }
