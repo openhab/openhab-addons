@@ -81,6 +81,9 @@ public class GoogleTVMessageParser {
                 // PIN Process Successful
                 logger.trace("PIN Process Successful!");
                 callback.finishPinProcess();
+            } else if (msg.startsWith("080210c801")) {
+                // 080210c801a201081204080310061801
+                // 080210c801fa0100
             } else if (msg.startsWith("c2020208")) {
                 // Power State
                 // c202020800 - OFF

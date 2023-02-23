@@ -63,9 +63,7 @@ public class GoogleTVRequest {
             String len1 = GoogleTVRequest.fixMessage(Integer.toHexString(length + 2));
             String len2 = GoogleTVRequest.fixMessage(Integer.toHexString(length));
             String reply = "080210c801c202" + len1 + "0a" + len2 + pin;
-            String replyLength = GoogleTVRequest.fixMessage(Integer.toHexString(reply.length() / 2));
-            String finalReply = replyLength + reply;
-            return finalReply;
+            return reply;
         }
     }
 

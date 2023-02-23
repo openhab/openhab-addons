@@ -478,9 +478,9 @@ public class GoogleTVConnectionManager {
             this.periodicUpdate = 20;
         } else if (config.mode.equals(PIN_MODE)) {
             // Send app name and device name
-            sendCommand(new GoogleTVCommand(GoogleTVRequest.loginRequest(1)));
+            sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(1))));
             // Unknown but required
-            sendCommand(new GoogleTVCommand(GoogleTVRequest.loginRequest(2)));
+            sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(2))));
             // Don't end pin request yet, let user send REQUEST via PINCODE channel
         }
     }
@@ -1148,11 +1148,13 @@ public class GoogleTVConnectionManager {
                     } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
                         if (!isLoggedIn) {
                             if (command.toString().equals("REQUEST")) {
-                                sendCommand(new GoogleTVCommand(GoogleTVRequest.pinRequest(command.toString())));
+                                sendCommand(new GoogleTVCommand(
+                                        GoogleTVRequest.encodeMessage(GoogleTVRequest.pinRequest(command.toString()))));
                             } else {
                                 this.pinHash = GoogleTVUtils.validatePIN(command.toString(), androidtvPKI.getCert(),
                                         shimServerChain[0]);
-                                sendCommand(new GoogleTVCommand(GoogleTVRequest.pinRequest(this.pinHash)));
+                                sendCommand(new GoogleTVCommand(
+                                        GoogleTVRequest.encodeMessage(GoogleTVRequest.pinRequest(this.pinHash))));
                             }
                         }
                     } else if ((config.mode.equals(PIN_MODE)) && (config.shim)) {
