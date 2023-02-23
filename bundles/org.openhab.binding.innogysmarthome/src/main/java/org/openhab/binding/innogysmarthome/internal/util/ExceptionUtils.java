@@ -27,7 +27,7 @@ public class ExceptionUtils {
 
     public static Throwable getRootThrowable(Throwable throwable) {
         List<Throwable> list = new ArrayList<>();
-        while (throwable != null && !list.contains(throwable)) {
+        while (!list.contains(throwable)) {
             list.add(throwable);
             Throwable throwableLocal = throwable.getCause();
             if (throwableLocal != null) {
