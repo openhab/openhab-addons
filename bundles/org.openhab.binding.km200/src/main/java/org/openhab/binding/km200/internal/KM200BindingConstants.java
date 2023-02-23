@@ -25,8 +25,6 @@ import org.openhab.core.thing.ThingTypeUID;
 public class KM200BindingConstants {
 
     public static final String BINDING_ID = "km200";
-    public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:km200:config";
-    public static final String CONFIG_DESCRIPTION_URI_THING = "thing-type:km200:config";
 
     // Bridge UID
     public static final ThingTypeUID THING_TYPE_KMDEVICE = new ThingTypeUID(BINDING_ID, "kmdevice");
