@@ -340,7 +340,7 @@
 /bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinkrouter/ @olivierkeke
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
-/bundles/org.openhab.binding.tr064/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.twitter/ @computergeek1507
 /bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
