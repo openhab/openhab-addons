@@ -455,10 +455,29 @@ public class GoogleTVConnectionManager {
             Thread.currentThread().interrupt();
             return;
         } catch (IOException e) {
-            setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
-            logger.info("Error opening GoogleTV SSL connection: {}", e.getMessage());
-            disconnect(false);
-            scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
+            if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
+                setStatus(false, "PIN Process Incomplete");
+                logger.debug("GoogleTV PIN Process Incomplete");
+                reconnectTaskCancel(true);
+                startChildConnectionManager(this.config.port + 1, PIN_MODE);
+            } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
+                logger.debug("Shim cert_unknown I/O error while connecting: {}", e.getMessage());
+                Socket shimServerSocket = this.shimServerSocket;
+                if (shimServerSocket != null) {
+                    try {
+                        shimServerSocket.close();
+                    } catch (IOException ex) {
+                        logger.debug("Error closing GoogleTV SSL socket: {}", ex.getMessage());
+                    }
+                    this.shimServerSocket = null;
+                }
+
+            } else {
+                setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
+                logger.info("Error opening GoogleTV SSL connection: {}", e.getMessage());
+                disconnect(false);
+                scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
+            }
             return;
         }
 
