@@ -227,7 +227,6 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
             EvohomeApiClient localApiCLient = apiClient;
             if (localApiCLient != null) {
                 localApiCLient.update();
-                apiClient = localApiCLient;
             }
             updateAccountStatus(ThingStatus.ONLINE);
             updateThings();
