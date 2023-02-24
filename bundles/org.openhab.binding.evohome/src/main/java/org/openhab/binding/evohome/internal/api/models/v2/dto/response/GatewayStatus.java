@@ -10,41 +10,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the temperature control system status
+ * Response model for the gateway status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class TemperatureControlSystemStatus {
+public class GatewayStatus {
 
-    @SerializedName("systemId")
-    private String systemId;
+    @SerializedName("gatewayId")
+    private String gatewayId;
 
-    @SerializedName("systemModeStatus")
-    private SystemModeStatus mode;
-
-    @SerializedName("zones")
-    private List<ZoneStatus> zones;
+    @SerializedName("temperatureControlSystems")
+    private List<TemperatureControlSystemStatus> temperatureControlSystems;
 
     @SerializedName("activeFaults")
     private List<ActiveFault> activeFaults;
 
-    public String getSystemId() {
-        return systemId;
+    public List<TemperatureControlSystemStatus> getTemperatureControlSystems() {
+        return temperatureControlSystems;
     }
 
-    public SystemModeStatus getMode() {
-        return mode;
+    public boolean hasActiveFaults() {
+        return !activeFaults.isEmpty();
     }
 
-    public List<ZoneStatus> getZones() {
-        return zones;
+    public ActiveFault getActiveFault(int index) {
+        return activeFaults.get(index);
     }
 }

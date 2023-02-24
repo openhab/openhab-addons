@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the system mode status
+ * Response model for the temperature status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class SystemModeStatus {
+public class TemperatureStatus {
 
-    @SerializedName("mode")
-    private String mode;
+    @SerializedName("temperature")
+    private double temperature;
 
-    @SerializedName("isPermanent")
-    private boolean isPermanent;
+    @SerializedName("isAvailable")
+    private boolean isAvailable;
 
-    public String getMode() {
-        return mode;
+    public double getTemperature() {
+        return temperature;
     }
 }

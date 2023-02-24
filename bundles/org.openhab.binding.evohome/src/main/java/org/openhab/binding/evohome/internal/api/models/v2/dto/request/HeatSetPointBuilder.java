@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.request;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
 /**
  * Builder for heat set point API requests

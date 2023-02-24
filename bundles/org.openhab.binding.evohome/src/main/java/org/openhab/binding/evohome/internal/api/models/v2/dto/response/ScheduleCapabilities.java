@@ -10,32 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the mode
+ * Response model for the schedule capabilities
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class Mode {
+public class ScheduleCapabilities {
 
-    @SerializedName("systemMode")
-    private String systemMode;
+    @SerializedName("maxSwitchpointsPerDay")
+    private int maxSwitchpointsPerDay;
 
-    @SerializedName("canBePermanent")
-    private boolean canBePermanent;
+    @SerializedName("minSwitchpointsPerDay")
+    private int minSwitchpointsPerDay;
 
-    @SerializedName("canBeTemporary")
-    private boolean canBeTemporary;
-
-    @SerializedName("timingMode")
-    private String timingMode;
-
-    @SerializedName("maxDuration")
-    private String maxDuration;
+    @SerializedName("setpointValueResolution")
+    private double setpointValueResolution;
 
     @SerializedName("timingResolution")
     private String timingResolution;

@@ -10,31 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
-
-import java.util.List;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the heat set point capabilities
+ * Response model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class HeatSetpointCapabilities {
+public class Mode {
 
-    @SerializedName("maxHeatSetpoint")
-    private double maxHeatSetpoint;
+    @SerializedName("systemMode")
+    private String systemMode;
 
-    @SerializedName("minHeatSetpoint")
-    private double minHeatSetpoint;
+    @SerializedName("canBePermanent")
+    private boolean canBePermanent;
 
-    @SerializedName("valueResolution")
-    private double valueResolution;
+    @SerializedName("canBeTemporary")
+    private boolean canBeTemporary;
 
-    @SerializedName("allowedSetpointModes")
-    private List<String> allowedSetpointModes;
+    @SerializedName("timingMode")
+    private String timingMode;
 
     @SerializedName("maxDuration")
     private String maxDuration;

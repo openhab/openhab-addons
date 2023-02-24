@@ -10,25 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 
 /**
- * Response model for the temperature status
+ * Alias for a list of location statuses
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class TemperatureStatus {
-
-    @SerializedName("temperature")
-    private double temperature;
-
-    @SerializedName("isAvailable")
-    private boolean isAvailable;
-
-    public double getTemperature() {
-        return temperature;
-    }
+public class LocationsStatus extends ArrayList<LocationStatus> {
+    private static final long serialVersionUID = 1L;
 }
