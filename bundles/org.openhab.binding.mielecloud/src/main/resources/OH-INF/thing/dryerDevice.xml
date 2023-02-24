@@ -42,6 +42,7 @@
 		</channels>
 
 		<properties>
+			<property name="thingTypeVersion">1</property>
 			<property name="vendor">Miele</property>
 		</properties>
 
