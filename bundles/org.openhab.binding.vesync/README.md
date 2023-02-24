@@ -5,12 +5,12 @@ Its current support is for the Air Purifiers & Humidifer's branded as Levoit whi
 ### Verified Models
 
 Air Filtering models supported are Core300S, Core400S.
-Air Humidifier models supported are Dual 200S, Classic 300S, 600S.
+Air Humidifier models supported are Dual 200S, Classic 300S, 600S, OasisMist Smart Humidifier
 
 ### Awaiting User Verification Models
 
 Air Filtering models supported are Core200S and Core600S.
-Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks), OasisMist Smart Humidifier
+Air Humidifier Classic 200S (Same as 300S without the nightlight from initial checks)
 
 ## Supported Things
 
