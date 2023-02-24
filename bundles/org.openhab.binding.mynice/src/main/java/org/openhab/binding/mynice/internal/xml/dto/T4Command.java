@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public enum T4Command {
 
     public static T4Command fromCode(String commandCode) {
         return Stream.of(T4Command.values()).filter(command -> command.name().equalsIgnoreCase(commandCode)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown T4 command code (" + commandCode + ")"));
+                .orElseThrow(() -> new IllegalArgumentException("Unknown T4 command code (%s)".formatted(commandCode)));
     }
 
     public static List<T4Command> fromBitmask(int bitmask) {
