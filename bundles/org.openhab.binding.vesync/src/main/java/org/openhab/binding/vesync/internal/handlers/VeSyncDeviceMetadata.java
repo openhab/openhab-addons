@@ -38,17 +38,17 @@ public class VeSyncDeviceMetadata {
      * The name of the family the set of ID's represents.
      *
      */
-    public String deviceFamilyName;
+    final public String deviceFamilyName;
 
     /**
      * The version id, that represents the specific model of the device
      */
-    public List<String> deviceGenerations;
+    final public List<String> deviceGenerations;
 
     /**
      * Device Types not following the standard 3 segment convention
      */
-    public List<String> nonStandardIds;
+    final public List<String> nonStandardIds;
 
     public boolean deviceTypeIdMatches(final String deviceType, final String[] deviceTypeSegments) {
         if (nonStandardIds.contains(deviceType)) {
