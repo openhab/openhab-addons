@@ -152,6 +152,7 @@
 		<item-type>String</item-type>
 		<label>Floodlight</label>
 		<description>State of the floodlight (On/Off/Auto)</description>
+		<category>Lightbulb</category>
 		<state pattern="%s">
 			<options>
 				<option value="ON">On</option>
