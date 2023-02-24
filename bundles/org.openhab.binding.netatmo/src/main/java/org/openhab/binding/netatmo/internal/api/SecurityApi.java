@@ -128,7 +128,7 @@ public class SecurityApi extends RestManager {
     }
 
     public void setPersonAwayStatus(String homeId, String personId, boolean away) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
+        UriBuilder uriBuilder = getApiUriBuilder(away ? SUB_PATH_PERSON_AWAY : SUB_PATH_PERSON_HOME);
         String payload = String.format(away ? PAYLOAD_PERSON_AWAY : PAYLOAD_PERSON_HOME, homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }
