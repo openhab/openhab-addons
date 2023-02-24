@@ -10,16 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
-import java.util.ArrayList;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Alias for a list of location statuses
+ * Response model for the system mode status
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class LocationsStatus extends ArrayList<LocationStatus> {
+public class SystemModeStatus {
 
+    @SerializedName("mode")
+    private String mode;
+
+    @SerializedName("isPermanent")
+    private boolean isPermanent;
+
+    public String getMode() {
+        return mode;
+    }
 }

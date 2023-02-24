@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.request;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -34,12 +34,15 @@ public class Mode {
         permanent = false;
     }
 
+    @SuppressWarnings("unused")
     @SerializedName("systemMode")
     private String systemMode;
 
+    @SuppressWarnings("unused")
     @SerializedName("timeUntil")
     private String timeUntil;
 
+    @SuppressWarnings("unused")
     @SerializedName("permanent")
     private boolean permanent;
 }

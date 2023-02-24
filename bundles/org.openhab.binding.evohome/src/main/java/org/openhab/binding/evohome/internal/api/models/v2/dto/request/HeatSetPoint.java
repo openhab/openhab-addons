@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.request;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -43,12 +43,15 @@ public class HeatSetPoint {
         timeUntil = null;
     }
 
+    @SuppressWarnings("unused")
     @SerializedName("heatSetpointValue")
     private double heatSetpointValue;
 
+    @SuppressWarnings("unused")
     @SerializedName("setpointMode")
     private String setpointMode;
 
+    @SuppressWarnings("unused")
     @SerializedName("timeUntil")
     private String timeUntil;
 }

@@ -10,15 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.request;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Builder for API requests
+ * Response model for the active fault
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public interface RequestBuilder<T> {
+public class ActiveFault {
 
-    public T build();
+    @SerializedName("faultType")
+    private String faultType;
+
+    @SerializedName("since")
+    private String since;
+
+    public String getFaultType() {
+        return faultType;
+    }
 }

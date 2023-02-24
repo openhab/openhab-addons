@@ -10,27 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.internal.api.models.v2.response;
+package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the schedule capabilities
+ * Response model for the gateway info
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class ScheduleCapabilities {
+public class GatewayInfo {
 
-    @SerializedName("maxSwitchpointsPerDay")
-    private int maxSwitchpointsPerDay;
+    @SerializedName("gatewayId")
+    private String gatewayId;
 
-    @SerializedName("minSwitchpointsPerDay")
-    private int minSwitchpointsPerDay;
+    @SerializedName("mac")
+    private String macAddress;
 
-    @SerializedName("setpointValueResolution")
-    private double setpointValueResolution;
+    @SerializedName("crc")
+    private String crc;
 
-    @SerializedName("timingResolution")
-    private String timingResolution;
+    @SerializedName("isWiFi")
+    private boolean isWifi;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
 }
