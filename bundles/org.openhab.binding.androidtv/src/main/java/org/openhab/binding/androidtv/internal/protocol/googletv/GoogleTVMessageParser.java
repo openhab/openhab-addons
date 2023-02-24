@@ -52,7 +52,7 @@ public class GoogleTVMessageParser {
         callback.validMessageReceived();
 
         try {
-            if (msg.startsWith("0a5b08ff041256")) {
+            if (msg.startsWith("0a")) {
                 // First message on connection from GTV
                 // 0a5b08ff041256 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 220231312a
                 // ------------------LEN-SHIELD Android TV---------------------LEN-NVIDIA
@@ -62,28 +62,30 @@ public class GoogleTVMessageParser {
                 // LEN-5.2.473254133
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
-            } else if (msg.equals("1200")) {
+            } else if (msg.equals("12")) {
                 // Second message on connection from GTV
                 // Login successful?
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
                 callback.setLoggedIn(true);
-            } else if (msg.startsWith("92032108021002")) {
+            } else if (msg.startsWith("92")) {
                 // Third message on connection from GTV
                 // Also sent on power state change (to ON only unless keypress triggers)
                 // 92032108021002 1a 11 534849454c4420416e64726f6964205456 20 02 2800 30 0f380e4000
                 // ------------------LEN-SHIELD Android TV
-            } else if (msg.startsWith("92031a08")) {
                 // 92031a08 f304 10 09 1a 11 534849454c4420416e64726f6964205456 2001
                 // 92031a08 8205 10 09 1a 11 534849454c4420416e64726f6964205456 2001
                 // -----------------------LEN-SHIELD Android TV
-            } else if (msg.startsWith("080210c801ca02")) {
-                // PIN Process Successful
-                logger.trace("PIN Process Successful!");
-                callback.finishPinProcess();
-            } else if (msg.startsWith("080210c801")) {
-                // 080210c801a201081204080310061801
-                // 080210c801fa0100
+            } else if (msg.startsWith("08")) {
+                if (msg.startsWith("080210c801ca02")) {
+                    // PIN Process Successful
+                    logger.trace("PIN Process Successful!");
+                    callback.finishPinProcess();
+
+                } else {
+                    // 080210c801a201081204080310061801
+                    // 080210c801fa0100
+                }
             } else if (msg.startsWith("c2020208")) {
                 // Power State
                 // c202020800 - OFF
@@ -91,7 +93,7 @@ public class GoogleTVMessageParser {
             } else if (msg.startsWith("42")) {
                 // Keepalive request
                 callback.sendKeepAlive(msg);
-            } else if (msg.startsWith("a201210a1f62")) {
+            } else if (msg.startsWith("a2")) {
                 // Current app name. Sent on keypress and power change.
                 // 01210a1f62 1d 636f6d2e676f6f676c652e616e64726f69642e796f75747562652e7476
                 // -----------LEN-com.google.android.youtube.tv
