@@ -62,7 +62,7 @@ public class GoogleTVMessageParser {
                 // LEN-5.2.473254133
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
-            } else if (msg.equals("12")) {
+            } else if (msg.startsWith("12")) {
                 // Second message on connection from GTV
                 // Login successful?
                 callback.sendCommand(
