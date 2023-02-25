@@ -1120,6 +1120,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 
 ### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
 
+
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
 | relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
@@ -1133,7 +1134,6 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
