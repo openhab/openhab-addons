@@ -63,6 +63,8 @@ public class DataResponseTransformer {
             if (channel == null) {
                 // This should not happen but we want to get informed about it
                 logger.warn("Channel not found: {}", channelId);
+            } else if (value == null) {
+                logger.info("null value for channel: {}", channelId);
             } else {
                 ChannelTypeUID typeUID = channel.getChannelTypeUID();
                 String type = typeUID == null ? "null" : typeUID.getId();
