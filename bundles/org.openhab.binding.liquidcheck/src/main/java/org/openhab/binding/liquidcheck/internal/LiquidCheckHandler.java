@@ -16,10 +16,6 @@ import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstan
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.FILL_INDICATOR_CHANNEL;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.LEVEL_CHANNEL;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.MEASURE_CHANNEL;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_IP;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_NAME;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_SECURITY_CODE;
-import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PROPERTY_SSID;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PUMP_TOTAL_RUNS_CHANNEL;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.PUMP_TOTAL_RUNTIME_CHANNEL;
 import static org.openhab.binding.liquidcheck.internal.LiquidCheckBindingConstants.RAW_CONTENT_CHANNEL;
@@ -80,22 +76,22 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getAsString().contains(MEASURE_CHANNEL)) {
+        if (channelUID.getId().equals(MEASURE_CHANNEL)) {
             if (command instanceof OnOffType) {
                 try {
-                    if (client.isConnected()) {
+                    if (client != null && client.isConnected()) {
                         String response = client.measureCommand();
                         CommData commandResponse = new Gson().fromJson(response, CommData.class);
-                        if (null != commandResponse) {
+                        if (commandResponse != null) {
                             if (!"success".equals(commandResponse.context.status)) {
-                                logger.error("Starting the measurement was not successful!");
+                                logger.warn("Starting the measurement was not successful!");
                             }
                         } else {
-                            logger.error("The object commandResponse is null!");
+                            logger.warn("The object commandResponse is null!");
                         }
                     }
                 } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
-                    logger.error("This went wrong in handleCommand: {}", e.getMessage());
+                    logger.warn("This went wrong in handleCommand: {}", e.getMessage());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -127,30 +123,12 @@ public class LiquidCheckHandler extends BaseThingHandler {
         });
     }
 
-    /**
-     * 
-     * @param response
-     * @return
-     */
-    private Map<String, String> createPropertyMap(CommData response) {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, response.payload.device.firmware);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, response.payload.device.hardware);
-        properties.put(PROPERTY_NAME, response.payload.device.name);
-        properties.put(Thing.PROPERTY_VENDOR, response.payload.device.manufacturer);
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, response.payload.device.uuid);
-        properties.put(PROPERTY_SECURITY_CODE, response.payload.device.security.code);
-        properties.put(PROPERTY_IP, response.payload.wifi.station.ip);
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, response.payload.wifi.station.mac);
-        properties.put(PROPERTY_SSID, response.payload.wifi.accessPoint.ssid);
-        return properties;
-    }
-
     @Override
     public void dispose() {
         ScheduledFuture<?> polling = this.polling;
         if (null != polling) {
             polling.cancel(true);
+            this.polling = null;
         }
     }
 
@@ -167,8 +145,8 @@ public class LiquidCheckHandler extends BaseThingHandler {
             try {
                 String jsonString = client.pollData();
                 CommData response = new Gson().fromJson(jsonString, CommData.class);
-                if (null != response) {
-                    Map<String, String> properties = createPropertyMap(response);
+                if (response != null) {
+                    Map<String, String> properties = response.createPropertyMap();
                     if (!oldProps.equals(properties)) {
                         oldProps = properties;
                         updateProperties(properties);

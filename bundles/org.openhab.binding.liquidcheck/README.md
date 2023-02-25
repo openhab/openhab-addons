@@ -22,12 +22,12 @@ If the maximum content has not been set the fill-indicator channel will not cont
 
 ### `liquidCheckDevice` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| maxContent      | integer | Maximum Content of the tank           | 1       | no       | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 60      | no       | yes      |
-| connecionTimeout| integer | Timeout after a request has been sent | 5       | no       | yes      |
+| Name             | Type    | Description                           | Default | Required | Advanced |
+|------------------|---------|---------------------------------------|---------|----------|----------|
+| hostname         | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
+| maxContent       | integer | Maximum Content of the tank           | 1       | no       | no       |
+| refreshInterval  | integer | Interval the device is polled in sec. | 60      | no       | yes      |
+| connectionTimeout| integer | Timeout after a request has been sent | 5       | no       | yes      |
 
 ## Channels
 

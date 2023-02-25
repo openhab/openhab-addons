@@ -63,7 +63,7 @@ public class LiquidCheckHttpClient {
     public String pollData() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/infos.json";
         Request request = client.newRequest(uri).method(HttpMethod.GET)
-                .timeout(config.connecionTimeout, TimeUnit.SECONDS).followRedirects(false);
+                .timeout(config.connectionTimeout, TimeUnit.SECONDS).followRedirects(false);
         ContentResponse response = request.send();
         return response.getContentAsString();
     }
@@ -91,7 +91,7 @@ public class LiquidCheckHttpClient {
         try {
             client.start();
         } catch (Exception e) {
-            logger.debug("Couldn't start client: {}", e.getMessage());
+            logger.warn("Couldn't start client: {}", e.getMessage());
         }
     }
 
@@ -102,6 +102,6 @@ public class LiquidCheckHttpClient {
      */
     public boolean isConnected() {
         String state = this.client.getState();
-        return "STARTED".equals(state) ? true : false;
+        return "STARTED".equals(state);
     }
 }
