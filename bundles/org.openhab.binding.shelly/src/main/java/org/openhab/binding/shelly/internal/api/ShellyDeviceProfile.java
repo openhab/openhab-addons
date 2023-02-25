@@ -99,6 +99,7 @@ public class ShellyDeviceProfile {
     public boolean isButton = false; // true for a Shelly Button 1
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
+    public boolean isSmoke = false; // true for Shelly Smoke
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -196,8 +197,7 @@ public class ShellyDeviceProfile {
         }
 
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
-        boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR)
-                || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
+        isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR) || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);

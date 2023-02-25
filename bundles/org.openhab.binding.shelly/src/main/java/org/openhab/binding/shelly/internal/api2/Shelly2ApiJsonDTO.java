@@ -56,6 +56,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CLOUDSET = "Cloud.SetConfig";
     public static final String SHELLYRPC_METHOD_WSGETCONFIG = "WS.GetConfig";
     public static final String SHELLYRPC_METHOD_WSSETCONFIG = "WS.SetConfig";
+    public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
+    public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device

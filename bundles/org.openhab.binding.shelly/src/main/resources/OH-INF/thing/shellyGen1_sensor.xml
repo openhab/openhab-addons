@@ -343,8 +343,6 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.sensorMute.label</label>
 		<description>@text/channel-type.shelly.sensorMute.description</description>
-		<state readOnly="true">
-		</state>
 	</channel-type>
 
 	<channel-type id="sensorLux">

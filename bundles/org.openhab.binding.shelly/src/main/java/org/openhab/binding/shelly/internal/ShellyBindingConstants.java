@@ -152,6 +152,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
+    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";

@@ -287,7 +287,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
         String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
-        if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
+        if (!config.localIp.isEmpty() && !getBool(wsConfig.enable)
+                || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
             wsConfig.server = url;
@@ -634,6 +635,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             req.params.config.autoOffDelay = value;
         }
         apiRequest(req);
+    }
+
+    @Override
+    public void resetMeterTotal(int id) throws ShellyApiException {
+    }
+
+    @Override
+    public void muteSmokeAlarm(int index) throws ShellyApiException {
+        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SMOKE_MUTE).withId(index));
     }
 
     @Override

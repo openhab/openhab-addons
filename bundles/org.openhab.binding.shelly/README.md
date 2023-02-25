@@ -82,9 +82,11 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU  |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X    |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X    |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A    |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z    |
 
 ### Generation 2 Pro series
 
@@ -374,7 +376,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | TEMP_OVER  | Above "temperature over" threshold                                                               |
 | VIBRATION  | A vibration/tamper was detected (DW2 only)                                                       |
 
-Refer to section [Full Example:shelly.rules](#shellyrules) for examples how to catch alarm triggers in openHAB rules
+Refer to section Full Example for examples how to catch alarm triggers in openHAB rules
 
 ## Channels
 
@@ -498,6 +500,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
@@ -506,6 +509,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
@@ -514,6 +518,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
@@ -1108,6 +1113,23 @@ If the Shelly Add-On is installed:
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
+### Shelly Plus Plug-S (thing-type: shellyplusplug)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|       | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds           |
+|       | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds           |
+|       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                                |
+|       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
 | Group   | Channel    | Type    | read-only | Description                                                           |
@@ -1131,6 +1153,18 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
+### Shelly Plus Smoke (thing-type: shellyplussmoke)
+
+| Group   | Channel      | Type     | read-only | Description                                             |
+| ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
+| sensors | smoke        | Switch   | yes       | ON: Smoke detected                                      |
+|         | mute         | Switch   | no        | ON: Alarm muted                                         |
+|         | lastUpdate   | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
+|         | lastError    | String   | yes       | Last device error.                                      |
+| battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
+|         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
+
 
 ## Shelly Pro Series
 

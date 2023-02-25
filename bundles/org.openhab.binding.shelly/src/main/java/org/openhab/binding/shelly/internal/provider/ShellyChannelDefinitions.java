@@ -199,6 +199,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_VOLTAGE, "meterVoltage", ITEMT_VOLT))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
 
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
@@ -456,8 +457,8 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
-    public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellySettingsEMeter emeter,
-            String group) {
+    public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellySettingsEMeter emeter, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         addChannel(thing, newChannels, emeter.power != null, group, CHANNEL_METER_CURRENTWATTS);
         addChannel(thing, newChannels, emeter.total != null, group, CHANNEL_METER_TOTALKWH);
@@ -466,7 +467,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.voltage != null, group, CHANNEL_EMETER_VOLTAGE);
         addChannel(thing, newChannels, emeter.current != null, group, CHANNEL_EMETER_CURRENT);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
-
+        addChannel(thing, newChannels, emeter.total != null && profile.numMeters > 1, group, CHANNEL_EMETER_RESETTOTAL); // 3EM
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }

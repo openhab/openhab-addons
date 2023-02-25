@@ -277,7 +277,7 @@ public class ShellyComponents {
                             String groupName = profile.getMeterGroup(m);
                             if (!thingHandler.areChannelsCreated()) {
                                 thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                                        .createEMeterChannels(thingHandler.getThing(), emeter, groupName));
+                                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
                             }
 
                             // convert Watt/Hour tok w/h
