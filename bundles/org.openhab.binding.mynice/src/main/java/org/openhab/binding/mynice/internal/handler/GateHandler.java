@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GateHandler extends BaseThingHandler implements MyNiceDataListener {
+    private static final String OPENING = "opening";
+    private static final String CLOSING = "closing";
+
     private final Logger logger = LoggerFactory.getLogger(GateHandler.class);
 
     private String id = "";
@@ -66,8 +69,8 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof It4WifiHandler) {
-                return Optional.of((It4WifiHandler) handler);
+            if (handler instanceof It4WifiHandler it4Handler) {
+                return Optional.of(it4Handler);
             }
         }
         return Optional.empty();
@@ -92,10 +95,10 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
                     T4Command t4 = T4Command.fromCode(command);
                     getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, t4));
                 } catch (IllegalArgumentException e) {
-                    logger.info("{} is not a valid T4 command", command);
+                    logger.warn("{} is not a valid T4 command", command);
                 }
             } else {
-                logger.info("This thing does not accept the T4 command '{}'", command);
+                logger.warn("This thing does not accept the T4 command '{}'", command);
             }
         }
     }
@@ -119,7 +122,7 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
                 String status = device.properties.doorStatus;
                 updateState(DOOR_STATUS, new StringType(status));
                 updateState(DOOR_OBSTRUCTED, new StringType(device.properties.obstruct));
-                updateState(DOOR_MOVING, OnOffType.from(status.endsWith("ing")));
+                updateState(DOOR_MOVING, OnOffType.from(status.equals(CLOSING) || status.equals(OPENING)));
             }
             return true;
         });

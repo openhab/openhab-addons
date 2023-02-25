@@ -116,10 +116,17 @@ public class It4WifiConnector extends Thread {
 
     /**
      * Stop the device thread
+     *
+     * @throws IOException
      */
     public void dispose() {
         interrupt();
         disconnect();
+        try {
+            sslsocket.close();
+        } catch (IOException e) {
+            logger.warn("Error closing sslsocket : {}", e.getMessage());
+        }
     }
 
     private void connect() throws IOException {

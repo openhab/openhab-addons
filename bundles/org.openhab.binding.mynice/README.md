@@ -3,35 +3,29 @@
 This binding implements the support of the IT4Wifi module through the NHK protocol and enables management of Nice gates automatisms.
 IT4Wifi is a bridge between the TP4 bus of your gate and your Ethernet network.
 
-
 ## Supported Things
 
-
-- `it4wifi`: The Bridge between openHAB and your module. 
+- `it4wifi`: The Bridge between openHAB and your module.
 - `swing`: A Thing representing a swinging (two rotating doors) gate.
 - `sliding`: A Thing representing a sliding gate.
-
 
 ## Discovery
 
 The binding will auto-discover (by MDNS) your module, creating the associated `it4wifi` bridge.
 
-Once discovered, a user named “org.openhab.binding.mynice” will be created on it. 
+Once discovered, a user named “org.openhab.binding.mynice” will be created on it.
 You will have to grant him permissions using the MyNice app (Android or IOS).
 
 Once configuration of the bridge is completed, your gate(s) will also be auto-discovered and added to the Inbox.
-
 
 ## Binding Configuration
 
 There is nothing to configure at binding level.
 
-
 ## Thing Configuration
 
 First configuration should be done via UI discovery, this will let you get automatically the password provided by the IT4Wifi module.
 Once done, you can also create your things via *.things file.
-
 
 ### `it4wifi` Bridge Configuration
 
@@ -42,14 +36,11 @@ Once done, you can also create your things via *.things file.
 | macAddress | text | The MAC address of the IT4Wifi                                         | N/A     | yes      | no       |
 | username   | text | Pairing Key needed to access the device, provided by the bridge itself | N/A     | yes      | no       |
 
-
 ### Gates Thing Configuration
 
 | Name       | Type | Description                                                            | Default | Required | Advanced |
 |------------|------|------------------------------------------------------------------------|---------|----------|----------|
 | id         | text | ID of the gate on the TP4 bus connected to the bridge                  | N/A     | yes      | no       |
-
-
 
 ## Channels
 
@@ -71,7 +62,7 @@ Channels available for the gates are :
 ### T4 Commands
 
 Depending upon your gate model, and motor capabilities, some T4 commands can be used.
-The list of available commands for your model will be automatically be discovered by the binding.
+The list of available commands for your model will be automatically discovered by the binding.
 This information is stored in the `allowedT4`property held by the gate Thing itself.
 
 Complete list of T4 Commands :
@@ -102,14 +93,11 @@ Complete list of T4 Commands :
 | MDE5    | Release and Open           |
 | MDFh    | Release and Close          |
 
-
-
 ## Full Example
-
 
 ### things/mynice.things
 
-```
+```java
 Bridge mynice:it4wifi:83eef09166 "Nice IT4WIFI" @ "portail" [
             hostname="192.168.0.198",
             macAddress="00:xx:zz:dd:ff:gg",
@@ -119,10 +107,9 @@ Bridge mynice:it4wifi:83eef09166 "Nice IT4WIFI" @ "portail" [
 }
 ```
 
-
 ### items/mynice.items
 
-```
+```java
 String   NiceIT4WIFI_GateStatus    "Gate Status"   <gate>     (gMyniceSwing83eef091661)   ["Status","Opening"]     {channel="mynice:swing:83eef09166:1:status"}
 String   NiceIT4WIFI_Obstruction   "Obstruction"       <none>     (gMyniceSwing83eef091661)                            {channel="mynice:swing:83eef09166:1:obstruct"}
 Switch   NiceIT4WIFI_Moving        "Moving"            <motion>   (gMyniceSwing83eef091661)   ["Status","Vibration"]   {channel="mynice:swing:83eef09166:1:moving"}

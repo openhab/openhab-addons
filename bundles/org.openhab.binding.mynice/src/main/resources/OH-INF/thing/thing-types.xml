@@ -110,6 +110,7 @@
 	<channel-type id="obstruct">
 		<item-type>String</item-type>
 		<label>Obstruction</label>
+		<description>Something obstructs normal movement of the gate</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -146,7 +147,7 @@
 				<option value="MDBl">Close and block</option>
 				<option value="MDBm">Block</option>
 				<option value="MDEw">Release</option>
-				<option value="MDEx">Courtesy ligh timer on</option>
+				<option value="MDEx">Courtesy light timer on</option>
 				<option value="MDEy">Courtesy light on-off</option>
 				<option value="MDEz">Step by Step master door</option>
 				<option value="MDE0">Open master door</option>

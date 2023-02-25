@@ -56,8 +56,8 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof It4WifiHandler) {
-            bridgeHandler = (It4WifiHandler) handler;
+        if (handler instanceof It4WifiHandler it4Handler) {
+            bridgeHandler = it4Handler;
         }
     }
 

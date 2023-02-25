@@ -13,6 +13,7 @@
 package org.openhab.binding.mynice.internal.handler;
 
 import static org.openhab.core.thing.Thing.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class It4WifiHandler extends BaseBridgeHandler {
     private static final int MAX_HANDSHAKE_ATTEMPTS = 3;
-    private static final int KEEPALIVE_DELAY_S = 240; // Timeout seems to be at 6 min
+    private static final int KEEPALIVE_DELAY_S = 235; // Timeout seems to be at 6 min
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiHandler.class);
     private final List<MyNiceDataListener> dataListeners = new CopyOnWriteArrayList<>();
@@ -86,7 +87,9 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // we do not handle commands
+        if (REFRESH.equals(command)) {
+            sendCommand(CommandType.INFO);
+        }
     }
 
     @Override
@@ -171,7 +174,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
                 if (sc != null) {
                     reqBuilder.setChallenges(sc, response.authentication.id, config.password);
-                    keepAliveJob = scheduler.scheduleAtFixedRate(() -> sendCommand(CommandType.VERIFY),
+                    keepAliveJob = scheduler.scheduleWithFixedDelay(() -> sendCommand(CommandType.VERIFY),
                             KEEPALIVE_DELAY_S, KEEPALIVE_DELAY_S, TimeUnit.SECONDS);
                     sendCommand(CommandType.INFO);
                 }
@@ -189,12 +192,12 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 return;
             case STATUS:
                 notifyListeners(response.getDevices());
-                break;
+                return;
             case CHANGE:
                 logger.debug("Change command accepted");
-                break;
+                return;
             default:
-                logger.info("Unhandled response type : {}", response.type);
+                logger.warn("Unhandled response type : {}", response.type);
         }
     }
 
