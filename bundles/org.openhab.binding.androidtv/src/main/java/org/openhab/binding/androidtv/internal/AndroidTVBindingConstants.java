@@ -47,6 +47,7 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_APP = "app";
     public static final String CHANNEL_APPNAME = "appname";
     public static final String CHANNEL_APPURL = "appurl";
+    public static final String CHANNEL_POWER = "power";
 
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";

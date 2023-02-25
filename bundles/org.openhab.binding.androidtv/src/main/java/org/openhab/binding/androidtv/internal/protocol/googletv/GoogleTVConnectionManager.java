@@ -59,6 +59,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.GoogleTVHandler;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -135,10 +136,16 @@ public class GoogleTVConnectionManager {
     private String pinHash = "";
     private String shimPinHash = "";
 
+    private boolean power = false;
     private String hostName = "";
     private String currentApp = "";
     private String deviceId = "";
     private String arch = "";
+    private String manufacturer = "";
+    private String model = "";
+    private String androidVersion = "";
+    private String remoteServer = "";
+    private String remoteServerVersion = "";
 
     private AndroidTVPKI androidtvPKI = new AndroidTVPKI();
     private byte[] encryptionKey;
@@ -192,6 +199,65 @@ public class GoogleTVConnectionManager {
 
     public String getArch() {
         return this.arch;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+        handler.setThingProperty("Manufacturer", manufacturer);
+    }
+
+    public String getManufacturer() {
+        return this.manufacturer;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+        handler.setThingProperty("Model", model);
+    }
+
+    public String getModel() {
+        return this.model;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
+        handler.setThingProperty("Android Version", androidVersion);
+    }
+
+    public String getAndroidVersion() {
+        return this.androidVersion;
+    }
+
+    public void setRemoteServer(String remoteServer) {
+        this.remoteServer = remoteServer;
+        handler.setThingProperty("Remote Server", remoteServer);
+    }
+
+    public String getRemoteServer() {
+        return this.remoteServer;
+    }
+
+    public void setRemoteServerVersion(String remoteServerVersion) {
+        this.remoteServerVersion = remoteServerVersion;
+        handler.setThingProperty("Remote Server Version", remoteServerVersion);
+    }
+
+    public String getRemoteServerVersion() {
+        return this.remoteServerVersion;
+    }
+
+    public void setPower(boolean power) {
+        this.power = power;
+        logger.trace("Setting power to {}", power);
+        if (power) {
+            handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
+        } else {
+            handler.updateChannelState(CHANNEL_POWER, OnOffType.OFF);
+        }
+    }
+
+    public boolean getPower() {
+        return this.power;
     }
 
     public void setCurrentApp(String currentApp) {
@@ -1184,6 +1250,12 @@ public class GoogleTVConnectionManager {
                     }
                 } catch (CertificateException e) {
                     logger.trace("PIN CertificateException", e);
+                }
+            }
+        } else if (CHANNEL_POWER.equals(channelUID.getId())) {
+            if (command instanceof OnOffType) {
+                if ((power && command.equals(OnOffType.OFF)) || (!power && command.equals(OnOffType.ON))) {
+                    sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
                 }
             }
         } else if (CHANNEL_RAW.equals(channelUID.getId())) {
