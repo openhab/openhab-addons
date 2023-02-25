@@ -1226,8 +1226,6 @@ public class GoogleTVConnectionManager {
                     case "KEY_POWERON":
                         sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408101003")));
                         break;
-                    case "KEY_GOOGLE":
-                        break;
                     case "KEY_VOLUP":
                         sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("520408181003")));
                         break;
@@ -1249,8 +1247,6 @@ public class GoogleTVConnectionManager {
                     case "KEY_MUTE":
                         sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204085b1003")));
                         break;
-                    case "KEY_SUBMIT":
-                        break;
                 }
                 if (command.toString().length() == 5) {
                     // Account for KEY_(ASCII Character)
@@ -1261,19 +1257,35 @@ public class GoogleTVConnectionManager {
             }
         } else if (CHANNEL_KEYCODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                String key = command.toString();
+                String shortCommand = command.toString().split("_")[0];
+                int commandInt = Integer.parseInt(shortCommand, 10);
+                String suffix = "";
+                if (commandInt > 255) {
+                    suffix = "02";
+                    commandInt -= 256;
+                } else if (commandInt > 127) {
+                    suffix = "01";
+                }
+
+                String key = Integer.toHexString(commandInt) + suffix;
+
                 if ((key.length() % 2) == 1) {
                     key = "0" + key;
                 }
-                String length = "0" + ((key.length() / 2) + 3);
-                String message = "52" + length + "08" + key;
+
+                key = "08" + key;
+
                 if (command.toString().endsWith("_PRESS")) {
-                    message = message + "1001";
+                    key = key + "1001";
                 } else if (command.toString().endsWith("_RELEASE")) {
-                    message = message + "1002";
+                    key = key + "1002";
                 } else {
-                    message = message + "1003";
+                    key = key + "1003";
                 }
+
+                String length = "0" + (key.length() / 2);
+                String message = "52" + length + key;
+
                 logger.trace("Sending KEYCODE {} as {}", key, message);
                 sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(message)));
             }
