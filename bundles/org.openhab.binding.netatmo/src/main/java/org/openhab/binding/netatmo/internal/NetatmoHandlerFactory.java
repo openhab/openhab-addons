@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.netatmo.internal.api.data.ChannelGroup;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
@@ -113,8 +114,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
         List<ChannelHelper> helpers = new ArrayList<>();
-        moduleType.channelGroups
-                .forEach(channelGroup -> channelGroup.getHelperInstance().ifPresent(helper -> helpers.add(helper)));
+
+        helpers.addAll(moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList());
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;

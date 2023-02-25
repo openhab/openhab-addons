@@ -18,8 +18,8 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,13 +59,14 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.WindChannelHel
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * This enum all handled Netatmo modules and devices along with their capabilities
+ * This enum describes all Netatmo modules and devices along with their capabilities.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, "", null, Set.of()),
+
     ACCOUNT(FeatureArea.NONE, "", null, Set.of(), new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", ACCOUNT,
@@ -142,11 +143,14 @@ public enum ModuleType {
 
     SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(SmokeCapability.class, ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP,
-            new ChannelGroup(EventChannelHelper.class, GROUP_SMOKE_LAST_EVENT));
+            new ChannelGroup(EventChannelHelper.class, GROUP_SMOKE_LAST_EVENT)),
+
+    CARBON_MONOXIDE_ALARM(FeatureArea.SECURITY, "NCO", HOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TIMESTAMP);
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
-    private final @Nullable ModuleType bridgeType;
+    private final Optional<ModuleType> bridgeType;
     public final Set<ChannelGroup> channelGroups;
     public final Set<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
@@ -155,7 +159,7 @@ public enum ModuleType {
 
     ModuleType(FeatureArea feature, String apiName, @Nullable ModuleType bridge,
             Set<Class<? extends Capability>> capabilities, ChannelGroup... channelGroups) {
-        this.bridgeType = bridge;
+        this.bridgeType = Optional.ofNullable(bridge);
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
@@ -167,21 +171,16 @@ public enum ModuleType {
         return !channelGroups.contains(ChannelGroup.SIGNAL);
     }
 
-    public boolean isABridge() {
-        for (ModuleType mt : ModuleType.values()) {
-            if (this.equals(mt.bridgeType)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isABridge() { // I am a bridge if any module references me as being so
+        return AS_SET.stream().anyMatch(mt -> this.equals(mt.getBridge()));
     }
 
     public List<String> getExtensions() {
-        return channelGroups.stream().map(cg -> cg.extensions).flatMap(Set::stream).collect(Collectors.toList());
+        return channelGroups.stream().map(cg -> cg.extensions).flatMap(Set::stream).toList();
     }
 
-    public Set<String> getGroupTypes() {
-        return channelGroups.stream().map(cg -> cg.groupTypes).flatMap(Set::stream).collect(Collectors.toSet());
+    public List<String> getGroupTypes() {
+        return channelGroups.stream().map(cg -> cg.groupTypes).flatMap(Set::stream).toList();
     }
 
     public int[] getSignalLevels() {
@@ -191,29 +190,29 @@ public enum ModuleType {
                     : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException(
-                "This should not be called for module type : " + name() + ", please file a bug report.");
+                "getSignalLevels should not be called for module type : '%s', please file a bug report."
+                        .formatted(name()));
     }
 
     public ModuleType getBridge() {
-        ModuleType bridge = bridgeType;
-        return bridge != null ? bridge : ModuleType.UNKNOWN;
+        return bridgeType.orElse(UNKNOWN);
     }
 
     public URI getConfigDescription() {
         return URI.create(BINDING_ID + ":"
                 + (equals(ACCOUNT) ? "api_bridge"
                         : equals(HOME) ? "home"
-                                : (isLogical() ? "virtual"
-                                        : ModuleType.UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+                                : (isLogical() ? "virtual" : UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
     }
 
     public int getDepth() {
-        ModuleType parent = bridgeType;
-        return parent == null ? 1 : 1 + parent.getDepth();
+        ModuleType parent = getBridge();
+        return parent == UNKNOWN ? 1 : parent.getDepth() + 1;
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
-        return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException());
+        return AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
     }
 }
