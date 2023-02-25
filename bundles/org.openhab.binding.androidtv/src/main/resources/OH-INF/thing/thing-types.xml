@@ -20,6 +20,9 @@
 			<channel id="raw" typeId="raw"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
 		</channels>
 
 		<properties>
@@ -83,13 +86,12 @@
 			<channel id="appurl" typeId="appurl"/>
 			<channel id="raw" typeId="raw"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
 		</channels>
 
 		<properties>
-			<property name="Device Name">unknown</property>
-			<property name="Device ID">unknown</property>
-			<property name="Architectures">unknown</property>
 			<property name="Manufacturer">unknown</property>
 			<property name="Model">unknown</property>
 			<property name="Android Version">unknown</property>
@@ -184,12 +186,6 @@
 		<item-type>String</item-type>
 		<label>Pin Code</label>
 		<description>Send Pin Code</description>
-	</channel-type>
-
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Power</description>
 	</channel-type>
 
 </thing:thing-descriptions>
