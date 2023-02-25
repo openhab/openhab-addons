@@ -59,12 +59,12 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(It4WifiHandler.class);
     private final List<MyNiceDataListener> dataListeners = new CopyOnWriteArrayList<>();
+    private final MyNiceXStream xstream = new MyNiceXStream();
 
     private @NonNullByDefault({}) RequestBuilder reqBuilder;
     private @Nullable It4WifiConnector connector;
-    private final MyNiceXStream xstream = new MyNiceXStream();
-    private List<Device> devices = new ArrayList<>();
     private @Nullable ScheduledFuture<?> keepAliveJob;
+    private List<Device> devices = new ArrayList<>();
     private int handshakeAttempts = 0;
 
     public It4WifiHandler(Bridge thing) {

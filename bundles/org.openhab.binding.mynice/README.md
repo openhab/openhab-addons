@@ -63,7 +63,7 @@ Channels available for the gates are :
 
 Depending upon your gate model, and motor capabilities, some T4 commands can be used.
 The list of available commands for your model will be automatically discovered by the binding.
-This information is stored in the `allowedT4`property held by the gate Thing itself.
+This information is stored in the `allowedT4` property held by the gate Thing itself.
 
 Complete list of T4 Commands :
 
@@ -110,9 +110,9 @@ Bridge mynice:it4wifi:83eef09166 "Nice IT4WIFI" @ "portail" [
 ### items/mynice.items
 
 ```java
-String   NiceIT4WIFI_GateStatus    "Gate Status"   <gate>     (gMyniceSwing83eef091661)   ["Status","Opening"]     {channel="mynice:swing:83eef09166:1:status"}
-String   NiceIT4WIFI_Obstruction   "Obstruction"       <none>     (gMyniceSwing83eef091661)                            {channel="mynice:swing:83eef09166:1:obstruct"}
-Switch   NiceIT4WIFI_Moving        "Moving"            <motion>   (gMyniceSwing83eef091661)   ["Status","Vibration"]   {channel="mynice:swing:83eef09166:1:moving"}
-String   NiceIT4WIFI_Command       "Command"           <none>     (gMyniceSwing83eef091661)                            {channel="mynice:swing:83eef09166:1:command"}
+String   NiceIT4WIFI_GateStatus    "Gate Status" <gate>   (gMyniceSwing) ["Status","Opening"]     {channel="mynice:swing:83eef09166:1:status"}
+String   NiceIT4WIFI_Obstruction   "Obstruction" <none>   (gMyniceSwing)                          {channel="mynice:swing:83eef09166:1:obstruct"}
+Switch   NiceIT4WIFI_Moving        "Moving"      <motion> (gMyniceSwing) ["Status","Vibration"]   {channel="mynice:swing:83eef09166:1:moving"}
+String   NiceIT4WIFI_Command       "Command"     <none>   (gMyniceSwing)                          {channel="mynice:swing:83eef09166:1:command"}
 
 ```

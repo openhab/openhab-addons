@@ -90,23 +90,19 @@ public class MyNiceDiscoveryService extends AbstractDiscoveryService
         if (handler != null) {
             ThingUID bridgeUID = handler.getThing().getUID();
             devices.stream().filter(device -> device.type != null).forEach(device -> {
-                ThingUID thingUID = null;
-                switch (device.type) {
-                    case SWING:
-                        thingUID = new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
-                        break;
-                    case SLIDING:
-                        thingUID = new ThingUID(THING_TYPE_SLIDING, bridgeUID, device.id);
-                        break;
-                    default:
-                        logger.info("`{}` type of device is not yet supported", device.type);
-                        break;
-                }
+                ThingUID thingUID = switch (device.type) {
+                    case SWING -> new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
+                    case SLIDING -> new ThingUID(THING_TYPE_SLIDING, bridgeUID, device.id);
+                    default -> null;
+                };
+
                 if (thingUID != null) {
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                             .withLabel(String.format("%s %s", device.manuf, device.prod))
                             .withRepresentationProperty(DEVICE_ID).withProperty(DEVICE_ID, device.id).build();
                     thingDiscovered(discoveryResult);
+                } else {
+                    logger.info("`{}` type of device is not yet supported", device.type);
                 }
             });
         }

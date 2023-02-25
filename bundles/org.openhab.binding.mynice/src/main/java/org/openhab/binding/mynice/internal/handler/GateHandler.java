@@ -18,7 +18,6 @@ import static org.openhab.core.thing.Thing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
@@ -91,12 +90,14 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
         } else if (DOOR_T4_COMMAND.equals(channelId)) {
             String allowed = thing.getProperties().get(ALLOWED_T4);
             if (allowed != null && allowed.contains(command)) {
-                try {
-                    T4Command t4 = T4Command.fromCode(command);
-                    getBridgeHandler().ifPresent(handler -> handler.sendCommand(id, t4));
-                } catch (IllegalArgumentException e) {
-                    logger.warn("{} is not a valid T4 command", command);
-                }
+                getBridgeHandler().ifPresent(handler -> {
+                    try {
+                        T4Command t4 = T4Command.fromCode(command);
+                        handler.sendCommand(id, t4);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("{} is not a valid T4 command", command);
+                    }
+                });
             } else {
                 logger.warn("This thing does not accept the T4 command '{}'", command);
             }
@@ -109,12 +110,10 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
             updateStatus(ThingStatus.ONLINE);
             if (thing.getProperties().isEmpty()) {
                 int value = Integer.parseInt(device.properties.t4allowed.values, 16);
-                List<String> t4Allowed = T4Command.fromBitmask(value).stream().map(Enum::name)
-                        .collect(Collectors.toList());
-                Map<String, String> properties = Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
+                List<String> t4Allowed = T4Command.fromBitmask(value).stream().map(Enum::name).toList();
+                updateProperties(Map.of(PROPERTY_VENDOR, device.manuf, PROPERTY_MODEL_ID, device.prod,
                         PROPERTY_SERIAL_NUMBER, device.serialNr, PROPERTY_HARDWARE_VERSION, device.versionHW,
-                        PROPERTY_FIRMWARE_VERSION, device.versionFW, ALLOWED_T4, String.join(",", t4Allowed));
-                updateProperties(properties);
+                        PROPERTY_FIRMWARE_VERSION, device.versionFW, ALLOWED_T4, String.join(",", t4Allowed)));
             }
             if (device.prod != null) {
                 getBridgeHandler().ifPresent(h -> h.sendCommand(CommandType.STATUS));
