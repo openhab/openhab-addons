@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(immediate = true, service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
+@Component(service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
 public class SysteminfoThingTypeProvider extends AbstractDynamicTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(SysteminfoThingTypeProvider.class);
 
