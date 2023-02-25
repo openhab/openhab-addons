@@ -485,6 +485,10 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE,
                         getOnOff(sdata.smoke));
             }
+            if (sdata.mute != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+            }
+
             if (sdata.gasSensor != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SELFTTEST,
                         getStringType(sdata.gasSensor.selfTestState));

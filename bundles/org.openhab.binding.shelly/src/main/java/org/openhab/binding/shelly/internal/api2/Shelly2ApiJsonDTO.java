@@ -292,7 +292,6 @@ public class Shelly2ApiJsonDTO {
             public String phase_selector;
             @SerializedName("monitor_phase_sequence")
             public Boolean monitorPhaseSequence;
-
         }
 
         public class Shelly2DevConfigCover {
@@ -345,6 +344,12 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceConfigCoverObstructionDetection obstructionDetection;
         }
 
+        public static class Shelly2ConfigSmoke {
+            public Integer id;
+            public Boolean alarm;
+            public Boolean mute;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -394,6 +399,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cover:0")
             public Shelly2DevConfigCover cover0;
+
+            @SerializedName("smoke:0")
+            public Shelly2ConfigSmoke smoke0;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -546,6 +554,12 @@ public class Shelly2ApiJsonDTO {
                 public String[] errors;
             }
 
+            public class Shelly2DeviceStatusSmoke {
+                public Integer id;
+                public Boolean alarm;
+                public Boolean mute;
+            }
+
             public Shelly2DeviceStatusBle ble;
             public Shelly2DeviceStatusCloud cloud;
             public Shelly2DeviceStatusMqqt mqtt;
@@ -597,6 +611,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusHumidity humidity0;
             @SerializedName("humidity:100")
             public Shelly2DeviceStatusHumidity humidity100;
+            @SerializedName("smoke:0")
+            public Shelly2DeviceStatusSmoke smoke0;
 
             @SerializedName("voltmeter:100")
             public Shelly2DeviceStatusVoltage voltmeter100;

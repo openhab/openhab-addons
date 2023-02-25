@@ -8,42 +8,42 @@
 		<label>ShellyPlus 1</label>
 		<description>@text/thing-type.shelly.shellyplus1.description</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus1pm">
 		<label>ShellyPlus 1PM</label>
 		<description>@text/thing-type.shelly.shellyplus1pm.description</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-relay">
 		<label>ShellyPlus 2 Relay</label>
 		<description>@text/thing-type.shelly.shellyplus2-relay.description</description>
 		<channel-groups>
-			<channel-group id="relay1" typeId="relayChannel" />
-			<channel-group id="meter1" typeId="meter" />
-			<channel-group id="relay2" typeId="relayChannel" />
-			<channel-group id="meter2" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay1" typeId="relayChannel"/>
+			<channel-group id="meter1" typeId="meter"/>
+			<channel-group id="relay2" typeId="relayChannel"/>
+			<channel-group id="meter2" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplus2pm-roller">
@@ -51,13 +51,27 @@
 		<description>@text/thing-type.shelly.shellyplus2pm-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:roller-gen2" />
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusplug">
+		<label>ShellyPlus Plug</label>
+		<description>@text/thing-type.shelly.shellyplusplug.description</description>
+		<category>PowerOutlet</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 
@@ -77,11 +91,11 @@
 			<channel-group id="status4" typeId="ixChannel">
 				<label>@text/channel-group-type.shelly.ixChannel4.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellyplusi4dc">
@@ -100,11 +114,11 @@
 			<channel-group id="status4" typeId="ixChannel">
 				<label>@text/channel-group-type.shelly.ixChannel4.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 
@@ -112,27 +126,27 @@
 		<label>ShellyPro 1</label>
 		<description>@text/thing-type.shelly.shellypro1.description</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro1pm">
 		<label>ShellyPro 1PM</label>
 		<description>@text/thing-type.shelly.shellypro1pm.description</description>
 		<channel-groups>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="sensors" typeId="externalSensors" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2-relay">
@@ -151,11 +165,11 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2pm-relay">
@@ -174,11 +188,11 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter2.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro2pm-roller">
@@ -186,13 +200,13 @@
 		<description>@text/thing-type.shelly.shellypro2pm-roller.description</description>
 		<category>Rollershutter</category>
 		<channel-groups>
-			<channel-group id="roller" typeId="rollerControl" />
-			<channel-group id="meter" typeId="meter" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:roller-gen2" />
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro3">
@@ -212,11 +226,11 @@
 			<channel-group id="relay4" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel4.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 	<thing-type id="shellypro3em">
@@ -232,12 +246,12 @@
 			<channel-group id="meter3" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
-			<channel-group id="relay" typeId="relayChannel" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay" />
+		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
 	<thing-type id="shellypro4pm">
@@ -269,11 +283,11 @@
 			<channel-group id="meter4" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter4.label</label>
 			</channel-group>
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:relay-gen2" />
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
 	</thing-type>
 
 </thing:thing-descriptions>

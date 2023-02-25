@@ -1103,6 +1103,7 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke
         public Boolean flood; // Shelly Flood: true = flood condition detected
+        public Boolean mute; // mute enabled/disabled
         @SerializedName("rain_sensor")
         public Boolean rainSensor; // Shelly Flood: true=in rain mode
 

@@ -82,6 +82,8 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //
             THING_TYPE_SHELLYPLUSHT, //
+            THING_TYPE_SHELLYPLUSSMOKE, //
+            THING_TYPE_SHELLYPLUSPLUGS, //
             THING_TYPE_SHELLYPLUSPLUGUS, //
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);
@@ -162,6 +164,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
+    public static final String CHANNEL_SENSOR_MUTE = "mute";
     public static final String CHANNEL_SENSOR_STATE = "state";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas

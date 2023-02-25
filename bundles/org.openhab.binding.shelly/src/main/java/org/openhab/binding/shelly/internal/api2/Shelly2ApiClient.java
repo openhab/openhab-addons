@@ -60,6 +60,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
@@ -189,6 +190,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
 
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
+        updateSmokeStatus(sensorData, result.smoke0);
         updateBatteryStatus(sensorData, result.devicepower0);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
@@ -525,6 +527,14 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         sdata.tmp.units = SHELLY_TEMP_CELSIUS;
         sdata.tmp.tC = value.tC;
         sdata.tmp.tF = value.tF;
+    }
+
+    protected void updateSmokeStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusSmoke value) {
+        if (value == null) {
+            return;
+        }
+        sdata.smoke = getBool(value.alarm);
+        sdata.mute = getBool(value.mute);
     }
 
     protected void updateBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value) {

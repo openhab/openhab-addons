@@ -196,7 +196,8 @@ public class ShellyDeviceProfile {
         }
 
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
-        boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
+        boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
