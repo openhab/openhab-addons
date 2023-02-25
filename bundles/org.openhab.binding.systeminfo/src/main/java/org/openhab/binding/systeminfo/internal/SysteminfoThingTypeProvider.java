@@ -15,22 +15,22 @@ package org.openhab.binding.systeminfo.internal;
 import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.AbstractDynamicTypeProvider;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -59,40 +59,24 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
-public class SysteminfoThingTypeProvider implements ThingTypeProvider {
+@Component(immediate = true, service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
+public class SysteminfoThingTypeProvider extends AbstractDynamicTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(SysteminfoThingTypeProvider.class);
 
     private final ThingTypeRegistry thingTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
 
-    private final Map<ThingTypeUID, ThingType> thingTypes = new HashMap<>();
-
     private final Map<ThingUID, Map<String, Configuration>> thingChannelsConfig = new HashMap<>();
 
     @Activate
     public SysteminfoThingTypeProvider(@Reference ThingTypeRegistry thingTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            @Reference ChannelTypeRegistry channelTypeRegistry) {
-        super();
+            @Reference ChannelTypeRegistry channelTypeRegistry, @Reference StorageService storageService) {
+        super(storageService, BINDING_ID);
         this.thingTypeRegistry = thingTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
-    }
-
-    @Override
-    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
-        return thingTypes.values();
-    }
-
-    @Override
-    public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
-        return thingTypes.get(thingTypeUID);
-    }
-
-    private void setThingType(ThingTypeUID uid, ThingType type) {
-        thingTypes.put(uid, type);
     }
 
     /**
@@ -114,17 +98,20 @@ public class SysteminfoThingTypeProvider implements ThingTypeProvider {
      * @return false if `typeUID` or its base type UID `systeminfo:computer` cannot be found in the thingTypeRegistry
      */
     public boolean updateThingType(ThingTypeUID typeUID, List<ChannelGroupDefinition> groupDefs) {
-        ThingTypeUID baseTypeUID = THING_TYPE_COMPUTER;
-        if (thingTypes.containsKey(typeUID)) {
-            baseTypeUID = typeUID;
+        ThingType baseType = thingTypeRegistry.getThingType(typeUID);
+        if (baseType == null) {
+            baseType = thingTypeRegistry.getThingType(THING_TYPE_COMPUTER);
+            if (baseType == null) {
+                logger.warn("Could not find base thing type in registry.");
+                return false;
+            }
         }
-        ThingType baseType = thingTypeRegistry.getThingType(baseTypeUID);
-        ThingTypeBuilder builder = createThingTypeBuilder(typeUID, baseTypeUID);
-        if (baseType != null && builder != null) {
+        ThingTypeBuilder builder = createThingTypeBuilder(typeUID, baseType.getUID());
+        if (builder != null) {
             logger.trace("Adding channel group definitions to thing type");
             ThingType type = builder.withChannelGroupDefinitions(groupDefs).build();
 
-            setThingType(typeUID, type);
+            putThingType(type);
             return true;
         } else {
             logger.debug("Error adding channel groups");
