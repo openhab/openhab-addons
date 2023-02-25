@@ -70,4 +70,5 @@ Fragment-Host: org.openhab.automation.jsscriptingnashorn
 	com.sun.jna;version='[5.12.1,5.12.2)',\
 	io.methvin.directory-watcher;version='[0.17.1,0.17.2)',\
 	org.apache.felix.configadmin;version='[1.9.24,1.9.25)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)'
+	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
+	xstream;version='[1.4.19,1.4.20)'
