@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherCapability;
-import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
+import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 
 /**
  * The {@link LGThinQWMApiClientService}
@@ -23,8 +25,9 @@ import org.openhab.binding.lgthinq.lgservices.model.washerdryer.WasherSnapshot;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface LGThinQWMApiClientService extends LGThinQApiClientService<WasherCapability, WasherSnapshot> {
-    void remoteStart(String bridgeName, String deviceId) throws LGThinqApiException;
+public interface LGThinQWMApiClientService extends LGThinQApiClientService<WasherDryerCapability, WasherDryerSnapshot> {
+    void remoteStart(String bridgeName, WasherDryerCapability cap, String deviceId, Map<String, Object> data)
+            throws LGThinqApiException;
 
-    void wakeUp(String bridgeName, String deviceId) throws LGThinqApiException;
+    void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException;
 }
