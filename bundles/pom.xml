@@ -39,6 +39,7 @@
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
     <module>org.openhab.transform.regex</module>
+    <module>org.openhab.transform.rollershutterposition</module>
     <module>org.openhab.transform.scale</module>
     <module>org.openhab.transform.xpath</module>
     <module>org.openhab.transform.xslt</module>
