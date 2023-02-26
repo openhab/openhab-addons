@@ -19,7 +19,6 @@
 			<channel id="appurl" typeId="appurl"/>
 			<channel id="raw" typeId="raw"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
-			<channel id="power" typeId="power"/>
 			<channel id="power" typeId="system.power"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -82,8 +81,6 @@
 			<channel id="keycode" typeId="keycode"/>
 			<channel id="pincode" typeId="pincode"/>
 			<channel id="app" typeId="app"/>
-			<channel id="appname" typeId="appname"/>
-			<channel id="appurl" typeId="appurl"/>
 			<channel id="raw" typeId="raw"/>
 			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="power" typeId="system.power"/>

@@ -34,8 +34,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -56,7 +54,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.androidtv.internal.GoogleTVHandler;
+import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.OnOffType;
@@ -88,7 +86,7 @@ public class GoogleTVConnectionManager {
 
     private ScheduledExecutorService scheduler;
 
-    private final GoogleTVHandler handler;
+    private final AndroidTVHandler handler;
     private GoogleTVConfiguration config;
 
     private @NonNullByDefault({}) SSLSocketFactory sslSocketFactory;
@@ -155,10 +153,7 @@ public class GoogleTVConnectionManager {
     private AndroidTVPKI androidtvPKI = new AndroidTVPKI();
     private byte[] encryptionKey;
 
-    private Map<String, String> appNameDB = new HashMap<>();
-    private Map<String, String> appURLDB = new HashMap<>();
-
-    public GoogleTVConnectionManager(GoogleTVHandler handler, GoogleTVConfiguration config) {
+    public GoogleTVConnectionManager(AndroidTVHandler handler, GoogleTVConfiguration config) {
         messageParser = new GoogleTVMessageParser(this);
         this.config = config;
         this.handler = handler;
@@ -168,7 +163,7 @@ public class GoogleTVConnectionManager {
         initalize();
     }
 
-    public GoogleTVConnectionManager(GoogleTVHandler handler, GoogleTVConfiguration config,
+    public GoogleTVConnectionManager(AndroidTVHandler handler, GoogleTVConfiguration config,
             GoogleTVConnectionManager connectionManager) {
         messageParser = new GoogleTVMessageParser(this);
         this.config = config;
@@ -309,20 +304,6 @@ public class GoogleTVConnectionManager {
     public void setCurrentApp(String currentApp) {
         this.currentApp = currentApp;
         handler.updateChannelState(CHANNEL_APP, new StringType(currentApp));
-
-        String appName = "";
-        String appURL = "";
-
-        try {
-            appName = appNameDB.get(currentApp);
-            appURL = appURLDB.get(currentApp);
-        } catch (NullPointerException e) {
-            logger.debug("Null Pointer Exception", e);
-            logger.info("Unknown Android App: {}", currentApp);
-        } finally {
-            handler.updateChannelState(CHANNEL_APPNAME, new StringType(appName));
-            handler.updateChannelState(CHANNEL_APPURL, new StringType(appURL));
-        }
     }
 
     public String getStatusMessage() {
@@ -382,14 +363,6 @@ public class GoogleTVConnectionManager {
             logger.debug("General Exception", e);
 
         }
-    }
-
-    public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB) {
-        this.appNameDB = appNameDB;
-        this.appURLDB = appURLDB;
-        logger.debug("App DB Populated");
-        logger.trace("Handler appNameDB: {} appURLDB: {}", this.appNameDB.toString(), this.appURLDB.toString());
-        handler.updateCDP(CHANNEL_APP, this.appNameDB);
     }
 
     private void setShimX509ClientChain(X509Certificate @Nullable [] shimX509ClientChain) {

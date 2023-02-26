@@ -51,7 +51,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.androidtv.internal.ShieldTVHandler;
+import org.openhab.binding.androidtv.internal.AndroidTVHandler;
 import org.openhab.binding.androidtv.internal.utils.AndroidTVPKI;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.StringType;
@@ -79,7 +79,7 @@ public class ShieldTVConnectionManager {
 
     private ScheduledExecutorService scheduler;
 
-    private final ShieldTVHandler handler;
+    private final AndroidTVHandler handler;
     private ShieldTVConfiguration config;
 
     private @NonNullByDefault({}) SSLSocketFactory sslSocketFactory;
@@ -133,7 +133,7 @@ public class ShieldTVConnectionManager {
     private Map<String, String> appNameDB = new HashMap<>();
     private Map<String, String> appURLDB = new HashMap<>();
 
-    public ShieldTVConnectionManager(ShieldTVHandler handler, ShieldTVConfiguration config) {
+    public ShieldTVConnectionManager(AndroidTVHandler handler, ShieldTVConfiguration config) {
         messageParser = new ShieldTVMessageParser(this);
         this.config = config;
         this.handler = handler;

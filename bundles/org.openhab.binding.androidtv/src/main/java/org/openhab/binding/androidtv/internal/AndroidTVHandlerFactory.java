@@ -59,13 +59,6 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
-            return new ShieldTVHandler(thing, commandDescriptionProvider);
-        } else if (THING_TYPE_GOOGLETV.equals(thingTypeUID)) {
-            return new GoogleTVHandler(thing, commandDescriptionProvider);
-        }
-
-        return null;
+        return new AndroidTVHandler(thing, commandDescriptionProvider, thingTypeUID);
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConnectionManager;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
@@ -35,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GoogleTVHandler} is responsible for handling commands, which are
+ * The {@link AndroidTVHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * Significant portions reused from Lutron binding with permission from Bob A.
@@ -43,20 +49,25 @@ import org.slf4j.LoggerFactory;
  * @author Ben Rosenblum - Initial contribution
  */
 @NonNullByDefault
-public class GoogleTVHandler extends BaseThingHandler {
+public class AndroidTVHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(GoogleTVHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AndroidTVHandler.class);
 
+    private @Nullable ShieldTVConnectionManager shieldtvConnectionManager;
     private @Nullable GoogleTVConnectionManager googletvConnectionManager;
+
     private @Nullable ScheduledFuture<?> monitorThingStatusJob;
     private final Object monitorThingStatusJobLock = new Object();
     private static final int THING_STATUS_FREQUENCY = 250;
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final ThingTypeUID thingTypeUID;
 
-    public GoogleTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider) {
+    public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
+            ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.thingTypeUID = thingTypeUID;
     }
 
     public void setThingProperty(String property, String value) {
@@ -88,26 +99,60 @@ public class GoogleTVHandler extends BaseThingHandler {
     }
 
     public void checkThingStatus() {
-        if (googletvConnectionManager.getLoggedIn()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            String statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
+        String statusMessage = "";
+        boolean failed = false;
+
+        if (googletvConnectionManager != null) {
+            if (!googletvConnectionManager.getLoggedIn()) {
+                statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
+                failed = true;
+            } else {
+                statusMessage = "GoogleTV: ONLINE";
+            }
+        }
+
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
+            if (shieldtvConnectionManager != null) {
+                if (!shieldtvConnectionManager.getLoggedIn()) {
+                    statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+                    failed = true;
+                } else {
+                    statusMessage = statusMessage + " | ShieldTV: ONLINE";
+                }
+            }
+        }
+
+        if (failed) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
     @Override
     public void initialize() {
-        GoogleTVConfiguration config = getConfigAs(GoogleTVConfiguration.class);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Protocols Starting");
 
-        if (config.ipAddress == null || config.ipAddress.isEmpty()) {
+        GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
+
+        if (googletvConfig.ipAddress == null || googletvConfig.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "googletv address not specified");
             return;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Protocols Starting");
+        googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
 
-        googletvConnectionManager = new GoogleTVConnectionManager(this, config);
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
+            ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
+
+            if (shieldtvConfig.ipAddress == null || shieldtvConfig.ipAddress.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "shieldtv address not specified");
+                return;
+            }
+
+            shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
+        }
 
         monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
                 TimeUnit.MILLISECONDS);
@@ -116,6 +161,23 @@ public class GoogleTVHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Command received at handler: {} {}", channelUID.getId().toString(), command.toString());
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
+            if (CHANNEL_PINCODE.equals(channelUID.getId())) {
+                if (command instanceof StringType) {
+                    if (!shieldtvConnectionManager.getLoggedIn()) {
+                        shieldtvConnectionManager.handleCommand(channelUID, command);
+                        return;
+                    }
+                }
+            } else if (CHANNEL_APP.equals(channelUID.getId())) {
+                if (command instanceof StringType) {
+                    shieldtvConnectionManager.handleCommand(channelUID, command);
+                    return;
+                }
+
+            }
+        }
+
         googletvConnectionManager.handleCommand(channelUID, command);
     }
 
@@ -128,6 +190,7 @@ public class GoogleTVHandler extends BaseThingHandler {
                 monitorThingStatusJob.cancel(true);
             }
         }
+        shieldtvConnectionManager.dispose();
         googletvConnectionManager.dispose();
     }
 }

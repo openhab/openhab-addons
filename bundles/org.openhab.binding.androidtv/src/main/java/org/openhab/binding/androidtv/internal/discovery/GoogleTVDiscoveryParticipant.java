@@ -89,6 +89,6 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
-        return new ThingUID(THING_TYPE_GOOGLETV, service.getPropertyString("SERVER").substring(8));
+        return new ThingUID(THING_TYPE_GOOGLETV, service.getQualifiedName().split("\\.")[0]);
     }
 }
