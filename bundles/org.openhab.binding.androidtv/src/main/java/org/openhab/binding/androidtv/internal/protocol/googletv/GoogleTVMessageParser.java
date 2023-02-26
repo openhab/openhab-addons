@@ -166,13 +166,13 @@ public class GoogleTVMessageParser {
                 callback.setRemoteServer(remoteServer);
                 callback.setRemoteServerVersion(remoteServerVersion);
 
-            } else if (msg.startsWith("1200")) {
+            } else if (msg.startsWith("12")) {
                 // Second message on connection from GTV
                 // Login successful
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
                 callback.setLoggedIn(true);
-            } else if (msg.startsWith("9203")) {
+            } else if (msg.startsWith("92")) {
                 // Third message on connection from GTV
                 // Also sent on power state change (to ON only unless keypress triggers)i
                 // 9203 21 08 02 10 02 1a 11 534849454c4420416e64726f6964205456 20 02 2800 30 0f 38 0e 40 00
@@ -254,7 +254,7 @@ public class GoogleTVMessageParser {
                         volMute);
                 callback.setAudioMode(audioMode);
 
-            } else if (msg.startsWith("0802")) {
+            } else if (msg.startsWith("08")) {
                 // PIN Process Messages. Only used on 6467.
                 if (msg.startsWith("080210c801ca02")) {
                     // PIN Process Successful
@@ -264,7 +264,7 @@ public class GoogleTVMessageParser {
                     // 080210c801a201081204080310061801
                     // 080210c801fa0100
                 }
-            } else if (msg.startsWith("c202")) {
+            } else if (msg.startsWith("c2")) {
                 // Power State
                 // c202020800 - OFF
                 // c202020801 - ON
@@ -276,7 +276,7 @@ public class GoogleTVMessageParser {
             } else if (msg.startsWith("42")) {
                 // Keepalive request
                 callback.sendKeepAlive(msg);
-            } else if (msg.startsWith("a201")) {
+            } else if (msg.startsWith("a2")) {
                 // Current app name. Sent on keypress and power change.
                 // a201 21 0a 1f 62 1d 636f6d2e676f6f676c652e616e64726f69642e796f75747562652e7476
                 // -----------------LEN-com.google.android.youtube.tv
