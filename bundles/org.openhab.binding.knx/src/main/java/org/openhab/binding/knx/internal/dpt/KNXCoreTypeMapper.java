@@ -888,7 +888,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
                         logger.debug("toType: KNX DPT_Control_Dimming: break received.");
-                        return UnDefType.UNDEF;
+                        return UnDefType.NULL;
                     }
                     switch (subNumber) {
                         case 7:
@@ -897,6 +897,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                         case 8:
                             return translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
                     }
+                    break;
                 case 18:
                     DPTXlatorSceneControl translatorSceneControl = (DPTXlatorSceneControl) translator;
                     int decimalValue = translatorSceneControl.getSceneNumber();
