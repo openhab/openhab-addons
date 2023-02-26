@@ -3,7 +3,7 @@
 The Rollershutter Position emulates absolute position setting for Rollershutter devices which only support basic UP/DOWN/STOP commands.
 This allows a Rollershutter to be set to an absolution position from 0..100 even if the controller does not support this feature (i.e. Somfy controllers).
 
-The logic code used for this profile service was adapted from Tarag Gautier's javascript implementation VASRollershutter.js.
+The logic code used for this profile service was adapted from Tarag Gautier's JavaScript implementation VASRollershutter.js.
 By implementing as a profile, it eliminates the need for setting up a jsr233 js environment and simplifies the configuration.
 
 ## Configuration

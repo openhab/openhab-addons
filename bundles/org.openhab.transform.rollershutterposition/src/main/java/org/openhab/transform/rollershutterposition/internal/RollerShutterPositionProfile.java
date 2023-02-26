@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -177,7 +177,7 @@ public class RollerShutterPositionProfile implements StateProfile {
         if (updateTimer != null) {
             Objects.requireNonNull(updateTimer).cancel(true);
         }
-        this.updateTimer = scheduler.scheduleWithFixedDelay(updateTimeoutTask, 0, POSITION_UPDATE_PERIOD,
+        this.updateTimer = scheduler.scheduleWithFixedDelay(updateTimeoutTask, 0, POSITION_UPDATE_PERIOD_MILLISECONDS,
                 TimeUnit.MILLISECONDS);
 
         if (!alreadyMoving) {
