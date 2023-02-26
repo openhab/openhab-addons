@@ -118,7 +118,6 @@ public class GoogleTVConnectionManager {
     private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
-    private int periodicUpdate;
 
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
@@ -330,18 +329,7 @@ public class GoogleTVConnectionManager {
         return this.currentApp;
     }
 
-    private void sendPeriodicUpdate() {
-        // sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("080b120308cd08"))); // Get Hostname
-        // sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08f30712020805"))); // No Reply
-        // sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08f10712020800"))); // Get App DB
-        // sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("08ec0712020806"))); // Get App
-    }
-
     public void setLoggedIn(boolean isLoggedIn) {
-        if (!this.isLoggedIn && isLoggedIn) {
-            sendPeriodicUpdate();
-        }
-
         if (this.isLoggedIn != isLoggedIn) {
             setStatus(isLoggedIn);
         }
@@ -578,14 +566,12 @@ public class GoogleTVConnectionManager {
         senderThread.start();
         this.senderThread = senderThread;
 
-        if ((!config.shim) && (config.mode.equals(DEFAULT_MODE))) {
-            this.periodicUpdate = 20;
-        } else if (config.mode.equals(PIN_MODE)) {
+        if (config.mode.equals(PIN_MODE)) {
             // Send app name and device name
             sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(1))));
             // Unknown but required
             sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(2))));
-            // Don't end pin request yet, let user send REQUEST via PINCODE channel
+            // Don't send pin request yet, let user send REQUEST via PINCODE channel
         }
     }
 
@@ -1030,12 +1016,6 @@ public class GoogleTVConnectionManager {
         String keepalive = GoogleTVRequest.encodeMessage(GoogleTVRequest.keepAlive(request));
         sendCommand(new GoogleTVCommand(keepalive));
         reconnectTaskSchedule();
-        if (this.periodicUpdate <= 1) {
-            sendPeriodicUpdate();
-            this.periodicUpdate = 20;
-        } else {
-            periodicUpdate--;
-        }
     }
 
     /**

@@ -100,19 +100,27 @@ public class GoogleTVRequest {
     }
 
     public static String keepAlive(String request) {
-        // 0a 42 08 087f 10 b4908a a819
-        // 04 4a 02 087f
+        // 42 07 08 01 10 e4f1 8d01
+        // 4a 02 08 01
 
-        // 0b 42 09 088001 10 edb78a a819
-        // 05 4a 03 088001
+        // 42 08 08 7f 10 b4908a a819
+        // 4a 02 08 7f
+
+        // 42 09 08 8001 10 edb78a a819
+        // 4a 03 08 8001
+
         logger.trace("keepAlive Request {}", request);
         char[] charArray = request.toCharArray();
-        String lenString = "" + charArray[2] + charArray[3];
-        int length = (Integer.parseInt(lenString, 16) - 6) * 2;
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < length; i++) {
-            sb.append(charArray[i + 4]);
-        }
+        int i = 4;
+        String st = "";
+        do {
+            st = "" + charArray[i] + charArray[i + 1];
+            if (!st.equals("10")) {
+                sb.append(st);
+            }
+            i += 2;
+        } while (!st.equals("10"));
         String reply = "4a" + fixMessage(Integer.toHexString(sb.toString().length() / 2)) + sb.toString();
         logger.trace("keepAlive Reply {}", reply);
         return reply;
