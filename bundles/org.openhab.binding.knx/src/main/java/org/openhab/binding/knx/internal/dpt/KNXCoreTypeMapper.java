@@ -14,8 +14,6 @@ package org.openhab.binding.knx.internal.dpt;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -899,28 +897,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                         case 8:
                             return translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
                     }
-                case 14:
-                    /*
-                     * FIXME: Workaround for a bug in Calimero / Openhab DPTXlator4ByteFloat.makeString(): is using a
-                     * locale when
-                     * translating a Float to String. It could happen the a ',' is used as separator, such as
-                     * 3,14159E20.
-                     * Openhab's DecimalType expects this to be in US format and expects '.': 3.14159E20.
-                     * There is no issue with DPTXlator2ByteFloat since calimero is using a non-localized translation
-                     * there.
-                     */
-                    DPTXlator4ByteFloat translator4ByteFloat = (DPTXlator4ByteFloat) translator;
-                    Float f = translator4ByteFloat.getValueFloat();
-                    if (Math.abs(f) < 100000) {
-                        value = String.valueOf(f);
-                    } else {
-                        NumberFormat dcf = NumberFormat.getInstance(Locale.US);
-                        if (dcf instanceof DecimalFormat) {
-                            ((DecimalFormat) dcf).applyPattern("0.#####E0");
-                        }
-                        value = dcf.format(f);
-                    }
-                    break;
                 case 18:
                     DPTXlatorSceneControl translatorSceneControl = (DPTXlatorSceneControl) translator;
                     int decimalValue = translatorSceneControl.getSceneNumber();
