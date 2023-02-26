@@ -52,7 +52,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXThingHandler.class);
 
     protected @Nullable IndividualAddress address;
-    private @Nullable Future<?> descriptionJob;
+    private @Nullable ScheduledFuture<?> descriptionJob;
     private boolean filledDescription = false;
     private final Random random = new Random();
 

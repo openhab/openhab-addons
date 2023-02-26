@@ -14,8 +14,8 @@ package org.openhab.binding.knx.internal.factory;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.knx")
 public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE,
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE,
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     @Nullable
@@ -58,9 +58,11 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     private final SerialPortManager serialPortManager;
 
     @Activate
-    public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
-            final @Reference LocaleProvider localeProvider, final @Reference SerialPortManager serialPortManager) {
+    public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+        this.networkAddressService = networkAddressService;
         this.serialPortManager = serialPortManager;
         SerialTransportAdapter.setSerialPortManager(serialPortManager);
     }
@@ -84,7 +86,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
+        return null;
     }
 
     @Override
@@ -115,14 +117,5 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         }
         String serialPort = (String) configuration.get(SERIAL_PORT);
         return new ThingUID(thingTypeUID, serialPort);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 }
