@@ -103,25 +103,32 @@ public class GoogleTVRequest {
         // 42 07 08 01 10 e4f1 8d01
         // 4a 02 08 01
 
-        // 42 08 08 7f 10 b4908a a819
+        // 42 08 08 7f 10 b4 908a a819
         // 4a 02 08 7f
 
-        // 42 09 08 8001 10 edb78a a819
+        // 42 09 08 8001 10 ed b78a a819
         // 4a 03 08 8001
 
         logger.trace("keepAlive Request {}", request);
         char[] charArray = request.toCharArray();
         StringBuffer sb = new StringBuffer();
-        int i = 4;
+        sb.append(request);
+        sb.setLength(sb.toString().length() - 8);
         String st = "";
         do {
-            st = "" + charArray[i] + charArray[i + 1];
+            int sbLen = sb.toString().length();
+            st = "" + charArray[sbLen - 2] + charArray[sbLen - 1];
             if (!st.equals("10")) {
-                sb.append(st);
+                sb.setLength(sbLen - 2);
             }
-            i += 2;
         } while (!st.equals("10"));
-        String reply = "4a" + fixMessage(Integer.toHexString(sb.toString().length() / 2)) + sb.toString();
+        sb.setLength(sb.toString().length() - 2);
+
+        StringBuffer sbReply = new StringBuffer();
+        for (int i = 4; i < sb.toString().length(); i++) {
+            sbReply.append(charArray[i]);
+        }
+        String reply = "4a" + fixMessage(Integer.toHexString(sbReply.toString().length() / 2)) + sbReply.toString();
         logger.trace("keepAlive Reply {}", reply);
         return reply;
     }
