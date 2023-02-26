@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extended channels can be auto discovered and added to newly created groups in the {@link SystemInfoHandler}. The
+ * Extended channels can be auto discovered and added to newly created groups in the {@link SysteminfoHandler}. The
  * thing needs to be updated to add the groups. The `SysteminfoThingTypeProvider` OSGi service gives access to the
  * `ThingTypeRegistry` and serves the updated `ThingType`.
  *
@@ -73,7 +73,7 @@ public class SysteminfoThingTypeProvider extends AbstractDynamicTypeProvider {
     public SysteminfoThingTypeProvider(@Reference ThingTypeRegistry thingTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry,
             @Reference ChannelTypeRegistry channelTypeRegistry, @Reference StorageService storageService) {
-        super(storageService, BINDING_ID);
+        super(storageService);
         this.thingTypeRegistry = thingTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
