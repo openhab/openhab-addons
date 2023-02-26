@@ -10,21 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model;
-
-import java.util.List;
+package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
 /**
- * The {@link Capability}
+ * The {@link WasherDryerPropertyDiscovery}
  *
  * @author Nemer Daud - Initial contribution
  */
-public interface Capability {
-    MonitoringResultFormat getMonitoringDataFormat();
+public class WasherDryerPropertyDiscovery {
 
-    void setMonitoringDataFormat(MonitoringResultFormat monitoringDataFormat);
-
-    List<MonitoringBinaryProtocol> getMonitoringBinaryProtocol();
-
-    void setMonitoringBinaryProtocol(List<MonitoringBinaryProtocol> monitoringBinaryProtocol);
 }
