@@ -1,17 +1,23 @@
 # AndroidTV Binding
 
 This binding is designed to emulate different protocols to interact with the AndroidTV platform.
-Currently it emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
+Currently it emulates both the Google Video App to interact with a variety of AndroidTVs for purposes of remote control.
+It also currently emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
 
 ## Supported Things
 
-This binding supports a single thing type:
+This binding supports two thing types:
 
-- **shieldtv** - The ShieldTV
+- **googletv** - An AndroidTV running Google Video
+- **shieldtv** - An Nvidia ShieldTV
 
 ## Discovery
 
-ShieldTVs should be added automatically to the inbox through the mDNS discovery process.  
+Both GoogleTVs and ShieldTVs should be added automatically to the inbox through the mDNS discovery process.  
+
+In the case of the ShieldTV, OpenHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV device.
+Only the ShieldTV device should be configured, the GoogleTV can be ignored.
+There is no benefit to configuring two things for a ShieldTV device.  This could cause undesired effects.
 
 ## Binding Configuration
 
@@ -31,27 +37,45 @@ There are three required fields to connect successfully to a ShieldTV.
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
+Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
 ```
 
 ## Channels
 
-| Channel    | Type   | Read/Write | Description                 |
-|------------|--------|------------|-----------------------------|
-| keyboard   | String | RW         | Keyboard Data Entry         |
-| keypress   | String | RW         | Manual Key Press Entry      |
-| pincode    | String | RW         | PIN Code Entry              |
-| app        | String | RW         | App Control                 |
-| appname    | String | RO         | App Name                    |
-| appurl     | String | RO         | App URL                     |
+| Channel    | Type   | Description                 | GoogleTV | ShieldTV |
+|------------|--------|-----------------------------|----------|----------|
+| keyboard   | String | Keyboard Data Entry         |    RW    |    RW    | 
+| keypress   | String | Manual Key Press Entry      |    RW    |    RW    |
+| keycode    | String | Direct KEYCODE Entry        |    RW    |    RW    |
+| pincode    | String | PIN Code Entry              |    RW    |    RW    |
+| app        | String | App Control                 |    RO    |    RW    |
+| appname    | String | App Name                    |    N/A   |    RW    |
+| appurl     | String | App URL                     |    N/A   |    RW    |
+| power      | Switch | Power Control               |    RW    |    RW    |
+| volume     | Dimmer | Volume Control              |    RO    |    RO    |
+| mute       | Switch | Mute Control                |    RW    |    RW    |
 
 
 ```java
 String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
+String ShieldTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:shieldtv:livingroom:keycode" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
 String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
 String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
+Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
+Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
+Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
+
+String GoogleTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:googletv:theater:keyboard" }
+String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater:keypress" }
+String GoogleTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:googletv:theater:keycode" }
+String GoogleTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:googletv:theater:pincode" }
+String GoogleTV_APP "APP [%s]" { channel = "androidtv:googletv:theater:app" }
+Switch GoogleTV_POWER "POWER [%s]" { channel = "androidtv:googletv:theater:power" }
+Dimmer GoogleTV_VOLUME "VOLUME [%s]" { channel = "androidtv:googletv:theater:volume" }
+Switch GoogleTV_MUTE "MUTE [%s]" { channel = "androidtv:googletv:theater:mute" }
 ```
 
 KEYPRESS will accept the following commands as strings (case sensitive):
@@ -65,10 +89,12 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_BACK
 - KEY_MENU
 - KEY_PLAYPAUSE
+- KEY_STOP
+- KEY_NEXT
+- KEY_PREVIOUS
 - KEY_REWIND
 - KEY_FORWARD
 - KEY_POWER
-- KEY_POWERON
 - KEY_GOOGLE
 - KEY_VOLUP
 - KEY_VOLDOWN
@@ -83,33 +109,52 @@ You may also send an ASCII character as a single letter to simulate a key entry 
 Use KEY_SUBMIT when full text entry is complete to tell the shield to process the line.
 KEY_SUBMIT is automatically sent by KEYBOARD when a command is sent to the channel.
 
-APP will display the currently active app as presented by the ShieldTV.  
+APP will display the currently active app as presented by the AndroidTV.  
 You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.
+
+KEYCODE values are listed at the bottom of this README.
+NOTE: Not all KEYCODES work on all devices.  Keycodes above 255 have not been tested.
 
 ## Pin Code Process
 
-For the ShieldTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
+For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
 
-To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your ShiledTV.  A 6 digit PIN should be displayed on the screen.
+To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.  A 6 digit PIN should be displayed on the screen.
 
 To complete the PIN process, send the PIN displayed to the pincode channel.  The display should return back to where it was originally.
 
-This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
+If you are on a ShieldTV you must run that process a second time to authenticate the GoogleTV protocol stack.
 
+This completes the PIN process.  Upon reconnection (either from reconfiguration or a restart of OpenHAB), you should now see a message of "Login Successful" in openhab.log
 
 ## Full Example
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
+Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
+
 ```
 
 ```java
 String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }
+String ShieldTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:shieldtv:livingroom:keycode" }
 String ShieldTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:shieldtv:livingroom:pincode" }
 String ShieldTV_APP "APP [%s]" { channel = "androidtv:shieldtv:livingroom:app" }
 String ShieldTV_APPNAME "APPNAME [%s]" { channel = "androidtv:shieldtv:livingroom:appname" }
 String ShieldTV_APPURL "APPURL [%s]" { channel = "androidtv:shieldtv:livingroom:appurl" }
+Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
+Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
+Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
+
+String GoogleTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:googletv:theater:keyboard" }
+String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater:keypress" }
+String GoogleTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:googletv:theater:keycode" }
+String GoogleTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:googletv:theater:pincode" }
+String GoogleTV_APP "APP [%s]" { channel = "androidtv:googletv:theater:app" }
+Switch GoogleTV_POWER "POWER [%s]" { channel = "androidtv:googletv:theater:power" }
+Dimmer GoogleTV_VOLUME "VOLUME [%s]" { channel = "androidtv:googletv:theater:volume" }
+Switch GoogleTV_MUTE "MUTE [%s]" { channel = "androidtv:googletv:theater:mute" }
 ```
 
 ## Google Keycodes
