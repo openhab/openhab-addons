@@ -71,8 +71,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
     public static final VeSyncDeviceMetadata CORE200S = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_200S,
             Arrays.asList("C201S", "C202S"), List.of("Core200S"));
 
-    public static final VeSyncDeviceMetadata CORE300S = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_300S, List.of("C301S"),
-            List.of("Core300S"));
+    public static final VeSyncDeviceMetadata CORE300S = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_300S,
+            List.of("C301S", "C302S"), List.of("Core300S"));
 
     public static final VeSyncDeviceMetadata CORE400S = new VeSyncDeviceMetadata(DEV_FAMILY_CORE_400S, List.of("C401S"),
             List.of("Core400S"));
