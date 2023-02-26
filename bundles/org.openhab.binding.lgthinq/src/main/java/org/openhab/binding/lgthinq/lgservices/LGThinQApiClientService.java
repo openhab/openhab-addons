@@ -29,7 +29,7 @@ import org.openhab.binding.lgthinq.lgservices.model.*;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface LGThinQApiClientService<C extends Capability, S extends Snapshot> {
+public interface LGThinQApiClientService<C extends CapabilityDefinition, S extends SnapshotDefinition> {
 
     List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException;
 

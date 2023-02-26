@@ -19,7 +19,8 @@ package org.openhab.binding.lgthinq.lgservices.model;
  */
 public enum LGAPIVerion {
     V1_0(1.0),
-    V2_0(2.0);
+    V2_0(2.0),
+    UNDEF(0.0);
 
     private final double version;
 
