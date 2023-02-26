@@ -10,28 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model.fridge;
-
-import java.util.Map;
+package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgservices.model.Capability;
 
 /**
- * The {@link FridgeCapability}
+ * The {@link CourseType}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface FridgeCapability extends Capability {
+public enum CourseType {
+    // TODO - review DownloadCourse value, in remote start debugging
+    COURSE("Course"),
+    SMART_COURSE("SmartCourse"),
+    DOWNLOADED_COURSE("DownloadedCourse"),
+    UNDEF("Undefined");
 
-    public Map<String, String> getFridgeTempCMap();
+    private final String value;
 
-    public Map<String, String> getFridgeTempFMap();
+    CourseType(String s) {
+        value = s;
+    }
 
-    public Map<String, String> getFreezerTempCMap();
-
-    public Map<String, String> getFreezerTempFMap();
-
-    public void loadCapabilities(Object veryRootNode);
+    public String getValue() {
+        return value;
+    }
 }

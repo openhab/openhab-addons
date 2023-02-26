@@ -17,12 +17,13 @@
 			<channel id="power" typeId="system.power"/>
 			<channel id="state" typeId="washer-state"/>
 			<channel id="course" typeId="washer-course"/>
-			<channel id="smart-course" typeId="washer-smart-course"/>
-			<channel id="downloaded-course" typeId="washer-downloaded-course"/>
 			<channel id="temperature-level" typeId="washer-temp-level"/>
 			<channel id="door-lock" typeId="washer-door-lock"/>
 			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+			<channel id="rinse" typeId="washer-rinse"/>
+			<channel id="spin" typeId="washer-spin"/>
 			<channel id="delay-time" typeId="washerdryer-delay-time"/>
+
 		</channels>
 	</thing-type>
 	<thing-type id="221">
@@ -38,7 +39,6 @@
 			<channel id="state" typeId="washer-state"/>
 			<channel id="course" typeId="washer-course"/>
 			<channel id="smart-course" typeId="washer-smart-course"/>
-			<channel id="downloaded-course" typeId="washer-downloaded-course"/>
 			<channel id="temperature-level" typeId="washer-temp-level"/>
 			<channel id="door-lock" typeId="washer-door-lock"/>
 			<channel id="remain-time" typeId="washerdryer-remain-time"/>
