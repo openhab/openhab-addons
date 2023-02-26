@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ExceptionUtils} class defines some static utility methods
@@ -26,11 +25,14 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ExceptionUtils {
 
-    public static @Nullable Throwable getRootThrowable(@Nullable Throwable throwable) {
+    public static Throwable getRootThrowable(Throwable throwable) {
         List<Throwable> list = new ArrayList<>();
-        while (throwable != null && !list.contains(throwable)) {
+        while (!list.contains(throwable)) {
             list.add(throwable);
-            throwable = throwable.getCause();
+            Throwable throwableLocal = throwable.getCause();
+            if (throwableLocal != null) {
+                throwable = throwableLocal;
+            }
         }
         return throwable;
     }
