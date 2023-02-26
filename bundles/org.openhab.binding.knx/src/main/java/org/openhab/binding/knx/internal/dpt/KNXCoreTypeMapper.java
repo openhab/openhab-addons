@@ -473,6 +473,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 20.014: Beaufort Wind Force Scale, enumeration [0..12]
          * 20.017: Sensor Select, enumeration [0..4]
          * 20.020: Actuator Connect Type, enumeration [1..2]
+         * unsupported (added after Calimero release 2.5.1): 20.022 Power Return Mode, enumeration [0..2]
          * 20.100: Fuel Type, enumeration [0..3]
          * 20.101: Burner Type, enumeration [0..3]
          * 20.102: HVAC Mode, enumeration [0..4]
@@ -488,6 +489,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 20.112: Master/Slave Mode, enumeration [0..2]
          * 20.113: Status Room Setpoint, enumeration [0..2]
          * 20.114: Metering Device Type, enumeration [0..41/255]
+         * unsupported (added after Calimero release 2.5.1): 20.115: Hum Dehum Mode, enumeration [0..2]
          * 20.120: Air Damper Actuator Type, enumeration [1..2]
          * 20.121: Backup Mode, enumeration [0..1]
          * 20.122: Start Synchronization, enumeration [0..2]
@@ -537,6 +539,17 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         dptMainTypeMap.put(21, StringType.class);
         /** Exceptions Datapoint Types, Main number 21 */
         // Example since calimero 2.4: dptTypeMap.put(DptXlator8BitSet.DptGeneralStatus.getID(), StringType.class);
+
+        /**
+         * MainType: 22
+         * unsupported (added after Calimero release 2.5.1): 22.100: DHW Controller Status
+         * 22.101: RHCC Status (enumeration)
+         * unsupported: 22.102: HVAC combined status
+         * unsupported: 22.103: RTC status
+         * 22.1000: KNX medium (enumeration)
+         * unsupported (added after Calimero release 2.5.1): 22.1010: 16 channel activation
+         */
+        dptMainTypeMap.put(22, StringType.class);
 
         /**
          * MainType: 28
@@ -869,6 +882,9 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                         case 8:
                             return translatorBoolean.getValueBoolean() ? UpDownType.DOWN : UpDownType.UP;
                         case 9:
+                            // This is wrong. It should be true -> CLOSE, false -> OPEN, but can't be fixed without
+                            // breaking a lot of working installations.
+                            // The documentation has been updated to reflect that.
                             return translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                         case 10:
                             return translatorBoolean.getValueBoolean() ? StopMoveType.MOVE : StopMoveType.STOP;
