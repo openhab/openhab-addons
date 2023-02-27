@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.client.SerialTransportAdapter;
 import org.openhab.binding.knx.internal.handler.DeviceThingHandler;
 import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
@@ -26,6 +27,7 @@ import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -53,11 +55,14 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     @Nullable
     private NetworkAddressService networkAddressService;
+    private final SerialPortManager serialPortManager;
 
     @Activate
     public KNXHandlerFactory(final @Reference TranslationProvider translationProvider,
-            final @Reference LocaleProvider localeProvider) {
+            final @Reference LocaleProvider localeProvider, final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
+        this.serialPortManager = serialPortManager;
+        SerialTransportAdapter.setSerialPortManager(serialPortManager);
     }
 
     @Override
@@ -87,7 +92,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         if (thing.getThingTypeUID().equals(THING_TYPE_IP_BRIDGE)) {
             return new IPBridgeThingHandler((Bridge) thing, networkAddressService);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_SERIAL_BRIDGE)) {
-            return new SerialBridgeThingHandler((Bridge) thing);
+            return new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
         } else if (thing.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
             return new DeviceThingHandler(thing);
         }
