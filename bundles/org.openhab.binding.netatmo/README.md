@@ -537,7 +537,7 @@ Warnings:
 | live          | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal        | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal        | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
-| presence      | floodlight           | Switch       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
+| presence      | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
 | last-event    | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event    | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event    | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
