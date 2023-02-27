@@ -113,6 +113,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         thing.setProperty(name, value);
     }
 
+    protected boolean isChannelLinked(String channel) {
+        return isLinked(channel);
+    }
+
     @Override
     public void initialize() {
         final String uid = this.getThing().getUID().getAsString();
