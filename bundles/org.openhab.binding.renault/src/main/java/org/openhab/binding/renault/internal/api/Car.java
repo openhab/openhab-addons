@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.renault.internal.api;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -40,19 +43,23 @@ public class Car {
     private boolean disableBattery = false;
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
+    private boolean disableLockStatus = false;
 
+    private PauseMode pausemode = PauseMode.UNKNOWN;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
     private double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
     private @Nullable Double batteryAvailableEnergy;
+    private @Nullable ZonedDateTime batteryStatusUpdated;
     private @Nullable Integer chargingRemainingTime;
     private @Nullable Boolean hvacstatus;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
-    private @Nullable String locationUpdated;
+    private @Nullable ZonedDateTime locationUpdated;
+    private LockStatus lockStatus = LockStatus.UNKNOWN;
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
@@ -61,14 +68,6 @@ public class Car {
         UNKNOWN,
         SCHEDULE_MODE,
         ALWAYS_CHARGING
-    }
-
-    public enum PlugStatus {
-        UNPLUGGED,
-        PLUGGED,
-        PLUG_ERROR,
-        PLUG_UNKNOWN,
-        UNKNOWN
     }
 
     public enum ChargingStatus {
@@ -80,6 +79,26 @@ public class Car {
         CHARGE_IN_PROGRESS,
         CHARGE_ERROR,
         UNAVAILABLE,
+        UNKNOWN
+    }
+
+    public enum PauseMode {
+        RESUME,
+        PAUSE,
+        UNKNOWN
+    }
+
+    public enum LockStatus {
+        LOCKED,
+        UNLOCKED,
+        UNKNOWN
+    }
+
+    public enum PlugStatus {
+        UNPLUGGED,
+        PLUGGED,
+        PLUG_ERROR,
+        PLUG_UNKNOWN,
         UNKNOWN
     }
 
@@ -104,6 +123,14 @@ public class Car {
                 }
                 if (attributes.get("chargingRemainingTime") != null) {
                     chargingRemainingTime = attributes.get("chargingRemainingTime").getAsInt();
+                }
+                if (attributes.get("timestamp") != null) {
+                    try {
+                        batteryStatusUpdated = ZonedDateTime.parse(attributes.get("timestamp").getAsString());
+                    } catch (DateTimeParseException e) {
+                        batteryStatusUpdated = null;
+                        logger.debug("Error updating battery status updated timestamp. {}", e.getMessage());
+                    }
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -131,6 +158,20 @@ public class Car {
         }
     }
 
+    // Have to map action from string to enum
+    public void setPauseStatus(JsonObject responseJson) {
+        try {
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null) {
+                if (attributes.get("action") != null) {
+                    pausemode = PauseMode.valueOf(attributes.get("action").getAsString());
+                }
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Pause Status: {}", e.getMessage(), responseJson);
+        }
+    }
+
     public void setCockpit(JsonObject responseJson) {
         try {
             JsonObject attributes = getAttributes(responseJson);
@@ -153,7 +194,25 @@ public class Car {
                     gpsLongitude = attributes.get("gpsLongitude").getAsDouble();
                 }
                 if (attributes.get("lastUpdateTime") != null) {
-                    locationUpdated = attributes.get("lastUpdateTime").getAsString();
+                    try {
+                        locationUpdated = ZonedDateTime.parse(attributes.get("lastUpdateTime").getAsString());
+                    } catch (DateTimeParseException e) {
+                        locationUpdated = null;
+                        logger.debug("Error updating location updated timestamp. {}", e.getMessage());
+                    }
+                }
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Location: {}", e.getMessage(), responseJson);
+        }
+    }
+
+    public void setLockStatus(JsonObject responseJson) {
+        try {
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null) {
+                if (attributes.get("lockStatus") != null) {
+                    lockStatus = mapLockStatus(attributes.get("lockStatus").getAsString());
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -212,6 +271,10 @@ public class Car {
         return batteryLevel;
     }
 
+    public @Nullable ZonedDateTime getBatteryStatusUpdated() {
+        return batteryStatusUpdated;
+    }
+
     public @Nullable Boolean getHvacstatus() {
         return hvacstatus;
     }
@@ -232,7 +295,7 @@ public class Car {
         return gpsLongitude;
     }
 
-    public @Nullable String getLocationUpdated() {
+    public @Nullable ZonedDateTime getLocationUpdated() {
         return locationUpdated;
     }
 
@@ -270,6 +333,14 @@ public class Car {
 
     public void setHvacTargetTemperature(double hvacTargetTemperature) {
         this.hvacTargetTemperature = hvacTargetTemperature;
+    }
+
+    public void setPauseMode(PauseMode pausemode) {
+        this.pausemode = pausemode;
+    }
+
+    public PauseMode getPauseMode() {
+        return pausemode;
     }
 
     public void setDisableLocation(boolean disableLocation) {
@@ -312,6 +383,17 @@ public class Car {
         return null;
     }
 
+    private LockStatus mapLockStatus(final String apiLockStatus) {
+        switch (apiLockStatus) {
+            case "locked":
+                return LockStatus.LOCKED;
+            case "unlocked":
+                return LockStatus.UNLOCKED;
+            default:
+                return LockStatus.UNKNOWN;
+        }
+    }
+
     private PlugStatus mapPlugStatus(final String apiPlugState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
         switch (apiPlugState) {
@@ -350,5 +432,17 @@ public class Car {
             default:
                 return ChargingStatus.UNKNOWN;
         }
+    }
+
+    public LockStatus getLockStatus() {
+        return lockStatus;
+    }
+
+    public boolean isDisableLockStatus() {
+        return disableLockStatus;
+    }
+
+    public void setDisableLockStatus(boolean disableLockStatus) {
+        this.disableLockStatus = disableLockStatus;
     }
 }
