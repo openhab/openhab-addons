@@ -234,16 +234,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             default:
+                logger.warn("handleCommand() unknown channel, channelUID:{}", channelUID);
                 return; // <= nota bene !!
         }
 
-        String putResourceId = commandResourceIds.get(putResource.getType());
+        putResourceType = putResource.getType();
+        String putResourceId = commandResourceIds.get(putResourceType);
         if (Objects.nonNull(putResourceId)) {
             try {
                 getBridgeHandler().putResource(putResource.setId(putResourceId));
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.warn("handleCommand() error {}", e.getMessage(), e);
             }
+        } else {
+            logger.warn("handleCommand() resource not found, putResourceType:{}, channelUID:{}, command:{}",
+                    putResourceType, channelUID, command);
         }
     }
 

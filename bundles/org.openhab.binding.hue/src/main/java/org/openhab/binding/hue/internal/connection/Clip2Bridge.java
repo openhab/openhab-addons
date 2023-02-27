@@ -389,7 +389,7 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
-    private final boolean cannotEncodePutMethod;
+    private final boolean useHttpV1;
 
     private boolean closing = false;
     private boolean online = false;
@@ -420,26 +420,33 @@ public class Clip2Bridge implements Closeable {
         http2Client = new HTTP2Client();
         http2Client.setConnectTimeout(TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
-        boolean cannotEncodePutMethod;
+        try {
+            http2Client.start();
+        } catch (Exception e) {
+            logger.warn("Clip2Bridge() error opening HTTP2Client", e);
+        }
+        boolean http2Loaded = false;
         try {
             PreEncodedHttpField field = new PreEncodedHttpField(HttpHeader.C_METHOD, "PUT");
             ByteBuffer bytes = ByteBuffer.allocate(32);
             field.putTo(bytes, HttpVersion.HTTP_2);
-            cannotEncodePutMethod = false;
+            http2Loaded = true;
         } catch (Exception e) {
-            cannotEncodePutMethod = true;
+            logger.warn("Clip2Bridge() HTTP/2 hpack module not loaded; falling back to HTTP/1.1");
         }
-        this.cannotEncodePutMethod = cannotEncodePutMethod;
-        logger.trace("cannotEncodePutMethod:{}", cannotEncodePutMethod);
+        useHttpV1 = !http2Loaded;
     }
 
     /**
      * Send a ping to the Hue bridge to check that the session is still alive.
      */
     private void checkAlive() {
+        if (isOfflineOrClosing()) {
+            return;
+        }
         logger.debug("checkAlive() called");
         Session session = http2Session;
-        if (session != null) {
+        if (Objects.nonNull(session)) {
             session.ping(new PingFrame(false), Callback.NOOP);
         }
         if (Instant.now().isAfter(sessionExpireTime)) {
@@ -454,6 +461,11 @@ public class Clip2Bridge implements Closeable {
     public void close() {
         logger.debug("close() called");
         close(false);
+        try {
+            http2Client.stop();
+        } catch (Exception e) {
+            // closing anyway so ignore errors
+        }
     }
 
     /**
@@ -469,7 +481,6 @@ public class Clip2Bridge implements Closeable {
             closeCheckAliveTask();
             closeEventStream();
             closeSession();
-            closeClient();
             if (notifyHandler) {
                 bridgeHandler.onConnectionOffline();
             }
@@ -486,20 +497,6 @@ public class Clip2Bridge implements Closeable {
             task.cancel(true);
         }
         checkAliveTask = null;
-    }
-
-    /**
-     * Stop the client if necessary.
-     */
-    private void closeClient() {
-        logger.debug("closeClient() called");
-        try {
-            if (http2Client.isRunning()) {
-                http2Client.stop();
-            }
-        } catch (Exception e) {
-            // closing anyway so ignore errors
-        }
     }
 
     /**
@@ -527,7 +524,9 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Method that is called back in case of fatal stream or session events.
+     * Method that is called back in case of fatal stream or session events. Note: under normal operation, the Hue
+     * Bridge sends a 'soft' GO_AWAY command every nine or ten hours, so we handle such soft errors by attempting to
+     * silently close and re-open the connection without notifying the handler of an actual 'hard' error.
      *
      * @param cause the entity that called this method.
      * @param error the type of error.
@@ -536,10 +535,20 @@ public class Clip2Bridge implements Closeable {
         if (isOfflineOrClosing()) {
             return;
         }
-        if (cause instanceof ContentAdapter) {
-            logger.debug("fatalError() {} {}", cause.getClass().getSimpleName(), error);
+        String cause2 = cause.getClass().getSimpleName();
+        if (BaseAdapter.Error.GO_AWAY == error) {
+            try {
+                close(false);
+                open(false);
+                logger.debug("fatalError() {} {} reconnect ok", cause2, error);
+            } catch (ApiException | HttpUnAuthorizedException e) {
+                logger.warn("fatalError() {} {} reconnect failed {}", cause2, error, e.getMessage(), e);
+                close(true);
+            }
+        } else if (cause instanceof ContentAdapter) {
+            logger.debug("fatalError() {} {} ignored", cause2, error);
         } else {
-            logger.warn("fatalError() {} {}", cause.getClass().getSimpleName(), error);
+            logger.warn("fatalError() {} {} closing connection", cause2, error);
             close(true);
         }
     }
@@ -703,12 +712,11 @@ public class Clip2Bridge implements Closeable {
      * @throws HttpUnAuthorizedException if the application key is not authenticated
      */
     private void open(boolean notifyHandler) throws ApiException, HttpUnAuthorizedException {
-        logger.debug("open() {} called", notifyHandler);
+        logger.debug("open({}) called", notifyHandler);
         synchronized (this) {
             closing = false;
             online = false;
             sessionExpireTime = Instant.now().plusSeconds(CHECK_ALIVE_SECONDS);
-            openClient();
             openSession();
             openEventStream();
             openCheckAliveTask();
@@ -728,22 +736,6 @@ public class Clip2Bridge implements Closeable {
         if (Objects.isNull(task) || task.isCancelled() || task.isDone()) {
             checkAliveTask = bridgeHandler.getScheduler().scheduleWithFixedDelay(() -> checkAlive(),
                     CHECK_ALIVE_SECONDS, CHECK_ALIVE_SECONDS, TimeUnit.SECONDS);
-        }
-    }
-
-    /**
-     * Start the client.
-     *
-     * @throws IllegalStateException if either of the clients failed to start.
-     */
-    private void openClient() throws IllegalStateException {
-        logger.debug("openClient() called");
-        if (!http2Client.isRunning()) {
-            try {
-                http2Client.start();
-            } catch (Exception e) {
-                throw new IllegalStateException("HTTP v2 client not started");
-            }
         }
     }
 
@@ -813,17 +805,19 @@ public class Clip2Bridge implements Closeable {
      * library version currently used by OH [v9.4.46.v20220331] fails with an 'hpack' (header compression) error
      * <a href="https://github.com/eclipse/jetty.project/issues/9168">(Jetty Issue 9168)</a> when attempting to encode
      * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, or when Jetty
-     * HTTP/2 is included in the OH core, but in the meantime we fall back to using a regular HTTP/1.1 call.
+     * HTTP/2 is included in the OH core, but in the meantime we can fall back to using a regular HTTP/1.1 call.
      * </p>
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      */
     public void putResource(Resource resource) throws ApiException {
-        if (cannotEncodePutMethod) {
-            putResourceHttp1(resource);
-        } else {
-            putResourceHttp2(resource);
+        if (!isOfflineOrClosing()) {
+            if (useHttpV1) {
+                putResourceHttp1(resource);
+            } else {
+                putResourceHttp2(resource);
+            }
         }
     }
 
