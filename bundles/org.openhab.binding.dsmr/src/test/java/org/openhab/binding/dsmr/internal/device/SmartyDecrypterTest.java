@@ -112,7 +112,6 @@ public class SmartyDecrypterTest {
         decoder.parse(data, data.length);
         final String expected = new String(TelegramReaderUtil.readRawTelegram("smarty_long"), StandardCharsets.UTF_8);
 
-        // assertThat("", telegramListener.state, is(equalTo(TelegramState.OK)));
         assertThat("Should have correctly decrypted the telegram", dataRead.get(), is(equalTo(expected)));
     }
 }

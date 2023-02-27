@@ -179,11 +179,9 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
         if (logger.isDebugEnabled()) {
             logger.debug("[{}] Received {} cosemObjects", currentScannedPortName, cosemObjects.size());
         }
-        // } else if (!cosemObjects.isEmpty()) {
         final ThingUID bridgeThingUID = bridgeDiscovered(THING_TYPE_DSMR_BRIDGE);
         meterDetector.detectMeters(telegram).getKey().forEach(m -> meterDiscovered(m, bridgeThingUID));
         stopSerialPortScan();
-        // }
     }
 
     @Override

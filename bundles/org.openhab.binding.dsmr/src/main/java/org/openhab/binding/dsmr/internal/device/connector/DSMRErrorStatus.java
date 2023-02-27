@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum DSMRErrorStatus {
     /**
-     * The smarty telegram was successful received but could not be decoded because of an invalid decryption key.
+     * The smarty telegram was successfully received but could not be decoded because of an invalid decryption key.
      */
     INVALID_DECRYPTION_KEY(false),
     /**
@@ -41,7 +41,7 @@ public enum DSMRErrorStatus {
      */
     PORT_INTERNAL_ERROR(true),
     /**
-     * Serial port is doesn't support the configured settings.
+     * Serial port doesn't support the configured settings.
      */
     PORT_NOT_COMPATIBLE(true),
     /**
@@ -53,11 +53,11 @@ public enum DSMRErrorStatus {
      */
     TELEGRAM_CRC_ERROR(false),
     /**
-     * TThe P1 telegram has syntax errors.
+     * The P1 telegram has syntax errors.
      */
     TELEGRAM_DATA_CORRUPTION(false),
     /**
-     * Received telegram data, but after parsing no data is present. Possible all data corrupted.
+     * Received telegram data, but after parsing no data is present. Possibly all data corrupted.
      */
     TELEGRAM_NO_DATA(false);
 

@@ -148,7 +148,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
     public void initialize() {
         final DSMRDeviceConfiguration deviceConfig = getConfigAs(DSMRDeviceConfiguration.class);
 
-        if (smartyMeter && !validateSmaryMeterConfiguration(deviceConfig)) {
+        if (smartyMeter && !validateSmartyMeterConfiguration(deviceConfig)) {
             return;
         }
 
@@ -167,7 +167,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
                 TimeUnit.NANOSECONDS);
     }
 
-    private boolean validateSmaryMeterConfiguration(final DSMRDeviceConfiguration deviceConfig) {
+    private boolean validateSmartyMeterConfiguration(final DSMRDeviceConfiguration deviceConfig) {
         final boolean valid;
         if (deviceConfig.decryptionKey == null || deviceConfig.decryptionKey.length() != 32) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
