@@ -140,7 +140,7 @@ public class LocationMessage {
     @Override
     public String toString() {
         return "LocationMessage [" + ("type=" + type + ", ") + ("trackerId=" + trackerId + ", ")
-                + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ")
+                + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ") + ("altitude=" + altitude + ", ")
                 + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
                 + ("batteryLevel=" + batteryLevel + ", ") + ("timestampMillis=" + timestampMillis) + "]";
     }
