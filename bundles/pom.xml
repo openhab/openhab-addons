@@ -75,6 +75,7 @@
     <module>org.openhab.binding.bluetooth.enoceanble</module>
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
+    <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.bondhome</module>
