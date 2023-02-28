@@ -118,6 +118,7 @@ public class GoogleTVConnectionManager {
     private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
+    private final Object connectionLock = new Object();
 
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
@@ -505,191 +506,196 @@ public class GoogleTVConnectionManager {
         }
     }
 
-    public synchronized void connect() {
-
-        try {
-            logger.debug("Opening GoogleTV SSL connection to {}:{}", config.ipAddress, config.port);
-            SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
-            sslSocket.startHandshake();
-            this.shimServerChain = ((SSLSocket) sslSocket).getSession().getPeerCertificates();
-            writer = new BufferedWriter(
-                    new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-            reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-            this.sslSocket = sslSocket;
-            this.sendQueue.clear();
-        } catch (UnknownHostException e) {
-            setStatus(false, "Unknown host");
-            return;
-        } catch (IllegalArgumentException e) {
-            // port out of valid range
-            setStatus(false, "Invalid port number");
-            return;
-        } catch (InterruptedIOException e) {
-            logger.debug("Interrupted while establishing GoogleTV connection");
-            Thread.currentThread().interrupt();
-            return;
-        } catch (IOException e) {
-            if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
-                setStatus(false, "PIN Process Incomplete");
-                logger.debug("GoogleTV PIN Process Incomplete");
-                reconnectTaskCancel(true);
-                startChildConnectionManager(this.config.port + 1, PIN_MODE);
-            } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
-                logger.debug("Shim cert_unknown I/O error while connecting: {}", e.getMessage());
-                Socket shimServerSocket = this.shimServerSocket;
-                if (shimServerSocket != null) {
-                    try {
-                        shimServerSocket.close();
-                    } catch (IOException ex) {
-                        logger.debug("Error closing GoogleTV SSL socket: {}", ex.getMessage());
+    public void connect() {
+        synchronized (connectionLock) {
+            try {
+                logger.debug("Opening GoogleTV SSL connection to {}:{}", config.ipAddress, config.port);
+                SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
+                sslSocket.startHandshake();
+                this.shimServerChain = ((SSLSocket) sslSocket).getSession().getPeerCertificates();
+                writer = new BufferedWriter(
+                        new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                reader = new BufferedReader(
+                        new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                this.sslSocket = sslSocket;
+                this.sendQueue.clear();
+            } catch (UnknownHostException e) {
+                setStatus(false, "Unknown host");
+                return;
+            } catch (IllegalArgumentException e) {
+                // port out of valid range
+                setStatus(false, "Invalid port number");
+                return;
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted while establishing GoogleTV connection");
+                Thread.currentThread().interrupt();
+                return;
+            } catch (IOException e) {
+                if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))
+                        && (!config.shim)) {
+                    setStatus(false, "PIN Process Incomplete");
+                    logger.debug("GoogleTV PIN Process Incomplete");
+                    reconnectTaskCancel(true);
+                    startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
+                    logger.debug("Shim cert_unknown I/O error while connecting: {}", e.getMessage());
+                    Socket shimServerSocket = this.shimServerSocket;
+                    if (shimServerSocket != null) {
+                        try {
+                            shimServerSocket.close();
+                        } catch (IOException ex) {
+                            logger.debug("Error closing GoogleTV SSL socket: {}", ex.getMessage());
+                        }
+                        this.shimServerSocket = null;
                     }
-                    this.shimServerSocket = null;
+
+                } else {
+                    setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
+                    logger.info("Error opening GoogleTV SSL connection to {}:{} {}", config.ipAddress, config.port,
+                            e.getMessage());
+                    disconnect(false);
+                    scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
                 }
-
-            } else {
-                setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
-                logger.info("Error opening GoogleTV SSL connection: {}", e.getMessage());
-                disconnect(false);
-                scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
+                return;
             }
-            return;
-        }
 
-        setStatus(false, "Initializing");
+            setStatus(false, "Initializing");
 
-        Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader");
-        readerThread.setDaemon(true);
-        readerThread.start();
-        this.readerThread = readerThread;
+            Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader");
+            readerThread.setDaemon(true);
+            readerThread.start();
+            this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender");
-        senderThread.setDaemon(true);
-        senderThread.start();
-        this.senderThread = senderThread;
+            Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender");
+            senderThread.setDaemon(true);
+            senderThread.start();
+            this.senderThread = senderThread;
 
-        if (config.mode.equals(PIN_MODE)) {
-            // Send app name and device name
-            sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(1))));
-            // Unknown but required
-            sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(2))));
-            // Don't send pin request yet, let user send REQUEST via PINCODE channel
+            if (config.mode.equals(PIN_MODE)) {
+                // Send app name and device name
+                sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(1))));
+                // Unknown but required
+                sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(2))));
+                // Don't send pin request yet, let user send REQUEST via PINCODE channel
+            }
         }
     }
 
-    public synchronized void shimInitalize() {
+    public void shimInitalize() {
+        synchronized (connectionLock) {
+            AndroidTVPKI shimPKI = new AndroidTVPKI();
+            byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
+            SSLContext sslContext;
 
-        AndroidTVPKI shimPKI = new AndroidTVPKI();
-        byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
-        SSLContext sslContext;
+            try {
+                shimPKI.generateNewKeyPair(shimEncryptionKey);
+                // Move this to PKI. Shim requires a trusted cert chain in the keystore.
+                KeyStore keystore = KeyStore.getInstance("JKS");
+                FileInputStream keystoreInputStream = new FileInputStream(config.keystoreFileName);
+                keystore.load(keystoreInputStream, config.keystorePassword.toCharArray());
 
-        try {
-            shimPKI.generateNewKeyPair(shimEncryptionKey);
-            // Move this to PKI. Shim requires a trusted cert chain in the keystore.
-            KeyStore keystore = KeyStore.getInstance("JKS");
-            FileInputStream keystoreInputStream = new FileInputStream(config.keystoreFileName);
-            keystore.load(keystoreInputStream, config.keystorePassword.toCharArray());
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf.init(keystore, config.keystorePassword.toCharArray());
+                TrustManager[] trustManagers = defineNoOpTrustManager();
 
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keystore, config.keystorePassword.toCharArray());
-            TrustManager[] trustManagers = defineNoOpTrustManager();
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+                this.sslServerSocketFactory = sslContext.getServerSocketFactory();
 
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), trustManagers, null);
-            this.sslServerSocketFactory = sslContext.getServerSocketFactory();
+                ServerSocketFactory factory = SSLServerSocketFactory.getDefault();
 
-            ServerSocketFactory factory = SSLServerSocketFactory.getDefault();
-
-            logger.debug("Opening GoogleTV shim on port {}", config.port);
-            SSLServerSocket sslServerSocket = (SSLServerSocket) this.sslServerSocketFactory
-                    .createServerSocket(config.port);
-            if (this.config.mode.equals(DEFAULT_MODE)) {
-                sslServerSocket.setNeedClientAuth(true);
-            } else {
-                sslServerSocket.setWantClientAuth(true);
-            }
-
-            logger.trace("sslServerSocket Cipher {}", sslServerSocket.getEnabledCipherSuites());
-            logger.trace("sslServerSocket Protocols {}", sslServerSocket.getEnabledProtocols());
-
-            logger.trace("sslServerSocket Cipher {}", sslServerSocket.getSupportedCipherSuites());
-            logger.trace("sslServerSocket Protocols {}", sslServerSocket.getSupportedProtocols());
-
-            while (true) {
-                logger.debug("Waiting for shim connection... {}", config.port);
-                if (this.config.mode.equals(DEFAULT_MODE) && (childConnectionManager == null)) {
-                    logger.debug("Starting childConnectionManager {}", config.port);
-                    startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                logger.debug("Opening GoogleTV shim on port {}", config.port);
+                SSLServerSocket sslServerSocket = (SSLServerSocket) this.sslServerSocketFactory
+                        .createServerSocket(config.port);
+                if (this.config.mode.equals(DEFAULT_MODE)) {
+                    sslServerSocket.setNeedClientAuth(true);
+                } else {
+                    sslServerSocket.setWantClientAuth(true);
                 }
-                SSLSocket serverSocket = (SSLSocket) sslServerSocket.accept();
-                logger.trace("shimInitalize accepted {}", config.port);
-                try {
-                    serverSocket.startHandshake();
-                    logger.trace("shimInitalize startHandshake {}", config.port);
-                    connect();
-                    logger.trace("shimInitalize connected {}", config.port);
 
-                    SSLSession session = serverSocket.getSession();
-                    Certificate[] cchain2 = session.getPeerCertificates();
-                    this.shimClientChain = cchain2;
-                    Certificate[] cchain3 = session.getLocalCertificates();
-                    this.shimClientLocalChain = cchain3;
+                logger.trace("sslServerSocket Cipher {}", sslServerSocket.getEnabledCipherSuites());
+                logger.trace("sslServerSocket Protocols {}", sslServerSocket.getEnabledProtocols());
 
-                    X509Certificate[] shimX509ClientChain = new X509Certificate[cchain2.length];
+                logger.trace("sslServerSocket Cipher {}", sslServerSocket.getSupportedCipherSuites());
+                logger.trace("sslServerSocket Protocols {}", sslServerSocket.getSupportedProtocols());
 
-                    if (cchain2 != null) {
-                        for (int i = 0; i < cchain2.length; i++) {
-                            logger.trace("Connection from: {}",
-                                    ((X509Certificate) cchain2[i]).getSubjectX500Principal());
-                            shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
+                while (true) {
+                    logger.debug("Waiting for shim connection... {}", config.port);
+                    if (this.config.mode.equals(DEFAULT_MODE) && (childConnectionManager == null)) {
+                        logger.debug("Starting childConnectionManager {}", config.port);
+                        startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                    }
+                    SSLSocket serverSocket = (SSLSocket) sslServerSocket.accept();
+                    logger.trace("shimInitalize accepted {}", config.port);
+                    try {
+                        serverSocket.startHandshake();
+                        logger.trace("shimInitalize startHandshake {}", config.port);
+                        connect();
+                        logger.trace("shimInitalize connected {}", config.port);
+
+                        SSLSession session = serverSocket.getSession();
+                        Certificate[] cchain2 = session.getPeerCertificates();
+                        this.shimClientChain = cchain2;
+                        Certificate[] cchain3 = session.getLocalCertificates();
+                        this.shimClientLocalChain = cchain3;
+
+                        X509Certificate[] shimX509ClientChain = new X509Certificate[cchain2.length];
+
+                        if (cchain2 != null) {
+                            for (int i = 0; i < cchain2.length; i++) {
+                                logger.trace("Connection from: {}",
+                                        ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                                shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
+                            }
                         }
-                    }
 
-                    if (this.config.mode.equals(PIN_MODE)) {
-                        this.shimX509ClientChain = shimX509ClientChain;
-                        connectionManager.setShimX509ClientChain(shimX509ClientChain);
-                    }
-
-                    if (cchain3 != null) {
-                        for (int i = 0; i < cchain3.length; i++) {
-                            logger.trace("Connection from: {}",
-                                    ((X509Certificate) cchain3[i]).getSubjectX500Principal());
+                        if (this.config.mode.equals(PIN_MODE)) {
+                            this.shimX509ClientChain = shimX509ClientChain;
+                            connectionManager.setShimX509ClientChain(shimX509ClientChain);
                         }
+
+                        if (cchain3 != null) {
+                            for (int i = 0; i < cchain3.length; i++) {
+                                logger.trace("Connection from: {}",
+                                        ((X509Certificate) cchain3[i]).getSubjectX500Principal());
+                            }
+                        }
+
+                        logger.trace("Peer host is {}", session.getPeerHost());
+                        logger.trace("Cipher is {}", session.getCipherSuite());
+                        logger.trace("Protocol is {}", session.getProtocol());
+                        logger.trace("ID is {}", new BigInteger(session.getId()));
+                        logger.trace("Session created in {}", session.getCreationTime());
+                        logger.trace("Session accessed in {}", session.getLastAccessedTime());
+
+                        shimWriter = new BufferedWriter(
+                                new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                        shimReader = new BufferedReader(
+                                new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                        this.shimServerSocket = serverSocket;
+                        this.shimQueue.clear();
+
+                        Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
+                        readerThread.setDaemon(true);
+                        readerThread.start();
+                        this.shimReaderThread = readerThread;
+
+                        Thread senderThread = new Thread(this::shimSenderThreadJob, "GoogleTV shim sender");
+                        senderThread.setDaemon(true);
+                        senderThread.start();
+                        this.shimSenderThread = senderThread;
+                    } catch (Exception e) {
+                        logger.trace("Shim initalization exception {}", config.port);
+                        logger.trace("Shim initalization exception", e);
+
                     }
-
-                    logger.trace("Peer host is {}", session.getPeerHost());
-                    logger.trace("Cipher is {}", session.getCipherSuite());
-                    logger.trace("Protocol is {}", session.getProtocol());
-                    logger.trace("ID is {}", new BigInteger(session.getId()));
-                    logger.trace("Session created in {}", session.getCreationTime());
-                    logger.trace("Session accessed in {}", session.getLastAccessedTime());
-
-                    shimWriter = new BufferedWriter(
-                            new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-                    shimReader = new BufferedReader(
-                            new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-                    this.shimServerSocket = serverSocket;
-                    this.shimQueue.clear();
-
-                    Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
-                    readerThread.setDaemon(true);
-                    readerThread.start();
-                    this.shimReaderThread = readerThread;
-
-                    Thread senderThread = new Thread(this::shimSenderThreadJob, "GoogleTV shim sender");
-                    senderThread.setDaemon(true);
-                    senderThread.start();
-                    this.shimSenderThread = senderThread;
-                } catch (Exception e) {
-                    logger.trace("Shim initalization exception {}", config.port);
-                    logger.trace("Shim initalization exception", e);
-
                 }
-            }
-        } catch (Exception e) {
-            logger.trace("Shim initalization exception {}", config.port);
-            logger.trace("Shim initalization exception", e);
+            } catch (Exception e) {
+                logger.trace("Shim initalization exception {}", config.port);
+                logger.trace("Shim initalization exception", e);
 
-            return;
+                return;
+            }
         }
     }
 
@@ -705,101 +711,103 @@ public class GoogleTVConnectionManager {
      * @param interruptAll Set if reconnect task should be interrupted if running. Should be false when calling from
      *            connect or reconnect, and true when calling from dispose.
      */
-    private synchronized void disconnect(boolean interruptAll) {
-        logger.debug("Disconnecting GoogleTV");
+    private void disconnect(boolean interruptAll) {
+        synchronized (connectionLock) {
+            logger.debug("Disconnecting GoogleTV");
 
-        ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
-        if (connectRetryJob != null) {
-            connectRetryJob.cancel(true);
-        }
-        ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
-        if (keepAliveJob != null) {
-            keepAliveJob.cancel(true);
-        }
-        ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
-        if (keepAliveReconnectJob != null) {
-            keepAliveReconnectJob.cancel(true);
-        }
-
-        Thread senderThread = this.senderThread;
-        if (senderThread != null && senderThread.isAlive()) {
-            senderThread.interrupt();
-        }
-
-        Thread readerThread = this.readerThread;
-        if (readerThread != null && readerThread.isAlive()) {
-            readerThread.interrupt();
-        }
-
-        Thread shimSenderThread = this.shimSenderThread;
-        if (shimSenderThread != null && shimSenderThread.isAlive()) {
-            shimSenderThread.interrupt();
-        }
-
-        Thread shimReaderThread = this.shimReaderThread;
-        if (shimReaderThread != null && shimReaderThread.isAlive()) {
-            shimReaderThread.interrupt();
-        }
-
-        SSLSocket sslSocket = this.sslSocket;
-        if (sslSocket != null) {
-            try {
-                sslSocket.close();
-            } catch (IOException e) {
-                logger.debug("Error closing GoogleTV SSL socket: {}", e.getMessage());
+            ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
+            if (connectRetryJob != null) {
+                connectRetryJob.cancel(true);
             }
-            this.sslSocket = null;
-        }
-        BufferedReader reader = this.reader;
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                logger.debug("Error closing reader: {}", e.getMessage());
+            ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
+            if (keepAliveJob != null) {
+                keepAliveJob.cancel(true);
             }
-        }
-        BufferedWriter writer = this.writer;
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                logger.debug("Error closing writer: {}", e.getMessage());
-            }
-        }
+            reconnectTaskCancel(interruptAll); // May be called from keepAliveReconnectJob thread
 
-        Socket shimServerSocket = this.shimServerSocket;
-        if (shimServerSocket != null) {
-            try {
-                shimServerSocket.close();
-            } catch (IOException e) {
-                logger.debug("Error closing GoogleTV SSL socket: {}", e.getMessage());
+            Thread senderThread = this.senderThread;
+            if (senderThread != null && senderThread.isAlive()) {
+                senderThread.interrupt();
             }
-            this.shimServerSocket = null;
-        }
-        BufferedReader shimReader = this.shimReader;
-        if (shimReader != null) {
-            try {
-                shimReader.close();
-            } catch (IOException e) {
-                logger.debug("Error closing shimReader: {}", e.getMessage());
+
+            Thread readerThread = this.readerThread;
+            if (readerThread != null && readerThread.isAlive()) {
+                readerThread.interrupt();
             }
-        }
-        BufferedWriter shimWriter = this.shimWriter;
-        if (shimWriter != null) {
-            try {
-                shimWriter.close();
-            } catch (IOException e) {
-                logger.debug("Error closing shimWriter: {}", e.getMessage());
+
+            Thread shimSenderThread = this.shimSenderThread;
+            if (shimSenderThread != null && shimSenderThread.isAlive()) {
+                shimSenderThread.interrupt();
+            }
+
+            Thread shimReaderThread = this.shimReaderThread;
+            if (shimReaderThread != null && shimReaderThread.isAlive()) {
+                shimReaderThread.interrupt();
+            }
+
+            SSLSocket sslSocket = this.sslSocket;
+            if (sslSocket != null) {
+                try {
+                    sslSocket.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing GoogleTV SSL socket: {}", e.getMessage());
+                }
+                this.sslSocket = null;
+            }
+            BufferedReader reader = this.reader;
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing reader: {}", e.getMessage());
+                }
+            }
+            BufferedWriter writer = this.writer;
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing writer: {}", e.getMessage());
+                }
+            }
+
+            Socket shimServerSocket = this.shimServerSocket;
+            if (shimServerSocket != null) {
+                try {
+                    shimServerSocket.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing GoogleTV SSL socket: {}", e.getMessage());
+                }
+                this.shimServerSocket = null;
+            }
+            BufferedReader shimReader = this.shimReader;
+            if (shimReader != null) {
+                try {
+                    shimReader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing shimReader: {}", e.getMessage());
+                }
+            }
+            BufferedWriter shimWriter = this.shimWriter;
+            if (shimWriter != null) {
+                try {
+                    shimWriter.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing shimWriter: {}", e.getMessage());
+                }
             }
         }
     }
 
-    private synchronized void reconnect() {
-        if (!this.disposing) {
-            logger.debug("Attempting to reconnect to the GoogleTV");
-            setStatus(false, "reconnecting");
-            disconnect(false);
-            connect();
+    private void reconnect() {
+        synchronized (connectionLock) {
+
+            if (!this.disposing) {
+                logger.debug("Attempting to reconnect to the GoogleTV");
+                setStatus(false, "reconnecting");
+                disconnect(false);
+                connect();
+            }
         }
     }
 
@@ -982,7 +990,7 @@ public class GoogleTVConnectionManager {
                 thisShimMsg = GoogleTVRequest.fixMessage(Integer.toHexString(reader.read()));
                 if (thisShimMsg.equals("ffffffff")) {
                     // Google has crashed the connection. Disconnect hard.
-                    disconnect(true);
+                    disconnect(false);
                     break;
                 }
                 if (length == 0) {
@@ -1066,7 +1074,7 @@ public class GoogleTVConnectionManager {
 
     public void finishPinProcess() {
         if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
-            disconnect(true);
+            disconnect(false);
             connectionManager.finishPinProcess();
         } else if ((config.mode.equals(DEFAULT_MODE)) && (!config.shim)) {
             childConnectionManager.dispose();

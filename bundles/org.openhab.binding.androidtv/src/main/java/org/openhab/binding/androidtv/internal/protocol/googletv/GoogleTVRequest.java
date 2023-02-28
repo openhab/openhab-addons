@@ -113,7 +113,7 @@ public class GoogleTVRequest {
         char[] charArray = request.toCharArray();
         StringBuffer sb = new StringBuffer();
         sb.append(request);
-        sb.setLength(sb.toString().length() - 8);
+        sb.setLength(sb.toString().length() - 6);
         String st = "";
         do {
             int sbLen = sb.toString().length();

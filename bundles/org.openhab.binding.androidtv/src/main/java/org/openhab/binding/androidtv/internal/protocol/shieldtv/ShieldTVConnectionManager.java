@@ -109,6 +109,7 @@ public class ShieldTVConnectionManager {
     private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
+    private final Object connectionLock = new Object();
     private int periodicUpdate;
 
     private StringBuffer sbReader = new StringBuffer();
@@ -354,115 +355,121 @@ public class ShieldTVConnectionManager {
         }
     }
 
-    public synchronized void connect() {
+    public void connect() {
+        synchronized (connectionLock) {
 
-        try {
-            logger.debug("Opening ShieldTV SSL connection to {}:{}", config.ipAddress, config.port);
-            SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
-            sslSocket.startHandshake();
-            writer = new BufferedWriter(
-                    new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-            reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-            this.sslSocket = sslSocket;
-        } catch (UnknownHostException e) {
-            setStatus(false, "Unknown host");
-            return;
-        } catch (IllegalArgumentException e) {
-            // port out of valid range
-            setStatus(false, "Invalid port number");
-            return;
-        } catch (InterruptedIOException e) {
-            logger.debug("Interrupted while establishing ShieldTV connection");
-            Thread.currentThread().interrupt();
-            return;
-        } catch (IOException e) {
-            setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
-            logger.info("Error opening ShieldTV SSL connection: {}", e.getMessage());
-            disconnect(false);
-            scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
-            return;
-        }
+            try {
+                logger.debug("Opening ShieldTV SSL connection to {}:{}", config.ipAddress, config.port);
+                SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
+                sslSocket.startHandshake();
+                writer = new BufferedWriter(
+                        new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                reader = new BufferedReader(
+                        new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                this.sslSocket = sslSocket;
+            } catch (UnknownHostException e) {
+                setStatus(false, "Unknown host");
+                return;
+            } catch (IllegalArgumentException e) {
+                // port out of valid range
+                setStatus(false, "Invalid port number");
+                return;
+            } catch (InterruptedIOException e) {
+                logger.debug("Interrupted while establishing ShieldTV connection");
+                Thread.currentThread().interrupt();
+                return;
+            } catch (IOException e) {
+                setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
+                logger.info("Error opening ShieldTV SSL connection to {}:{} {}", config.ipAddress, config.port,
+                        e.getMessage());
+                disconnect(false);
+                scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
+                return;
+            }
 
-        setStatus(false, "Initializing");
+            setStatus(false, "Initializing");
 
-        Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader");
-        readerThread.setDaemon(true);
-        readerThread.start();
-        this.readerThread = readerThread;
+            Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader");
+            readerThread.setDaemon(true);
+            readerThread.start();
+            this.readerThread = readerThread;
 
-        Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender");
-        senderThread.setDaemon(true);
-        senderThread.start();
-        this.senderThread = senderThread;
+            Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender");
+            senderThread.setDaemon(true);
+            senderThread.start();
+            this.senderThread = senderThread;
 
-        if (!config.shim) {
-            this.periodicUpdate = 20;
-            logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
-            keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
-                    TimeUnit.SECONDS);
+            if (!config.shim) {
+                this.periodicUpdate = 20;
+                logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
+                keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
+                        TimeUnit.SECONDS);
 
-            String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
-            sendCommand(new ShieldTVCommand(login));
+                String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
+                sendCommand(new ShieldTVCommand(login));
+            }
         }
     }
 
-    public synchronized void shimInitalize() {
+    public void shimInitalize() {
+        synchronized (connectionLock) {
 
-        AndroidTVPKI shimPKI = new AndroidTVPKI();
-        byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
-        SSLContext sslContext;
+            AndroidTVPKI shimPKI = new AndroidTVPKI();
+            byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
+            SSLContext sslContext;
 
-        try {
-            shimPKI.generateNewKeyPair(shimEncryptionKey);
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(shimPKI.getKeyStore(config.keystorePassword, shimEncryptionKey),
-                    config.keystorePassword.toCharArray());
-            TrustManager[] trustManagers = defineNoOpTrustManager();
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), trustManagers, null);
-            this.sslServerSocketFactory = sslContext.getServerSocketFactory();
+            try {
+                shimPKI.generateNewKeyPair(shimEncryptionKey);
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf.init(shimPKI.getKeyStore(config.keystorePassword, shimEncryptionKey),
+                        config.keystorePassword.toCharArray());
+                TrustManager[] trustManagers = defineNoOpTrustManager();
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+                this.sslServerSocketFactory = sslContext.getServerSocketFactory();
 
-            logger.debug("Opening ShieldTV shim on port {}", config.port);
-            ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.port);
+                logger.debug("Opening ShieldTV shim on port {}", config.port);
+                ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.port);
 
-            while (true) {
-                logger.debug("Waiting for shim connection...");
-                Socket serverSocket = sslServerSocket.accept();
-                disconnect(true);
-                connect();
-                SSLSession session = ((SSLSocket) serverSocket).getSession();
-                Certificate[] cchain2 = session.getLocalCertificates();
-                for (int i = 0; i < cchain2.length; i++) {
-                    logger.trace("Connection from: {}", ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                while (true) {
+                    logger.debug("Waiting for shim connection...");
+                    Socket serverSocket = sslServerSocket.accept();
+                    disconnect(false);
+                    connect();
+                    SSLSession session = ((SSLSocket) serverSocket).getSession();
+                    Certificate[] cchain2 = session.getLocalCertificates();
+                    for (int i = 0; i < cchain2.length; i++) {
+                        logger.trace("Connection from: {}", ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                    }
+
+                    logger.trace("Peer host is {}", session.getPeerHost());
+                    logger.trace("Cipher is {}", session.getCipherSuite());
+                    logger.trace("Protocol is {}", session.getProtocol());
+                    logger.trace("ID is {}", new BigInteger(session.getId()));
+                    logger.trace("Session created in {}", session.getCreationTime());
+                    logger.trace("Session accessed in {}", session.getLastAccessedTime());
+
+                    shimWriter = new BufferedWriter(
+                            new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                    shimReader = new BufferedReader(
+                            new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                    this.shimServerSocket = serverSocket;
+
+                    Thread readerThread = new Thread(this::shimReaderThreadJob, "ShieldTV shim reader");
+                    readerThread.setDaemon(true);
+                    readerThread.start();
+                    this.shimReaderThread = readerThread;
+
+                    Thread senderThread = new Thread(this::shimSenderThreadJob, "ShieldTV shim sender");
+                    senderThread.setDaemon(true);
+                    senderThread.start();
+                    this.shimSenderThread = senderThread;
+
                 }
-
-                logger.trace("Peer host is {}", session.getPeerHost());
-                logger.trace("Cipher is {}", session.getCipherSuite());
-                logger.trace("Protocol is {}", session.getProtocol());
-                logger.trace("ID is {}", new BigInteger(session.getId()));
-                logger.trace("Session created in {}", session.getCreationTime());
-                logger.trace("Session accessed in {}", session.getLastAccessedTime());
-
-                shimWriter = new BufferedWriter(
-                        new OutputStreamWriter(serverSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-                shimReader = new BufferedReader(
-                        new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-                this.shimServerSocket = serverSocket;
-
-                Thread readerThread = new Thread(this::shimReaderThreadJob, "ShieldTV shim reader");
-                readerThread.setDaemon(true);
-                readerThread.start();
-                this.shimReaderThread = readerThread;
-
-                Thread senderThread = new Thread(this::shimSenderThreadJob, "ShieldTV shim sender");
-                senderThread.setDaemon(true);
-                senderThread.start();
-                this.shimSenderThread = senderThread;
-
+            } catch (Exception e) {
+                logger.trace("Shim initalization exception", e);
+                return;
             }
-        } catch (Exception e) {
-            logger.trace("Shim initalization exception", e);
-            return;
         }
     }
 
@@ -478,101 +485,104 @@ public class ShieldTVConnectionManager {
      * @param interruptAll Set if reconnect task should be interrupted if running. Should be false when calling from
      *            connect or reconnect, and true when calling from dispose.
      */
-    private synchronized void disconnect(boolean interruptAll) {
-        logger.debug("Disconnecting ShieldTV");
+    private void disconnect(boolean interruptAll) {
+        synchronized (connectionLock) {
 
-        ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
-        if (connectRetryJob != null) {
-            connectRetryJob.cancel(true);
-        }
-        ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
-        if (keepAliveJob != null) {
-            keepAliveJob.cancel(true);
-        }
-        ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
-        if (keepAliveReconnectJob != null) {
-            keepAliveReconnectJob.cancel(true);
-        }
+            logger.debug("Disconnecting ShieldTV");
 
-        Thread senderThread = this.senderThread;
-        if (senderThread != null && senderThread.isAlive()) {
-            senderThread.interrupt();
-        }
-
-        Thread readerThread = this.readerThread;
-        if (readerThread != null && readerThread.isAlive()) {
-            readerThread.interrupt();
-        }
-
-        Thread shimSenderThread = this.shimSenderThread;
-        if (shimSenderThread != null && shimSenderThread.isAlive()) {
-            shimSenderThread.interrupt();
-        }
-
-        Thread shimReaderThread = this.shimReaderThread;
-        if (shimReaderThread != null && shimReaderThread.isAlive()) {
-            shimReaderThread.interrupt();
-        }
-
-        SSLSocket sslSocket = this.sslSocket;
-        if (sslSocket != null) {
-            try {
-                sslSocket.close();
-            } catch (IOException e) {
-                logger.debug("Error closing ShieldTV SSL socket: {}", e.getMessage());
+            ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
+            if (connectRetryJob != null) {
+                connectRetryJob.cancel(true);
             }
-            this.sslSocket = null;
-        }
-        BufferedReader reader = this.reader;
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                logger.debug("Error closing reader: {}", e.getMessage());
+            ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
+            if (keepAliveJob != null) {
+                keepAliveJob.cancel(true);
             }
-        }
-        BufferedWriter writer = this.writer;
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                logger.debug("Error closing writer: {}", e.getMessage());
-            }
-        }
 
-        Socket shimServerSocket = this.shimServerSocket;
-        if (shimServerSocket != null) {
-            try {
-                shimServerSocket.close();
-            } catch (IOException e) {
-                logger.debug("Error closing ShieldTV SSL socket: {}", e.getMessage());
+            reconnectTaskCancel(interruptAll); // May be called from keepAliveReconnectJob thread
+
+            Thread senderThread = this.senderThread;
+            if (senderThread != null && senderThread.isAlive()) {
+                senderThread.interrupt();
             }
-            this.shimServerSocket = null;
-        }
-        BufferedReader shimReader = this.shimReader;
-        if (shimReader != null) {
-            try {
-                shimReader.close();
-            } catch (IOException e) {
-                logger.debug("Error closing shimReader: {}", e.getMessage());
+
+            Thread readerThread = this.readerThread;
+            if (readerThread != null && readerThread.isAlive()) {
+                readerThread.interrupt();
             }
-        }
-        BufferedWriter shimWriter = this.shimWriter;
-        if (shimWriter != null) {
-            try {
-                shimWriter.close();
-            } catch (IOException e) {
-                logger.debug("Error closing shimWriter: {}", e.getMessage());
+
+            Thread shimSenderThread = this.shimSenderThread;
+            if (shimSenderThread != null && shimSenderThread.isAlive()) {
+                shimSenderThread.interrupt();
+            }
+
+            Thread shimReaderThread = this.shimReaderThread;
+            if (shimReaderThread != null && shimReaderThread.isAlive()) {
+                shimReaderThread.interrupt();
+            }
+
+            SSLSocket sslSocket = this.sslSocket;
+            if (sslSocket != null) {
+                try {
+                    sslSocket.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing ShieldTV SSL socket: {}", e.getMessage());
+                }
+                this.sslSocket = null;
+            }
+            BufferedReader reader = this.reader;
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing reader: {}", e.getMessage());
+                }
+            }
+            BufferedWriter writer = this.writer;
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing writer: {}", e.getMessage());
+                }
+            }
+
+            Socket shimServerSocket = this.shimServerSocket;
+            if (shimServerSocket != null) {
+                try {
+                    shimServerSocket.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing ShieldTV SSL socket: {}", e.getMessage());
+                }
+                this.shimServerSocket = null;
+            }
+            BufferedReader shimReader = this.shimReader;
+            if (shimReader != null) {
+                try {
+                    shimReader.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing shimReader: {}", e.getMessage());
+                }
+            }
+            BufferedWriter shimWriter = this.shimWriter;
+            if (shimWriter != null) {
+                try {
+                    shimWriter.close();
+                } catch (IOException e) {
+                    logger.debug("Error closing shimWriter: {}", e.getMessage());
+                }
             }
         }
     }
 
-    private synchronized void reconnect() {
-        if (!this.disposing) {
-            logger.debug("Attempting to reconnect to the ShieldTV");
-            setStatus(false, "reconnecting");
-            disconnect(false);
-            connect();
+    private void reconnect() {
+        synchronized (connectionLock) {
+            if (!this.disposing) {
+                logger.debug("Attempting to reconnect to the ShieldTV");
+                setStatus(false, "reconnecting");
+                disconnect(false);
+                connect();
+            }
         }
     }
 
@@ -738,7 +748,7 @@ public class ShieldTVConnectionManager {
                 thisShimRawMsg = reader.read();
                 thisShimMsg = fixMessage(Integer.toHexString(thisShimRawMsg));
                 if (thisShimMsg.equals("ffffffff")) {
-                    disconnect(true);
+                    disconnect(false);
                     break;
                 }
                 if (!inShimMessage) {
