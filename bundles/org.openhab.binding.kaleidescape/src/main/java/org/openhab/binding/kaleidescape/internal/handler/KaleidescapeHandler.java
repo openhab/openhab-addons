@@ -424,7 +424,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     // if the last successful polling update was more than 1.25 intervals ago,
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_S * 1.25 * 1000)) {
-                        logger.warn("Component not responding to status requests");
+                        logger.debug("Component not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Component not responding to status requests");
                         closeConnection();
