@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,18 @@
  */
 package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
+import static org.mockito.Mockito.verify;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * Unit Tests for {@link WindowContactHandler}.
@@ -39,5 +47,20 @@ public class WindowContactHandlerTest extends AbstractBatteryPoweredDeviceHandle
     @Override
     protected ThingTypeUID getThingTypeUID() {
         return BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
+    }
+
+    @Test
+    public void testUpdateChannelsShutterContactService() {
+        JsonElement jsonObject = JsonParser
+                .parseString("{\n" + "   \"@type\": \"shutterContactState\",\n" + "   \"value\": \"OPEN\"\n" + " }");
+        getFixture().processUpdate("ShutterContact", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CONTACT), OpenClosedType.OPEN);
+
+        jsonObject = JsonParser
+                .parseString("{\n" + "   \"@type\": \"shutterContactState\",\n" + "   \"value\": \"CLOSED\"\n" + " }");
+        getFixture().processUpdate("ShutterContact", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CONTACT), OpenClosedType.CLOSED);
     }
 }

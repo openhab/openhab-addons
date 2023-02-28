@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.*;
+import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.DEVICE_V5;
+import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.ELECTRICITY_V4_2;
+import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.M3_V5_0;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -32,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
@@ -63,13 +65,13 @@ public class DSMRMeterDiscoveryServiceTest {
      */
     @Test
     public void testInvalidConfiguredMeters() {
-        P1Telegram expected = TelegramReaderUtil.readTelegram(EXPECTED_CONFIGURED_TELEGRAM, TelegramState.OK);
-        AtomicReference<List<DSMRMeterType>> invalidConfiguredRef = new AtomicReference<>();
-        AtomicReference<List<DSMRMeterType>> unconfiguredRef = new AtomicReference<>();
-        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
+        final P1Telegram expected = TelegramReaderUtil.readTelegram(EXPECTED_CONFIGURED_TELEGRAM);
+        final AtomicReference<List<DSMRMeterType>> invalidConfiguredRef = new AtomicReference<>();
+        final AtomicReference<List<DSMRMeterType>> unconfiguredRef = new AtomicReference<>();
+        final DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
             @Override
-            protected void reportConfigurationValidationResults(List<DSMRMeterType> invalidConfigured,
-                    List<DSMRMeterType> unconfiguredMeters) {
+            protected void reportConfigurationValidationResults(final List<DSMRMeterType> invalidConfigured,
+                    final List<DSMRMeterType> unconfiguredMeters) {
                 super.reportConfigurationValidationResults(invalidConfigured, unconfiguredMeters);
                 invalidConfiguredRef.set(invalidConfigured);
                 unconfiguredRef.set(unconfiguredMeters);
@@ -79,10 +81,13 @@ public class DSMRMeterDiscoveryServiceTest {
 
         // Mock the invalid configuration by reading a telegram that is valid for a meter that is a subset of the
         // expected meter.
-        List<DSMRMeterDescriptor> invalidConfiguredMeterDescriptors = EnumSet.of(DEVICE_V5, ELECTRICITY_V4_2, M3_V5_0)
-                .stream().map(mt -> new DSMRMeterDescriptor(mt, 0)).collect(Collectors.toList());
-        List<Thing> things = invalidConfiguredMeterDescriptors.stream().map(m -> thing).collect(Collectors.toList());
-        AtomicReference<Iterator<DSMRMeterDescriptor>> detectMetersRef = new AtomicReference<>();
+        final List<DSMRMeterDescriptor> invalidConfiguredMeterDescriptors = EnumSet
+                .of(DEVICE_V5, ELECTRICITY_V4_2, M3_V5_0).stream().map(mt -> new DSMRMeterDescriptor(mt, 0))
+                .collect(Collectors.toList());
+        final List<Thing> things = invalidConfiguredMeterDescriptors.stream().map(m -> thing)
+                .collect(Collectors.toList());
+        final AtomicReference<Iterator<DSMRMeterDescriptor>> detectMetersRef = new AtomicReference<>();
+
         when((meterHandler).getMeterDescriptor()).then(a -> {
             if (detectMetersRef.get() == null || !detectMetersRef.get().hasNext()) {
                 detectMetersRef.set(invalidConfiguredMeterDescriptors.iterator());
@@ -109,9 +114,9 @@ public class DSMRMeterDiscoveryServiceTest {
      */
     @Test
     public void testUnregisteredMeters() {
-        P1Telegram telegram = TelegramReaderUtil.readTelegram(UNREGISTERED_METER_TELEGRAM, TelegramState.OK);
-        AtomicBoolean unregisteredMeter = new AtomicBoolean(false);
-        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
+        final P1Telegram telegram = TelegramReaderUtil.readTelegram(UNREGISTERED_METER_TELEGRAM);
+        final AtomicBoolean unregisteredMeter = new AtomicBoolean(false);
+        final DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
             @Override
             protected void reportUnregisteredMeters() {
                 super.reportUnregisteredMeters();

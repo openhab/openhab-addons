@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -344,10 +344,10 @@ public class ShellyChannelDefinitions {
         }
 
         // Shelly 1/1PM and Plus 1/1PM Addon
-        addChannel(thing, add,
-                profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                        && idx == getInteger(profile.settings.extSwitch.input0.relayNum),
-                CHGR_SENSOR, CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
+        if (profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
+                && idx == getInteger(profile.settings.extSwitch.input0.relayNum)) {
+            addChannel(thing, add, true, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT + (idx + 1));
+        }
         if (profile.status.extTemperature != null) {
             addChannel(thing, add, profile.status.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1);
             addChannel(thing, add, profile.status.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2);

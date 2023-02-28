@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,6 +68,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
         super(thing, httpClient);
     }
 
+    @SuppressWarnings("PMD.SimplifyBooleanExpressions")
     @Override
     protected State getValue(String channelId, GoEStatusResponseBaseDTO goeResponseBase) {
         var state = super.getValue(channelId, goeResponseBase);
@@ -274,11 +275,13 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
+                break;
             case TRANSACTION:
                 key = "trx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
                 }
+                break;
         }
 
         if (key != null && value != null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,31 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_TOTAL_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRED_CLIENTS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_WIRELESS_CLIENTS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiSiteThingConfig;
+import org.openhab.binding.unifi.internal.UniFiVoucherChannelConfig;
+import org.openhab.binding.unifi.internal.action.UniFiSiteActions;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
+import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -39,6 +47,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Matthew Bowman - Initial contribution
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Mark Herwege - Added guest vouchers
  */
 @NonNullByDefault
 public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniFiSiteThingConfig> {
@@ -67,32 +76,64 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
 
     @Override
     protected State getChannelState(final UniFiSite site, final String channelId) {
-        final UniFiControllerCache cache = site.getCache();
-        final long count;
+        final State state;
 
         switch (channelId) {
             case CHANNEL_TOTAL_CLIENTS:
-                count = cache.countClients(site, c -> true);
+                state = countClients(site, c -> true);
                 break;
             case CHANNEL_WIRELESS_CLIENTS:
-                count = cache.countClients(site, c -> c.isWireless());
+                state = countClients(site, c -> c.isWireless());
                 break;
             case CHANNEL_WIRED_CLIENTS:
-                count = cache.countClients(site, c -> c.isWired());
+                state = countClients(site, c -> c.isWired());
                 break;
             case CHANNEL_GUEST_CLIENTS:
-                count = cache.countClients(site, c -> c.isGuest());
+                state = countClients(site, c -> c.isGuest());
+                break;
+            case CHANNEL_GUEST_VOUCHER:
+                final String voucher = site.getVoucher();
+                state = (voucher != null) ? StringType.valueOf(voucher) : UnDefType.UNDEF;
+                break;
+            case CHANNEL_GUEST_VOUCHERS_GENERATE:
+                state = OnOffType.OFF;
                 break;
             default:
                 // Unsupported channel; nothing to update
                 return UnDefType.NULL;
         }
-        return new DecimalType(count);
+        return state;
+    }
+
+    private static State countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
+        return new DecimalType(site.getCache().countClients(site, filter));
     }
 
     @Override
     protected boolean handleCommand(final UniFiController controller, final UniFiSite entity,
             final ChannelUID channelUID, final Command command) throws UniFiException {
+        final String channelID = channelUID.getId();
+
+        if (CHANNEL_GUEST_VOUCHERS_GENERATE.equals(channelID)) {
+            final Channel channel = getThing().getChannel(CHANNEL_GUEST_VOUCHERS_GENERATE);
+            if (channel == null) {
+                return false;
+            }
+            final UniFiVoucherChannelConfig config = channel.getConfiguration().as(UniFiVoucherChannelConfig.class);
+            final int count = config.getCount();
+            final int expire = config.getExpiration();
+            final int users = config.getVoucherUsers();
+            final Integer upLimit = config.getUpLimit();
+            final Integer downLimit = config.getDownLimit();
+            final Integer dataQuota = config.getDataQuota();
+            controller.generateVouchers(entity, count, expire, users, upLimit, downLimit, dataQuota);
+            return true;
+        }
         return false;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(UniFiSiteActions.class);
     }
 }

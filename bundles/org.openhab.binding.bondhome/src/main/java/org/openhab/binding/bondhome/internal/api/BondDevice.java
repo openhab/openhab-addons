@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.bondhome.internal.api;
-
-import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.List;

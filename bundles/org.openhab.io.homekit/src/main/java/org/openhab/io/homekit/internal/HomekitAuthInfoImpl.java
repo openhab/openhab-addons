@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
@@ -57,8 +58,12 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         initializeStorage();
     }
 
+    public void setBlockUserDeletion(boolean blockUserDeletion) {
+        this.blockUserDeletion = blockUserDeletion;
+    }
+
     @Override
-    public void createUser(String username, byte[] publicKey) {
+    public void createUser(String username, byte[] publicKey, boolean isAdmin) {
         logger.trace("create user {}", username);
         final String userKey = createUserKey(username);
         final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey);
@@ -129,16 +134,38 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         return keys.stream().anyMatch(this::isUserKey);
     }
 
+    @Override
+    public Collection<String> listUsers() {
+        Collection<String> keys = storage.getKeys();
+        // don't forget to strip user_ prefix
+        return keys.stream().filter(this::isUserKey).map(u -> u.substring(5)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean userIsAdmin(String username) {
+        return true;
+    }
+
     public void clear() {
-        logger.trace("clear all users");
         if (!this.blockUserDeletion) {
             for (String key : new HashSet<>(storage.getKeys())) {
                 if (isUserKey(key)) {
                     storage.remove(key);
                 }
             }
+            mac = HomekitServer.generateMac();
+            storage.put(STORAGE_MAC, mac);
+            storage.remove(STORAGE_SALT);
+            storage.remove(STORAGE_PRIVATE_KEY);
+            try {
+                initializeStorage();
+                logger.info("All users cleared from HomeKit bridge; re-pairing required.");
+            } catch (InvalidAlgorithmParameterException e) {
+                logger.warn(
+                        "Failed generating new encryption settings for HomeKit bridge; re-pairing required, but will likely fail.");
+            }
         } else {
-            logger.debug("deletion of users information was blocked by binding settings");
+            logger.warn("Deletion of HomeKit users was blocked by addon settings.");
         }
     }
 

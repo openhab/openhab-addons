@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,12 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSUID} represents the digitalSTROM-Device unique identifier.
  *
- * @author Alexander Friese - initial contributor
+ * @author Alexander Friese - Initial contribution
  */
 public class DSUID {
 
     private final String dsuid;
-    private final String DEFAULT_DSUID = "3504175fe0000000000000000000000001";
+    private static final String DEFAULT_DSUID = "3504175fe0000000000000000000000001";
 
     /**
      * Creates a new {@link DSUID}.

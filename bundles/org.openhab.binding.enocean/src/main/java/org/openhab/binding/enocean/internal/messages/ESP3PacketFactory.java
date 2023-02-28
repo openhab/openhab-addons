@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class ESP3PacketFactory {
                 new byte[] { SAMessageType.SA_WR_LEARNMODE.getValue(), (byte) (activate ? 1 : 0), 0, 0, 0, 0, 0 });
     }
 
-    public final static BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
+    public static final BasePacket SA_RD_LEARNEDCLIENTS = new SAMessage(SAMessageType.SA_RD_LEARNEDCLIENTS);
 
     public static BasePacket SA_RD_MAILBOX_STATUS(byte[] clientId, byte[] controllerId) {
         return new SAMessage(SAMessageType.SA_RD_MAILBOX_STATUS,

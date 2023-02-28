@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -44,16 +45,14 @@ import com.google.gson.JsonParser;
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<SmartBulbHandler> {
 
-    @Captor
-    private ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<BinarySwitchServiceState> binarySwitchServiceStateCaptor;
 
-    @Captor
-    private ArgumentCaptor<MultiLevelSwitchServiceState> multiLevelSwitchServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<MultiLevelSwitchServiceState> multiLevelSwitchServiceStateCaptor;
 
-    @Captor
-    private ArgumentCaptor<HSBColorActuatorServiceState> hsbColorActuatorServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<HSBColorActuatorServiceState> hsbColorActuatorServiceStateCaptor;
 
     @Override
     protected SmartBulbHandler createFixture() {
@@ -71,9 +70,8 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommand_BinarySwitch()
+    public void testHandleCommandBinarySwitch()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("BinarySwitch"),
@@ -90,9 +88,8 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommand_MultiLevelSwitch()
+    public void testHandleCommandMultiLevelSwitch()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BRIGHTNESS),
                 new PercentType(42));
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("MultiLevelSwitch"),
@@ -102,9 +99,8 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testHandleCommand_HSBColorActuator()
+    public void testHandleCommandHSBColorActuator()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COLOR),
                 HSBType.BLUE);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("HSBColorActuator"),
@@ -114,7 +110,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannel_BinarySwitchState() {
+    public void testUpdateChannelBinarySwitchState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"binarySwitchState\",\"on\":true}");
         getFixture().processUpdate("BinarySwitch", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -127,7 +123,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannel_MultiLevelSwitchState() {
+    public void testUpdateChannelMultiLevelSwitchState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"multiLevelSwitchState\",\"level\":16}");
         getFixture().processUpdate("MultiLevelSwitch", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -135,7 +131,7 @@ public class SmartBulbHandlerTest extends AbstractBoschSHCDeviceHandlerTest<Smar
     }
 
     @Test
-    public void testUpdateChannel_HSBColorActuatorState() {
+    public void testUpdateChannelHSBColorActuatorState() {
         JsonElement jsonObject = JsonParser.parseString("{\"colorTemperatureRange\": {\n" + "        \"minCt\": 153,\n"
                 + "        \"maxCt\": 526\n" + "    },\n" + "    \"@type\": \"colorState\",\n"
                 + "    \"gamut\": \"LEDVANCE_GAMUT_A\",\n" + "    \"rgb\": -12427}");

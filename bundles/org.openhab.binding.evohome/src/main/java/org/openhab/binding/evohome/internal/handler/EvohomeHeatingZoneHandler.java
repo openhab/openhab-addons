@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
+import javax.measure.quantity.Temperature;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneStatus;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -30,12 +35,14 @@ import org.openhab.core.types.RefreshType;
  * @author Jasper van Zuijlen - Initial contribution
  * @author Neil Renaud - Working implementation
  * @author Jasper van Zuijlen - Refactor + Permanent Zone temperature setting
+ * @author Leo Siepel - Add UoM
  */
+@NonNullByDefault
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
 
     private static final int CANCEL_SET_POINT_OVERRIDE = 0;
-    private ThingStatus tcsStatus;
-    private ZoneStatus zoneStatus;
+    private @Nullable ThingStatus tcsStatus;
+    private @Nullable ZoneStatus zoneStatus;
 
     public EvohomeHeatingZoneHandler(Thing thing) {
         super(thing);
@@ -46,7 +53,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         super.initialize();
     }
 
-    public void update(ThingStatus tcsStatus, ZoneStatus zoneStatus) {
+    public void update(@Nullable ThingStatus tcsStatus, @Nullable ZoneStatus zoneStatus) {
         this.tcsStatus = tcsStatus;
         this.zoneStatus = zoneStatus;
 
@@ -62,11 +69,11 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
-                    new DecimalType(zoneStatus.getTemperature().getTemperature()));
+                    new QuantityType<Temperature>(zoneStatus.getTemperature().getTemperature(), SIUnits.CELSIUS));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
                     new StringType(zoneStatus.getHeatSetpoint().getSetpointMode()));
-            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL,
-                    new DecimalType(zoneStatus.getHeatSetpoint().getTargetTemperature()));
+            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL, new QuantityType<Temperature>(
+                    zoneStatus.getHeatSetpoint().getTargetTemperature(), SIUnits.CELSIUS));
         }
     }
 
@@ -78,16 +85,19 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
             if (bridge != null) {
                 String channelId = channelUID.getId();
-                if (EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)
-                        && command instanceof DecimalType) {
-                    double newTemp = ((DecimalType) command).doubleValue();
-                    if (newTemp == CANCEL_SET_POINT_OVERRIDE) {
-                        bridge.cancelSetPointOverride(getEvohomeThingConfig().id);
-                    } else if (newTemp < 5) {
-                        newTemp = 5;
-                    }
-                    if (newTemp >= 5 && newTemp <= 35) {
-                        bridge.setPermanentSetPoint(getEvohomeThingConfig().id, newTemp);
+                if (EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)) {
+                    if (command instanceof QuantityType) {
+                        QuantityType<?> state = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                        double newTempInCelsius = state.doubleValue();
+
+                        if (newTempInCelsius == CANCEL_SET_POINT_OVERRIDE) {
+                            bridge.cancelSetPointOverride(getEvohomeThingConfig().id);
+                        } else if (newTempInCelsius < 5) {
+                            newTempInCelsius = 5;
+                        }
+                        if (newTempInCelsius >= 5 && newTempInCelsius <= 35) {
+                            bridge.setPermanentSetPoint(getEvohomeThingConfig().id, newTempInCelsius);
+                        }
                     }
                 }
             }

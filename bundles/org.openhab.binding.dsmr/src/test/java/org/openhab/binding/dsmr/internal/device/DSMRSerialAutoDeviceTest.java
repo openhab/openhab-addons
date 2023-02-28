@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,18 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,8 +43,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice.DeviceState;
-import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -61,7 +71,7 @@ public class DSMRSerialAutoDeviceTest {
 
     private final SerialPortManager serialPortManager = new SerialPortManager() {
         @Override
-        public @Nullable SerialPortIdentifier getIdentifier(String name) {
+        public @Nullable SerialPortIdentifier getIdentifier(final String name) {
             assertEquals(DUMMY_PORTNAME, name, "Expect the passed serial port name");
             return mockIdentifier;
         }
@@ -84,21 +94,21 @@ public class DSMRSerialAutoDeviceTest {
     @Test
     public void testHandlingDataAndRestart() throws IOException, PortInUseException {
         mockValidSerialPort();
-        AtomicReference<@Nullable P1Telegram> telegramRef = new AtomicReference<>(null);
-        DSMREventListener listener = new DSMREventListener() {
+        final AtomicReference<@Nullable P1Telegram> telegramRef = new AtomicReference<>(null);
+        final P1TelegramListener listener = new P1TelegramListener() {
             @Override
-            public void handleTelegramReceived(P1Telegram telegram) {
+            public void telegramReceived(final P1Telegram telegram) {
                 telegramRef.set(telegram);
             }
 
             @Override
-            public void handleErrorEvent(DSMRConnectorErrorEvent connectorErrorEvent) {
-                fail("No handleErrorEvent Expected" + connectorErrorEvent);
+            public void onError(final DSMRErrorStatus errorStatus, final String message) {
+                fail("No error status expected" + errorStatus);
             }
         };
         try (InputStream inputStream = new ByteArrayInputStream(TelegramReaderUtil.readRawTelegram(TELEGRAM_NAME))) {
             when(mockSerialPort.getInputStream()).thenReturn(inputStream);
-            DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
+            final DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
                     new DSMRTelegramListener(), scheduler, 1);
             device.start();
             assertSame(DeviceState.DISCOVER_SETTINGS, device.getState(), "Expect to be starting discovery state");
@@ -117,16 +127,16 @@ public class DSMRSerialAutoDeviceTest {
 
     @Test
     public void testHandleError() throws IOException, PortInUseException {
-        AtomicReference<@Nullable DSMRConnectorErrorEvent> eventRef = new AtomicReference<>(null);
-        DSMREventListener listener = new DSMREventListener() {
+        final AtomicReference<@Nullable DSMRErrorStatus> eventRef = new AtomicReference<>(null);
+        final P1TelegramListener listener = new P1TelegramListener() {
             @Override
-            public void handleTelegramReceived(P1Telegram telegram) {
+            public void telegramReceived(final P1Telegram telegram) {
                 fail("No telegram expected:" + telegram);
             }
 
             @Override
-            public void handleErrorEvent(DSMRConnectorErrorEvent connectorErrorEvent) {
-                eventRef.set(connectorErrorEvent);
+            public void onError(final DSMRErrorStatus errorStatus, final String message) {
+                eventRef.set(errorStatus);
             }
         };
         try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
@@ -137,7 +147,7 @@ public class DSMRSerialAutoDeviceTest {
             DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
                     new DSMRTelegramListener(), scheduler, 1);
             device.start();
-            assertSame(DSMRConnectorErrorEvent.IN_USE, eventRef.get(), "Expected an error");
+            assertSame(DSMRErrorStatus.PORT_IN_USE, eventRef.get(), "Expected an error");
             assertSame(DeviceState.ERROR, device.getState(), "Expect to be in error state");
             // Trigger device to restart
             mockValidSerialPort();
@@ -148,7 +158,7 @@ public class DSMRSerialAutoDeviceTest {
             device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener, new DSMRTelegramListener(),
                     scheduler, 1);
             device.start();
-            assertSame(DSMRConnectorErrorEvent.DONT_EXISTS, eventRef.get(), "Expected an error");
+            assertSame(DSMRErrorStatus.PORT_DONT_EXISTS, eventRef.get(), "Expected an error");
             assertSame(DeviceState.ERROR, device.getState(), "Expect to be in error state");
         }
     }
@@ -164,7 +174,8 @@ public class DSMRSerialAutoDeviceTest {
         private final int eventType;
         private final boolean newValue;
 
-        public MockSerialPortEvent(SerialPort mockSerialPort, int eventType, boolean oldValue, boolean newValue) {
+        public MockSerialPortEvent(final SerialPort mockSerialPort, final int eventType, final boolean oldValue,
+                final boolean newValue) {
             this.eventType = eventType;
             this.newValue = newValue;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ecobee.internal.dto.thermostat;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * The {@link WeatherForecastDTO} contains the weather forecast information for
@@ -31,9 +31,9 @@ public class WeatherForecastDTO {
     public Integer weatherSymbol;
 
     /*
-     * The time stamp of the weather forecast.
+     * The time stamp of the weather forecast in the thermostat's time zone.
      */
-    public Date dateTime;
+    public LocalDateTime dateTime;
 
     /*
      * A text value representing the current weather condition.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,9 +43,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthenticationApi extends RestManager {
-    private static final UriBuilder OAUTH_BUILDER = getApiBaseBuilder().path(PATH_OAUTH);
-    private static final UriBuilder AUTH_BUILDER = OAUTH_BUILDER.clone().path(SUB_PATH_AUTHORIZE);
-    private static final URI TOKEN_URI = OAUTH_BUILDER.clone().path(SUB_PATH_TOKEN).build();
+    private static final UriBuilder AUTH_BUILDER = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_AUTHORIZE);
+    private static final URI TOKEN_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_TOKEN).build();
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
     private final ScheduledExecutorService scheduler;

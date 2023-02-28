@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
-    private final static Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
     private boolean isBound = false;
     private final InetAddress ipAddress;
     private int port = 0;
@@ -80,7 +80,6 @@ public class GreeAirDevice {
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
-
         if (!isBound) {
             throw new GreeException("Device not bound");
         }
@@ -116,7 +115,7 @@ public class GreeAirDevice {
             reqStatusPackGson.t = GREE_CMDT_STATUS;
             reqStatusPackGson.cols = colArray;
             reqStatusPackGson.mac = getId();
-            String reqStatusPackStr = gson.toJson(reqStatusPackGson);
+            String reqStatusPackStr = GSON.toJson(reqStatusPackGson);
 
             // Encrypt and send the Status Request pack
             String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey(), reqStatusPackStr);
@@ -135,7 +134,7 @@ public class GreeAirDevice {
             GreeStatusResponseDTO resp = receiveResponse(clientSocket, GreeStatusResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), resp.pack);
             logger.debug("Response from device: {}", resp.decryptedPack);
-            resp.packJson = gson.fromJson(resp.decryptedPack, GreeStatusResponsePackDTO.class);
+            resp.packJson = GSON.fromJson(resp.decryptedPack, GreeStatusResponsePackDTO.class);
 
             // save the results
             statusResponseGson = Optional.of(resp);
@@ -156,7 +155,7 @@ public class GreeAirDevice {
             bindReqPackGson.mac = getId();
             bindReqPackGson.t = GREE_CMDT_BIND;
             bindReqPackGson.uid = 0;
-            String bindReqPackStr = gson.toJson(bindReqPackGson);
+            String bindReqPackStr = GSON.toJson(bindReqPackGson);
 
             // Encrypt and send the Binding Request pack
             String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
@@ -167,9 +166,9 @@ public class GreeAirDevice {
             // Recieve a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
-            resp.packJson = gson.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
+            resp.packJson = GSON.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
 
-            // Now set the key and flag to indicate the bind was succesful
+            // Now set the key and flag to indicate the bind was successful
             encKey = resp.packJson.key;
 
             // save the outcome
@@ -278,10 +277,10 @@ public class GreeAirDevice {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
         double newVal = temp.doubleValue();
-        int CorF = SIUnits.CELSIUS.equals(temp.getUnit()) ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
+        int celsiusOrFahrenheit = SIUnits.CELSIUS.equals(temp.getUnit()) ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
         // 1=Fahrenheit
-        if (((CorF == TEMP_UNIT_CELSIUS) && (newVal < TEMP_MIN_C || newVal > TEMP_MAX_C))
-                || ((CorF == TEMP_UNIT_FAHRENHEIT) && (newVal < TEMP_MIN_F || newVal > TEMP_MAX_F))) {
+        if (((celsiusOrFahrenheit == TEMP_UNIT_CELSIUS) && (newVal < TEMP_MIN_C || newVal > TEMP_MAX_C))
+                || ((celsiusOrFahrenheit == TEMP_UNIT_FAHRENHEIT) && (newVal < TEMP_MIN_F || newVal > TEMP_MAX_F))) {
             throw new IllegalArgumentException("Temp Value out of Range");
         }
 
@@ -302,15 +301,15 @@ public class GreeAirDevice {
         // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
         // subtract the float version - the int version to get the fractional difference
         // if the difference is positive set halfStep to 1, negative to 0
-        if (CorF == TEMP_UNIT_FAHRENHEIT) { // If Fahrenheit,
+        if (celsiusOrFahrenheit == TEMP_UNIT_FAHRENHEIT) { // If Fahrenheit,
             halfStep = newVal - outVal > 0 ? TEMP_HALFSTEP_YES : TEMP_HALFSTEP_NO;
         }
         logger.debug("Converted temp from {}{} to temp={}, halfStep={}, unit={})", newVal, temp.getUnit(), outVal,
-                halfStep, CorF == TEMP_UNIT_CELSIUS ? "C" : "F");
+                halfStep, celsiusOrFahrenheit == TEMP_UNIT_CELSIUS ? "C" : "F");
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put(GREE_PROP_TEMPUNIT, CorF);
+        parameters.put(GREE_PROP_TEMPUNIT, celsiusOrFahrenheit);
         parameters.put(GREE_PROP_SETTEMP, outVal);
         parameters.put(GREE_PROP_TEMPREC, halfStep);
         executeCommand(clientSocket, parameters);
@@ -424,7 +423,7 @@ public class GreeAirDevice {
             execCmdPackGson.opt = keyArray;
             execCmdPackGson.p = valueArray;
             execCmdPackGson.t = GREE_CMDT_CMD;
-            String execCmdPackStr = gson.toJson(execCmdPackGson);
+            String execCmdPackStr = GSON.toJson(execCmdPackGson);
 
             // Now encrypt and send the Command Request pack
             String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey(), execCmdPackStr);
@@ -436,7 +435,7 @@ public class GreeAirDevice {
             execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), execResponseGson.pack);
 
             // Create the JSON to hold the response values
-            execResponseGson.packJson = gson.fromJson(execResponseGson.decryptedPack, GreeExecResponsePackDTO.class);
+            execResponseGson.packJson = GSON.fromJson(execResponseGson.decryptedPack, GreeExecResponsePackDTO.class);
         } catch (IOException | JsonSyntaxException e) {
             throw new GreeException("Exception on command execution", e);
         }
@@ -462,7 +461,7 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = pack;
-        byte[] sendData = gson.toJson(request).getBytes(StandardCharsets.UTF_8);
+        byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
         return sendPacket;
     }
@@ -473,20 +472,20 @@ public class GreeAirDevice {
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
         String json = new String(receivePacket.getData(), StandardCharsets.UTF_8).replace("\\u0000", "").trim();
-        return gson.fromJson(json, classOfT);
+        return GSON.fromJson(json, classOfT);
     }
 
     private void updateTempFtoC() {
         // Status message back from A/C always reports degrees C
         // If using Fahrenheit, us SetTem, TemUn and TemRec to reconstruct the Fahrenheit temperature
         // Get Celsius or Fahrenheit from status message
-        int CorF = getIntStatusVal(GREE_PROP_TEMPUNIT);
+        int celsiusOrFahrenheit = getIntStatusVal(GREE_PROP_TEMPUNIT);
         int newVal = getIntStatusVal(GREE_PROP_SETTEMP);
         int halfStep = getIntStatusVal(GREE_PROP_TEMPREC);
 
-        if ((CorF == -1) || (newVal == -1) || (halfStep == -1)) {
+        if ((celsiusOrFahrenheit == -1) || (newVal == -1) || (halfStep == -1)) {
             throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
-        } else if (CorF == 1) { // convert SetTem to Fahrenheit
+        } else if (celsiusOrFahrenheit == 1) { // convert SetTem to Fahrenheit
             // Find the valueName in the Returned Status object
             String[] columns = statusResponseGson.get().packJson.cols;
             Integer[] values = statusResponseGson.get().packJson.dat;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlSt
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
-import org.openhab.binding.digitalstrom.internal.lib.manager.impl.TemperatureControlManager;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;

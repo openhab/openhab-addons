@@ -87,11 +87,11 @@ Also, you can target a specific series episode by season and episode numbers pre
 
 ```java
 Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
- clientActiveWithInSeconds=0,
- hostname="192.168.1.177",
- port=8096,
- refreshSeconds=30,
- ssl="false"
+    clientActiveWithInSeconds=0,
+    hostname="192.168.1.177",
+    port=8096,
+    refreshSeconds=30,
+    ssl="false"
     token=XXXXX # Optional, read bellow
     userId=XXXXX # Optional, read bellow
 ]

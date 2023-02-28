@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -161,7 +161,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
         channelTypeUID = new ChannelTypeUID(NtpBindingConstants.BINDING_ID + ":channelType");
         channelTypeProvider = mock(ChannelTypeProvider.class);
-        when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), any(Locale.class)))
+        when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), nullable(Locale.class)))
                 .thenReturn(ChannelTypeBuilder.state(channelTypeUID, "label", CoreItemFactory.SWITCH).build());
         registerService(channelTypeProvider);
     }

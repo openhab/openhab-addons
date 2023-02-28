@@ -1,6 +1,6 @@
 # JavaScript Scripting
 
-This add-on provides support for JavaScript (ECMAScript 2021+) that can be used as a scripting language within automation rules.
+This add-on provides support for JavaScript (ECMAScript 2022+) that can be used as a scripting language within automation rules.
 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
@@ -15,6 +15,8 @@ to common openHAB functionality within rules including items, things, actions, l
   - [Console](#console)
   - [Timers](#timers)
   - [Paths](#paths)
+  - [Deinitialization Hook](#deinitialization-hook)
+- [`SCRIPT` Transformation](#script-transformation)
 - [Standard Library](#standard-library)
   - [Items](#items)
   - [Things](#things)
@@ -27,20 +29,22 @@ to common openHAB functionality within rules including items, things, actions, l
   - [JSRule](#jsrule)
   - [Rule Builder](#rule-builder)
   - [Event Object](#event-object)
-  - [Initialization hook: scriptLoaded](#initialization-hook-scriptloaded)
-  - [Deinitialization hook: scriptUnloaded](#deinitialization-hook-scriptunloaded)
 - [Advanced Scripting](#advanced-scripting)
+  - [Libraries](#libraries)
   - [@runtime](#runtime)
 
 ## Configuration
 
 This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
-This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import using `require()`.
+This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
 This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
+
+By default, the injection of the included [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached to improve performance and reduce memory usage.
+If you want to use a different version of openhab-js (installed to the `node_modules` folder) than the included one, you need to disable the usage of the included library.
 
 ![openHAB Rule Configuration](doc/settings.png)
 
-<!-- Paste the copied docs from openhab-js under this comment. -->
+<!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
 
 ### UI Based Rules
 
@@ -69,8 +73,8 @@ You can now write rules using standard ES6 JavaScript along with the included op
 For example, turning a light on:
 
 ```javascript
-items.getItem("KitchenLight").sendCommand("ON");
-console.log("Kitchen Light State", items.getItem("KitchenLight").state);
+items.KitchenLight.sendCommand("ON");
+console.log("Kitchen Light State", items.KitchenLight.state);
 ```
 
 Sending a notification
@@ -94,7 +98,7 @@ See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of fu
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
-This tables gives an overview over the `event` object for most common trigger types:
+This table gives an overview over the `event` object for most common trigger types:
 
 | Property Name  | Type                                                                                                                 | Trigger Types                          | Description                                                                                                   | Rules DSL Equivalent   |
 |----------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -143,7 +147,8 @@ log:set TRACE org.openhab.automation.script
 log:set DEFAULT org.openhab.automation.script
 ```
 
-The default logger name prefix is `org.openhab.automation.script`, this can be changed by assigning a new string to the `loggerName` property of the console:
+The default logger name consists of the prefix `org.openhab.automation.script` and the script’s individual part `.file.filename` or `.ui.ruleUID`.
+This logger name can be changed by assigning a new string to the `loggerName` property of the console:
 
 ```javascript
 console.loggerName = 'org.openhab.custom';
@@ -287,16 +292,18 @@ Use the `SCRIPT` transformation with JavaScript Scripting by:
 Full documentation for the openHAB JavaScript library can be found at [openhab-js](https://openhab.github.io/openhab-js).
 
 The openHAB JavaScript library provides type definitions for most of its APIs to enable code completion is IDEs like [VS Code](https://code.visualstudio.com).
-To use the type definitions, install the [`openhab` npm package](https://npmjs.com/openhab) (read the [installation guide](https://github.com/openhab/openhab-js#custom-installation) for more information).
-If an API does not provide type definitions and therefore autocompletion won‘t work, the documentation will include a note.
+To use the type definitions, install the [`openhab` npm package](https://npmjs.com/openhab) (read the [installation guide](https://github.com/openhab/openhab-js#custom-installation) for more information), and import the used namespaces with `const { rules, triggers, items } = require('openhab');` (adjust this to your needs).
+If an API does not provide type definitions and therefore autocompletion won't work, the documentation will include a note.
 
 ### Items
 
-The items namespace allows interactions with openHAB items.
+The `items` namespace allows interactions with openHAB Items.
+Anywhere that a native openHAB `Item` is required, the runtime will automatically convert the JS-`Item` to its Java counterpart.
 
 See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation.
 
 - items : `object`
+  - .NAME ⇒ `Item`
   - .getItem(name, nullIfMissing) ⇒ `Item`
   - .getItems() ⇒ `Array[Item]`
   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
@@ -306,13 +313,13 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .safeItemName(s) ⇒ `string`
 
 ```javascript
-var item = items.getItem("KitchenLight");
+var item = items.KitchenLight;
 console.log("Kitchen Light State", item.state);
 ```
 
 #### `getItem(name, nullIfMissing)`
 
-Calling `getItem(...)` returns an `Item` object with the following properties:
+Calling `getItem(...)` or `...` returns an `Item` object with the following properties:
 
 - Item : `object`
   - .rawItem ⇒ `HostItem`
@@ -322,33 +329,37 @@ Calling `getItem(...)` returns an `Item` object with the following properties:
   - .name ⇒ `string`
   - .label ⇒ `string`
   - .state ⇒ `string`
+  - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
+  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible
   - .rawState ⇒ `HostState`
   - .members ⇒ `Array[Item]`
   - .descendents ⇒ `Array[Item]`
   - .isUninitialized ⇒ `boolean`
   - .groupNames ⇒ `Array[string]`
   - .tags ⇒ `Array[string]`
-  - .getMetadataValue(namespace) ⇒ `string`
-  - .updateMetadataValue(namespace, value) ⇒ `string`
-  - .upsertMetadataValue(namespace, value) ⇒ `boolean`
-  - .updateMetadataValues(namespaceToValues)
-  - .sendCommand(value)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`
-  - .postUpdate(value)
+  - .getMetadata(namespace) ⇒ `object|null`
+  - .replaceMetadata(namespace, value, configuration) ⇒ `object`
+  - .removeMetadata(namespace) ⇒ `object|null`
+  - .sendCommand(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
+  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string or a [`time.ZonedDateTime`](#time)
+  - .postUpdate(value): `value` can be a string or a [`time.ZonedDateTime`](#time)
   - .addGroups(...groupNamesOrItems)
   - .removeGroups(...groupNamesOrItems)
   - .addTags(...tagNames)
   - .removeTags(...tagNames)
 
 ```javascript
+// Equivalent to items.KitchenLight
 var item = items.getItem("KitchenLight");
 // Send an ON command
 item.sendCommand("ON");
 // Post an update
 item.postUpdate("OFF");
 // Get state
-console.log("KitchenLight state", item.state)
+console.log("KitchenLight state", item.state);
 ```
+
+See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) for full API documentation.
 
 #### `itemConfig`
 
@@ -427,15 +438,15 @@ Calling `Item.history` returns a `ItemHistory` object with the following functio
   - .deviationSince(timestamp, serviceId) ⇒ `number | null`
   - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
   - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
-  - .historicState(timestamp, serviceId) ⇒ `string | null`
+  - .historicState(timestamp, serviceId) ⇒ `HistoricItem | null`
   - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
   - .latestState(serviceId) ⇒ `string | null`
-  - .maximumBetween(begin, end, serviceId) ⇒ `string | null`
-  - .maximumSince(timestamp,serviceId) ⇒ `string | null`
-  - .minimumSince(begin, end, serviceId) ⇒ `string | null`
-  - .minimumSince(timestamp, serviceId) ⇒ `string | null`
+  - .maximumBetween(begin, end, serviceId) ⇒ `HistoricItem | null`
+  - .maximumSince(timestamp,serviceId) ⇒ `HistoricItem | null`
+  - .minimumSince(begin, end, serviceId) ⇒ `HistoricItem | null`
+  - .minimumSince(timestamp, serviceId) ⇒ `HistoricItem | null`
   - .persist(serviceId)
-  - .previousState(skipEqual, serviceId) ⇒ `string | null`
+  - .previousState(skipEqual, serviceId) ⇒ `HistoricItem | null`
   - .sumBetween(begin, end, serviceId) ⇒ `number | null`
   - .sumSince(timestamp, serviceId) ⇒ `number | null`
   - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
@@ -447,8 +458,22 @@ Note: `serviceId` is optional, if omitted, the default persistence service will 
 
 ```javascript
 var yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
-var item = items.getItem('KitchenDimmer');
+var item = items.KitchenDimmer;
 console.log('KitchenDimmer averageSince', item.history.averageSince(yesterday));
+```
+
+The `HistoricItem` object contains the following properties, representing Item state and the respective timestamp:
+
+- `state`: State as string
+- `numericState`: State as number, if state can be represented as number, or `null` if that's not the case
+- `quantityState`: Item state as [`Quantity`](#quantity) or `null` if state is not Quantity-compatible
+- `rawState`: State as Java `State` object
+- `timestamp`: Timestamp as [`time.ZonedDateTime`](#time)
+
+```javascript
+var midnight = time.toZDT('00:00');
+var historic = items.KitchenDimmer.history.maximumSince(midnight);
+console.log('KitchenDimmer maximum was ', historic.state, ' at ', historic.timestamp);
 ```
 
 See [openhab-js : ItemHistory](https://openhab.github.io/openhab-js/items.ItemHistory.html) for full API documentation.
@@ -527,19 +552,14 @@ See [openhab-js : actions.Exec](https://openhab.github.io/openhab-js/actions.htm
 Execute a command line.
 
 ```javascript
-
 // Execute command line.
 actions.Exec.executeCommandLine('echo', 'Hello World!');
 
 // Execute command line with timeout.
-var Duration = Java.type('java.time.Duration');
-actions.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
-
-// Get response from command line.
-var response = actions.Exec.executeCommandLine('echo', 'Hello World!');
+actions.Exec.executeCommandLine(time.Duration.ofSeconds(20), 'echo', 'Hello World!');
 
 // Get response from command line with timeout.
-response = actions.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
+var response = actions.Exec.executeCommandLine(time.Duration.ofSeconds(20), 'echo', 'Hello World!');
 ```
 
 #### HTTP Actions
@@ -560,7 +580,7 @@ The `ScriptExecution` actions provide the `callScript(string scriptName)` method
 You can also create timers using the [native JS methods for timer creation](#timers), your choice depends on the versatility you need.
 Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
-Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanagable timers running until you restart openHAB.
+Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanageable timers running until you restart openHAB.
 A possible solution is to store all timers in an array and cancel all timers in the [Deinitialization Hook](#deinitialization-hook).
 
 ##### `createTimer`
@@ -699,18 +719,6 @@ if (counter === null) {
 console.log('Count', counter.times++);
 ```
 
-### Log
-
-By default, the JS Scripting binding supports console logging like `console.log()` and `console.debug()` to the openHAB default log.
-Additionally, scripts may create their own native openHAB logger using the log namespace.
-
-```javascript
-var logger = log('my_logger');
-
-//prints "Hello World!"
-logger.debug("Hello {}!", "world");
-```
-
 ### Time
 
 openHAB internally makes extensive use of the `java.time` package.
@@ -724,7 +732,7 @@ Examples:
 ```javascript
 var now = time.ZonedDateTime.now();
 var yesterday = time.ZonedDateTime.now().minusHours(24);
-var item = items.getItem("Kitchen");
+var item = items.Kitchen;
 console.log("averageSince", item.history.averageSince(yesterday));
 ```
 
@@ -740,20 +748,20 @@ There will be times when this automatic conversion is not available (for example
 To ease having to deal with these cases a `time.toZDT()` function will accept almost any type that can be converted to a `time.ZonedDateTime`.
 The following rules are used during the conversion:
 
-| Argument Type                                              | Rule                                                                                                                                                                                                   | Examples                                                        |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| `null` or `undefined`                                      | `time.ZonedDateTime.now()`                                                                                                                                                                             | `time.toZDT();`                                                 |
-| `time.ZonedDateTime`                                       | passed through unmodified                                                                                                                                                                              |                                                                 |
-| `java.time.ZonedDateTime`                                  | converted to the `time.ZonedDateTime` equivalent                                                                                                                                                       |                                                                 |
-| JavaScript native `Date`                                   | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                                                                                                        |                                                                 |
-| `number`, `bingint`, `java.lang.Number`, `DecimalType`     | rounded to the nearest integer and added to `now` as milliseconds                                                                                                                                      | `time.toZDT(1000);`                                             |
-| `QuantityType`                                             | if the units are `Time`, that time is added to `now`                                                                                                                                                   | `time.toZDT(item.getItem('MyTimeItem').rawState);`              |
-| `items.Item` or `org.openhab.core.types.Item`              | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted                                                                                             | `time.toZDT(items.getItem('MyItem'));`                          |
-| `String`, `java.lang.String`, `StringType`                 | parsed based on the following rules                                                                                                                                                                    |                                                                 |
-| RFC String (output from a Java `ZonedDateTime.toString()`) | parsed                                                                                                                                                                                                 | `time.toZDT(new DateTimeType().getZonedDateTime().toString());` |
-| `"HH:MM[:ss]"` (24 hour time)                              | today's date with the time indicated, seconds is optional                                                                                                                                              | `time.toZDT('13:45:12');`                                       |
-| `"kk:mm[:ss][ ]a"` (12 hour time)                          | today's date with the time indicated, the space between the time and am/pm and seconds are optional                                                                                                    | `time.toZDT('1:23:45 PM');`                                     |
-| Duration String                                            | any duration string supported by `time.Duration` added to `now()`, see [the docs](https://js-joda.github.io/js-joda/class/packages/core/src/Duration.js~Duration.html#static-method-parse) for details | `time.toZDT('PT1H4M6.789S');`                                   |
+| Argument Type                                                                | Rule                                                                                                            | Examples                                                                               |
+|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `null` or `undefined`                                                        | `time.ZonedDateTime.now()`                                                                                      | `time.toZDT();`                                                                        |
+| `time.ZonedDateTime`                                                         | passed through unmodified                                                                                       |                                                                                        |
+| `java.time.ZonedDateTime`                                                    | converted to the `time.ZonedDateTime` equivalent                                                                |                                                                                        |
+| JavaScript native `Date`                                                     | converted to the equivalent `time.ZonedDateTime` using `SYSTEM` as the timezone                                 |                                                                                        |
+| `number`, `bingint`, `java.lang.Number`, `DecimalType`                       | rounded to the nearest integer and added to `now` as milliseconds                                               | `time.toZDT(1000);`                                                                    |
+| [`Quantity`](#quantity) or `QuantityType`                                    | if the units are `Time`, that time is added to `now`                                                            | `time.toZDT(item.getItem('MyTimeItem').rawState);`, `time.toZDT(Quantity('10 min'));`  |
+| `items.Item` or `org.openhab.core.types.Item`                                | if the state is supported (see the `Type` rules in this table, e.g. `DecimalType`), the state is converted      | `time.toZDT(items.getItem('MyItem'));`                                                 |
+| `String`, `java.lang.String`, `StringType`                                   | parsed based on the following rules                                                                             |                                                                                        |
+| [ISO8601 Date/Time](https://en.wikipedia.org/wiki/ISO_8601) String           | parsed, depending on the provided data: if no date is passed, today's date; if no time is passed, midnight time | `time.toZDT('00:00');`, `time.toZDT('2022-12-24');`, `time.toZDT('2022-12-24T18:30');` |
+| RFC String (output from a Java `ZonedDateTime.toString()`)                   | parsed                                                                                                          | `time.toZDT('2019-10-12T07:20:50.52Z');`                                               |
+| `"kk:mm[:ss][ ]a"` (12 hour time)                                            | today's date with the time indicated, the space between the time and am/pm and seconds are optional             | `time.toZDT('1:23:45 PM');`                                                            |
+| [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations) String | added to `now`                                                                                                  | `time.toZDT('PT1H4M6.789S');`                                                          |
 
 When a type or string that cannot be handled is encountered, an error is thrown.
 
@@ -764,8 +772,41 @@ When you have a `time.ZonedDateTime`, a new `toToday()` method was added which w
 For example, if the time was 13:45 and today was a DST changeover, the time will still be 13:45 instead of one hour off.
 
 ```javascript
-var alarm = items.getItem('Alarm');
+var alarm = items.Alarm;
 alarm.postUpdate(time.toZDT(alarm).toToday());
+```
+
+#### `isBeforeTime(timestamp)`, `isBeforeDate(timestamp)`, `isBeforeDateTime(timestamp)`
+
+Tests whether this `time.ZonedDateTime` is before the time passed in `timestamp`, tested in various ways:
+
+- `isBeforeTime` only compares the time portion of both, ignoring the date portion
+- `isBeforeDate` only compares the date portion of both, ignoring the time portion
+- `isBeforeDateTime` compares both date and time portions
+
+`timestamp` can be anything supported by `time.toZDT()`.
+
+Examples:
+
+```javascript
+time.toZDT('22:00').isBeforeTime('23:00')
+time.toZDT('2022-12-01T12:00Z').isBeforeDateTime('2022-12-02T13:00Z')
+```
+
+#### `isAfterTime(timestamp)`, `isAfterDate(timestamp)`, `isAfterDateTime(timestamp)`
+
+Tests whether this `time.ZonedDateTime` is after the time passed in `timestamp`, tested in various ways:
+
+- `isAfterTime` only compares the time portion of both, ignoring the date portion
+- `isAfterDate` only compares the date portion of both, ignoring the time portion
+- `isAfterDateTime` compares both date and time portions
+
+`timestamp` can be anything supported by `time.toZDT()`.
+
+```javascript
+// Equivalent to items.Sunset
+time.toZDT().isAfterTime(items.getItem('Sunset')) // is now after sunset?
+time.toZDT().isAfterDateTime('2022-12-01T12:00Z') // is now after 2022-12-01 noon?
 ```
 
 #### `isBetweenTimes(start, end)`
@@ -779,8 +820,33 @@ Examples:
 
 ```javascript
 time.toZDT().isBetweenTimes('22:00', '05:00') // currently between 11:00 pm and 5:00 am
+// Equivalent to items.Sunset
 time.toZDT().isBetweenTimes(items.getItem('Sunset'), '11:30 PM') // is now between sunset and 11:30 PM?
+// Equivalent to items.StartTime
 time.toZDT(items.getItem('StartTime')).isBetweenTimes(time.toZDT(), 'PT1H'); // is the state of StartTime between now and one hour from now
+```
+
+#### `isBetweenDates(start, end)`
+
+Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
+However, the function only compares the date portion of the three, ignoring the time portion.
+`start` and `end` can be anything supported by `time.toZDT()`.
+
+Examples:
+
+```javascript
+time.toZDT().isBetweenDates('2022-06-18', '2023-12-24') // currently between 2022-06-18 and 2023-12-24
+```
+
+#### `isBetweenDateTimes(start, end)`
+
+Tests whether this `time.ZonedDateTime` is between the passed in `start` and `end`.
+`start` and `end` can be anything supported by `time.toZDT()`.
+
+Examples:
+
+```javascript
+time.toZDT().isBetweenDateTimes('2022-06-18T22:00Z', '2023-12-24T05:00Z') // currently between 2022-06-18 22:00 and 2023-12-24 05:00
 ```
 
 #### `isClose(zdt, maxDur)`
@@ -802,6 +868,100 @@ This method on `time.ZonedDateTime` returns the milliseconds from now to the pas
 ```javascript
 var timestamp = time.ZonedDateTime.now().plusMinutes(5);
 console.log(timestamp.getMillisFromNow());
+```
+
+### Quantity
+
+The `Quantity` class greatly simplifies Quantity handling by providing unit conversion, comparisons and mathematical operations.
+A Quantity consists of a measurement and its [Unit of Measurement (UoM)](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units), e.g. `5.7 m` (the measurement is `5.7`, the unit is `m` meters).
+
+Internally using the openHAB `QuantityType`, which relies on [`javax.measure`](https://unitsofmeasurement.github.io/unit-api/), it supports all units and dimensions that openHAB supports.
+If your unit is not listed in the UoM docs, it is very likely that it is still supported, e.g. the Angstrom Å for very small lengths (1 Å = 10 nm).
+Anywhere that a native openHAB `QuantityType` is required, the runtime will automatically convert the JS-`Quantity` to its Java counterpart.
+
+#### Creation
+
+`Quantity(value)` is used without new (it's a factory, not a constructor), pass an amount **and** a unit to it to create a new `Quantity` object:
+
+The argument `value` can be a string, a `Quantity` instance or an openHAB Java [`QuantityType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/quantitytype).
+
+`value` strings have the `$amount $unit` format and must follow these rules:
+
+- `$amount` is required with a number provided as string
+- `$unit` is optional (unitless quantities are possible) and can have a prefix like `m` (milli) or `M` (mega)
+- `$unit` does not allow whitespaces.
+- `$unit` does allow superscript, e.g. `²` instead of `^2`.
+- `$unit` requires the `*` between two units to be present, although you usually omit it (which is mathematically seen allowed, but openHAB needs the `*`).
+
+Generally, you can expect a unit consisting of two (or more) units to need a `*`, e.g. `Nm` is `N*m`,
+
+Nearly all [Units of Measurement (UoM)](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units) are expected to work with `Quantity`.
+`ɡₙ` (standard gravity) is known to not work.
+
+```javascript
+// Allowed:
+var qty = Quantity('5.75 m');
+qty = Quantity('1 N*m');
+qty = Quantity('1 m/s');
+qty = Quantity('1 m^2/s^2');
+qty = Quantity('1 m^2/s^-2'); // negative powers
+qty = Quantity('1'); // unitless quantity
+
+// Not allowed:
+qty = Quantity('m');
+qty = Quantity('1 Nm'); // * is required
+qty = Quantity('1 m^2 / s^2'); // whitespaces are not allowed
+qty = Quantity('1 m^2 s^2'); // / is required
+qty = Quantity('1 m2/s2'); // ^ is required
+```
+
+#### Conversion
+
+It is possible to convert a `Quantity` to a new `Quantity` with a different unit or to get a `Quantity`'s amount as integer or float:
+
+```javascript
+var qty = Quantity('10.2 °C');
+
+qty = qty.toUnit('°F');
+var intValue = qty.int;
+var floatValue = qty.float;
+```
+
+`toUnit` returns a new Quantity with the given unit or `null`, if conversion to that unit is not possible.
+
+#### Comparison
+
+`Quantity` provides the following methods for comparison:
+
+- `equal(value)` ⇒ `boolean`: this `Quantity` equals to `value`
+- `greaterThan(value)` ⇒ `boolean`: this `Quantity` is greater than `value`
+- `greaterThanOrEqual(value)` ⇒ `boolean`: this `Quantity` is greater than or equal to `value`
+- `lessThan(value)` ⇒ `boolean`: this `Quantity` is less than `value`
+- `lessThanOrEqual(value)` ⇒ `boolean`: this `Quantity` is less than or equal to `value`
+
+`value` can be a string or a `Quantity`, for the string the same rules apply as described above.
+
+#### Mathematical Operators
+
+- `add(value)` ⇒ `Quantity`: `value` can be a string or a `Quantity`
+- `divide(value)` ⇒ `Quantity`: `value` can be a number, a string or a `Quantity`
+- `multiply(value)` ⇒ `Quantity`: `value` can be a number, a string or a `Quantity`
+- `subtract(value)` ⇒ `Quantity`: `value` can be a string or a `Quantity`
+
+For the string the same rules apply as described above.
+
+See [openhab-js : Quantity](https://openhab.github.io/openhab-js/Quantity.html) for full API documentation.
+
+### Log
+
+By default, the JS Scripting binding supports console logging like `console.log()` and `console.debug()` to the openHAB default log.
+Additionally, scripts may create their own native openHAB logger using the log namespace.
+
+```javascript
+var logger = log('my_logger');
+
+//prints "Hello World!"
+logger.debug("Hello {}!", "world");
 ```
 
 ### Utils
@@ -833,6 +993,7 @@ rules.JSRule({
   description: "Light will turn on when it's 5:00pm",
   triggers: [triggers.GenericCronTrigger("0 0 17 * * ?")],
   execute: (event) => {
+    // Equivalent to items.BalconyLights.sendCommand("ON")
     items.getItem("BalconyLights").sendCommand("ON");
     actions.NotificationAction.sendNotification(email, "Balcony lights are ON");
   },
@@ -1030,7 +1191,8 @@ When a rule is triggered, the script is provided the event instance that trigger
 The specific data depends on the event type.
 The `event` object provides some information about that trigger.
 
-This tables gives an overview over the `event` object:
+This table gives an overview over the `event` object:
+
 | Property Name     | Trigger Types                                        | Description                                                                         | Rules DSL Equivalent   |
 |-------------------|------------------------------------------------------|-------------------------------------------------------------------------------------|------------------------|
 | `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                                | `previousState`        |

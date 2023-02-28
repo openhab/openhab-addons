@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,6 @@ public class NetatmoConstants {
 
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
-    public static final String URL_APP = "https://app.netatmo.net/";
     public static final String PATH_OAUTH = "oauth2";
     public static final String SUB_PATH_TOKEN = "token";
     public static final String SUB_PATH_AUTHORIZE = "authorize";

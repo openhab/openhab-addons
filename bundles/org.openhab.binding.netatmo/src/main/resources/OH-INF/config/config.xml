@@ -29,6 +29,11 @@
 			<description>@text/config.webHookUrl.description</description>
 		</parameter>
 
+		<parameter name="webHookPostfix" type="text" required="false">
+			<label>@text/config.webHookPostfix.label</label>
+			<description>@text/config.webHookPostfix.description</description>
+		</parameter>
+
 		<parameter name="reconnectInterval" type="integer" unit="s">
 			<label>@text/config.reconnectInterval.label</label>
 			<description>@text/config.reconnectInterval.description</description>

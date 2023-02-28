@@ -7,7 +7,7 @@ The latter can be requested from the [Miele Developer Portal](https://www.miele.
 ## Supported Things
 
 Most Miele appliances that directly connect to the cloud via a Wi-Fi module are supported.
-Appliances connecting to the XGW3000 gateway via ZigBee are also supported when registered with the cloud account.
+Appliances connecting to the XGW3000 gateway via Zigbee are also supported when registered with the cloud account.
 However they might be better supported by the [gateway-based Miele binding](https://www.openhab.org/addons/bindings/miele/).
 Depending on the age of your appliance the functionality of the binding might be limited.
 Appliances from recent generations will support all functionality.

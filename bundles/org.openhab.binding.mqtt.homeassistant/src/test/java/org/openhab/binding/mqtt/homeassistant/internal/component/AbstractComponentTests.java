@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,6 +174,20 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     protected static void assertState(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, State state) {
         assertThat(component.getChannel(channelId).getState().getCache().getChannelState(), is(state));
+    }
+
+    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId) {
+        // It's already thingHandler, but not the spy version
+        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
+    }
+
+    /**
+     * Assert a channel triggers
+     */
+    protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannelUID()), eq(trigger));
     }
 
     /**

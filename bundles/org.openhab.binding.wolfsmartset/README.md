@@ -80,6 +80,7 @@ Bridge wolfsmartset:account:account "Wolf Smartset Account" [ username="User", p
     }
 }
 ````
+
 _You need to use the corrosponding systemId and unitId returned by the discovery_
 
 ### Items
@@ -117,7 +118,7 @@ All devices able to be connected to www.wolf-smartset.de
 
 ### Related Documentation from WOLF
 
-https://www.wolf.eu/fileadmin/Wolf_Daten/Dokumente/FAQ/3065655_201711.pdf
+https://oxomi.com/service/json/catalog/pdf?portal=2024876&catalog=10406695
 
 | Heating system                            | WOLF Link home        | WOLF Link pro      |
 |-------------------------------------------|-----------------------|--------------------|

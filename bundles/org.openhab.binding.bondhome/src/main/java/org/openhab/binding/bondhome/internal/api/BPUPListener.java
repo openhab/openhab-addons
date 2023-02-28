@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,9 +130,11 @@ public class BPUPListener implements Runnable {
                 sock.receive(inPacket);
                 BPUPUpdate response = transformUpdatePacket(inPacket);
                 if (response != null) {
-                    if (!response.bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
+                    @Nullable
+                    String bondId = response.bondId;
+                    if (bondId == null || !bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
                         logger.warn("Response isn't from expected Bridge!  Expected: {}  Got: {}",
-                                bridgeHandler.getBridgeId(), response.bondId);
+                                bridgeHandler.getBridgeId(), bondId);
                     } else {
                         bridgeHandler.setBridgeOnline(inPacket.getAddress().getHostAddress());
                         numberOfKeepAliveTimeouts = 0;

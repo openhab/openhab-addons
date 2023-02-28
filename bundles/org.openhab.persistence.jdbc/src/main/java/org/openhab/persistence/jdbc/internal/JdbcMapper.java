@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
@@ -179,6 +180,7 @@ public class JdbcMapper {
         ItemsVO isvo = new ItemsVO();
         isvo.setJdbcUriDatabaseName(conf.getDbName());
         isvo.setTableName(tableName);
+        isvo.setItemsManageTable(conf.getItemsManageTable());
         List<Column> is = conf.getDBDAO().doGetTableColumns(isvo);
         logTime("getTableColumns", timerStart, System.currentTimeMillis());
         return is;
@@ -340,6 +342,11 @@ public class JdbcMapper {
             }
         } else {
             for (ItemsVO vo : getItemIDTableNames()) {
+                String itemName = vo.getItemName();
+                if (!ItemUtil.isValidItemName(itemName)) {
+                    logger.warn("Skipping invalid item name {}", itemName);
+                    continue;
+                }
                 itemNameToTableNameMap.put(vo.getItemName(),
                         namingStrategy.getTableName(vo.getItemId(), vo.getItemName()));
             }
@@ -429,6 +436,10 @@ public class JdbcMapper {
             }
             oldNewTableNames = new ArrayList<>();
             for (String itemName : itemTables) {
+                if (!ItemUtil.isValidItemName(itemName)) {
+                    logger.warn("JDBC::formatTableNames: Skipping invalid item name {}", itemName);
+                    continue;
+                }
                 ItemsVO isvo = new ItemsVO();
                 isvo.setItemName(itemName);
                 isvo.setItemsManageTable(conf.getItemsManageTable());

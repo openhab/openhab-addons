@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,19 +22,21 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
-import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
-import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
-import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.GatewayStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.LocationStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.LocationsStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.TemperatureControlSystemStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Zone;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneStatus;
 import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -54,15 +56,16 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeAccountBridgeHandler.class);
     private final HttpClient httpClient;
-    private EvohomeAccountConfiguration configuration;
-    private EvohomeApiClient apiClient;
+    private EvohomeAccountConfiguration configuration = new EvohomeAccountConfiguration();
+    private @Nullable EvohomeApiClient apiClient;
     private List<AccountStatusListener> listeners = new CopyOnWriteArrayList<>();
 
-    protected ScheduledFuture<?> refreshTask;
+    protected @Nullable ScheduledFuture<?> refreshTask;
 
     public EvohomeAccountBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
@@ -73,13 +76,14 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
-        if (checkConfig()) {
+        if (checkConfig(configuration)) {
             apiClient = new EvohomeApiClient(configuration, this.httpClient);
 
             // Initialization can take a while, so kick it off on a separate thread
             scheduler.schedule(() -> {
-                if (apiClient.login()) {
-                    if (checkInstallationInfoHasDuplicateIds(apiClient.getInstallationInfo())) {
+                EvohomeApiClient localApiCLient = apiClient;
+                if (localApiCLient != null && localApiCLient.login()) {
+                    if (checkInstallationInfoHasDuplicateIds(localApiCLient.getInstallationInfo())) {
                         startRefreshTask();
                     } else {
                         updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -104,24 +108,41 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public Locations getEvohomeConfig() {
-        return apiClient.getInstallationInfo();
+    public @Nullable Locations getEvohomeConfig() {
+        EvohomeApiClient localApiCLient = apiClient;
+        if (localApiCLient != null) {
+            return localApiCLient.getInstallationInfo();
+        }
+        return null;
     }
 
-    public LocationsStatus getEvohomeStatus() {
-        return apiClient.getInstallationStatus();
+    public @Nullable LocationsStatus getEvohomeStatus() {
+        EvohomeApiClient localApiCLient = apiClient;
+        if (localApiCLient != null) {
+            return localApiCLient.getInstallationStatus();
+        }
+        return null;
     }
 
     public void setTcsMode(String tcsId, String mode) {
-        tryToCall(() -> apiClient.setTcsMode(tcsId, mode));
+        EvohomeApiClient localApiCLient = apiClient;
+        if (localApiCLient != null) {
+            tryToCall(() -> localApiCLient.setTcsMode(tcsId, mode));
+        }
     }
 
     public void setPermanentSetPoint(String zoneId, double doubleValue) {
-        tryToCall(() -> apiClient.setHeatingZoneOverride(zoneId, doubleValue));
+        EvohomeApiClient localApiCLient = apiClient;
+        if (localApiCLient != null) {
+            tryToCall(() -> localApiCLient.setHeatingZoneOverride(zoneId, doubleValue));
+        }
     }
 
     public void cancelSetPointOverride(String zoneId) {
-        tryToCall(() -> apiClient.cancelHeatingZoneOverride(zoneId));
+        EvohomeApiClient localApiCLient = apiClient;
+        if (localApiCLient != null) {
+            tryToCall(() -> localApiCLient.cancelHeatingZoneOverride(zoneId));
+        }
     }
 
     public void addAccountStatusListener(AccountStatusListener listener) {
@@ -164,26 +185,27 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void disposeApiClient() {
-        if (apiClient != null) {
-            apiClient.logout();
+        EvohomeApiClient localApiClient = apiClient;
+        if (localApiClient != null) {
+            localApiClient.logout();
+            this.apiClient = null;
         }
-        apiClient = null;
     }
 
     private void disposeRefreshTask() {
-        if (refreshTask != null) {
-            refreshTask.cancel(true);
+        ScheduledFuture<?> localRefreshTask = refreshTask;
+        if (localRefreshTask != null) {
+            localRefreshTask.cancel(true);
+            this.refreshTask = null;
         }
     }
 
-    private boolean checkConfig() {
+    private boolean checkConfig(EvohomeAccountConfiguration configuration) {
         String errorMessage = "";
 
-        if (configuration == null) {
-            errorMessage = "Configuration is missing or corrupted";
-        } else if (configuration.username == null || configuration.username.isEmpty()) {
+        if (configuration.username.isBlank()) {
             errorMessage = "Username not configured";
-        } else if (configuration.password == null || configuration.password.isEmpty()) {
+        } else if (configuration.password.isBlank()) {
             errorMessage = "Password not configured";
         } else {
             return true;
@@ -202,7 +224,10 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     private void update() {
         try {
-            apiClient.update();
+            EvohomeApiClient localApiCLient = apiClient;
+            if (localApiCLient != null) {
+                localApiCLient.update();
+            }
             updateAccountStatus(ThingStatus.ONLINE);
             updateThings();
         } catch (Exception e) {
@@ -215,7 +240,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         updateAccountStatus(newStatus, ThingStatusDetail.NONE, null);
     }
 
-    private void updateAccountStatus(ThingStatus newStatus, ThingStatusDetail detail, String message) {
+    private void updateAccountStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
@@ -236,15 +261,32 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         Map<String, String> zoneIdToTcsIdMap = new HashMap<>();
         Map<String, ThingStatus> idToTcsThingsStatusMap = new HashMap<>();
 
-        // First, create a lookup table
-        for (LocationStatus location : apiClient.getInstallationStatus()) {
-            for (GatewayStatus gateway : location.getGateways()) {
-                for (TemperatureControlSystemStatus tcs : gateway.getTemperatureControlSystems()) {
-                    idToTcsMap.put(tcs.getSystemId(), tcs);
-                    tcsIdToGatewayMap.put(tcs.getSystemId(), gateway);
-                    for (ZoneStatus zone : tcs.getZones()) {
-                        idToZoneMap.put(zone.getZoneId(), zone);
-                        zoneIdToTcsIdMap.put(zone.getZoneId(), tcs.getSystemId());
+        EvohomeApiClient localApiClient = apiClient;
+        if (localApiClient != null) {
+            // First, create a lookup table
+            LocationsStatus localLocationsStatus = localApiClient.getInstallationStatus();
+            if (localLocationsStatus != null) {
+                for (LocationStatus location : localLocationsStatus) {
+                    for (GatewayStatus gateway : location.getGateways()) {
+                        if (gateway == null) {
+                            continue;
+                        }
+                        for (TemperatureControlSystemStatus tcs : gateway.getTemperatureControlSystems()) {
+                            String systemId = tcs.getSystemId();
+                            if (systemId != null) {
+                                idToTcsMap.put(systemId, tcs);
+                                tcsIdToGatewayMap.put(systemId, gateway);
+                            }
+                            for (ZoneStatus zone : tcs.getZones()) {
+                                String zoneId = zone.getZoneId();
+                                if (zoneId != null) {
+                                    idToZoneMap.put(zoneId, zone);
+                                    if (systemId != null) {
+                                        zoneIdToTcsIdMap.put(zoneId, systemId);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

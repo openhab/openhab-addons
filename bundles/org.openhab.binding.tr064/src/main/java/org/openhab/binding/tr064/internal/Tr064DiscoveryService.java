@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,7 @@ package org.openhab.binding.tr064.internal;
 
 import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Tr064DiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final int SEARCH_TIME = 5;
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SUBDEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SUBDEVICE);
 
     private final Logger logger = LoggerFactory.getLogger(Tr064DiscoveryService.class);
     private @Nullable Tr064RootHandler bridgeHandler;
@@ -101,13 +99,12 @@ public class Tr064DiscoveryService extends AbstractDiscoveryService implements T
                 }
                 ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, UIDUtils.encode(udn));
 
-                Map<String, Object> properties = new HashMap<>(2);
-                properties.put("uuid", udn);
-                properties.put("deviceType", device.getDeviceType());
-
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.getFriendlyName())
-                        .withBridge(bridgeHandler.getThing().getUID()).withProperties(properties)
-                        .withRepresentationProperty("uuid").build();
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID) //
+                        .withLabel(device.getFriendlyName()) //
+                        .withBridge(bridgeUID) //
+                        .withProperties(Map.of("uuid", udn, "deviceType", device.getDeviceType())) //
+                        .withRepresentationProperty("uuid") //
+                        .build();
                 thingDiscovered(result);
             }
         });

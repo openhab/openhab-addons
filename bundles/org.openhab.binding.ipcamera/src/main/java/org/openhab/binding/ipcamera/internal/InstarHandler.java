@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     if (requestUrl.startsWith("/param.cgi?cmd=setasaction&-server=1&enable=1")
                             && content.contains("response=\"200\";")) {// new
                         ipCameraHandler.newInstarApi = true;
-                        ipCameraHandler.logger.debug("Alarm server sucessfully setup for a 2k+ Instar camera");
+                        ipCameraHandler.logger.debug("Alarm server successfully setup for a 2k+ Instar camera");
                         if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
                             ipCameraHandler.rtspUri = "rtsp://" + ipCameraHandler.cameraConfig.getIp()
                                     + "/livestream/12";
@@ -150,7 +150,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     } else if (requestUrl.startsWith("/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1")
                             && content.startsWith("[Succeed]set ok")) {
                         ipCameraHandler.newInstarApi = false;
-                        ipCameraHandler.logger.debug("Alarm server sucessfully setup for a 1080p Instar camera");
+                        ipCameraHandler.logger.debug("Alarm server successfully setup for a 1080p Instar camera");
                     } else {
                         ipCameraHandler.logger.debug("Unknown reply from URI:{}", requestUrl);
                     }

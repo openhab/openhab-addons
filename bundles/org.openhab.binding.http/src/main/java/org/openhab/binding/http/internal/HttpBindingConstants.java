@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HttpBindingConstants {
 
-    private static final String BINDING_ID = "http";
+    public static final String BINDING_ID = "http";
 
     public static final ThingTypeUID THING_TYPE_URL = new ThingTypeUID(BINDING_ID, "url");
 }

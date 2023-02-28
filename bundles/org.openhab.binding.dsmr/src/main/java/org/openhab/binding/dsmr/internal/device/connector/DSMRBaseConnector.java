@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.dsmr.internal.device.connector;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,7 +37,7 @@ class DSMRBaseConnector {
     /**
      * Listener to send received data and errors to.
      */
-    protected final DSMRConnectorListener dsmrConnectorListener;
+    private final DSMRConnectorListener dsmrConnectorListener;
 
     /**
      * 1Kbyte buffer for storing received data.
@@ -53,7 +54,7 @@ class DSMRBaseConnector {
      */
     private boolean open;
 
-    public DSMRBaseConnector(DSMRConnectorListener connectorListener) {
+    public DSMRBaseConnector(final DSMRConnectorListener connectorListener) {
         this.dsmrConnectorListener = connectorListener;
     }
 
@@ -68,7 +69,7 @@ class DSMRBaseConnector {
      * @param inputStream input stream to read data from
      * @throws IOException throws exception in case input stream is null
      */
-    protected void open(@Nullable InputStream inputStream) throws IOException {
+    protected void open(@Nullable final InputStream inputStream) throws IOException {
         if (inputStream == null) {
             throw new IOException("Inputstream is null");
         }
@@ -91,7 +92,7 @@ class DSMRBaseConnector {
         if (inputStream != null) {
             try {
                 inputStream.close();
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 logger.debug("Failed to close reader", ioe);
             }
         }
@@ -104,12 +105,12 @@ class DSMRBaseConnector {
     protected void handleDataAvailable() {
         try {
             synchronized (readLock) {
-                BufferedInputStream localInputStream = inputStream;
+                final BufferedInputStream localInputStream = inputStream;
 
                 if (localInputStream != null) {
                     int bytesAvailable = localInputStream.available();
                     while (bytesAvailable > 0) {
-                        int bytesAvailableRead = localInputStream.read(buffer, 0,
+                        final int bytesAvailableRead = localInputStream.read(buffer, 0,
                                 Math.min(bytesAvailable, buffer.length));
 
                         if (open && bytesAvailableRead > 0) {
@@ -122,8 +123,9 @@ class DSMRBaseConnector {
                     }
                 }
             }
-        } catch (IOException e) {
-            dsmrConnectorListener.handleErrorEvent(DSMRConnectorErrorEvent.READ_ERROR);
+        } catch (final IOException e) {
+            dsmrConnectorListener.handleError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
+                    Optional.ofNullable(e.getMessage()).orElse(""));
             logger.debug("Exception on read data", e);
         }
     }

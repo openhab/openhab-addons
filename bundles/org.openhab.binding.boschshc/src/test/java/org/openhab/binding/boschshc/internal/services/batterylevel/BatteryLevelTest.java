@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Fault;
@@ -30,6 +31,7 @@ import org.openhab.core.types.UnDefType;
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 class BatteryLevelTest {
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,10 +27,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault({ DefaultLocation.PARAMETER })
 public class InfluxPoint {
-    private String measurementName;
-    private Instant time;
-    private Object value;
-    private Map<String, String> tags;
+    private final String measurementName;
+    private final Instant time;
+    private final Object value;
+    private final Map<String, String> tags;
 
     private InfluxPoint(Builder builder) {
         measurementName = builder.measurementName;
@@ -60,10 +60,10 @@ public class InfluxPoint {
     }
 
     public static final class Builder {
-        private String measurementName;
+        private final String measurementName;
         private Instant time;
         private Object value;
-        private Map<String, String> tags = new HashMap<>();
+        private final Map<String, String> tags = new HashMap<>();
 
         private Builder(String measurementName) {
             this.measurementName = measurementName;
@@ -79,8 +79,8 @@ public class InfluxPoint {
             return this;
         }
 
-        public Builder withTag(String name, String value) {
-            tags.put(name, value);
+        public Builder withTag(String name, Object value) {
+            tags.put(name, value.toString());
             return this;
         }
 

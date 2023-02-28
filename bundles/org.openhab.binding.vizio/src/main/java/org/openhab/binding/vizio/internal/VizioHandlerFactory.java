@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.vizio.internal.VizioBindingConstants.SUPPORTED
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.vizio.internal.appdb.VizioAppDbService;
 import org.openhab.binding.vizio.internal.handler.VizioHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -39,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.vizio")
 public class VizioHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final VizioStateDescriptionOptionProvider stateDescriptionProvider;
     private final String vizioAppsJson;
 
@@ -47,7 +46,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
     public VizioHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference VizioStateDescriptionOptionProvider provider,
             final @Reference VizioAppDbService vizioAppDbService) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = provider;
         this.vizioAppsJson = vizioAppDbService.getVizioAppsJson();
     }
@@ -62,7 +61,7 @@ public class VizioHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            VizioHandler handler = new VizioHandler(thing, httpClient, stateDescriptionProvider, vizioAppsJson);
+            VizioHandler handler = new VizioHandler(thing, httpClientFactory, stateDescriptionProvider, vizioAppsJson);
             return handler;
         }
 

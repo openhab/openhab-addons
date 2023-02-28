@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,67 +27,8 @@ public class EvccBindingConstants {
 
     private static final String BINDING_ID = "evcc";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-
-    // List of all Channel Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_POWER = new ChannelTypeUID(BINDING_ID, "batteryPower");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_SOC = new ChannelTypeUID(BINDING_ID, "batterySoC");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC = new ChannelTypeUID(BINDING_ID,
-            "batteryPrioritySoC");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, "gridPower");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, "homePower");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, "pvPower");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES = new ChannelTypeUID(BINDING_ID,
-            "activePhases");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT = new ChannelTypeUID(BINDING_ID,
-            "chargeCurrent");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_DURATION = new ChannelTypeUID(BINDING_ID,
-            "chargeDuration");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_POWER = new ChannelTypeUID(BINDING_ID,
-            "chargePower");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_DURATION = new ChannelTypeUID(
-            BINDING_ID, "chargeRemainingDuration");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_ENERGY = new ChannelTypeUID(
-            BINDING_ID, "chargeRemainingEnergy");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGED_ENERGY = new ChannelTypeUID(BINDING_ID,
-            "chargedEnergy");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGING = new ChannelTypeUID(BINDING_ID, "charging");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED = new ChannelTypeUID(BINDING_ID,
-            "vehicleConnected");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED_DURATION = new ChannelTypeUID(BINDING_ID,
-            "vehicleConnectedDuration");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ENABLED = new ChannelTypeUID(BINDING_ID, "enabled");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE = new ChannelTypeUID(BINDING_ID,
-            "hasVehicle");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT = new ChannelTypeUID(BINDING_ID,
-            "maxCurrent");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT = new ChannelTypeUID(BINDING_ID,
-            "minCurrent");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC = new ChannelTypeUID(BINDING_ID, "minSoC");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MODE = new ChannelTypeUID(BINDING_ID, "mode");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID, "phases");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC = new ChannelTypeUID(BINDING_ID,
-            "targetSoC");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,
-            "targetTime");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED = new ChannelTypeUID(BINDING_ID,
-            "targetTimeEnabled");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID, "title");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
-            "vehicleCapacity");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_ODOMETER = new ChannelTypeUID(BINDING_ID,
-            "vehicleOdometer");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_PRESENT = new ChannelTypeUID(BINDING_ID,
-            "vehiclePresent");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_RANGE = new ChannelTypeUID(BINDING_ID,
-            "vehicleRange");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC = new ChannelTypeUID(BINDING_ID,
-            "vehicleSoC");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
-            "vehicleTitle");
-
     // List of all Channel ids
+    public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
     public static final String CHANNEL_BATTERY_POWER = "batteryPower";
     public static final String CHANNEL_BATTERY_SOC = "batterySoC";
     public static final String CHANNEL_BATTERY_PRIORITY_SOC = "batteryPrioritySoC";
@@ -124,6 +65,76 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
     public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "vehicleTitle";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+
+    // List of all Channel Type UIDs
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_CAPACITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_CAPACITY);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_POWER = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_PRIORITY_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_ACTIVE_PHASES);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CHARGE_CURRENT);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CHARGE_DURATION);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_POWER = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CHARGE_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_DURATION = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_ENERGY = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGED_ENERGY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CHARGED_ENERGY);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGING = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CHARGING);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CONNECTED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_CONNECTED_DURATION);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ENABLED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_ENABLED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_HAS_VEHICLE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_HAS_VEHICLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_MAX_CURRENT);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_MIN_CURRENT);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_MIN_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MODE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_MODE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_PHASES);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_TARGET_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_TARGET_TIME);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TARGET_TIME_ENABLED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_TITLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_CAPACITY);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_ODOMETER = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_PRESENT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_PRESENT);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_RANGE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_RANGE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_TITLE);
 
     public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
     public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;

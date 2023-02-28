@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
+import org.openhab.binding.dsmr.internal.device.connector.DSMRErrorStatus;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialConnector;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
+import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *         settings automatically.
  */
 @NonNullByDefault
-public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
+public class DSMRSerialAutoDevice implements DSMRDevice, P1TelegramListener {
 
     /**
      * Enum to keep track of the internal state of {@link DSMRSerialAutoDevice}.
@@ -113,7 +114,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /**
      * The listener of the class handling the connector events
      */
-    private DSMREventListener parentListener;
+    private final P1TelegramListener parentListener;
 
     /**
      * Time in nanos the last time the baudrate was switched. This is used during discovery ignore errors retrieved
@@ -126,20 +127,20 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      *
      * @param serialPortManager the manager to get a new serial port connecting from
      * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
-     * @param listener the parent {@link DSMREventListener}
+     * @param listener the parent {@link P1TelegramListener}
      * @param telegramListener listener to report found telegrams or errors
      * @param scheduler the scheduler to use with the baudrate switching timers
      * @param baudrateSwitchTimeoutSeconds timeout period for when to try other baudrate settings and end the discovery
      *            of the baudrate
      */
-    public DSMRSerialAutoDevice(SerialPortManager serialPortManager, String serialPortName, DSMREventListener listener,
-            DSMRTelegramListener telegramListener, ScheduledExecutorService scheduler,
-            int baudrateSwitchTimeoutSeconds) {
+    public DSMRSerialAutoDevice(final SerialPortManager serialPortManager, final String serialPortName,
+            final P1TelegramListener listener, final DSMRTelegramListener telegramListener,
+            final ScheduledExecutorService scheduler, final int baudrateSwitchTimeoutSeconds) {
         this.parentListener = listener;
         this.scheduler = scheduler;
         this.baudrateSwitchTimeoutSeconds = baudrateSwitchTimeoutSeconds;
         this.telegramListener = telegramListener;
-        telegramListener.setDsmrEventListener(listener);
+        telegramListener.setP1TelegramListener(listener);
         dsmrConnector = new DSMRSerialConnector(serialPortManager, serialPortName, telegramListener);
         logger.debug("Initialized port '{}'", serialPortName);
     }
@@ -148,7 +149,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     public void start() {
         stopDiscover(DeviceState.DISCOVER_SETTINGS);
         portSettings = DEFAULT_PORT_SETTINGS;
-        telegramListener.setDsmrEventListener(this);
+        telegramListener.setP1TelegramListener(this);
         dsmrConnector.open(portSettings);
         restartHalfTimer();
         endTimeTimer = scheduler.schedule(this::endTimeScheduledCall,
@@ -178,30 +179,28 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      * @param telegram the details of the received telegram
      */
     @Override
-    public void handleTelegramReceived(P1Telegram telegram) {
-        if (!telegram.getCosemObjects().isEmpty()) {
-            stopDiscover(DeviceState.NORMAL);
-            parentListener.handleTelegramReceived(telegram);
-            logger.info("Start receiving telegrams on port {} with settings: {}", dsmrConnector.getPortName(),
-                    portSettings);
-        }
+    public void telegramReceived(final P1Telegram telegram) {
+        stopDiscover(DeviceState.NORMAL);
+        parentListener.telegramReceived(telegram);
+        logger.info("Start receiving telegrams on port {} with settings: {}", dsmrConnector.getPortName(),
+                portSettings);
     }
 
     /**
      * Event handler for DSMR Port events.
      *
-     * @param portEvent {@link DSMRConnectorErrorEvent} to handle
+     * @param portEvent {@link DSMRErrorStatus} to handle
      */
     @Override
-    public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
+    public void onError(final DSMRErrorStatus portEvent, final String message) {
         logger.trace("Received portEvent {}", portEvent.getEventDetails());
-        if (portEvent == DSMRConnectorErrorEvent.READ_ERROR) {
+        if (portEvent == DSMRErrorStatus.SERIAL_DATA_READ_ERROR) {
             switchBaudrate();
         } else {
             logger.debug("Error during discovery of port settings: {}, current state:{}.", portEvent.getEventDetails(),
                     state);
             stopDiscover(DeviceState.ERROR);
-            parentListener.handleErrorEvent(portEvent);
+            parentListener.onError(portEvent, message);
         }
     }
 
@@ -209,7 +208,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      * @param lenientMode the lenientMode to set
      */
     @Override
-    public void setLenientMode(boolean lenientMode) {
+    public void setLenientMode(final boolean lenientMode) {
         telegramListener.setLenientMode(lenientMode);
     }
 
@@ -248,7 +247,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     private void endTimeScheduledCall() {
         if (state == DeviceState.DISCOVER_SETTINGS) {
             stopDiscover(DeviceState.ERROR);
-            parentListener.handleErrorEvent(DSMRConnectorErrorEvent.DONT_EXISTS);
+            parentListener.onError(DSMRErrorStatus.PORT_DONT_EXISTS, "");
         }
     }
 
@@ -257,8 +256,9 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      *
      * @param state the state with which the process was stopped.
      */
-    private void stopDiscover(DeviceState state) {
-        telegramListener.setDsmrEventListener(parentListener);
+    private void stopDiscover(final DeviceState state) {
+        this.state = state;
+        telegramListener.setP1TelegramListener(parentListener);
         logger.debug("Stop discovery of port settings.");
         if (halfTimeTimer != null) {
             halfTimeTimer.cancel(true);
@@ -268,7 +268,6 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
             endTimeTimer.cancel(true);
             endTimeTimer = null;
         }
-        this.state = state;
     }
 
     /**

@@ -110,14 +110,14 @@ demo.sitemap:
 ```perl
 sitemap demo label="Main Menu"
 {
- Frame {
-  Switch item=RadioPower
-  Slider visibility=[RadioPower==ON] item=RadioVolume
-  Switch visibility=[RadioPower==ON] item=RadioMute
-  Selection visibility=[RadioPower==ON] item=RadioPreset mappings=[0="Favourit 1", 1="Favourit 2", 2="Favourit 3", 3="Favourit 4"]
-  Selection visibility=[RadioPower==ON] item=RadioMode mappings=[0="Internet Radio", 1="Musik Player", 2="DAB", 3="FM", 4="AUX"]
-  Text visibility=[RadioPower==ON] item=RadioInfo1
-  Text visibility=[RadioPower==ON] item=RadioInfo2
- }
+    Frame {
+        Switch item=RadioPower
+        Slider visibility=[RadioPower==ON] item=RadioVolume
+        Switch visibility=[RadioPower==ON] item=RadioMute
+        Selection visibility=[RadioPower==ON] item=RadioPreset mappings=[0="Favourit 1", 1="Favourit 2", 2="Favourit 3", 3="Favourit 4"]
+        Selection visibility=[RadioPower==ON] item=RadioMode mappings=[0="Internet Radio", 1="Musik Player", 2="DAB", 3="FM", 4="AUX"]
+        Text visibility=[RadioPower==ON] item=RadioInfo1
+        Text visibility=[RadioPower==ON] item=RadioInfo2
+    }
 }
 ```
