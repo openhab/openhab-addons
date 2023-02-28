@@ -51,7 +51,9 @@ public class GoogleTVMessageParser {
         callback.validMessageReceived();
 
         try {
-            if (msg.startsWith("0a")) {
+            if (msg.startsWith("1a")) {
+                logger.warn("GoogleTV Error Message: {}", msg);
+            } else if (msg.startsWith("0a")) {
                 // First message on connection from GTV
                 //
                 // 0a 5b08 ff 041256 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 22 02 3131 2a

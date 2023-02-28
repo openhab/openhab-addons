@@ -190,7 +190,12 @@ public class AndroidTVHandler extends BaseThingHandler {
                 monitorThingStatusJob.cancel(true);
             }
         }
-        shieldtvConnectionManager.dispose();
-        googletvConnectionManager.dispose();
+        if (shieldtvConnectionManager != null) {
+            shieldtvConnectionManager.dispose();
+        }
+
+        if (googletvConnectionManager != null) {
+            googletvConnectionManager.dispose();
+        }
     }
 }

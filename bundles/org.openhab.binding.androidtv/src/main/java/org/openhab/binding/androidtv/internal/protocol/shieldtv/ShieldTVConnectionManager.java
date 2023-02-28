@@ -489,6 +489,10 @@ public class ShieldTVConnectionManager {
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
         }
+        ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
+        if (keepAliveReconnectJob != null) {
+            keepAliveReconnectJob.cancel(true);
+        }
 
         Thread senderThread = this.senderThread;
         if (senderThread != null && senderThread.isAlive()) {

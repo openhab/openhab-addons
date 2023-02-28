@@ -516,6 +516,7 @@ public class GoogleTVConnectionManager {
                     new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
             reader = new BufferedReader(new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
             this.sslSocket = sslSocket;
+            this.sendQueue.clear();
         } catch (UnknownHostException e) {
             setStatus(false, "Unknown host");
             return;
@@ -667,6 +668,7 @@ public class GoogleTVConnectionManager {
                     shimReader = new BufferedReader(
                             new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
                     this.shimServerSocket = serverSocket;
+                    this.shimQueue.clear();
 
                     Thread readerThread = new Thread(this::shimReaderThreadJob, "GoogleTV shim reader");
                     readerThread.setDaemon(true);
@@ -713,6 +715,10 @@ public class GoogleTVConnectionManager {
         ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
+        }
+        ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
+        if (keepAliveReconnectJob != null) {
+            keepAliveReconnectJob.cancel(true);
         }
 
         Thread senderThread = this.senderThread;
@@ -1210,6 +1216,13 @@ public class GoogleTVConnectionManager {
             if (command instanceof StringType) {
                 try {
                     if (config.mode.equals(DEFAULT_MODE)) {
+                        if ((!isLoggedIn) && (command.toString().equals("REQUEST"))
+                                && (childConnectionManager == null)) {
+                            setStatus(false, "User Forced PIN Process");
+                            logger.debug("User Forced PIN Process");
+                            disconnect(true);
+                            startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                        }
                         childConnectionManager.handleCommand(channelUID, command);
                     } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
                         if (!isLoggedIn) {
