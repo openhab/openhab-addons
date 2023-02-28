@@ -43,10 +43,14 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_RAWMSG = "rawmsg";
     public static final String CHANNEL_KEYBOARD = "keyboard";
     public static final String CHANNEL_KEYPRESS = "keypress";
+    public static final String CHANNEL_KEYCODE = "keycode";
     public static final String CHANNEL_PINCODE = "pincode";
     public static final String CHANNEL_APP = "app";
     public static final String CHANNEL_APPNAME = "appname";
     public static final String CHANNEL_APPURL = "appurl";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MUTE = "mute";
 
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";
