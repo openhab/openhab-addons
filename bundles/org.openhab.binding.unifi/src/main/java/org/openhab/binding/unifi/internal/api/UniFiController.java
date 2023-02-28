@@ -215,7 +215,7 @@ public class UniFiController {
         refresh();
     }
 
-    public void generateGuestVouchers(final UniFiSite site, final int count, final int expiration, final int users,
+    public void generateVouchers(final UniFiSite site, final int count, final int expiration, final int users,
             @Nullable Integer upLimit, @Nullable Integer downLimit, @Nullable Integer dataQuota) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
         req.setAPIPath(String.format("/api/s/%s/cmd/hotspot", site.getName()));
@@ -233,6 +233,17 @@ public class UniFiController {
             req.setBodyParameter("bytes", dataQuota);
         }
         executeRequest(req);
+        refresh();
+    }
+
+    public void revokeVouchers(final UniFiSite site, final List<UniFiVoucher> vouchers) throws UniFiException {
+        for (UniFiVoucher voucher : vouchers) {
+            final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
+            req.setAPIPath(String.format("/api/s/%s/cmd/hotspot", site.getName()));
+            req.setBodyParameter("cmd", "delete-voucher");
+            req.setBodyParameter("_id", voucher.getId());
+            executeRequest(req);
+        }
         refresh();
     }
 

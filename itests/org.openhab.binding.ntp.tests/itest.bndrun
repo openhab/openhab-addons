@@ -4,9 +4,7 @@ Bundle-SymbolicName: ${project.artifactId}
 Fragment-Host: org.openhab.binding.ntp
 
 -runrequires: \
-	bnd.identity;id='org.openhab.binding.ntp.tests',\
-	bnd.identity;id='org.openhab.core.addon.xml',\
-	bnd.identity;id='org.openhab.core.thing.xml'
+	bnd.identity;id='org.openhab.binding.ntp.tests'
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
@@ -66,10 +64,9 @@ Fragment-Host: org.openhab.binding.ntp
 	org.openhab.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
-	org.openhab.core.config.xml;version='[4.0.0,4.0.1)',\
 	org.openhab.core.io.console;version='[4.0.0,4.0.1)',\
 	org.openhab.core.test;version='[4.0.0,4.0.1)',\
 	org.openhab.core.thing;version='[4.0.0,4.0.1)',\
-	org.openhab.core.thing.xml;version='[4.0.0,4.0.1)',\
 	com.google.gson;version='[2.9.1,2.9.2)',\
-	org.openhab.core.addon.xml;version='[4.0.0,4.0.1)'
+	io.methvin.directory-watcher;version='[0.17.1,0.17.2)',\
+	com.sun.jna;version='[5.12.1,5.12.2)'

@@ -71,7 +71,7 @@ public class SensorIdTest {
         SensorId sensorId2 = new SensorId("1F.0123456789ab/aux/28.0123456789ab");
         SensorId sensorId3 = new SensorId("1F.0123456789ab/aux/28.0123456789ac");
 
-        assertTrue(sensorId1.equals(sensorId2));
-        assertFalse(sensorId1.equals(sensorId3));
+        assertEquals(sensorId1, sensorId2);
+        assertNotEquals(sensorId1, sensorId3);
     }
 }

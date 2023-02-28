@@ -24,7 +24,7 @@ public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    @SerializedName("activePhases")
+    @SerializedName("phasesActive")
     private int activePhases;
 
     @SerializedName("chargeCurrent")

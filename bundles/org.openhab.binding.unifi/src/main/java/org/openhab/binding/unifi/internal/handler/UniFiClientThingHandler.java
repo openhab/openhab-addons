@@ -48,7 +48,6 @@ import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.dto.UniFiWirelessClient;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -286,7 +285,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             // :rssi
             case CHANNEL_RSSI:
                 if (client.getRssi() != null) {
-                    state = new DecimalType(client.getRssi());
+                    state = new QuantityType<>(client.getRssi(), Units.DECIBEL_MILLIWATTS);
                 }
                 break;
 

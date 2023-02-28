@@ -176,7 +176,7 @@ The `wirelessClient` information that is retrieved is available as these channel
 | guest      | Switch               | On if this is a guest client                                         | Read        |
 | ap         | String               | Access point (AP) the client is connected to                         | Read        |
 | essid      | String               | Network name (ESSID) the client is connected to                      | Read        |
-| rssi       | Number               | Received signal strength indicator (RSSI) of the client              | Read        |
+| rssi       | Number:Power         | Received signal strength indicator (RSSI) of the client              | Read        |
 | uptime     | Number:Time          | Uptime of the client (in seconds)                                    | Read        |
 | lastSeen   | DateTime             | Date and Time the client was last seen                               | Read        |
 | experience | Number:Dimensionless | Overall health indication of the client (in percentage)              | Read        |
@@ -230,44 +230,112 @@ The `poePort` information that is retrieved is available as these channels:
 The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.
 
+## Rule Actions
+
+As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` thing, it is possible to use rule actions on the thing to generate, revoke and list guest vouchers.
+The following actions are available:
+
+- `boolean success = generateVoucher(Integer expire, Integer users, Integer upLimit, Integer downLimit, Integer dataQuota)`
+- `boolean success = generateVouchers(Integer count, Integer expire, Integer users, Integer upLimit, Integer downLimit, Integer dataQuota)`
+- `boolean success = revokeVoucher(String voucherCode)`
+- `boolean success = revokeVouchers(List<String> voucherCodes)`
+- `boolean success = revokeAllVouchers()`
+- `String vouchers = listVouchers()`
+
+Since there is a separate rule action instance for each `site` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
+The first parameter always has to be `unifi` and the second is the full Thing UID of the site that should be used.
+Once this action instance is retrieved, you can invoke the action method on it.
+
+Boolean return values for the actions indicate success or failure.
+
+The `generateVoucher(s)` actions parameters match the configuration parameters for the `guestVouchersGenerate` channel.
+With the actions, these parameters can be controlled in a rule or script.
+`null` values for the parameters are allowed, and will set the parameter to the default value.
+
+| Parameter     | Description                                                                 | Default |
+| ------------- | --------------------------------------------------------------------------- | ------- |
+| count         | Number of vouchers to create                                                |    1    |
+| expire        | Minutes a voucher is valid after activation (default is 1 day)              |  1440   |
+| users         | Number of users for voucher, 0 for no limit                                 |    1    |
+| upLimit       | Upload speed limit in kbps, no limit if not set                             |         |
+| downLimit     | Download speed limit in kbps, no limit if not set                           |         |
+| dataQuota     | Data transfer quota in MB per user, no limit if not set                     |         |
+
+The `revoke...` actions allow you to revoke previously created vouchers.
+The parameter is the voucher code or a list of voucher codes to be revoked.
+
+The `listVouchers` action will return a json string representing the currently available vouchers for the site.
+The json contains all parameters for the voucher, therefore it is possible to filter on these in a rule or script.
+For example, one could retrieve all vouchers created before a certain time and use the `revokeVouchers` action to delete these.
+The structure of the returned json is (depending on content, some fields may be missing):
+
+```json
+[
+    {
+        "code": "3867791284",
+        "createTime": "2023-01-31T14:40:47Z",
+        "duration": 1440,
+        "quota": 2,
+        "used": 0,
+        "qosUsageQuota": 300,
+        "qosRateMaxUp": 200,
+        "qosRateMaxDown": 100,
+        "qosOverwrite": true,
+        "note": "I added a note when creating vouchers in the UniFi hotspot UI",
+        "status": "VALID_MULTI"
+    },
+    {
+        "code": "0021952641",
+        "createTime": "2023-01-31T14:38:47Z",
+        "duration": 1440,
+        "quota": 1,
+        "used": 0,
+        "qosOverwrite": false,
+        "status": "VALID_ONE"
+    },
+    { ... }
+]
+```
+
 ## Full Example
 
-things/unifi.things
+### `things/unifi.things`
 
 ```
 Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
 	Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
+	Thing site mysite "My Site" [ sid="$sid" ]
 }
 ```
 
 _Note: Usually on Unifi OS, the default port is 443_
 
-Replace `$user`, `$password` and `$cid` accordingly.
+Replace `$user`, `$password`, `$cid` and `$sid` accordingly.
 
-items/unifi.items
+### `items/unifi.items`
 
 ```
-Switch      MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
-String      MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
-String      MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
-String      MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
-String      MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
-String      MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
-Number      MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
-Number:Time MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
-DateTime    MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
-Switch      MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
-Switch      MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
+Switch       MatthewsPhone           "Matthew's iPhone [MAP(unifi.map):%s]"             { channel="unifi:wirelessClient:home:matthewsPhone:online" }
+String       MatthewsPhoneSite       "Matthew's iPhone: Site [%s]"                      { channel="unifi:wirelessClient:home:matthewsPhone:site" }
+String       MatthewsPhoneMAC        "Matthew's iPhone: MAC [%s]"                       { channel="unifi:wirelessClient:home:matthewsPhone:macAddress" }
+String       MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ipAddress" }
+String       MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
+String       MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
+Number:Power MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d dBm]"                  { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
+Number:Time  MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
+DateTime     MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
+Switch       MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
+Switch       MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
 ```
 
-transform/unifi.map
+### `transform/unifi.map`
 
 ```
 ON=Home
 OFF=Away
 ```
 
-sitemaps/unifi.sitemap
+### `sitemaps/unifi.sitemap`
 
 ```
 sitemap unifi label="UniFi Binding"
@@ -286,4 +354,24 @@ sitemap unifi label="UniFi Binding"
 		Switch item=MatthewsPhoneReconnect
 	}
 }
+```
+
+### `rule actions` for `site` thing
+
+```java
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
+val success = uniFiActions.generateVoucher(null, null, null, 100, 500, 250)
+```
+
+```java
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
+val vouchersJson = uniFiActions.listVouchers()
+```
+
+```java
+import java.util.List
+
+val List<String> voucherList = newArrayList("38677-91284", "46415-36104")
+val uniFiActions = getActions("unifi","unifi:site:home:mysite")
+val success = uniFiActions.revokeVouchers(voucherList)
 ```

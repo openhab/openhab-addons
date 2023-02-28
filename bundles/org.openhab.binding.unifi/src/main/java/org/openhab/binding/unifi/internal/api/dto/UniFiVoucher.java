@@ -40,8 +40,11 @@ public class UniFiVoucher implements HasId {
     private Integer duration;
     private Integer quota;
     private Integer used;
-    private boolean qosOverwrite;
     private Integer qosUsageQuota;
+    private Integer qosRateMaxUp;
+    private Integer qosRateMaxDown;
+    private boolean qosOverwrite;
+    private String note;
     private String status;
 
     public UniFiVoucher(final UniFiControllerCache cache) {
@@ -73,12 +76,24 @@ public class UniFiVoucher implements HasId {
         return used;
     }
 
+    public Integer getQosUsageQuota() {
+        return qosUsageQuota;
+    }
+
+    public Integer getQosRateMaxUp() {
+        return qosRateMaxUp;
+    }
+
+    public Integer getQosRateMaxDown() {
+        return qosRateMaxDown;
+    }
+
     public boolean isQosOverwrite() {
         return qosOverwrite;
     }
 
-    public Integer getQosUsageQuota() {
-        return qosUsageQuota;
+    public String getNote() {
+        return note;
     }
 
     public String getStatus() {
@@ -92,7 +107,9 @@ public class UniFiVoucher implements HasId {
     @Override
     public String toString() {
         return String.format(
-                "UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', status: '%s', site: %s}",
-                id, code, createTime, duration, quota, used, qosUsageQuota, status, getSite());
+                "UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', "
+                        + "qosRateMaxUp: '%s', qosRateMaxDown: '%s', qosOverwrite: '%s', note: '%s', status: '%s', site: %s}",
+                id, code, createTime, duration, quota, used, qosUsageQuota, qosRateMaxUp, qosRateMaxDown, qosOverwrite,
+                note, status, getSite());
     }
 }
