@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
@@ -82,7 +81,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private static final int MAX_SEND_ATTEMPTS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXClient.class);
-    private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
 
     private final ThingUID thingUID;
     private final int responseTimeout;
@@ -339,18 +337,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    /**
-     * Transforms a {@link Type} into a datapoint type value for the KNX bus.
-     *
-     * @param type the {@link Type} to transform
-     * @param dpt the datapoint type to which should be converted
-     * @return the corresponding KNX datapoint type value as a string
-     */
-    @Nullable
-    private String toDPTValue(Type type, String dpt) {
-        return typeHelper.toDPTValue(type, dpt);
-    }
-
     // datapoint is null at end of the list, warning is misleading
     @SuppressWarnings("null")
     private void readNextQueuedDatapoint() {
@@ -509,7 +495,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
 
         if (groupAddress != null) {
-            sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getType());
+            sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
         }
     }
 
@@ -528,7 +514,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
 
         if (groupAddress != null) {
-            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getType());
+            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getValue());
         }
     }
 
@@ -539,7 +525,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
 
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0, dpt);
-        String mappedValue = toDPTValue(type, dpt);
+        String mappedValue = KNXCoreTypeMapper.formatAsDPTString(type, dpt);
 
         logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
 

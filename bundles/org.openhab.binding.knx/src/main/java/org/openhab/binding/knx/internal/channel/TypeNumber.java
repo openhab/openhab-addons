@@ -14,9 +14,6 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -35,10 +32,5 @@ class TypeNumber extends KNXChannelType {
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
         return "9.001";
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Collections.singleton(GA);
     }
 }

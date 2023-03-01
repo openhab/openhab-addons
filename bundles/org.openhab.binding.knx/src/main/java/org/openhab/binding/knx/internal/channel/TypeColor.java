@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.toSet;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -35,12 +33,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorRGB;
 class TypeColor extends KNXChannelType {
 
     TypeColor() {
-        super(CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Stream.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA).collect(toSet());
+        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA), CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
     }
 
     @Override

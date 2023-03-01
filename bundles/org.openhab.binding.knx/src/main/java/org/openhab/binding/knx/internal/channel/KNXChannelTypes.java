@@ -12,15 +12,10 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -32,7 +27,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public final class KNXChannelTypes {
 
-    private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
+    private static final Set<KNXChannelType> TYPES = Set.of(//
             new TypeColor(), //
             new TypeContact(), //
             new TypeDateTime(), //
@@ -41,14 +36,18 @@ public final class KNXChannelTypes {
             new TypeRollershutter(), //
             new TypeString(), //
             new TypeSwitch() //
-    ).collect(toSet()));
+    );
 
     private KNXChannelTypes() {
         // prevent instantiation
     }
 
-    public static KNXChannelType getType(@Nullable ChannelTypeUID channelTypeUID) throws IllegalArgumentException {
-        Objects.requireNonNull(channelTypeUID);
+    public static KNXChannelType getKnxChannelType(Channel channel) throws IllegalArgumentException {
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            throw new IllegalArgumentException("Could not determine ChannelTypeUID for channel " + channel.getUID());
+        }
+
         for (KNXChannelType c : TYPES) {
             if (c.getChannelIDs().contains(channelTypeUID.getId())) {
                 return c;

@@ -32,7 +32,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 class TypeRollershutter extends KNXChannelType {
 
     TypeRollershutter() {
-        super(CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL);
+        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA), CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL);
     }
 
     @Override
@@ -47,10 +47,5 @@ class TypeRollershutter extends KNXChannelType {
             return DPTXlator8BitUnsigned.DPT_SCALING.getID();
         }
         throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA);
     }
 }

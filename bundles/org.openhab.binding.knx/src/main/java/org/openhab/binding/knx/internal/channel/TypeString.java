@@ -14,9 +14,6 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorString;
@@ -32,11 +29,6 @@ class TypeString extends KNXChannelType {
 
     TypeString() {
         super(CHANNEL_STRING, CHANNEL_STRING_CONTROL);
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Collections.singleton(GA);
     }
 
     @Override

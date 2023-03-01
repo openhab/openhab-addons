@@ -29,10 +29,10 @@ import tuwien.auto.calimero.KNXFormatException;
 @NonNullByDefault
 public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
 
-    private final Type type;
+    private final Type value;
     private final @Nullable GroupAddress groupAddress;
 
-    public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type type)
+    public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type value)
             throws KNXFormatException {
         super(channelConfiguration, defaultDPT);
         if (channelConfiguration != null) {
@@ -40,16 +40,21 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
         } else {
             this.groupAddress = null;
         }
-        this.type = type;
+        this.value = value;
     }
 
     @Override
-    public Type getType() {
-        return type;
+    public Type getValue() {
+        return value;
     }
 
     @Override
     public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
+    }
+
+    @Override
+    public boolean matchesDestination(GroupAddress groupAddress) {
+        return groupAddress.equals(this.groupAddress);
     }
 }

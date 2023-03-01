@@ -33,12 +33,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 class TypeDimmer extends KNXChannelType {
 
     TypeDimmer() {
-        super(CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
-    }
-
-    @Override
-    protected Set<String> getAllGAKeys() {
-        return Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA);
+        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA), CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
     }
 
     @Override
