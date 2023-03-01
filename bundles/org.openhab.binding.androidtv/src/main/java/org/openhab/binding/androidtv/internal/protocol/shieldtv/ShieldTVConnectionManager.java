@@ -152,6 +152,10 @@ public class ShieldTVConnectionManager {
         return this.hostName;
     }
 
+    public String getThingID() {
+        return handler.getThingID();
+    }
+
     public void setDeviceID(String deviceId) {
         this.deviceId = deviceId;
         handler.setThingProperty("Device ID", deviceId);
@@ -326,7 +330,7 @@ public class ShieldTVConnectionManager {
                 androidtvPKI.loadFromKeyStore(config.keystorePassword, this.encryptionKey);
             }
 
-            logger.trace("Initializing SSL Context");
+            logger.trace("{} - Initializing SSL Context", handler.getThingID());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
                     config.keystorePassword.toCharArray());
@@ -359,7 +363,8 @@ public class ShieldTVConnectionManager {
         synchronized (connectionLock) {
 
             try {
-                logger.debug("Opening ShieldTV SSL connection to {}:{}", config.ipAddress, config.port);
+                logger.debug("{} - Opening ShieldTV SSL connection to {}:{}", handler.getThingID(), config.ipAddress,
+                        config.port);
                 SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
                 sslSocket.startHandshake();
                 writer = new BufferedWriter(
@@ -380,8 +385,8 @@ public class ShieldTVConnectionManager {
                 return;
             } catch (IOException e) {
                 setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
-                logger.info("Error opening ShieldTV SSL connection to {}:{} {}", config.ipAddress, config.port,
-                        e.getMessage());
+                logger.info("{} - Error opening ShieldTV SSL connection to {}:{} {}", handler.getThingID(),
+                        config.ipAddress, config.port, e.getMessage());
                 disconnect(false);
                 scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
                 return;
@@ -389,19 +394,20 @@ public class ShieldTVConnectionManager {
 
             setStatus(false, "Initializing");
 
-            Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader");
+            Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader " + handler.getThingID());
             readerThread.setDaemon(true);
             readerThread.start();
             this.readerThread = readerThread;
 
-            Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender");
+            Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender " + handler.getThingID());
             senderThread.setDaemon(true);
             senderThread.start();
             this.senderThread = senderThread;
 
             if (!config.shim) {
                 this.periodicUpdate = 20;
-                logger.debug("Starting ShieldTV keepalive job with interval {}", config.heartbeat);
+                logger.debug("{} - Starting ShieldTV keepalive job with interval {}", handler.getThingID(),
+                        config.heartbeat);
                 keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
                         TimeUnit.SECONDS);
 
@@ -428,11 +434,11 @@ public class ShieldTVConnectionManager {
                 sslContext.init(kmf.getKeyManagers(), trustManagers, null);
                 this.sslServerSocketFactory = sslContext.getServerSocketFactory();
 
-                logger.debug("Opening ShieldTV shim on port {}", config.port);
+                logger.debug("{} - Opening ShieldTV shim on port {}", handler.getThingID(), config.port);
                 ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.port);
 
                 while (true) {
-                    logger.debug("Waiting for shim connection...");
+                    logger.debug("{} - Waiting for shim connection...", handler.getThingID());
                     Socket serverSocket = sslServerSocket.accept();
                     disconnect(false);
                     connect();
@@ -455,12 +461,14 @@ public class ShieldTVConnectionManager {
                             new InputStreamReader(serverSocket.getInputStream(), StandardCharsets.ISO_8859_1));
                     this.shimServerSocket = serverSocket;
 
-                    Thread readerThread = new Thread(this::shimReaderThreadJob, "ShieldTV shim reader");
+                    Thread readerThread = new Thread(this::shimReaderThreadJob,
+                            "ShieldTV shim reader " + handler.getThingID());
                     readerThread.setDaemon(true);
                     readerThread.start();
                     this.shimReaderThread = readerThread;
 
-                    Thread senderThread = new Thread(this::shimSenderThreadJob, "ShieldTV shim sender");
+                    Thread senderThread = new Thread(this::shimSenderThreadJob,
+                            "ShieldTV shim sender" + handler.getThingID());
                     senderThread.setDaemon(true);
                     senderThread.start();
                     this.shimSenderThread = senderThread;
@@ -474,7 +482,7 @@ public class ShieldTVConnectionManager {
     }
 
     private void scheduleConnectRetry(long waitSeconds) {
-        logger.debug("Scheduling ShieldTV connection retry in {} seconds", waitSeconds);
+        logger.debug("{} - Scheduling ShieldTV connection retry in {} seconds", handler.getThingID(), waitSeconds);
         connectRetryJob = scheduler.schedule(this::connect, waitSeconds, TimeUnit.SECONDS);
     }
 
@@ -488,7 +496,7 @@ public class ShieldTVConnectionManager {
     private void disconnect(boolean interruptAll) {
         synchronized (connectionLock) {
 
-            logger.debug("Disconnecting ShieldTV");
+            logger.debug("{} - Disconnecting ShieldTV", handler.getThingID());
 
             ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
             if (connectRetryJob != null) {
@@ -578,7 +586,7 @@ public class ShieldTVConnectionManager {
     private void reconnect() {
         synchronized (connectionLock) {
             if (!this.disposing) {
-                logger.debug("Attempting to reconnect to the ShieldTV");
+                logger.debug("{} - Attempting to reconnect to the ShieldTV", handler.getThingID());
                 setStatus(false, "reconnecting");
                 disconnect(false);
                 connect();
@@ -590,7 +598,7 @@ public class ShieldTVConnectionManager {
      * Method executed by the message sender thread (senderThread)
      */
     private void senderThreadJob() {
-        logger.debug("Command sender thread started");
+        logger.debug("{} - Command sender thread started", handler.getThingID());
         try {
             while (!Thread.currentThread().isInterrupted() && writer != null) {
                 ShieldTVCommand command = sendQueue.take();
@@ -599,7 +607,7 @@ public class ShieldTVConnectionManager {
                 try {
                     BufferedWriter writer = this.writer;
                     if (writer != null) {
-                        logger.trace("Raw ShieldTV command decodes as: {}",
+                        logger.trace("{} - Raw ShieldTV command decodes as: {}", handler.getThingID(),
                                 ShieldTVRequest.decodeMessage(command.toString()));
                         writer.write(command.toString());
                         writer.flush();
@@ -609,7 +617,8 @@ public class ShieldTVConnectionManager {
                     setStatus(false, "Interrupted");
                     break; // exit loop and terminate thread
                 } catch (IOException e) {
-                    logger.warn("Communication error, will try to reconnect ShieldTV. Error: {}", e.getMessage());
+                    logger.warn("{} - Communication error, will try to reconnect ShieldTV. Error: {}",
+                            handler.getThingID(), e.getMessage());
                     setStatus(false, "Communication error, will try to reconnect");
                     sendQueue.add(command); // Requeue command
                     reconnect();
@@ -622,7 +631,7 @@ public class ShieldTVConnectionManager {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            logger.debug("Command sender thread exiting");
+            logger.debug("{} - Command sender thread exiting", handler.getThingID());
         }
     }
 
@@ -691,14 +700,14 @@ public class ShieldTVConnectionManager {
      * Method executed by the message reader thread (readerThread)
      */
     private void readerThreadJob() {
-        logger.debug("Message reader thread started");
+        logger.debug("{} - Message reader thread started", handler.getThingID());
         try {
             BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null) {
                 thisMsg = fixMessage(Integer.toHexString(reader.read()));
                 if (thisMsg.equals("ffffffff")) {
                     // Shield has crashed the connection. Disconnect hard.
-                    logger.trace("readerThreadJob received ffffffff.  Disconnecting hard.");
+                    logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
                     reconnect();
                     break;
                 }
@@ -730,7 +739,7 @@ public class ShieldTVConnectionManager {
             logger.warn("Runtime exception in reader thread", e);
             setStatus(false, "Runtime exception");
         } finally {
-            logger.debug("Message reader thread exiting");
+            logger.debug("{} - Message reader thread exiting", handler.getThingID());
         }
     }
 
@@ -836,7 +845,7 @@ public class ShieldTVConnectionManager {
     }
 
     private void sendKeepAlive() {
-        logger.trace("Sending ShieldTV keepalive query");
+        logger.trace("{} - Sending ShieldTV keepalive query", handler.getThingID());
         String keepalive = ShieldTVRequest.encodeMessage(ShieldTVRequest.keepAlive());
         sendCommand(new ShieldTVCommand(keepalive));
         if (isLoggedIn) {
@@ -870,7 +879,7 @@ public class ShieldTVConnectionManager {
         synchronized (keepAliveReconnectLock) {
             ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
             if (keepAliveReconnectJob != null) {
-                logger.trace("Canceling ShieldTV scheduled reconnect job.");
+                logger.trace("{} - Canceling ShieldTV scheduled reconnect job.", handler.getThingID());
                 keepAliveReconnectJob.cancel(interrupt);
                 this.keepAliveReconnectJob = null;
             }
@@ -882,7 +891,7 @@ public class ShieldTVConnectionManager {
      * validMessageReceived() which in turn calls reconnectTaskCancel().
      */
     private void keepAliveTimeoutExpired() {
-        logger.debug("ShieldTV keepalive response timeout expired. Initiating reconnect.");
+        logger.debug("{} - ShieldTV keepalive response timeout expired. Initiating reconnect.", handler.getThingID());
         reconnect();
     }
 
@@ -903,7 +912,7 @@ public class ShieldTVConnectionManager {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command received: {}", channelUID.getId().toString());
+        logger.trace("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
@@ -1103,7 +1112,7 @@ public class ShieldTVConnectionManager {
             if (command instanceof StringType) {
                 if (!isLoggedIn) {
                     // Do PIN for shieldtv protocol
-                    logger.trace("ShieldTV PIN Process Started");
+                    logger.trace("{} - ShieldTV PIN Process Started", handler.getThingID());
                     String pin = ShieldTVRequest.pinRequest(command.toString());
                     String message = ShieldTVRequest.encodeMessage(pin);
                     sendCommand(new ShieldTVCommand(message));

@@ -13,8 +13,6 @@
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Contains static methods for constructing LEAP messages
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GoogleTVRequest {
-    private static final Logger logger = LoggerFactory.getLogger(GoogleTVRequest.class);
 
     public static String encodeMessage(String message) {
         String reply = new String();
@@ -109,7 +106,6 @@ public class GoogleTVRequest {
         // 42 09 08 8001 10 ed b78a a819
         // 4a 03 08 8001
 
-        logger.trace("keepAlive Request {}", request);
         char[] charArray = request.toCharArray();
         StringBuffer sb = new StringBuffer();
         sb.append(request);
@@ -129,7 +125,6 @@ public class GoogleTVRequest {
             sbReply.append(charArray[i]);
         }
         String reply = "4a" + fixMessage(Integer.toHexString(sbReply.toString().length() / 2)) + sbReply.toString();
-        logger.trace("keepAlive Reply {}", reply);
         return reply;
     }
 

@@ -51,7 +51,8 @@ public class ShieldTVMessageParser {
             return; // Ignore empty lines
         }
 
-        logger.trace("Received ShieldTV message from: {} - Message: {}", callback.getHostName(), msg);
+        logger.trace("{} - Received ShieldTV message from: {} - Message: {}", callback.getThingID(),
+                callback.getHostName(), msg);
         // logger.trace("Encoded message: {}", ShieldTVRequest.encodeMessage(msg));
 
         callback.validMessageReceived();
@@ -87,8 +88,9 @@ public class ShieldTVMessageParser {
                     st = "" + charArray[i] + "" + charArray[i + 1];
                     hostname.append(st);
                 }
-                logger.trace("Shield Hostname: {} {}", hostname, length);
-                logger.trace("Shield Hostname Encoded: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
+                logger.trace("{} - Shield Hostname: {} {}", callback.getThingID(), hostname, length);
+                logger.trace("{} - Shield Hostname Encoded: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(hostname.toString()));
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
 
@@ -97,7 +99,7 @@ public class ShieldTVMessageParser {
                 // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR Padding? 22 LEN DeviceID 2a LEN arm64-v8a
                 // 2a LEN armeabi-v7a 2a LEN armeabi 180b
                 // It's possible for there to be more or less of the arm lists
-                logger.trace("Longer Hostname Reply");
+                logger.trace("{} - Longer Hostname Reply", callback.getThingID());
 
                 int i = 20;
                 int length;
@@ -172,10 +174,13 @@ public class ShieldTVMessageParser {
                     }
                 }
 
-                logger.trace("Hostname: {}", ShieldTVRequest.encodeMessage(hostname.toString()));
-                logger.trace("ipAddress: {}", ShieldTVRequest.encodeMessage(ipAddress.toString()));
-                logger.trace("deviceId: {}", ShieldTVRequest.encodeMessage(deviceId.toString()));
-                logger.trace("arch: {}", ShieldTVRequest.encodeMessage(arch.toString()));
+                logger.trace("{} - Hostname: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(hostname.toString()));
+                logger.trace("{} - ipAddress: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(ipAddress.toString()));
+                logger.trace("{} - deviceId: {}", callback.getThingID(),
+                        ShieldTVRequest.encodeMessage(deviceId.toString()));
+                logger.trace("{} - arch: {}", callback.getThingID(), ShieldTVRequest.encodeMessage(arch.toString()));
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
                 callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
@@ -304,8 +309,8 @@ public class ShieldTVMessageParser {
                     String appDN = ShieldTVRequest.encodeMessage(appSBDN.toString());
                     String appName = ShieldTVRequest.encodeMessage(appSBName.toString());
                     String appURL = ShieldTVRequest.encodeMessage(appSBURL.toString());
-                    logger.debug("AppPrepend: {} AppDN: {}", appPrepend, appDN);
-                    logger.debug("AppName: {} AppURL: {}", appName, appURL);
+                    logger.debug("{} - AppPrepend: {} AppDN: {}", callback.getThingID(), appPrepend, appDN);
+                    logger.debug("{} - AppName: {} AppURL: {}", callback.getThingID(), appName, appURL);
                     appNameDB.put(appDN, appName);
                     appURLDB.put(appDN, appURL);
                 }
@@ -328,12 +333,12 @@ public class ShieldTVMessageParser {
                         }
                     }
 
-                    logger.trace("MP appNameDB: {} sortedAppNameDB: {} appURLDB: {}", appNameDB.toString(),
-                            sortedAppNameDB.toString(), appURLDB.toString());
+                    logger.trace("{} - MP appNameDB: {} sortedAppNameDB: {} appURLDB: {}", callback.getThingID(),
+                            appNameDB.toString(), sortedAppNameDB.toString(), appURLDB.toString());
                     callback.setAppDB(sortedAppNameDB, appURLDB);
                 } else {
-                    logger.warn("MP empty msg: {} appDB appNameDB: {} appURLDB: {}", msg, appNameDB.toString(),
-                            appURLDB.toString());
+                    logger.warn("{} - MP empty msg: {} appDB appNameDB: {} appURLDB: {}", callback.getThingID(), msg,
+                            appNameDB.toString(), appURLDB.toString());
                 }
             } else if (msg.startsWith("08f30712")) {
                 // This has something to do with successful command response, maybe.
@@ -353,13 +358,13 @@ public class ShieldTVMessageParser {
                 // 08f00712 0c 0804 12 08 0a0608 01100e200f 18f007 KEY_VOLDOWN
                 // 08f00712 0c 0804 12 08 0a0608 01100f200f 18f007 KEY_VOLUP
                 // 08f00712 0c 0804 12 08 0a0608 01200f2801 18f007 KEY_MUTE
-                logger.info("Login Successful to {}", callback.getHostName());
+                logger.info("{} - Login Successful to {}", callback.getThingID(), callback.getHostName());
                 callback.setLoggedIn(true);
             } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
                 // Timeout
                 // 080a 12 1108b510 12 0c0804 12 08 54696d65206f7574 180a
                 // 080a 12 1108b510 12 0c0804 12 LEN Timeout 180a
-                logger.debug("Timeout");
+                logger.debug("{} - Timeout", callback.getThingID());
             } else if (msg.startsWith("08ec07") && msg.startsWith("0803", 10)) {
                 // Get current app command successful. Usually paired with 0807 reply below.
             } else if (msg.startsWith("08ec07") && msg.startsWith("0807", 10)) {
@@ -395,7 +400,7 @@ public class ShieldTVMessageParser {
                     for (; i < 44; i++) {
                         preamble.append(charArray[i]);
                     }
-                    logger.trace("Cert Preamble:   {}", preamble.toString());
+                    logger.trace("{} - Cert Preamble:   {}", callback.getThingID(), preamble.toString());
 
                     i += 2; // 1a
                     String st = "" + charArray[i + 2] + "" + charArray[i + 3] + "" + charArray[i] + ""
@@ -404,19 +409,20 @@ public class ShieldTVMessageParser {
                     i += 4; // length
                     current = i;
 
-                    logger.trace("Cert privLen: {} {}", st, privLen);
+                    logger.trace("{} - Cert privLen: {} {}", callback.getThingID(), st, privLen);
 
                     for (; i < current + privLen; i++) {
                         privKey.append(charArray[i]);
                     }
 
-                    logger.trace("Cert privKey: {} {}", privLen, privKey.toString());
+                    logger.trace("{} - Cert privKey: {} {}", callback.getThingID(), privLen, privKey.toString());
 
                     for (; i < msg.length() - 4; i++) {
                         pubKey.append(charArray[i]);
                     }
 
-                    logger.trace("Cert pubKey:  {} {}", msg.length() - privLen - 4, pubKey.toString());
+                    logger.trace("{} - Cert pubKey:  {} {}", callback.getThingID(), msg.length() - privLen - 4,
+                            pubKey.toString());
 
                     byte[] privKeyB64Byte = DatatypeConverter.parseHexBinary(privKey.toString());
                     byte[] pubKeyB64Byte = DatatypeConverter.parseHexBinary(pubKey.toString());
@@ -426,13 +432,13 @@ public class ShieldTVMessageParser {
 
                     callback.setKeys(privKeyB64, pubKeyB64);
                 } else {
-                    logger.info("Pin Process Failed.");
+                    logger.info("{} - Pin Process Failed.", callback.getThingID());
                 }
             } else {
-                logger.debug("Unknown payload received. {}", msg);
+                logger.debug("{} - Unknown payload received. {}", callback.getThingID(), msg);
             }
         } catch (Exception e) {
-            logger.debug("Message Parser Caught Exception", e);
+            logger.debug("{} - Message Parser Caught Exception", callback.getThingID(), e);
         }
     }
 }

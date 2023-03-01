@@ -46,13 +46,13 @@ public class GoogleTVMessageParser {
         msg = msg.substring(2);
         charArray = msg.toCharArray();
 
-        logger.trace("Received GoogleTV message from: {} - Length: {} Message: {}", callback.getHostName(), len, msg);
+        logger.trace("{} - Received GoogleTV message - Length: {} Message: {}", callback.getThingID(), len, msg);
 
         callback.validMessageReceived();
 
         try {
             if (msg.startsWith("1a")) {
-                logger.warn("GoogleTV Error Message: {}", msg);
+                logger.warn("{} - GoogleTV Error Message: {}", callback.getThingID(), msg);
             } else if (msg.startsWith("0a")) {
                 // First message on connection from GTV
                 //
@@ -159,8 +159,8 @@ public class GoogleTVMessageParser {
                 String remoteServer = GoogleTVRequest.encodeMessage(remoteServerSb.toString());
                 String remoteServerVersion = GoogleTVRequest.encodeMessage(remoteServerVersionSb.toString());
 
-                logger.trace("{} \"{}\" \"{}\" {} {} {}", preamble, model, manufacturer, androidVersion, remoteServer,
-                        remoteServerVersion);
+                logger.trace("{} - {} \"{}\" \"{}\" {} {} {}", callback.getThingID(), preamble, model, manufacturer,
+                        androidVersion, remoteServer, remoteServerVersion);
 
                 callback.setModel(model);
                 callback.setManufacturer(manufacturer);
@@ -252,15 +252,15 @@ public class GoogleTVMessageParser {
 
                 String preamble = preambleSb.toString();
                 String model = GoogleTVRequest.encodeMessage(modelSb.toString());
-                logger.trace("Device Update: {} \"{}\" {} {} {} {}", preamble, model, audioMode, volMax, volCurr,
-                        volMute);
+                logger.trace("{} - Device Update: {} \"{}\" {} {} {} {}", callback.getThingID(), preamble, model,
+                        audioMode, volMax, volCurr, volMute);
                 callback.setAudioMode(audioMode);
 
             } else if (msg.startsWith("08")) {
                 // PIN Process Messages. Only used on 6467.
                 if (msg.startsWith("080210c801ca02")) {
                     // PIN Process Successful
-                    logger.trace("PIN Process Successful!");
+                    logger.trace("{} - PIN Process Successful!", callback.getThingID());
                     callback.finishPinProcess();
                 } else {
                     // 080210c801a201081204080310061801
@@ -312,12 +312,13 @@ public class GoogleTVMessageParser {
                 String preamble = preambleSb.toString();
                 String appName = GoogleTVRequest.encodeMessage(appNameSb.toString());
 
-                logger.trace("Current App: {} {}", preamble, appName);
+                logger.trace("{} - Current App: {} {}", callback.getThingID(), preamble, appName);
                 callback.setCurrentApp(appName);
             } else {
-                logger.debug("Unknown payload received. {} {}", len, msg);
+                logger.debug("{} - Unknown payload received. {} {}", callback.getThingID(), len, msg);
             }
         } catch (Exception e) {
+            logger.debug("{} - Message Parser Exception on {}", callback.getThingID(), msg);
             logger.debug("Message Parser Caught Exception", e);
         } finally {
             return;

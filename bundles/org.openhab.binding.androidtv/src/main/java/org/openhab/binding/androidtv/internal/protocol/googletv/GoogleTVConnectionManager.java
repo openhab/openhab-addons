@@ -183,6 +183,10 @@ public class GoogleTVConnectionManager {
         return this.hostName;
     }
 
+    public String getThingID() {
+        return handler.getThingID();
+    }
+
     public void setDeviceID(String deviceId) {
         this.deviceId = deviceId;
         handler.setThingProperty("Device ID", deviceId);
@@ -248,7 +252,7 @@ public class GoogleTVConnectionManager {
 
     public void setPower(boolean power) {
         this.power = power;
-        logger.trace("Setting power to {}", power);
+        logger.trace("{} - Setting power to {}", handler.getThingID(), power);
         if (power) {
             handler.updateChannelState(CHANNEL_POWER, OnOffType.ON);
         } else {
@@ -383,9 +387,10 @@ public class GoogleTVConnectionManager {
         childConfig.delay = config.delay;
         childConfig.shim = config.shim;
         childConfig.mode = mode;
-        logger.trace("startChildConnectionManager parent config: {} {} {}", config.port, config.mode, config.shim);
-        logger.trace("startChildConnectionManager child config: {} {} {}", childConfig.port, childConfig.mode,
-                childConfig.shim);
+        logger.trace("{} - startChildConnectionManager parent config: {} {} {}", handler.getThingID(), config.port,
+                config.mode, config.shim);
+        logger.trace("{} - startChildConnectionManager child config: {} {} {}", handler.getThingID(), childConfig.port,
+                childConfig.mode, childConfig.shim);
         childConnectionManager = new GoogleTVConnectionManager(this.handler, childConfig, this);
     }
 
@@ -477,7 +482,7 @@ public class GoogleTVConnectionManager {
                 androidtvPKI.loadFromKeyStore(config.keystorePassword, this.encryptionKey);
             }
 
-            logger.trace("Initializing SSL Context");
+            logger.trace("{} - Initializing SSL Context", handler.getThingID());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(androidtvPKI.getKeyStore(config.keystorePassword, this.encryptionKey),
                     config.keystorePassword.toCharArray());
@@ -509,7 +514,8 @@ public class GoogleTVConnectionManager {
     public void connect() {
         synchronized (connectionLock) {
             try {
-                logger.debug("Opening GoogleTV SSL connection to {}:{}", config.ipAddress, config.port);
+                logger.debug("{} - Opening GoogleTV SSL connection to {}:{}", handler.getThingID(), config.ipAddress,
+                        config.port);
                 SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
                 sslSocket.startHandshake();
                 this.shimServerChain = ((SSLSocket) sslSocket).getSession().getPeerCertificates();
@@ -527,14 +533,14 @@ public class GoogleTVConnectionManager {
                 setStatus(false, "Invalid port number");
                 return;
             } catch (InterruptedIOException e) {
-                logger.debug("Interrupted while establishing GoogleTV connection");
+                logger.debug("{} - Interrupted while establishing GoogleTV connection", handler.getThingID());
                 Thread.currentThread().interrupt();
                 return;
             } catch (IOException e) {
                 if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE))
                         && (!config.shim)) {
                     setStatus(false, "PIN Process Incomplete");
-                    logger.debug("GoogleTV PIN Process Incomplete");
+                    logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                     reconnectTaskCancel(true);
                     startChildConnectionManager(this.config.port + 1, PIN_MODE);
                 } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
@@ -551,8 +557,8 @@ public class GoogleTVConnectionManager {
 
                 } else {
                     setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
-                    logger.info("Error opening GoogleTV SSL connection to {}:{} {}", config.ipAddress, config.port,
-                            e.getMessage());
+                    logger.info("{} - Error opening GoogleTV SSL connection to {}:{} {}", handler.getThingID(),
+                            config.ipAddress, config.port, e.getMessage());
                     disconnect(false);
                     scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
                 }
@@ -561,12 +567,12 @@ public class GoogleTVConnectionManager {
 
             setStatus(false, "Initializing");
 
-            Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader");
+            Thread readerThread = new Thread(this::readerThreadJob, "GoogleTV reader " + handler.getThingID());
             readerThread.setDaemon(true);
             readerThread.start();
             this.readerThread = readerThread;
 
-            Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender");
+            Thread senderThread = new Thread(this::senderThreadJob, "GoogleTV sender " + handler.getThingID());
             senderThread.setDaemon(true);
             senderThread.start();
             this.senderThread = senderThread;
@@ -700,7 +706,7 @@ public class GoogleTVConnectionManager {
     }
 
     private void scheduleConnectRetry(long waitSeconds) {
-        logger.debug("Scheduling GoogleTV connection retry in {} seconds", waitSeconds);
+        logger.debug("{} - Scheduling GoogleTV connection retry in {} seconds", handler.getThingID(), waitSeconds);
         connectRetryJob = scheduler.schedule(this::connect, waitSeconds, TimeUnit.SECONDS);
     }
 
@@ -713,7 +719,7 @@ public class GoogleTVConnectionManager {
      */
     private void disconnect(boolean interruptAll) {
         synchronized (connectionLock) {
-            logger.debug("Disconnecting GoogleTV");
+            logger.debug("{} - Disconnecting GoogleTV", handler.getThingID());
 
             ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
             if (connectRetryJob != null) {
@@ -801,9 +807,8 @@ public class GoogleTVConnectionManager {
 
     private void reconnect() {
         synchronized (connectionLock) {
-
             if (!this.disposing) {
-                logger.debug("Attempting to reconnect to the GoogleTV");
+                logger.debug("{} - Attempting to reconnect to the GoogleTV", handler.getThingID());
                 setStatus(false, "reconnecting");
                 disconnect(false);
                 connect();
@@ -815,7 +820,7 @@ public class GoogleTVConnectionManager {
      * Method executed by the message sender thread (senderThread)
      */
     private void senderThreadJob() {
-        logger.debug("Command sender thread started");
+        logger.debug("{} - Command sender thread started {}", handler.getThingID(), config.port);
         try {
             while (!Thread.currentThread().isInterrupted() && writer != null) {
                 GoogleTVCommand command = sendQueue.take();
@@ -823,7 +828,7 @@ public class GoogleTVConnectionManager {
                 try {
                     BufferedWriter writer = this.writer;
                     if (writer != null) {
-                        logger.trace("Raw GoogleTV command decodes as: {}",
+                        logger.trace("{} - Raw GoogleTV command decodes as: {}", handler.getThingID(),
                                 GoogleTVRequest.decodeMessage(command.toString()));
                         writer.write(command.toString());
                         writer.flush();
@@ -833,7 +838,8 @@ public class GoogleTVConnectionManager {
                     setStatus(false, "Interrupted");
                     break; // exit loop and terminate thread
                 } catch (IOException e) {
-                    logger.warn("Communication error, will try to reconnect GoogleTV. Error: {}", e.getMessage());
+                    logger.warn("{} - Communication error, will try to reconnect GoogleTV. Error: {}",
+                            handler.getThingID(), e.getMessage());
                     setStatus(false, "Communication error, will try to reconnect");
                     sendQueue.add(command); // Requeue command
                     reconnect();
@@ -846,7 +852,7 @@ public class GoogleTVConnectionManager {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            logger.debug("Command sender thread exiting");
+            logger.debug("{} - Command sender thread exiting {}", handler.getThingID(), config.port);
         }
     }
 
@@ -883,7 +889,7 @@ public class GoogleTVConnectionManager {
      * Method executed by the message reader thread (readerThread)
      */
     private void readerThreadJob() {
-        logger.debug("Message reader thread started {}", config.port);
+        logger.debug("{} - Message reader thread started {}", handler.getThingID(), config.port);
         try {
             BufferedReader reader = this.reader;
             int length = 0;
@@ -892,13 +898,13 @@ public class GoogleTVConnectionManager {
                 thisMsg = GoogleTVRequest.fixMessage(Integer.toHexString(reader.read()));
                 if (thisMsg.equals("ffffffff")) {
                     // Google has crashed the connection. Disconnect hard.
-                    logger.trace("readerThreadJob received ffffffff.  Disconnecting hard.");
+                    logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
                     reconnect();
                     break;
                 }
                 if (length == 0) {
                     length = Integer.parseInt(thisMsg.toString(), 16);
-                    logger.trace("readerThreadJob message length {}", length);
+                    logger.trace("{} - readerThreadJob message length {}", handler.getThingID(), length);
                     current = 0;
                     sbReader = new StringBuffer();
                     sbReader.append(thisMsg.toString());
@@ -908,7 +914,7 @@ public class GoogleTVConnectionManager {
                 }
 
                 if ((length > 0) && (current == length)) {
-                    logger.trace("GoogleTV Message: {} {}", length, sbReader.toString());
+                    logger.trace("{} - GoogleTV Message: {} {}", handler.getThingID(), length, sbReader.toString());
                     messageParser.handleMessage(sbReader.toString());
                     if (config.shim) {
                         String thisCommand = interceptMessages(sbReader.toString());
@@ -923,7 +929,7 @@ public class GoogleTVConnectionManager {
         } catch (IOException e) {
             if ((e.getMessage().contains("certificate_unknown")) && (!config.mode.equals(PIN_MODE)) && (!config.shim)) {
                 setStatus(false, "PIN Process Incomplete");
-                logger.debug("GoogleTV PIN Process Incomplete");
+                logger.debug("{} - GoogleTV PIN Process Incomplete", handler.getThingID());
                 reconnectTaskCancel(true);
                 startChildConnectionManager(this.config.port + 1, PIN_MODE);
             } else if ((e.getMessage().contains("certificate_unknown")) && (config.shim)) {
@@ -946,7 +952,7 @@ public class GoogleTVConnectionManager {
             logger.warn("Runtime exception in reader thread", e);
             setStatus(false, "Runtime exception");
         } finally {
-            logger.debug("Message reader thread exiting port {}", config.port);
+            logger.debug("{} - Message reader thread exiting {}", handler.getThingID(), config.port);
         }
     }
 
@@ -1026,8 +1032,9 @@ public class GoogleTVConnectionManager {
     }
 
     public void sendKeepAlive(String request) {
-        logger.trace("Sending GoogleTV keepalive query");
         String keepalive = GoogleTVRequest.encodeMessage(GoogleTVRequest.keepAlive(request));
+        logger.trace("{} - Sending GoogleTV keepalive - request {} - response {}", handler.getThingID(), request,
+                GoogleTVRequest.decodeMessage(keepalive));
         sendCommand(new GoogleTVCommand(keepalive));
         reconnectTaskSchedule();
     }
@@ -1039,7 +1046,7 @@ public class GoogleTVConnectionManager {
      */
     private void reconnectTaskSchedule() {
         synchronized (keepAliveReconnectLock) {
-            logger.trace("Scheduling Reconnect Job for {}", KEEPALIVE_TIMEOUT_SECONDS);
+            logger.trace("{} - Scheduling Reconnect Job for {}", handler.getThingID(), KEEPALIVE_TIMEOUT_SECONDS);
             keepAliveReconnectJob = scheduler.schedule(this::keepAliveTimeoutExpired, KEEPALIVE_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
         }
@@ -1052,7 +1059,7 @@ public class GoogleTVConnectionManager {
         synchronized (keepAliveReconnectLock) {
             ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
             if (keepAliveReconnectJob != null) {
-                logger.trace("Canceling GoogleTV scheduled reconnect job.");
+                logger.trace("{} - Canceling GoogleTV scheduled reconnect job.", handler.getThingID());
                 keepAliveReconnectJob.cancel(interrupt);
                 this.keepAliveReconnectJob = null;
             }
@@ -1064,7 +1071,7 @@ public class GoogleTVConnectionManager {
      * validMessageReceived() which in turn calls reconnectTaskCancel().
      */
     private void keepAliveTimeoutExpired() {
-        logger.debug("GoogleTV keepalive response timeout expired. Initiating reconnect.");
+        logger.debug("{} - GoogleTV keepalive response timeout expired. Initiating reconnect.", handler.getThingID());
         reconnect();
     }
 
@@ -1099,7 +1106,7 @@ public class GoogleTVConnectionManager {
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command received: {}", channelUID.getId().toString());
+        logger.trace("{} - Command received: {}", handler.getThingID(), channelUID.getId().toString());
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
@@ -1227,9 +1234,10 @@ public class GoogleTVConnectionManager {
                         if ((!isLoggedIn) && (command.toString().equals("REQUEST"))
                                 && (childConnectionManager == null)) {
                             setStatus(false, "User Forced PIN Process");
-                            logger.debug("User Forced PIN Process");
+                            logger.debug("{} - User Forced PIN Process", handler.getThingID());
                             disconnect(true);
                             startChildConnectionManager(this.config.port + 1, PIN_MODE);
+                            // Thread::sleep(1000);
                         }
                         childConnectionManager.handleCommand(channelUID, command);
                     } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {

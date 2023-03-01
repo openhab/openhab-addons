@@ -66,15 +66,13 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         InetAddress[] ipAddresses = service.getInetAddresses();
         String ipAddress = ipAddresses[0].getHostAddress();
-        String serverId = service.getPropertyString("SERVER");
-        String serverCapability = service.getPropertyString("SERVER_CAPABILITY");
+        String macAddress = service.getPropertyString("bt");
 
         logger.debug("GoogleTV mDNS discovery notified of GoogleTV mDNS service: {}", nice);
         logger.trace("GoogleTV mDNS service qualifiedName: {}", qualifiedName);
         logger.trace("GoogleTV mDNS service ipAddresses: {} ({})", ipAddresses, ipAddresses.length);
         logger.trace("GoogleTV mDNS service selected ipAddress: {}", ipAddress);
-        logger.trace("GoogleTV mDNS service property SERVER: {}", serverId);
-        logger.trace("GoogleTV mDNS service property SERVER_CAPABILITY: {}", serverCapability);
+        logger.trace("GoogleTV mDNS service property macAddress: {}", macAddress);
 
         final ThingUID uid = getThingUID(service);
         final String id = uid.getId();
@@ -89,6 +87,6 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Nullable
     @Override
     public ThingUID getThingUID(@Nullable ServiceInfo service) {
-        return new ThingUID(THING_TYPE_GOOGLETV, service.getQualifiedName().split("\\.")[0]);
+        return new ThingUID(THING_TYPE_GOOGLETV, service.getPropertyString("bt").replace(":", ""));
     }
 }

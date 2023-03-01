@@ -166,7 +166,8 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(), command.toString());
+        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(),
+                command.toString());
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             if (CHANNEL_PINCODE.equals(channelUID.getId())) {
                 if (command instanceof StringType) {
