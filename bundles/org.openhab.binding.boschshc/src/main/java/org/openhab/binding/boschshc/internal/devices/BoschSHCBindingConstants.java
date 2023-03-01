@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BoschSHCBindingConstants {
 
-    private static final String BINDING_ID = "boschshc";
+    public static final String BINDING_ID = "boschshc";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SHC = new ThingTypeUID(BINDING_ID, "shc");

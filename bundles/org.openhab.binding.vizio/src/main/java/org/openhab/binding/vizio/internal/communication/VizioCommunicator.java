@@ -196,7 +196,7 @@ public class VizioCommunicator {
      * @throws VizioException
      *
      */
-    public PairingStart starPairing(String deviceName, int deviceId) throws VizioException {
+    public PairingStart startPairing(String deviceName, int deviceId) throws VizioException {
         return fromJson(
                 putCommand(urlStartPairing,
                         String.format("{ \"DEVICE_NAME\": \"%s\", \"DEVICE_ID\": \"%d\" }", deviceName, deviceId)),

@@ -193,7 +193,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
             if (enableEvents) {
                 if (eventThread == null) {
-                    eventThread = new Thread(eventRunnable, "openHAB-Tesla-Events-" + getThing().getUID());
+                    eventThread = new Thread(eventRunnable, "OH-binding-" + getThing().getUID() + "-events");
                     eventThread.start();
                 }
             }
@@ -1130,7 +1130,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            eventEndpoint = new TeslaEventEndpoint(webSocketFactory);
+            eventEndpoint = new TeslaEventEndpoint(getThing().getUID(), webSocketFactory);
             eventEndpoint.addEventHandler(new TeslaEventEndpoint.EventHandler() {
                 @Override
                 public void handleEvent(Event event) {

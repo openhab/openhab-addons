@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link MeteringUnitsEnum} lists all available digitalSTROM metering units.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - remove W, because it does not exist any more
  * @author Matthias Siegele - remove W, because it does not exist any more
  */
