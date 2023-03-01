@@ -62,16 +62,22 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ThingTypeUID thingTypeUID;
+    private final String thingID;
 
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
             ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.thingTypeUID = thingTypeUID;
+        this.thingID = this.getThing().getUID().getId();
     }
 
     public void setThingProperty(String property, String value) {
         thing.setProperty(property, value);
+    }
+
+    public String getThingID() {
+        return this.thingID;
     }
 
     public void updateChannelState(String channel, State state) {
@@ -83,10 +89,10 @@ public class AndroidTVHandler extends BaseThingHandler {
     }
 
     public void updateCDP(String channelName, Map<String, String> cdpMap) {
-        logger.trace("Updating CDP for {}", channelName);
+        logger.trace("{} - Updating CDP for {}", this.thingID, channelName);
         List<CommandOption> commandOptions = new ArrayList<CommandOption>();
         cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
-        logger.trace("CDP List: {}", commandOptions.toString());
+        logger.trace("{} - CDP List: {}", this.thingID, commandOptions.toString());
         commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
     }
 
@@ -160,7 +166,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command received at handler: {} {}", channelUID.getId().toString(), command.toString());
+        logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(), command.toString());
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             if (CHANNEL_PINCODE.equals(channelUID.getId())) {
                 if (command instanceof StringType) {
