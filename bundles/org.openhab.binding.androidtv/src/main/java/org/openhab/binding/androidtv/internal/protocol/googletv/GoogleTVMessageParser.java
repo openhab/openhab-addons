@@ -173,6 +173,7 @@ public class GoogleTVMessageParser {
                 // Login successful
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
+                logger.info("{} - Login Successful", callback.getThingID());
                 callback.setLoggedIn(true);
             } else if (msg.startsWith("92")) {
                 // Third message on connection from GTV
