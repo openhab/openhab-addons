@@ -100,9 +100,14 @@
 				<description>Fallback Encoding text received by this thing's channels.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="userAgent" type="text">
+				<label>User Agent</label>
+				<description>The User-Agent header to send with the request.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="headers" type="text" multiple="true">
 				<label>Headers</label>
-				<description>Additional headers send along with the request</description>
+				<description>Additional headers send along with the request.</description>
 				<limitToOptions>false</limitToOptions>
 				<advanced>true</advanced>
 			</parameter>

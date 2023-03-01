@@ -329,6 +329,10 @@ public class HttpThingHandler extends BaseThingHandler {
                 }
             }
 
+            if (config.userAgent != null) {
+                request.agent(config.userAgent);
+            }
+
             config.headers.forEach(header -> {
                 String[] keyValuePair = header.split("=", 2);
                 if (keyValuePair.length == 2) {

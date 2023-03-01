@@ -54,6 +54,7 @@ public class RefreshingUrlCache {
     private final int bufferSize;
     private final @Nullable String fallbackEncoding;
     private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
+    private final @Nullable String userAgent;
     private final List<String> headers;
     private final HttpMethod httpMethod;
     private final String httpContent;
@@ -68,6 +69,7 @@ public class RefreshingUrlCache {
         this.escapedUrl = escapedUrl;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
+        this.userAgent = thingConfig.userAgent;
         this.headers = thingConfig.headers;
         this.httpMethod = thingConfig.stateMethod;
         this.httpContent = httpContent;
@@ -95,6 +97,10 @@ public class RefreshingUrlCache {
 
             httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
+
+                if (userAgent != null) {
+                    request.agent(userAgent);
+                }
 
                 headers.forEach(header -> {
                     String[] keyValuePair = header.split("=", 2);

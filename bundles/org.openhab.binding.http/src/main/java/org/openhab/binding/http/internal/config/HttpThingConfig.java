@@ -41,6 +41,7 @@ public class HttpThingConfig {
 
     public @Nullable String encoding = null;
     public @Nullable String contentType = null;
+    public @Nullable String userAgent = null;
 
     public boolean ignoreSSLErrors = false;
 
