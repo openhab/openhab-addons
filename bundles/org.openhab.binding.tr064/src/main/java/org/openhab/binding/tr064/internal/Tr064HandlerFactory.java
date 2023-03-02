@@ -98,7 +98,7 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
 
         if (Tr064RootHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             Tr064RootHandler handler = new Tr064RootHandler((Bridge) thing, httpClient);
-            if (thingTypeUID.equals(THING_TYPE_FRITZBOX)) {
+            if (THING_TYPE_FRITZBOX.equals(thingTypeUID)) {
                 phonebookProfileFactory.registerPhonebookProvider(handler);
             }
             return handler;
