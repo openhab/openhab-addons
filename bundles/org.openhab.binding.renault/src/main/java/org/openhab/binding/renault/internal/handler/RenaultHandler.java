@@ -119,7 +119,6 @@ public class RenaultHandler extends BaseThingHandler {
                 new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
 
         reschedulePollingJob();
-        // updateState(CHANNEL_PAUSE_MODE, new StringType(car.getPauseMode().toString()));
     }
 
     @Override
@@ -270,7 +269,6 @@ public class RenaultHandler extends BaseThingHandler {
         updateLocation(httpSession);
         updateBattery(httpSession);
         updateLockStatus(httpSession);
-        // updatePauseStatus(httpSession);
     }
 
     private void updateHvacStatus(MyRenaultHttpSession httpSession) {
@@ -298,20 +296,6 @@ public class RenaultHandler extends BaseThingHandler {
             }
         }
     }
-
-    // private void updatePauseStatus(MyRenaultHttpSession httpSession) {
-    // try {
-    // httpSession.getPauseStatus(car);
-    // PauseMode pausemode = car.getPauseMode();
-    // if (pausemode == null) {
-    // updateState(CHANNEL_PAUSE_MODE, new StringType(pausemode.toString()));
-    // }
-    // } catch (RenaultNotImplementedException e) {
-    // logger.warn("Disabling unsupported Pause status update.");
-    // } catch (RenaultForbiddenException | RenaultUpdateException e) {
-    // logger.warn("Error updating Pause status.", e);
-    // }
-    // }
 
     private void updateLocation(MyRenaultHttpSession httpSession) {
         if (!car.isDisableLocation()) {

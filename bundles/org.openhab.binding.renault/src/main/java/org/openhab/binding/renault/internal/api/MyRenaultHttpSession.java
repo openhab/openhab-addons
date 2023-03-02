@@ -248,17 +248,6 @@ public class MyRenaultHttpSession {
         }
     }
 
-    // public void getPauseStatus(Car car)
-    //         throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
-    //     logger.debug("Trying to get pause status");
-    //     JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
-    //             + "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
-    //             + "/charge/pause-resume?country=" + getCountry(config));
-    //     if (responseJson != null) {
-    //         car.setPauseStatus(responseJson);
-    //     }
-    // }
-
     public void getLockStatus(Car car)
             throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
