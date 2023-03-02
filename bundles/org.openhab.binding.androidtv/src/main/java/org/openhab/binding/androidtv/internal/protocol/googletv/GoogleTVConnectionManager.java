@@ -81,6 +81,7 @@ public class GoogleTVConnectionManager {
     private static final String DEFAULT_MODE = "NORMAL";
     private static final String PIN_MODE = "PIN";
     private static final int DEFAULT_PORT = 6466;
+    private static final int PIN_DELAY = 1000;
 
     private final Logger logger = LoggerFactory.getLogger(GoogleTVConnectionManager.class);
 
@@ -1237,7 +1238,11 @@ public class GoogleTVConnectionManager {
                             logger.debug("{} - User Forced PIN Process", handler.getThingID());
                             disconnect(true);
                             startChildConnectionManager(this.config.port + 1, PIN_MODE);
-                            // Thread::sleep(1000);
+                            try {
+                                Thread.sleep(PIN_DELAY);
+                            } catch (InterruptedException e) {
+                                logger.trace("InterruptedException", e);
+                            }
                         }
                         childConnectionManager.handleCommand(channelUID, command);
                     } else if ((config.mode.equals(PIN_MODE)) && (!config.shim)) {
