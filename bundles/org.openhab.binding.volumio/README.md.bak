@@ -9,7 +9,6 @@ _Put each sentence in a separate line to improve readability of diffs._
 
 ## Supported Things
 
-
 _Please describe the different supported things / devices including their ThingTypeUID within this section._
 _Which different types are supported, which models were tested etc.?_
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
