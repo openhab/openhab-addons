@@ -374,7 +374,7 @@ public class RenaultHandler extends BaseThingHandler {
             }
         }
     }
-
+     
     private void updateLockStatus(MyRenaultHttpSession httpSession) {
         if (!car.isDisableLockStatus()) {
             try {
