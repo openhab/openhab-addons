@@ -52,9 +52,9 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_SP2, "sp2-test");
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this).close();
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 
