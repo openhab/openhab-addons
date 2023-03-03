@@ -78,6 +78,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
+    private static final int RECONNECT_DELAY_SECONDS = 10;
     private static final int RECONNECT_MAX_TRIES = 5;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
@@ -124,7 +125,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * scheduler thread, which reschedules itself repeatedly until the thing is shutdown.
      */
     private synchronized void checkConnection() {
-        logger.debug("checkConnection() called");
+        logger.debug("checkConnection()");
 
         // check connection to the hub
         ThingStatusDetail thingStatus;
@@ -266,7 +267,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("dispose() {} called", this);
+        logger.debug("dispose() {}", this);
         if (assetsLoaded) {
             assetsLoaded = false;
             scheduler.submit(() -> disposeAssets());
@@ -277,7 +278,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Dispose the bridge handler's assets.
      */
     private void disposeAssets() {
-        logger.debug("disposeAssets() {} called", this);
+        logger.debug("disposeAssets() {}", this);
         synchronized (this) {
             assetsLoaded = false;
             ScheduledFuture<?> task = checkConnectionTask;
@@ -351,8 +352,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             return;
         }
         if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
+            String sceneId = ((StringType) command).toString();
+            if (!sceneId.isBlank()) {
+            }
             try {
-                putResource(new Resource(ResourceType.SCENE).setId(command.toString()));
+                putResource(new Resource(ResourceType.SCENE).setId(sceneId));
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.warn("handleCommand() error {}", e.getMessage(), e);
             }
@@ -361,7 +365,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initialize() {} called", this);
+        logger.debug("initialize() {}", this);
         updateThingFromLegacy();
         updateStatus(ThingStatus.UNKNOWN);
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
@@ -373,7 +377,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Initialize the bridge handler's assets.
      */
     private void initializeAssets() {
-        logger.debug("initializeAssets() {} called", this);
+        logger.debug("initializeAssets() {}", this);
         synchronized (this) {
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
 
@@ -422,33 +426,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called when the connection goes offline. Schedule a reconnection event.
+     * Called when the connection goes offline. Schedule a reconnection.
      */
     public void onConnectionOffline() {
         if (assetsLoaded) {
-            logger.debug("onConnectionOffline() called");
-            scheduler.submit(() -> checkConnection());
+            scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
         }
     }
 
     /**
-     * Called when the connection goes online.
+     * Called when the connection goes online. Schedule a general state update.
      */
     public void onConnectionOnline() {
-        if (assetsLoaded && (thing.getStatus() != ThingStatus.ONLINE)) {
-            logger.debug("onConnectionOnline() ThingStatus:ONLINE");
-            connectRetriesRemaining = RECONNECT_MAX_TRIES;
-            updateStatus(ThingStatus.ONLINE);
-            try {
-                updateThings();
-                Clip2ThingDiscoveryService discoveryService = this.discoveryService;
-                if (Objects.nonNull(discoveryService)) {
-                    discoveryService.startScan(null);
-                }
-            } catch (ApiException | AssetNotLoadedException e) {
-                // should never happen as we are already online
-            }
-        }
+        scheduler.submit(() -> updateOnlineState());
     }
 
     /**
@@ -473,8 +463,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public void onResourcesEvent(List<Resource> resources) {
         if (assetsLoaded) {
-            logger.debug("onResourcesEvent() called with resource count {}", resources.size());
-            resources.forEach(resource -> onResource(resource));
+            scheduler.submit(() -> {
+                logger.debug("onResourcesEvent() resource count {}", resources.size());
+                resources.forEach(resource -> onResource(resource));
+            });
         }
     }
 
@@ -501,7 +493,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void registerApplicationKey()
             throws HttpUnAuthorizedException, ApiException, AssetNotLoadedException, IllegalStateException {
-        logger.debug("registerApplicationKey() called");
+        logger.debug("registerApplicationKey()");
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         String newApplicationKey = getClip2Bridge().registerApplicationKey(config.applicationKey);
         Configuration configuration = editConfiguration();
@@ -519,13 +511,33 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Update the bridge's online state and update its dependent things. Called when the connection goes online.
+     */
+    private void updateOnlineState() {
+        if (assetsLoaded && (thing.getStatus() != ThingStatus.ONLINE)) {
+            logger.debug("updateOnlineState()");
+            connectRetriesRemaining = RECONNECT_MAX_TRIES;
+            updateStatus(ThingStatus.ONLINE);
+            try {
+                updateThings();
+                Clip2ThingDiscoveryService discoveryService = this.discoveryService;
+                if (Objects.nonNull(discoveryService)) {
+                    discoveryService.startScan(null);
+                }
+            } catch (ApiException | AssetNotLoadedException e) {
+                // should never happen as we are already online
+            }
+        }
+    }
+
+    /**
      * Update the bridge thing properties.
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      */
     private void updateProperties() throws ApiException, AssetNotLoadedException {
-        logger.debug("updateProperties() called");
+        logger.debug("updateProperties()");
         Map<String, String> properties = new HashMap<>(thing.getProperties());
 
         for (Resource device : getClip2Bridge().getResources(BRIDGE).getResources()) {
@@ -581,7 +593,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Update the thing's own state. Called sporadically in case any SSE events may have been lost.
      */
     private void updateSelf() {
-        logger.debug("updateSelf() called");
+        logger.debug("updateSelf()");
         try {
             checkAssetsLoaded();
             updateProperties();
@@ -645,7 +657,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @throws AssetNotLoadedException if one of the assets is not loaded.
      */
     private void updateThings() throws ApiException, AssetNotLoadedException {
-        logger.debug("updateDevices() called");
+        logger.debug("updateThings()");
         Clip2Bridge bridge = getClip2Bridge();
         for (ResourceReference reference : THING_SET) {
             bridge.getResources(reference).getResources().forEach(resource -> onResource(resource));
