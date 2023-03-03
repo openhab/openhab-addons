@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
 
@@ -23,8 +23,8 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -52,7 +52,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
             (byte) 0x4f, (byte) 0x89, (byte) 0xf8, (byte) 0xb4, (byte) 0xdb, (byte) 0xb0, (byte) 0x72, (byte) 0xe7,
             (byte) 0x1f, (byte) 0x86, };
 
-    @Before
+    @BeforeEach
     public void setUp() {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM4, "rm4-test");
         MockitoAnnotations.initMocks(this);

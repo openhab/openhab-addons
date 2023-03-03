@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.broadlink.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public class ModelMapperTest {
     public void throwsOnUnrecognisedDeviceModel() {
         try {
             ModelMapper.getThingType(0x6666, mockLogger);
-            Assert.fail("Should have thrown on unmapped device model");
+            Assertions.fail("Should have thrown on unmapped device model");
         } catch (Exception e) {
             assertEquals(
                     "Device identifying itself as '26214' (hex 0x6666) is not currently supported. Please report this to the developer!",

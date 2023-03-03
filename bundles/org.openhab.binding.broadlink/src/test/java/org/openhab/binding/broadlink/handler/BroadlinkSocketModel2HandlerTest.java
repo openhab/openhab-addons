@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_POWER_CONSUMPTION;
@@ -24,8 +24,8 @@ import java.util.List;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -51,7 +51,7 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
-    @Before
+    @BeforeEach
     public void setUp() {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_SP2, "sp2-test");
         MockitoAnnotations.initMocks(this);
