@@ -53,9 +53,9 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
             (byte) 0x1f, (byte) 0x86, };
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM4, "rm4-test");
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this).close();
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 

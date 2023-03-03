@@ -56,8 +56,8 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this).close();
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 

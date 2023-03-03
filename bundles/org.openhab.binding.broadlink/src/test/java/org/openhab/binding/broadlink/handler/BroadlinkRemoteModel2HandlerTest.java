@@ -35,9 +35,9 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHandlerTest {
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM2, "rm2-test");
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this).close();
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 
