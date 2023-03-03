@@ -284,6 +284,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
                 try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
                     request.content(inputStreamContentProvider, contentType);
+                    request.header(HttpHeader.ACCEPT, "application/json");
                 }
                 logger.trace(" -with payload : {} ", payload);
             }

@@ -19,7 +19,7 @@
 
 	<channel-type id="siren-status-ro">
 		<item-type>Switch</item-type>
-		<label>Status</label>
+		<label>Siren</label>
 		<description>Status of the siren</description>
 		<category>Soundvolume</category>
 		<state readOnly="true"/>
@@ -27,7 +27,7 @@
 
 	<channel-type id="siren-status-rw">
 		<item-type>Switch</item-type>
-		<label>Status</label>
+		<label>Siren</label>
 		<description>Status of the siren</description>
 		<category>Soundvolume</category>
 	</channel-type>
