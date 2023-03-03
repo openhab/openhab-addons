@@ -61,7 +61,6 @@ public class BroadlinkSocketModel3SHandler extends BroadlinkSocketModel2Handler 
         if (consumptionResponsePayload.length > 7) {
             return (fromBCD(consumptionResponsePayload[7]) * 100) + fromBCD(consumptionResponsePayload[6])
                     + (fromBCD(consumptionResponsePayload[5]) / 100);
-
         }
         return 0D;
     }

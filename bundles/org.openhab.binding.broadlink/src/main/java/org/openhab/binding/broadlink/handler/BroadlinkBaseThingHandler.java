@@ -278,11 +278,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     @SuppressWarnings("null")
-    @SuppressWarnings("null")
-    @SuppressWarnings("null")
-    @SuppressWarnings("null")
-    @SuppressWarnings("null")
-    @SuppressWarnings("null")
     private void forceOffline(ThingStatusDetail detail, String reason) {
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time
