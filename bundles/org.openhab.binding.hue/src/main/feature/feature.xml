@@ -6,10 +6,9 @@
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mdns</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.hue/${project.version}</bundle>
-		<bundle dependency="true">mvn:org.eclipse.jetty.http2/http2-client/9.4.46.v20220331</bundle>
-		<bundle dependency="true">mvn:org.eclipse.jetty.http2/http2-common/9.4.46.v20220331</bundle>
-		<bundle dependency="true">mvn:org.eclipse.jetty.http2/http2-hpack/9.4.46.v20220331</bundle>
-		<bundle dependency="true">mvn:org.eclipse.jetty/jetty-alpn-java-client/9.4.46.v20220331</bundle>
-		<bundle dependency="true">mvn:org.eclipse.jetty/jetty-alpn-client/9.4.46.v20220331</bundle>
+		<bundle dependency="true">mvn:org.eclipse.jetty.http2/http2-common/9.4.50.v20221201</bundle>
+		<bundle dependency="true">mvn:org.eclipse.jetty.http2/http2-hpack/9.4.50.v20221201</bundle>
+		<bundle dependency="true">mvn:org.eclipse.jetty/jetty-alpn-client/9.4.50.v20221201</bundle>
+		<bundle dependency="true">mvn:org.eclipse.jetty/jetty-alpn-java-client/9.4.50.v20221201</bundle>
 	</feature>
 </features>
