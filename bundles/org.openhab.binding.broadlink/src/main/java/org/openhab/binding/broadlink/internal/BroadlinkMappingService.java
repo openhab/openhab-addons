@@ -93,7 +93,7 @@ public class BroadlinkMappingService {
         return commandMap.get(command);
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings({ "null", "unchecked" })
     private Runnable watchingRunnable = new Runnable() {
         @Override
         public void run() {
