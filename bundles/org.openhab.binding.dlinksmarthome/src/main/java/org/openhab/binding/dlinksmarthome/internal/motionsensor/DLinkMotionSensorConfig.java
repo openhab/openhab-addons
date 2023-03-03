@@ -37,5 +37,5 @@ public class DLinkMotionSensorConfig {
     /**
      * The hour to reboot the device
      */
-    public Integer rebootHour;
+    public int rebootHour;
 }
