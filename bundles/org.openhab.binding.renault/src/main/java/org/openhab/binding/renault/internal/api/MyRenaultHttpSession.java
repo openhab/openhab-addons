@@ -26,6 +26,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
+import org.openhab.binding.renault.internal.api.Car.PauseMode;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
@@ -272,6 +273,15 @@ public class MyRenaultHttpSession {
                 + config.vin + "/actions/charge-mode?country=" + getCountry(config);
         postKamereonRequest(path,
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
+    }
+
+    public void actionPause(PauseMode mode)
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+        final String apiMode = PauseMode.PAUSE.equals(mode) ? "pause" : "resume";
+        final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
+                + "/charge/pause-resume?country=" + getCountry(config);
+        postKamereonRequest(path,
+                "{\"data\":{\"type\":\"ChargePauseResume\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
     private void postKamereonRequest(final String path, final String content)

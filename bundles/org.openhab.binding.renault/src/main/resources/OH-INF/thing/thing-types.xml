@@ -16,6 +16,7 @@
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="pausemode" typeId="pausemode"/>
 			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
@@ -145,6 +146,17 @@
 				<option value="UNKNOWN">Unknown</option>
 				<option value="SCHEDULE_MODE">Schedule mode</option>
 				<option value="ALWAYS_CHARGING">Instant charge</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="pausemode">
+		<item-type>String</item-type>
+		<label>Pause Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="PAUSE">Pause</option>
+				<option value="RESUME">Resume</option>
 			</options>
 		</state>
 	</channel-type>

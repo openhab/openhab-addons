@@ -45,6 +45,7 @@ public class Car {
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
+    private PauseMode pausemode = PauseMode.UNKNOWN;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
@@ -67,6 +68,12 @@ public class Car {
         UNKNOWN,
         SCHEDULE_MODE,
         ALWAYS_CHARGING
+    }
+
+    public enum PauseMode {
+        RESUME,
+        PAUSE,
+        UNKNOWN
     }
 
     public enum ChargingStatus {
@@ -148,6 +155,19 @@ public class Car {
             }
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing HVAC Status: {}", e.getMessage(), responseJson);
+        }
+    }
+
+    public void setPauseStatus(JsonObject responseJson) {
+        try {
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null) {
+                if (attributes.get("action") != null) {
+                    pausemode = PauseMode.valueOf(attributes.get("action").getAsString());
+                }
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Pause Status: {}", e.getMessage(), responseJson);
         }
     }
 
@@ -298,6 +318,10 @@ public class Car {
         return chargingMode;
     }
 
+    public PauseMode getPauseMode() {
+        return pausemode;
+    }
+
     public @Nullable Integer getChargingRemainingTime() {
         return chargingRemainingTime;
     }
@@ -344,6 +368,10 @@ public class Car {
             default:
                 break;
         }
+    }
+
+    public void setPauseMode(PauseMode pausemode) {
+        this.pausemode = pausemode;
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)

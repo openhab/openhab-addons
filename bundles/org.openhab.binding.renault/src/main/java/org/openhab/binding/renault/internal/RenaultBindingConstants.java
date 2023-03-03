@@ -34,6 +34,7 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "batterylevel";
     public static final String CHANNEL_BATTERY_STATUS_UPDATED = "batterystatusupdated";
     public static final String CHANNEL_CHARGING_MODE = "chargingmode";
+    public static final String CHANNEL_PAUSE_MODE = "pausemode";
     public static final String CHANNEL_CHARGING_STATUS = "chargingstatus";
     public static final String CHANNEL_CHARGING_REMAINING_TIME = "chargingremainingtime";
     public static final String CHANNEL_ESTIMATED_RANGE = "estimatedrange";
