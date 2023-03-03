@@ -68,6 +68,7 @@ public class RetryableSocket {
         return null;
     }
 
+    @SuppressWarnings("null")
     private boolean sendDatagram(byte message[], String purpose) {
         try {
             logger.trace("Sending {} to {}:{}", purpose, thingConfig.getIpAddress(), thingConfig.getPort());
@@ -90,6 +91,7 @@ public class RetryableSocket {
         }
     }
 
+    @SuppressWarnings("null")
     private @Nullable DatagramPacket receiveDatagram(String purpose, DatagramPacket receivePacket) {
         logger.trace("Awaiting {} response", purpose);
 
@@ -110,6 +112,7 @@ public class RetryableSocket {
         return null;
     }
 
+    @SuppressWarnings("null")
     public void close() {
         if (socket != null) {
             socket.close();

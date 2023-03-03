@@ -69,6 +69,7 @@ public class BroadlinkMappingService {
         logger.debug("BroadlinkMappingService constructed on behalf of {}", this.targetChannelUID);
     }
 
+    @SuppressWarnings("null")
     public void dispose() {
         try {
             if (watchThread != null && !watchThread.isInterrupted()) {
@@ -92,6 +93,7 @@ public class BroadlinkMappingService {
         return commandMap.get(command);
     }
 
+    @SuppressWarnings("null")
     private Runnable watchingRunnable = new Runnable() {
         @Override
         public void run() {
@@ -116,6 +118,7 @@ public class BroadlinkMappingService {
         }
     };
 
+    @SuppressWarnings("null")
     private void startWatching() {
         try {
             this.watchService = FileSystems.getDefault().newWatchService();

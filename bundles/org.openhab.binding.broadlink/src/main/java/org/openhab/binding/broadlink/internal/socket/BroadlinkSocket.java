@@ -63,7 +63,6 @@ public class BroadlinkSocket {
         return sb.toString();
     }
 
-    @NonNullByDefault
     private static class ReceiverThread extends Thread {
         private Logger logger;
 
@@ -71,6 +70,7 @@ public class BroadlinkSocket {
             receiveData(BroadlinkSocket.socket, BroadlinkSocket.datagramPacket);
         }
 
+        @SuppressWarnings("null")
         private void receiveData(@Nullable MulticastSocket socket, DatagramPacket dgram) {
             try {
                 while (true) {
@@ -117,6 +117,7 @@ public class BroadlinkSocket {
         }
     }
 
+    @SuppressWarnings("null")
     private static void setupSocket(Logger logger) {
         synchronized (BroadlinkSocket.class) {
             try {
@@ -129,6 +130,7 @@ public class BroadlinkSocket {
         }
     }
 
+    @SuppressWarnings("null")
     private static void closeSocket(Logger logger) {
         synchronized (BroadlinkSocket.class) {
             if (socketReceiveThread != null) {
@@ -146,6 +148,7 @@ public class BroadlinkSocket {
         sendMessage(message, "255.255.255.255", 80, logger);
     }
 
+    @SuppressWarnings("null")
     public static void sendMessage(byte message[], String host, int port, Logger logger) {
         try {
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(host), port);
