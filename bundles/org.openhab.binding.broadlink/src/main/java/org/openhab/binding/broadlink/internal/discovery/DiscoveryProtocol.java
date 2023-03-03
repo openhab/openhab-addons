@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class DiscoveryProtocol {
 
-    @NonNullByDefault
     private static class AsyncDiscoveryThread extends Thread {
         private final BroadlinkSocketListener listener;
         private final long timeoutMillis;

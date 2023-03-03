@@ -112,6 +112,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
+    @SuppressWarnings("null")
     public void dispose() {
         logger.debug("Disposing of {}", getThing().getLabel());
         if (refreshHandle != null && !refreshHandle.isDone()) {
@@ -159,6 +160,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
+    @SuppressWarnings("null")
     protected byte @Nullable [] sendAndReceiveDatagram(byte message[], String purpose) {
         return socket.sendAndReceive(message, purpose);
     }
@@ -167,6 +169,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         return buildMessage(command, payload, thingConfig.getDeviceType());
     }
 
+    @SuppressWarnings("null")
     private byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         count = count + 1 & 0xffff;
 
@@ -179,6 +182,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_IV), deviceKey, deviceType, logger);
     }
 
+    @SuppressWarnings("null")
     protected byte[] decodeDevicePacket(byte[] responseBytes) throws IOException {
         byte[] rxBytes = BroadlinkProtocol.decodePacket(responseBytes, this.deviceKey,
                 BroadlinkBindingConstants.BROADLINK_IV);
@@ -273,6 +277,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
+    @SuppressWarnings("null")
+    @SuppressWarnings("null")
+    @SuppressWarnings("null")
+    @SuppressWarnings("null")
+    @SuppressWarnings("null")
+    @SuppressWarnings("null")
     private void forceOffline(ThingStatusDetail detail, String reason) {
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time

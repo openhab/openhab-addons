@@ -59,6 +59,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
     }
 
+    @SuppressWarnings("null")
     public void dispose() {
         if (this.mappingService != null) {
             this.mappingService.dispose();
@@ -174,6 +175,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
+    @SuppressWarnings("null")
     private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
         String value = this.mappingService.lookup(command.toString());
