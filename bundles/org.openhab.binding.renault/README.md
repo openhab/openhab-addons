@@ -36,6 +36,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | batteryavailableEnergy | Number:Energy      | Battery Energy Available                        | Yes       |
 | batterylevel           | Number             | State of the battery in %                       | Yes       |
 | chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
+| pausemode              | String             | Pause mode. Pause or Resume                     | No        |
 | chargingstatus         | String             | Charging status                                 | Yes       |
 | chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
 | plugstatus             | String             | Status of charging plug                         | Yes       |
@@ -74,6 +75,7 @@ sitemap renaultcar label="Renault Car" {
         Default item=RenaultCar_PlugStatus icon="poweroutlet"
         Default item=RenaultCar_ChargingStatus icon="switch"
         Selection item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"] icon="switch"
+        Selection item=RenaultCar_PauseMode mappings=[RESUME="Resume",PAUSE="Pause"] icon="switch"
         Default item=RenaultCar_ChargingTimeRemaining icon="time"
         Default item=RenaultCar_EstimatedRange
         Default item=RenaultCar_Odometer
