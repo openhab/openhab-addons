@@ -95,7 +95,7 @@ public class BroadlinkSocket {
                     logger.warn("Error while receiving", e);
                 }
             }
-            logger.info("Receiver thread ended");
+            logger.debug("Receiver thread ended");
         }
 
         private ReceiverThread(Logger logger) {
@@ -137,7 +137,7 @@ public class BroadlinkSocket {
                 socketReceiveThread.interrupt();
             }
             if (socket != null) {
-                logger.info("Socket closed");
+                logger.debug("Socket closed");
                 socket.close();
                 socket = null;
             }

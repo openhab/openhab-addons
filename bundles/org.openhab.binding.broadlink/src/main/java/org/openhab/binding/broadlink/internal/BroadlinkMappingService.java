@@ -141,7 +141,7 @@ public class BroadlinkMappingService {
             props.stringPropertyNames().forEach(k -> {
                 commandMap.put(k, props.getProperty(k));
             });
-            logger.info("Read {} commands from {}", commandMap.size(), mapFilePath);
+            logger.debug("Read {} commands from {}", commandMap.size(), mapFilePath);
             notifyAvailableCommands(commandMap.keySet());
         } catch (IOException e) {
             logger.warn("Couldn't read {}: {}", mapFilePath, e.getMessage());

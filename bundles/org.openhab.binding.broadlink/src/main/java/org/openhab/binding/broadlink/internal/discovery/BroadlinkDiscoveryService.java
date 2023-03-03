@@ -45,7 +45,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     public BroadlinkDiscoveryService() {
         super(BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet(), 10, true);
-        logger.info("BroadlinkDiscoveryService - Constructed");
+        logger.debug("BroadlinkDiscoveryService - Constructed");
     }
 
     public void startScan() {

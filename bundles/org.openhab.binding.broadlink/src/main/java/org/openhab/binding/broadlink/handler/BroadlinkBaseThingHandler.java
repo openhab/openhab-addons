@@ -247,7 +247,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void onDeviceRediscovered(String newIpAddress) {
-        logger.info("Rediscovered this device at IP {}", newIpAddress);
+        logger.debug("Rediscovered this device at IP {}", newIpAddress);
         thingConfig.setIpAddress(newIpAddress);
         transitionToOnline();
     }
