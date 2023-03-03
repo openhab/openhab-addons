@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="volumio2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="player">
+		<label>Volumio2 Binding Thing</label>
+		<description>A Volumio2 Instance</description>
+
+		<channels>
+			<channel id="title" typeId="title"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="album" typeId="album"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="player" typeId="player"/>
+			<channel id="trackType" typeId="trackType"/>
+			<channel id="playRadioStream" typeId="playRadioStream"/>
+			<channel id="playPlaylist" typeId="playPlaylist"/>
+			<channel id="clearQueue" typeId="clearQueue"/>
+			<channel id="playURI" typeId="playURI"/>
+			<channel id="playFile" typeId="playFile"/>
+			<channel id="random" typeId="playRandom"/>
+			<channel id="repeat" typeId="playRepeat"/>
+			<channel id="systemCommand" typeId="systemCommand"/>
+			<channel id="stopCommand" typeId="stopCommand"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname of your volumio2 device</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port of your volumio2 device (default is 3000)</description>
+				<default>3000</default>
+			</parameter>
+			<parameter name="protocol" type="text" required="true">
+				<label>Protocol</label>
+				<description>The protocol of your volumio2 device (default is http)</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="http">http</option>
+					<option value="https">https</option>
+				</options>
+			</parameter>
+			<parameter name="timeout" type="integer" required="true">
+				<label>Timeout</label>
+				<description>Connection-Timeout in ms</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="systemCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Send system command</label>
+		<description>Sends a system command to Volumio. This allows to shutdown/reboot Volumio</description>
+		<state>
+			<options>
+				<option value="shutdown">Shutdown</option>
+				<option value="reboot">Reboot</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="stopCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Stop</label>
+		<description>Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.
+		</description>
+		<state>
+			<options>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Current Title</label>
+		<description>Title of the song currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="artist">
+		<item-type>String</item-type>
+		<label>Current Artist</label>
+		<description>Name of the artist currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Current Album</label>
+		<description>Name of the album currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set or get the master volume</description>
+		<category>SoundVolume</category>
+		<state max="100" min="0" step="10"/>
+	</channel-type>
+
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>State</label>
+		<description>The State channel contains state of the Volumio2 Player</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="albumArt" advanced="true">
+		<item-type>Image</item-type>
+		<label>Cover Art</label>
+		<description>Cover Art for the currently played track</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="trackType" advanced="true">
+		<item-type>String</item-type>
+		<label>trackType</label>
+		<description>Tracktype of the currently played track</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="playRadioStream" advanced="true">
+		<item-type>String</item-type>
+		<label>Play radio stream</label>
+		<description>Play the given radio stream</description>
+	</channel-type>
+
+	<channel-type id="playPlaylist" advanced="true">
+		<item-type>String</item-type>
+		<label>Play playlist</label>
+		<description>Playback a playlist identifed by its name</description>
+	</channel-type>
+
+	<channel-type id="clearQueue" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Clear queue</label>
+		<description>Clear the current queue</description>
+	</channel-type>
+
+	<channel-type id="playRandom" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Random</label>
+		<description>Activate random mode</description>
+	</channel-type>
+
+	<channel-type id="playRepeat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Repeat</label>
+		<description>Activate repeat mode</description>
+	</channel-type>
+
+	<channel-type id="playURI" advanced="true">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Play the stream at given uri</description>
+	</channel-type>
+
+	<channel-type id="playFile" advanced="true">
+		<item-type>String</item-type>
+		<label>Play file</label>
+		<description>Play a file, located on your Volumio2 device at the given absolute path, e.g.
+			"mnt/INTERNAL/song.mp3"
+		</description>
+	</channel-type>
+
+</thing:thing-descriptions>
