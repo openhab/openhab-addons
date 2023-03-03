@@ -583,7 +583,7 @@ public class Clip2Bridge implements Closeable {
         try {
             return getResourcesImpl(reference);
         } catch (HttpUnAuthorizedException e) {
-            throw new ApiException("\"getResources() unauthorized error", e);
+            throw new ApiException("getResources() unauthorized error", e);
         }
     }
 
