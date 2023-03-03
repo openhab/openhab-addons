@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
@@ -21,8 +21,8 @@ import static org.openhab.binding.broadlink.handler.BroadlinkSocketModel3Handler
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -55,7 +55,7 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
         model3 = new BroadlinkSocketModel3Handler(thing);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);

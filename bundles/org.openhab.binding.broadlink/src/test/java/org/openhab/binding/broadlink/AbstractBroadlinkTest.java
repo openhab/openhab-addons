@@ -16,8 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.OpenHAB;
 
 /**
@@ -31,12 +31,12 @@ import org.openhab.core.OpenHAB;
 public abstract class AbstractBroadlinkTest {
     protected static final Path TEST_CONF_DIRECTORY = Paths.get("src", "test", "resources", "conf");
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         System.setProperty(OpenHAB.CONFIG_DIR_PROG_ARGUMENT, TEST_CONF_DIRECTORY.toFile().getAbsolutePath());
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         System.clearProperty(OpenHAB.CONFIG_DIR_PROG_ARGUMENT);
     }
