@@ -507,13 +507,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                // Get profile, if refreshSettings == true reload settings from device
                 ShellySettingsStatus status = api.getStatus();
-                /*
-                 * if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
-                 * status = api.getStatus();
-                 * }
-                 */ boolean restarted = checkRestarted(status);
+                boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);

@@ -30,8 +30,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -114,8 +112,7 @@ public class ShellyComponents {
             if (status.extSwitch != null) {
                 if (status.extSwitch.input0 != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_INPUT1,
-                            getInteger(status.extSwitch.input0.input) == 1 ? OpenClosedType.OPEN
-                                    : OpenClosedType.CLOSED);
+                            getOpenClosed(getInteger(status.extSwitch.input0.input) == 1));
                 }
             }
             if (status.extTemperature != null) {
@@ -390,8 +387,7 @@ public class ShellyComponents {
             if ((sdata.sensor != null) && sdata.sensor.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
-                        getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
-                                : OpenClosedType.CLOSED);
+                        getOpenClosed(getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN)));
                 String sensorError = sdata.sensorError;
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
                         getStringType(sensorError));
@@ -419,6 +415,9 @@ public class ShellyComponents {
                             toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE, getStringType(
                             getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OPEN,
+                            getOpenClosed(t.windowOpen));
+
                     int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
                             getOnOff(t.schedule));
@@ -434,7 +433,7 @@ public class ShellyComponents {
                         updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_POSITION,
                                 t.pos != -1 ? toQuantityType(t.pos, DIGITS_NONE, Units.PERCENT) : UnDefType.UNDEF);
                         updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
-                                getDouble(t.pos) > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                                getOpenClosed(getDouble(t.pos) > 0));
                     }
                 }
             }
@@ -489,7 +488,7 @@ public class ShellyComponents {
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
-                        charger ? OnOffType.ON : OnOffType.OFF);
+                        getOnOff(charger));
             }
             if (sdata.bat != null) { // no update for Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
@@ -497,7 +496,7 @@ public class ShellyComponents {
 
                 int lowBattery = thingHandler.getThingConfig().lowBattery;
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                        !charger && getDouble(sdata.bat.value) < lowBattery ? OnOffType.ON : OnOffType.OFF);
+                        getOnOff(!charger && getDouble(sdata.bat.value) < lowBattery));
                 updated |= changed;
                 if (!charger && changed && getDouble(sdata.bat.value) < lowBattery) {
                     thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
