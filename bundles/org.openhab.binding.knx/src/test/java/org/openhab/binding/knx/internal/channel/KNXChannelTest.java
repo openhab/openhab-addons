@@ -142,6 +142,7 @@ class KNXChannelTest {
                 Map.of("key1", "5.001:<1/2/3+4/5/6+1/5/6", "key2", "1.001:7/1/9+1/1/2"));
         when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
         when(channel.getConfiguration()).thenReturn(configuration);
+        when(channel.getAcceptedItemType()).thenReturn("none");
 
         MyKNXChannel knxChannel = new MyKNXChannel(channel);
 

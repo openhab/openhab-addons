@@ -29,6 +29,17 @@ import org.openhab.binding.knx.internal.client.InboundSpec;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Type;
@@ -60,6 +71,16 @@ public abstract class KNXChannel {
         this(Set.of(GA), channel);
     }
 
+    private static final Map<String, Set<Class<? extends Type>>> ACCEPTED_TYPES = Map.ofEntries( //
+            Map.entry("Switch", Set.of(OnOffType.class)), //
+            Map.entry("Dimmer", Set.of(OnOffType.class, PercentType.class, IncreaseDecreaseType.class)), //
+            Map.entry("Contact", Set.of(OpenClosedType.class)), //
+            Map.entry("Color", Set.of(OnOffType.class, PercentType.class, HSBType.class, IncreaseDecreaseType.class)), //
+            Map.entry("DateTime", Set.of(DateTimeType.class)), //
+            Map.entry("Number", Set.of(DecimalType.class, QuantityType.class)), //
+            Map.entry("Rollershutter", Set.of(PercentType.class, UpDownType.class, StopMoveType.class)), //
+            Map.entry("String", Set.of(StringType.class)));
+
     KNXChannel(Set<String> gaKeys, Channel channel) {
         this.gaKeys = gaKeys;
 
@@ -74,6 +95,24 @@ public abstract class KNXChannel {
             GroupAddressConfiguration groupAddressConfiguration = GroupAddressConfiguration
                     .parse(configuration.get(key));
             if (groupAddressConfiguration != null) {
+                // check DPT configuration (if set) is compatible with item
+                String dpt = groupAddressConfiguration.getDPT();
+                if (dpt != null) {
+                    Set<Class<? extends Type>> types = KNXCoreTypeMapper.getAllowedTypes(dpt);
+                    String itemType = Objects.requireNonNull(channel.getAcceptedItemType());
+                    if (itemType.contains(":")) {
+                        itemType = itemType.substring(0, itemType.indexOf(":"));
+                    }
+                    Set<Class<? extends Type>> channelTypes = ACCEPTED_TYPES.get(itemType);
+                    if (channelTypes == null) {
+                        logger.debug(
+                                "Could not determine accepted types for channel '{}', assuming DPT assignment is ok.",
+                                channelUID);
+                    } else if (!channelTypes.containsAll(types)) {
+                        logger.warn("Configured DPT '{}' is incompatible with accepted item type '{}' for channel '{}'",
+                                dpt, itemType, channelUID);
+                    }
+                }
                 groupAddressConfigurations.put(key, groupAddressConfiguration);
                 // store address configuration for re-use
                 listenAddresses.addAll(groupAddressConfiguration.getListenGAs());
