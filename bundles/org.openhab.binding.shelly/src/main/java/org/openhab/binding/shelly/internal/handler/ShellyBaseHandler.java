@@ -263,6 +263,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
+        profile.initFromThingType(thingType); // do some basic initialization
+
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
@@ -272,7 +274,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Initialize API access, exceptions will be catched by initialize()
         api.initialize();
-        profile.initFromThingType(thingType);
         ShellySettingsDevice devInfo = api.getDeviceInfo();
         if (getBool(devInfo.auth) && config.password.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -508,10 +509,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
                 // Get profile, if refreshSettings == true reload settings from device
                 ShellySettingsStatus status = api.getStatus();
-                if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
-                    status = api.getStatus();
-                }
-                boolean restarted = checkRestarted(status);
+                /*
+                 * if (status.uptime != null && status.uptime == 0 && profile.alwaysOn) {
+                 * status = api.getStatus();
+                 * }
+                 */ boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);
