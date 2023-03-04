@@ -30,8 +30,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.AbstractDynamicTypeProvider;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { SysteminfoThingTypeProvider.class, ThingTypeProvider.class })
-public class SysteminfoThingTypeProvider extends AbstractDynamicTypeProvider {
+public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(SysteminfoThingTypeProvider.class);
 
     private final ThingTypeRegistry thingTypeRegistry;
@@ -240,7 +239,7 @@ public class SysteminfoThingTypeProvider extends AbstractDynamicTypeProvider {
     /**
      * Store the channel configurations for a thing, to be able to restore them later when the thing handler for the
      * same thing gets recreated with a new thing type. This is necessary because the
-     * {@link BaseThingHandler#changeThingType()} method reverts channel configurations to their defaults.
+     * {@link BaseThingHandler##changeThingType()} method reverts channel configurations to their defaults.
      *
      * @param thing
      */
