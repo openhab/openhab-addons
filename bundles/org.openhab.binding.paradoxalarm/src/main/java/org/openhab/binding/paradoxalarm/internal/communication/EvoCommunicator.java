@@ -87,7 +87,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         if (payload != null && payload.length >= RAM_BLOCK_SIZE) {
             RamRequest request = (RamRequest) response.getRequest();
             int ramBlockNumber = request.getRamBlockNumber();
-            memoryMap.updateElement(ramBlockNumber, payload);
+            memoryMap.updateElement(ramBlockNumber - 1, payload);
             if (logger.isTraceEnabled()) {
                 logger.trace("Result for ramBlock={} is [{}]", ramBlockNumber, ParadoxUtil.byteArrayToString(payload));
             }
@@ -181,6 +181,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         createZoneLowbatteryFlags(result, firstPage, secondPage);
 
         createSpecialZoneFlags(result, memoryMap);
+
+        ParadoxUtil.printByteArray("Zone opened flags", result.getZonesOpened());
+        ParadoxUtil.printByteArray("Zone tampered flags", result.getZonesTampered());
+        ParadoxUtil.printByteArray("Zone low battery flags", result.getZonesLowBattery());
+        ParadoxUtil.printByteArray("Zone special flags", result.getZoneSpecialFlags());
 
         return result;
     }
