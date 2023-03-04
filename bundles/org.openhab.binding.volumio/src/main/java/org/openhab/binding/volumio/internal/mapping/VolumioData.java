@@ -18,6 +18,8 @@ import java.net.URLConnection;
 import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.volumio.internal.VolumioBindingConstants;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Wohlbrecht - Adaption for openHAB 3
  * @author Michael Loercher - Adaption for openHAB 3
  */
+@NonNullByDefault
 public class VolumioData {
 
     private static final Logger log = LoggerFactory.getLogger(VolumioData.class);
@@ -61,8 +64,8 @@ public class VolumioData {
     private String position = "";
     private boolean positionDirty;
 
-    private byte[] coverArt;
-    private String coverArtUrl;
+    private byte @Nullable [] coverArt = null;
+    private String coverArtUrl = "";
     private boolean coverArtDirty;
 
     private boolean repeat = false;
@@ -237,7 +240,7 @@ public class VolumioData {
         }
     }
 
-    public void setCoverArt(String coverArtUrl) {
+    public void setCoverArt(@Nullable String coverArtUrl) {
 
         if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
             // TODO: Only handle images with complete uri atm.
@@ -259,12 +262,9 @@ public class VolumioData {
         }
     }
 
-    public RawType getCoverArt() {
-        if (coverArt == null) {
-            return null;
-        } else {
-            return new RawType(coverArt, "image/jpeg");
-        }
+    public @Nullable RawType getCoverArt() {
+        byte[] localCoverArt = coverArt;
+        return localCoverArt == null ? null : new RawType(localCoverArt, "image/jpeg");
     }
 
     public OnOffType getRandom() {

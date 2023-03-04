@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.volumio.internal.mapping;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Patrick Sernetz - Initial Contribution
+ * @author Michael Loercher - Adaption for openHAB 3
  */
+@NonNullByDefault
 public class VolumioServiceTypes {
 
     public static final String WEBRADIO = "webradio";

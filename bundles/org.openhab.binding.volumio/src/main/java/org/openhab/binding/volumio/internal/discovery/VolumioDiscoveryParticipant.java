@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.jmdns.ServiceInfo;
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volumio.internal.VolumioBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -35,7 +36,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Patrick Sernetz - Initial contribution
  * @author Chris Wohlbrecht - Adaption for openHAB 3
+ * @author Michael Loercher - Adaption for openHAB 3
  */
+@NonNullByDefault
 @Component(configurationPid = "discovery.volumio")
 public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

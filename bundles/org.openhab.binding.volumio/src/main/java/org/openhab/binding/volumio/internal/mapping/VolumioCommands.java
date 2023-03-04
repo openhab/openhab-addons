@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volumio.internal.mapping;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @see https://github.com/volumio/Volumio2-UI/blob/master/src/app/services/player.service.js
  * @see https://github.com/volumio/Volumio2/blob/master/app/plugins/user_interface/websocket/index.js
@@ -21,6 +23,7 @@ package org.openhab.binding.volumio.internal.mapping;
  * @author Michael Loercher - Adaption for openHAB 3
  *
  */
+@NonNullByDefault
 public class VolumioCommands {
 
     /* Player Status */
