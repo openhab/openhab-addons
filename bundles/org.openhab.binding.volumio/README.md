@@ -1,41 +1,28 @@
 # volumio Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding integrates the open-source Music Player [Volumio](https://www.volumio.com).. 
 
 ## Supported Things
 
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+All available Volumio (playback) modes are supported by this binding.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+The volumio devices are discovered through UPnP in the local network and all devices are put in the Inbox.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+## Binding Configuration
 
-```
-# Configuration for the volumio Binding
-#
-# Default secret key for the pairing of the volumio Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+The binding has the following configuration options, which can be set for "binding:sonos":
+
+| Parameter   | Name             | Description                                                                | Required |
+| ----------- | ---------------- | -------------------------------------------------------------------------- | -------- |
+| hostname    | Hostanem         | The hostname of the Volumio player.                                        | yes      |
+| port        | Port             | The port of your volumio2 device (default is 3000)                         | yes      |
+| protocol    | Protocol         | The protocol of your volumio2 device (default is http)                     | yes      |
+
 
 _Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
 
