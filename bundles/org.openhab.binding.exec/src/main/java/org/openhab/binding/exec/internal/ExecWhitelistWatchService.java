@@ -43,11 +43,13 @@ public class ExecWhitelistWatchService implements WatchService.WatchEventListene
     private final Logger logger = LoggerFactory.getLogger(ExecWhitelistWatchService.class);
     private final Set<String> commandWhitelist = new HashSet<>();
     private final WatchService watchService;
+    private final Path watchFile;
 
     @Activate
     public ExecWhitelistWatchService(
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
         this.watchService = watchService;
+        this.watchFile = watchService.getWatchPath().resolve(COMMAND_WHITELIST_FILE);
         watchService.registerListener(this, COMMAND_WHITELIST_FILE, false);
 
         // read initial content
@@ -61,9 +63,9 @@ public class ExecWhitelistWatchService implements WatchService.WatchEventListene
 
     @Override
     public void processWatchEvent(WatchService.Kind kind, Path path) {
-        if (path.endsWith(COMMAND_WHITELIST_FILE)) {
-            commandWhitelist.clear();
-            try (Stream<String> lines = Files.lines(path)) {
+        commandWhitelist.clear();
+        if (kind != WatchService.Kind.DELETE) {
+            try (Stream<String> lines = Files.lines(watchFile)) {
                 lines.filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
                 logger.debug("Updated command whitelist: {}", commandWhitelist);
             } catch (IOException e) {
