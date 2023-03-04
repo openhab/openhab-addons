@@ -370,14 +370,14 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                         });
                     }
                 } else {
-                    if (value instanceof Command) {
+                    if (value instanceof Command command) {
                         logger.trace("processDataReceived postCommand new value '{}' for GA '{}'", asdu, address);
-                        postCommand(channelUID, (Command) value);
+                        postCommand(channelUID, command);
                     }
                 }
             } else {
-                if (value instanceof State && !(value instanceof UnDefType)) {
-                    updateState(channelUID, (State) value);
+                if (value instanceof State state && !(value instanceof UnDefType)) {
+                    updateState(channelUID, state);
                 }
             }
         } else {

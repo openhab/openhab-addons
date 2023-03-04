@@ -349,8 +349,7 @@ public class KNXCoreTypeMapper {
 
         try {
             // check for HSBType first, because it extends PercentType as well
-            if (value instanceof HSBType) {
-                HSBType hsb = ((HSBType) value);
+            if (value instanceof HSBType hsb) {
                 // also covers 232.600 (RGB)
                 if ("5".equals(mainNumber)) {
                     switch (m.group("sub")) {
@@ -406,11 +405,10 @@ public class KNXCoreTypeMapper {
                 }
             } else if (value instanceof StringType) {
                 return value.toString();
-            } else if (value instanceof DateTimeType) {
-                return formatDateTime((DateTimeType) value, dptId);
+            } else if (value instanceof DateTimeType dtt) {
+                return formatDateTime(dtt, dptId);
             } // TODO remove later
-            else if (value instanceof QuantityType) {
-                final QuantityType<?> qt = (QuantityType<?>) value;
+            else if (value instanceof QuantityType<?> qt) {
                 return quantityTypeToDPTValue(qt, Integer.parseInt(m.group("main")), Integer.parseInt(m.group("sub")),
                         dpt.getUnit());
             }
