@@ -10,6 +10,7 @@
 		<description>Nvidia ShieldTV</description>
 
 		<channels>
+			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
 			<channel id="keyboard" typeId="keyboard"/>
 			<channel id="keycode" typeId="keycode"/>
@@ -76,6 +77,7 @@
 		<description>GoogleTV</description>
 
 		<channels>
+			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
 			<channel id="keyboard" typeId="keyboard"/>
 			<channel id="keycode" typeId="keycode"/>
@@ -130,6 +132,12 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-type id="debug" advanced="true">
+		<item-type>String</item-type>
+		<label>DEBUG Command</label>
+		<description>Binding control (for debugging)</description>
+	</channel-type>
 
 	<channel-type id="raw" advanced="true">
 		<item-type>String</item-type>

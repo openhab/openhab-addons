@@ -64,7 +64,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String nice = service.getNiceTextString();
         String qualifiedName = service.getQualifiedName();
 
-        InetAddress[] ipAddresses = service.getInetAddresses();
+        InetAddress[] ipAddresses = service.getInet4Addresses();
         String ipAddress = ipAddresses[0].getHostAddress();
         String serverId = service.getPropertyString("SERVER");
         String serverCapability = service.getPropertyString("SERVER_CAPABILITY");

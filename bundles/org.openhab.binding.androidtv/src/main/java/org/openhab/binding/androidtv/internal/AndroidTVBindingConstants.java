@@ -39,6 +39,7 @@ public class AndroidTVBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV).collect(Collectors.toSet()));
 
     // List of all Channel ids
+    public static final String CHANNEL_DEBUG = "debug";
     public static final String CHANNEL_RAW = "raw";
     public static final String CHANNEL_RAWMSG = "rawmsg";
     public static final String CHANNEL_KEYBOARD = "keyboard";

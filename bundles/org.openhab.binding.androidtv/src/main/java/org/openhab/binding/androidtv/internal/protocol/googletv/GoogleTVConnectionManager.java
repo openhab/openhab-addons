@@ -1272,6 +1272,10 @@ public class GoogleTVConnectionManager {
                 if ((power && command.equals(OnOffType.OFF)) || (!power && command.equals(OnOffType.ON))) {
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
                 }
+            } else if (command instanceof StringType) {
+                if ((power && command.equals("OFF")) || (!power && command.equals("ON"))) {
+                    sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
+                }
             }
         } else if (CHANNEL_MUTE.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
@@ -1292,7 +1296,8 @@ public class GoogleTVConnectionManager {
         } else if (CHANNEL_APP.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 String message = GoogleTVRequest.encodeMessage(GoogleTVRequest.startApp(command.toString()));
-                sendCommand(new GoogleTVCommand(message));
+                // sendCommand(new GoogleTVCommand(message));
+                // Disabled until app command is identified
             }
         } else if (CHANNEL_KEYBOARD.equals(channelUID.getId())) {
             if (command instanceof StringType) {

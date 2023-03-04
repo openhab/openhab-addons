@@ -275,6 +275,8 @@ public class GoogleTVMessageParser {
                     callback.setPower(false);
                 } else if (msg.equals("c202020801")) {
                     callback.setPower(true);
+                } else {
+                    logger.info("{} - Unknown power state received. {}", callback.getThingID(), msg);
                 }
             } else if (msg.startsWith("42")) {
                 // Keepalive request
