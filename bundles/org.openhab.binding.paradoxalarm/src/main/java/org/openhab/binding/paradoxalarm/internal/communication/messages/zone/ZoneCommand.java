@@ -59,7 +59,7 @@ public enum ZoneCommand implements Command {
     @Override
     public IRequest getRequest(int zoneId) {
         ZoneCommandPayload payload = new ZoneCommandPayload(zoneId, this);
-        ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes())
+        ParadoxIPPacket packet = new ParadoxIPPacket(payload.getBytes(), false)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
         return new ZoneCommandRequest(RequestType.ZONE_COMMAND, packet, null);
     }

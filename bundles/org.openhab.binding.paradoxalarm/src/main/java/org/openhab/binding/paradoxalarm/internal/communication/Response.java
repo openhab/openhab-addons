@@ -131,19 +131,24 @@ public class Response implements IResponse {
                 if (highNibble == 0x4) {
                     header = Arrays.copyOfRange(packetBytes, 0, 16);
                     payload = Arrays.copyOfRange(packetBytes, 16, 16 + packetBytes[1]);
-                    logger.debug("Received valid response for partition command");
+                    logger.debug("Received a valid response for partition command");
                     return;
                 }
                 break;
 
             case ZONE_COMMAND:
-                // TODO implement response parse here...
+                if (highNibble == 0xD) {
+                    header = Arrays.copyOfRange(packetBytes, 0, 16);
+                    payload = Arrays.copyOfRange(packetBytes, 16, 16 + packetBytes[1]);
+                    logger.debug("Received a valid response for zone command");
+                    return;
+                }
                 break;
         }
 
         // All other cases are considered wrong results for the parser and are probably live events which cannot be
         // parsed currently
-        logger.debug("Message command not expected. Received command={}", receivedCommand);
+        logger.debug("Message command not expected. Received command={}", String.format("0x%08X", receivedCommand));
         header = null;
         payload = null;
     }
