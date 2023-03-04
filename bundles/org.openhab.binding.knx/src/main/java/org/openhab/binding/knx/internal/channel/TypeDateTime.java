@@ -14,7 +14,10 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 
@@ -25,10 +28,11 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
  *
  */
 @NonNullByDefault
-class TypeDateTime extends KNXChannelType {
+class TypeDateTime extends KNXChannel {
+    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_DATETIME, CHANNEL_DATETIME_CONTROL);
 
-    TypeDateTime() {
-        super(CHANNEL_DATETIME, CHANNEL_DATETIME_CONTROL);
+    TypeDateTime(Channel channel) {
+        super(channel);
     }
 
     @Override

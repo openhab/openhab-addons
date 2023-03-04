@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.core.types.Type;
 
 import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.KNXFormatException;
 
 /**
  * Command meta-data
@@ -27,20 +27,20 @@ import tuwien.auto.calimero.KNXFormatException;
  *
  */
 @NonNullByDefault
-public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
-
+public class WriteSpecImpl implements OutboundSpec {
+    private String dpt;
     private final Type value;
-    private final @Nullable GroupAddress groupAddress;
+    private final GroupAddress groupAddress;
 
-    public WriteSpecImpl(@Nullable ChannelConfiguration channelConfiguration, String defaultDPT, Type value)
-            throws KNXFormatException {
-        super(channelConfiguration, defaultDPT);
-        if (channelConfiguration != null) {
-            this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
-        } else {
-            this.groupAddress = null;
-        }
+    public WriteSpecImpl(GroupAddressConfiguration groupAddressConfiguration, String defaultDPT, Type value) {
+        this.dpt = Objects.requireNonNullElse(groupAddressConfiguration.getDPT(), defaultDPT);
+        this.groupAddress = groupAddressConfiguration.getMainGA();
         this.value = value;
+    }
+
+    @Override
+    public String getDPT() {
+        return dpt;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
     }
 
     @Override
-    public @Nullable GroupAddress getGroupAddress() {
+    public GroupAddress getGroupAddress() {
         return groupAddress;
     }
 

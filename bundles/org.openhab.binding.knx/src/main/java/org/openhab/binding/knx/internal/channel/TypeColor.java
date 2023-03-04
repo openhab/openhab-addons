@@ -17,6 +17,7 @@ import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
@@ -30,10 +31,11 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorRGB;
  *
  */
 @NonNullByDefault
-class TypeColor extends KNXChannelType {
+class TypeColor extends KNXChannel {
+    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
 
-    TypeColor() {
-        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA), CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
+    TypeColor(Channel channel) {
+        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA), channel);
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -29,10 +30,12 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
  *
  */
 @NonNullByDefault
-class TypeRollershutter extends KNXChannelType {
+class TypeRollershutter extends KNXChannel {
+    public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_ROLLERSHUTTER,
+            CHANNEL_ROLLERSHUTTER_CONTROL);
 
-    TypeRollershutter() {
-        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA), CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL);
+    TypeRollershutter(Channel channel) {
+        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA), channel);
     }
 
     @Override

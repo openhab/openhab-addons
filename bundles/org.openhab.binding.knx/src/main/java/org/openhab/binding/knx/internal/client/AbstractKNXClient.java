@@ -366,7 +366,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 }
             } catch (InterruptedException | CancellationException e) {
                 logger.debug("Interrupted sending KNX read request");
-                return;
             } catch (Exception e) {
                 // Any other exception: Fail gracefully, i.e. notify user and continue reading next DP.
                 // Not catching this would end the scheduled read for all DPs in case of an error.
@@ -485,7 +484,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         ProcessCommunicator processCommunicator = this.processCommunicator;
         KNXNetworkLink link = this.link;
         if (processCommunicator == null || link == null) {
-            logger.debug("Cannot write to KNX bus (processCommuicator: {}, link: {})",
+            logger.debug("Cannot write to KNX bus (processCommunicator: {}, link: {})",
                     processCommunicator == null ? "Not OK" : "OK",
                     link == null ? "Not OK" : (link.isOpen() ? "Open" : "Closed"));
             return;
@@ -494,9 +493,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
 
-        if (groupAddress != null) {
-            sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
-        }
+        sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
     }
 
     @Override
@@ -513,9 +510,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
 
-        if (groupAddress != null) {
-            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getValue());
-        }
+        sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getValue());
     }
 
     private void sendToKNX(ProcessCommunication communicator, KNXNetworkLink link, GroupAddress groupAddress,

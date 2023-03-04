@@ -13,7 +13,6 @@
 package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.Type;
 
 import tuwien.auto.calimero.GroupAddress;
@@ -39,7 +38,6 @@ public interface OutboundSpec {
      *
      * @return the group address
      */
-    @Nullable
     GroupAddress getGroupAddress();
 
     /**
