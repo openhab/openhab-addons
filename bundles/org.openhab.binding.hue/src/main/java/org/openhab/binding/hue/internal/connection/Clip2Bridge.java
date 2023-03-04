@@ -358,12 +358,12 @@ public class Clip2Bridge implements Closeable {
     private static final String FORMAT_URL_CONFIG = "http://%s/api/0/config";
     private static final String FORMAT_URL_RESOURCE = "https://%s/clip/v2/resource/";
     private static final String FORMAT_URL_REGISTER = "http://%s/api";
-
     private static final String FORMAT_URL_EVENTS = "https://%s/eventstream/clip/v2";
+
     private static final int CLIP2_MINIMUM_VERSION = 1948086000;
+
     private static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
-
     private static final int REQUEST_INTERVAL_MILLISECS = 100;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
@@ -405,7 +405,8 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
-    private final boolean useHttpV1;
+    private final boolean useHttp1;
+    private final Object restartLock = new Object();
 
     private State onlineState = State.CLOSED;
     private Instant lastRequestTime = Instant.MIN;
@@ -448,7 +449,7 @@ public class Clip2Bridge implements Closeable {
         } catch (Exception e) {
             logger.warn("Clip2Bridge() HTTP/2 hpack module not loaded; falling back to HTTP/1.1");
         }
-        useHttpV1 = !http2HpackLoaded;
+        useHttp1 = !http2HpackLoaded;
     }
 
     /**
@@ -547,15 +548,21 @@ public class Clip2Bridge implements Closeable {
         if (cause instanceof ContentAdapter) {
             logger.debug("fatalError() {} {} ignoring", causeId, error);
         } else if (AdapterErrorHandler.SOFT_ERROR.contains(error)) {
-            try {
-                logger.debug("fatalError() {} {} reconnecting", causeId, error);
-                onlineState = State.PASSIVE; // suppress notifying the handler
-                closeInner();
-                openInner();
-                openEventStream();
-            } catch (ApiException | HttpUnAuthorizedException e) {
-                logger.warn("fatalError() {} {} reconnect failed {}", causeId, error, e.getMessage(), e);
-                closeInner();
+            synchronized (restartLock) {
+                State priorState = onlineState;
+                try {
+                    logger.debug("fatalError() {} {} reconnecting", causeId, error);
+                    onlineState = State.PASSIVE; // suppress handler notification
+                    closeInner();
+                    openInner();
+                    if (priorState == State.ACTIVE) {
+                        openEventStream();
+                    }
+                } catch (ApiException | HttpUnAuthorizedException e) {
+                    logger.warn("fatalError() {} {} reconnect failed {}", causeId, error, e.getMessage(), e);
+                    onlineState = priorState; // re-enable handler notification
+                    closeInner();
+                }
             }
         } else {
             logger.warn("fatalError() {} {} closing", causeId, error);
@@ -699,14 +706,10 @@ public class Clip2Bridge implements Closeable {
      * @throws HttpUnAuthorizedException if the application key is not authenticated
      */
     public void open() throws ApiException, HttpUnAuthorizedException {
-        try {
-            logger.debug("open()");
-            openInner();
-            openEventStream();
-            bridgeHandler.onConnectionOnline();
-        } catch (ApiException | HttpUnAuthorizedException e) {
-            throw e;
-        }
+        logger.debug("open()");
+        openInner();
+        openEventStream();
+        bridgeHandler.onConnectionOnline();
     }
 
     /**
@@ -727,6 +730,18 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if an error was encountered.
      */
     private void openEventStream() throws ApiException, HttpUnAuthorizedException {
+        synchronized (this) {
+            openEventStreamImpl();
+            onlineState = State.ACTIVE;
+        }
+    }
+
+    /**
+     * Implementation to open an HTTP 2 SSE event stream if necessary.
+     *
+     * @throws ApiException if an error was encountered.
+     */
+    private void openEventStreamImpl() throws ApiException, HttpUnAuthorizedException {
         throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
@@ -752,7 +767,6 @@ public class Clip2Bridge implements Closeable {
             stream.setIdleTimeout(0);
             stream.setAttribute(EVENT_STREAM_ID, session);
             adapter.completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            onlineState = State.ACTIVE;
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             if (Objects.nonNull(stream)) {
                 stream.reset(new ResetFrame(stream.getId(), 0), Callback.NOOP);
@@ -806,7 +820,7 @@ public class Clip2Bridge implements Closeable {
      * <p>
      * <b>Developer Note:</b>
      * For best performance this method should use a new stream on the existing HTTP/2 session. However the Jetty HTTP2
-     * library version currently used by OH [v9.4.46.v20220331] fails with an 'hpack' (header compression) error
+     * library version currently used by OH [v9.4.50.v20221201] fails with an 'hpack' (header compression) error
      * <a href="https://github.com/eclipse/jetty.project/issues/9168">(Jetty Issue 9168)</a> when attempting to encode
      * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, or when Jetty
      * HTTP/2 is included in the OH core, but in the meantime we can fall back to using a regular HTTP/1.1 call.
@@ -819,10 +833,10 @@ public class Clip2Bridge implements Closeable {
         if (onlineState == State.CLOSED) {
             return;
         }
-        if (useHttpV1) {
-            putResourceHttp1(resource);
+        if (useHttp1) {
+            putResourceHttp1Impl(resource);
         } else {
-            putResourceHttp2(resource);
+            putResourceHttp2Impl(resource);
         }
     }
 
@@ -832,7 +846,7 @@ public class Clip2Bridge implements Closeable {
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      */
-    private void putResourceHttp1(Resource resource) throws ApiException {
+    private void putResourceHttp1Impl(Resource resource) throws ApiException {
         throttle();
         String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
         String json = jsonParser.toJson(resource);
@@ -860,7 +874,7 @@ public class Clip2Bridge implements Closeable {
      * @param resource the resource to put.
      * @throws ApiException if something fails.
      */
-    private void putResourceHttp2(Resource resource) throws ApiException {
+    private void putResourceHttp2Impl(Resource resource) throws ApiException {
         throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
