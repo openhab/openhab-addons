@@ -23,6 +23,7 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -44,15 +45,21 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        int index = calculateEntityIndex();
-        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
-        ParadoxPanel panel = bridge.getPanel();
+        ParadoxIP150BridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Paradox bridge handler is null. Skipping update.");
+            return;
+        }
+
+        ParadoxPanel panel = bridgeHandler.getPanel();
         List<Zone> zones = panel.getZones();
         if (zones == null) {
             logger.debug(
                     "Zones collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
             return;
         }
+
+        int index = calculateEntityIndex();
         if (zones.size() <= index) {
             logger.debug("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
                     zones);
@@ -103,15 +110,21 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     }
 
     protected Zone getZone() {
-        int index = calculateEntityIndex();
-        ParadoxIP150BridgeHandler bridge = (ParadoxIP150BridgeHandler) getBridge().getHandler();
-        ParadoxPanel panel = bridge.getPanel();
+        ParadoxIP150BridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Paradox bridge handler is null. Skipping update.");
+            return null;
+        }
+
+        ParadoxPanel panel = bridgeHandler.getPanel();
         List<Zone> zones = panel.getZones();
         if (zones == null) {
             logger.debug(
                     "Zones collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
             return null;
         }
+
+        int index = calculateEntityIndex();
         if (zones.size() <= index) {
             logger.debug("Attempted to access a zone out of bounds of current zone list. Index: {}, List: {}", index,
                     zones);
@@ -120,5 +133,15 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
 
         Zone zone = zones.get(index);
         return zone;
+    }
+
+    private ParadoxIP150BridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Paradox bridge is null. Skipping update.");
+            return null;
+        }
+
+        return (ParadoxIP150BridgeHandler) bridge.getHandler();
     }
 }

@@ -28,6 +28,8 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.Zon
 import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TestGetBytes} This test tests creation of IP packet and it's getBytes() method
