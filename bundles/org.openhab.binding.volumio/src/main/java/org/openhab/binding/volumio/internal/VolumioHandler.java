@@ -166,29 +166,65 @@ public class VolumioHandler extends BaseThingHandler {
                     }
                     break;
                 case VolumioBindingConstants.CHANNEL_CLEAR_QUEUE:
-                    if (command instanceof OnOffType) {
-                        if (command == OnOffType.ON) {
-                            volumio.clearQueue();
-                            // Make it feel like a toggle button ...
-                            updateState(channelUID, OnOffType.OFF);
+                    if (volumio == null) {
+                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
+                                command);
+                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "device is offline");
+                        }
+                    } else {
+                        if (command instanceof OnOffType) {
+                            if (command == OnOffType.ON) {
+                                volumio.clearQueue();
+                                // Make it feel like a toggle button ...
+                                updateState(channelUID, OnOffType.OFF);
+                            }
                         }
                     }
                     break;
                 case VolumioBindingConstants.CHANNEL_PLAY_RANDOM:
-                    if (command instanceof OnOffType) {
-                        boolean enableRandom = command == OnOffType.ON;
-                        volumio.setRandom(enableRandom);
+                    if (volumio == null) {
+                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
+                                command);
+                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "device is offline");
+                        }
+                    } else {
+                        if (command instanceof OnOffType) {
+                            boolean enableRandom = command == OnOffType.ON;
+                            volumio.setRandom(enableRandom);
+                        }
                     }
                     break;
                 case VolumioBindingConstants.CHANNEL_PLAY_REPEAT:
-                    if (command instanceof OnOffType) {
-                        boolean enableRepeat = command == OnOffType.ON;
-                        volumio.setRepeat(enableRepeat);
+                    if (volumio == null) {
+                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
+                                command);
+                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "device is offline");
+                        }
+                    } else {
+                        if (command instanceof OnOffType) {
+                            boolean enableRepeat = command == OnOffType.ON;
+                            volumio.setRepeat(enableRepeat);
+                        }
                     }
                     break;
                 case "REFRESH":
-                    logger.debug("Called Refresh");
-                    volumio.getState();
+                    if (volumio == null) {
+                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
+                                command);
+                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "device is offline");
+                        }
+                    } else {
+                        logger.debug("Called Refresh");
+                        volumio.getState();
+                    }
                     break;
                 case VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND:
                     if (command instanceof StringType) {
@@ -217,8 +253,15 @@ public class VolumioHandler extends BaseThingHandler {
 
     private void sendSystemCommand(Command command) {
         if (command instanceof StringType) {
-            volumio.sendSystemCommand(command.toString());
-            updateState(VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND, UnDefType.UNDEF);
+            if (volumio == null) {
+                logger.debug("Ignoring command {} = {} because device is offline.", command);
+                if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+                }
+            } else {
+                volumio.sendSystemCommand(command.toString());
+                updateState(VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND, UnDefType.UNDEF);
+            }
         } else if (command.equals(RefreshType.REFRESH)) {
             updateState(VolumioBindingConstants.CHANNEL_SYSTEM_COMMAND, UnDefType.UNDEF);
         }
@@ -234,66 +277,86 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void handleVolumeCommand(Command command) {
-
-        if (command instanceof PercentType) {
-            volumio.setVolume((PercentType) command);
-        } else if (command instanceof RefreshType) {
-            volumio.getState();
+        if (volumio == null) {
+            logger.debug("Ignoring command {} = {} because device is offline.", command);
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+            }
         } else {
-            logger.error("Command is not handled");
+            if (command instanceof PercentType) {
+                volumio.setVolume((PercentType) command);
+            } else if (command instanceof RefreshType) {
+                volumio.getState();
+            } else {
+                logger.error("Command is not handled");
+            }
         }
     }
 
     private void handleStopCommand(Command command) {
-        if (command instanceof StringType) {
-            volumio.stop();
-            updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
-        } else if (command.equals(RefreshType.REFRESH)) {
-            updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
+        if (volumio == null) {
+            logger.debug("Ignoring command {} = {} because device is offline.", command);
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+            }
+        } else {
+            if (command instanceof StringType) {
+                volumio.stop();
+                updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(VolumioBindingConstants.CHANNEL_STOP, UnDefType.UNDEF);
+            }
         }
     }
 
     private void handlePlaybackCommands(Command command) {
-        if (command instanceof PlayPauseType) {
-
-            PlayPauseType playPauseCmd = (PlayPauseType) command;
-
-            switch (playPauseCmd) {
-                case PLAY:
-                    volumio.play();
-                    break;
-                case PAUSE:
-                    volumio.pause();
-                    break;
+        if (volumio == null) {
+            logger.debug("Ignoring command {} = {} because device is offline.", command);
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
             }
-        } else if (command instanceof NextPreviousType) {
-
-            NextPreviousType nextPreviousType = (NextPreviousType) command;
-
-            switch (nextPreviousType) {
-                case PREVIOUS:
-                    volumio.previous();
-                    break;
-                case NEXT:
-                    volumio.next();
-                    break;
-            }
-
-        } else if (command instanceof RewindFastforwardType) {
-
-            RewindFastforwardType fastForwardType = (RewindFastforwardType) command;
-
-            switch (fastForwardType) {
-                case FASTFORWARD:
-                case REWIND:
-                    logger.warn("Not implemented yet");
-                    break;
-            }
-
-        } else if (command instanceof RefreshType) {
-            volumio.getState();
         } else {
-            logger.error("Command is not handled: {}", command);
+            if (command instanceof PlayPauseType) {
+
+                PlayPauseType playPauseCmd = (PlayPauseType) command;
+
+                switch (playPauseCmd) {
+                    case PLAY:
+                        volumio.play();
+                        break;
+                    case PAUSE:
+                        volumio.pause();
+                        break;
+                }
+            } else if (command instanceof NextPreviousType) {
+
+                NextPreviousType nextPreviousType = (NextPreviousType) command;
+
+                switch (nextPreviousType) {
+                    case PREVIOUS:
+                        volumio.previous();
+                        break;
+                    case NEXT:
+                        volumio.next();
+                        break;
+                }
+
+            } else if (command instanceof RewindFastforwardType) {
+
+                RewindFastforwardType fastForwardType = (RewindFastforwardType) command;
+
+                switch (fastForwardType) {
+                    case FASTFORWARD:
+                    case REWIND:
+                        logger.warn("Not implemented yet");
+                        break;
+                }
+
+            } else if (command instanceof RefreshType) {
+                volumio.getState();
+            } else {
+                logger.error("Command is not handled: {}", command);
+            }
         }
     }
 
@@ -304,10 +367,16 @@ public class VolumioHandler extends BaseThingHandler {
      * - PUSH.STATE -
      */
     private void bindDefaultListener() {
-
-        volumio.on(Socket.EVENT_CONNECT, connectListener());
-        volumio.on(Socket.EVENT_DISCONNECT, disconnectListener());
-        volumio.on(VolumioEvents.PUSH_STATE, pushStateListener());
+        if (volumio == null) {
+            logger.debug("Device is offline.");
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+            }
+        } else {
+            volumio.on(Socket.EVENT_CONNECT, connectListener());
+            volumio.on(Socket.EVENT_DISCONNECT, disconnectListener());
+            volumio.on(VolumioEvents.PUSH_STATE, pushStateListener());
+        }
     }
 
     /**
@@ -373,8 +442,15 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     public void playURI(StringType url) {
-        logger.debug("Play uri sound: {}", url.toFullString());
-        this.volumio.playURI(url.toFullString());
+        if (this.volumio == null) {
+            logger.debug("Ignoring palying {} = {} because device is offline.", url);
+            if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "device is offline");
+            }
+        } else {
+            logger.debug("Play uri sound: {}", url.toFullString());
+            this.volumio.playURI(url.toFullString());
+        }
     }
 
     public void playNotificationSoundURI(StringType url) {
