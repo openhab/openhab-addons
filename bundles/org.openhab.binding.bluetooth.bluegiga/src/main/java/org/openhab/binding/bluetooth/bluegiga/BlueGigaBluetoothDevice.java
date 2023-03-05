@@ -431,7 +431,6 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                                 for (int i = 0; i < manufacturerInt.length; i++) {
                                     manufacturerData[i + 2] = (byte) manufacturerInt[i];
                                 }
-
                             } catch (ClassCastException e) {
                                 logger.debug("Unsupported manufacturer specific record received from device {}",
                                         address);
