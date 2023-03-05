@@ -75,6 +75,8 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     public static final Type LIST_SCENES = new TypeToken<ArrayList<Scene>>() {}.getType();
     // @formatter:on
 
+    private static final Set<Integer> HTTP_OK_CODES = Set.of(HttpStatus.OK_200, HttpStatus.NO_CONTENT_204);
+
     private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
     private final String shades;
     private final String scenes;
@@ -122,10 +124,9 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         shadePositions = home + "shades/positions";
         shadeEvents = home + "shades/events";
         sceneEvents = home + "scenes/events";
+        register = home + "integration/openhab.org";
 
         info = base + "gateway/info";
-
-        register = "TODO"; // TODO waiting for Hunter Douglas to provide the end point URL
 
         this.httpClient = httpClient;
         this.clientBuilder = clientBuilder;
@@ -166,14 +167,8 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
      * @throws HubProcessingException if any error occurs.
      */
     public void gatewayRegister() throws HubProcessingException {
-        // TODO waiting for Hunter Douglas to provide registration details
         if (!isRegistered) {
-            final class GatewayRegistration {
-                @SuppressWarnings("unused")
-                public String todo = "org.openhab.binding.hdpowerview";
-            }
-            String json = jsonParser.toJson(new GatewayRegistration());
-            invoke(HttpMethod.PUT, register, null, json);
+            invoke(HttpMethod.PUT, register, null, null);
             isRegistered = true;
         }
     }
@@ -296,7 +291,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
             throw new HubProcessingException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
         int statusCode = response.getStatus();
-        if (statusCode != HttpStatus.OK_200) {
+        if (!HTTP_OK_CODES.contains(statusCode)) {
             logger.warn("invoke() HTTP status:{}, reason:{}", statusCode, response.getReason());
             throw new HubProcessingException(String.format("HTTP %d error", statusCode));
         }
@@ -304,7 +299,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
         if (logger.isTraceEnabled()) {
             logger.trace("invoke() response JSON:{}", jsonResponse);
         }
-        if (jsonResponse == null || jsonResponse.isEmpty()) {
+        if ((HttpStatus.OK_200 == statusCode) && ((jsonResponse == null) || (jsonResponse.isEmpty()))) {
             logger.warn("invoke() hub returned no content");
             throw new HubProcessingException("Missing response entity");
         }
