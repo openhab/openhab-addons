@@ -17,6 +17,7 @@ import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -32,7 +33,7 @@ class TypeSwitch extends KNXChannel {
     public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL);
 
     TypeSwitch(Channel channel) {
-        super(channel);
+        super(Set.of(OnOffType.class), channel);
     }
 
     @Override

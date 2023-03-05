@@ -13,9 +13,15 @@
 package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper.DPT_UNIT_MAP;
+
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -295,6 +301,24 @@ class KNXCoreTypeMapperTest {
         int b = Integer.parseInt(value.split(" ")[2].split(":")[1]);
         HSBType expected = HSBType.fromRGB(r, g, b);
 
-        assertEquals(expected, KNXCoreTypeMapper.convertRawDataToType("232.600", data));
+        assertEquals(expected, KNXCoreTypeMapper.convertRawDataToType("232.600", data, false));
+    }
+
+    @Test
+    public void unitFix() {
+        Assertions.assertEquals("m/s²", KNXCoreTypeMapper.fixUnit("ms⁻²"));
+        Assertions.assertEquals("Ah", KNXCoreTypeMapper.fixUnit("A h"));
+    }
+
+    private static Stream<String> unitProvider() {
+        return DPT_UNIT_MAP.values().stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("unitProvider")
+    public void unitsValid(String unit) {
+        String valueStr = "1 " + unit;
+        QuantityType<?> value = new QuantityType<>(valueStr);
+        Assertions.assertNotNull(value);
     }
 }

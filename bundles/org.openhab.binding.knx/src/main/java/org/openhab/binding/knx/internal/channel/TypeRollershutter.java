@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
@@ -35,7 +38,8 @@ class TypeRollershutter extends KNXChannel {
             CHANNEL_ROLLERSHUTTER_CONTROL);
 
     TypeRollershutter(Channel channel) {
-        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA), channel);
+        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
+                Set.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
     }
 
     @Override

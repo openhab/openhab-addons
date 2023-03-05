@@ -157,7 +157,7 @@ class KNXChannelTest {
 
     private static class MyKNXChannel extends KNXChannel {
         public MyKNXChannel(Channel channel) {
-            super(Set.of("key1", "key2"), channel);
+            super(Set.of("key1", "key2"), Set.of(), channel);
         }
 
         @Override

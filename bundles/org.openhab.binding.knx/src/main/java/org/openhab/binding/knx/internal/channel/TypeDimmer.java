@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
@@ -35,7 +38,8 @@ class TypeDimmer extends KNXChannel {
     public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
 
     TypeDimmer(Channel channel) {
-        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA), channel);
+        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA),
+                Set.of(OnOffType.class, PercentType.class, IncreaseDecreaseType.class), channel);
     }
 
     @Override
