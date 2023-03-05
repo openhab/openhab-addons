@@ -358,7 +358,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 return;
             }
 
-            if (!profile.isInitialized()) {
+            if (!profile.isInitialized() || (isThingOffline() && profile.alwaysOn)) {
                 logger.debug("{}: {}", thingName, messages.get("command.init", command));
                 initializeThing();
             } else {

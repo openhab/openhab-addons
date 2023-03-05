@@ -275,7 +275,7 @@ public class ShellyComponents {
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                    toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
+                                    toQuantityType(getDouble(emeter.current), DIGITS_KWH, Units.AMPERE));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                                     toQuantityType(computePF(emeter), Units.PERCENT));
 

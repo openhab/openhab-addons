@@ -388,7 +388,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }
         if (profile.isSensor && !profile.isMotion && profile.settings.wifiSta != null
-                && profile.settings.wifiSta.enabled) {
+                && getBool(profile.settings.wifiSta.enabled)) {
             // FW 1.10+: Reset STA list, force WiFi rescan and connect to stringest AP
             list.put(ACTION_RESSTA, "Reconnect WiFi");
         }

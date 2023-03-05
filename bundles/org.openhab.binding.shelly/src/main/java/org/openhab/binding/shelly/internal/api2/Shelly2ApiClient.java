@@ -177,6 +177,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             boolean channelUpdate) throws ShellyApiException {
         boolean updated = false;
 
+        if (result.temperature0 != null && !getProfile().isSensor) {
+            status.temperature = status.tmp.tC = result.temperature0.tC;
+        }
+
         updated |= updateInputStatus(status, result, channelUpdate);
         updated |= updateRelayStatus(status, result.switch0, channelUpdate);
         updated |= updateRelayStatus(status, result.switch1, channelUpdate);
@@ -313,7 +317,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.bActPower != null) {
             sm.power = emeter.power = em.bActPower;
         }
-        if (em.aAprtPower != null) {
+        if (em.bAprtPower != null) {
             emeter.totalReturned = em.bAprtPower;
         }
         if (em.bVoltage != null) {
