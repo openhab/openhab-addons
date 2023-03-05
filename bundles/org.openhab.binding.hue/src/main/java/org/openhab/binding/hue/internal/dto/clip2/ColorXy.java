@@ -40,8 +40,9 @@ public class ColorXy {
 
     public ColorXy setXY(float[] xyValues) {
         PairXy xy = this.xy;
-        this.xy = Objects.nonNull(xy) ? xy : new PairXy();
-        this.xy.setXY(xyValues);
+        xy = Objects.nonNull(xy) ? xy : new PairXy();
+        xy.setXY(xyValues);
+        this.xy = xy;
         return this;
     }
 }
