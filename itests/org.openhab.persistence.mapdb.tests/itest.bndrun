@@ -52,7 +52,6 @@ Fragment-Host: org.openhab.persistence.mapdb
 	com.google.gson;version='[2.9.1,2.9.2)',\
 	io.methvin.directory-watcher;version='[0.17.1,0.17.2)',\
 	com.sun.jna;version='[5.12.1,5.12.2)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
 	xstream;version='[1.4.19,1.4.20)',\
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
