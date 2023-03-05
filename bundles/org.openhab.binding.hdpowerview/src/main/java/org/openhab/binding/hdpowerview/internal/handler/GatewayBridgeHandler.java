@@ -203,10 +203,11 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         if (refreshTask != null) {
             refreshTask.cancel(false);
         }
-        this.refreshTask = scheduler.scheduleWithFixedDelay(() -> doRefresh(), 10, config.hardRefresh,
-                TimeUnit.MINUTES);
+        this.refreshTask = scheduler.scheduleWithFixedDelay(() -> doRefresh(), 0, config.hardRefresh, TimeUnit.MINUTES);
 
         updateStatus(ThingStatus.UNKNOWN);
+
+        scheduler.submit(() -> doRefresh());
     }
 
     /**
