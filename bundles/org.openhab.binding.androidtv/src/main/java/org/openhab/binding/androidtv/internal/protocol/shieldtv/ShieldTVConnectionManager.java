@@ -255,8 +255,9 @@ public class ShieldTVConnectionManager {
     public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB) {
         this.appNameDB = appNameDB;
         this.appURLDB = appURLDB;
-        logger.debug("App DB Populated");
-        logger.trace("Handler appNameDB: {} appURLDB: {}", this.appNameDB.toString(), this.appURLDB.toString());
+        logger.debug("{} - App DB Populated", handler.getThingID());
+        logger.trace("{} - Handler appNameDB: {} appURLDB: {}", handler.getThingID(), this.appNameDB.toString(),
+                this.appURLDB.toString());
         handler.updateCDP(CHANNEL_APP, this.appNameDB);
     }
 
@@ -850,14 +851,14 @@ public class ShieldTVConnectionManager {
         sendCommand(new ShieldTVCommand(keepalive));
         if (isLoggedIn) {
             sendCommand(new ShieldTVCommand(ShieldTVRequest.encodeMessage("08ec0712020806"))); // Get App
+            if (this.periodicUpdate <= 1) {
+                sendPeriodicUpdate();
+                this.periodicUpdate = 20;
+            } else {
+                periodicUpdate--;
+            }
         }
         reconnectTaskSchedule();
-        if (this.periodicUpdate <= 1) {
-            sendPeriodicUpdate();
-            this.periodicUpdate = 20;
-        } else {
-            periodicUpdate--;
-        }
     }
 
     /**
