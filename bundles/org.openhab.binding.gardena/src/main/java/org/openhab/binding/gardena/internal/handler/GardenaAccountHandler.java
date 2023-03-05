@@ -173,8 +173,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
             logger.debug("{}", gardenaConfig);
 
-            String id = getThing().getUID().getId();
-            gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, this, scheduler, httpClientFactory,
+            gardenaSmart = new GardenaSmartImpl(getThing().getUID(), gardenaConfig, this, scheduler, httpClientFactory,
                     webSocketFactory);
             final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {

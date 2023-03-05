@@ -26,7 +26,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,6 +45,7 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.summary.RunningDTODese
 import org.openhab.binding.ecobee.internal.dto.thermostat.summary.SummaryResponseDTO;
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
+import org.openhab.binding.ecobee.internal.util.ExceptionUtils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -315,7 +315,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     }
 
     private void logIOException(Exception e) {
-        Throwable rootCause = ExceptionUtils.getRootCause(e);
+        Throwable rootCause = ExceptionUtils.getRootThrowable(e);
         if (rootCause instanceof TimeoutException || rootCause instanceof EOFException) {
             // These are "normal" errors and should be logged as DEBUG
             logger.debug("API: Call to Ecobee API failed with exception: {}: {}", rootCause.getClass().getSimpleName(),

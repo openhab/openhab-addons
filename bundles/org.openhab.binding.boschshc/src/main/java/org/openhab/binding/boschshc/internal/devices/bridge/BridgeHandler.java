@@ -46,6 +46,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,8 +96,10 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize {} Version {}", FrameworkUtil.getBundle(getClass()).getSymbolicName(),
-                FrameworkUtil.getBundle(getClass()).getVersion());
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle != null) {
+            logger.debug("Initialize {} Version {}", bundle.getSymbolicName(), bundle.getVersion());
+        }
 
         // Read configuration
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
@@ -190,8 +193,10 @@ public class BridgeHandler extends BaseBridgeHandler {
      * to check if access if possible
      * pairs this Bosch SHC Bridge with the SHC if necessary
      * and starts the first log poll.
+     * <p>
+     * This method is package-protected to enable unit testing.
      */
-    private void initialAccess(BoschHttpClient httpClient) {
+    /* package */ void initialAccess(BoschHttpClient httpClient) {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {}", this, httpClient);
 
         try {
@@ -482,7 +487,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                                     deviceId, errorResponse.statusCode, errorResponse.errorCode));
                 }
             } else {
-                return new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                return new BoschSHCException(String.format("Request for info of device %s failed with status code %d",
                         deviceId, statusCode));
             }
         });

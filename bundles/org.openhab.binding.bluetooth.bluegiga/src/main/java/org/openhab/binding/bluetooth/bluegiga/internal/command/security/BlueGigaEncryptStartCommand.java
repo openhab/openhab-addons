@@ -28,8 +28,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  */
 @NonNullByDefault
 public class BlueGigaEncryptStartCommand extends BlueGigaCommand {
-    public static int COMMAND_CLASS = 0x05;
-    public static int COMMAND_METHOD = 0x00;
+    public static final int COMMAND_CLASS = 0x05;
+    public static final int COMMAND_METHOD = 0x00;
 
     /**
      * Bonding handle of a device. This handle can be obtained for example from events like: Scan
