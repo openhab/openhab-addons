@@ -108,6 +108,5 @@ Import-Package: \
 	org.eclipse.jetty.util;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.util.ajax;version='[9.4.50,9.4.51)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
-	org.osgi.service.component;version='[1.5.0,1.5.1)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)'
+	org.osgi.service.component;version='[1.5.0,1.5.1)'
 
