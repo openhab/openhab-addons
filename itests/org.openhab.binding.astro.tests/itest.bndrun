@@ -53,5 +53,4 @@ Fragment-Host: org.openhab.binding.astro
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.scr;version='[2.2.4,2.2.5)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
 	org.osgi.service.component;version='[1.5.0,1.5.1)'

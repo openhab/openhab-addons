@@ -41,7 +41,6 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.objenesis;version='[3.2.0,3.2.1)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
-	org.jupnp;version='[2.6.1,2.6.2)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
 	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
@@ -75,5 +74,5 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.eclipse.jetty.websocket.common;version='[9.4.50,9.4.51)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
 	org.ops4j.pax.web.pax-web-api;version='[8.0.15,8.0.16)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	org.osgi.service.component;version='[1.5.0,1.5.1)'
+	org.osgi.service.component;version='[1.5.0,1.5.1)',\
+	org.jupnp;version='[2.7.0,2.7.1)'
