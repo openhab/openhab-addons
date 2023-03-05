@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
@@ -90,6 +91,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
     private final HttpClient httpClient;
+    private final HTTP2Client http2Client;
     private final ThingRegistry thingRegistry;
 
     private @Nullable Clip2Bridge clip2Bridge;
@@ -101,9 +103,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
 
-    public Clip2BridgeHandler(Bridge bridge, HttpClient httpClient, ThingRegistry thingRegistry) {
+    public Clip2BridgeHandler(Bridge bridge, HttpClient httpClient, HTTP2Client http2Client,
+            ThingRegistry thingRegistry) {
         super(bridge);
         this.httpClient = httpClient;
+        this.http2Client = http2Client;
         this.thingRegistry = thingRegistry;
     }
 
@@ -417,7 +421,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String applicationKey = config.applicationKey;
             applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "";
-            clip2Bridge = new Clip2Bridge(httpClient, this, ipAddress, applicationKey);
+            clip2Bridge = new Clip2Bridge(httpClient, http2Client, this, ipAddress, applicationKey);
 
             assetsLoaded = true;
         }

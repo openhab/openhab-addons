@@ -362,7 +362,7 @@ public class Clip2Bridge implements Closeable {
 
     private static final int CLIP2_MINIMUM_VERSION = 1948086000;
 
-    private static final int TIMEOUT_SECONDS = 10;
+    public static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
     private static final int REQUEST_INTERVAL_MILLISECS = 100;
 
@@ -418,28 +418,22 @@ public class Clip2Bridge implements Closeable {
      * Constructor.
      *
      * @param httpClient the OH common HTTP client.
+     * @param http2Client2
      * @param bridgeHandler the bridge handler.
      * @param hostName the host name (ip address) of the Hue bridge
      * @param applicationKey the application key.
      */
-    public Clip2Bridge(HttpClient httpClient, Clip2BridgeHandler bridgeHandler, String hostName,
-            String applicationKey) {
+    public Clip2Bridge(HttpClient httpClient, HTTP2Client http2Client, Clip2BridgeHandler bridgeHandler,
+            String hostName, String applicationKey) {
         logger.debug("Clip2Bridge()");
         this.httpClient = httpClient;
+        this.http2Client = http2Client;
         this.applicationKey = applicationKey;
         this.bridgeHandler = bridgeHandler;
         this.hostName = hostName;
         baseUrl = String.format(FORMAT_URL_RESOURCE, hostName);
         eventUrl = String.format(FORMAT_URL_EVENTS, hostName);
         registrationUrl = String.format(FORMAT_URL_REGISTER, hostName);
-        http2Client = new HTTP2Client();
-        http2Client.setConnectTimeout(TIMEOUT_SECONDS * 1000);
-        http2Client.setIdleTimeout(-1);
-        try {
-            http2Client.start();
-        } catch (Exception e) {
-            logger.warn("Clip2Bridge() error opening HTTP2Client", e);
-        }
         boolean http2HpackLoaded = false;
         try {
             PreEncodedHttpField field = new PreEncodedHttpField(HttpHeader.C_METHOD, "PUT");
@@ -447,7 +441,7 @@ public class Clip2Bridge implements Closeable {
             field.putTo(bytes, HttpVersion.HTTP_2);
             http2HpackLoaded = true;
         } catch (Exception e) {
-            logger.warn("Clip2Bridge() HTTP/2 hpack module not loaded; falling back to HTTP/1.1");
+            logger.warn("Clip2Bridge() HTTP/2 hpack module not yet loaded; falling back to HTTP/1.1");
         }
         useHttp1 = !http2HpackLoaded;
     }
@@ -483,12 +477,15 @@ public class Clip2Bridge implements Closeable {
      */
     @Override
     public void close() {
-        logger.debug("close()");
-        closeInner();
-        try {
-            http2Client.stop();
-        } catch (Exception e) {
-            // closing anyway so ignore errors
+        synchronized (this) {
+            logger.debug("close()");
+            boolean wasActive = onlineState == State.ACTIVE;
+            onlineState = State.CLOSED;
+            closeCheckAliveTask();
+            closeSession();
+            if (wasActive) {
+                bridgeHandler.onConnectionOffline();
+            }
         }
     }
 
@@ -502,22 +499,6 @@ public class Clip2Bridge implements Closeable {
             task.cancel(true);
         }
         checkAliveTask = null;
-    }
-
-    /**
-     * Private method to close the connection.
-     */
-    private void closeInner() {
-        synchronized (this) {
-            logger.debug("closeInner()");
-            boolean wasActive = onlineState == State.ACTIVE;
-            onlineState = State.CLOSED;
-            closeCheckAliveTask();
-            closeSession();
-            if (wasActive) {
-                bridgeHandler.onConnectionOffline();
-            }
-        }
     }
 
     /**
@@ -553,20 +534,20 @@ public class Clip2Bridge implements Closeable {
                 try {
                     logger.debug("fatalError() {} {} reconnecting", causeId, error);
                     onlineState = State.PASSIVE; // suppress handler notification
-                    closeInner();
-                    openInner();
+                    close();
+                    openPassive();
                     if (priorState == State.ACTIVE) {
-                        openEventStream();
+                        openActive();
                     }
                 } catch (ApiException | HttpUnAuthorizedException e) {
                     logger.warn("fatalError() {} {} reconnect failed {}", causeId, error, e.getMessage(), e);
                     onlineState = priorState; // re-enable handler notification
-                    closeInner();
+                    close();
                 }
             }
         } else {
             logger.warn("fatalError() {} {} closing", causeId, error);
-            closeInner();
+            close();
         }
     }
 
@@ -707,9 +688,22 @@ public class Clip2Bridge implements Closeable {
      */
     public void open() throws ApiException, HttpUnAuthorizedException {
         logger.debug("open()");
-        openInner();
-        openEventStream();
+        openPassive();
+        openActive();
         bridgeHandler.onConnectionOnline();
+    }
+
+    /**
+     * Make the session active, by opening an HTTP 2 SSE event stream (if necessary).
+     *
+     * @throws ApiException if an error was encountered.
+     * @throws HttpUnAuthorizedException if the application key is not authenticated.
+     */
+    private void openActive() throws ApiException, HttpUnAuthorizedException {
+        synchronized (this) {
+            openEventStream();
+            onlineState = State.ACTIVE;
+        }
     }
 
     /**
@@ -725,23 +719,12 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Open an HTTP 2 SSE event stream if necessary.
-     *
-     * @throws ApiException if an error was encountered.
-     */
-    private void openEventStream() throws ApiException, HttpUnAuthorizedException {
-        synchronized (this) {
-            openEventStreamImpl();
-            onlineState = State.ACTIVE;
-        }
-    }
-
-    /**
      * Implementation to open an HTTP 2 SSE event stream if necessary.
      *
      * @throws ApiException if an error was encountered.
+     * @throws HttpUnAuthorizedException if the application key is not authenticated.
      */
-    private void openEventStreamImpl() throws ApiException, HttpUnAuthorizedException {
+    private void openEventStream() throws ApiException, HttpUnAuthorizedException {
         throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
@@ -776,14 +759,14 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Private method to open the HTTP 2 session.
+     * Private method to open the HTTP 2 session in passive mode.
      *
      * @throws ApiException if there was a communication error.
      * @throws HttpUnAuthorizedException if the application key is not authenticated.
      */
-    private void openInner() throws ApiException, HttpUnAuthorizedException {
+    private void openPassive() throws ApiException, HttpUnAuthorizedException {
         synchronized (this) {
-            logger.debug("openInner()");
+            logger.debug("openPassive()");
             onlineState = State.CLOSED;
             openSession();
             openCheckAliveTask();
@@ -975,10 +958,10 @@ public class Clip2Bridge implements Closeable {
     public void testConnectionState() throws HttpUnAuthorizedException, ApiException {
         logger.debug("testConnectionState()");
         try {
-            openInner();
+            openPassive();
             getResourcesImpl(BRIDGE);
         } catch (HttpUnAuthorizedException | ApiException e) {
-            closeInner();
+            close();
             throw e;
         }
     }
