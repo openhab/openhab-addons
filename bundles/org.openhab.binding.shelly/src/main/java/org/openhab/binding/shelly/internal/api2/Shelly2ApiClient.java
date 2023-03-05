@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,12 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRequest;
@@ -182,8 +188,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateBatteryStatus(sensorData, result.devicepower0);
+        updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
-
         return updated;
     }
 
@@ -380,6 +386,45 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return updateChannels ? ShellyComponents.updateRoller((ShellyBaseHandler) getThing(), rs, cs.id) : false;
     }
 
+    // Addon
+    private void updateAddonStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusResult ds)
+            throws ShellyApiException {
+        if (ds == null) {
+            return;
+        }
+
+        if (ds.temperature100 != null) {
+            if (status.extTemperature == null) {
+                status.extTemperature = new ShellyExtTemperature();
+            }
+            status.extTemperature.sensor1 = updateExtTempSensor(ds.temperature100);
+            status.extTemperature.sensor2 = updateExtTempSensor(ds.temperature101);
+            status.extTemperature.sensor3 = updateExtTempSensor(ds.temperature102);
+            status.extTemperature.sensor4 = updateExtTempSensor(ds.temperature103);
+            status.extTemperature.sensor5 = updateExtTempSensor(ds.temperature104);
+        }
+        if (ds.humidity100 != null) {
+            status.extHumidity = new ShellyExtHumidity(ds.humidity100.rh);
+        }
+        if (ds.voltmeter100 != null) {
+            status.extVoltage = new ShellyExtVoltage(ds.voltmeter100.voltage);
+        }
+        if (ds.input100 != null) {
+            status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
+        }
+    }
+
+    private @Nullable ShellyShortTemp updateExtTempSensor(@Nullable Shelly2DeviceStatusTempId value) {
+        if (value != null) {
+            ShellyShortTemp temp = new ShellyShortTemp();
+            temp.hwID = value.id.toString();
+            temp.tC = value.tC;
+            temp.tF = value.tF;
+            return temp;
+        }
+        return null;
+    }
+
     protected void updateHumidityStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusHumidity value) {
         if (value == null) {
             return;
@@ -458,19 +503,21 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected boolean updateInputStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult ds,
             boolean updateChannels) throws ShellyApiException {
         boolean updated = false;
-        updated |= addInputStatus(ds.input0, updateChannels);
-        updated |= addInputStatus(ds.input1, updateChannels);
-        updated |= addInputStatus(ds.input2, updateChannels);
-        updated |= addInputStatus(ds.input3, updateChannels);
+        updated |= addInputStatus(status, ds.input0, updateChannels);
+        updated |= addInputStatus(status, ds.input1, updateChannels);
+        updated |= addInputStatus(status, ds.input2, updateChannels);
+        updated |= addInputStatus(status, ds.input3, updateChannels);
         status.inputs = relayStatus.inputs;
         return updated;
     }
 
-    private boolean addInputStatus(@Nullable Shelly2InputStatus is, boolean updateChannels) throws ShellyApiException {
+    private boolean addInputStatus(ShellySettingsStatus status, @Nullable Shelly2InputStatus is, boolean updateChannels)
+            throws ShellyApiException {
         if (is == null) {
             return false;
         }
         ShellyDeviceProfile profile = getProfile();
+
         if (is.id == null || is.id > profile.numInputs) {
             logger.debug("{}: Invalid input id: {}", thingName, is.id);
             return false;
@@ -484,6 +531,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (input.event == null && profile.inButtonMode(is.id)) {
             input.event = "";
             input.eventCount = 0;
+        }
+        if (is.percent != null) { // analogous input
+            status.extAnalogInput = new ShellyExtAnalogInput(getDouble(is.percent));
         }
         relayStatus.inputs.set(is.id, input);
         if (updateChannels) {

@@ -49,7 +49,11 @@ The binding supports the following types of Thing.
 To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
 The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
-And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
+And once the Velux Bridge is fully configured, you need to check your Inbox for discovered scenes and actuators.
+If nothing shows up you need to trigger discovering scenes and actuators (like windows and rollershutters) of the Velux Bridge.
+For this log into the OpenHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
+Then select the Velux Binding and click Scan.
+After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
 
 ## Thing Configuration
 
@@ -79,13 +83,13 @@ Normally it differs from the password of the web frontend.
 
 Advice: if you see a significant number of messages per day as follows, you should increase the parameters `retries` or/and `timeoutMsecs`...
 
-```
+```text
  communicate(): socket I/O failed continuously (x times).
 ```
 
 For your convenience you'll see a log entry for the recognized configuration within the log file i.e.
 
-```
+```text
 2018-07-23 20:40:24.746 [INFO ] [.b.velux.internal.VeluxBinding] - veluxConfig[ipAddress=192.168.42.1,tcpPort=80,password=********,timeoutMsecs=2000,retries=10]
 ```
 
@@ -104,13 +108,13 @@ In addition there are some optional Configuration Parameters.
 Notes:
 
 1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
-For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
+  For an example, see the Thing definition for 'Bathroom_Roof_Window' below.
 
 2. Somfy devices do not provide a valid serial number to the Velux KLF200 Bridge.
-For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
-This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
-The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
-For an example, see the Thing definition for 'Living_Room_Awning' below.
+  For such devices you have to enter the special all-zero serial number 00:00:00:00:00:00:00:00 in the `serial` parameter.
+  This special serial number complies with the serial number validation checks, but also makes the binding use the `name` parameter value instead of the `serial` parameter value when it communicates with the KLF Bridge.
+  The `name` parameter must therefore contain the name that you gave to the actuator when you first registered it in the KLF200 Bridge.
+  For an example, see the Thing definition for 'Living_Room_Awning' below.
 
 ### Thing Configuration for "scene"
 
@@ -254,7 +258,7 @@ The bridge Thing provides the following properties.
 
 ### Things
 
-```
+```java
 Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
 	// Velux (standard) window (with serial number)
     Thing window Bathroom_Roof_Window "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
@@ -264,25 +268,25 @@ Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.
 }
 ```
 
-See [velux.things](doc/conf/things/velux.things) for more examples.
+See [things.md](doc/things.md) for more examples.
 
 ### Items
 
-```
+```java
 Rollershutter Bathroom_Roof_Window_Position "Bathroom Roof Window Position [%.0f %%]" {channel="velux:window:g24:w56-36-13-5A-11-2A-05-70:position"}
 ```
 
-See [velux.items](doc/conf/items/velux.items) for more examples.
+See [items.md](doc/items.md) for more examples.
 
 ### Sitemap
 
-```
+```perl
 Frame label="Velux Windows" {
 	Slider item=Bathroom_Roof_Window_Position
 }
 ```
 
-See [velux.sitemap](doc/conf/sitemaps/velux.sitemap) for more examples.
+See [sitemaps.md](doc/sitemaps.md) for more examples.
 
 ### Rule for simultaneously moving the main position and the vane position
 
@@ -298,12 +302,12 @@ The method is called with the following syntax `moveMainAndVane(thingName, mainP
 The meaning of the arguments is described in the table below.
 The method returns a `Boolean` whose meaning is also described in the table below.
 
-| Argument    | Type    | Example                             | Description                                                                             |
-|-------------|---------|-------------------------------------|-----------------------------------------------------------------------------------------|
-| thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.             |
-| mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                         |
-| vanePercent | Integer | 25                                  | The target vane position in percent. Integer between 0 and 100.                         |
-| return      | Boolean | `true`                              | Is `true` if the command was sent sucessfully or `false` if any arguments were invalid. |
+| Argument    | Type    | Example                             | Description                                                                              |
+|-------------|---------|-------------------------------------|------------------------------------------------------------------------------------------|
+| thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.              |
+| mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                          |
+| vanePercent | Integer | 25                                  | The target vane position in percent. Integer between 0 and 100.                          |
+| return      | Boolean | `true`                              | Is `true` if the command was sent successfully or `false` if any arguments were invalid. |
 
 Example:
 
@@ -356,7 +360,7 @@ then
 end
 ```
 
-See [velux.rules](doc/conf/rules/velux.rules) for more examples.
+See [rules.md](doc/rules.md) for more examples.
 
 ### Rule for rebooting the Bridge
 
@@ -427,21 +431,21 @@ For those who are interested in more detailed insight of the processing of this 
 
 With Karaf you can use the following command sequence:
 
-```
+```text
 log:set TRACE org.openhab.binding.velux
 log:tail
 ```
 
 This, of course, is possible on command line with the commands:
 
-```
+```text
 % openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
-```
+```text
 	<logger name="org.openhab.binding.velux" level="TRACE">
 		<appender-ref ref="FILE" />
 	</logger>
@@ -449,7 +453,7 @@ On the other hand, if you prefer a textual configuration, you can append the log
 
 During startup of normal operations, there should be only some few messages within the logfile, like:
 
-```
+```text
 [INFO ] [nal.VeluxValidatedBridgeConfiguration] - veluxConfig[protocol=slip,ipAddress=192.168.45.9,tcpPort=51200,password=********,timeoutMsecs=1000,retries=5,refreshMsecs=15000,isBulkRetrievalEnabled=true]
 [INFO ] [ng.velux.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [hab.binding.velux.bridge.slip.SClogin] - velux bridge connection successfully established (login succeeded).
@@ -474,7 +478,7 @@ During startup of normal operations, there should be only some few messages with
 
 However if you have set the configuration parameter isProtocolTraceEnabled to true, you'll see the complete sequence of exchanged messages:
 
-```
+```text
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_PASSWORD_ENTER_REQ.
 [INFO ] [nternal.bridge.slip.io.SSLconnection] - Starting velux bridge connection.
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_PASSWORD_ENTER_CFM.
@@ -555,6 +559,6 @@ All known <B>Velux</B> devices can be handled by this binding.
 However, there might be some new ones which will be reported within the logfiles.
 Therefore, error messages like the one below should be reported to the maintainers so that the new Velux device type can be incorporated.
 
-```
+```text
 [ERROR] [g.velux.things.VeluxProductReference] - PLEASE REPORT THIS TO MAINTAINER: VeluxProductReference(3) has found an unregistered ProductTypeId.
 ```

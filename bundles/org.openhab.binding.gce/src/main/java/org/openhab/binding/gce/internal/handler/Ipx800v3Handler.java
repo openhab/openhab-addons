@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.action.Ipx800Actions;
 import org.openhab.binding.gce.internal.config.AnalogInputConfiguration;
 import org.openhab.binding.gce.internal.config.DigitalInputConfiguration;
@@ -56,7 +55,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -78,14 +76,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800v3Handler.class);
 
-    private @NonNullByDefault({}) Ipx800Configuration configuration;
-    private @NonNullByDefault({}) Ipx800DeviceConnector connector;
-    private @NonNullByDefault({}) StatusFileInterpreter statusFile;
-
+    private Optional<Ipx800DeviceConnector> connector = Optional.empty();
     private Optional<M2MMessageParser> parser = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    private final Map<String, @Nullable PortData> portDatas = new HashMap<>();
+    private final Map<String, PortData> portDatas = new HashMap<>();
 
     private class LongPressEvaluator implements Runnable {
         private final ZonedDateTime referenceTime;
@@ -110,41 +105,42 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     public Ipx800v3Handler(Thing thing) {
         super(thing);
-        logger.debug("Create a IPX800 Handler for thing '{}'", getThing().getUID());
+        logger.debug("Create an IPX800 Handler for thing '{}'", getThing().getUID());
     }
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(Ipx800Configuration.class);
-
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
 
-        statusFile = new StatusFileInterpreter(configuration.hostname, this);
+        Ipx800Configuration config = getConfigAs(Ipx800Configuration.class);
+        StatusFileInterpreter statusFile = new StatusFileInterpreter(config.hostname, this);
 
         if (thing.getProperties().isEmpty()) {
-            discoverAttributes();
+            updateProperties(Map.of(Thing.PROPERTY_VENDOR, "GCE Electronics", Thing.PROPERTY_FIRMWARE_VERSION,
+                    statusFile.getElement(StatusEntry.VERSION), Thing.PROPERTY_MAC_ADDRESS,
+                    statusFile.getElement(StatusEntry.CONFIG_MAC)));
         }
 
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        ThingBuilder thingBuilder = editThing();
         PortDefinition.asStream().forEach(portDefinition -> {
             int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
             for (int i = 0; i < nbElements; i++) {
-                createChannels(portDefinition, i, channels);
+                ChannelUID portChannelUID = createChannels(portDefinition, i, channels);
+                portDatas.put(portChannelUID.getId(), new PortData());
             }
         });
-        thingBuilder.withChannels(channels);
-        updateThing(thingBuilder.build());
 
-        connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber, getThing().getUID());
-        parser = Optional.of(new M2MMessageParser(connector, this));
+        updateThing(editThing().withChannels(channels).build());
+
+        connector = Optional.of(new Ipx800DeviceConnector(config.hostname, config.portNumber, getThing().getUID()));
+        parser = Optional.of(new M2MMessageParser(connector.get(), this));
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(statusFile::read, 3000, configuration.pullInterval,
-                TimeUnit.MILLISECONDS));
+        refreshJob = Optional.of(
+                scheduler.scheduleWithFixedDelay(statusFile::read, 3000, config.pullInterval, TimeUnit.MILLISECONDS));
 
-        connector.start();
+        connector.get().start();
     }
 
     @Override
@@ -152,23 +148,13 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         refreshJob.ifPresent(job -> job.cancel(true));
         refreshJob = Optional.empty();
 
-        if (connector != null) {
-            connector.destroyAndExit();
-        }
+        connector.ifPresent(Ipx800DeviceConnector::dispose);
+        connector = Optional.empty();
+
         parser = Optional.empty();
 
-        portDatas.values().stream().forEach(portData -> {
-            if (portData != null) {
-                portData.dispose();
-            }
-        });
+        portDatas.values().stream().forEach(PortData::dispose);
         super.dispose();
-    }
-
-    protected void discoverAttributes() {
-        updateProperties(Map.of(Thing.PROPERTY_VENDOR, "GCE Electronics", Thing.PROPERTY_FIRMWARE_VERSION,
-                statusFile.getElement(StatusEntry.VERSION), Thing.PROPERTY_MAC_ADDRESS,
-                statusFile.getElement(StatusEntry.CONFIG_MAC)));
     }
 
     private void addIfChannelAbsent(ChannelBuilder channelBuilder, List<Channel> channels) {
@@ -178,7 +164,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
     }
 
-    private void createChannels(PortDefinition portDefinition, int portIndex, List<Channel> channels) {
+    private ChannelUID createChannels(PortDefinition portDefinition, int portIndex, List<Channel> channels) {
         String ndx = Integer.toString(portIndex + 1);
         String advancedChannelTypeName = portDefinition.toString()
                 + (portDefinition.isAdvanced(portIndex) ? "Advanced" : "");
@@ -210,9 +196,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         .withLabel("Relay " + ndx).withType(channelType), channels);
                 break;
         }
+
         addIfChannelAbsent(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-duration"), "Number:Time")
                 .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_LAST_STATE_DURATION))
                 .withLabel("Previous state duration " + ndx), channels);
+
+        return mainChannelUID;
     }
 
     @Override
@@ -258,7 +247,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                     return;
                 }
                 logger.debug("About to update port '{}' with data '{}'", port, value);
-                State state = UnDefType.UNDEF;
+                State state = UnDefType.NULL;
                 switch (portDefinition) {
                     case COUNTER:
                         state = new DecimalType(value);
@@ -268,7 +257,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         break;
                     case ANALOG:
                         state = new DecimalType(value);
-                        updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_VOLTAGE,
+                        updateIfLinked(channelId + PROPERTY_SEPARATOR + CHANNEL_VOLTAGE,
                                 new QuantityType<>(value * ANALOG_SAMPLING, Units.VOLT));
                         break;
                     case CONTACT:
@@ -303,9 +292,9 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         break;
                 }
 
-                updateState(channelId, state);
+                updateIfLinked(channelId, state);
                 if (!portData.isInitializing()) {
-                    updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_LAST_STATE_DURATION,
+                    updateIfLinked(channelId + PROPERTY_SEPARATOR + CHANNEL_LAST_STATE_DURATION,
                             new QuantityType<>(sinceLastChange / 1000, Units.SECOND));
                 }
                 portData.setData(value, now);
@@ -314,6 +303,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             }
         } else {
             logger.debug("Received data '{}' for not configured channel '{}'", value, port);
+        }
+    }
+
+    private void updateIfLinked(String channelId, State state) {
+        if (isLinked(channelId)) {
+            updateState(channelId, state);
         }
     }
 
@@ -342,30 +337,8 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channelLinked: {}", channelUID);
-        final String channelId = channelUID.getId();
-        if (isValidPortId(channelUID)) {
-            Channel channel = thing.getChannel(channelUID);
-            if (channel != null) {
-                PortData data = new PortData();
-                portDatas.put(channelId, data);
-            }
-        }
-    }
-
     private boolean isValidPortId(ChannelUID channelUID) {
         return channelUID.getIdWithoutGroup().chars().allMatch(Character::isDigit);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        PortData portData = portDatas.remove(channelUID.getId());
-        if (portData != null) {
-            portData.dispose();
-        }
     }
 
     public void resetCounter(int counter) {

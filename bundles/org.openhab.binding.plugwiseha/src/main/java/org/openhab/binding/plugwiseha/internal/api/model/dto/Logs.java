@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,7 @@ public class Logs extends PlugwiseHACollection<Log> {
     private static final String CHSTATE = "central_heating_state";
     private static final String VALVE_POSITION = "valve_position";
     private static final String WATER_PRESSURE = "central_heater_water_pressure";
+    private static final String RETURNWATERTEMP = "return_water_temperature";
 
     public Optional<Boolean> getCoolingState() {
         return this.getLog(COOLINGSTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
@@ -97,6 +98,14 @@ public class Logs extends PlugwiseHACollection<Log> {
 
     public Optional<String> getBoilerTempUnit() {
         return this.getLog(BOILERTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getReturnWaterTemp() {
+        return this.getLog(RETURNWATERTEMP).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<String> getReturnWaterTempUnit() {
+        return this.getLog(RETURNWATERTEMP).map(logEntry -> logEntry.getMeasurementUnit()).orElse(Optional.empty());
     }
 
     public Optional<Double> getDHTSetpoint() {

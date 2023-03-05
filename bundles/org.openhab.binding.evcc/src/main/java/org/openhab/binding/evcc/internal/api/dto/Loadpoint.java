@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.91.
+ * This DTO was written for evcc version 0.111.1
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -24,26 +24,26 @@ public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    @SerializedName("activePhases")
+    @SerializedName("phasesActive")
     private int activePhases;
 
     @SerializedName("chargeCurrent")
-    private double chargeCurrent;
+    private float chargeCurrent;
 
     @SerializedName("chargeDuration")
     private long chargeDuration;
 
     @SerializedName("chargePower")
-    private double chargePower;
+    private float chargePower;
 
     @SerializedName("chargeRemainingDuration")
     private long chargeRemainingDuration;
 
     @SerializedName("chargeRemainingEnergy")
-    private double chargeRemainingEnergy;
+    private float chargeRemainingEnergy;
 
     @SerializedName("chargedEnergy")
-    private double chargedEnergy;
+    private float chargedEnergy;
 
     @SerializedName("charging")
     private boolean charging;
@@ -64,13 +64,13 @@ public class Loadpoint {
     private int loadpoint;
 
     @SerializedName("maxCurrent")
-    private double maxCurrent;
+    private float maxCurrent;
 
     @SerializedName("minCurrent")
-    private double minCurrent;
+    private float minCurrent;
 
-    @SerializedName("minSoC")
-    private int minSoC;
+    @SerializedName("minSoc")
+    private float minSoC;
 
     @SerializedName("mode")
     private String mode;
@@ -84,8 +84,8 @@ public class Loadpoint {
     @SerializedName("pvRemaining")
     private long pvRemaining;
 
-    @SerializedName("targetSoC")
-    private int targetSoC;
+    @SerializedName("targetSoc")
+    private float targetSoC;
 
     @SerializedName("targetTime")
     private String targetTime;
@@ -94,19 +94,19 @@ public class Loadpoint {
     private String title;
 
     @SerializedName("vehicleCapacity")
-    private long vehicleCapacity;
+    private float vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
-    private double vehicleOdometer;
+    private float vehicleOdometer;
 
     @SerializedName("vehiclePresent")
     private boolean vehiclePresent;
 
     @SerializedName("vehicleRange")
-    private long vehicleRange;
+    private float vehicleRange;
 
-    @SerializedName("vehicleSoC")
-    private int vehicleSoC;
+    @SerializedName("vehicleSoc")
+    private float vehicleSoC;
 
     @SerializedName("vehicleTitle")
     private String vehicleTitle;
@@ -121,7 +121,7 @@ public class Loadpoint {
     /**
      * @return charge current
      */
-    public double getChargeCurrent() {
+    public float getChargeCurrent() {
         return chargeCurrent;
     }
 
@@ -135,7 +135,7 @@ public class Loadpoint {
     /**
      * @return charge power
      */
-    public double getChargePower() {
+    public float getChargePower() {
         return chargePower;
     }
 
@@ -149,14 +149,14 @@ public class Loadpoint {
     /**
      * @return charge remaining energy until the target SoC is reached
      */
-    public double getChargeRemainingEnergy() {
+    public float getChargeRemainingEnergy() {
         return chargeRemainingEnergy;
     }
 
     /**
      * @return charged energy
      */
-    public double getChargedEnergy() {
+    public float getChargedEnergy() {
         return chargedEnergy;
     }
 
@@ -205,21 +205,21 @@ public class Loadpoint {
     /**
      * @return maximum current
      */
-    public double getMaxCurrent() {
+    public float getMaxCurrent() {
         return maxCurrent;
     }
 
     /**
      * @return minimum current
      */
-    public double getMinCurrent() {
+    public float getMinCurrent() {
         return minCurrent;
     }
 
     /**
      * @return minimum state of charge
      */
-    public int getMinSoC() {
+    public float getMinSoC() {
         return minSoC;
     }
 
@@ -254,7 +254,7 @@ public class Loadpoint {
     /**
      * @return target state of charge (SoC)
      */
-    public int getTargetSoC() {
+    public float getTargetSoC() {
         return targetSoC;
     }
 
@@ -275,14 +275,14 @@ public class Loadpoint {
     /**
      * @return vehicle's capacity
      */
-    public double getVehicleCapacity() {
+    public float getVehicleCapacity() {
         return vehicleCapacity;
     }
 
     /**
      * @return vehicle's odometer
      */
-    public double getVehicleOdometer() {
+    public float getVehicleOdometer() {
         return vehicleOdometer;
     }
 
@@ -296,14 +296,14 @@ public class Loadpoint {
     /**
      * @return vehicle's range
      */
-    public long getVehicleRange() {
+    public float getVehicleRange() {
         return vehicleRange;
     }
 
     /**
      * @return vehicle's state of charge (SoC)
      */
-    public int getVehicleSoC() {
+    public float getVehicleSoC() {
         return vehicleSoC;
     }
 

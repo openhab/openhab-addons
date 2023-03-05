@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * {@link ScriptEngine} implementation that delegates to a supplied ScriptEngine instance. Allows overriding specific
  * methods.
@@ -30,9 +32,9 @@ import javax.script.ScriptException;
  */
 public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable>
         implements ScriptEngine, Invocable, AutoCloseable {
-    protected T delegate;
+    protected @NonNull T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndAutocloseable(T delegate) {
+    public DelegatingScriptEngineWithInvocableAndAutocloseable(@NonNull T delegate) {
         this.delegate = delegate;
     }
 
@@ -107,7 +109,8 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
     }
 
     @Override
-    public Object invokeMethod(Object o, String s, Object... objects) throws ScriptException, NoSuchMethodException {
+    public Object invokeMethod(Object o, String s, Object... objects)
+            throws ScriptException, NoSuchMethodException, IllegalArgumentException {
         return delegate.invokeMethod(o, s, objects);
     }
 

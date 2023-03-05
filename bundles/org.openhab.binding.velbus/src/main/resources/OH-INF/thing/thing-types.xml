@@ -867,6 +867,58 @@
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmbkp">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBKP</label>
+		<description>Keypad interface module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="5SubchannelButtonModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbin">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBIN</label>
+		<description>1-channel input module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4pb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4PB</label>
+		<description>4 button interface module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
 	<channel-type id="heatingOperatingMode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
@@ -1325,6 +1377,19 @@
 		<channels>
 			<channel id="CH1" typeId="button-channel"/>
 			<channel id="CH2" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="5SubchannelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 5 button channels. Starting at channel 4.
+		</description>
+		<channels>
+			<channel id="CH4" typeId="button-channel"/>
+			<channel id="CH5" typeId="button-channel"/>
+			<channel id="CH6" typeId="button-channel"/>
+			<channel id="CH7" typeId="button-channel"/>
+			<channel id="CH8" typeId="button-channel"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="6channelButtonModule">

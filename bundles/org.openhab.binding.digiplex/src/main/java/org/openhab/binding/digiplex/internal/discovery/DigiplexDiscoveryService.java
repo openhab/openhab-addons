@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,11 +101,7 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     private boolean isDefaultName(ZoneLabelResponse response) {
         return ZONE_DEFAULT_NAMES.stream().anyMatch(format -> {
-            if (String.format(format, response.zoneNo).equals(response.zoneName)) {
-                return true;
-            } else {
-                return false;
-            }
+            return String.format(format, response.zoneNo).equals(response.zoneName);
         });
     }
 

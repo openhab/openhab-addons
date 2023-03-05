@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.io.homekit;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -45,12 +45,43 @@ public interface Homekit {
     void allowUnauthenticatedRequests(boolean allow);
 
     /**
-     * returns list of HomeKit accessories registered at bridge.
+     * returns list of HomeKit accessories registered on all bridge instances.
      */
-    List<HomekitAccessory> getAccessories();
+    Collection<HomekitAccessory> getAccessories();
 
     /**
-     * clear all pairings with HomeKit clients
+     * returns list of HomeKit accessories registered on a specific instance.
+     */
+    Collection<HomekitAccessory> getAccessories(int instance);
+
+    /**
+     * clear all pairings with HomeKit clients on all bridge instances.
      */
     void clearHomekitPairings();
+
+    /**
+     * clear all pairings with HomeKit clients for a specific instance.
+     * 
+     * @param instance the instance number (1-based)
+     */
+    void clearHomekitPairings(int instance);
+
+    /**
+     * Prune dummy accessories (accessories that no longer have associated items)
+     * on all bridge instances.
+     */
+    void pruneDummyAccessories();
+
+    /**
+     * Prune dummy accessories (accessories that no longer have associated items)
+     * for a specific instance
+     *
+     * @param instance the instance number (1-based)
+     */
+    void pruneDummyAccessories(int instance);
+
+    /**
+     * returns how many bridge instances there are
+     */
+    int getInstanceCount();
 }

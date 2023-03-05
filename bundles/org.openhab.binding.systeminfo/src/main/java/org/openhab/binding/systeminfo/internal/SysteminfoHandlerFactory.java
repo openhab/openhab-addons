@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.systeminfo.internal;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,28 +33,33 @@ import org.osgi.service.component.annotations.Reference;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
  * @author Wouter Born - Add null annotations
+ * @author Mark Herwege - Add dynamic creation of extra channels
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
-
     private @NonNullByDefault({}) SysteminfoInterface systeminfo;
+    private @NonNullByDefault({}) SysteminfoThingTypeProvider thingTypeProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return BINDING_ID.equals(thingTypeUID.getBindingId())
+                && thingTypeUID.getId().startsWith(THING_TYPE_COMPUTER_ID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(THING_TYPE_COMPUTER)) {
-            return new SysteminfoHandler(thing, systeminfo);
+        if (supportsThingType(thingTypeUID)) {
+            String extString = "-" + thing.getUID().getId();
+            ThingTypeUID extThingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_COMPUTER_ID + extString);
+            if (thingTypeProvider.getThingType(extThingTypeUID, null) == null) {
+                thingTypeProvider.createThingType(extThingTypeUID);
+                thingTypeProvider.storeChannelsConfig(thing); // Save the current channels configs, will be restored
+                                                              // after thing type change.
+            }
+            return new SysteminfoHandler(thing, thingTypeProvider, systeminfo);
         }
-
         return null;
     }
 
@@ -68,5 +70,14 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
     public void unbindSystemInfo(SysteminfoInterface systeminfo) {
         this.systeminfo = null;
+    }
+
+    @Reference
+    public void setSysteminfoThingTypeProvider(SysteminfoThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    public void unsetSysteminfoThingTypeProvider(SysteminfoThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
     }
 }

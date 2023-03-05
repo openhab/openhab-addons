@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,7 +34,9 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NeoHubHandlerFactory} creates things and thing handlers
@@ -48,7 +51,13 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG,
                     THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR)));
 
+    private final WebSocketFactory webSocketFactory;
     private final Map<ThingUID, ServiceRegistration<?>> discoServices = new HashMap<>();
+
+    @Activate
+    public NeoHubHandlerFactory(final @Reference WebSocketFactory webSocketFactory) {
+        this.webSocketFactory = webSocketFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -60,7 +69,7 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if ((thingTypeUID.equals(THING_TYPE_NEOHUB)) && (thing instanceof Bridge)) {
-            NeoHubHandler handler = new NeoHubHandler((Bridge) thing);
+            NeoHubHandler handler = new NeoHubHandler((Bridge) thing, webSocketFactory);
             createDiscoveryService(handler);
             return handler;
         }

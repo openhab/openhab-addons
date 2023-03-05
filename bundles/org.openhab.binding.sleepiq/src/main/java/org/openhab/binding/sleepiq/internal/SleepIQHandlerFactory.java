@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,12 +20,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.client.ClientBuilder;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.sleepiq.internal.discovery.SleepIQBedDiscoveryService;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.internal.handler.SleepIQDualBedHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sleepiq")
 public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
@@ -53,13 +56,13 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQHandlerFactory.class);
 
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
     @Activate
-    public SleepIQHandlerFactory(@Reference ClientBuilder clientBuilder) {
-        this.clientBuilder = clientBuilder;
+    public SleepIQHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -68,26 +71,23 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(final Thing thing) {
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
             logger.debug("Creating SleepIQ cloud thing handler");
-            SleepIQCloudHandler cloudHandler = new SleepIQCloudHandler((Bridge) thing, clientBuilder);
+            SleepIQCloudHandler cloudHandler = new SleepIQCloudHandler((Bridge) thing, httpClient);
             registerBedDiscoveryService(cloudHandler);
             return cloudHandler;
         } else if (SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
             logger.debug("Creating SleepIQ dual bed thing handler");
             return new SleepIQDualBedHandler(thing);
         }
-
         return null;
     }
 
     @Override
     protected void removeHandler(final ThingHandler thingHandler) {
         logger.debug("Removing SleepIQ thing handler");
-
         if (thingHandler instanceof SleepIQCloudHandler) {
             unregisterBedDiscoveryService((SleepIQCloudHandler) thingHandler);
         }

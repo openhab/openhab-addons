@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.automation.pidcontroller.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Realizes an first-order FIR low pass filter. To keep code complexity low, it is implemented as moving average (all
+ * Realizes a first-order FIR low pass filter. To keep code complexity low, it is implemented as moving average (all
  * FIR coefficients are set to normalized ones).
  *
  * The exponential decaying function is used for the calculation (see https://en.wikipedia.org/wiki/Time_constant). That

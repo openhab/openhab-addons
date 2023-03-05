@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 
 /**
  * Test class for {@link P1TelegramParser}.
@@ -55,7 +54,7 @@ public class P1TelegramParserTest {
     @ParameterizedTest
     @MethodSource("data")
     public void testParsing(final String telegramName, final int numberOfCosemObjects, final int unknownObjects) {
-        final P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
+        final P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName);
         assertEquals(unknownObjects, telegram.getUnknownCosemObjects().size(),
                 "Should not have other than " + unknownObjects + " unknown cosem objects");
         assertEquals(numberOfCosemObjects,

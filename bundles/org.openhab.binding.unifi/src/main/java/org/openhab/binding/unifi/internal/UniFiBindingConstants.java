@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Matthew Bowman - Initial contribution
  * @author Patrik Wimnell - Blocking / Unblocking client support
  * @author Hilbrand Bouwkamp - Added poePort
+ * @author Mark Herwege - Added guest vouchers
  */
 @NonNullByDefault
 public final class UniFiBindingConstants {
@@ -47,6 +48,8 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_WIRELESS_CLIENTS = "wirelessClients";
     public static final String CHANNEL_WIRED_CLIENTS = "wiredClients";
     public static final String CHANNEL_GUEST_CLIENTS = "guestClients";
+    public static final String CHANNEL_GUEST_VOUCHER = "guestVoucher";
+    public static final String CHANNEL_GUEST_VOUCHERS_GENERATE = "guestVouchersGenerate";
 
     // List of wlan channels
     public static final String CHANNEL_SECURITY = "security";
@@ -58,6 +61,8 @@ public final class UniFiBindingConstants {
 
     // List of common wired + wireless client channels
     public static final String CHANNEL_ONLINE = "online";
+    public static final String CHANNEL_NAME = "name";
+    public static final String CHANNEL_HOSTNAME = "hostname";
     public static final String CHANNEL_SITE = "site";
     public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
@@ -98,6 +103,12 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_CID = "cid";
     public static final String PARAMETER_SID = "sid";
     public static final String PARAMETER_WID = "wid";
+    public static final String PARAMETER_VOUCHER_COUNT = "voucherCount";
+    public static final String PARAMETER_VOUCHER_EXPIRATION = "voucherExpiration";
+    public static final String PARAMETER_VOUCHER_USERS = "voucherUsers";
+    public static final String PARAMETER_VOUCHER_UP_LIMIT = "voucherUpLimit";
+    public static final String PARAMETER_VOUCHER_DOWN_LIMIT = "voucherDownLimit";
+    public static final String PARAMETER_VOUCHER_DATA_QUOTA = "voucherDataQuota";
     public static final String PARAMETER_PORT_NUMBER = "portNumber";
     public static final String PARAMETER_MAC_ADDRESS = "macAddress";
     public static final String PARAMETER_WIFI_NAME = "wifi";

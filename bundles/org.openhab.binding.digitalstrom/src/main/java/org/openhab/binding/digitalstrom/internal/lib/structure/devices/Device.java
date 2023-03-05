@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
-import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames;
 import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
-import org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
@@ -163,7 +161,7 @@ public interface Device extends GeneralDeviceInformation {
     void increase();
 
     /**
-     * Adds an decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
+     * Adds a decrease command as {@link DeviceStateUpdate} to the list of outstanding commands.
      */
     void decrease();
 
@@ -175,7 +173,7 @@ public interface Device extends GeneralDeviceInformation {
     int getSlatPosition();
 
     /**
-     * Adds an set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
+     * Adds a set slat position command as {@link DeviceStateUpdate} with the given slat position to the list of
      * outstanding commands.
      *
      * @param slatPosition to set
@@ -205,7 +203,7 @@ public interface Device extends GeneralDeviceInformation {
     short getOutputValue();
 
     /**
-     * Adds an set output value command as {@link DeviceStateUpdate} with the given output value to the list of
+     * Adds a set output value command as {@link DeviceStateUpdate} with the given output value to the list of
      * outstanding commands.
      *
      * @param outputValue to set
@@ -394,14 +392,14 @@ public interface Device extends GeneralDeviceInformation {
     List<Short> getSavedScenes();
 
     /**
-     * Initializes a internal device update as call scene for the given scene number.
+     * Initializes an internal device update as call scene for the given scene number.
      *
      * @param sceneNumber to call
      */
     void internalCallScene(Short sceneNumber);
 
     /**
-     * Initializes a internal device update as undo scene.
+     * Initializes an internal device update as undo scene.
      */
     void internalUndoScene();
 
@@ -427,7 +425,7 @@ public interface Device extends GeneralDeviceInformation {
     short getAnglePosition();
 
     /**
-     * Adds an set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
+     * Adds a set angle value command as {@link DeviceStateUpdate} with the given angle value to the list of
      * outstanding commands.
      *
      * @param angle to set
@@ -773,7 +771,7 @@ public interface Device extends GeneralDeviceInformation {
     boolean isSensorEchoBoxEnabled();
 
     /**
-     * Sets the {@link DeviceSensorValue} through a {@link EventItem} of the type
+     * Sets the {@link DeviceSensorValue} through an {@link EventItem} of the type
      * {@link EventNames#DEVICE_SENSOR_VALUE}.
      *
      * @param event of the sensor update

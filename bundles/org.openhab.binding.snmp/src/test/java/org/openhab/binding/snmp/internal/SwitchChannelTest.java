@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,10 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.snmp.internal.types.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.types.SnmpDatatype;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
@@ -38,6 +41,7 @@ import org.snmp4j.smi.VariableBinding;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
 
     @Test
@@ -45,11 +49,23 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
         VariableBinding variable;
 
         variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.ON, "on", "off", true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals("on", ((OctetString) variable.getVariable()).toString());
 
         variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.OFF, "on", "off", true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals("off", ((OctetString) variable.getVariable()).toString());

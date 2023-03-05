@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public interface DeviceStatusListener {
     void onDeviceAdded(GeneralDeviceInformation device);
 
     /**
-     * This method is called whenever a configuration of an device has changed. What configuration has changed
+     * This method is called whenever a configuration of a device has changed. What configuration has changed
      * can be see by the given parameter whatConfig to handle the change.<br>
      * Please have a look at {@link ChangeableDeviceConfigEnum} to see what configuration are changeable.
      *

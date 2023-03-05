@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
         waitForAssert(() -> {
-            assertThat(thing.getStatus(), is(ThingStatus.OFFLINE));
+            assertThat(thing.getStatus(), is(ThingStatus.UNKNOWN));
         });
 
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will

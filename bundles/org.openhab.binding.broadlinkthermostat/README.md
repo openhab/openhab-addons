@@ -1,20 +1,21 @@
-# Broadlink Thermostat Binding
+# Broadlink Binding
 
-The binding integrates devices based on Broadlinkthermostat controllers.
+The binding integrates devices based on broadlink controllers.
 As the binding uses the [broadlink-java-api](https://github.com/mob41/broadlink-java-api), theoretically all devices supported by the api can be integrated with this binding.
 
 ## Supported Things
 
-*Note:* So far only the Floureon Thermostat has been tested! The other things are "best guess" implementations.
+_Note:_ So far only the Floureon Thermostat and Rm Mini 3 devices has been tested! The other things are "best guess" implementations.
 
-| Things                  | Description                                                   | Thing Type           |
-|-------------------------|---------------------------------------------------------------|----------------------|
-| Floureon Thermostat     | Broadlinkthermostat based Thermostat sold with the branding Floureon    | floureonthermostat   |
-| Hysen Thermostat        | Broadlinkthermostat based Thermostat sold with the branding Hysen       | hysenthermostat      |
+| Things                  | Description                                                         | Thing Type           |
+|-------------------------|---------------------------------------------------------------------|----------------------|
+| Floureon Thermostat     | broadlink based Thermostat sold with the branding Floureon          | floureonthermostat   |
+| Hysen Thermostat        | broadlink based Thermostat sold with the branding Hysen             | hysenthermostat      |
+| Rm Mini                 | broadlink based Universal Controller sold with the branding Rm Mini | rmuniversalremote    |
 
 ## Discovery
 
-Broadlinkthermostat devices are discovered on the network by sending a specific broadcast message.
+Broadlink devices are discovered on the network by sending a specific broadcast message.
 Authentication is automatically sent after creating the thing.
 
 ## Thing Configuration
@@ -30,7 +31,7 @@ The autodiscovery process finds both parts automatically.
 
 ### Floureon-/Hysenthermostat
 
-| Channel Type ID               | Item Type          | Description                                                                                                                                                                           |
+| Channel Type ID               | Item Type          | Description                                                          |
 |-------------------------------|--------------------|----------------------------------------------------------------------|
 | power                         | Switch             | Switch display on/off and enable/disables heating                    |
 | mode                          | String             | Current mode of the thermostat (`auto` or `manual`)                  |
@@ -43,17 +44,25 @@ The autodiscovery process finds both parts automatically.
 | remotelock                    | Switch             | Locks the device to only allow remote actions                        |
 | time                          | DateTime           | The time and day of week of the device                               |
 
+### RM Mini Universal Controller
+
+| Channel Type ID               | Item Type          | Description                                                          |
+|-------------------------------|--------------------|----------------------------------------------------------------------|
+| learningmode                 | Switch             | Put device in infrared learning mode when turned on                  |
+| savelearned                  | String             | Saves the learned keys using the provided name                       |
+| sendlearned                  | String             | Send previously learned keys by name                                 |
+
 ## Full Example
 
 demo.things:
 
-```
+```java
 Thing broadlinkthermostat:floureonthermostat:bathroomthermostat "Bathroom Thermostat" [ host="192.168.0.23", macAddress="00:10:FA:6E:38:4A"]
 ```
 
 demo.items:
 
-```
+```java
 Number:Temperature  Bathroom_Thermostat_Temperature      "Room temperature [%.1f %unit%]"        <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:roomtemperature"}
 Number:Temperature  Bathroom_Thermostat_Temperature_Ext  "Room temperature (ext) [%.1f %unit%]"  <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:roomtemperature"}
 Number:Temperature  Bathroom_Thermostat_Setpoint         "Setpoint [%.1f %unit%]"                <temperature>  { channel="broadlinkthermostat:floureonthermostat:bathroomthermostat:setpoint"}

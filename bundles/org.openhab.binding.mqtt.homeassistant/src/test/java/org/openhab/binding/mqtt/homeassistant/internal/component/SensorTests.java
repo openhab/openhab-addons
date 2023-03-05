@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,11 +31,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings("ConstantConditions")
 @NonNullByDefault
 public class SensorTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "sensor/0x0000000000000000_sensor_zigbee2mqtt";
 
+    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off
@@ -75,7 +75,7 @@ public class SensorTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/sensor/state", "20");
         assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
         assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
-                .build().getPattern(), is("%s %unit%"));
+                .build().getPattern(), is("%s W"));
 
         waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 5000, 200);
 

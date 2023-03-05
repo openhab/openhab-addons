@@ -4,14 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for ZigBee Dimmer (BTicino 4585/4594/...) -->
+	<!-- Thing for Zigbee Dimmer (BTicino 4585/4594/...) -->
 	<thing-type id="zb_dimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="zb_gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>ZigBee Dimmer</label>
-		<description>A OpenWebNet ZigBee dimmer for the dimmer control of 1 light. BTicino models: 4585/4594/etc.</description>
+		<label>Zigbee Dimmer</label>
+		<description>An OpenWebNet Zigbee dimmer for the dimmer control of 1 light. BTicino models: 4585/4594/etc.</description>
 
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
@@ -28,7 +28,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>It identifies one ZigBee device. Example: 765432101#9</description>
+				<description>It identifies one Zigbee device. Example: 765432101#9</description>
 			</parameter>
 		</config-description>
 

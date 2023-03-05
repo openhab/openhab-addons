@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.etherrain.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EtherRainUdpResponse} is a encapsulation of the UDP broadcast response from the EtherRain
+ * The {@link EtherRainUdpResponse} is an encapsulation of the UDP broadcast response from the EtherRain
  *
  * @author Joe Inkenbrandt - Initial contribution
  */

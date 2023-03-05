@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.GatewayStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.dto.response.TemperatureControlSystemStatus;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -29,9 +31,10 @@ import org.openhab.core.types.RefreshType;
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
-    private GatewayStatus gatewayStatus;
-    private TemperatureControlSystemStatus tcsStatus;
+    private @Nullable GatewayStatus gatewayStatus;
+    private @Nullable TemperatureControlSystemStatus tcsStatus;
 
     public EvohomeTemperatureControlSystemHandler(Thing thing) {
         super(thing);
@@ -42,7 +45,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
         super.initialize();
     }
 
-    public void update(GatewayStatus gatewayStatus, TemperatureControlSystemStatus tcsStatus) {
+    public void update(@Nullable GatewayStatus gatewayStatus, @Nullable TemperatureControlSystemStatus tcsStatus) {
         this.gatewayStatus = gatewayStatus;
         this.tcsStatus = tcsStatus;
 

@@ -4,10 +4,10 @@
 
 	<feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<feature dependency="true">openhab.tp-commons-net</feature>
 		<feature dependency="true">openhab.tp-jackson</feature>
-		<bundle dependency="true">mvn:org.jsoup/jsoup/1.14.3</bundle>
+		<bundle dependency="true">mvn:org.jsoup/jsoup/1.15.3</bundle>
 		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
-		<bundle dependency="true">mvn:commons-net/commons-net/3.6</bundle>
 		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jinja/${project.version}</bundle>
 	</feature>
 </features>

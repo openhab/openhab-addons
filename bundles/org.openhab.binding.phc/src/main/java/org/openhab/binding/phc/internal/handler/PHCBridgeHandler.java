@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,11 +24,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.phc.internal.PHCBindingConstants;
 import org.openhab.binding.phc.internal.PHCHelper;
+import org.openhab.binding.phc.internal.util.StringUtils;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -438,7 +438,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             amOutputState[qo.getModuleAddress() & 0x1F] = -1;
         } else if (PHCBindingConstants.CHANNELS_DIM.equals(qo.getModuleType())) {
             // state ist the same for every dim level except zero/off -> inizialize state
-            // with 0x0F after sending an command.
+            // with 0x0F after sending a command.
             dmOutputState[qo.getModuleAddress() & 0x1F] |= (0x0F << (qo.getChannel() * 4));
         }
 
@@ -712,7 +712,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private void handleIncomingCommand(byte moduleAddress, int channel, OnOffType onOff) {
         ThingUID uid = PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress);
         Thing thing = getThing().getThing(uid);
-        String channelId = "em#" + StringUtils.leftPad(Integer.toString(channel), 2, '0');
+        String channelId = "em#" + StringUtils.padLeft(Integer.toString(channel), 2, "0");
 
         if (thing != null && thing.getHandler() != null) {
             logger.debug("Input: {}, {}, {}", thing.getUID(), channelId, onOff);

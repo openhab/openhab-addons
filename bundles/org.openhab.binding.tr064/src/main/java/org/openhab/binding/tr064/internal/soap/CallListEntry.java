@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.tr064.internal.soap;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,14 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.dto.additions.Call;
 
 /**
- * The {@link CallListEntry} is used for post processing the retrieved call
+ * The {@link CallListEntry} is used for post-processing the retrieved call
  * lists
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class CallListEntry {
-    private static final DateTimeFormatter DATE_FORMAT_PARSER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
+    private static final SimpleDateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("dd.MM.yy HH:mm");
     public @Nullable String localNumber;
     public @Nullable String remoteNumber;
     public @Nullable Date date;
@@ -39,9 +37,10 @@ public class CallListEntry {
 
     public CallListEntry(Call call) {
         try {
-            date = Date.from(
-                    LocalDateTime.parse(call.getDate(), DATE_FORMAT_PARSER).atZone(ZoneId.systemDefault()).toInstant());
-        } catch (DateTimeParseException e) {
+            synchronized (DATE_FORMAT_PARSER) {
+                date = DATE_FORMAT_PARSER.parse(call.getDate());
+            }
+        } catch (ParseException e) {
             // ignore parsing error
             date = null;
         }

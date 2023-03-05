@@ -108,6 +108,7 @@
 			<channel id="shiftstate" typeId="shiftstate"/>
 			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
+			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
 			<channel id="soc" typeId="soc"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>
@@ -134,6 +135,7 @@
 			<parameter name="allowWakeup" type="boolean" required="false">
 				<default>false</default>
 				<label>Allow Wake-Up</label>
+				<advanced>true</advanced>
 				<description>Allows waking up the vehicle. Caution: This can result in huge vampire drain!</description>
 			</parameter>
 			<parameter name="allowWakeupForCommands" type="boolean" required="false">
@@ -145,7 +147,27 @@
 			<parameter name="enableEvents" type="boolean" required="false">
 				<default>false</default>
 				<label>Enable Events</label>
+				<advanced>true</advanced>
 				<description>Enable the event stream for the vehicle</description>
+			</parameter>
+			<parameter name="inactivity" type="integer" min="5" required="false">
+				<label>Inactivity Interval</label>
+				<advanced>true</advanced>
+				<description>The inactivity period in minutes, after which the binding stops for 20 minutes to let the car sleep.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="useDriveState" type="boolean" required="false">
+				<default>false</default>
+				<label>Use Drive State for Inactivity</label>
+				<advanced>true</advanced>
+				<description>Use the drive state instead of location to determine vehicle inactivity.</description>
+			</parameter>
+			<parameter name="useAdvancedStatesForPolling" type="boolean" required="false">
+				<default>false</default>
+				<label>Use Console Modes and Occupancy for Inactivity</label>
+				<advanced>true</advanced>
+				<description>Use these states to help continue the fast polling of the API. Do not back off polling if in these
+					states.</description>
 			</parameter>
 		</config-description>
 

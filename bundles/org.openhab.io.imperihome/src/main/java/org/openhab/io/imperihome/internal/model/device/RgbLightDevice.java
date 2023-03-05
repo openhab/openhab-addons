@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,13 @@ package org.openhab.io.imperihome.internal.model.device;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
+import org.openhab.io.imperihome.internal.util.StringUtils;
 
 /**
  * RGB light device.
@@ -80,7 +80,7 @@ public class RgbLightDevice extends AbstractEnergyLinkDevice {
 
     private String toHex(int value) {
         String hex = Integer.toHexString(value);
-        return StringUtils.leftPad(hex, 2, '0');
+        return StringUtils.padLeft(hex, 2, "0");
     }
 
     private int convertPercentToByte(PercentType percent) {

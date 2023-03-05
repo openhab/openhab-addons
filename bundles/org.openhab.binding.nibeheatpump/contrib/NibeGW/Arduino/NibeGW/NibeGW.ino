@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@
  *  3.7.2022    v4.00   Send messages to IP address received from the UDP messages
  *  13.7.2022   v4.01   Fixed target IP address issue
  *  29.7.2022   v5.00   New configuration model and PRODINo ESP32 Ethernet v1 support with OTA update
+ *  19.11.2022  v5.10   Support 16-bit addressing.
  */
 
 #define VERSION   "5.00"
@@ -146,7 +147,7 @@ void setupStaticConfigMode() {
 
   #ifdef ENABLE_NIBE_DEBUG
     nibegw.setDebugCallback(nibeDebugCallback);
-    nibegw.setVerboseLevel(config.debug.level);
+    nibegw.setVerboseLevel(config.debug.verboseLevel);
   #endif
 
   targetIp.fromString(config.nibe.targetIp);

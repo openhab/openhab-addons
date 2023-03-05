@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -416,7 +416,7 @@ public class IAqualinkHandler extends BaseThingHandler {
     }
 
     /**
-     * Update an channels state only if the value of the channel has changed since our last poll.
+     * Update a channel state only if the value of the channel has changed since our last poll.
      *
      * @param name
      * @param value

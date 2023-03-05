@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,8 @@ public class ShellyUtils {
                 throw new ShellyApiException(
                         PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
-                throw new ShellyApiException(PRE + className + " from JSON: " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + " from JSON (" + getString(e.getMessage() + "), JSON=" + json), e);
             }
         }
     }

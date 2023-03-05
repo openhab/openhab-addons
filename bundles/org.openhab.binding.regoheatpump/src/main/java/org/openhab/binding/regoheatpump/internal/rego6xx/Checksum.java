@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Checksum} is responsible for calculating checksum of given data.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 class Checksum {
     static byte calculate(byte[]... lists) {
         return Arrays.stream(lists).reduce((byte) 0, Checksum::calculate, (a, b) -> b);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,8 +69,9 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     private final Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
     private IParadoxCommunicator communicator;
+    private ParadoxPanel panel = new ParadoxPanel();
 
-    private static ParadoxIP150BridgeConfiguration config;
+    private ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
 
     private long timeStamp = 0;
@@ -169,7 +170,6 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
                 .withMaxPartitions(config.getMaxPartitions()).withMaxZones(config.getMaxZones())
                 .withScheduler(scheduler).withEncryption(config.isEncrypt()).build();
 
-        ParadoxPanel panel = ParadoxPanel.getInstance();
         panel.setCommunicator(communicator);
 
         Collection<IDataUpdateListener> listeners = Arrays.asList(panel, this);
@@ -208,6 +208,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     public void dispose() {
         cancelSchedule(refreshCacheUpdateSchedule);
         CommunicationState.logout(communicator);
+        panel.dispose();
         super.dispose();
     }
 
@@ -321,6 +322,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
 
     public IParadoxCommunicator getCommunicator() {
         return communicator;
+    }
+
+    public ParadoxPanel getPanel() {
+        return panel;
     }
 
     @Override

@@ -59,7 +59,7 @@
 	<channel-type id="coe-analog-in">
 		<item-type>Number</item-type>
 		<label>Analog Input Channel (C.M.I. -> OH)</label>
-		<description>A Analog Channel received from the C.M.I.</description>
+		<description>An Analog Channel received from the C.M.I.</description>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">

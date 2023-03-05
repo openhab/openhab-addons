@@ -2002,6 +2002,10 @@
 			<channel id="lastMotionType" typeId="lastMotionType"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
+			<channel id="carAlarm" typeId="carAlarm"/>
+			<channel id="humanAlarm" typeId="humanAlarm"/>
+			<channel id="animalAlarm" typeId="animalAlarm"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
 			<channel id="motionAlarm" typeId="motionAlarm"/>
 			<channel id="externalMotion" typeId="externalMotion"/>
@@ -2516,6 +2520,14 @@
 		<item-type>Switch</item-type>
 		<label>Car Alarm</label>
 		<description>A car has triggered the Vehicle Detection.</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="animalAlarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Animal Alarm</label>
+		<description>An animal has triggered the object detection.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
 	</channel-type>

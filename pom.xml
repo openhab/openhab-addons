@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -20,7 +20,7 @@
 
   <organization>
     <name>openHAB.org</name>
-    <url>http://www.openhab.org</url>
+    <url>https://www.openhab.org</url>
   </organization>
 
   <licenses>
@@ -63,21 +63,22 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <oh.java.version>11</oh.java.version>
+    <oh.java.version>17</oh.java.version>
     <maven.compiler.source>${oh.java.version}</maven.compiler.source>
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>3.4.0-SNAPSHOT</ohc.version>
-    <bnd.version>6.3.0</bnd.version>
-    <commons.net.version>3.7.2</commons.net.version>
+    <ohc.version>4.0.0-SNAPSHOT</ohc.version>
+    <bnd.version>6.4.0</bnd.version>
+    <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.2.1</eea.version>
-    <jackson.version>2.12.5</jackson.version>
-    <karaf.version>4.3.7</karaf.version>
+    <jackson.version>2.14.1</jackson.version>
+    <karaf.version>4.4.3</karaf.version>
     <netty.version>4.1.72.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.13.0</sat.version>
-    <spotless.version>2.0.3</spotless.version>
+    <spotless.version>2.28.0</spotless.version>
+    <spotless.eclipse.version>4.21.0</spotless.eclipse.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
@@ -85,6 +86,32 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
+
+    <oh.bndDefaults><![CDATA[Bundle-SymbolicName: ${project.artifactId}
+Automatic-Module-Name: ${def;bsn}
+Import-Package: \\
+  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
+  javax.annotation.security.*;resolution:=optional,\\
+  org.eclipse.jdt.annotation.*;resolution:=optional,\\
+  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
+  org.openhab.*;version=!,\\
+  com.google.common.*;version="14.0",\\
+  ${bnd.importpackage},\\
+  *
+-exportcontents: \\
+  !*.internal.*,\\
+  !*.impl.*, \\
+  org.openhab.*, \\
+  ${bnd.exportpackage}
+-noimportjava: true
+-sources: false
+-contract: *
+-includeresource: ${bnd.includeresource}
+-fixupmessages: \\
+  'Unused Import-Package instructions';is:=ignore,\\
+  'Unused Export-Package instructions';is:=ignore,\\
+  ${bnd.fixupmessages}]]>
+    </oh.bndDefaults>
   </properties>
 
   <dependencyManagement>
@@ -139,30 +166,7 @@
           <artifactId>bnd-maven-plugin</artifactId>
           <version>${bnd.version}</version>
           <configuration>
-            <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
-Automatic-Module-Name: ${def;bsn}
-Import-Package: \\
-  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
-  javax.annotation.security.*;resolution:=optional,\\
-  org.eclipse.jdt.annotation.*;resolution:=optional,\\
-  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
-  org.openhab.*;version=!,\\
-  com.google.common.*;version="14.0",\\
-  ${bnd.importpackage},\\
-  *
--exportcontents: \\
-  !*.internal.*,\\
-  !*.impl.*, \\
-  org.openhab.*, \\
-  ${bnd.exportpackage}
--noimportjava: true
--sources: false
--contract: *
--includeresource: ${bnd.includeresource}
--fixupmessages: \\
-  'Unused Import-Package instructions';is:=ignore,\\
-  'Unused Export-Package instructions';is:=ignore,\\
-  ${bnd.fixupmessages}]]></bnd>
+            <bnd><![CDATA[${oh.bndDefaults}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
             <skipIfEmpty>true</skipIfEmpty>
@@ -311,12 +315,12 @@ Import-Package: \\
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>2.11.1</version>
+              <version>2.12.1</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.28.0</version>
+              <version>3.30.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -342,10 +346,18 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>3.2.0</version>
           <configuration>
             <failOnError>!${quality.skip}</failOnError>
           </configuration>
+          <dependencies>
+            <!-- This newer version fixes issues with resolving tech.units:indriya packages -->
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-java</artifactId>
+              <version>1.0.7</version>
+            </dependency>
+          </dependencies>
         </plugin>
 
         <plugin>
@@ -384,7 +396,7 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M5</version>
+          <version>3.0.0-M7</version>
           <configuration>
             <argLine>
               --add-opens java.base/java.lang=ALL-UNNAMED
@@ -424,13 +436,14 @@ Import-Package: \\
               <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
+              <exclude>**/3rdparty/**</exclude>
               <exclude>target/**</exclude>
               <exclude>**/pom.xml</exclude>
               <exclude>_*.java</exclude>
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2022</year>
+              <year>2023</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -456,6 +469,7 @@ Import-Package: \\
           <configuration>
             <checkstyleProperties>${basedirRoot}/tools/static-code-analysis/checkstyle/ruleset.properties</checkstyleProperties>
             <checkstyleFilter>${basedirRoot}/tools/static-code-analysis/checkstyle/suppressions.xml</checkstyleFilter>
+            <spotbugsExclude>${basedirRoot}/tools/static-code-analysis/spotbugs/suppressions.xml</spotbugsExclude>
           </configuration>
           <executions>
             <execution>
@@ -479,7 +493,7 @@ Import-Package: \\
             <java>
               <eclipse>
                 <file>openhab_codestyle.xml</file>
-                <version>4.13.0</version>
+                <version>${spotless.eclipse.version}</version>
               </eclipse>
               <removeUnusedImports/>
               <importOrder>
@@ -507,7 +521,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_xml_files.prefs</file>
                   </files>
-                  <version>4.13.0</version>
+                  <version>${spotless.eclipse.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -522,7 +536,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_feature_file.prefs</file>
                   </files>
-                  <version>4.13.0</version>
+                  <version>${spotless.eclipse.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -537,7 +551,7 @@ Import-Package: \\
                   <files>
                     <file>openhab_wst_pom_file.prefs</file>
                   </files>
-                  <version>4.13.0</version>
+                  <version>${spotless.eclipse.version}</version>
                 </eclipseWtp>
                 <trimTrailingWhitespace/>
                 <endWithNewline/>
@@ -599,7 +613,7 @@ Import-Package: \\
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[11.0,18.0)</version>
+                  <version>[17.0,18.0)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>

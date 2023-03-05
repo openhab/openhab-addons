@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,8 +134,9 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinStepCurrentTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return HomekitCharacteristicFactory.getTemperatureStep(
+                getCharacteristic(HomekitCharacteristicType.CURRENT_TEMPERATURE).get(),
+                TargetTemperatureCharacteristic.DEFAULT_STEP);
     }
 
     @Override
@@ -204,8 +205,9 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinStepTargetTemperature() {
-        return getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.STEP,
-                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+        return HomekitCharacteristicFactory.getTemperatureStep(
+                getCharacteristic(HomekitCharacteristicType.TARGET_TEMPERATURE).get(),
+                TargetTemperatureCharacteristic.DEFAULT_STEP);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,51 @@ public class OmnikInverterMessageTest {
     }
 
     @Test
+    public void testGetVoltageAC1() {
+        assertEquals(236.0, message.getVoltageAC1(), 0.01);
+    }
+
+    @Test
+    public void testGetVoltageAC2() {
+        assertEquals(-0.1, message.getVoltageAC2(), 0.01);
+    }
+
+    @Test
+    public void testGetVoltageAC3() {
+        assertEquals(-0.1, message.getVoltageAC3(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentAC1() {
+        assertEquals(0.5, message.getCurrentAC1(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentAC2() {
+        assertEquals(-0.1, message.getCurrentAC2(), 0.01);
+    }
+
+    @Test
+    public void testGetCurrentAC3() {
+        assertEquals(-0.1, message.getCurrentAC3(), 0.01);
+    }
+
+    @Test
+    public void testGetFrequencyAC1() {
+        assertEquals(50.06, message.getFrequencyAC1(), 0.01);
+    }
+
+    @Test
+    public void testGetFrequencyAC2() {
+        assertEquals(-0.01, message.getFrequencyAC2(), 0.01);
+    }
+
+    @Test
+    public void testGetFrequencyAC3() {
+        assertEquals(-0.01, message.getFrequencyAC3(), 0.01);
+    }
+
+    @Test
     public void testGetCurrentPV1() {
         assertEquals(0.5, message.getCurrentPV1(), 0.01);
     }
@@ -93,5 +138,15 @@ public class OmnikInverterMessageTest {
     @Test
     public void testGetEnergyToday() {
         assertEquals(11.13, message.getEnergyToday(), 0.01);
+    }
+
+    @Test
+    public void testGetTemperature() {
+        assertEquals(31.7, message.getTemperature(), 0.01);
+    }
+
+    @Test
+    public void testGetHoursTotal() {
+        assertEquals(17693, message.getHoursTotal(), 0.01);
     }
 }

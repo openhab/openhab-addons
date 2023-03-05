@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,10 +79,10 @@ public class BooleanItemReader {
                 || (trueThreshold != null && baseItem instanceof NumberItem))) {
             if (trueThreshold != null) {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem, NumberItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             } else {
                 logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem",
-                        item.getName(), item.getClass().getName());
+                        item.getName(), item.getClass().getSimpleName());
             }
         }
     }

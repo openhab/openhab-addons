@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class manages the polling of all devices.
- * Between successive polls of a any device there is a quiet time of
+ * Between successive polls of any device there is a quiet time of
  * at least MIN_MSEC_BETWEEN_POLLS. This avoids bunching up of poll messages
  * and keeps the network bandwidth open for other messages.
  *

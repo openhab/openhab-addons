@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
@@ -26,9 +27,11 @@ import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAutomationManager;
 
 /**
- * Class providing script extensions via CommonJS modules.
+ * Class providing script extensions via CommonJS modules (with module name `@runtime`).
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread
+ *         synchronization
  */
 
 @NonNullByDefault
@@ -36,11 +39,13 @@ public class ScriptExtensionModuleProvider {
 
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
+    private final Lock lock;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
-    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor) {
+    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
+        this.lock = lock;
     }
 
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier) {
@@ -94,7 +99,7 @@ public class ScriptExtensionModuleProvider {
         for (Map.Entry<String, Object> entry : rv.entrySet()) {
             if (entry.getValue() instanceof ScriptedAutomationManager) {
                 entry.setValue(new ThreadsafeWrappingScriptedAutomationManagerDelegate(
-                        (ScriptedAutomationManager) entry.getValue()));
+                        (ScriptedAutomationManager) entry.getValue(), lock));
             }
         }
 

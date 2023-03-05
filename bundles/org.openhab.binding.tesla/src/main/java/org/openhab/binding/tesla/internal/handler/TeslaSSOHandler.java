@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.tesla.internal.handler;
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -44,6 +46,8 @@ public class TeslaSSOHandler {
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(TeslaSSOHandler.class);
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            .withZone(ZoneId.systemDefault());
 
     public TeslaSSOHandler(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -70,6 +74,8 @@ public class TeslaSSOHandler {
 
             if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
                 tokenResponse.created_at = Instant.now().getEpochSecond();
+                logger.debug("Access token expires in {} seconds at {}", tokenResponse.expires_in, dateFormatter
+                        .format(Instant.ofEpochMilli((tokenResponse.created_at + tokenResponse.expires_in) * 1000)));
                 return tokenResponse;
             } else {
                 logger.debug("An error occurred while exchanging SSO auth token for API access token.");

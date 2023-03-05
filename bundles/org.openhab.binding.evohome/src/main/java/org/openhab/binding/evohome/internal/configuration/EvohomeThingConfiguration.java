@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.evohome.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the common configuration definition of an evohome Thing
  *
  * @author Jasper van Zuijlen - Initial contribution
  *
  */
+@NonNullByDefault
 public class EvohomeThingConfiguration {
-    public String id;
-    public String name;
+    public String id = "";
+    public String name = "";
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UniFiCommunicationException extends UniFiException {
 
-    private static final long serialVersionUID = -7261308872245069364L;
+    private static final long serialVersionUID = 1L;
+
+    public UniFiCommunicationException(final String message) {
+        super(message);
+    }
 
     public UniFiCommunicationException(final Throwable cause) {
         super(cause);

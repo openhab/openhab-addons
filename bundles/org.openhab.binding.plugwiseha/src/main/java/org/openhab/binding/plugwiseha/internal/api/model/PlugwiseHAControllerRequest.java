@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,11 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -224,6 +226,22 @@ public class PlugwiseHAControllerRequest<T> {
         ContentResponse response;
 
         this.logger.debug("Performing API request: {} {}", request.getMethod(), request.getURI());
+
+        if (logger.isTraceEnabled()) {
+            String content = "";
+            final ContentProvider provider = request.getContent();
+            if (provider != null) {
+                final Iterator<ByteBuffer> it = provider.iterator();
+                while (it.hasNext()) {
+                    final ByteBuffer next = it.next();
+                    final byte[] bytes = new byte[next.capacity()];
+                    next.get(bytes);
+                    content += String.format("{}\n", new String(bytes, StandardCharsets.UTF_8));
+                }
+            }
+
+            logger.trace(">> \n{}", content);
+        }
 
         try {
             response = request.send();

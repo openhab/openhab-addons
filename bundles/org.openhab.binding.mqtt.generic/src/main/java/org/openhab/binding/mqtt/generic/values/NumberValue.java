@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,7 @@ public class NumberValue extends Value {
     private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
         BigDecimal val = qType.toBigDecimal();
         if (!qType.getUnit().isCompatible(Units.ONE)) {
-            QuantityType<?> convertedType = qType.toUnit(unit);
+            QuantityType<?> convertedType = qType.toInvertibleUnit(unit);
             if (convertedType != null) {
                 val = convertedType.toBigDecimal();
             }
@@ -149,6 +149,11 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        return builder.withStep(step).withPattern("%s %unit%");
+        if (!unit.equals(Units.ONE)) {
+            builder.withPattern("%s " + unit);
+        } else {
+            builder.withPattern("%s %unit%");
+        }
+        return builder.withStep(step);
     }
 }

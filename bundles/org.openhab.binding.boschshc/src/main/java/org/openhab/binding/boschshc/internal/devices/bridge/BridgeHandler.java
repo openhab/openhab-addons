@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
-import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceStatusUpdate;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -46,11 +46,13 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -94,8 +96,10 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize {} Version {}", FrameworkUtil.getBundle(getClass()).getSymbolicName(),
-                FrameworkUtil.getBundle(getClass()).getVersion());
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle != null) {
+            logger.debug("Initialize {} Version {}", bundle.getSymbolicName(), bundle.getVersion());
+        }
 
         // Read configuration
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
@@ -189,8 +193,10 @@ public class BridgeHandler extends BaseBridgeHandler {
      * to check if access if possible
      * pairs this Bosch SHC Bridge with the SHC if necessary
      * and starts the first log poll.
+     * <p>
+     * This method is package-protected to enable unit testing.
      */
-    private void initialAccess(BoschHttpClient httpClient) {
+    /* package */ void initialAccess(BoschHttpClient httpClient) {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {}", this, httpClient);
 
         try {
@@ -299,52 +305,96 @@ public class BridgeHandler extends BaseBridgeHandler {
     /**
      * Bridge callback handler for the results of long polls.
      *
-     * It will check the result and
-     * forward the received to the bosch thing handlers.
+     * It will check the results and
+     * forward the received states to the Bosch thing handlers.
      *
      * @param result Results from Long Polling
      */
     private void handleLongPollResult(LongPollResult result) {
-        for (DeviceStatusUpdate update : result.result) {
-            if (update != null && update.state != null) {
-                logger.debug("Got update for service {} of type {}: {}", update.id, update.type, update.state);
+        for (DeviceServiceData deviceServiceData : result.result) {
+            handleDeviceServiceData(deviceServiceData);
+        }
+    }
 
-                var updateDeviceId = update.deviceId;
-                if (updateDeviceId == null) {
-                    continue;
-                }
+    /**
+     * Processes a single long poll result.
+     *
+     * @param deviceServiceData object representing a single long poll result
+     */
+    private void handleDeviceServiceData(@Nullable DeviceServiceData deviceServiceData) {
+        if (deviceServiceData != null) {
+            JsonElement state = obtainState(deviceServiceData);
 
-                logger.debug("Got update for device {}", updateDeviceId);
+            logger.debug("Got update for service {} of type {}: {}", deviceServiceData.id, deviceServiceData.type,
+                    state);
 
-                boolean handled = false;
-
-                Bridge bridge = this.getThing();
-                for (Thing childThing : bridge.getThings()) {
-                    // All children of this should implement BoschSHCHandler
-                    @Nullable
-                    ThingHandler baseHandler = childThing.getHandler();
-                    if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
-                        BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
-                        @Nullable
-                        String deviceId = handler.getBoschID();
-
-                        handled = true;
-                        logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
-
-                        if (deviceId != null && updateDeviceId.equals(deviceId)) {
-                            logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, update.id,
-                                    update.state);
-                            handler.processUpdate(update.id, update.state);
-                        }
-                    } else {
-                        logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
-                    }
-                }
-
-                if (!handled) {
-                    logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
-                }
+            var updateDeviceId = deviceServiceData.deviceId;
+            if (updateDeviceId == null || state == null) {
+                return;
             }
+
+            logger.debug("Got update for device {}", updateDeviceId);
+
+            forwardStateToHandlers(deviceServiceData, state, updateDeviceId);
+        }
+    }
+
+    /**
+     * Extracts the actual state object from the given {@link DeviceServiceData} instance.
+     * <p>
+     * In some special cases like the <code>BatteryLevel</code> service the {@link DeviceServiceData} object itself
+     * contains the state.
+     * In all other cases, the state is contained in a sub-object named <code>state</code>.
+     *
+     * @param deviceServiceData the {@link DeviceServiceData} object from which the state should be obtained
+     * @return the state sub-object or the {@link DeviceServiceData} object itself
+     */
+    @Nullable
+    private JsonElement obtainState(DeviceServiceData deviceServiceData) {
+        // the battery level service receives no individual state object but rather requires the DeviceServiceData
+        // structure
+        if ("BatteryLevel".equals(deviceServiceData.id)) {
+            return gson.toJsonTree(deviceServiceData);
+        }
+
+        return deviceServiceData.state;
+    }
+
+    /**
+     * Tries to find handlers for the device with the given ID and forwards the received state to the handlers.
+     *
+     * @param deviceServiceData object representing updates received in long poll results
+     * @param state the received state object as JSON element
+     * @param updateDeviceId the ID of the device for which the state update was received
+     */
+    private void forwardStateToHandlers(DeviceServiceData deviceServiceData, JsonElement state, String updateDeviceId) {
+        boolean handled = false;
+
+        Bridge bridge = this.getThing();
+        for (Thing childThing : bridge.getThings()) {
+            // All children of this should implement BoschSHCHandler
+            @Nullable
+            ThingHandler baseHandler = childThing.getHandler();
+            if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
+                BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
+                @Nullable
+                String deviceId = handler.getBoschID();
+
+                handled = true;
+                logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
+
+                if (deviceId != null && updateDeviceId.equals(deviceId)) {
+                    logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler,
+                            deviceServiceData.id, state);
+                    handler.processUpdate(deviceServiceData.id, state);
+                }
+            } else {
+                logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
+            }
+        }
+
+        if (!handled) {
+            logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
         }
     }
 
@@ -437,7 +487,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                                     deviceId, errorResponse.statusCode, errorResponse.errorCode));
                 }
             } else {
-                return new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                return new BoschSHCException(String.format("Request for info of device %s failed with status code %d",
                         deviceId, statusCode));
             }
         });
@@ -447,7 +497,7 @@ public class BridgeHandler extends BaseBridgeHandler {
      * Query the Bosch Smart Home Controller for the state of the given device.
      * <p>
      * The URL used for retrieving the state has the following structure:
-     * 
+     *
      * <pre>
      * https://{IP}:8444/smarthome/devices/{deviceId}/services/{serviceName}/state
      * </pre>
@@ -470,14 +520,14 @@ public class BridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        String url = httpClient.getServiceUrl(stateName, deviceId);
+        String url = httpClient.getServiceStateUrl(stateName, deviceId);
         logger.debug("getState(): Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
         return getState(httpClient, url, stateClass);
     }
 
     /**
      * Queries the Bosch Smart Home Controller for the state using an explicit endpoint.
-     * 
+     *
      * @param <T> Type to which the resulting JSON should be deserialized to
      * @param endpoint The destination endpoint part of the URL
      * @param stateClass Class to convert the resulting JSON to
@@ -503,7 +553,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP GET request in order to retrieve a state from the Bosch Smart Home Controller.
-     * 
+     *
      * @param <T> Type to which the resulting JSON should be deserialized to
      * @param httpClient HTTP client used for sending the request
      * @param url URL at which the state should be retrieved
@@ -566,7 +616,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         // Create request
-        String url = httpClient.getServiceUrl(serviceName, deviceId);
+        String url = httpClient.getServiceStateUrl(serviceName, deviceId);
         Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
@@ -575,7 +625,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP POST request without a request body to the given endpoint.
-     * 
+     *
      * @param endpoint The destination endpoint part of the URL
      * @return the HTTP response
      * @throws InterruptedException
@@ -589,7 +639,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Sends a HTTP POST request with a request body to the given endpoint.
-     * 
+     *
      * @param <T> Type of the request
      * @param endpoint The destination endpoint part of the URL
      * @param requestBody object representing the request body to be sent, may be <code>null</code>
@@ -610,5 +660,19 @@ public class BridgeHandler extends BaseBridgeHandler {
         String url = httpClient.getBoschSmartHomeUrl(endpoint);
         Request request = httpClient.createRequest(url, POST, requestBody);
         return request.send();
+    }
+
+    public @Nullable DeviceServiceData getServiceData(String deviceId, String serviceName)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
+        String url = httpClient.getServiceUrl(serviceName, deviceId);
+        logger.debug("getState(): Requesting \"{}\" from Bosch: {} via {}", serviceName, deviceId, url);
+        return getState(httpClient, url, DeviceServiceData.class);
     }
 }

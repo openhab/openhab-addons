@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.ScriptExtensionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -30,7 +32,7 @@ import org.osgi.service.component.annotations.Activate;
  * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
-    private Map<String, Function<String, Object>> types;
+    private Map<String, Function<String, Object>> types = new HashMap<>();
     private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
 
     protected abstract String getPresetName();
@@ -43,7 +45,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Activate
     public void activate(final BundleContext context) {
-        types = new HashMap<>();
+        types.clear();
         initializeTypes(context);
     }
 
@@ -63,10 +65,11 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
     }
 
     @Override
-    public Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
+    public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
 
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
-        return forScript.computeIfAbsent(type, k -> types.get(k).apply(scriptIdentifier));
+        return forScript.computeIfAbsent(type,
+                k -> Objects.nonNull(types.get(k)) ? types.get(k).apply(scriptIdentifier) : null);
     }
 
     @Override

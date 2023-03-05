@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ public enum HomekitAccessoryType {
     SMOKE_SENSOR("SmokeSensor"),
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
     CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    BASIC_FAN("BasicFan"),
     FAN("Fan"),
     LOCK("Lock"),
     SECURITY_SYSTEM("SecuritySystem"),
@@ -54,6 +55,11 @@ public enum HomekitAccessoryType {
     FAUCET("Faucet"),
     MICROPHONE("Microphone"),
     SLAT("Slat"),
+    TELEVISION("Television"),
+    INPUT_SOURCE("InputSource"),
+    TELEVISION_SPEAKER("TelevisionSpeaker"),
+    ACCESSORY_GROUP("AccessoryGroup"),
+    IRRIGATION_SYSTEM("IrrigationSystem"),
     DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.dmx.internal;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -26,8 +22,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class DmxBindingConstants {
-
     public static final String BINDING_ID = "dmx";
 
     // List of all Thing Type UIDs
@@ -38,10 +34,6 @@ public class DmxBindingConstants {
     public static final ThingTypeUID THING_TYPE_ARTNET_BRIDGE = new ThingTypeUID(BINDING_ID, "artnet-bridge");
     public static final ThingTypeUID THING_TYPE_LIB485_BRIDGE = new ThingTypeUID(BINDING_ID, "lib485-bridge");
     public static final ThingTypeUID THING_TYPE_SACN_BRIDGE = new ThingTypeUID(BINDING_ID, "sacn-bridge");
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_ARTNET_BRIDGE, THING_TYPE_LIB485_BRIDGE, THING_TYPE_SACN_BRIDGE, THING_TYPE_CHASER,
-                    THING_TYPE_COLOR, THING_TYPE_DIMMER, THING_TYPE_TUNABLEWHITE).collect(Collectors.toSet()));
 
     // List of all config options
     public static final String CONFIG_UNIVERSE = "universe";

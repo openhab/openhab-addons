@@ -1,15 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
-  ~ Copyright (c) 2022 Contributors to the openHAB project
-  ~ <p>
-  ~ See the NOTICE file(s) distributed with this work for additional
-  ~ information.
-  ~ <p>
-  ~ This program and the accompanying materials are made available under the
-  ~ terms of the Eclipse Public License 2.0 which is available at
-  ~ http://www.eclipse.org/legal/epl-2.0
-  ~ <p>
-  ~ SPDX-License-Identifier: EPL-2.0
--->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -18,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.fineoffsetweatherstation</artifactId>

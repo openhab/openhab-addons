@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -57,9 +58,11 @@ import com.google.gson.GsonBuilder;
 public class SOAPValueConverter {
     private final Logger logger = LoggerFactory.getLogger(SOAPValueConverter.class);
     private final HttpClient httpClient;
+    private final int timeout;
 
-    public SOAPValueConverter(HttpClient httpClient) {
+    public SOAPValueConverter(HttpClient httpClient, int timeout) {
         this.httpClient = httpClient;
+        this.timeout = timeout;
     }
 
     /**
@@ -83,31 +86,33 @@ public class SOAPValueConverter {
                 return Optional.empty();
             }
             switch (dataType) {
-                case "ui1":
-                case "ui2":
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
-                case "i4":
-                case "ui4":
+                }
+                case "i4", "ui4" -> {
                     return Optional.of(String.valueOf(value.intValue()));
-                default:
+                }
+                default -> {
+                }
             }
         } else if (command instanceof DecimalType) {
             BigDecimal value = ((DecimalType) command).toBigDecimal();
             switch (dataType) {
-                case "ui1":
-                case "ui2":
+                case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
-                case "i4":
-                case "ui4":
+                }
+                case "i4", "ui4" -> {
                     return Optional.of(String.valueOf(value.intValue()));
-                default:
+                }
+                default -> {
+                }
             }
         } else if (command instanceof StringType) {
-            if (dataType.equals("string")) {
+            if ("string".equals(dataType)) {
                 return Optional.of(command.toString());
             }
         } else if (command instanceof OnOffType) {
-            if (dataType.equals("boolean")) {
+            if ("boolean".equals(dataType)) {
                 return Optional.of(OnOffType.ON.equals(command) ? "1" : "0");
             }
         }
@@ -127,28 +132,35 @@ public class SOAPValueConverter {
             @Nullable Tr064ChannelConfig channelConfig) {
         String dataType = channelConfig != null ? channelConfig.getDataType() : "string";
         String unit = channelConfig != null ? channelConfig.getChannelTypeDescription().getItem().getUnit() : "";
+        BigDecimal factor = channelConfig != null ? channelConfig.getChannelTypeDescription().getItem().getFactor()
+                : null;
 
         return getSOAPElement(soapMessage, element).map(rawValue -> {
             // map rawValue to State
             switch (dataType) {
-                case "boolean":
+                case "boolean" -> {
                     return rawValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                case "string":
+                }
+                case "string" -> {
                     return new StringType(rawValue);
-                case "ui1":
-                case "ui2":
-                case "i4":
-                case "ui4":
-                    if (!unit.isEmpty()) {
-                        return new QuantityType<>(rawValue + " " + unit);
-                    } else {
-                        return new DecimalType(rawValue);
+                }
+                case "ui1", "ui2", "i4", "ui4" -> {
+                    BigDecimal decimalValue = new BigDecimal(rawValue);
+                    if (factor != null) {
+                        decimalValue = decimalValue.multiply(factor);
                     }
-                default:
+                    if (!unit.isEmpty()) {
+                        return new QuantityType<>(decimalValue + " " + unit);
+                    } else {
+                        return new DecimalType(decimalValue);
+                    }
+                }
+                default -> {
                     return null;
+                }
             }
         }).map(state -> {
-            // check if we need post processing
+            // check if we need post-processing
             if (channelConfig == null
                     || channelConfig.getChannelTypeDescription().getGetAction().getPostProcessor() == null) {
                 return state;
@@ -170,6 +182,26 @@ public class SOAPValueConverter {
             }
             return null;
         }).or(Optional::empty);
+    }
+
+    /**
+     * post processor for current bitrate
+     */
+    @SuppressWarnings("unused")
+    private State processCurrentBitrate(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
+        Double bps = Arrays.stream(state.toString().split(",")).mapToDouble(s -> {
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                return 0.0;
+            }
+        }).limit(3).average().orElse(Double.NaN);
+
+        if (bps.equals(Double.NaN)) {
+            return UnDefType.UNDEF;
+        } else {
+            return new QuantityType<>(bps * 8.0 / 1024.0, Units.KILOBIT_PER_SECOND);
+        }
     }
 
     /**
@@ -202,20 +234,6 @@ public class SOAPValueConverter {
     }
 
     /**
-     * post processor for decibel values (which are served as deca decibel)
-     *
-     * @param state the channel value in deca decibel
-     * @param channelConfig channel config of the channel
-     * @return the state converted to decibel
-     */
-    @SuppressWarnings("unused")
-    private State processDecaDecibel(State state, Tr064ChannelConfig channelConfig) {
-        Float value = state.as(DecimalType.class).floatValue() / 10;
-
-        return new QuantityType(value, Units.DECIBEL);
-    }
-
-    /**
      * post processor for answering machine new messages channel
      *
      * @param state the message list URL
@@ -226,14 +244,14 @@ public class SOAPValueConverter {
     @SuppressWarnings("unused")
     private State processTamListURL(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
         try {
-            ContentResponse response = httpClient.newRequest(state.toString()).timeout(1000, TimeUnit.MILLISECONDS)
+            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.MILLISECONDS)
                     .send();
             String responseContent = response.getContentAsString();
             int messageCount = responseContent.split("<New>1</New>").length - 1;
 
             return new DecimalType(messageCount);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new PostProcessingException("Failed to get TAM list from URL " + state.toString(), e);
+            throw new PostProcessingException("Failed to get TAM list from URL " + state, e);
         }
     }
 
@@ -313,23 +331,22 @@ public class SOAPValueConverter {
      */
     private State processCallList(State state, @Nullable String days, CallListType type)
             throws PostProcessingException {
-        Root callListRoot = Util.getAndUnmarshalXML(httpClient, state.toString() + "&days=" + days, Root.class);
+        Root callListRoot = Util.getAndUnmarshalXML(httpClient, state + "&days=" + days, Root.class, timeout);
         if (callListRoot == null) {
-            throw new PostProcessingException("Failed to get call list from URL " + state.toString());
+            throw new PostProcessingException("Failed to get call list from URL " + state);
         }
         List<Call> calls = callListRoot.getCall();
         switch (type) {
-            case INBOUND_COUNT:
-            case MISSED_COUNT:
-            case OUTBOUND_COUNT:
-            case REJECTED_COUNT:
+            case INBOUND_COUNT, MISSED_COUNT, OUTBOUND_COUNT, REJECTED_COUNT -> {
                 long callCount = calls.stream().filter(call -> type.typeString().equals(call.getType())).count();
                 return new DecimalType(callCount);
-            case JSON_LIST:
+            }
+            case JSON_LIST -> {
                 Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").serializeNulls().create();
                 List<CallListEntry> callListEntries = calls.stream().map(CallListEntry::new)
                         .collect(Collectors.toList());
                 return new StringType(gson.toJson(callListEntries));
+            }
         }
         return UnDefType.UNDEF;
     }

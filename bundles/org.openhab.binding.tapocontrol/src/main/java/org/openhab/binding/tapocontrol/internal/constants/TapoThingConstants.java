@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.constants;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.BINDING_ID;
 
 import java.util.Collections;
 import java.util.Set;
@@ -38,15 +38,20 @@ public class TapoThingConstants {
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
     public static final String DEVICE_P115 = "P115";
+    public static final String DEVICE_P300 = "P300";
     public static final String DEVICE_L510 = "L510";
     public static final String DEVICE_L530 = "L530";
+    public static final String DEVICE_L610 = "L610";
+    public static final String DEVICE_L630 = "L630";
     public static final String DEVICE_L900 = "L900";
     public static final String DEVICE_L920 = "L920";
+    public static final String DEVICE_L930 = "L930";
     public static final String DEVICE_UNIVERSAL = "Test_Device";
 
     /*** LIST OF SUPPORTED DEVICE DESCRIPTIONS ***/
     public static final String DEVICE_DESCRIPTION_BRIDGE = "TapoControl Cloud-Login";
     public static final String DEVICE_DESCRIPTION_SMART_PLUG = "SmartPlug";
+    public static final String DEVICE_DESCRIPTION_POWER_STRIP = "PowerStrip";
     public static final String DEVICE_DESCRIPTION_WHITE_BULB = "White-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_COLOR_BULB = "Color-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_LIGHTSTRIP = "LightStrip";
@@ -57,19 +62,24 @@ public class TapoThingConstants {
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
     public static final ThingTypeUID P115_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P115);
+    public static final ThingTypeUID P300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P300);
     public static final ThingTypeUID L510_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L510);
     public static final ThingTypeUID L530_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L530);
+    public static final ThingTypeUID L610_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L610);
+    public static final ThingTypeUID L630_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L630);
     public static final ThingTypeUID L900_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L900);
     public static final ThingTypeUID L920_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L920);
+    public static final ThingTypeUID L930_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L930);
     public static final ThingTypeUID UNIVERSAL_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_UNIVERSAL);
 
     /*** SET OF SUPPORTED UIDS ***/
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_UIDS = Set.of(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_PLUG_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
-            P110_THING_TYPE, P115_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE);
+            P110_THING_TYPE, P115_THING_TYPE, P300_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE, L610_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE, L630_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE,
+            L930_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream
                     .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
@@ -77,6 +87,9 @@ public class TapoThingConstants {
                     .flatMap(Set::stream).collect(Collectors.toSet()));
     /*** THINGS WITH ENERGY DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
+
+    /*** THINGS WITH CHILDS DATA ***/
+    public static final Set<ThingTypeUID> SUPPORTED_CHILDS_DATA_UIDS = Set.of(P300_THING_TYPE);
 
     /*** THINGS WITH CHANNEL GROUPS ***/
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
@@ -119,7 +132,7 @@ public class TapoThingConstants {
     public static final String DEVICE_PROPERTY_USAGE_7 = "time_usage_past7";
     public static final String DEVICE_PROPERTY_USAGE_30 = "time_usage_past30";
     public static final String DEVICE_PROPERTY_USAGE_TODAY = "time_usage_today";
-    public static final String DEVICE_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String DEVICE_REPRESENTATION_PROPERTY = "macAddress";
     // lightning effects
     public static final String DEVICE_PROPERTY_EFFECT = "lighting_effect";
     public static final String PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
@@ -139,6 +152,8 @@ public class TapoThingConstants {
     public static final String ENERGY_PROPERTY_PAST7D = "past7d";
     public static final String ENERGY_PROPERTY_PAST30D = "past30d";
     public static final String ENERGY_PROPERTY_PAST1Y = "past1y";
+    // childs management
+    public static final String CHILD_PROPERTY_START_INDEX = "start_index";
 
     /*** DEVICE SETTINGS ***/
     public static final Integer BULB_MIN_COLORTEMP = 2500;

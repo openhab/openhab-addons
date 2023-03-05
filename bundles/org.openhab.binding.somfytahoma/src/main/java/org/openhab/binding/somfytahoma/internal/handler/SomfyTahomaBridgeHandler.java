@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -28,23 +30,29 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.jmdns.JmDNS;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.somfytahoma.internal.config.SomfyTahomaConfig;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
+import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaMDNSDiscoveryListener;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaAction;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaError;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLocalToken;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Error;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Reponse;
@@ -53,7 +61,9 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatusResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaTokenReponse;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -63,6 +73,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +97,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     /**
      * The shared HttpClient
      */
-    private final HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     /**
      * Future to poll for updates
@@ -102,6 +113,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Future to set reconciliation flag
      */
     private @Nullable ScheduledFuture<?> reconciliationFuture;
+
+    /**
+     * Future for postponed login
+     */
+    private @Nullable ScheduledFuture<?> loginFuture;
 
     // List of futures used for command retries
     private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
@@ -120,6 +136,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     // Reconciliation flag
     private boolean reconciliation = false;
 
+    // Cloud fallback
+    private boolean cloudFallback = false;
+
     /**
      * Our configuration
      */
@@ -130,6 +149,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private String eventsId = "";
 
+    private String localToken = "";
+
     private Map<String, SomfyTahomaDevice> devicePlaces = new HashMap<>();
 
     private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
@@ -138,9 +159,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     // Gson & parser
     private final Gson gson = new Gson();
 
+    private final HttpClientFactory httpClientFactory;
+
     public SomfyTahomaBridgeHandler(Bridge thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpClient = httpClientFactory.createHttpClient("somfy_" + thing.getUID().getId());
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -149,7 +172,25 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         thingConfig = getConfigAs(SomfyTahomaConfig.class);
+        createHttpClient();
+
+        scheduler.execute(() -> {
+            login();
+            initPolling();
+            logger.debug("Initialize done...");
+        });
+    }
+
+    private void createHttpClient() {
+        // let's create the right http client
+        String clientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
+        if (thingConfig.isDevMode()) {
+            this.httpClient = httpClientFactory.createHttpClient(clientName, new SslContextFactory.Client(true));
+        } else {
+            this.httpClient = httpClientFactory.createHttpClient(clientName);
+        }
 
         try {
             httpClient.start();
@@ -157,12 +198,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
             return;
         }
-
-        scheduler.execute(() -> {
-            login();
-            initPolling();
-            logger.debug("Initialize done...");
-        });
+        // Remove the WWWAuth protocol handler since Tahoma is not fully compliant
+        httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
     }
 
     /**
@@ -214,9 +251,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
 
         reLoginNeeded = false;
+        cloudFallback = false;
 
         try {
-
             String urlParameters = "";
 
             // if cozytouch, must use oauth server
@@ -239,31 +276,37 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
+
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received invalid data (login)");
-            } else if (data.isSuccess()) {
-                logger.debug("SomfyTahoma version: {}", data.getVersion());
+            } else if (!data.getErrorCode().isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, data.getError());
+                if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
+                    setTooManyRequests();
+                }
+            } else {
+                if (thingConfig.isDevMode()) {
+                    initializeLocalMode();
+                }
+
                 String id = registerEvents();
                 if (id != null && !UNAUTHORIZED.equals(id)) {
                     eventsId = id;
                     logger.debug("Events id: {}", eventsId);
-                    updateStatus(ThingStatus.ONLINE);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                            isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
                 } else {
                     logger.debug("Events id error: {}", id);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error logging in: " + data.getError());
-                if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
-                    setTooManyRequests();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "unable to register events");
                 }
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data (login)", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e) || isOAuthGrantError(e)) {
+            if (isOAuthGrantError(e)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error logging in (check your credentials)");
                 setTooManyRequests();
@@ -280,11 +323,106 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public boolean isDevModeReady() {
+        return thingConfig.isDevMode() && !localToken.isEmpty() && !cloudFallback;
+    }
+
+    private void initializeLocalMode() {
+        if (thingConfig.getIp().isEmpty() || thingConfig.getPin().isEmpty()) {
+            discoverGateway();
+        }
+
+        if (!thingConfig.getIp().isEmpty() && !thingConfig.getPin().isEmpty()) {
+            try {
+                if (thingConfig.getToken().isEmpty()) {
+                    localToken = getNewLocalToken();
+                    logger.debug("Local token retrieved");
+                    activateLocalToken();
+                    updateConfiguration();
+                } else {
+                    localToken = thingConfig.getToken();
+                    activateLocalToken();
+                }
+                logger.debug("Local mode initialized, waiting for cloud sync");
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                logger.debug("Interruption during local mode initialization, falling back to cloud mode", ex);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException ex) {
+                logger.debug("Exception during local mode initialization, falling back to cloud mode", ex);
+                cloudFallback = true;
+            }
+        } else {
+            logger.debug("Cannot switch to developer mode - gateway not found on LAN");
+            cloudFallback = true;
+        }
+    }
+
+    private String getNewLocalToken() throws ExecutionException, InterruptedException, TimeoutException {
+        // Get list of local tokens
+        SomfyTahomaLocalToken[] tokens = invokeCallToURL(
+                CONFIG_URL + thingConfig.getPin() + LOCAL_TOKENS_URL + "devmode", "", HttpMethod.GET,
+                SomfyTahomaLocalToken[].class);
+
+        // Delete old OH tokens
+        for (SomfyTahomaLocalToken token : tokens) {
+            if (OPENHAB_TOKEN.equals(token.getLabel())) {
+                logger.debug("Deleting token: {}", token.getUuid());
+                sendDeleteToTahomaWithCookie(CONFIG_URL + thingConfig.getPin() + LOCAL_TOKENS_URL + token.getUuid());
+            }
+        }
+
+        // Generate a new token
+        SomfyTahomaTokenReponse tokenResponse = invokeCallToURL(
+                CONFIG_URL + thingConfig.getPin() + LOCAL_TOKENS_URL + "generate", "", HttpMethod.GET,
+                SomfyTahomaTokenReponse.class);
+
+        return tokenResponse.getToken();
+    }
+
+    private void discoverGateway() {
+        logger.debug("Starting mDNS discovery...");
+        JmDNS jmdns = null;
+
+        try {
+            // Create a JmDNS instance
+            jmdns = JmDNS.create(InetAddress.getLocalHost());
+            jmdns.addServiceListener("_kizboxdev._tcp.local.", new SomfyTahomaMDNSDiscoveryListener(this));
+
+            // Wait a bit
+            Thread.sleep(TAHOMA_TIMEOUT * 1000);
+        } catch (InterruptedException e) {
+            logger.debug("mDNS discovery interrupted", e);
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            logger.debug("Exception during mDNS discovery", e);
+        }
+
+        if (jmdns != null) {
+            jmdns.unregisterAllServices();
+            try {
+                jmdns.close();
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+    }
+
+    private void activateLocalToken() throws ExecutionException, InterruptedException, TimeoutException {
+        String param = "{\"label\" : \"" + OPENHAB_TOKEN + "\",\"token\" : \"" + localToken
+                + "\",\"scope\" : \"devmode\"}";
+        String response = sendPostToTahomaWithCookie(CONFIG_URL + thingConfig.getPin() + "/local/tokens", param);
+        logger.trace("Local token activation: {}", response);
+    }
+
     private void setTooManyRequests() {
-        logger.debug("Too many requests or bad credentials for the cloud portal, suspending activity for {} seconds",
-                SUSPEND_TIME);
-        tooManyRequests = true;
-        scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+        if (!tooManyRequests) {
+            logger.debug(
+                    "Too many requests or bad credentials for the cloud portal, suspending activity for {} seconds",
+                    SUSPEND_TIME);
+            tooManyRequests = true;
+            loginFuture = scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+        }
     }
 
     private @Nullable String registerEvents() {
@@ -302,6 +440,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private List<SomfyTahomaEvent> getEvents() {
+        if (eventsId.isEmpty()) {
+            return List.of();
+        }
+
         SomfyTahomaEvent[] response = invokeCallToURL(EVENTS_URL + eventsId + "/fetch", "", HttpMethod.POST,
                 SomfyTahomaEvent[].class);
         return response != null ? List.of(response) : List.of();
@@ -331,11 +473,24 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         // cancel all scheduled retries
         retryFutures.forEach(x -> x.cancel(false));
 
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.debug("Error during http client stopping", e);
+        ScheduledFuture<?> localLoginFuture = loginFuture;
+        if (localLoginFuture != null) {
+            localLoginFuture.cancel(true);
+            loginFuture = null;
         }
+
+        HttpClient localHttpClient = httpClient;
+        if (localHttpClient != null) {
+            try {
+                localHttpClient.stop();
+            } catch (Exception e) {
+                logger.debug("Error during http client stopping", e);
+            }
+            httpClient = null;
+        }
+
+        // Clean access data
+        localToken = "";
     }
 
     @Override
@@ -351,16 +506,19 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      */
     private void stopPolling() {
         ScheduledFuture<?> localPollFuture = pollFuture;
-        if (localPollFuture != null && !localPollFuture.isCancelled()) {
+        if (localPollFuture != null) {
             localPollFuture.cancel(true);
+            pollFuture = null;
         }
         ScheduledFuture<?> localStatusFuture = statusFuture;
-        if (localStatusFuture != null && !localStatusFuture.isCancelled()) {
+        if (localStatusFuture != null) {
             localStatusFuture.cancel(true);
+            statusFuture = null;
         }
         ScheduledFuture<?> localReconciliationFuture = reconciliationFuture;
-        if (localReconciliationFuture != null && !localReconciliationFuture.isCancelled()) {
+        if (localReconciliationFuture != null) {
             localReconciliationFuture.cancel(true);
+            reconciliationFuture = null;
         }
     }
 
@@ -404,7 +562,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             if (!device.getPlaceOID().isEmpty()) {
                 SomfyTahomaDevice newDevice = new SomfyTahomaDevice();
                 newDevice.setPlaceOID(device.getPlaceOID());
-                newDevice.setWidget(device.getWidget());
+                newDevice.getDefinition().setWidgetName(device.getDefinition().getWidgetName());
                 devicePlaces.put(device.getDeviceURL(), newDevice);
             }
         }
@@ -637,10 +795,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private String sendMethodToTahomaWithCookie(String url, HttpMethod method, String urlParameters)
             throws InterruptedException, ExecutionException, TimeoutException {
-        logger.trace("Sending {} to url: {} with data: {}", method.asString(), getApiFullUrl(url), urlParameters);
+        logger.debug("Sending {} to url: {} with data: {}", method.asString(), getApiFullUrl(url), urlParameters);
         Request request = sendRequestBuilder(url, method);
         if (!urlParameters.isEmpty()) {
-            request = request.content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8");
+            request = request.content(new StringContentProvider(urlParameters), "application/json");
         }
 
         ContentResponse response = request.send();
@@ -651,15 +809,42 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
             logger.debug("Received unexpected status code: {}", response.getStatus());
+            if (response.getHeaders().contains(HttpHeader.CONTENT_TYPE)) {
+                if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                        .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                    try {
+                        SomfyTahomaError error = gson.fromJson(response.getContentAsString(), SomfyTahomaError.class);
+                        throw new ExecutionException(error.getError(), null);
+                    } catch (JsonSyntaxException e) {
+
+                    }
+                }
+            }
+            throw new ExecutionException(
+                    "Unknown http error " + response.getStatus() + " while attempting to send a message.", null);
         }
         return response.getContentAsString();
     }
 
     private Request sendRequestBuilder(String subUrl, HttpMethod method) {
+        return isLocalRequest(subUrl) ? sendRequestBuilderLocal(subUrl, method)
+                : sendRequestBuilderCloud(subUrl, method);
+    }
+
+    private boolean isLocalRequest(String subUrl) {
+        return isDevModeReady() && !subUrl.startsWith(CONFIG_URL);
+    }
+
+    private Request sendRequestBuilderCloud(String subUrl, HttpMethod method) {
         return httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
                 .agent(TAHOMA_AGENT);
+    }
+
+    private Request sendRequestBuilderLocal(String subUrl, HttpMethod method) {
+        return httpClient.newRequest(getApiFullUrl(subUrl)).method(method).accept("application/json")
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
     }
 
     /**
@@ -720,7 +905,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private String getApiFullUrl(String subUrl) {
-        return "https://" + thingConfig.getCloudPortal() + API_BASE_URL + subUrl;
+        return isLocalRequest(subUrl)
+                ? "https://" + thingConfig.getIp() + ":8443/enduser-mobile-web/1/enduserAPI/" + subUrl
+                : "https://" + thingConfig.getCloudPortal() + API_BASE_URL + subUrl;
     }
 
     public void sendCommand(String io, String command, String params, String url) {
@@ -781,7 +968,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         if (device != null && !device.getPlaceOID().isEmpty()) {
             devicePlaces.forEach((deviceUrl, devicePlace) -> {
                 if (device.getPlaceOID().equals(devicePlace.getPlaceOID())
-                        && device.getWidget().equals(devicePlace.getWidget())) {
+                        && device.getDefinition().getWidgetName().equals(devicePlace.getDefinition().getWidgetName())) {
                     sendCommand(deviceUrl, command, params, url);
                 }
             });
@@ -832,6 +1019,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private boolean reLogin() {
         logger.debug("Doing relogin");
         reLoginNeeded = true;
+        localToken = "";
         login();
         return ThingStatus.OFFLINE != thing.getStatus();
     }
@@ -850,28 +1038,53 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     public void forceGatewaySync() {
-        invokeCallToURL(REFRESH_URL, "", HttpMethod.PUT, null);
+        // refresh is valid only if in a cloud mode
+        if (!thingConfig.isDevMode() || localToken.isEmpty()) {
+            invokeCallToURL(REFRESH_URL, "", HttpMethod.PUT, null);
+        }
     }
 
     public SomfyTahomaStatus getTahomaStatus(String gatewayId) {
-        SomfyTahomaStatusResponse data = invokeCallToURL(GATEWAYS_URL + gatewayId, "", HttpMethod.GET,
-                SomfyTahomaStatusResponse.class);
-        if (data != null) {
-            logger.debug("Tahoma status: {}", data.getConnectivity().getStatus());
-            logger.debug("Tahoma protocol version: {}", data.getConnectivity().getProtocolVersion());
-            return data.getConnectivity();
+        SomfyTahomaStatusResponse status = null;
+
+        if (isDevModeReady()) {
+            // Local endpoint does not have a method for specific gateway
+            SomfyTahomaStatusResponse[] data = invokeCallToURL(GATEWAYS_URL, "", HttpMethod.GET,
+                    SomfyTahomaStatusResponse[].class);
+            if (data != null) {
+                for (SomfyTahomaStatusResponse gatewayStatus : data) {
+                    if (gatewayStatus.getGatewayId().equals(gatewayId)) {
+                        status = gatewayStatus;
+                        break;
+                    }
+                }
+            }
+        } else {
+            status = invokeCallToURL(GATEWAYS_URL + gatewayId, "", HttpMethod.GET, SomfyTahomaStatusResponse.class);
+        }
+
+        if (status != null) {
+            logger.debug("Tahoma status: {}", status.getConnectivity().getStatus());
+            logger.debug("Tahoma protocol version: {}", status.getConnectivity().getProtocolVersion());
+            return status.getConnectivity();
         }
         return new SomfyTahomaStatus();
     }
 
-    private boolean isAuthenticationChallenge(Exception ex) {
+    private boolean isTempBanned(Exception ex) {
         String msg = ex.getMessage();
-        return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
+        return msg != null && msg.contains(TEMPORARILY_BANNED);
+    }
+
+    private boolean isEventListenerTimeout(Exception ex) {
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(EVENT_LISTENER_TIMEOUT);
     }
 
     private boolean isOAuthGrantError(Exception ex) {
         String msg = ex.getMessage();
-        return msg != null && msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR);
+        return msg != null
+                && (msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR) || msg.contains(AUTHENTICATION_OAUTH_INVALID_GRANT));
     }
 
     @Override
@@ -915,7 +1128,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Received data: {} is not JSON", response, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
+            if (isTempBanned(e)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Temporarily banned");
+                setTooManyRequests();
+            } else if (isEventListenerTimeout(e)) {
                 reLogin();
             } else {
                 logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
@@ -929,5 +1145,23 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
         }
         return null;
+    }
+
+    public void setGatewayIPAddress(String gatewayIPAddress) {
+        thingConfig.setIp(gatewayIPAddress);
+    }
+
+    public void setGatewayPin(String gatewayPin) {
+        thingConfig.setPin(gatewayPin);
+    }
+
+    public void updateConfiguration() {
+        Configuration config = editConfiguration();
+        config.put("ip", thingConfig.getIp());
+        config.put("pin", thingConfig.getPin());
+        if (!localToken.isEmpty()) {
+            config.put("token", localToken);
+        }
+        updateConfiguration(config);
     }
 }

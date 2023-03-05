@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ class ConfigurationTest {
     void testScope() {
         AccountConfiguration ac = new AccountConfiguration();
         assertEquals(
-                "offline_access mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
+                "openid offline_access mb:vehicle:mbdata:payasyoudrive mb:vehicle:mbdata:vehiclestatus mb:vehicle:mbdata:vehiclelock mb:vehicle:mbdata:fuelstatus mb:vehicle:mbdata:evstatus",
                 ac.getScope());
     }
 
@@ -62,10 +62,11 @@ class ConfigurationTest {
     @Test
     public void testCallbackUrl() throws SocketException {
         String ip = Utils.getCallbackIP();
+        String message = "IP " + ip + " not reachable";
         try {
-            assertTrue(InetAddress.getByName(ip).isReachable(10));
+            assertTrue(InetAddress.getByName(ip).isReachable(10000), message);
         } catch (IOException e) {
-            assertTrue(false, "IP " + ip + " not reachable");
+            fail(message);
         }
     }
 }

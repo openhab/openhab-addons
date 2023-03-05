@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="homeconnect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Home Connect Binding</name>
+	<description>The binding integrates the Home Connect (https://www.home-connect.com/) system into openHAB. It connects
+		to household devices from brands like Bosch and Siemens.</description>
+
+</addon:addon>

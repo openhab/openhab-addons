@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="influxdb2">
 		<label>InfluxDB2 Bridge</label>
-		<description>The InfluxDB 2.0 represents a connection to a InfluxDB 2.0 server</description>
+		<description>The InfluxDB 2.0 represents a connection to an InfluxDB 2.0 server</description>
 
 		<config-description>
 			<parameter name="url" type="text" required="true">

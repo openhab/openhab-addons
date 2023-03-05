@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.binding.jeelink.internal.SensorDefinition;
 import org.openhab.core.thing.Thing;
 
 /**
- * Sensor Defintion of a EC3000 Power Monitor.
+ * Sensor Defintion of an EC3000 Power Monitor.
  *
  * @author Volker Bier - Initial contribution
  */

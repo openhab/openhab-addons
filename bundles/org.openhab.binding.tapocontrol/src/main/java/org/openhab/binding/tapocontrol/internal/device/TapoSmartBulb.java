@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,9 +127,9 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
         newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_HUE, command.getHue());
-        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation());
-        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness());
+        newState.put(DEVICE_PROPERTY_HUE, command.getHue().intValue());
+        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation().intValue());
+        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness().intValue());
         connector.sendDeviceCommands(newState);
     }
 

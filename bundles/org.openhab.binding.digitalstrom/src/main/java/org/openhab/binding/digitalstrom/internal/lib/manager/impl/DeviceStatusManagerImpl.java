@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,8 +230,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
     /**
      * Check and updates the {@link Device} structure, configurations and status.
      *
-     * @author Michael Ochel - initial contributer
-     * @author Matthias Siegele - initial contributer
+     * @author Michael Ochel - Initial contribution
+     * @author Matthias Siegele - Initial contribution
      */
     private class PollingRunnable implements Runnable {
         private boolean devicesLoaded = false;
@@ -340,7 +340,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                         }
                     }
                     if (deviceDiscovery != null) {
-                        // only informs discovery, if the device is a output or a sensor device
+                        // only informs discovery, if the device is an output or a sensor device
                         deviceDiscovery.onDeviceAdded(currentDevice);
                         logger.debug("inform DeviceStatusListener: {} about added device with dSID {}",
                                 DeviceStatusListener.DEVICE_DISCOVERY, currentDevice.getDSID().getValue());

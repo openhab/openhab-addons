@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.am43.internal.data;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ControlAction} list possible controls actions that can be sent through
  * {@link org.openhab.binding.bluetooth.am43.internal.command.ControlCommand}
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public enum ControlAction {
     CLOSE(0xee),
     OPEN(0xdd),

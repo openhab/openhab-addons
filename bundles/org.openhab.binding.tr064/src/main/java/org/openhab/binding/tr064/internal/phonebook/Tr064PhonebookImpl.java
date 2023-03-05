@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,37 +33,45 @@ import org.slf4j.LoggerFactory;
 public class Tr064PhonebookImpl implements Phonebook {
     private final Logger logger = LoggerFactory.getLogger(Tr064PhonebookImpl.class);
 
-    private Map<String, String> phonebook = new HashMap<>();
+    protected Map<String, String> phonebook = new HashMap<>();
 
     private final HttpClient httpClient;
     private final String phonebookUrl;
+    private final int httpTimeout;
 
     private String phonebookName = "";
 
-    public Tr064PhonebookImpl(HttpClient httpClient, String phonebookUrl) {
+    public Tr064PhonebookImpl(HttpClient httpClient, String phonebookUrl, int httpTimeout) {
         this.httpClient = httpClient;
         this.phonebookUrl = phonebookUrl;
+        this.httpTimeout = httpTimeout;
         getPhonebook();
     }
 
     private void getPhonebook() {
-        PhonebooksType phonebooksType = Util.getAndUnmarshalXML(httpClient, phonebookUrl, PhonebooksType.class);
-        if (phonebooksType != null) {
-            phonebookName = phonebooksType.getPhonebook().getName();
-            phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
-                String contactName = contact.getPerson().getRealName();
-                return contact.getTelephony().getNumber().stream()
-                        .collect(Collectors.toMap(number -> normalizeNumber(number.getValue()), number -> contactName,
-                                this::mergeSameContactNames));
-            }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
-            logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
+        PhonebooksType phonebooksType = Util.getAndUnmarshalXML(httpClient, phonebookUrl, PhonebooksType.class,
+                httpTimeout);
+        if (phonebooksType == null) {
+            logger.warn("Failed to get phonebook with URL '{}'", phonebookUrl);
+            return;
         }
+        phonebookName = phonebooksType.getPhonebook().getName();
+
+        phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
+            String contactName = contact.getPerson().getRealName();
+            if (contactName == null || contactName.isBlank()) {
+                return new HashMap<String, String>();
+            }
+            return contact.getTelephony().getNumber().stream().collect(Collectors.toMap(
+                    number -> normalizeNumber(number.getValue()), number -> contactName, this::mergeSameContactNames));
+        }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
+        logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
     }
 
     // in case there are multiple phone entries with same number -> name mapping, i.e. in phonebooks exported from
     // mobiles containing multiple accounts like: local, cloudprovider1, messenger1, messenger2,...
     private String mergeSameContactNames(String nameA, String nameB) {
-        if (nameA != null && nameA.equals(nameB)) {
+        if (nameA.equals(nameB)) {
             return nameA;
         }
         throw new IllegalStateException(
@@ -78,9 +86,14 @@ public class Tr064PhonebookImpl implements Phonebook {
     @Override
     public Optional<String> lookupNumber(String number, int matchCount) {
         String normalized = normalizeNumber(number);
-        String matchString = matchCount > 0 && matchCount < normalized.length()
-                ? normalized.substring(normalized.length() - matchCount)
-                : normalized;
+        String matchString;
+        if (matchCount > 0 && matchCount < normalized.length()) {
+            matchString = normalized.substring(normalized.length() - matchCount);
+        } else if (matchCount < 0 && (-matchCount) < normalized.length()) {
+            matchString = normalized.substring(-matchCount);
+        } else {
+            matchString = normalized;
+        }
         logger.trace("Normalized '{}' to '{}', matchString is '{}'", number, normalized, matchString);
         return matchString.isBlank() ? Optional.empty()
                 : phonebook.keySet().stream().filter(n -> n.endsWith(matchString)).findFirst().map(phonebook::get);
@@ -91,8 +104,13 @@ public class Tr064PhonebookImpl implements Phonebook {
         return "Phonebook{" + "phonebookName='" + phonebookName + "', phonebook=" + phonebook + '}';
     }
 
-    private String normalizeNumber(String number) {
-        // Naive normalization: remove all non-digit characters
+    /**
+     * normalize a phone number (remove everything except digits and *) for comparison
+     *
+     * @param number the input phone number string
+     * @return normalized phone number string
+     */
+    public final String normalizeNumber(String number) {
         return number.replaceAll("[^0-9\\*\\+]", "");
     }
 }

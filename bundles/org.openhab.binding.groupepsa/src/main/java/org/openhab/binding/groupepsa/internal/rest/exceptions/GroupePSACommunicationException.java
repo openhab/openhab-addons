@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An exception that occurred while communicating with an groupepsa or an groupepsa bridge
+ * An exception that occurred while communicating with a groupepsa or a groupepsa bridge
  *
  * @author Arjan Mels - Initial contribution
  */

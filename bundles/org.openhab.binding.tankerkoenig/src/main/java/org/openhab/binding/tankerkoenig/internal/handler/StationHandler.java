@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,7 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        if (station.isOpen() == true) {
+        if (station.isOpen()) {
             logger.debug("Checked Station is open! '{}'", getThing().getUID());
             updateState(CHANNEL_STATION_OPEN, OpenClosedType.OPEN);
             if (station.getDiesel() != null) {

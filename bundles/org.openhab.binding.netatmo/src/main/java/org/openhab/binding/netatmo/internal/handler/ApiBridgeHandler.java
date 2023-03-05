@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static java.util.Comparator.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -45,13 +47,21 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiError;
 import org.openhab.binding.netatmo.internal.api.AuthenticationApi;
+import org.openhab.binding.netatmo.internal.api.HomeApi;
+import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.RestManager;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.WeatherApi;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
+import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.ApiHandlerConfiguration;
 import org.openhab.binding.netatmo.internal.config.BindingConfiguration;
 import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
@@ -66,6 +76,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -149,7 +160,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         SecurityApi securityApi = getRestManager(SecurityApi.class);
                         if (securityApi != null) {
                             WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                                    configuration.webHookUrl);
+                                    configuration.webHookUrl, configuration.webHookPostfix);
                             servlet.startListening();
                             this.webHookServlet = servlet;
                         }
@@ -261,8 +272,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             logger.trace("executeUri returned : code {} body {}", statusCode, responseBody);
 
             if (statusCode != Code.OK) {
-                ApiError error = deserializer.deserialize(ApiError.class, responseBody);
-                throw new NetatmoException(error);
+                try {
+                    ApiError error = deserializer.deserialize(ApiError.class, responseBody);
+                    throw new NetatmoException(error);
+                } catch (NetatmoException e) {
+                    logger.debug("Error deserializing payload from error response", e);
+                    throw new NetatmoException(statusCode.getMessage());
+                }
             }
             return deserializer.deserialize(clazz, responseBody);
         } catch (NetatmoException e) {
@@ -283,6 +299,66 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
             prepareReconnection(null, null);
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    public void identifyAllModulesAndApplyAction(BiFunction<NAModule, ThingUID, Optional<ThingUID>> action) {
+        ThingUID accountUID = getThing().getUID();
+        try {
+            AircareApi airCareApi = getRestManager(AircareApi.class);
+            if (airCareApi != null) { // Search Healthy Home Coaches
+                ListBodyResponse<NAMain> body = airCareApi.getHomeCoachData(null).getBody();
+                if (body != null) {
+                    body.getElements().stream().forEach(homeCoach -> action.apply(homeCoach, accountUID));
+                }
+            }
+            WeatherApi weatherApi = getRestManager(WeatherApi.class);
+            if (weatherApi != null) { // Search owned or favorite stations
+                weatherApi.getFavoriteAndGuestStationsData().stream().forEach(station -> {
+                    if (!station.isReadOnly() || getReadFriends()) {
+                        action.apply(station, accountUID).ifPresent(stationUID -> station.getModules().values().stream()
+                                .forEach(module -> action.apply(module, stationUID)));
+                    }
+                });
+            }
+            HomeApi homeApi = getRestManager(HomeApi.class);
+            if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
+                homeApi.getHomesData(null, null).stream()
+                        .filter(h -> !(h.getFeatures().isEmpty()
+                                || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
+                        .forEach(home -> {
+                            action.apply(home, accountUID).ifPresent(homeUID -> {
+                                home.getKnownPersons().forEach(person -> action.apply(person, homeUID));
+
+                                Map<String, ThingUID> bridgesUids = new HashMap<>();
+
+                                home.getRooms().values().stream().forEach(room -> {
+                                    room.getModuleIds().stream().map(id -> home.getModules().get(id))
+                                            .map(m -> m != null ? m.getType().feature : FeatureArea.NONE)
+                                            .filter(f -> FeatureArea.ENERGY.equals(f)).findAny().ifPresent(f -> {
+                                                action.apply(room, homeUID)
+                                                        .ifPresent(roomUID -> bridgesUids.put(room.getId(), roomUID));
+                                            });
+                                });
+
+                                // Creating modules that have no bridge first, avoiding weather station itself
+                                home.getModules().values().stream()
+                                        .filter(module -> module.getType().feature != FeatureArea.WEATHER)
+                                        .sorted(comparing(HomeDataModule::getBridge, nullsFirst(naturalOrder())))
+                                        .forEach(module -> {
+                                            String bridgeId = module.getBridge();
+                                            if (bridgeId == null) {
+                                                action.apply(module, homeUID).ifPresent(
+                                                        moduleUID -> bridgesUids.put(module.getId(), moduleUID));
+                                            } else {
+                                                action.apply(module, bridgesUids.getOrDefault(bridgeId, homeUID));
+                                            }
+                                        });
+                            });
+                        });
+            }
+        } catch (NetatmoException e) {
+            logger.warn("Error while identifying all modules : {}", e.getMessage());
         }
     }
 

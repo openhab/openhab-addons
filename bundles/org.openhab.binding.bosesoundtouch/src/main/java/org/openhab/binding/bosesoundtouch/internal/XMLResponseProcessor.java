@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,15 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The {@link XMLResponseProcessor} class handles the XML mapping
@@ -29,18 +33,23 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
+
+@NonNullByDefault
 public class XMLResponseProcessor {
     private BoseSoundTouchHandler handler;
 
-    private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
+    private final Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap = new HashMap<>();
 
     public XMLResponseProcessor(BoseSoundTouchHandler handler) {
         this.handler = handler;
         init();
     }
 
-    public void handleMessage(String msg) throws SAXException, IOException {
-        XMLReader reader = XMLReaderFactory.createXMLReader();
+    public void handleMessage(String msg) throws SAXException, IOException, ParserConfigurationException {
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
+        SAXParser parser = parserFactory.newSAXParser();
+        XMLReader reader = parser.getXMLReader();
         reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         reader.setContentHandler(new XMLResponseHandler(handler, stateSwitchingMap));
         reader.parse(new InputSource(new StringReader(msg)));
@@ -48,8 +57,6 @@ public class XMLResponseProcessor {
 
     // initializes our XML parsing state machine
     private void init() {
-        stateSwitchingMap = new HashMap<>();
-
         Map<String, XMLHandlerState> msgInitMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.INIT, msgInitMap);
         msgInitMap.put("msg", XMLHandlerState.Msg);

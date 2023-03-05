@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -182,6 +182,14 @@ public class ValueTests {
         v.update(new QuantityType<>("20"));
         assertThat(v.getMQTTpublishValue(null), is("20"));
         assertThat(v.getChannelState(), is(new QuantityType<>(20, Units.WATT)));
+    }
+
+    @Test
+    public void numberUpdateMireds() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.MIRED);
+
+        v.update(new QuantityType<>(2700, Units.KELVIN));
+        assertThat(v.getMQTTpublishValue("%.0f"), is("370"));
     }
 
     @Test

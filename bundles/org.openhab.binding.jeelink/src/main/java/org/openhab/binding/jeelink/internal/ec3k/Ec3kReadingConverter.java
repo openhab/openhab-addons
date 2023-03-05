@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
 
 /**
- * Converter for converting a line read from a ec3kSerial sketch to a Ec3kReading.
+ * Converter for converting a line read from an ec3kSerial sketch to an Ec3kReading.
  *
  * @author Volker Bier - Initial contribution
  */

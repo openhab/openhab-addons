@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketFrameListener;
@@ -75,6 +77,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - code clean up
  * @author Alexander Kostadinov - Handling of websocket ping-pong mechanism for thing status check
  */
+@NonNullByDefault
 public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener, WebSocketFrameListener {
 
     private static final int MAX_MISSED_PONGS_COUNT = 2;
@@ -83,10 +86,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private final Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
 
-    private ScheduledFuture<?> connectionChecker;
-    private WebSocketClient client;
-    private volatile Session session;
-    private volatile CommandExecutor commandExecutor;
+    private @Nullable ScheduledFuture<?> connectionChecker;
+    private @Nullable WebSocketClient client;
+    private @Nullable volatile Session session;
+    private @Nullable volatile CommandExecutor commandExecutor;
     private volatile int missedPongsCount = 0;
 
     private XMLResponseProcessor xmlResponseProcessor;
@@ -94,7 +97,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private PresetContainer presetContainer;
     private BoseStateDescriptionOptionProvider stateOptionProvider;
 
-    private Future<?> sessionFuture;
+    private @Nullable Future<?> sessionFuture;
 
     /**
      * Creates a new instance of this class for the {@link Thing}.
@@ -120,9 +123,12 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void dispose() {
-        if (connectionChecker != null && !connectionChecker.isCancelled()) {
-            connectionChecker.cancel(true);
-            connectionChecker = null;
+        ScheduledFuture<?> localConnectionChecker = connectionChecker;
+        if (localConnectionChecker != null) {
+            if (!localConnectionChecker.isCancelled()) {
+                localConnectionChecker.cancel(true);
+                connectionChecker = null;
+            }
         }
         closeConnection();
         super.dispose();
@@ -146,7 +152,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (commandExecutor == null) {
+        CommandExecutor localCommandExecutor = commandExecutor;
+        if (localCommandExecutor == null) {
             logger.debug("{}: Can't handle command '{}' for channel '{}' because of not initialized connection.",
                     getDeviceName(), command, channelUID);
             return;
@@ -157,7 +164,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (command.equals(RefreshType.REFRESH)) {
             switch (channelUID.getIdWithoutGroup()) {
                 case CHANNEL_BASS:
-                    commandExecutor.getInformations(APIRequest.BASS);
+                    localCommandExecutor.getInformations(APIRequest.BASS);
                     break;
                 case CHANNEL_KEY_CODE:
                     // refresh makes no sense... ?
@@ -174,10 +181,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 case CHANNEL_RATEENABLED:
                 case CHANNEL_SKIPENABLED:
                 case CHANNEL_SKIPPREVIOUSENABLED:
-                    commandExecutor.getInformations(APIRequest.NOW_PLAYING);
+                    localCommandExecutor.getInformations(APIRequest.NOW_PLAYING);
                     break;
                 case CHANNEL_VOLUME:
-                    commandExecutor.getInformations(APIRequest.VOLUME);
+                    localCommandExecutor.getInformations(APIRequest.VOLUME);
                     break;
                 default:
                     logger.debug("{} : Got command '{}' for channel '{}' which is unhandled!", getDeviceName(), command,
@@ -188,21 +195,21 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_POWER:
                 if (command instanceof OnOffType) {
-                    commandExecutor.postPower((OnOffType) command);
+                    localCommandExecutor.postPower((OnOffType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
             case CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
-                    commandExecutor.postVolume((PercentType) command);
+                    localCommandExecutor.postVolume((PercentType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
             case CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
-                    commandExecutor.postVolumeMuted((OnOffType) command);
+                    localCommandExecutor.postVolumeMuted((OnOffType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
@@ -212,7 +219,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     String cmd = command.toString().toUpperCase().trim();
                     try {
                         OperationModeType mode = OperationModeType.valueOf(cmd);
-                        commandExecutor.postOperationMode(mode);
+                        localCommandExecutor.postOperationMode(mode);
                     } catch (IllegalArgumentException iae) {
                         logger.warn("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
                     }
@@ -220,28 +227,28 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 break;
             case CHANNEL_PLAYER_CONTROL:
                 if ((command instanceof PlayPauseType) || (command instanceof NextPreviousType)) {
-                    commandExecutor.postPlayerControl(command);
+                    localCommandExecutor.postPlayerControl(command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
             case CHANNEL_PRESET:
                 if (command instanceof DecimalType) {
-                    commandExecutor.postPreset((DecimalType) command);
+                    localCommandExecutor.postPreset((DecimalType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
             case CHANNEL_BASS:
                 if (command instanceof DecimalType) {
-                    commandExecutor.postBass((DecimalType) command);
+                    localCommandExecutor.postBass((DecimalType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
             case CHANNEL_SAVE_AS_PRESET:
                 if (command instanceof DecimalType) {
-                    commandExecutor.addCurrentContentItemToPresetContainer((DecimalType) command);
+                    localCommandExecutor.addCurrentContentItemToPresetContainer((DecimalType) command);
                 } else {
                     logger.debug("{}: Unhandled command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
@@ -251,7 +258,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     String cmd = command.toString().toUpperCase().trim();
                     try {
                         RemoteKeyType keyCommand = RemoteKeyType.valueOf(cmd);
-                        commandExecutor.postRemoteKey(keyCommand);
+                        localCommandExecutor.postRemoteKey(keyCommand);
                     } catch (IllegalArgumentException e) {
                         logger.debug("{}: Unhandled remote key: {}", getDeviceName(), cmd);
                     }
@@ -262,7 +269,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 if (channel != null) {
                     ChannelTypeUID chTypeUid = channel.getChannelTypeUID();
                     if (chTypeUid != null) {
-                        switch (channel.getChannelTypeUID().getId()) {
+                        switch (chTypeUid.getId()) {
                             case CHANNEL_NOTIFICATION_SOUND:
                                 String appKey = Objects.toString(getConfig().get(BoseSoundTouchConfiguration.APP_KEY),
                                         null);
@@ -273,8 +280,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                                                 .getConfiguration()
                                                 .as(BoseSoundTouchNotificationChannelConfiguration.class);
                                         if (!url.isEmpty()) {
-                                            commandExecutor.playNotificationSound(appKey, notificationConfiguration,
-                                                    url);
+                                            localCommandExecutor.playNotificationSound(appKey,
+                                                    notificationConfiguration, url);
                                         }
                                     }
                                 } else {
@@ -295,8 +302,16 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the CommandExecutor of this handler
      */
-    public CommandExecutor getCommandExecutor() {
+    public @Nullable CommandExecutor getCommandExecutor() {
         return commandExecutor;
+    }
+
+    /**
+     * Sets the CommandExecutor of this handler
+     *
+     */
+    public void setCommandExecutor(@Nullable CommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
     }
 
     /**
@@ -304,7 +319,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the Session this handler has opened
      */
-    public Session getSession() {
+    public @Nullable Session getSession() {
         return session;
     }
 
@@ -313,7 +328,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the name of the device delivered from itself
      */
-    public String getDeviceName() {
+    public @Nullable String getDeviceName() {
         return getThing().getProperties().get(DEVICE_INFO_NAME);
     }
 
@@ -322,7 +337,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the type of the device delivered from itself
      */
-    public String getDeviceType() {
+    public @Nullable String getDeviceType() {
         return getThing().getProperties().get(DEVICE_INFO_TYPE);
     }
 
@@ -331,7 +346,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the MAC Address of this device (in format "123456789ABC")
      */
-    public String getMacAddress() {
+    public @Nullable String getMacAddress() {
         return ((String) getThing().getConfiguration().get(BoseSoundTouchConfiguration.MAC_ADDRESS)).replaceAll(":",
                 "");
     }
@@ -341,7 +356,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
      *
      * @return the IP Address of this device
      */
-    public String getIPAddress() {
+    public @Nullable String getIPAddress() {
         return (String) getThing().getConfiguration().getProperties().get(BoseSoundTouchConfiguration.HOST);
     }
 
@@ -359,7 +374,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     @Override
-    public void onWebSocketConnect(Session session) {
+    public void onWebSocketConnect(@Nullable Session session) {
         logger.debug("{}: onWebSocketConnect('{}')", getDeviceName(), session);
         this.session = session;
         commandExecutor = new CommandExecutor(this);
@@ -367,88 +382,106 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     @Override
-    public void onWebSocketError(Throwable e) {
-        logger.debug("{}: Error during websocket communication: {}", getDeviceName(), e.getMessage(), e);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        if (commandExecutor != null) {
-            commandExecutor.postOperationMode(OperationModeType.OFFLINE);
+    public void onWebSocketError(@Nullable Throwable e) {
+        Throwable localThrowable = (e != null) ? e
+                : new IllegalStateException("Null Exception passed to onWebSocketError");
+        logger.debug("{}: Error during websocket communication: {}", getDeviceName(), localThrowable.getMessage(),
+                localThrowable);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, localThrowable.getMessage());
+        CommandExecutor localCommandExecutor = commandExecutor;
+        if (localCommandExecutor != null) {
+            localCommandExecutor.postOperationMode(OperationModeType.OFFLINE);
             commandExecutor = null;
         }
-        if (session != null) {
-            session.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + e.getMessage());
+        Session localSession = session;
+        if (localSession != null) {
+            localSession.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + localThrowable.getMessage());
             session = null;
         }
     }
 
     @Override
-    public void onWebSocketText(String msg) {
+    public void onWebSocketText(@Nullable String msg) {
         logger.debug("{}: onWebSocketText('{}')", getDeviceName(), msg);
         try {
-            xmlResponseProcessor.handleMessage(msg);
+            String localMessage = msg;
+            if (localMessage != null) {
+                xmlResponseProcessor.handleMessage(localMessage);
+            }
         } catch (Exception e) {
             logger.warn("{}: Could not parse XML from string '{}'.", getDeviceName(), msg, e);
         }
     }
 
     @Override
-    public void onWebSocketBinary(byte[] arr, int pos, int len) {
+    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
         // we don't expect binary data so just dump if we get some...
-        logger.debug("{}: onWebSocketBinary({}, {}, '{}')", getDeviceName(), pos, len, Arrays.toString(arr));
+        logger.debug("{}: onWebSocketBinary({}, {}, '{}')", getDeviceName(), offset, len, Arrays.toString(payload));
     }
 
     @Override
-    public void onWebSocketClose(int code, String reason) {
+    public void onWebSocketClose(int code, @Nullable String reason) {
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         missedPongsCount = 0;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (commandExecutor != null) {
-            commandExecutor.postOperationMode(OperationModeType.OFFLINE);
+        CommandExecutor localCommandExecutor = commandExecutor;
+        if (localCommandExecutor != null) {
+            localCommandExecutor.postOperationMode(OperationModeType.OFFLINE);
         }
     }
 
     @Override
-    public void onWebSocketFrame(Frame frame) {
-        if (frame.getType() == Type.PONG) {
-            missedPongsCount = 0;
+    public void onWebSocketFrame(@Nullable Frame frame) {
+        Frame localFrame = frame;
+        if (localFrame != null) {
+            if (localFrame.getType() == Type.PONG) {
+                missedPongsCount = 0;
+            }
         }
     }
 
     private synchronized void openConnection() {
         closeConnection();
         try {
-            client = new WebSocketClient();
+            WebSocketClient localClient = new WebSocketClient();
             // we need longer timeouts for web socket.
-            client.setMaxIdleTimeout(360 * 1000);
+            localClient.setMaxIdleTimeout(360 * 1000);
             // Port seems to be hard coded, therefore no user input or discovery is necessary
             String wsUrl = "ws://" + getIPAddress() + ":8080/";
             logger.debug("{}: Connecting to: {}", getDeviceName(), wsUrl);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("gabbo");
-            client.setStopTimeout(1000);
-            client.start();
-            sessionFuture = client.connect(this, new URI(wsUrl), request);
+            localClient.setStopTimeout(1000);
+            localClient.start();
+            sessionFuture = localClient.connect(this, new URI(wsUrl), request);
+            client = localClient;
         } catch (Exception e) {
             onWebSocketError(e);
         }
     }
 
     private synchronized void closeConnection() {
-        if (session != null) {
+        Session localSession = this.session;
+        if (localSession != null) {
             try {
-                session.close(StatusCode.NORMAL, "Binding shutdown");
+                localSession.close(StatusCode.NORMAL, "Binding shutdown");
             } catch (Exception e) {
                 logger.debug("{}: Error while closing websocket communication: {} ({})", getDeviceName(),
                         e.getClass().getName(), e.getMessage());
             }
             session = null;
         }
-        if (sessionFuture != null && !sessionFuture.isDone()) {
-            sessionFuture.cancel(true);
+        Future<?> localSessionFuture = sessionFuture;
+        if (localSessionFuture != null) {
+            if (!localSessionFuture.isDone()) {
+                localSessionFuture.cancel(true);
+            }
         }
-        if (client != null) {
+        WebSocketClient localClient = client;
+        if (localClient != null) {
             try {
-                client.stop();
-                client.destroy();
+                localClient.stop();
+                localClient.destroy();
             } catch (Exception e) {
                 logger.debug("{}: Error while closing websocket communication: {} ({})", getDeviceName(),
                         e.getClass().getName(), e.getMessage());
@@ -464,23 +497,25 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 || commandExecutor == null) {
             openConnection(); // try to reconnect....
         }
+        Session localSession = this.session;
+        if (localSession != null) {
+            if (getThing().getStatus() == ThingStatus.ONLINE && localSession.isOpen()) {
+                try {
+                    localSession.getRemote().sendPing(null);
+                    missedPongsCount++;
+                } catch (IOException e) {
+                    onWebSocketError(e);
+                    closeConnection();
+                    openConnection();
+                }
 
-        if (getThing().getStatus() == ThingStatus.ONLINE && this.session != null && this.session.isOpen()) {
-            try {
-                this.session.getRemote().sendPing(null);
-                missedPongsCount++;
-            } catch (IOException | NullPointerException e) {
-                onWebSocketError(e);
-                closeConnection();
-                openConnection();
-            }
-
-            if (missedPongsCount >= MAX_MISSED_PONGS_COUNT) {
-                logger.debug("{}: Closing connection because of too many missed PONGs: {} (max allowed {}) ",
-                        getDeviceName(), missedPongsCount, MAX_MISSED_PONGS_COUNT);
-                missedPongsCount = 0;
-                closeConnection();
-                openConnection();
+                if (missedPongsCount >= MAX_MISSED_PONGS_COUNT) {
+                    logger.debug("{}: Closing connection because of too many missed PONGs: {} (max allowed {}) ",
+                            getDeviceName(), missedPongsCount, MAX_MISSED_PONGS_COUNT);
+                    missedPongsCount = 0;
+                    closeConnection();
+                    openConnection();
+                }
             }
         }
     }
@@ -494,7 +529,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void handleGroupUpdated(BoseSoundTouchConfiguration masterPlayerConfiguration) {
         String deviceId = getMacAddress();
 
-        if (masterPlayerConfiguration != null && masterPlayerConfiguration.macAddress != null) {
+        if (masterPlayerConfiguration.macAddress != null) {
             // Stereo pair
             if (Objects.equals(masterPlayerConfiguration.macAddress, deviceId)) {
                 if (getThing().getThingTypeUID().equals(BST_10_THING_TYPE_UID)) {

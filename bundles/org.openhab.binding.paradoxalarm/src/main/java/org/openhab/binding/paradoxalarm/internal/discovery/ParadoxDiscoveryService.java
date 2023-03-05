@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         IParadoxCommunicator communicator = ip150BridgeHandler.getCommunicator();
         if (communicator != null && communicator.isOnline()) {
-            ParadoxPanel panel = ParadoxPanel.getInstance();
+            ParadoxPanel panel = ip150BridgeHandler.getPanel();
             discoverPanel(panel.getPanelInformation());
             discoverPartitions(panel.getPartitions());
             discoverZones(panel.getZones());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -28,8 +30,10 @@ import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
@@ -46,15 +50,18 @@ public class HomekitTaggedItem {
     private final Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
 
     /** configuration keywords at items level **/
-    public final static String DELAY = "commandDelay";
-    public final static String DIMMER_MODE = "dimmerMode";
+    public static final String DELAY = "commandDelay";
+    public static final String DIMMER_MODE = "dimmerMode";
     public static final String BATTERY_LOW_THRESHOLD = "lowThreshold";
-    public final static String INSTANCE = "instance";
-    public final static String INVERTED = "inverted";
-    public final static String MAX_VALUE = "maxValue";
-    public final static String MIN_VALUE = "minValue";
-    public final static String PRIMARY_SERVICE = "primary";
-    public final static String STEP = "step";
+    public static final String INSTANCE = "instance";
+    public static final String INVERTED = "inverted";
+    public static final String MAX_VALUE = "maxValue";
+    public static final String MIN_VALUE = "minValue";
+    public static final String PRIMARY_SERVICE = "primary";
+    public static final String STEP = "step";
+    public static final String UNIT = "unit";
+    public static final String EMULATE_STOP_STATE = "stop";
+    public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
@@ -84,7 +91,7 @@ public class HomekitTaggedItem {
         this.homekitAccessoryType = homekitAccessoryType;
         this.homekitCharacteristicType = HomekitCharacteristicType.EMPTY;
         if (homekitAccessoryType != DUMMY) {
-            this.id = calculateId(item.getItem());
+            this.id = calculateId(item.getItem().getName());
         } else {
             this.id = 0;
         }
@@ -182,6 +189,23 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * Send QuantityType command to a NumberItem (or a Group:Number)
+     * 
+     * @param command
+     */
+    public void send(QuantityType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof NumberItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof NumberItem) {
+            ((NumberItem) getItem()).send(command);
+            return;
+        }
+        logger.warn("Received QuantityType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
      * Send OnOffType command to a SwitchItem (or a Group:Switch)
      * 
      * @param command
@@ -195,6 +219,22 @@ public class HomekitTaggedItem {
             return;
         }
         logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send IncreaseDecreaseType command to a DimmerItem (or a Group:Dimmer)
+     */
+    public void send(IncreaseDecreaseType command) {
+        if (getItem() instanceof GroupItem && getBaseItem() instanceof DimmerItem) {
+            ((GroupItem) getItem()).send(command);
+            return;
+        } else if (getItem() instanceof DimmerItem) {
+            ((DimmerItem) getItem()).send(command);
+            return;
+        }
+        logger.warn(
+                "Received IncreaseDecreaseType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 
@@ -322,6 +362,9 @@ public class HomekitTaggedItem {
                 if ((value instanceof Long) && (defaultValue instanceof BigDecimal)) {
                     return (T) BigDecimal.valueOf((Long) value);
                 }
+                if (defaultValue instanceof String) {
+                    return (T) value.toString();
+                }
             }
 
         }
@@ -385,6 +428,47 @@ public class HomekitTaggedItem {
     }
 
     /**
+     * return configuration as quantity of the given unit
+     * 
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return value
+     */
+    public QuantityType<?> getConfigurationAsQuantity(String key, QuantityType defaultValue,
+            boolean relativeConversion) {
+        String stringValue = getConfiguration(key, new String());
+        if (stringValue.isEmpty()) {
+            return defaultValue;
+        }
+        var parsedValue = new QuantityType(stringValue);
+        QuantityType<?> convertedValue;
+
+        if (relativeConversion) {
+            convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+        } else {
+            convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+        }
+        // not convertible? just assume it's in the item's unit
+        if (convertedValue == null) {
+            Unit unit;
+            if (getBaseItem() instanceof NumberItem && (unit = ((NumberItem) getBaseItem()).getUnit()) != null) {
+                var bdValue = new BigDecimal(stringValue);
+                parsedValue = new QuantityType(bdValue, unit);
+                if (relativeConversion) {
+                    convertedValue = parsedValue.toUnitRelative(defaultValue.getUnit());
+                } else {
+                    convertedValue = parsedValue.toInvertibleUnit(defaultValue.getUnit());
+                }
+            }
+        }
+        // still not convertible? just assume it's in the default's unit
+        if (convertedValue == null) {
+            return new QuantityType(parsedValue.toBigDecimal(), defaultValue.getUnit());
+        }
+        return convertedValue;
+    }
+
+    /**
      * parse and apply item configuration.
      */
     private void parseConfiguration() {
@@ -400,24 +484,25 @@ public class HomekitTaggedItem {
         }
     }
 
-    private int calculateId(Item item) {
+    public static int calculateId(String name) {
         // magic number 629 is the legacy from apache HashCodeBuilder (17*37)
-        int id = 629 + item.getName().hashCode();
+        int id = 629 + name.hashCode();
         if (id < 0) {
             id += Integer.MAX_VALUE;
         }
         if (id < 2) {
             id = 2; // 0 and 1 are reserved
         }
+
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
-            if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.warn(
+            if (!CREATED_ACCESSORY_IDS.get(id).equals(name)) {
+                LoggerFactory.getLogger(HomekitTaggedItem.class).warn(
                         "Could not create HomeKit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab-addons/issues/257#issuecomment-125886562",
-                        item.getName(), CREATED_ACCESSORY_IDS.get(id));
+                        name, CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }
         } else {
-            CREATED_ACCESSORY_IDS.put(id, item.getName());
+            CREATED_ACCESSORY_IDS.put(id, name);
         }
         return id;
     }

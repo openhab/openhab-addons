@@ -13,7 +13,7 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Energy Sensor</label>
-		<description>A Energy device.</description>
+		<description>An Energy device.</description>
 
 		<channels>
 			<channel id="instantPower" typeId="instantpower"/>

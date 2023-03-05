@@ -45,7 +45,7 @@ Each `eventfilter` thing requires a bridge of type `calendar` and has following 
 
 ## Channels
 
-### Channels for `calendar` 
+### Channels for `calendar`
 
 The channels of `calendar` describe the current and the next forthcoming event.
 They are all read-only.
@@ -73,15 +73,15 @@ The channels of `eventfilter` are generated using following scheme, all are read
 
 The scheme replaces `<no>` by the results index, beginning at `0`. An `eventfilter` having `maxEvents` set to 3 will have following channels:
 
-* `result_0#begin`
-* `result_0#end`
-* `result_0#title`
-* `result_1#begin`
-* `result_1#end`
-* `result_1#title`
-* `result_2#begin`
-* `result_2#end`
-* `result_2#title` 
+- `result_0#begin`
+- `result_0#end`
+- `result_0#title`
+- `result_1#begin`
+- `result_1#end`
+- `result_1#title`
+- `result_2#begin`
+- `result_2#end`
+- `result_2#title`
 
 ## Command Tags
 
@@ -91,11 +91,11 @@ A command tag must consist of at least three fields.
 A fourth field is optional.
 The syntax is as follows:
 
-```
-	BEGIN:Item_Name:New_State_Value
-	BEGIN:Item_Name:New_State_Value:Authorization_Code
-	END:Item_Name:New_State_Value
-	END:Item_Name:New_State_Value:Authorization_Code
+```text
+BEGIN:Item_Name:New_State_Value
+BEGIN:Item_Name:New_State_Value:Authorization_Code
+END:Item_Name:New_State_Value
+END:Item_Name:New_State_Value:Authorization_Code
 ```
 
 The first field **must** be either `BEGIN` or `END`.
@@ -110,7 +110,7 @@ The `New_State_Value` is the state value that will be sent to the item.
 It must be a value which is compatible with the item type.
 See openHAB Core definitions for [command types](https://www.openhab.org/docs/concepts/items.html#state-and-command-type-formatting) for valid types and formats.
 
-The `Authorization_Code` may *optionally* be used as follows:
+The `Authorization_Code` may _optionally_ be used as follows:
 
 - When the thing configuration parameter `authorizationCode` is not blank, the binding will compare the `Authorization_Code` field against the `authorizationCode` configuration parameter, and it will only execute the command if the two strings are the same.
 
@@ -120,14 +120,14 @@ The `Authorization_Code` may *optionally* be used as follows:
 
 All required information must be provided in the thing definition, either via UI or in the `.things` file..
 
-```
+```java
 Bridge icalendar:calendar:deadbeef    "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]
 Thing  icalendar:eventfilter:feedd0d0 "Tomorrows events" (icalendar:calendar:deadbeef) [ maxEvents=1, datetimeUnit="DAY", datetimeStart=1, datetimeEnd=2, datetimeRound=true ]
 ```
 
 Link the channels as usual to items:
 
-```
+```java
 String   current_event_name        "current event [%s]"                       <calendar> { channel="icalendar:calendar:deadbeef:current_title" }
 DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
 String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
@@ -138,7 +138,7 @@ DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <c
 
 Sitemap just showing the current event and the beginning of the next:
 
-```
+```perl
 sitemap local label="My Calendar Sitemap" {
     Frame label="events" {
         Text item=current_event_name label="current event [%s]"
@@ -155,14 +155,14 @@ sitemap local label="My Calendar Sitemap" {
 
 Command tags in a calendar event (in the case that configuration parameter `authorizationCode` equals `abc`):
 
-```
+```text
 BEGIN:Calendar_Test_Temperature:12.3°C:abc
 END:Calendar_Test_Temperature:23.4°F:abc
 ```
 
 Command tags in a calendar event (in the case that configuration parameter `authorizationCode` is not set):
 
-```
+```text
 BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```

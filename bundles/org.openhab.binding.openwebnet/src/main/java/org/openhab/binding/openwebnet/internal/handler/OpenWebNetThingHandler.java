@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThingHandler} is responsible for handling commands for a OpenWebNet device.
+ * The {@link OpenWebNetThingHandler} is responsible for handling commands for an OpenWebNet device.
  * It's the abstract class for all OpenWebNet things. It should be extended by each specific OpenWebNet category of
  * device (WHO).
  *

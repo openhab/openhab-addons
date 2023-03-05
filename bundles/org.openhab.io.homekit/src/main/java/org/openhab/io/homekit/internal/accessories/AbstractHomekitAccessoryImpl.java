@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,19 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,17 +32,19 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.base.BaseCharacteristic;
 import io.github.hapjava.services.Service;
 
 /**
@@ -46,13 +53,14 @@ import io.github.hapjava.services.Service;
  *
  * @author Andy Lintner - Initial contribution
  */
-abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
+public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
     private final List<HomekitTaggedItem> characteristics;
     private final HomekitTaggedItem accessory;
     private final HomekitAccessoryUpdater updater;
     private final HomekitSettings settings;
     private final List<Service> services;
+    private final Map<Class<? extends Characteristic>, Characteristic> rawCharacteristics;
 
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
@@ -61,10 +69,42 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.updater = updater;
         this.services = new ArrayList<>();
         this.settings = settings;
+        this.rawCharacteristics = new HashMap<>();
+        // create raw characteristics for mandatory characteristics
+        characteristics.forEach(c -> {
+            var rawCharacteristic = HomekitCharacteristicFactory.createNullableCharacteristic(c, updater);
+            // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
+            if (rawCharacteristic != null) {
+                rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
+    }
+
+    /**
+     * Gives an accessory an opportunity to populate additional characteristics after all optional
+     * charactericteristics have been added.
+     */
+    public void init() throws HomekitException {
+    }
+
+    /**
+     * @param parentAccessory The primary service to link to.
+     * @return If this accessory should be nested as a linked service below a primary service,
+     *         rather than as a sibling.
+     */
+    public boolean isLinkable(HomekitAccessory parentAccessory) {
+        return false;
+    }
+
+    /**
+     * @return If this accessory is only valid as a linked service, not as a standalone accessory.
+     */
+    public boolean isLinkedServiceOnly() {
+        return false;
     }
 
     @NonNullByDefault
-    protected Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
+    public Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
         return characteristics.stream().filter(c -> c.getCharacteristicType() == type).findAny();
     }
 
@@ -237,26 +277,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param customEnumList list to store custom state enumeration
      */
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
+    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map,
             @Nullable List<T> customEnumList) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
             if (configuration != null) {
-                map.forEach((k, current_value) -> {
-                    final Object new_value = configuration.get(k.toString());
-                    if (new_value instanceof String) {
-                        map.put(k, (String) new_value);
-                        if (customEnumList != null) {
-                            customEnumList.add(k);
-                        }
-                    }
-                });
+                HomekitCharacteristicFactory.updateMapping(configuration, map, customEnumList);
             }
         });
     }
 
     @NonNullByDefault
-    protected <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
+    public <T> void updateMapping(HomekitCharacteristicType characteristicType, Map<T, String> map) {
         updateMapping(characteristicType, map, null);
     }
 
@@ -271,30 +303,49 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     @NonNullByDefault
-    protected <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            final State state = c.get().getItem().getState();
-            logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", characteristicType.getTag(),
-                    state, mapping);
-            if (state instanceof StringType) {
-                return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
-                        .findAny().map(Entry::getKey).orElseGet(() -> {
-                            logger.warn(
-                                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
-                                    state.toString(), characteristicType.getTag(), c.get().getName(), mapping.values(),
-                                    defaultValue);
-                            return defaultValue;
-                        });
-            }
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
         }
         return defaultValue;
     }
 
     @NonNullByDefault
-    protected void addCharacteristic(HomekitTaggedItem characteristic) {
-        characteristics.add(characteristic);
+    protected void addCharacteristic(HomekitTaggedItem item, Characteristic characteristic)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        characteristics.add(item);
+        addCharacteristic(characteristic);
+    }
+
+    /**
+     * If the primary service does not yet exist, it won't be added to it. It's the resposibility
+     * of the caller to add characteristics when the primary service is created.
+     *
+     * @param type
+     * @param characteristic
+     */
+    @NonNullByDefault
+    public void addCharacteristic(Characteristic characteristic)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        if (rawCharacteristics.containsKey(characteristic.getClass())) {
+            logger.warn("Accessory {} already has a characteristic of type {}; ignoring additional definition.",
+                    accessory.getName(), characteristic.getClass().getSimpleName());
+            return;
+        }
+        rawCharacteristics.put(characteristic.getClass(), characteristic);
+        var service = getPrimaryService();
+        if (service != null) {
+            // find the corresponding add method at service and call it.
+            service.getClass().getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                    characteristic);
+        }
+    }
+
+    @NonNullByDefault
+    public <T> Optional<T> getCharacteristic(Class<? extends T> klazz) {
+        return Optional.ofNullable((T) rawCharacteristics.get(klazz));
     }
 
     /**
@@ -348,5 +399,61 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 .orElseThrow(() -> new IncompleteAccessoryException(characteristicType));
         return new BooleanItemReader(taggedItem.getItem(), taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+    }
+
+    /**
+     * Calculates a string as json of the configuration for this accessory, suitable for seeing
+     * if the structure has changed, and building a dummy accessory for it. It is _not_ suitable
+     * for actual publishing to by HAP-Java to iOS devices, since all the IIDs will be set to 0.
+     * The IIDs will get replaced by actual values by HAP-Java inside of DummyHomekitCharacteristic.
+     */
+    public String toJson() {
+        var builder = Json.createArrayBuilder();
+        getServices().forEach(s -> {
+            builder.add(serviceToJson(s));
+        });
+        return builder.build().toString();
+    }
+
+    private JsonObjectBuilder serviceToJson(Service service) {
+        var serviceBuilder = Json.createObjectBuilder();
+        serviceBuilder.add("type", service.getType());
+        var characteristics = Json.createArrayBuilder();
+
+        service.getCharacteristics().stream().sorted((l, r) -> l.getClass().getName().compareTo(r.getClass().getName()))
+                .forEach(c -> {
+                    try {
+                        var cJson = c.toJson(0).get();
+                        var cBuilder = Json.createObjectBuilder();
+                        // Need to copy over everything except the current value, which we instead
+                        // reach in and get the default value
+                        cJson.forEach((k, v) -> {
+                            if (k.equals("value")) {
+                                Object defaultValue = ((BaseCharacteristic) c).getDefault();
+                                if (defaultValue instanceof Boolean) {
+                                    cBuilder.add("value", (boolean) defaultValue);
+                                } else if (defaultValue instanceof Integer) {
+                                    cBuilder.add("value", (int) defaultValue);
+                                } else if (defaultValue instanceof Double) {
+                                    cBuilder.add("value", (double) defaultValue);
+                                } else {
+                                    cBuilder.add("value", defaultValue.toString());
+                                }
+                            } else {
+                                cBuilder.add(k, v);
+                            }
+                        });
+                        characteristics.add(cBuilder.build());
+                    } catch (InterruptedException | ExecutionException e) {
+                    }
+                });
+        serviceBuilder.add("c", characteristics);
+
+        if (!service.getLinkedServices().isEmpty()) {
+            var linkedServices = Json.createArrayBuilder();
+            service.getLinkedServices().forEach(s -> linkedServices.add(serviceToJson(s)));
+            serviceBuilder.add("ls", linkedServices);
+        }
+        return serviceBuilder;
     }
 }

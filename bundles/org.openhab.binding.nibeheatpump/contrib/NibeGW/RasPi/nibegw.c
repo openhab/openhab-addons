@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- *	This application listening data from Nibe F1145/F1245/F1155/F1255 heat pumps (RS485 bus)
+ *	This application listening data from various Nibe heat pumps (RS485 bus)
  *	and send valid frames to configurable IP/port address by UDP packets.
  *	Application also acknowledge the valid packets to heat pump.
  *
@@ -21,18 +21,18 @@
  *	MODBUS module support should be turned ON from the heat pump.
  *
  *	Frame format:
- *	+----+----+------+-----+-----+----+----+-----+
- *	| 5C | 00 | ADDR | CMD | LEN |  DATA   | CHK |
- *	+----+----+------+-----+-----+----+----+-----+
+ *	+----+------+------+-----+-----+----+----+-----+
+ *	| 5C | ADDR | ADDR | CMD | LEN |  DATA   | CHK |
+ *	+----+------+------+-----+-----+----+----+-----+
  *
- *	          |------------ CHK -----------|
+ *	     |------------ CHK ------------------|
  *
- *	 Address: 
- *	   0x16 = SMS40
- *	   0x19 = RMU40
- *	   0x20 = MODBUS40
+ *	Address: 
+ *		0x0016 = SMS40
+ *		0x0019 = RMU40
+ *		0x0020 = MODBUS40
  *
- *   Checksum: XOR
+ *	Checksum: XOR
  *
  *	When valid data is received (checksum ok),
  *	 ACK (0x06) should be sent to the heat pump.
@@ -56,6 +56,7 @@
  *	30.6.2015   v1.21   Some fixes.
  *	20.2.2017   v1.22   Separated read and write token support.
  *	7.2.2021    v1.23   Fixed compile error in RasPi.
+ *	19.11.2022  v1.30   Support 16-bit addressing.
  */
 
 #include <signal.h>
@@ -273,12 +274,6 @@ int checkMessage(const unsigned char* const data, int len)
 		if (data[0] != 0x5C)
 			return -1;
 		
-		if (len >= 2)
-		{
-			if (data[1] != 0x00)
-				return -1;
-		}
-		
 		if (len >= 6)
 		{
 			int datalen = data[4];
@@ -289,7 +284,7 @@ int checkMessage(const unsigned char* const data, int len)
 			unsigned char calc_checksum = 0;
 			
 			// calculate XOR checksum
-			for(int i = 2; i < (datalen + 5); i++)
+			for(int i = 1; i < (datalen + 5); i++)
 				calc_checksum ^= data[i];
 			
 			unsigned char msg_checksum = data[datalen + 5];

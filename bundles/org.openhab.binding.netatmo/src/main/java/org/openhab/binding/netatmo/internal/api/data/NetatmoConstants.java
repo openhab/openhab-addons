@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class NetatmoConstants {
         PRESSURE(260, 1260, 0.1, HECTO(SIUnits.PASCAL), "pressure", "measure", true),
         CO2(0, 5000, 50, Units.PARTS_PER_MILLION, "co2", "measure", true),
         NOISE(35, 120, 1, Units.DECIBEL, "noise", "measure", true),
-        RAIN_QUANTITY(0, 150, 0.1, MILLI(SIUnits.METRE), "sum_rain", "sum_rain", false),
+        RAIN_QUANTITY(0, Double.MAX_VALUE, 0.1, MILLI(SIUnits.METRE), "sum_rain", "sum_rain", false),
         RAIN_INTENSITY(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR, "", "", false),
         WIND_SPEED(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR, "", "", false),
         WIND_ANGLE(0, 360, 5, Units.DEGREE_ANGLE, "", "", false),
@@ -120,7 +120,6 @@ public class NetatmoConstants {
 
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
-    public static final String URL_APP = "https://app.netatmo.net/";
     public static final String PATH_OAUTH = "oauth2";
     public static final String SUB_PATH_TOKEN = "token";
     public static final String SUB_PATH_AUTHORIZE = "authorize";

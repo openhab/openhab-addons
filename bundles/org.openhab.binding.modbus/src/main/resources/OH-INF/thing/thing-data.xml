@@ -82,7 +82,7 @@
 				<label>Write Address</label>
 				<description><![CDATA[Start address of the first holding register or coil in the write. Use empty for read-only things.
 				<br />Use zero based address, e.g. in place of 400001 (first holding register), use the address 0. This address is passed to data frame as is.
-				<br />One can write individual bits of an register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
+				<br />One can write individual bits of a register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
 				]]></description>
 			</parameter>
 			<parameter name="writeType" type="text">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 class SecurityCapability extends RestCapability<SecurityApi> {
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
 
-    private static final Map<String, HomeEvent> eventBuffer = new HashMap<>();
+    private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
     private @Nullable ZonedDateTime freshestEventTime;
 
     SecurityCapability(CommonInterface handler) {

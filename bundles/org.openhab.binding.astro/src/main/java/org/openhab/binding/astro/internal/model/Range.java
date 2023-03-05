@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.model;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Calendar;
+import java.util.Comparator;
 
 import javax.measure.quantity.Time;
 
@@ -23,7 +24,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
 /**
- * Range class which holds a start and a end calendar object.
+ * Range class which holds a start and an end calendar object.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
@@ -80,5 +81,14 @@ public class Range {
                 : DateTimeUtils.truncateToMidnight(cal).getTimeInMillis();
         long matchEnd = end != null ? end.getTimeInMillis() : DateTimeUtils.endOfDayDate(cal).getTimeInMillis();
         return cal.getTimeInMillis() >= matchStart && cal.getTimeInMillis() < matchEnd;
+    }
+
+    private static Comparator<Calendar> nullSafeCalendarComparator = Comparator.nullsFirst(Calendar::compareTo);
+
+    private static Comparator<Range> rangeComparator = Comparator.comparing(Range::getStart, nullSafeCalendarComparator)
+            .thenComparing(Range::getEnd, nullSafeCalendarComparator);
+
+    public int compareTo(Range that) {
+        return rangeComparator.compare(this, that);
     }
 }

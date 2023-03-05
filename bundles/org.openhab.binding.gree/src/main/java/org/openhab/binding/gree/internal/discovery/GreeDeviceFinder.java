@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = GreeDeviceFinder.class, configurationPid = "devicefinder.gree")
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
-    private static final Gson gson = (new GsonBuilder()).create();
+    private static final Gson GSON = (new GsonBuilder()).create();
 
     protected final InetAddress ipAddress = InetAddress.getLoopbackAddress();
     protected Map<String, GreeAirDevice> deviceTable = new HashMap<>();
@@ -75,7 +75,7 @@ public class GreeDeviceFinder {
             // Send the Scan message
             GreeScanRequestDTO scanGson = new GreeScanRequestDTO();
             scanGson.t = GREE_CMDT_SCAN;
-            String scanReq = gson.toJson(scanGson);
+            String scanReq = GSON.toJson(scanGson);
             sendData = scanReq.getBytes(StandardCharsets.UTF_8);
             logger.debug("Sending scan packet to {}", ipAddress.getHostAddress());
             clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
@@ -102,13 +102,13 @@ public class GreeDeviceFinder {
                         continue;
                     }
 
-                    // Decrypt message - a a GreeException is thrown when something went wrong
+                    // Decrypt message - a GreeException is thrown when something went wrong
                     String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
                             .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
                     // Create the JSON to hold the response values
-                    scanResponseGson.packJson = gson.fromJson(decryptedMsg, GreeScanReponsePackDTO.class);
+                    scanResponseGson.packJson = GSON.fromJson(decryptedMsg, GreeScanReponsePackDTO.class);
 
                     // Now make sure the device is reported as a Gree device
                     if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
@@ -135,7 +135,7 @@ public class GreeDeviceFinder {
 
     private <T> T fromJson(DatagramPacket packet, Class<T> classOfT) {
         String json = new String(packet.getData(), StandardCharsets.UTF_8).replace("\\u0000", "").trim();
-        return gson.fromJson(json, classOfT);
+        return GSON.fromJson(json, classOfT);
     }
 
     public void addDevice(GreeAirDevice newDevice) {

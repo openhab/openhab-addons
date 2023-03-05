@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import java.net.URL;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Helper interface for jUnit Tests to provide an {@link TimetablesApiTestModule}.
+ * Helper interface for jUnit Tests to provide a {@link TimetablesApiTestModule}.
  * 
  * @author Sönke Küper - initial contribution.
  */
@@ -33,7 +33,7 @@ public interface TimetablesV1ImplTestHelper {
     public static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
 
     /**
-     * Creates an {@link TimetablesApiTestModule} that uses http response data from file system.
+     * Creates a {@link TimetablesApiTestModule} that uses http response data from file system.
      * Uses default-testdata from directory /timetablesData
      */
     public default TimetablesApiTestModule createApiWithTestdata() throws Exception {
@@ -41,7 +41,7 @@ public interface TimetablesV1ImplTestHelper {
     }
 
     /**
-     * Creates an {@link TimetablesApiTestModule} that uses http response data from file system.
+     * Creates a {@link TimetablesApiTestModule} that uses http response data from file system.
      * 
      * @param dataDirectory Directory within test-resources containing the stub-data.
      */

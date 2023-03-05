@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,6 +119,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
     private @Nullable ScheduledFuture<?> statusJob;
+    private @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -171,7 +172,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void initialize() {
         // start background initialization:
-        scheduler.schedule(() -> {
+        initJob = scheduler.schedule(() -> {
             boolean start = true;
             try {
                 initializeThingConfig();
@@ -187,12 +188,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 start = initializeThing();
             } catch (ShellyApiException e) {
                 ShellyApiResult res = e.getApiResult();
-                if (profile.alwaysOn && e.isConnectionError()) {
-                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-connect",
-                            e.toString());
-                }
-                if (isAuthorizationFailed(res)) {
+                String mid = "";
+                if (e.isJsonError()) { // invalid JSON format
+                    mid = "offline.status-error-unexpected-error";
                     start = false;
+                } else if (isAuthorizationFailed(res)) {
+                    mid = "offline.conf-error-access-denied";
+                    start = false;
+                } else if (profile.alwaysOn && e.isConnectionError()) {
+                    mid = "offline.status-error-connect";
+                }
+                if (!mid.isEmpty()) {
+                    setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, mid, e.toString());
                 }
                 logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
             } catch (IllegalArgumentException e) {
@@ -576,14 +583,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, profile.hostname, profile.settingsJson);
         logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{}), ext. Switch Add-On: {}"
                 + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isMotion:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
-                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter, profile.isSensor,
-                profile.isDW, profile.hasBattery,
-                profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", profile.isSense,
-                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
-                profile.alwaysOn, profile.updatePeriod);
+                profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
+                profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
+                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
+                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
+                profile.inColor, profile.alwaysOn, profile.updatePeriod);
+        if (profile.status.extTemperature != null || profile.status.extHumidity != null
+                || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
+            logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
+        }
     }
 
     private void addStateOptions(ShellyDeviceProfile prf) {
@@ -1463,7 +1474,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
-        ScheduledFuture<?> job = this.statusJob;
+        ScheduledFuture<?> job = this.initJob;
+        if (job != null) {
+            job.cancel(true);
+            initJob = null;
+        }
+        job = this.statusJob;
         if (job != null) {
             job.cancel(true);
             statusJob = null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.bluetooth.am43.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for AM43 Binding.
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public class AM43Configuration {
 
-    public String address;
+    public String address = "";
     public int refreshInterval;
     public boolean invertPosition;
     public int commandTimeout;

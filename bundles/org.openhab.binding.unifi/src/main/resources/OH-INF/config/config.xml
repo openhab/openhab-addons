@@ -54,7 +54,7 @@
 	<config-description uri="thing-type:unifi:client">
 		<parameter name="cid" type="text" required="true">
 			<label>Client ID</label>
-			<description>The MAC address, IP address, hostname or alias of the client</description>
+			<description>The MAC address, IP address, hostname or name of the client</description>
 		</parameter>
 		<parameter name="site" type="text" required="false">
 			<label>Site</label>
@@ -64,6 +64,36 @@
 			<label>Consider Home Interval</label>
 			<description>The interval in seconds to consider the client as home</description>
 			<default>180</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:unifi:guestVouchersGenerate">
+		<parameter name="voucherCount" type="integer">
+			<label>Number</label>
+			<description>Number of vouchers to create</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="voucherExpiration" type="integer" unit="min">
+			<label>Expiration Time</label>
+			<description>Minutes a voucher is valid after activation</description>
+			<default>1440</default>
+		</parameter>
+		<parameter name="voucherUsers" type="integer">
+			<label>Users</label>
+			<description>Number of users for voucher, 0 if no limit</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="voucherUpLimit" type="integer">
+			<label>Upload Speed Limit</label>
+			<description>Upload speed limit in kbps, no limit if not set</description>
+		</parameter>
+		<parameter name="voucherDownLimit" type="integer">
+			<label>Download Speed Limit</label>
+			<description>Download speed limit in kbps, no limit if not set</description>
+		</parameter>
+		<parameter name="voucherDataQuota" type="integer">
+			<label>Data Transfer Quota</label>
+			<description>Data transfer quota in MB per user, no limit if not set</description>
 		</parameter>
 	</config-description>
 
@@ -84,7 +114,7 @@
 			<description>The value to set when setting PoE on.</description>
 			<options>
 				<option value="auto">Auto</option>
-				<option value="24v">24V</option>
+				<option value="pasv24">24V</option>
 				<option value="passthrough">Passthrough</option>
 			</options>
 			<default>auto</default>

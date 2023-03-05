@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -58,6 +57,7 @@ import org.openhab.binding.innogysmarthome.internal.listener.DeviceStatusListene
 import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
 import org.openhab.binding.innogysmarthome.internal.manager.DeviceStructureManager;
 import org.openhab.binding.innogysmarthome.internal.manager.FullDeviceManager;
+import org.openhab.binding.innogysmarthome.internal.util.ExceptionUtils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -954,7 +954,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             isReinitialize = false;
             Thread.currentThread().interrupt();
         } else if (e instanceof ExecutionException) {
-            logger.debug("ExecutionException: {}", ExceptionUtils.getRootCauseMessage(e));
+            logger.debug("ExecutionException: {}", ExceptionUtils.getRootThrowable(e).getMessage());
             updateStatus(ThingStatus.OFFLINE);
         } else {
             logger.debug("Unknown exception", e);

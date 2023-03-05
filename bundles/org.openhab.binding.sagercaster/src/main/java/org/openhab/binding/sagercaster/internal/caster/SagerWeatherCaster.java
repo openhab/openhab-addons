@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,15 +76,15 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
-    public final static String UNDEF = "-";
+    public static final String UNDEF = "-";
     // Northern Polar Zone & Northern Tropical Zone
-    private final static String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
+    private static final String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
     // Northern Temperate Zone
-    private final static String[] NTZDIRECTIONS = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
+    private static final String[] NTZDIRECTIONS = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
     // Southern Polar Zone & Southern Tropical Zone
-    private final static String[] SPZDIRECTIONS = { "N", "NW", "W", "SW", "S", "SE", "E", "NE" };
+    private static final String[] SPZDIRECTIONS = { "N", "NW", "W", "SW", "S", "SE", "E", "NE" };
     // Southern Temperate Zone
-    private final static String[] STZDIRECTIONS = { "S", "SE", "E", "NE", "N", "NW", "W", "SW" };
+    private static final String[] STZDIRECTIONS = { "S", "SE", "E", "NE", "N", "NW", "W", "SW" };
 
     private final Logger logger = LoggerFactory.getLogger(SagerWeatherCaster.class);
     private final Properties forecaster = new Properties();
