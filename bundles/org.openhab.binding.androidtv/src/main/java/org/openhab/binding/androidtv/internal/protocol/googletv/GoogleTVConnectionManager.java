@@ -1273,7 +1273,7 @@ public class GoogleTVConnectionManager {
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
                 }
             } else if (command instanceof StringType) {
-                if ((power && command.equals("OFF")) || (!power && command.equals("ON"))) {
+                if ((power && command.toString().equals("OFF")) || (!power && command.toString().equals("ON"))) {
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204081a1003")));
                 }
             }

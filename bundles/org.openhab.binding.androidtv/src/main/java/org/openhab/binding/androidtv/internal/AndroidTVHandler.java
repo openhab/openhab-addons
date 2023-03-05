@@ -168,6 +168,12 @@ public class AndroidTVHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("{} - Command received at handler: {} {}", this.thingID, channelUID.getId().toString(),
                 command.toString());
+
+        if (command.toString().equals("REFRESH")) {
+            // REFRESH causes issues on some channels. Block for now until implemented.
+            return;
+        }
+
         if (CHANNEL_DEBUG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 if (command.toString().equals("GOOGLETV_HALT") && (googletvConnectionManager != null)) {
@@ -196,7 +202,7 @@ public class AndroidTVHandler extends BaseThingHandler {
             return;
         }
 
-        if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
             if (CHANNEL_PINCODE.equals(channelUID.getId())) {
                 if (command instanceof StringType) {
                     if (!shieldtvConnectionManager.getLoggedIn()) {
@@ -213,7 +219,13 @@ public class AndroidTVHandler extends BaseThingHandler {
             }
         }
 
-        googletvConnectionManager.handleCommand(channelUID, command);
+        if (googletvConnectionManager != null) {
+            googletvConnectionManager.handleCommand(channelUID, command);
+            return;
+        }
+
+        logger.warn("{} - Commands All Failed.  Please report this as a bug. {} {}", thingID, channelUID.getId(),
+                command.toString());
     }
 
     @Override
