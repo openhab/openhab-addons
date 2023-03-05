@@ -77,9 +77,8 @@ Fragment-Host: org.openhab.binding.hue
 	org.eclipse.jetty.websocket.api;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.websocket.client;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.websocket.common;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.alpn.client;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.http2.common;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.http2.hpack;version='[9.4.50,9.4.51)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
-	org.osgi.service.component;version='[1.5.0,1.5.1)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	org.eclipse.jetty.alpn.client;version='[9.4.46,9.4.51)',\
-	org.eclipse.jetty.http2.common;version='[9.4.46,9.4.51)',\
-	org.eclipse.jetty.http2.hpack;version='[9.4.46,9.4.51)'
+	org.osgi.service.cm;version='[1.6.0,1.6.1)'
