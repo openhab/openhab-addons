@@ -82,7 +82,8 @@ public class VolumioData {
             setTitle("");
         }
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_ALBUM)) {
+        if (jsonObject.has(VolumioBindingConstants.CHANNEL_ALBUM)
+                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_ALBUM)) {
             setAlbum(jsonObject.getString(VolumioBindingConstants.CHANNEL_ALBUM));
         } else {
             setAlbum("");
@@ -113,7 +114,8 @@ public class VolumioData {
             setTrackType("");
         }
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_COVER_ART)) {
+        if (jsonObject.has(VolumioBindingConstants.CHANNEL_COVER_ART)
+                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_COVER_ART)) {
             setCoverArt(jsonObject.getString(VolumioBindingConstants.CHANNEL_COVER_ART));
         } else {
             setCoverArt(null);
@@ -241,24 +243,27 @@ public class VolumioData {
     }
 
     public void setCoverArt(@Nullable String coverArtUrl) {
+        if (coverArtUrl != null) {
+            if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
+                // TODO: Only handle images with complete uri atm.
+                if (!coverArtUrl.startsWith("http")) {
+                    return;
+                }
 
-        if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
-            // TODO: Only handle images with complete uri atm.
-            if (!coverArtUrl.startsWith("http")) {
-                return;
+                try {
+                    URL url = new URL(coverArtUrl);
+                    URLConnection connection = url.openConnection();
+                    coverArt = IOUtils.toByteArray(connection.getInputStream());
+
+                } catch (IOException ioe) {
+                    coverArt = null;
+                }
+                this.coverArtDirty = true;
+            } else {
+                this.coverArtDirty = false;
             }
-
-            try {
-                URL url = new URL(coverArtUrl);
-                URLConnection connection = url.openConnection();
-                coverArt = IOUtils.toByteArray(connection.getInputStream());
-
-            } catch (IOException ioe) {
-                coverArt = null;
-            }
-            this.coverArtDirty = true;
         } else {
-            this.coverArtDirty = false;
+            coverArt = null;
         }
     }
 
