@@ -56,7 +56,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private SpeedtestConfiguration config = new SpeedtestConfiguration();
     private Gson gson = new Gson();
     private static Runtime rt = Runtime.getRuntime();
-    private long pollingInterval = 1440;
+    private long pollingInterval = 60;
     private String serverID = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;

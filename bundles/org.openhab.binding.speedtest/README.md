@@ -5,51 +5,45 @@ It is based on the command line interface (CLI) version of Ookla's Speedtest (ht
 
 The Ookla CLI Speedtest application MUST be installed on your openHAB instance when using the Speedtest Binding.
 
-
 ## Why Ookla's Speedtest?
 
 Fully supported and maintained by Ookla with the latest Speedtest technology for best results:
 
-* Consistent measurement, even on high bandwidth
-* Consistent measurement, very much independent from the performance of the host system
-
+- Consistent measurement, even on high bandwidth
+- Consistent measurement, very much independent from the performance of the host system
 
 ## What functionality does Ookla's Speedtest offer?
 
 The Speedtest Binding is using the following functionality, provided by Ookla's Speedtest:
 
-* Output of an accurate timestamp per measurement
-* Output of Ping time and Jitter
-* Output of Bandwidth, transferred Bytes and elapsed time for Down-/Upload
-* Output of the used interface with Internal/External IP, MAC Address and the Internet Service Provider (ISP)
-* Output of a result ID and a result URL
-* Output of the used Server and location the Speedtest was run against
-* Possiblity to pre-select a server used for testing
-
+- Output of an accurate timestamp per measurement
+- Output of Ping time and Jitter
+- Output of Bandwidth, transferred Bytes and elapsed time for Down-/Upload
+- Output of the used interface with Internal/External IP, MAC Address and the Internet Service Provider (ISP)
+- Output of a result ID and a result URL
+- Output of the used Server and location the Speedtest was run against
+- Possibility to pre-select a server used for testing
 
 ## What interfaces does the Speedtest Binding offer?
 
 The Speedtest Binding provides the Ookla's Speedtest functionality via the following openHAB interface:
 
-* Execute Speedtest time based or triggered
-* Provide results via openHAB Channels
-* List available Ookla Speedtest servers that can be used for testing (optional)
-
+- Execute Speedtest time based or triggered
+- Provide results via openHAB Channels
+- List available Ookla Speedtest servers that can be used for testing (optional)
 
 ## Ookla License and Privacy Terms
 
 When using this binding, you automatically accept the license and privacy terms of Ookla's Speedtest.
 You can find the latest version of those terms at the following webpages:
 
-* https://www.speedtest.net/about/eula
-* https://www.speedtest.net/about/terms
-* https://www.speedtest.net/about/privacy
-
+- https://www.speedtest.net/about/eula
+- https://www.speedtest.net/about/terms
+- https://www.speedtest.net/about/privacy
 
 ## Supported Things
 
 Speedtest thing.
-
 
 ## Binding Configuration
 
@@ -57,7 +51,6 @@ For this binding to work, you MUST install Ookla's Speedtest command line tool (
 It will not work with other versions like `speedtest-cli` or other `speedtest` variants.
 
 To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/cli and follow the instructions for your Operating System.
-
 
 ## Thing Configuration
 
@@ -67,18 +60,16 @@ To install Ookla's version of Speedtest, head to https://www.speedtest.net/apps/
 | `execPath`        | The path of the Ookla Speedtest executable.<br/>Linux machines may leave this blank and it defaults to `/usr/bin/speedtest`. |         |
 | `serverID`        | Optional: A specific server that shall be used for testing. You can pick the server ID from the "Thing Properties".<br/>If this is left blank the best option will be selected by Ookla.          |         |
 
-The `refreshInterval` parameter can also be set to "Do not test automatically".
+The `refreshInterval` parameter can also be set to `0` which means "Do not test automatically".
 This can be used if you want to use the "Trigger Test" channel in order to test via rules, or an item instead.
 
 Ensure that the user that openHAB is running with, has the permissions to access and execute the executable.
-
 
 ## Properties
 
 | Property            | Description                                                                                                |
 |---------------------|------------------------------------------------------------------------------------------------------------|
 | Server List 1...10  | A List of Ookla Speedtest servers that can be used in order to specify a specific server for the Speedtest.<br/>Configure the Server ID via the `serverID` Thing Configuration Parameter. |
-
 
 ## Channels
 
@@ -99,16 +90,15 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver   |
 | `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |
 
-
 ## Full Example
 
-**Thing File**
+### Thing File
 
 ```java
 Thing   speedtest:speedtest:myspeedtest   "Ookla Speedtest"    [ execPath="/usr/bin/speedtest", refreshInterval=60 ]
 ```
 
-**Item File**
+### Item File
 
 ```java
 String                    Speedtest_Server                "Server"                { channel="speedtest:speedtest:myspeedtest:server" }
