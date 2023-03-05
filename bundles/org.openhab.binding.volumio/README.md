@@ -11,7 +11,6 @@ All available Volumio (playback) modes are supported by this binding.
 
 The volumio devices are discovered through UPnP in the local network and all devices are put in the Inbox.
 
-## Binding Configuration
 
 ## Binding Configuration
 
@@ -22,59 +21,84 @@ The binding has the following configuration options, which can be set for "bindi
 | hostname    | Hostanem         | The hostname of the Volumio player.                                        | yes      |
 | port        | Port             | The port of your volumio2 device (default is 3000)                         | yes      |
 | protocol    | Protocol         | The protocol of your volumio2 device (default is http)                     | yes      |
+| timeout     | Timeout          | Connection-Timeout in ms                                                   | no       |
 
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+The Volumio Thing requires the hostname, port and protocol as a configuration value in order for the binding to know how to access it.
+Additionally, a connection timeout (in ms)can be configured.
+In the thing file, this looks e.g. like
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
+```java
+Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volumio.local", protocol="http"]
+```
 ### `sample` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| hostname        | text    | The hostname of the Volumio player.   | N/A     | yes      | no       |
+| port            | text    | The port of your volumio2 device.     | 3000    | yes      | no       |
+| protocol        | text    | The protocol of your volumio2 device. | http    | yes      | no       |
+| timeout         | integer | Connection-Timeout in ms.             | 5000    | no       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The devices support the following channels:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel        | Type   | Read/Write | Description                                                                                                          |
+|----------------|--------|------------|----------------------------------------------------------------------------------------------------------------------|
+| title          | String | R          | Title of the song currently playing.                                                                                 |
+| artist         | String | R          | Name of the artist currently playing.                                                                                |
+| album          | String | R          | Name of the album currently playing.                                                                                 |
+| volume         | Dimmer | RW         | Set or get the master volume.                                                                                        |
+| player         | Player | RW         | The State channel contains state of the Volumio Player.                                                              |
+| albumArt       | Image  | R          | Cover Art for the currently played track.                                                                            |
+| trackType      | String | R          | Tracktype of the currently played track.                                                                             |
+| playRadioStream| String | RW         | Play the given radio stream.                                                                                         |
+| playPlaylist   | String | RW         | Playback a playlist identifed by its name.                                                                           |
+| clearQueue     | Switch | RW         | Clear the current queue.                                                                                             | 
+| playURI        | Switch | RW         | Play the stream at given uri.                                                                                        |
+| playFile       | Switch | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
+| random         | Switch | RW         | Activate random mode.                                                                                                |
+| repeat         | Switch | RW         | Activate repeat mode.                                                                                                |
+| systemCommand  | Switch | RW         | Sends a system command to Volumio. This allows to shutdown/reboot Volumio. Use "Shutdown"/"Reboot" as String command.|
+| stopCommand    | Switch | RW         | Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.                       |
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-### Thing Configuration
+demo.things:
 
 ```java
-Example thing configuration goes here.
+Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volumio.local", protocol="http"]
+
 ```
-### Item Configuration
+
+demo.items:
 
 ```java
-Example item configuration goes here.
+String	Volumio_CurrentTitle	    "Current Titel [%s]"	   <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
+String	Volumio_CurrentArtist	    "Current Artist [%s]"	                    {channel="volumio:player:VolumioLivingRoom:artist"}
+String	Volumio_CurrentAlbum	    "Current Album [%s]"	                    {channel="volumio:player:VolumioLivingRoom:album"}
+Dimmer	Volumio_CurrentVolume	    "CurrentVolume [%.1f %%]"  <soundvolume>	{channel="volumio:player:VolumioLivingRoom:volume"}
+Player	Volumio	                    "Current Status [%s]"	   <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
+String	Volumio_CurrentTrackType	"Current trackType [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:trackType"}
+
 ```
 
-### Sitemap Configuration
+demo.sitemap:
 
 ```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+sitemap demo label="Main Menu"
+{
+    Frame label="Volumio" {
+        Slider item=Volumio_CurrentVolume
+        Text item=Volumio
+		Text item=Volumio_CurrentTitle
+    }
+}
 ```
 
 ## Any custom content here!
