@@ -242,12 +242,20 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
                 updateState(CHANNEL_LEFT_TODAY_AVG_RESPIRATION_RATE, UnDefType.UNDEF);
                 updateState(CHANNEL_LEFT_TODAY_MESSAGE, UnDefType.UNDEF);
                 updateState(CHANNEL_LEFT_TODAY_SLEEP_DURATION_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_LEFT_TODAY_SLEEP_IN_BED_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_LEFT_TODAY_SLEEP_OUT_OF_BED_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_LEFT_TODAY_SLEEP_RESTFUL_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_LEFT_TODAY_SLEEP_RESTLESS_SECONDS, UnDefType.UNDEF);
             } else {
                 updateState(CHANNEL_RIGHT_TODAY_SLEEP_IQ, UnDefType.UNDEF);
                 updateState(CHANNEL_RIGHT_TODAY_AVG_HEART_RATE, UnDefType.UNDEF);
                 updateState(CHANNEL_RIGHT_TODAY_AVG_RESPIRATION_RATE, UnDefType.UNDEF);
                 updateState(CHANNEL_RIGHT_TODAY_MESSAGE, UnDefType.UNDEF);
                 updateState(CHANNEL_RIGHT_TODAY_SLEEP_DURATION_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_RIGHT_TODAY_SLEEP_IN_BED_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_RIGHT_TODAY_SLEEP_OUT_OF_BED_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_RIGHT_TODAY_SLEEP_RESTFUL_SECONDS, UnDefType.UNDEF);
+                updateState(CHANNEL_RIGHT_TODAY_SLEEP_RESTLESS_SECONDS, UnDefType.UNDEF);
             }
             return;
         } else if (sleeper.getSide().equals(Side.LEFT)) {
@@ -258,6 +266,14 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             updateState(CHANNEL_LEFT_TODAY_MESSAGE, new StringType(sleepData.getSleepDataDays().get(0).getMessage()));
             updateState(CHANNEL_LEFT_TODAY_SLEEP_DURATION_SECONDS,
                     new QuantityType<>(sleepData.getTotalSleepSessionTime(), Units.SECOND));
+            updateState(CHANNEL_LEFT_TODAY_SLEEP_IN_BED_SECONDS,
+                    new QuantityType<>(sleepData.getTotalInBedSeconds(), Units.SECOND));
+            updateState(CHANNEL_LEFT_TODAY_SLEEP_OUT_OF_BED_SECONDS,
+                    new QuantityType<>(sleepData.getTotalOutOfBedSeconds(), Units.SECOND));
+            updateState(CHANNEL_LEFT_TODAY_SLEEP_RESTFUL_SECONDS,
+                    new QuantityType<>(sleepData.getTotalRestfulSeconds(), Units.SECOND));
+            updateState(CHANNEL_LEFT_TODAY_SLEEP_RESTLESS_SECONDS,
+                    new QuantityType<>(sleepData.getTotalRestlessSeconds(), Units.SECOND));
         } else if (sleeper.getSide().equals(Side.RIGHT)) {
             updateState(CHANNEL_RIGHT_TODAY_SLEEP_IQ, new DecimalType(sleepData.getAverageSleepIQ()));
             updateState(CHANNEL_RIGHT_TODAY_AVG_HEART_RATE, new DecimalType(sleepData.getAverageHeartRate()));
@@ -266,6 +282,14 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             updateState(CHANNEL_RIGHT_TODAY_MESSAGE, new StringType(sleepData.getSleepDataDays().get(0).getMessage()));
             updateState(CHANNEL_RIGHT_TODAY_SLEEP_DURATION_SECONDS,
                     new QuantityType<>(sleepData.getTotalSleepSessionTime(), Units.SECOND));
+            updateState(CHANNEL_RIGHT_TODAY_SLEEP_IN_BED_SECONDS,
+                    new QuantityType<>(sleepData.getTotalInBedSeconds(), Units.SECOND));
+            updateState(CHANNEL_RIGHT_TODAY_SLEEP_OUT_OF_BED_SECONDS,
+                    new QuantityType<>(sleepData.getTotalOutOfBedSeconds(), Units.SECOND));
+            updateState(CHANNEL_RIGHT_TODAY_SLEEP_RESTFUL_SECONDS,
+                    new QuantityType<>(sleepData.getTotalRestfulSeconds(), Units.SECOND));
+            updateState(CHANNEL_RIGHT_TODAY_SLEEP_RESTLESS_SECONDS,
+                    new QuantityType<>(sleepData.getTotalRestlessSeconds(), Units.SECOND));
         }
     }
 

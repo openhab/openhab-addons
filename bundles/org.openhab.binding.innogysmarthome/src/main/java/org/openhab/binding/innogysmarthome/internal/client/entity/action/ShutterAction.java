@@ -15,7 +15,7 @@ package org.openhab.binding.innogysmarthome.internal.client.entity.action;
 /**
  * Special {@link Action} needed to control shutters.
  *
- * @author Marco Mans
+ * @author Marco Mans - Initial contribution
  */
 public class ShutterAction extends Action {
 
