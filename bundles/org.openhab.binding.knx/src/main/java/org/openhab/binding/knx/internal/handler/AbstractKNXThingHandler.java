@@ -100,17 +100,6 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
         return false;
     }
 
-    protected final String asduToHex(byte[] asdu) {
-        final char[] hexCode = "0123456789ABCDEF".toCharArray();
-        StringBuilder sb = new StringBuilder(2 + asdu.length * 2);
-        sb.append("0x");
-        for (byte b : asdu) {
-            sb.append(hexCode[(b >> 4) & 0xF]);
-            sb.append(hexCode[(b & 0xF)]);
-        }
-        return sb.toString();
-    }
-
     protected final void restart() {
         if (address != null) {
             getClient().restartNetworkDevice(address);
@@ -187,7 +176,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
                 ScheduledFuture<?> pollingJob = this.pollingJob;
                 if ((pollingJob == null || pollingJob.isCancelled())) {
                     logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(() -> pollDeviceStatus(),
+                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(this::pollDeviceStatus,
                             initialPingDelay, pingInterval, TimeUnit.SECONDS);
                 }
             } else {

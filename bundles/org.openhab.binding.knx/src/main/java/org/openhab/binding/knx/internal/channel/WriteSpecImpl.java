@@ -28,7 +28,7 @@ import tuwien.auto.calimero.GroupAddress;
  */
 @NonNullByDefault
 public class WriteSpecImpl implements OutboundSpec {
-    private String dpt;
+    private final String dpt;
     private final Type value;
     private final GroupAddress groupAddress;
 

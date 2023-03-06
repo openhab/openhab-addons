@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ class TypeColor extends KNXChannel {
 
     TypeColor(Channel channel) {
         super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA),
-                Set.of(OnOffType.class, PercentType.class, HSBType.class, IncreaseDecreaseType.class), channel);
+                List.of(HSBType.class, PercentType.class, OnOffType.class, IncreaseDecreaseType.class), channel);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     @Nullable
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
 
     @Activate

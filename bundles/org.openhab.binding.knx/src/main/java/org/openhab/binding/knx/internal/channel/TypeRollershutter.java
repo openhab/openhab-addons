@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ class TypeRollershutter extends KNXChannel {
 
     TypeRollershutter(Channel channel) {
         super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
-                Set.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
+                List.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
     }
 
     @Override

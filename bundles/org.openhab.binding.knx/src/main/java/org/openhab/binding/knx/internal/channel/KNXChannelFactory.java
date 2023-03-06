@@ -56,8 +56,6 @@ public final class KNXChannelFactory {
                 .map(Map.Entry::getValue).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(channelTypeUID + " is not a valid channel type ID"));
 
-        KNXChannel knxChannel = supplier.apply(channel);
-
-        return knxChannel;
+        return supplier.apply(channel);
     }
 }

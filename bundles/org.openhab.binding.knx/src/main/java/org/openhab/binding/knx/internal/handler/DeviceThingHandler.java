@@ -32,7 +32,8 @@ import org.openhab.binding.knx.internal.client.AbstractKNXClient;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
-import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
+import org.openhab.binding.knx.internal.dpt.DPTUtil;
+import org.openhab.binding.knx.internal.dpt.ValueDecoder;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -42,6 +43,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +161,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private void readDatapoint(GroupAddress groupAddress, String dpt) {
         if (getClient().isConnected()) {
-            if (!isDPTSupported(dpt)) {
+            if (DPTUtil.getAllowedTypes(dpt).isEmpty()) {
                 logger.warn("DPT '{}' is not supported by the KNX binding", dpt);
                 return;
             }
@@ -297,8 +299,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                  */
                 if (knxChannel.isControl()) {
                     logger.trace("onGroupWrite isControl");
-                    Type value = KNXCoreTypeMapper.convertRawDataToType(listenSpec.getDPT(), asdu,
-                            knxChannel.supportsPercentType());
+                    Type value = ValueDecoder.decode(listenSpec.getDPT(), asdu, knxChannel.preferredType());
                     if (value != null) {
                         OutboundSpec commandSpec = knxChannel.getCommandSpec(value);
                         if (commandSpec != null) {
@@ -313,13 +314,12 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private void processDataReceived(GroupAddress destination, byte[] asdu, InboundSpec listenSpec,
             KNXChannel knxChannel) {
-        if (!isDPTSupported(listenSpec.getDPT())) {
+        if (DPTUtil.getAllowedTypes(listenSpec.getDPT()).isEmpty()) {
             logger.warn("DPT '{}' is not supported by the KNX binding.", listenSpec.getDPT());
             return;
         }
 
-        Type value = KNXCoreTypeMapper.convertRawDataToType(listenSpec.getDPT(), asdu,
-                knxChannel.supportsPercentType());
+        Type value = ValueDecoder.decode(listenSpec.getDPT(), asdu, knxChannel.preferredType());
         if (value != null) {
             if (knxChannel.isControl()) {
                 ChannelUID channelUID = knxChannel.getChannelUID();
@@ -361,13 +361,9 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                 }
             }
         } else {
-            String s = asduToHex(asdu);
-            logger.warn("Ignoring KNX bus data: couldn't transform to any Type (destination='{}', dpt='{}', data='{}')",
-                    destination, listenSpec.getDPT(), s);
+            logger.warn(
+                    "Ignoring KNX bus data for channel '{}': couldn't transform to any Type (GA='{}', DPT='{}', data='{}')",
+                    knxChannel.getChannelUID(), destination, listenSpec.getDPT(), HexUtils.bytesToHex(asdu));
         }
-    }
-
-    private boolean isDPTSupported(String dpt) {
-        return !KNXCoreTypeMapper.getAllowedTypes(dpt).isEmpty();
     }
 }

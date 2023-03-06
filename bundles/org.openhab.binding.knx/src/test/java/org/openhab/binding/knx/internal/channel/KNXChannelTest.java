@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXFormatException;
@@ -157,7 +159,7 @@ class KNXChannelTest {
 
     private static class MyKNXChannel extends KNXChannel {
         public MyKNXChannel(Channel channel) {
-            super(Set.of("key1", "key2"), Set.of(), channel);
+            super(Set.of("key1", "key2"), List.of(UnDefType.class), channel);
         }
 
         @Override

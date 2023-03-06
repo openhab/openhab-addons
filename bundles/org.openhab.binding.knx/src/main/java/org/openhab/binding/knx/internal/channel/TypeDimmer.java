@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ class TypeDimmer extends KNXChannel {
 
     TypeDimmer(Channel channel) {
         super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA),
-                Set.of(OnOffType.class, PercentType.class, IncreaseDecreaseType.class), channel);
+                List.of(PercentType.class, OnOffType.class, IncreaseDecreaseType.class), channel);
     }
 
     @Override

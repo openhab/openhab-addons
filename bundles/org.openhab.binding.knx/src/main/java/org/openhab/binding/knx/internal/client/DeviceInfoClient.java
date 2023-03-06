@@ -26,8 +26,8 @@ import tuwien.auto.calimero.IndividualAddress;
 @NonNullByDefault
 public interface DeviceInfoClient {
 
-    byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate, long timeout)
-            throws InterruptedException;
+    byte @Nullable [] readDeviceDescription(IndividualAddress address, int descType, boolean authenticate,
+            long timeout) throws InterruptedException;
 
     byte @Nullable [] readDeviceMemory(IndividualAddress address, int startAddress, int bytes, boolean authenticate,
             long timeout) throws InterruptedException;

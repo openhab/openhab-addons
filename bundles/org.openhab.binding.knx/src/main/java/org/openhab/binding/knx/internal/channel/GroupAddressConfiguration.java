@@ -36,9 +36,9 @@ public class GroupAddressConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(GroupAddressConfiguration.class);
 
     private static final Pattern PATTERN_GA_CONFIGURATION = Pattern.compile(
-            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,4}):)?(?<read>\\<)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(\\<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
+            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<read><)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
     private static final Pattern PATTERN_LISTEN_GA = Pattern
-            .compile("\\+((?<read>\\<)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
+            .compile("\\+((?<read><)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
 
     private final @Nullable String dpt;
     private final GroupAddress mainGA;

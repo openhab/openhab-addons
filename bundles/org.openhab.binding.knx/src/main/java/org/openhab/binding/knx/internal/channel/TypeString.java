@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.channel;
 
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +34,7 @@ class TypeString extends KNXChannel {
     public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_STRING, CHANNEL_STRING_CONTROL);
 
     TypeString(Channel channel) {
-        super(Set.of(StringType.class), channel);
+        super(List.of(StringType.class), channel);
     }
 
     @Override
