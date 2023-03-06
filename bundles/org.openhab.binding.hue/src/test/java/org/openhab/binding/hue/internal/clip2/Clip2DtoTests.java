@@ -484,7 +484,7 @@ class Clip2DtoTests {
         assertEquals(35, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.ZIGBEE_CONNECTIVITY, item.getType());
-        ZigbeeStatus zigbeeStatus = item.getZigBeeStatus();
+        ZigbeeStatus zigbeeStatus = item.getZigbeeStatus();
         assertNotNull(zigbeeStatus);
         assertEquals("Connected", zigbeeStatus.toString());
     }

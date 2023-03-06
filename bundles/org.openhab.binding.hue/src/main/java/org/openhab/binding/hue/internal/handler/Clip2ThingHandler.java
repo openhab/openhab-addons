@@ -451,7 +451,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
-                updateState(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS, resource.getZigBeeState(), fullUpdate);
+                updateState(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS, resource.getZigbeeState(), fullUpdate);
                 break;
 
             default:
@@ -462,22 +462,22 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Check the ZigBee connectivity and set the thing online status accordingly. If the thing is offline then set all
+     * Check the Zigbee connectivity and set the thing online status accordingly. If the thing is offline then set all
      * its channel states to undefined, otherwise execute a refresh command to update channels to the latest current
      * state.
      *
-     * @param resource a Resource that potentially contains the ZigBee connectivity state.
+     * @param resource a Resource that potentially contains the Zigbee connectivity state.
      */
     private void updateConnectivityState(Resource resource) {
-        ZigbeeStatus zigBeeStatus = resource.getZigBeeStatus();
-        if (Objects.nonNull(zigBeeStatus)) {
-            logger.debug("updateConnectivityState() thingStatus:{}, zigBeeStatus:{}", thing.getStatus(), zigBeeStatus);
-            hasConnectivityIssue = zigBeeStatus != ZigbeeStatus.CONNECTED;
+        ZigbeeStatus zigbeeStatus = resource.getZigbeeStatus();
+        if (Objects.nonNull(zigbeeStatus)) {
+            logger.debug("updateConnectivityState() thingStatus:{}, zigbeeStatus:{}", thing.getStatus(), zigbeeStatus);
+            hasConnectivityIssue = zigbeeStatus != ZigbeeStatus.CONNECTED;
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.clip2.communication-error.zigbee-connectivity-issue");
-                    // change all channel states, except the ZigBee channel itself, to undefined
+                    // change all channel states, except the Zigbee channel itself, to undefined
                     for (String channelId : supportedChannelIds) {
                         if (!HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS.equals(channelId)) {
                             updateState(channelId, UnDefType.UNDEF);
@@ -487,9 +487,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } else if (thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 // one single refresh command will update all channels
-                Channel zigBeeChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS);
-                if (Objects.nonNull(zigBeeChannel)) {
-                    handleCommand(zigBeeChannel.getUID(), RefreshType.REFRESH);
+                Channel zigbeeChannel = thing.getChannel(HueBindingConstants.CHANNEL_2_ZIGBEE_STATUS);
+                if (Objects.nonNull(zigbeeChannel)) {
+                    handleCommand(zigbeeChannel.getUID(), RefreshType.REFRESH);
                 }
             }
         }

@@ -355,14 +355,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (RefreshType.REFRESH.equals(command)) {
             return;
         }
+        logger.debug("handleCommand() channelUID:{}, command:{}", channelUID, command);
         if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
             String sceneId = ((StringType) command).toString();
             if (!sceneId.isBlank()) {
-            }
-            try {
-                putResource(new Resource(ResourceType.SCENE).setId(sceneId));
-            } catch (ApiException | AssetNotLoadedException e) {
-                logger.warn("handleCommand() error {}", e.getMessage(), e);
+                try {
+                    putResource(new Resource(ResourceType.SCENE).setId(sceneId));
+                } catch (ApiException | AssetNotLoadedException e) {
+                    logger.warn("handleCommand() error {}", e.getMessage(), e);
+                }
             }
         }
     }

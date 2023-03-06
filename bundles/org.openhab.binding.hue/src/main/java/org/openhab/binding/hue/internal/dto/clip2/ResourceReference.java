@@ -30,7 +30,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
  * This means that the information of the device itself can be found under the /device resource endpoint, but it then
  * contains a services array which references for example the light and motion resources, for which the details can be
  * found under the /light and /motion resource endpoints respectively. Other services the device might have, such as a
- * ZigBee radio (zigbee_connectivy) or battery (device_power) are modeled in the same way.
+ * Zigbee radio (zigbee_connectivy) or battery (device_power) are modeled in the same way.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

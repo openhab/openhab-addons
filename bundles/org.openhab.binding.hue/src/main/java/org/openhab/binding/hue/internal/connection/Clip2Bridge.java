@@ -878,11 +878,12 @@ public class Clip2Bridge implements Closeable {
         Completable<@Nullable Stream> completable = new Completable<>();
         logger.trace("PUT {} HTTP/2 >> {}", url, jsonSend);
         Stream stream = null;
+        String jsonRead = "null";
         try {
             session.newStream(headers, completable, adapter);
             stream = Objects.requireNonNull(completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
             stream.data(new DataFrame(stream.getId(), jsonBytes, true), Callback.NOOP);
-            String jsonRead = adapter.completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).trim();
+            jsonRead = adapter.completable.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).trim();
             logger.trace("HTTP/2 200 OK << {}", jsonRead);
             Resources resources = Objects.requireNonNull(jsonParser.fromJson(jsonRead, Resources.class));
             if (logger.isDebugEnabled()) {
@@ -891,6 +892,7 @@ public class Clip2Bridge implements Closeable {
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             throw new ApiException("Error sending request", e);
         } catch (JsonParseException e) {
+            logger.warn("putResourceHttp2Impl() error parsing JSON response:{}", jsonRead);
             throw new ApiException("Parsing error", e);
         } finally {
             if (Objects.nonNull(stream)) {
