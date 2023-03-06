@@ -977,7 +977,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (typeClass.equals(DateTimeType.class)) {
                 String date = formatDateTime(value, datapoint.getDPT());
                 if (date.isEmpty()) {
-                    logger.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
+                    logger.debug("toType: KNX clock msg ignored: date object empty {}.", date);
                     return null;
                 } else {
                     return DateTimeType.valueOf(date);
@@ -1047,7 +1047,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @return a formatted String like </code>yyyy-MM-dd'T'HH:mm:ss</code> which
      *         is target format of the {@link DateTimeType}
      */
-    private String formatDateTime(String value, String dpt) {
+    private String formatDateTime(String value, @Nullable String dpt) {
         Date date = null;
 
         try {
