@@ -67,7 +67,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
-import org.openhab.binding.hue.internal.exceptions.HttpUnAuthorizedException;
+import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -148,7 +148,7 @@ public class Clip2Bridge implements Closeable {
         public void fatalError(Error error) {
             Exception e;
             if (Error.UNAUTHORIZED.equals(error)) {
-                e = new HttpUnAuthorizedException("HTTP 2 request not authorized");
+                e = new HttpUnauthorizedException("HTTP 2 request not authorized");
             } else {
                 e = new ApiException("HTTP 2 stream " + error.toString().toLowerCase());
             }
@@ -539,7 +539,7 @@ public class Clip2Bridge implements Closeable {
                     if (priorState == State.ACTIVE) {
                         openActive();
                     }
-                } catch (ApiException | HttpUnAuthorizedException e) {
+                } catch (ApiException | HttpUnauthorizedException e) {
                     logger.warn("fatalError() {} {} reconnect failed {}", causeId, error, e.getMessage(), e);
                     onlineState = priorState; // re-enable handler notification
                     close();
@@ -570,7 +570,7 @@ public class Clip2Bridge implements Closeable {
         }
         try {
             return getResourcesImpl(reference);
-        } catch (HttpUnAuthorizedException e) {
+        } catch (HttpUnauthorizedException e) {
             throw new ApiException("getResources() unauthorized error", e);
         }
     }
@@ -581,9 +581,9 @@ public class Clip2Bridge implements Closeable {
      * @param reference the Reference class to get.
      * @return a Resource object containing either a list of Resources or a list of Errors.
      * @throws ApiException if the communication failed, or an unexpected result occurred.
-     * @throws HttpUnAuthorizedException if the request was refused as not authorised or forbidden.
+     * @throws HttpUnauthorizedException if the request was refused as not authorised or forbidden.
      */
-    private Resources getResourcesImpl(ResourceReference reference) throws ApiException, HttpUnAuthorizedException {
+    private Resources getResourcesImpl(ResourceReference reference) throws ApiException, HttpUnauthorizedException {
         throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
@@ -612,8 +612,8 @@ public class Clip2Bridge implements Closeable {
             return resources;
         } catch (ExecutionException e) {
             Throwable e2 = e.getCause();
-            if (e2 instanceof HttpUnAuthorizedException) {
-                throw (HttpUnAuthorizedException) e2;
+            if (e2 instanceof HttpUnauthorizedException) {
+                throw (HttpUnauthorizedException) e2;
             }
             throw new ApiException("Error sending request", e);
         } catch (InterruptedException | TimeoutException e) {
@@ -684,9 +684,9 @@ public class Clip2Bridge implements Closeable {
      * Open the HTTP 2 session and the event stream.
      *
      * @throws ApiException if there was a communication error.
-     * @throws HttpUnAuthorizedException if the application key is not authenticated
+     * @throws HttpUnauthorizedException if the application key is not authenticated
      */
-    public void open() throws ApiException, HttpUnAuthorizedException {
+    public void open() throws ApiException, HttpUnauthorizedException {
         logger.debug("open()");
         openPassive();
         openActive();
@@ -697,9 +697,9 @@ public class Clip2Bridge implements Closeable {
      * Make the session active, by opening an HTTP 2 SSE event stream (if necessary).
      *
      * @throws ApiException if an error was encountered.
-     * @throws HttpUnAuthorizedException if the application key is not authenticated.
+     * @throws HttpUnauthorizedException if the application key is not authenticated.
      */
-    private void openActive() throws ApiException, HttpUnAuthorizedException {
+    private void openActive() throws ApiException, HttpUnauthorizedException {
         synchronized (this) {
             openEventStream();
             onlineState = State.ACTIVE;
@@ -722,9 +722,9 @@ public class Clip2Bridge implements Closeable {
      * Implementation to open an HTTP 2 SSE event stream if necessary.
      *
      * @throws ApiException if an error was encountered.
-     * @throws HttpUnAuthorizedException if the application key is not authenticated.
+     * @throws HttpUnauthorizedException if the application key is not authenticated.
      */
-    private void openEventStream() throws ApiException, HttpUnAuthorizedException {
+    private void openEventStream() throws ApiException, HttpUnauthorizedException {
         throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
@@ -762,9 +762,9 @@ public class Clip2Bridge implements Closeable {
      * Private method to open the HTTP 2 session in passive mode.
      *
      * @throws ApiException if there was a communication error.
-     * @throws HttpUnAuthorizedException if the application key is not authenticated.
+     * @throws HttpUnauthorizedException if the application key is not authenticated.
      */
-    private void openPassive() throws ApiException, HttpUnAuthorizedException {
+    private void openPassive() throws ApiException, HttpUnauthorizedException {
         synchronized (this) {
             logger.debug("openPassive()");
             onlineState = State.CLOSED;
@@ -906,10 +906,10 @@ public class Clip2Bridge implements Closeable {
      * @param oldApplicationKey existing application key if any i.e. may be empty.
      * @return the existing or a newly created application key.
      * @throws ApiException if there was a communications error.
-     * @throws HttpUnAuthorizedException if the registration failed.
+     * @throws HttpUnauthorizedException if the registration failed.
      */
     public String registerApplicationKey(@Nullable String oldApplicationKey)
-            throws ApiException, HttpUnAuthorizedException {
+            throws ApiException, HttpUnauthorizedException {
         logger.debug("registerApplicationKey()");
         String json = jsonParser.toJson((Objects.isNull(oldApplicationKey) || oldApplicationKey.isEmpty())
                 ? new CreateUserRequest(APPLICATION_ID)
@@ -945,7 +945,7 @@ public class Clip2Bridge implements Closeable {
         } catch (JsonParseException e) {
             // fall through
         }
-        throw new HttpUnAuthorizedException("Application key registration failed");
+        throw new HttpUnauthorizedException("Application key registration failed");
     }
 
     /**
@@ -953,14 +953,14 @@ public class Clip2Bridge implements Closeable {
      * authentication.
      *
      * @throws ApiException if it was not possible to connect.
-     * @throws HttpUnAuthorizedException if it was possible to connect but not to authenticate.
+     * @throws HttpUnauthorizedException if it was possible to connect but not to authenticate.
      */
-    public void testConnectionState() throws HttpUnAuthorizedException, ApiException {
+    public void testConnectionState() throws HttpUnauthorizedException, ApiException {
         logger.debug("testConnectionState()");
         try {
             openPassive();
             getResourcesImpl(BRIDGE);
-        } catch (HttpUnAuthorizedException | ApiException e) {
+        } catch (HttpUnauthorizedException | ApiException e) {
             close();
             throw e;
         }

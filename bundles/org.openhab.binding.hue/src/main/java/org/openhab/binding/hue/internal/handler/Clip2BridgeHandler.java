@@ -43,7 +43,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.binding.hue.internal.exceptions.HttpUnAuthorizedException;
+import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.library.types.StringType;
@@ -137,7 +137,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             checkAssetsLoaded();
             getClip2Bridge().testConnectionState();
             thingStatus = ThingStatusDetail.NONE;
-        } catch (HttpUnAuthorizedException e) {
+        } catch (HttpUnauthorizedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
             thingStatus = ThingStatusDetail.CONFIGURATION_ERROR;
         } catch (ApiException e) {
@@ -159,7 +159,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     try {
                         registerApplicationKey();
                         retryApplicationKey = true;
-                    } catch (HttpUnAuthorizedException e) {
+                    } catch (HttpUnauthorizedException e) {
                         retryApplicationKey = true;
                     } catch (ApiException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -492,11 +492,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *
      * @throws ApiException if a communication error occurred.
      * @throws AssetNotLoadedException if one of the assets is not loaded.
-     * @throws HttpUnAuthorizedException if the communication was OK but the registration failed anyway.
+     * @throws HttpUnauthorizedException if the communication was OK but the registration failed anyway.
      * @throws IllegalStateException if the configuration cannot be changed e.g. read only.
      */
     private void registerApplicationKey()
-            throws HttpUnAuthorizedException, ApiException, AssetNotLoadedException, IllegalStateException {
+            throws HttpUnauthorizedException, ApiException, AssetNotLoadedException, IllegalStateException {
         logger.debug("registerApplicationKey()");
         Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
         String newApplicationKey = getClip2Bridge().registerApplicationKey(config.applicationKey);
@@ -611,7 +611,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.clip2.conf-error-assets-not-loaded");
-        } catch (HttpUnAuthorizedException e) {
+        } catch (HttpUnauthorizedException e) {
             logger.debug("updateSelf() {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.clip2.conf-error-access_denied");

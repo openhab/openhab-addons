@@ -16,18 +16,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for possible ZigBee states.
+ * Enum for possible Zigbee states.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum ZigBeeStatus {
+public enum ZigbeeStatus {
     CONNECTED,
     DISCONNECTED,
     CONNECTIVITY_ISSUE,
     UNIDIRECTIONAL_INCOMING;
 
-    public static ZigBeeStatus of(@Nullable String value) {
+    public static ZigbeeStatus of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());

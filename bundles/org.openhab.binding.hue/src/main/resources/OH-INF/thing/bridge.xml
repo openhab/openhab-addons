@@ -65,7 +65,7 @@
 	<!-- CLIP 2 Bridge -->
 	<bridge-type id="clip2">
 		<label>Hue API v2 Bridge</label>
-		<description>The Hue Bridge represents the Philips Hue Bridge supporting API v2.</description>
+		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
 
 		<channels>
 			<channel id="scene" typeId="scene"/>

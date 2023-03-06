@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBindingConstants;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RecallAction;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ZigBeeStatus;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -471,13 +471,13 @@ public class Resource {
     }
 
     public State getZigBeeState() {
-        ZigBeeStatus zigBeeStatus = getZigBeeStatus();
+        ZigbeeStatus zigBeeStatus = getZigBeeStatus();
         return Objects.nonNull(zigBeeStatus) ? new StringType(zigBeeStatus.toString()) : UnDefType.NULL;
     }
 
-    public @Nullable ZigBeeStatus getZigBeeStatus() {
+    public @Nullable ZigbeeStatus getZigBeeStatus() {
         String status = this.status;
-        return Objects.nonNull(status) ? ZigBeeStatus.of(status) : null;
+        return Objects.nonNull(status) ? ZigbeeStatus.of(status) : null;
     }
 
     public boolean hasFullState() {

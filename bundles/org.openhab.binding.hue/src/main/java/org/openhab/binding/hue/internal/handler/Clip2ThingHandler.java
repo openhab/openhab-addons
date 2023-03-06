@@ -35,7 +35,7 @@ import org.openhab.binding.hue.internal.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ZigBeeStatus;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.core.library.types.DateTimeType;
@@ -96,7 +96,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final Map<String, Integer> controlIds = new ConcurrentHashMap<>();
 
     /**
-     * This is the set of channel ids that are actually supported by this device. e.g. an on/of light may support
+     * This is the set of channel ids that are actually supported by this device. e.g. an on/off light may support
      * 'switch' and 'zigbeeStatus' channels, whereas a complex light may support 'switch', 'brightness', 'color', 'color
      * temperature' and 'zigbeeStatus' channels.
      */
@@ -142,7 +142,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         logger.debug("dispose() called");
         disposing = true;
         ScheduledFuture<?> task = updateContributorsTask;
-        if (Objects.nonNull(task) && !task.isCancelled()) {
+        if (Objects.nonNull(task)) {
             task.cancel(true);
         }
         updateContributorsTask = null;
@@ -469,10 +469,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource that potentially contains the ZigBee connectivity state.
      */
     private void updateConnectivityState(Resource resource) {
-        ZigBeeStatus zigBeeStatus = resource.getZigBeeStatus();
+        ZigbeeStatus zigBeeStatus = resource.getZigBeeStatus();
         if (Objects.nonNull(zigBeeStatus)) {
             logger.debug("updateConnectivityState() thingStatus:{}, zigBeeStatus:{}", thing.getStatus(), zigBeeStatus);
-            hasConnectivityIssue = zigBeeStatus != ZigBeeStatus.CONNECTED;
+            hasConnectivityIssue = zigBeeStatus != ZigbeeStatus.CONNECTED;
             if (hasConnectivityIssue) {
                 if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

@@ -48,7 +48,7 @@ import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.DirectionType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ZigBeeStatus;
+import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -484,7 +484,7 @@ class Clip2DtoTests {
         assertEquals(35, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.ZIGBEE_CONNECTIVITY, item.getType());
-        ZigBeeStatus zigbeeStatus = item.getZigBeeStatus();
+        ZigbeeStatus zigbeeStatus = item.getZigBeeStatus();
         assertNotNull(zigbeeStatus);
         assertEquals("Connected", zigbeeStatus.toString());
     }

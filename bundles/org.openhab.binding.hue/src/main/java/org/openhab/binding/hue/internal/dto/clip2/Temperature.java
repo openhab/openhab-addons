@@ -13,9 +13,11 @@
 package org.openhab.binding.hue.internal.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,7 +40,7 @@ public class Temperature {
     }
 
     public State getTemperatureState() {
-        return new DecimalType(temperature);
+        return temperatureValid ? new QuantityType<>(temperature, SIUnits.CELSIUS) : UnDefType.UNDEF;
     }
 
     public State getTemperatureValidState() {

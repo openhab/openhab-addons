@@ -38,7 +38,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopasdfgh
 
 ### Devices and Grouped Lights
 
-Apart from the Bridge, there are two other types of thing -- namely Devices `device` and Grouped Lights `groupedlight`.
+Apart from the Bridge, there are two other types of thing -- namely Devices `device` and Grouped Lights `groupedLight`.
 Device things represent physical hardware devices in the system, whereas Grouped Light things represent logical groups of lights, either in a room or a zone.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
@@ -47,7 +47,7 @@ Thus, all it needs for manual configuration is this single value like
 ```java
 device officelamp "Lamp 1" @ "Office" [ resourceId="d1ae958e-8908-449a-9897-7f10f9b8d4c2" ]
 ..
-groupedlight kitchenLights "Kitchen Down Lihts" @ "Kitchen" [ resourceId="7f10f9b8-8908-449a-9897-d4c2d1ae958e" ]
+groupedLight kitchenLights "Kitchen Down Lihts" @ "Kitchen" [ resourceId="7f10f9b8-8908-449a-9897-d4c2d1ae958e" ]
 ```
 
 You can get a list of all devices in the bridge and their respective Resource Ids by entering the following console command: `openhab:hue <bridgeUID> devices`
@@ -159,7 +159,7 @@ Bridge hue:clip2:g24 "Philips Hue Hub" @ "Home" [ipAddress="192.168.1.234", appl
     Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"]
     Thing device 11111111-2222-3333-4444-666666666666 "Kitchen Wallplate Switch" @ "Kitchen" [resourceId="11111111-2222-3333-4444-666666666666"]
 
-    Thing groupedlight 11111111-2222-3333-4444-666666666666 "Kitchen Lights" @ "Kitchen" [resourceId="11111111-2222-3333-4444-666666666666"]
+    Thing groupedLight 11111111-2222-3333-4444-666666666666 "Kitchen Lights" @ "Kitchen" [resourceId="11111111-2222-3333-4444-666666666666"]
 }
 ```
 

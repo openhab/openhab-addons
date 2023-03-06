@@ -132,7 +132,7 @@ public class HueBindingConstants {
     // thing types for CLIP 2
     public static final ThingTypeUID THING_TYPE_CLIP2 = new ThingTypeUID(BINDING_ID, "clip2");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final ThingTypeUID THING_TYPE_GROUPED_LIGHT = new ThingTypeUID(BINDING_ID, "groupedlight");
+    public static final ThingTypeUID THING_TYPE_GROUPED_LIGHT = new ThingTypeUID(BINDING_ID, "groupedLight");
 
     // channels for CLIP 2
     public static final String CHANNEL_2_BATTERY_LEVEL = "batterylevel";

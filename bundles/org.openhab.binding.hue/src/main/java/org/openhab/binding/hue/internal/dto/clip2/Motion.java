@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.dto.clip2;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,7 +38,7 @@ public class Motion {
     }
 
     public State getMotionState() {
-        return OnOffType.from(motion);
+        return motionValid ? OnOffType.from(motion) : UnDefType.UNDEF;
     }
 
     public State getMotionValidState() {

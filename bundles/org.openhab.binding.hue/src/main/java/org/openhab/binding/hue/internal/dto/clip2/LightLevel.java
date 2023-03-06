@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,7 +39,7 @@ public class LightLevel {
     }
 
     public State getLightlevelState() {
-        return new DecimalType(lightLevel);
+        return lightLevelValid ? new DecimalType(lightLevel) : UnDefType.UNDEF;
     }
 
     public State isLightLevelValidState() {

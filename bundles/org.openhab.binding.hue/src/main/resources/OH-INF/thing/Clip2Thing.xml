@@ -44,7 +44,7 @@
 	</thing-type>
 
 	<!-- CLIP 2 light group thing -->
-	<thing-type id="groupedlight">
+	<thing-type id="groupedLight">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="clip2"/>
 		</supported-bridge-type-refs>
