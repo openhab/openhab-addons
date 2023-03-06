@@ -10,6 +10,7 @@ The Netatmo binding integrates the following Netatmo products:
 - _Doorbell_
 - _Smoke Detector_
 - _Smart Door Sensor_
+- _Carbon Monoxide Detector_
 
 See <https://www.netatmo.com/> for details on their product.
 
@@ -641,6 +642,18 @@ All these channels are read only.
 | last-event    | time       | DateTime     | Moment of the last event for this person         |
 | last-event    | subtype    | String       | Sub-type of event                                |
 | last-event    | message    | String       | Last event message from this person              |
+
+### Netatmo Smart Cabon Monoxide Detector
+
+All these channels are read only.
+
+**Supported channels for the Carbon Monoxide Detector thing:**
+
+| Channel Group | Channel Id | Item Type    | Description                                      |
+| ------------- | ---------- | ------------ | ------------------------------------------------ |
+| signal        | strength   | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value      | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
 
 ## Configuration Examples
 
