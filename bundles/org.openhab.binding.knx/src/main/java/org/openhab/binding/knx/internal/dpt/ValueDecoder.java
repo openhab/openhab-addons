@@ -273,8 +273,10 @@ public class ValueDecoder {
                     return HSBType.fromRGB(r, g, b);
                 case "60000":
                     // MDT specific: mis-use 232.600 for hsv instead of rgb
-                    return new HSBType(new DecimalType(r * 360.0 / 255.0), new PercentType(new BigDecimal(g / 2.55)),
-                            new PercentType(new BigDecimal(b / 2.55)));
+                    DecimalType hue = new DecimalType(coerceToRange(r * 360.0 / 255.0, 0.0, 359.9999));
+                    PercentType sat = new PercentType(BigDecimal.valueOf(coerceToRange(g / 2.55, 0.0, 100.0)));
+                    PercentType bright = new PercentType(BigDecimal.valueOf(coerceToRange(b / 2.55, 0.0, 100.0)));
+                    return new HSBType(hue, sat, bright);
                 default:
                     LOGGER.warn("Unknown subtype '232.{}', no conversion possible.", subType);
                     return null;
@@ -319,9 +321,9 @@ public class ValueDecoder {
 
             if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
                 // does not support PercentType and r,g,b valid -> HSBType
-                int r = (int) (Integer.parseInt(rString) * 2.56);
-                int g = (int) (Integer.parseInt(gString) * 2.56);
-                int b = (int) (Integer.parseInt(bString) * 2.56);
+                int r = coerceToRange((int) (Integer.parseInt(rString) * 2.55), 0, 255);
+                int g = coerceToRange((int) (Integer.parseInt(gString) * 2.55), 0, 255);
+                int b = coerceToRange((int) (Integer.parseInt(bString) * 2.55), 0, 255);
 
                 return HSBType.fromRGB(r, g, b);
             } else if (wString != null && PercentType.class.equals(preferredType)) {
@@ -340,7 +342,8 @@ public class ValueDecoder {
         Set<Class<? extends Type>> allowedTypes = DPTUtil.getAllowedTypes(id);
 
         double value = translator.getNumericValue();
-        if (allowedTypes.contains(PercentType.class) && PercentType.class.equals(preferredType)) {
+        if (allowedTypes.contains(PercentType.class)
+                && (HSBType.class.equals(preferredType) || PercentType.class.equals(preferredType))) {
             return new PercentType(BigDecimal.valueOf(Math.round(value)));
         } else if (allowedTypes.contains(QuantityType.class)) {
             String unit = DPTUnits.getUnitForDpt(id);
@@ -354,5 +357,13 @@ public class ValueDecoder {
         }
         LOGGER.warn("Failed to convert '{}' (DPT '{}'): no matching type found", value, id);
         return null;
+    }
+
+    private static double coerceToRange(double value, double min, double max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    private static int coerceToRange(int value, int min, int max) {
+        return Math.min(Math.max(value, min), max);
     }
 }
