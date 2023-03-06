@@ -297,12 +297,11 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    @SuppressWarnings("null")
     protected void releaseConnection() {
         logger.debug("Bridge {} is disconnecting from KNX bus", thingUID);
         var tmplink = link;
         if (tmplink != null) {
-            link.removeLinkListener(this);
+            tmplink.removeLinkListener(this);
         }
         busJob = nullify(busJob, j -> j.cancel(true));
         readDatapoints.clear();
@@ -321,7 +320,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         logger.trace("Bridge {} disconnected from KNX bus", thingUID);
     }
 
-    private <T> @Nullable T nullify(T target, @Nullable Consumer<T> lastWill) {
+    private <T> @Nullable T nullify(@Nullable T target, @Nullable Consumer<T> lastWill) {
         if (target != null && lastWill != null) {
             lastWill.accept(target);
         }

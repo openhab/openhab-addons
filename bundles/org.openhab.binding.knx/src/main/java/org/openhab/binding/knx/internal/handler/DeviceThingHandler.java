@@ -15,13 +15,12 @@ package org.openhab.binding.knx.internal.handler;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,11 +68,11 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceThingHandler.class);
 
     private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
-    private final Set<GroupAddress> groupAddresses = new HashSet<>();
-    private final Set<GroupAddress> groupAddressesWriteBlockedOnce = new HashSet<>();
-    private final Set<OutboundSpec> groupAddressesRespondingSpec = new HashSet<>();
-    private final Map<GroupAddress, ScheduledFuture<?>> readFutures = new HashMap<>();
-    private final Map<ChannelUID, ScheduledFuture<?>> channelFutures = new HashMap<>();
+    private final Set<GroupAddress> groupAddresses = ConcurrentHashMap.newKeySet();
+    private final Set<GroupAddress> groupAddressesWriteBlockedOnce = ConcurrentHashMap.newKeySet();
+    private final Set<OutboundSpec> groupAddressesRespondingSpec = ConcurrentHashMap.newKeySet();
+    private final Map<GroupAddress, ScheduledFuture<?>> readFutures = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, ScheduledFuture<?>> channelFutures = new ConcurrentHashMap<>();
     private int readInterval;
 
     public DeviceThingHandler(Thing thing) {
@@ -99,20 +98,20 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     @Override
     public void dispose() {
         cancelChannelFutures();
-        freeGroupAdresses();
+        freeGroupAddresses();
         super.dispose();
     }
 
     private void cancelChannelFutures() {
-        for (ScheduledFuture<?> future : channelFutures.values()) {
-            if (!future.isDone()) {
-                future.cancel(true);
-            }
+        for (ChannelUID channelUID : channelFutures.keySet()) {
+            channelFutures.computeIfPresent(channelUID, (k, v) -> {
+                v.cancel(true);
+                return null;
+            });
         }
-        channelFutures.clear();
     }
 
-    private void freeGroupAdresses() {
+    private void freeGroupAddresses() {
         groupAddresses.clear();
         groupAddressesWriteBlockedOnce.clear();
         groupAddressesRespondingSpec.clear();
@@ -120,12 +119,12 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     @Override
     protected void cancelReadFutures() {
-        for (ScheduledFuture<?> future : readFutures.values()) {
-            if (!future.isDone()) {
-                future.cancel(true);
-            }
+        for (GroupAddress groupAddress : readFutures.keySet()) {
+            readFutures.computeIfPresent(groupAddress, (k, v) -> {
+                v.cancel(true);
+                return null;
+            });
         }
-        readFutures.clear();
     }
 
     @FunctionalInterface
@@ -220,7 +219,9 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     @SuppressWarnings("null")
     private void rememberRespondingSpec(OutboundSpec commandSpec, boolean add) {
         GroupAddress ga = commandSpec.getGroupAddress();
-        groupAddressesRespondingSpec.removeIf(spec -> spec.getGroupAddress().equals(ga));
+        if (ga != null) {
+            groupAddressesRespondingSpec.removeIf(spec -> spec.getGroupAddress().equals(ga));
+        }
         if (add) {
             groupAddressesRespondingSpec.add(commandSpec);
         }
@@ -393,18 +394,18 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                         && (type instanceof UnDefType || type instanceof IncreaseDecreaseType) && frequency > 0) {
                     // continuous dimming by the binding
                     if (UnDefType.UNDEF.equals(type)) {
-                        ScheduledFuture<?> future = channelFutures.remove(channelUID);
-                        if (future != null) {
-                            future.cancel(false);
-                        }
+                        channelFutures.computeIfPresent(channelUID, (k, v) -> {
+                            v.cancel(false);
+                            return null;
+                        });
                     } else if (type instanceof IncreaseDecreaseType) {
-                        ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(() -> {
-                            postCommand(channelUID, (Command) type);
-                        }, 0, frequency, TimeUnit.MILLISECONDS);
-                        ScheduledFuture<?> previousFuture = channelFutures.put(channelUID, future);
-                        if (previousFuture != null) {
-                            previousFuture.cancel(true);
-                        }
+                        channelFutures.compute(channelUID, (k, v) -> {
+                            if (v != null) {
+                                v.cancel(true);
+                            }
+                            return scheduler.scheduleWithFixedDelay(() -> postCommand(channelUID, (Command) type), 0,
+                                    frequency, TimeUnit.MILLISECONDS);
+                        });
                     }
                 } else {
                     if (type instanceof Command) {
