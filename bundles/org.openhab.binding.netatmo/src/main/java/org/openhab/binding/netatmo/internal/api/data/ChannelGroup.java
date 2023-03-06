@@ -63,6 +63,8 @@ public class ChannelGroup {
             GROUP_NOISE);
     public static final ChannelGroup HUMIDITY = new ChannelGroup(HumidityChannelHelper.class, MeasureClass.HUMIDITY,
             GROUP_HUMIDITY);
+    public static final ChannelGroup ALARM_LAST_EVENT = new ChannelGroup(EventChannelHelper.class,
+            GROUP_ALARM_LAST_EVENT);
 
     private final Class<? extends ChannelHelper> helper;
     public final Set<String> groupTypes;

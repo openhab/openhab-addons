@@ -654,6 +654,10 @@ All these channels are read only.
 | signal        | strength   | Number       | Signal strength (0 for no signal, 1 for weak...) |
 | signal        | value      | Number:Power | Signal strength in dBm                           |
 | timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
+| last-event    | type       | String       | Type of event                                    |
+| last-event    | time       | DateTime     | Moment of the last event for this person         |
+| last-event    | subtype    | String       | Sub-type of event                                |
+| last-event    | message    | String       | Last event message from this person              |
 
 ## Configuration Examples
 

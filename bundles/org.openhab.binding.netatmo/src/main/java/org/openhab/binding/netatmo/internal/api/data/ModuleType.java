@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.handler.capability.AirCareCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.AlarmEventCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.CameraCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapability;
@@ -36,14 +37,12 @@ import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.SmokeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ApiBridgeChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.DoorTagChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EnergyChannelHelper;
-import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventDoorbellChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventPersonChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.PersonChannelHelper;
@@ -141,12 +140,12 @@ public enum ModuleType {
             new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
             new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT)),
 
-    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(SmokeCapability.class, ChannelHelperCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP,
-            new ChannelGroup(EventChannelHelper.class, GROUP_SMOKE_LAST_EVENT)),
+    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(AlarmEventCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
 
-    CARBON_MONOXIDE_ALARM(FeatureArea.SECURITY, "NCO", HOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TIMESTAMP);
+    CARBON_MONOXIDE_ALARM(FeatureArea.SECURITY, "NCO", HOME,
+            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 

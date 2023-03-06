@@ -12,39 +12,31 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 
 /**
- * {@link SmokeCapability} gives the ability to handle Smoke detector specifics
+ * {@link AlarmEventCapability} gives the ability to handle Alarm modules events
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class SmokeCapability extends HomeSecurityThingCapability {
+public class AlarmEventCapability extends HomeSecurityThingCapability {
 
-    public SmokeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
+    public AlarmEventCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
     }
 
     @Override
     public List<NAObject> updateReadings() {
-        List<NAObject> result = new ArrayList<>();
-        securityCapability.ifPresent(cap -> {
-            HomeEvent event = cap.getLastDeviceEvent(handler.getId(), moduleType.apiName);
-            if (event != null) {
-                result.add(event);
-            }
-        });
-        return result;
+        return securityCapability.map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
+                .map(event -> List.of((NAObject) event)).orElse(List.of());
     }
 }
