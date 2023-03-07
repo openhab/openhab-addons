@@ -141,10 +141,7 @@ public class GoogleTVConnectionManager {
     private String volMax = "ff";
     private boolean volMute = false;
     private String audioMode = "";
-    private String hostName = "";
     private String currentApp = "";
-    private String deviceId = "";
-    private String arch = "";
     private String manufacturer = "";
     private String model = "";
     private String androidVersion = "";
@@ -175,35 +172,8 @@ public class GoogleTVConnectionManager {
         initalize();
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-        handler.setThingProperty("Device Name", hostName);
-    }
-
-    public String getHostName() {
-        return this.hostName;
-    }
-
     public String getThingID() {
         return handler.getThingID();
-    }
-
-    public void setDeviceID(String deviceId) {
-        this.deviceId = deviceId;
-        handler.setThingProperty("Device ID", deviceId);
-    }
-
-    public String getDeviceID() {
-        return this.deviceId;
-    }
-
-    public void setArch(String arch) {
-        this.arch = arch;
-        handler.setThingProperty("Architectures", arch);
-    }
-
-    public String getArch() {
-        return this.arch;
     }
 
     public void setManufacturer(String manufacturer) {
@@ -345,20 +315,6 @@ public class GoogleTVConnectionManager {
         return this.isLoggedIn;
     }
 
-    public void setKeys(String privKey, String cert) {
-        try {
-            androidtvPKI.setKeys(privKey, encryptionKey, cert);
-            androidtvPKI.saveKeyStore(config.keystorePassword, encryptionKey);
-        } catch (GeneralSecurityException e) {
-            logger.debug("General security exception", e);
-        } catch (IOException e) {
-            logger.debug("IO Exception", e);
-        } catch (Exception e) {
-            logger.debug("General Exception", e);
-
-        }
-    }
-
     private void setShimX509ClientChain(X509Certificate @Nullable [] shimX509ClientChain) {
         try {
             this.shimX509ClientChain = shimX509ClientChain;
@@ -393,11 +349,6 @@ public class GoogleTVConnectionManager {
         logger.trace("{} - startChildConnectionManager child config: {} {} {}", handler.getThingID(), childConfig.port,
                 childConfig.mode, childConfig.shim);
         childConnectionManager = new GoogleTVConnectionManager(this.handler, childConfig, this);
-    }
-
-    private void resetConnectionManager() {
-        dispose();
-        initalize();
     }
 
     private TrustManager[] defineNoOpTrustManager() {
@@ -435,7 +386,6 @@ public class GoogleTVConnectionManager {
                         logger.trace("Issuer DN: {}", shimX509ClientChain[cert].getIssuerX500Principal());
                         logger.trace("Serial number: {}", shimX509ClientChain[cert].getSerialNumber());
                     }
-
                     return shimX509ClientChain;
                 } else {
                     logger.debug("Returning empty certificate for getAcceptedIssuers");
@@ -1292,12 +1242,6 @@ public class GoogleTVConnectionManager {
         } else if (CHANNEL_RAWMSG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 messageParser.handleMessage(command.toString());
-            }
-        } else if (CHANNEL_APP.equals(channelUID.getId())) {
-            if (command instanceof StringType) {
-                String message = GoogleTVRequest.encodeMessage(GoogleTVRequest.startApp(command.toString()));
-                // sendCommand(new GoogleTVCommand(message));
-                // Disabled until app command is identified
             }
         } else if (CHANNEL_KEYBOARD.equals(channelUID.getId())) {
             if (command instanceof StringType) {
