@@ -58,13 +58,13 @@ public class AuthenticationApi extends RestManager {
         this.scheduler = scheduler;
     }
 
-    public void authorize(ApiHandlerConfiguration credentials, @Nullable String code, @Nullable String redirectUri)
-            throws NetatmoException {
+    public void authorize(ApiHandlerConfiguration credentials, String refreshToken, @Nullable String code,
+            @Nullable String redirectUri) throws NetatmoException {
         if (!(credentials.clientId.isBlank() || credentials.clientSecret.isBlank())) {
             Map<String, String> params = new HashMap<>(Map.of(SCOPE, FeatureArea.ALL_SCOPES));
 
-            if (!credentials.refreshToken.isBlank()) {
-                params.put(REFRESH_TOKEN, credentials.refreshToken);
+            if (!refreshToken.isBlank()) {
+                params.put(REFRESH_TOKEN, refreshToken);
             } else if (code != null && redirectUri != null) {
                 params.putAll(Map.of(REDIRECT_URI, redirectUri, CODE, code));
             }
