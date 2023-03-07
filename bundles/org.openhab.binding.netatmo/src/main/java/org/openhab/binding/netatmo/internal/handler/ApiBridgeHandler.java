@@ -249,8 +249,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
-            request.header("app_version", "app_homecoach");
-            request.agent("android");
 
             if (payload != null && contentType != null
                     && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
