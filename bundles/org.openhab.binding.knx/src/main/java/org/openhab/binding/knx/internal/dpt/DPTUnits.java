@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
@@ -34,6 +33,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
+import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
  * This class provides the units for values depending on the DPT (if available)
@@ -69,9 +69,9 @@ public class DPTUnits {
 
     static {
         // try to get units from Calimeros "unit" field in DPTXlators
-        List<Class<? extends DPTXlator>> translators = List.of(DPTXlator2ByteUnsigned.class, DPTXlator2ByteFloat.class,
-                DPTXlator4ByteUnsigned.class, DPTXlator4ByteSigned.class, DPTXlator4ByteFloat.class,
-                DPTXlator64BitSigned.class);
+        List<Class<? extends DPTXlator>> translators = List.of(DPTXlator2ByteUnsigned.class, DptXlator2ByteSigned.class,
+                DPTXlator2ByteFloat.class, DPTXlator4ByteUnsigned.class, DPTXlator4ByteSigned.class,
+                DPTXlator4ByteFloat.class, DPTXlator64BitSigned.class);
 
         for (Class<? extends DPTXlator> translator : translators) {
             Field[] fields = translator.getFields();
@@ -111,16 +111,7 @@ public class DPTUnits {
         DPT_UNIT_MAP.remove(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID()); // counts have no unit
 
         // two byte signed (DPT 8, DPTXlator is missing in calimero 2.5-M1)
-        // TODO: 2byte signed (DPT 8) use DptXlator2ByteSigned after 2.5 release of calimero
-        DPT_UNIT_MAP.put("8.002", MetricPrefix.MILLI(Units.SECOND).toString());
-        DPT_UNIT_MAP.put("8.003", MetricPrefix.MILLI(Units.SECOND).toString());
-        DPT_UNIT_MAP.put("8.004", MetricPrefix.MILLI(Units.SECOND).toString());
-        DPT_UNIT_MAP.put("8.005", Units.SECOND.toString());
-        DPT_UNIT_MAP.put("8.006", Units.MINUTE.toString());
-        DPT_UNIT_MAP.put("8.007", Units.HOUR.toString());
-        DPT_UNIT_MAP.put("8.010", Units.PERCENT.toString());
-        DPT_UNIT_MAP.put("8.011", Units.DEGREE_ANGLE.toString());
-        DPT_UNIT_MAP.put("8.012", SIUnits.METRE.toString());
+        DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses habe no unit
 
         // 4 byte unsigned (DPT 12)
         DPT_UNIT_MAP.put(DPTXlator4ByteUnsigned.DptVolumeLiquid.getID(), Units.LITRE.toString());
