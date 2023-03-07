@@ -148,15 +148,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 try {
                     logger.debug("Connecting to Netatmo API.");
 
-                    String refreshToken = connectApi.authorize(configuration, code, redirectUri);
-
-                    if (configuration.refreshToken.isBlank()) {
-                        logger.trace("Adding refresh token to configuration : {}", refreshToken);
-                        Configuration thingConfig = editConfiguration();
-                        thingConfig.put(ApiHandlerConfiguration.REFRESH_TOKEN, refreshToken);
-                        updateConfiguration(thingConfig);
-                        configuration = getConfiguration();
-                    }
+                    connectApi.authorize(configuration, code, redirectUri);
 
                     if (!configuration.webHookUrl.isBlank()) {
                         SecurityApi securityApi = getRestManager(SecurityApi.class);
@@ -179,6 +171,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                     prepareReconnection(code, redirectUri);
                 }
                 break;
+        }
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        if (refreshToken.isBlank() || refreshToken.equals(getConfiguration().refreshToken)) {
+            logger.trace("Blank or unchanged refresh token received");
+        } else {
+            logger.trace("Updating refresh token in configuration : {}", refreshToken);
+            Configuration bridgeConfig = editConfiguration();
+            bridgeConfig.put(ApiHandlerConfiguration.REFRESH_TOKEN, refreshToken);
+            updateConfiguration(bridgeConfig);
         }
     }
 
@@ -245,10 +248,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
-            String auth = connectApi.getAuthorization();
-            if (auth != null) {
-                request.header(HttpHeader.AUTHORIZATION, auth);
-            }
+            connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
+            request.header("app_version", "app_homecoach");
+            request.agent("android");
 
             if (payload != null && contentType != null
                     && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {

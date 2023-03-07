@@ -40,7 +40,7 @@ public abstract class RestManager {
     private static final UriBuilder API_URI_BUILDER = getApiBaseBuilder(PATH_API);
 
     private final Set<Scope> requiredScopes;
-    private final ApiBridgeHandler apiBridge;
+    protected final ApiBridgeHandler apiBridge;
 
     public RestManager(ApiBridgeHandler apiBridge, FeatureArea features) {
         this.requiredScopes = features.scopes;
