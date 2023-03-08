@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.ecovacs.internal;
 
-import java.util.HashMap;
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand.SoundType;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
+import org.openhab.binding.ecovacs.internal.util.StateOptionEntry;
+import org.openhab.binding.ecovacs.internal.util.StateOptionMapping;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -80,48 +78,6 @@ public class EcovacsBindingConstants {
     public static final String CMD_STOP = "stop";
     public static final String CMD_SPOT_AREA = "spotArea";
     public static final String CMD_CUSTOM_AREA = "customArea";
-
-    public static class StateOptionEntry<T extends Enum<T>> {
-        public final T enumValue;
-        public final String value;
-        public final Optional<DeviceCapability> capability;
-
-        StateOptionEntry(T enumValue, String value) {
-            this(enumValue, value, null);
-        }
-
-        StateOptionEntry(T enumValue, String value, @Nullable DeviceCapability capability) {
-            this.enumValue = enumValue;
-            this.value = value;
-            this.capability = Optional.ofNullable(capability);
-        }
-    }
-
-    public static class StateOptionMapping<T extends Enum<T>> extends HashMap<T, StateOptionEntry<T>> {
-        private static final long serialVersionUID = -6828690091106259902L;
-
-        public String getMappedValue(T key) {
-            StateOptionEntry<T> entry = get(key);
-            if (entry != null) {
-                return entry.value;
-            }
-            throw new IllegalArgumentException("No mapping for key " + key);
-        }
-
-        public @Nullable T findMappedEnumValue(String value) {
-            return entrySet().stream().filter(entry -> entry.getValue().value.equals(value))
-                    .map(entry -> entry.getKey()).findFirst().orElse(null);
-        }
-
-        @SafeVarargs
-        public static <T extends Enum<T>> StateOptionMapping<T> of(StateOptionEntry<T>... entries) {
-            StateOptionMapping<T> map = new StateOptionMapping<>();
-            for (StateOptionEntry<T> entry : entries) {
-                map.put(entry.enumValue, entry);
-            }
-            return map;
-        }
-    }
 
     public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.<CleanMode> of(
             new StateOptionEntry<CleanMode>(CleanMode.AUTO, "auto"),

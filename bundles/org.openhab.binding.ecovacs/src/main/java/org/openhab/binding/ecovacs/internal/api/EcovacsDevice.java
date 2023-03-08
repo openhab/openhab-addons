@@ -48,18 +48,18 @@ public interface EcovacsDevice {
         void onEventStreamFailure(EcovacsDevice device, Throwable error);
     }
 
-    public String getSerialNumber();
+    String getSerialNumber();
 
-    public String getModelName();
+    String getModelName();
 
-    public boolean hasCapability(DeviceCapability cap);
+    boolean hasCapability(DeviceCapability cap);
 
-    public void connect(EventListener listener, ScheduledExecutorService scheduler)
+    void connect(EventListener listener, ScheduledExecutorService scheduler)
             throws EcovacsApiException, InterruptedException;
 
-    public void disconnect(ScheduledExecutorService scheduler);
+    void disconnect(ScheduledExecutorService scheduler);
 
-    public <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException;
+    <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException;
 
-    public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException;
+    List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException;
 }

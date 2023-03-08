@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.StateOptionEntry;
-import org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.StateOptionMapping;
 import org.openhab.binding.ecovacs.internal.EcovacsDynamicStateDescriptionProvider;
 import org.openhab.binding.ecovacs.internal.action.EcovacsVacuumActions;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
@@ -77,6 +75,8 @@ import org.openhab.binding.ecovacs.internal.api.model.NetworkInfo;
 import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
 import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.config.EcovacsVacuumConfiguration;
+import org.openhab.binding.ecovacs.internal.util.StateOptionEntry;
+import org.openhab.binding.ecovacs.internal.util.StateOptionMapping;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -175,15 +175,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                 device.sendCommand(new SetVolumeCommand((volumePercent + 5) / 10));
                 return;
             } else if (channel.equals(CHANNEL_ID_SUCTION_POWER) && command instanceof StringType) {
-                SuctionPower power = SUCTION_POWER_MAPPING.findMappedEnumValue(command.toString());
-                if (power != null) {
-                    device.sendCommand(new SetSuctionPowerCommand(power));
+                Optional<SuctionPower> power = SUCTION_POWER_MAPPING.findMappedEnumValue(command.toString());
+                if (power.isPresent()) {
+                    device.sendCommand(new SetSuctionPowerCommand(power.get()));
                     return;
                 }
             } else if (channel.equals(CHANNEL_ID_WATER_AMOUNT) && command instanceof StringType) {
-                MoppingWaterAmount amount = WATER_AMOUNT_MAPPING.findMappedEnumValue(command.toString());
-                if (amount != null) {
-                    device.sendCommand(new SetMoppingWaterAmountCommand(amount));
+                Optional<MoppingWaterAmount> amount = WATER_AMOUNT_MAPPING.findMappedEnumValue(command.toString());
+                if (amount.isPresent()) {
+                    device.sendCommand(new SetMoppingWaterAmountCommand(amount.get()));
                     return;
                 }
             } else if (channel.equals(CHANNEL_ID_AUTO_EMPTY)) {

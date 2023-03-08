@@ -14,6 +14,8 @@ package org.openhab.binding.ecovacs.internal.action;
 
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
@@ -50,9 +52,9 @@ public class EcovacsVacuumActions implements ThingActions {
             @ActionInput(name = "type", label = "@text/actionInputSoundTypeLabel", description = "@text/actionInputSoundTypeDesc") String type) {
         EcovacsVacuumHandler handler = this.handler;
         if (handler != null) {
-            PlaySoundCommand.SoundType soundType = SOUND_TYPE_MAPPING.findMappedEnumValue(type);
-            if (soundType != null) {
-                handler.playSound(new PlaySoundCommand(soundType));
+            Optional<PlaySoundCommand.SoundType> soundType = SOUND_TYPE_MAPPING.findMappedEnumValue(type);
+            if (soundType.isPresent()) {
+                handler.playSound(new PlaySoundCommand(soundType.get()));
             } else {
                 logger.debug("Sound type '{}' is unknown, ignoring", type);
             }
