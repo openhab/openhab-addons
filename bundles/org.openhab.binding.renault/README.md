@@ -37,7 +37,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | batterylevel           | Number             | State of the battery in %                       | Yes       |
 | batterystatusupdated   | DateTime           | Timestamp of the last battery status update     | Yes       |
 | chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
-| pause                  | Switch             | Pause mode.                                     | No        |
+| pause                  | Switch             | Pause the charge.                               | No        |
 | chargingstatus         | String             | Charging status                                 | Yes       |
 | chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
 | plugstatus             | String             | Status of charging plug                         | Yes       |

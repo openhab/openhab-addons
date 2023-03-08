@@ -217,7 +217,9 @@ public class RenaultHandler extends BaseThingHandler {
                             httpSession.actionPause(newcommand);
                             car.setPauseMode(newcommand);
                             updateState(CHANNEL_PAUSE_MODE, newcommand);
-                        } catch (Exception e) {
+                        } catch (InterruptedException | RenaultForbiddenException | RenaultNotImplementedException
+                                | RenaultActionException | RenaultException | RenaultUpdateException
+                                | ExecutionException | TimeoutException e) {
                             logger.warn("Error My Renault Http Session.", e);
                             Thread.currentThread().interrupt();
                         }
