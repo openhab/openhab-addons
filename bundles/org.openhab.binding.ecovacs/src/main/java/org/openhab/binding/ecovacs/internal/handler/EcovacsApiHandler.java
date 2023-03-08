@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ecovacs.internal.handler;
 
+import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -19,7 +21,6 @@ import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ecovacs.internal.api.ClientKeys;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.config.EcovacsApiConfiguration;
@@ -137,8 +138,8 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         EcovacsApiConfiguration config = getConfigAs(EcovacsApiConfiguration.class);
         String deviceId = config.installId + deviceIdSuffix;
         org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
-                deviceId, config.email, config.password, config.continent, country, "EN", ClientKeys.CLIENT_KEY,
-                ClientKeys.CLIENT_SECRET, ClientKeys.AUTH_CLIENT_KEY, ClientKeys.AUTH_CLIENT_SECRET);
+                deviceId, config.email, config.password, config.continent, country, "EN", CLIENT_KEY, CLIENT_SECRET,
+                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET);
 
         return EcovacsApi.create(httpClientFactory.getCommonHttpClient(), apiConfig);
     }
