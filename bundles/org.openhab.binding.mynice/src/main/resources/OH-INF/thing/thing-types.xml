@@ -39,7 +39,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Swing Gate</label>
-		<description>A double wing gate</description>
+		<description>A dual swing gate</description>
 
 		<channels>
 			<channel id="status" typeId="doorstatus"/>
@@ -89,6 +89,7 @@
 	<channel-type id="doorstatus">
 		<item-type>String</item-type>
 		<label>Gate Status</label>
+		<description>Position of the gate or state if moving</description>
 		<state readOnly="true">
 			<options>
 				<option value="open">Open</option>

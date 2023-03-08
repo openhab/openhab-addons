@@ -94,11 +94,10 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         if (getConfigAs(It4WifiConfiguration.class).username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Please define a username for this thing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
         } else {
+            updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(() -> startConnector());
         }
     }
@@ -163,7 +162,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                         return;
                     case wait:
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                "Please validate the user on the MyNice application");
+                                "@text/conf-pending-validation");
                         scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                         return;
                     default:
@@ -238,8 +237,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             startConnector();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Maximum handshake attempts reached");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
             connector = null;
         }
     }

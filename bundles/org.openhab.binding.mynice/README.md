@@ -18,10 +18,6 @@ You will have to grant him permissions using the MyNice app (Android or IOS).
 
 Once configuration of the bridge is completed, your gate(s) will also be auto-discovered and added to the Inbox.
 
-## Binding Configuration
-
-There is nothing to configure at binding level.
-
 ## Thing Configuration
 
 First configuration should be done via UI discovery, this will let you get automatically the password provided by the IT4Wifi module.
@@ -50,18 +46,18 @@ Channels available for the gates are :
 
 | Channel   | Type   | Read/Write | Description                                              |
 |-----------|--------|------------|----------------------------------------------------------|
-| status    | String | R          | Description of the current status of the door *          |
+| status    | String | R          | Description of the current status of the door (1)        |
 | obstruct  | Switch | R          | Flags an obstruction, blocking the door                  |
 | moving    | Switch | R          | Indicates if the device is currently operating a command |
-| command   | String | W          | Send a given command to the gate **                      |
+| command   | String | W          | Send a given command to the gate (2)                     |
 | t4command | String | W          | Send a T4 Command to the gate                            |
 
-* : can be open, closed, opening, closing, stopped.
-** : must be "stop","open","close"
+(1) : can be open, closed, opening, closing, stopped.
+(2) : must be "stop","open","close"
 
 ### T4 Commands
 
-Depending upon your gate model, and motor capabilities, some T4 commands can be used.
+Depending upon your gate model and motor capabilities, some T4 commands can be used.
 The list of available commands for your model will be automatically discovered by the binding.
 This information is stored in the `allowedT4` property held by the gate Thing itself.
 
