@@ -17,6 +17,7 @@ import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class Car {
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
-    private PauseMode pausemode = PauseMode.OFF;
+    private OnOffType pausemode = OnOffType.OFF;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
@@ -68,11 +69,6 @@ public class Car {
         UNKNOWN,
         SCHEDULE_MODE,
         ALWAYS_CHARGING
-    }
-
-    public enum PauseMode {
-        ON,
-        OFF
     }
 
     public enum ChargingStatus {
@@ -154,19 +150,6 @@ public class Car {
             }
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing HVAC Status: {}", e.getMessage(), responseJson);
-        }
-    }
-
-    public void setPauseStatus(JsonObject responseJson) {
-        try {
-            JsonObject attributes = getAttributes(responseJson);
-            if (attributes != null) {
-                if (attributes.get("action") != null) {
-                    pausemode = PauseMode.valueOf(attributes.get("action").getAsString());
-                }
-            }
-        } catch (IllegalStateException | ClassCastException e) {
-            logger.warn("Error {} parsing Pause Status: {}", e.getMessage(), responseJson);
         }
     }
 
@@ -317,7 +300,7 @@ public class Car {
         return chargingMode;
     }
 
-    public PauseMode getPauseMode() {
+    public OnOffType getPauseMode() {
         return pausemode;
     }
 
@@ -369,7 +352,7 @@ public class Car {
         }
     }
 
-    public void setPauseMode(PauseMode pausemode) {
+    public void setPauseMode(OnOffType pausemode) {
         this.pausemode = pausemode;
     }
 

@@ -16,7 +16,7 @@
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
-			<channel id="pausemode" typeId="pausemode"/>
+			<channel id="pause" typeId="pause"/>
 			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
@@ -149,11 +149,11 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="pausemode">
+	<channel-type id="pause">
 		<item-type>Switch</item-type>
 		<label>Pause Charge</label>
-		<state readOnly="false">
-		</state>
+		<description>Pause or resume the charge.</description>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>

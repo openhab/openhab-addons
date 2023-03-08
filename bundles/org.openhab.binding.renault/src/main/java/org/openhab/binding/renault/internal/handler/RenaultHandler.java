@@ -36,7 +36,6 @@ import org.openhab.binding.renault.internal.RenaultBindingConstants;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
-import org.openhab.binding.renault.internal.api.Car.PauseMode;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
@@ -211,13 +210,13 @@ public class RenaultHandler extends BaseThingHandler {
                     reschedulePollingJob();
                 } else if (command instanceof OnOffType) {
                     try {
-                        PauseMode newMode = PauseMode.valueOf(command.toString());
                         MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                         try {
+                            OnOffType newcommand = OnOffType.from(command.toString());
                             httpSession.initSesssion(car);
-                            httpSession.actionPause(newMode);
-                            car.setPauseMode(newMode);
-                            updateState(CHANNEL_PAUSE_MODE, new StringType(newMode.toString()));
+                            httpSession.actionPause(newcommand);
+                            car.setPauseMode(newcommand);
+                            updateState(CHANNEL_PAUSE_MODE, newcommand);
                         } catch (Exception e) {
                             logger.warn("Error My Renault Http Session.", e);
                             Thread.currentThread().interrupt();

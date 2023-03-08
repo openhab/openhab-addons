@@ -37,7 +37,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | batterylevel           | Number             | State of the battery in %                       | Yes       |
 | batterystatusupdated   | DateTime           | Timestamp of the last battery status update     | Yes       |
 | chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
-| pausemode              | Switch             | Pause mode.                                     | No        |
+| pause                  | Switch             | Pause mode.                                     | No        |
 | chargingstatus         | String             | Charging status                                 | Yes       |
 | chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
 | plugstatus             | String             | Status of charging plug                         | Yes       |
@@ -60,7 +60,7 @@ The "externaltemperature" only works on a few cars.
 The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car.
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
-The "Pausemode" and "chargingmode" mat not working on some cars. as an example "chargingmode" do not work on Dacia Spring cars.
+The "Pause" and "chargingmode" mat not working on some cars. as an example "chargingmode" do not work on Dacia Spring cars.
 
 The Kamereon API Key changes periodically, which causes a communication error.
 To fix this error update the API Key in the bindings configuration.
@@ -80,7 +80,7 @@ sitemap renaultcar label="Renault Car" {
         Default icon="poweroutlet" item=RenaultCar_PlugStatus
         Default icon="switch" item=RenaultCar_ChargingStatus
         Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
-        Selection item=RenaultCar_PauseMode
+        Default icon="switch" item=RenaultCar_PauseMode
         Default item=RenaultCar_ChargingTimeRemaining
         Default icon="pressure" item=RenaultCar_EstimatedRange
         Default icon="pressure" item=RenaultCar_Odometer
