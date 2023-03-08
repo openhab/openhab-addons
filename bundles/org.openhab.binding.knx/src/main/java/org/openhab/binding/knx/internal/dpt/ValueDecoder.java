@@ -347,16 +347,21 @@ public class ValueDecoder {
         if (allowedTypes.contains(PercentType.class)
                 && (HSBType.class.equals(preferredType) || PercentType.class.equals(preferredType))) {
             return new PercentType(BigDecimal.valueOf(Math.round(value)));
-        } else if (allowedTypes.contains(QuantityType.class) && !DISABLE_UOM) {
+        }
+
+        if (allowedTypes.contains(QuantityType.class) && !DISABLE_UOM) {
             String unit = DPTUnits.getUnitForDpt(id);
             if (unit != null) {
                 return new QuantityType<>(value + " " + unit);
             } else {
                 LOGGER.trace("Could not determine unit for DPT '{}', fallback to plain decimal", id);
             }
-        } else if (allowedTypes.contains(DecimalType.class)) {
+        }
+
+        if (allowedTypes.contains(DecimalType.class)) {
             return new DecimalType(value);
         }
+
         LOGGER.warn("Failed to convert '{}' (DPT '{}'): no matching type found", value, id);
         return null;
     }
