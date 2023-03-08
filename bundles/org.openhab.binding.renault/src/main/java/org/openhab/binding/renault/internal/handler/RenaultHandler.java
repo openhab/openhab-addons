@@ -209,20 +209,18 @@ public class RenaultHandler extends BaseThingHandler {
             case RenaultBindingConstants.CHANNEL_PAUSE_MODE:
                 if (command instanceof RefreshType) {
                     reschedulePollingJob();
-                } else if (command instanceof StringType) {
+                } else if (command instanceof OnOffType) {
                     try {
                         PauseMode newMode = PauseMode.valueOf(command.toString());
-                        if (!PauseMode.UNKNOWN.equals(newMode)) {
-                            MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
-                            try {
-                                httpSession.initSesssion(car);
-                                httpSession.actionPause(newMode);
-                                car.setPauseMode(newMode);
-                                updateState(CHANNEL_PAUSE_MODE, new StringType(newMode.toString()));
-                            } catch (Exception e) {
-                                logger.warn("Error My Renault Http Session.", e);
-                                Thread.currentThread().interrupt();
-                            }
+                        MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                        try {
+                            httpSession.initSesssion(car);
+                            httpSession.actionPause(newMode);
+                            car.setPauseMode(newMode);
+                            updateState(CHANNEL_PAUSE_MODE, new StringType(newMode.toString()));
+                        } catch (Exception e) {
+                            logger.warn("Error My Renault Http Session.", e);
+                            Thread.currentThread().interrupt();
                         }
                     } catch (IllegalArgumentException e) {
                         logger.warn("Invalid Pause Mode {}.", command.toString());

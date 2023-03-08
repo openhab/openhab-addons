@@ -150,14 +150,9 @@
 		</state>
 	</channel-type>
 	<channel-type id="pausemode">
-		<item-type>String</item-type>
-		<label>Pause Mode</label>
+		<item-type>Switch</item-type>
+		<label>Pause Charge</label>
 		<state readOnly="false">
-			<options>
-				<option value="UNKNOWN">Unknown</option>
-				<option value="PAUSE">Pause</option>
-				<option value="RESUME">Resume</option>
-			</options>
 		</state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">

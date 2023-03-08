@@ -45,7 +45,7 @@ public class Car {
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
-    private PauseMode pausemode = PauseMode.UNKNOWN;
+    private PauseMode pausemode = PauseMode.OFF;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
@@ -71,9 +71,8 @@ public class Car {
     }
 
     public enum PauseMode {
-        RESUME,
-        PAUSE,
-        UNKNOWN
+        ON,
+        OFF
     }
 
     public enum ChargingStatus {
