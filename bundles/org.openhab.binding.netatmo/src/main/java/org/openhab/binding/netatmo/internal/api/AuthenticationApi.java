@@ -96,7 +96,7 @@ public class AuthenticationApi extends RestManager {
 
         grantedScope = response.getScope();
         authorization = "Bearer %s".formatted(response.getAccessToken());
-        apiBridge.updateRefreshToken(response.getRefreshToken());
+        apiBridge.storeRefreshToken(response.getRefreshToken());
     }
 
     public void disconnect() {

@@ -16,10 +16,14 @@ import static java.util.Comparator.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -70,6 +74,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -101,13 +106,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final NADeserializer deserializer;
     private final HttpService httpService;
+    private final ChannelUID requestCountChannelUID;
+    private final Path tokenFile;
 
     private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
     private Optional<WebhookServlet> webHookServlet = Optional.empty();
     private Optional<GrantServlet> grantServlet = Optional.empty();
     private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private Deque<LocalDateTime> requestsTimestamps;
-    private final ChannelUID requestCountChannelUID;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService) {
@@ -119,6 +125,16 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpService = httpService;
         this.requestsTimestamps = new ArrayDeque<>(200);
         this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+
+        Path homeFolder = Paths.get(OpenHAB.getUserDataFolder(), BINDING_ID);
+        if (Files.notExists(homeFolder)) {
+            try {
+                Files.createDirectory(homeFolder);
+            } catch (IOException e) {
+                logger.warn("Unable to create {} folder : {}", homeFolder.toString(), e.getMessage());
+            }
+        }
+        tokenFile = homeFolder.resolve(REFRESH_TOKEN + "_" + thing.getUID().toString().replace(":", "_"));
     }
 
     @Override
@@ -130,7 +146,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public void openConnection(@Nullable String code, @Nullable String redirectUri) {
         ApiHandlerConfiguration configuration = getConfiguration();
-        String refreshToken = getThing().getProperties().getOrDefault(REFRESH_TOKEN, "");
+
+        String refreshToken = readRefreshToken();
+
         ConfigurationLevel level = configuration.check(refreshToken);
         switch (level) {
             case EMPTY_CLIENT_ID:
@@ -175,13 +193,27 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void updateRefreshToken(String refreshToken) {
-        String oldRefreshToken = getThing().getProperties().getOrDefault(REFRESH_TOKEN, "");
-        if (refreshToken.isBlank() || refreshToken.equals(oldRefreshToken)) {
-            logger.trace("Blank or unchanged refresh token received");
+    private String readRefreshToken() {
+        if (Files.exists(tokenFile)) {
+            try {
+                return Files.readString(tokenFile);
+            } catch (IOException e) {
+                logger.warn("Unable to read token file {} : {}", tokenFile.toString(), e.getMessage());
+            }
+        }
+        return "";
+    }
+
+    public void storeRefreshToken(String refreshToken) {
+        if (refreshToken.isBlank()) {
+            logger.trace("Blank refresh token received - ignored");
         } else {
-            logger.trace("Updating refresh token in properties : {}", refreshToken);
-            thing.setProperty(REFRESH_TOKEN, refreshToken);
+            logger.trace("Updating refresh token in {} : {}", tokenFile.toString(), refreshToken);
+            try {
+                Files.write(tokenFile, refreshToken.getBytes());
+            } catch (IOException e) {
+                logger.warn("Error saving refresh token to {} : {}", tokenFile.toString(), e.getMessage());
+            }
         }
     }
 
