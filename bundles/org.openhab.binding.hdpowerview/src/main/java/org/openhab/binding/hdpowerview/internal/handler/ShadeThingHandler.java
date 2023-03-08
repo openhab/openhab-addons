@@ -18,6 +18,7 @@ import static org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -169,13 +170,16 @@ public class ShadeThingHandler extends BaseThingHandler {
     public void initialize() {
         thisShade.setId(getConfigAs(HDPowerViewShadeConfiguration.class).id);
         Bridge bridge = getBridge();
-        if (bridge == null) {
+        BridgeHandler bridgeHandler = bridge != null ? bridge.getHandler() : null;
+        if (!(bridgeHandler instanceof GatewayBridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
         isInitialized = false;
         updateStatus(ThingStatus.UNKNOWN);
+        scheduler.schedule(() -> ((GatewayBridgeHandler) bridgeHandler).refreshShade(thisShade.getId()), 5,
+                TimeUnit.SECONDS);
     }
 
     /**

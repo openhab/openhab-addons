@@ -75,11 +75,13 @@ public class ShadeDiscoveryService extends AbstractDiscoveryService {
 
     private Runnable createScanner() {
         return () -> {
-            GatewayWebTargets webTargets = hub.getWebTargets();
             try {
+                GatewayWebTargets webTargets = hub.getWebTargets();
                 discoverShades(webTargets);
             } catch (HubProcessingException e) {
                 logger.warn("Unexpected exception:{}, message:{}", e.getClass().getSimpleName(), e.getMessage());
+            } catch (IllegalStateException e) {
+                // ignore
             }
             stopScan();
         };

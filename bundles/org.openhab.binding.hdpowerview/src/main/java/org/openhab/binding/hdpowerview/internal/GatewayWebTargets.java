@@ -82,8 +82,9 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     private final String scenes;
     private final String sceneActivate;
     private final String shadeMotion;
-    private final String shadeStop;
     private final String shadePositions;
+    private final String shadeSingle;
+    private final String shadeStop;
     private final String info;
     private final String register;
     private final String shadeEvents;
@@ -118,12 +119,16 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
 
         shades = home + "shades";
         scenes = home + "scenes";
+
         sceneActivate = home + "scenes/%d/activate";
         shadeMotion = home + "shades/%d/motion";
+        shadePositions = home + "shades/%d/positions";
+        shadeSingle = home + "shades/%d";
         shadeStop = home + "shades/stop";
-        shadePositions = home + "shades/positions";
+
         shadeEvents = home + "shades/events";
         sceneEvents = home + "scenes/events";
+
         register = home + "integration/openhab.org";
 
         info = base + "gateway/info";
@@ -221,7 +226,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
      * @throws HubProcessingException if any error occurs.
      */
     public Shade getShade(int shadeId) throws HubProcessingException {
-        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId), null, null);
+        String json = invoke(HttpMethod.GET, String.format(shadeSingle, shadeId), null, null);
         try {
             Shade result = jsonParser.fromJson(json, Shade.class);
             if (result == null) {
@@ -318,15 +323,14 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     }
 
     /**
-     * Issue a ccommand to move a shade.
+     * Issue a command to move a shade.
      *
      * @param shadeId the shade to be moved.
      * @param position the new position.
      * @throws HubProcessingException if any error occurs.
      */
     public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException {
-        invoke(HttpMethod.PUT, shadePositions, Query.of(IDS, Integer.valueOf(shadeId).toString()),
-                jsonParser.toJson(position));
+        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, jsonParser.toJson(position));
     }
 
     /**
