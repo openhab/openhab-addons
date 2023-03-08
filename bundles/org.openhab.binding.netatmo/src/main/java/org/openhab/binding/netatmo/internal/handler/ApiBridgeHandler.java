@@ -101,8 +101,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final String REFRESH_TOKEN = "refreshToken";
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
+    private final AuthenticationApi connectApi = new AuthenticationApi(this, scheduler);
+    private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
+    private final Deque<LocalDateTime> requestsTimestamps = new ArrayDeque<>(200);
     private final BindingConfiguration bindingConf;
-    private final AuthenticationApi connectApi;
     private final HttpClient httpClient;
     private final NADeserializer deserializer;
     private final HttpService httpService;
@@ -112,19 +114,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
     private Optional<WebhookServlet> webHookServlet = Optional.empty();
     private Optional<GrantServlet> grantServlet = Optional.empty();
-    private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
-    private Deque<LocalDateTime> requestsTimestamps;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService) {
         super(bridge);
         this.bindingConf = configuration;
-        this.connectApi = new AuthenticationApi(this, scheduler);
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
-        this.requestsTimestamps = new ArrayDeque<>(200);
-        this.requestCountChannelUID = new ChannelUID(getThing().getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+        this.requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
 
         Path homeFolder = Paths.get(OpenHAB.getUserDataFolder(), BINDING_ID);
         if (Files.notExists(homeFolder)) {

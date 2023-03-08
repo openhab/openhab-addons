@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import java.io.File;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.OpenHAB;
 
 /**
  * The {@link NetatmoBindingConstants} class defines common constants, which are used
@@ -158,6 +156,4 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
     public static final String CHANNEL_FLOODLIGHT = "floodlight";
     public static final String CHANNEL_REQUEST_COUNT = "request-count";
-
-    public static final String BINDING_USERDATA_PATH = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
 }
