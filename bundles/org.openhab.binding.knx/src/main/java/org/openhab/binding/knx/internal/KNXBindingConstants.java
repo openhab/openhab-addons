@@ -28,6 +28,10 @@ public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
 
+    // Global config
+    public static final String CONFIG_DISABLE_UOM = "disableUoM";
+    public static boolean DISABLE_UOM = false;
+
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serial");

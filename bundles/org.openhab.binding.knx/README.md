@@ -16,6 +16,11 @@ Since the protocol is identical, the KNX binding can also communicate with it tr
 - the data type for DPT 6.001 (Percent 8bit -128 -> 127%) has changed from `PercentType` to `QuantityType`
 - the data type for DPT 9.007 (Humidity) has changed from `PercentType` to `QuantityType`
 
+Rules that check for or compare states and transformations that expect a raw value might need adjustments.
+If you run into trouble with that and need some time, you can disable UoM support on binding level via the `disableUoM` parameter.
+UoM are enabled by default and need to be disabled manually.
+A new setting is activated immediately without restart.
+
 ## Supported Things
 
 The KNX binding supports two types of bridges, and one type of things to access the KNX bus.
@@ -23,7 +28,8 @@ There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for
 
 ## Bridges
 
-The following two bridge types are supported. Bridges don't have channels on their own.
+The following two bridge types are supported.
+Bridges don't have channels on their own.
 
 ### IP Gateway
 
@@ -91,8 +97,6 @@ They are used in the common case where the physical state is owned by a device w
 Control channel types (suffix `-control`) are used for cases where the KNX bus does not own the physical state of a device.
 This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
 If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
-
-Note: After changing the DPT of already existing Channels, openHAB needs to be restarted for the changes to become effective.
 
 ##### Channel Type `color`, `color-control`
 
