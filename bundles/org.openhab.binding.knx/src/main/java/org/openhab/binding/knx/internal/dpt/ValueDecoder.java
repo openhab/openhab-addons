@@ -69,7 +69,7 @@ public class ValueDecoder {
     private static final Pattern RGB_PATTERN = Pattern.compile("r:(?<r>\\d+) g:(?<g>\\d+) b:(?<b>\\d+)");
     // RGBW: "100 27 25 12 %", value range: 0-100, invalid values: "-"
     private static final Pattern RGBW_PATTERN = Pattern
-            .compile("(?:(?<r>\\d+)|-)\\s(?:(?<g>\\d+)|-)\\s(?:(?<b>\\d+)|-)\\s(?:(?<w>\\d+)|-)\\s%");
+            .compile("(?:(?<r>[\\d,.]+)|-)\\s(?:(?<g>[\\d,.]+)|-)\\s(?:(?<b>[\\d,.]+)|-)\\s(?:(?<w>[\\d,.]+)|-)\\s%");
     // xyY: "(0,123 0,123) 56 %", value range 0-1 for xy (comma as decimal point), 0-100 for Y, invalid values omitted
     private static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:,\\d+)?) (?<y>\\d+(?:,\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:,\\d+)?)\\s%)?");
@@ -323,14 +323,14 @@ public class ValueDecoder {
 
             if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
                 // does not support PercentType and r,g,b valid -> HSBType
-                int r = coerceToRange((int) (Integer.parseInt(rString) * 2.55), 0, 255);
-                int g = coerceToRange((int) (Integer.parseInt(gString) * 2.55), 0, 255);
-                int b = coerceToRange((int) (Integer.parseInt(bString) * 2.55), 0, 255);
+                int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
 
                 return HSBType.fromRGB(r, g, b);
             } else if (wString != null && PercentType.class.equals(preferredType)) {
                 // does support PercentType and w valid -> PercentType
-                int w = Integer.parseInt(wString);
+                BigDecimal w = new BigDecimal(wString.replace(",", "."));
 
                 return new PercentType(w);
             }

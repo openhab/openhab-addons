@@ -316,6 +316,18 @@ class DPTTest {
         assertEquals(26.3, hsbType.getBrightness().doubleValue(), 0.1);
     }
 
+    @Test
+    public void dpt252EncoderTest() {
+        // input data
+        byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e };
+        HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
+
+        assertNotNull(hsbType);
+        assertEquals(207, hsbType.getHue().doubleValue(), 0.1);
+        assertEquals(22, hsbType.getSaturation().doubleValue(), 0.1);
+        assertEquals(18, hsbType.getBrightness().doubleValue(), 0.1);
+    }
+
     // TODO maybe re-use this (#208)
     @Test
     public void unitFix() {
