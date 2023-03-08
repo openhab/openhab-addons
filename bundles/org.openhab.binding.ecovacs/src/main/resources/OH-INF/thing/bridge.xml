@@ -26,7 +26,6 @@
 				<label>Continent</label>
 				<description>Continent the account was registered on. Choose the one you are located in, or "World" if none matches.</description>
 				<default>ww</default>
-				<required>true</required>
 				<options>
 					<option value="ww">World</option>
 					<option value="eu">Europe</option>

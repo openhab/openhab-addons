@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Ecovacs Binding</name>
 	<description>This is the binding for Ecovacs Deebot vacuum cleaners.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

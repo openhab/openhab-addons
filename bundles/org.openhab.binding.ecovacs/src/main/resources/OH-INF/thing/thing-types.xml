@@ -258,6 +258,7 @@
 	<channel-type id="suction-power">
 		<item-type>String</item-type>
 		<label>Cleaning Power Level</label>
+		<description>Amount of suction power to be used while cleaning</description>
 		<state>
 			<options>
 				<option value="silent">Silent</option>
@@ -271,6 +272,7 @@
 	<channel-type id="true-detect-3d" advanced="true">
 		<item-type>Switch</item-type>
 		<label>True Detect 3D</label>
+		<description>Enable the True Detect 3D object recognition technology</description>
 	</channel-type>
 
 	<channel-type id="water-system-present">
@@ -296,6 +298,7 @@
 	<channel-type id="wifi-rssi" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
+		<category>QualityOfService</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
