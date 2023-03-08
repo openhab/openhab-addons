@@ -10,6 +10,7 @@ The Netatmo binding integrates the following Netatmo products:
 - _Doorbell_
 - _Smoke Detector_
 - _Smart Door Sensor_
+- _Carbon Monoxide Detector_
 
 See <https://www.netatmo.com/> for details on their product.
 
@@ -94,6 +95,8 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                       | id                                                                        |
 | tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                                | id                                                                        |
+| smoke-detector  | Thing  | NSD            | A Smoke Detector                                                                                      | id                                                                        |
+| co-detector     | Thing  | NCO            | A Carbon Monoxide Alarm                                                                               | id                                                                        |
 
 ### Webhook
 
@@ -641,6 +644,22 @@ All these channels are read only.
 | last-event    | time       | DateTime     | Moment of the last event for this person         |
 | last-event    | subtype    | String       | Sub-type of event                                |
 | last-event    | message    | String       | Last event message from this person              |
+
+### Netatmo Smart Carbon Monoxide Detector
+
+All these channels are read only.
+
+**Supported channels for the Carbon Monoxide Detector thing:**
+
+| Channel Group | Channel Id | Item Type    | Description                                      |
+| ------------- | ---------- | ------------ | ------------------------------------------------ |
+| signal        | strength   | Number       | Signal strength (0 for no signal, 1 for weak...) |
+| signal        | value      | Number:Power | Signal strength in dBm                           |
+| timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
+| last-event    | type       | String       | Type of event                                    |
+| last-event    | time       | DateTime     | Moment of the last event for this detector       |
+| last-event    | subtype    | String       | Sub-type of event                                |
+| last-event    | message    | String       | Last event message from this detector            |
 
 ## Configuration Examples
 
