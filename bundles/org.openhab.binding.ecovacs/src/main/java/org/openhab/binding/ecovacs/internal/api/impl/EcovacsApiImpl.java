@@ -188,7 +188,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     private List<DeviceDescription> getSupportedDeviceList() {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("devices/supported_device_list.json");
+        InputStream is = getClass().getResourceAsStream("devices/supported_device_list.json");
         JsonReader reader = new JsonReader(new InputStreamReader(is));
         Type type = new TypeToken<List<DeviceDescription>>() {
         }.getType();

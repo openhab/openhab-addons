@@ -55,6 +55,7 @@ public class XPathUtils {
         }
     }
 
+    @SuppressWarnings("null") // null annotations don't recognize FACTORY can not be null in return statement
     private static XPath newXPath() {
         synchronized (XPathUtils.class) {
             if (FACTORY == null) {
