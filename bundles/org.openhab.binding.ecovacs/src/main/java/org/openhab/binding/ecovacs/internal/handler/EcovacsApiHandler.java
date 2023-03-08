@@ -21,13 +21,13 @@ import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.config.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.discovery.EcovacsDeviceDiscoveryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -51,12 +51,12 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     private @Nullable EcovacsDeviceDiscoveryService discoveryService;
     private @Nullable EcovacsApi api;
     private @Nullable Future<?> loginFuture;
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
 
-    public EcovacsApiHandler(Bridge bridge, HttpClientFactory httpClientFactory, LocaleProvider localeProvider) {
+    public EcovacsApiHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider) {
         super(bridge);
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClient;
         this.localeProvider = localeProvider;
     }
 
@@ -141,7 +141,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
                 deviceId, config.email, config.password, config.continent, country, "EN", CLIENT_KEY, CLIENT_SECRET,
                 AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET);
 
-        return EcovacsApi.create(httpClientFactory.getCommonHttpClient(), apiConfig);
+        return EcovacsApi.create(httpClient, apiConfig);
     }
 
     private synchronized void loginToApi(final EcovacsApi api) {

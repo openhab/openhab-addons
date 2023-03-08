@@ -23,6 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EcovacsApiConfiguration {
     public String email = "";
     public String password = "";
-    public String continent = "";
+    public String continent = "ww";
     public String installId = "";
 }
