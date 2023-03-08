@@ -48,6 +48,7 @@ This binding is developed on and tested with the following devices
   - TF-FKB (window contact)
   - TF-AHDSB (outdoor brightness sensor)
   - FAFT60 (outdoor temperature & humidity sensor)
+  - FLGTF55 (air quality & temperature & humidity sensor)
 - The following Opus actuators:
   - GN-A-R12V-SR-4 (light)
   - GN-A-R12V-MF-2 (light)
@@ -70,6 +71,7 @@ This binding is developed on and tested with the following devices
 - Rocker switches (NodOn, Eltako FT55 etc)
 - Siegenia Senso Secure window sensors
 - Soda window handles
+- Nexelec INSAFE+ Carbon
 
 However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
 Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
@@ -83,6 +85,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
 | temperatureHumiditySensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
+| gasSensor                       | A5-09       | 0x02,04,05,08,09,0C,0D | co, co2, TVOC, VOC, VOCId,<br/>humidity, temperature | Nexelec, Eltako FLGTF55 | Discovery |
 | occupancySensor                 | A5-07       | 0x01-03       | illumination, batteryVoltage,<br/>motionDetection | NodON PIR-2-1-01 | Discovery |
 | lightTemperatureOccupancySensor | A5-08       | 0x01-03       | illumination, temperature,<br/>occupancy, motionDetection | Eltako FABH | Discovery |
 | lightSensor                     | A5-06       | 0x01          | illumination                 | Eltako TF-AHDSB                | Discovery |
@@ -202,6 +205,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
+| gasSensor                       | receivingEEPId    |                             | A5_09_02, A5_09_04, A5_09_05, A5_09_08, A5_09_09, A5_09_0C, A5_09_0D |
+|                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
@@ -277,6 +283,11 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
 | temperature         | Number:Temperature | Temperature in degree Celsius |
 | humidity            | Number             | Relative humidity level in percentages |
+| co                  | Number:Dimensionless | Carbonmonoxide level in ppm |
+| co2                 | Number:Dimensionless | Carbondioxide level in ppm |
+| totalVolatileOrganicCompounds | Number:Dimensionless | Total volatile organic compounds in ppb |
+| volatileOrganicCompounds | Number:Dimensionless | VOC level |
+| volatileOrganicCompoundsId | String             | VOC Identification |
 | illumination        | Number:Illuminance | Illumination in lux |
 | illuminationWest    | Number:Illuminance | Illumination in lux |
 | illuminationSouthNorth| Number:Illuminance | Illumination in lux |
