@@ -544,7 +544,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 status = "offline.conf-error-access-denied";
             } else if (isWatchdogStarted()) {
                 if (!isWatchdogExpired()) {
-                    logger.debug("{}: Ignore API Timeout, retry later", thingName);
+                    logger.debug("{}: Ignore API Timeout on {} {}, retry later", thingName, res.method, res.url);
                 } else {
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
