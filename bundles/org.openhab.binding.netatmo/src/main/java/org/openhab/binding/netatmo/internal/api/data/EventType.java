@@ -111,25 +111,25 @@ public enum EventType {
     SMOKE(ModuleType.SMOKE_DETECTOR),
 
     @SerializedName("tampered") // When smoke detector is ready or tampered
-    TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CARBON_MONOXIDE_ALARM),
+    TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("wifi_status") // When wifi status is updated
-    WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CARBON_MONOXIDE_ALARM),
+    WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("battery_status") // When battery status is too low
-    BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CARBON_MONOXIDE_ALARM),
+    BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("detection_chamber_status") // When the detection chamber is dusty or clean
     DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
 
     @SerializedName("sound_test") // Sound test result
-    SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CARBON_MONOXIDE_ALARM),
+    SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
     @SerializedName("new_device")
     NEW_DEVICE(ModuleType.HOME),
 
     @SerializedName("co_detected")
-    CO_DETECTED(ModuleType.CARBON_MONOXIDE_ALARM);
+    CO_DETECTED(ModuleType.CO_DETECTOR);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 

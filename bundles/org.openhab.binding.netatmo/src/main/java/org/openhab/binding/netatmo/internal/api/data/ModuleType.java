@@ -143,9 +143,8 @@ public enum ModuleType {
     SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", HOME, Set.of(AlarmEventCapability.class, ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
 
-    CARBON_MONOXIDE_ALARM(FeatureArea.SECURITY, "NCO", HOME,
-            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
+    CO_DETECTOR(FeatureArea.SECURITY, "NCO", HOME, Set.of(AlarmEventCapability.class, ChannelHelperCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 

@@ -95,6 +95,8 @@ Now that you have got your bridge _ONLINE_ you can now start a scan with the bin
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
 | valve           | Thing  | NRV            | A valve controlling a radiator.                                                                       | id                                                                        |
 | tag             | Thing  | NACamDoorTag   | A door / window sensor                                                                                | id                                                                        |
+| smoke-detector  | Thing  | NSD            | A Smoke Detector                                                                                      | id                                                                        |
+| co-detector     | Thing  | NCO            | A Carbon Monoxide Alarm                                                                               | id                                                                        |
 
 ### Webhook
 
@@ -643,7 +645,7 @@ All these channels are read only.
 | last-event    | subtype    | String       | Sub-type of event                                |
 | last-event    | message    | String       | Last event message from this person              |
 
-### Netatmo Smart Cabon Monoxide Detector
+### Netatmo Smart Carbon Monoxide Detector
 
 All these channels are read only.
 
@@ -655,9 +657,9 @@ All these channels are read only.
 | signal        | value      | Number:Power | Signal strength in dBm                           |
 | timestamp     | last-seen  | DateTime     | Last time the module reported its presence       |
 | last-event    | type       | String       | Type of event                                    |
-| last-event    | time       | DateTime     | Moment of the last event for this person         |
+| last-event    | time       | DateTime     | Moment of the last event for this detector       |
 | last-event    | subtype    | String       | Sub-type of event                                |
-| last-event    | message    | String       | Last event message from this person              |
+| last-event    | message    | String       | Last event message from this detector            |
 
 ## Configuration Examples
 
