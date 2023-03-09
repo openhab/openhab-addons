@@ -21,7 +21,6 @@ import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
-import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
 
 /**
  * @author Danny Baumann - Initial contribution
@@ -36,8 +35,6 @@ public interface EcovacsDevice {
         void onChargingStateUpdated(EcovacsDevice device, boolean charging);
 
         void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode, Optional<String> areaDefinition);
-
-        void onCleaningPowerUpdated(EcovacsDevice device, SuctionPower newPower);
 
         void onCleaningStatsUpdated(EcovacsDevice device, int cleanedArea, int cleaningTimeSeconds);
 

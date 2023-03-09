@@ -221,11 +221,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (serial.isEmpty()) {
             logger.info("Thing {} is missing serial number information", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
+        } else {
+            logger.debug("{}: Initializing handler", serial);
+            updateStatus(ThingStatus.UNKNOWN);
+            initTask.submit();
         }
-
-        logger.debug("{}: Initializing handler", serial);
-        initTask.submit();
     }
 
     @Override
@@ -325,10 +325,6 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             updateState(CHANNEL_ID_CLEANED_AREA, UnDefType.UNDEF);
             updateState(CHANNEL_ID_CLEANING_TIME, UnDefType.UNDEF);
         }
-    }
-
-    @Override
-    public void onCleaningPowerUpdated(EcovacsDevice device, SuctionPower newPower) {
     }
 
     @Override

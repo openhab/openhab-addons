@@ -113,20 +113,6 @@ class JsonReportParser implements ReportParser {
                     listener.onErrorReported(device, code);
                 }
             }
-            case "evt": {
-                // EventReport report = payloadAs(reponse, EventReport.class);
-                break;
-            }
-            case "lifespan": {
-                // ComponentLifeSpanReport report = payloadAs(response, ComponentLifeSpanReport.class);
-                break;
-            }
-            case "speed": {
-                // SpeedReport report = payloadAs(response, SpeedReport.class);
-                // SuctionPower power = SuctionPower.fromJsonValue(report.speedLevel);
-                // TODO: report change
-                break;
-            }
             case "stats": {
                 StatsReport report = payloadAs(response, StatsReport.class);
                 listener.onCleaningStatsUpdated(device, report.area, report.timeInSeconds);
@@ -137,6 +123,10 @@ class JsonReportParser implements ReportParser {
                 listener.onWaterSystemPresentUpdated(device, report.waterPlatePresent != 0);
                 break;
             }
+            // more possible events (unused for now):
+            // - "evt" -> EventReport
+            // - "lifespan" -> ComponentLifeSpanReport
+            // - "speed" -> SpeedReport
         }
     }
 

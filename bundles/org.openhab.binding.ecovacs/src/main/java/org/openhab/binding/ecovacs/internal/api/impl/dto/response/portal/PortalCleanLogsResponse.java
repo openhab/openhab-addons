@@ -37,7 +37,7 @@ public class PortalCleanLogsResponse {
 
         public final CleanMode type;
 
-        // TODO: aiavoid (int), aitypes (list of something), stopReason (int)
+        // more possible fields: aiavoid (int), aitypes (list of something), stopReason (int)
 
         LogRecord(long timestamp, long duration, int area, String id, String imageUrl, CleanMode type) {
             this.timestamp = timestamp;

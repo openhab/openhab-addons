@@ -67,7 +67,8 @@ class XmlReportParser implements ReportParser {
                             info.areaDefinition);
                 }
                 listener.onCleaningModeUpdated(device, info.mode, info.areaDefinition);
-                // TODO: speed <ctl td='CleanReport'><clean type='auto' speed='standard' st='s' rsn='a'/></ctl>
+                // Full report:
+                // <ctl td='CleanReport'><clean type='auto' speed='standard' st='s' rsn='a'/></ctl>
                 break;
             }
             case "cleanrptbgdata": {
@@ -79,9 +80,8 @@ class XmlReportParser implements ReportParser {
                 }
                 // Full report:
                 // <ctl td='CleanRptBgdata' ts='1643044172' Battery='102' CleanID='1333688018' iCleanID='0497265223'
-                // MapID='1430814334' rsn='a' IsFrmCharger='1' CleanType='auto' Speed='standard' OnOffRag='0'
-                // WorkMode='s'
-                // Spray='2' WorkArea='002'/>
+                //      MapID='1430814334' rsn='a' IsFrmCharger='1' CleanType='auto' Speed='standard' OnOffRag='0'
+                //      WorkMode='s' Spray='2' WorkArea='002'/>
                 break;
             }
             case "cleanst": {

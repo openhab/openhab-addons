@@ -123,9 +123,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             listener.onFirmwareVersionChanged(this, sendCommand(new GetFirmwareVersionCommand()));
         }
 
-        // TOOD: use realm from config
-        String userName = loginData.getUserId() + "@ecouser";
-        String host = String.format("mq-%s.ecouser.net", config.getContinent());
+        String userName = String.format("%s@%s", loginData.getUserId(), config.getRealm().split("\\.")[0]);
+        String host = String.format("mq-%s.%s", config.getContinent(), config.getRealm());
 
         Mqtt3SimpleAuth auth = Mqtt3SimpleAuth.builder().username(userName).password(loginData.getToken().getBytes())
                 .build();

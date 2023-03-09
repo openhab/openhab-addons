@@ -89,6 +89,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             newConfig.put("installId", UUID.randomUUID().toString());
             updateConfiguration(newConfig);
         }
+        updateStatus(ThingStatus.UNKNOWN);
         initializeApi();
     }
 
