@@ -95,7 +95,6 @@ public class ShieldTVMessageParser {
                         ShieldTVRequest.encodeMessage(hostname.toString()));
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
-
             } else if (msg.startsWith(MESSAGE_HOSTNAME)) {
                 // Longer hostname reply
                 // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR Padding? 22 LEN DeviceID 2a LEN arm64-v8a
@@ -187,7 +186,6 @@ public class ShieldTVMessageParser {
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
                 callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
                 callback.setArch(ShieldTVRequest.encodeMessage(arch.toString()));
-
             } else if (APP_START_SUCCESS.equals(msg)) {
                 // App successfully started
             } else if (APP_START_FAILED.equals(msg)) {

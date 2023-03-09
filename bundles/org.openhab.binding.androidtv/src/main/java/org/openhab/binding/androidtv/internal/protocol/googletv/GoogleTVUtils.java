@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GoogleTVUtils {
-    private static final Logger logger = LoggerFactory.getLogger(GoogleTVUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoogleTVUtils.class);
 
     private static String processMag(final byte[] magnitude) {
         final int length = magnitude.length;
@@ -91,7 +91,7 @@ public class GoogleTVUtils {
                 digest = instance.digest();
                 processMag(digest);
             } catch (NoSuchAlgorithmException e) {
-                logger.debug("NoSuchAlgorithmException Exception", e);
+                LOGGER.debug("NoSuchAlgorithmException Exception", e);
             }
         }
         return digest;
@@ -122,7 +122,7 @@ public class GoogleTVUtils {
 
         byte[] validPinB = new byte[] { digest[0], (byte) si2, (byte) si3 };
         String validPin = GoogleTVRequest.decodeMessage(byteArrayToString(validPinB));
-        logger.trace("validatePIN {} {} {} {} {} {}", sb123, digest[0], sb23, validPinB, validPin, digestString);
+        LOGGER.trace("validatePIN {} {} {} {} {} {}", sb123, digest[0], sb23, validPinB, validPin, digestString);
 
         return digestString;
     }

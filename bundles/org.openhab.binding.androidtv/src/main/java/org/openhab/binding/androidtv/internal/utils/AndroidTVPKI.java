@@ -69,8 +69,8 @@ public class AndroidTVPKI {
 
     private final Logger logger = LoggerFactory.getLogger(AndroidTVPKI.class);
 
-    private final int KEY_SIZE = 128;
-    private final int DATA_LENGTH = 128;
+    private final int KEYSIZE = 128;
+    private final int DATALENGTH = 128;
     private final String CIPHER = "AES/GCM/NoPadding";
 
     private String privKey = "";
@@ -97,7 +97,7 @@ public class AndroidTVPKI {
         Key key;
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(KEY_SIZE);
+            keyGenerator.init(KEYSIZE);
             key = keyGenerator.generateKey();
             byte[] newKey = key.getEncoded();
             this.keyAlgorithm = key.getAlgorithm();
@@ -109,7 +109,6 @@ public class AndroidTVPKI {
     }
 
     private Key convertByteToKey(byte[] keyString) {
-        // byte[] encodedKey = Base64.getDecoder().decode(keyString);
         Key key = new SecretKeySpec(keyString, keyAlgorithm);
         return key;
     }
@@ -132,7 +131,7 @@ public class AndroidTVPKI {
     public String decrypt(String encryptedData, Key key, String cipher) throws Exception {
         byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
         Cipher decryptionCipher = Cipher.getInstance(cipher);
-        GCMParameterSpec spec = new GCMParameterSpec(DATA_LENGTH, encryptionCipher.getIV());
+        GCMParameterSpec spec = new GCMParameterSpec(DATALENGTH, encryptionCipher.getIV());
         decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
         byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
         return new String(decryptedBytes);

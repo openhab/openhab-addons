@@ -250,7 +250,6 @@ public class ShieldTVConnectionManager {
             logger.debug("IO Exception", e);
         } catch (Exception e) {
             logger.debug("General Exception", e);
-
         }
     }
 
@@ -349,7 +348,6 @@ public class ShieldTVConnectionManager {
             } else {
                 shimAsyncInitializeTask = scheduler.submit(this::shimInitalize);
             }
-
         } catch (NoSuchAlgorithmException | IOException e) {
             setStatus(false, "Error initializing keystore");
             logger.debug("Error initializing keystore", e);
@@ -473,7 +471,6 @@ public class ShieldTVConnectionManager {
                     senderThread.setDaemon(true);
                     senderThread.start();
                     this.shimSenderThread = senderThread;
-
                 }
             } catch (Exception e) {
                 logger.trace("Shim initalization exception", e);
@@ -819,7 +816,6 @@ public class ShieldTVConnectionManager {
                     }
                     payloadRemain--;
                     payloadBlock++;
-
                 }
 
                 if ((payloadBlock > 5) && (payloadRemain == 0)) {
@@ -830,7 +826,6 @@ public class ShieldTVConnectionManager {
                     payloadRemain = 0;
                     sbShimReader.setLength(0);
                 }
-
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
