@@ -75,16 +75,16 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
                 updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zoneState.isTampered()));
                 updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zoneState.hasLowBattery()));
 
-                updateState(ZONE_SUPERVISION_TROUBLE_UID, booleanToSwitchState(zoneState.isSupervisionTrouble()));
-                updateState(ZONE_IN_TX_DELAY_UID, booleanToSwitchState(zoneState.isInTxDelay()));
-                updateState(ZONE_SHUTDOWN_UID, booleanToSwitchState(zoneState.isShutdown()));
-                updateState(ZONE_BYPASSED_UID, booleanToSwitchState(zoneState.isBypassed()));
+                updateState(ZONE_SUPERVISION_TROUBLE_UID, booleanToContactState(zoneState.isSupervisionTrouble()));
+                updateState(ZONE_IN_TX_DELAY_UID, booleanToContactState(zoneState.isInTxDelay()));
+                updateState(ZONE_SHUTDOWN_UID, booleanToContactState(zoneState.isShutdown()));
+                updateState(ZONE_BYPASSED_UID, booleanToContactState(zoneState.isBypassed()));
                 updateState(ZONE_HAS_ACTIVATED_INTELLIZONE_DELAY_UID,
-                        booleanToSwitchState(zoneState.isHasActivatedIntellizoneDelay()));
+                        booleanToContactState(zoneState.isHasActivatedIntellizoneDelay()));
                 updateState(ZONE_HAS_ACTIVATED_ENTRY_DELAY_UID,
-                        booleanToSwitchState(zoneState.isHasActivatedEntryDelay()));
-                updateState(ZONE_PRESENTLY_IN_ALARM_UID, booleanToSwitchState(zoneState.isPresentlyInAlarm()));
-                updateState(ZONE_GENERATED_ALARM_UID, booleanToSwitchState(zoneState.isGeneratedAlarm()));
+                        booleanToContactState(zoneState.isHasActivatedEntryDelay()));
+                updateState(ZONE_PRESENTLY_IN_ALARM_UID, booleanToContactState(zoneState.isPresentlyInAlarm()));
+                updateState(ZONE_GENERATED_ALARM_UID, booleanToContactState(zoneState.isGeneratedAlarm()));
             }
         }
     }
