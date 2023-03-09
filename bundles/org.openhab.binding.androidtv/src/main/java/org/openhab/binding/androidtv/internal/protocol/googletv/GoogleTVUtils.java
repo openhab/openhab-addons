@@ -33,16 +33,14 @@ public class GoogleTVUtils {
     private static final Logger logger = LoggerFactory.getLogger(GoogleTVUtils.class);
 
     private static String processMag(final byte[] magnitude) {
-        if (magnitude != null) {
-            final int length = magnitude.length;
-            if (length != 0) {
-                final BigInteger bigInteger = new BigInteger(1, magnitude);
-                final StringBuilder sb = new StringBuilder();
-                sb.append("%0");
-                sb.append(length + length);
-                sb.append("x");
-                return String.format(sb.toString(), bigInteger);
-            }
+        final int length = magnitude.length;
+        if (length != 0) {
+            final BigInteger bigInteger = new BigInteger(1, magnitude);
+            final StringBuilder sb = new StringBuilder();
+            sb.append("%0");
+            sb.append(length + length);
+            sb.append("x");
+            return String.format(sb.toString(), bigInteger);
         }
         return "";
     }
@@ -64,11 +62,9 @@ public class GoogleTVUtils {
     }
 
     public static final byte[] processDigest(byte[] digest, Certificate clientCert, Certificate serverCert) {
-        logger.trace("processDigest byte[] digest {}", digest);
         final PublicKey clientPublicKey = clientCert.getPublicKey();
         final PublicKey serverPublicKey = serverCert.getPublicKey();
         processMag(digest);
-        logger.trace("processDigest byte[] processMag(digest) {}", digest);
         if (clientPublicKey instanceof RSAPublicKey && serverPublicKey instanceof RSAPublicKey) {
             final RSAPublicKey clientRSAPublicKey = (RSAPublicKey) clientPublicKey;
             final RSAPublicKey serverRSAPublicKey = (RSAPublicKey) serverPublicKey;
@@ -93,10 +89,7 @@ public class GoogleTVUtils {
                 instance.update(r4);
                 instance.update(digest);
                 digest = instance.digest();
-                logger.trace("processDigest digest {}", digest);
                 processMag(digest);
-                logger.trace("processDigest byte[] processMag(digest) {}", digest);
-
             } catch (NoSuchAlgorithmException e) {
                 logger.debug("NoSuchAlgorithmException Exception", e);
             }
@@ -114,7 +107,6 @@ public class GoogleTVUtils {
 
     public static String validatePIN(String pin, Certificate clientCert, Certificate serverCert) {
         char[] charArray = pin.toCharArray();
-        byte[] byteArray = pin.getBytes();
 
         String s1 = "" + charArray[0] + charArray[1];
         String s2 = "" + charArray[2] + charArray[3];

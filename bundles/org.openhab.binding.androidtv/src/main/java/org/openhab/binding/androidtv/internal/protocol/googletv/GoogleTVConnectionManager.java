@@ -42,7 +42,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
@@ -560,8 +559,6 @@ public class GoogleTVConnectionManager {
                 sslContext.init(kmf.getKeyManagers(), trustManagers, null);
                 this.sslServerSocketFactory = sslContext.getServerSocketFactory();
 
-                ServerSocketFactory factory = SSLServerSocketFactory.getDefault();
-
                 logger.debug("Opening GoogleTV shim on port {}", config.port);
                 SSLServerSocket sslServerSocket = (SSLServerSocket) this.sslServerSocketFactory
                         .createServerSocket(config.port);
@@ -570,12 +567,6 @@ public class GoogleTVConnectionManager {
                 } else {
                     sslServerSocket.setWantClientAuth(true);
                 }
-
-                logger.trace("sslServerSocket Cipher {}", sslServerSocket.getEnabledCipherSuites());
-                logger.trace("sslServerSocket Protocols {}", sslServerSocket.getEnabledProtocols());
-
-                logger.trace("sslServerSocket Cipher {}", sslServerSocket.getSupportedCipherSuites());
-                logger.trace("sslServerSocket Protocols {}", sslServerSocket.getSupportedProtocols());
 
                 while (true) {
                     logger.debug("Waiting for shim connection... {}", config.port);
@@ -599,12 +590,10 @@ public class GoogleTVConnectionManager {
 
                         X509Certificate[] shimX509ClientChain = new X509Certificate[cchain2.length];
 
-                        if (cchain2 != null) {
-                            for (int i = 0; i < cchain2.length; i++) {
-                                logger.trace("Connection from: {}",
-                                        ((X509Certificate) cchain2[i]).getSubjectX500Principal());
-                                shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
-                            }
+                        for (int i = 0; i < cchain2.length; i++) {
+                            logger.trace("Connection from: {}",
+                                    ((X509Certificate) cchain2[i]).getSubjectX500Principal());
+                            shimX509ClientChain[i] = ((X509Certificate) cchain2[i]);
                         }
 
                         if (this.config.mode.equals(PIN_MODE)) {

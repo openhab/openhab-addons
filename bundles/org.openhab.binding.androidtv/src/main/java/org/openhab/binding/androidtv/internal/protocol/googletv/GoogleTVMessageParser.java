@@ -325,8 +325,6 @@ public class GoogleTVMessageParser {
         } catch (Exception e) {
             logger.debug("{} - Message Parser Exception on {}", callback.getThingID(), msg);
             logger.debug("Message Parser Caught Exception", e);
-        } finally {
-            return;
         }
     }
 }
