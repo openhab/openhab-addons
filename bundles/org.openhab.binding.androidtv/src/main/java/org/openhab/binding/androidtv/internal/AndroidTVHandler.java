@@ -231,7 +231,6 @@ public class AndroidTVHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         synchronized (monitorThingStatusJobLock) {
-
             ScheduledFuture<?> monitorThingStatusJob = this.monitorThingStatusJob;
             if (monitorThingStatusJob != null) {
                 monitorThingStatusJob.cancel(true);

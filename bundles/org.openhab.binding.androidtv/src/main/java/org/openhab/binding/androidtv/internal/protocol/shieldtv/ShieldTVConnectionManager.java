@@ -364,7 +364,6 @@ public class ShieldTVConnectionManager {
 
     public void connect() {
         synchronized (connectionLock) {
-
             try {
                 logger.debug("{} - Opening ShieldTV SSL connection to {}:{}", handler.getThingID(), config.ipAddress,
                         config.port);
@@ -422,7 +421,6 @@ public class ShieldTVConnectionManager {
 
     public void shimInitalize() {
         synchronized (connectionLock) {
-
             AndroidTVPKI shimPKI = new AndroidTVPKI();
             byte[] shimEncryptionKey = shimPKI.generateEncryptionKey();
             SSLContext sslContext;
@@ -498,7 +496,6 @@ public class ShieldTVConnectionManager {
      */
     private void disconnect(boolean interruptAll) {
         synchronized (connectionLock) {
-
             logger.debug("{} - Disconnecting ShieldTV", handler.getThingID());
 
             ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
@@ -921,9 +918,6 @@ public class ShieldTVConnectionManager {
 
         if (CHANNEL_KEYPRESS.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                // All key presses require a down and up command to simulate the button being pushed down and then back
-                // up
-                // This probably needs to be handled separately for remote controls TODO
                 switch (command.toString()) {
                     case "KEY_UP":
                         sendCommand(new ShieldTVCommand(

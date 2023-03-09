@@ -449,7 +449,6 @@ public class GoogleTVConnectionManager {
             } else {
                 shimAsyncInitializeTask = scheduler.submit(this::shimInitalize);
             }
-
         } catch (NoSuchAlgorithmException | IOException e) {
             setStatus(false, "Error initializing keystore");
             logger.debug("Error initializing keystore", e);
@@ -505,7 +504,6 @@ public class GoogleTVConnectionManager {
                         }
                         this.shimServerSocket = null;
                     }
-
                 } else {
                     setStatus(false, "Error opening GoogleTV SSL connection. Check log.");
                     logger.info("{} - Error opening GoogleTV SSL connection to {}:{} {}", handler.getThingID(),
@@ -634,7 +632,6 @@ public class GoogleTVConnectionManager {
                     } catch (Exception e) {
                         logger.trace("Shim initalization exception {}", config.port);
                         logger.trace("Shim initalization exception", e);
-
                     }
                 }
             } catch (Exception e) {
@@ -884,7 +881,6 @@ public class GoogleTVConnectionManager {
                     }
                     this.shimServerSocket = null;
                 }
-
             } else {
                 logger.debug("I/O error while reading from stream: {}", e.getMessage());
                 setStatus(false, "I/O Error");
@@ -957,7 +953,6 @@ public class GoogleTVConnectionManager {
                     length = 0;
                 }
             }
-
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
             setStatus(false, "Interrupted");
