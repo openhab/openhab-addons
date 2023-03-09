@@ -132,6 +132,7 @@ public class ShieldTVConnectionManager {
     private AndroidTVPKI androidtvPKI = new AndroidTVPKI();
     private byte[] encryptionKey;
 
+    private boolean appDBPopulated = false;
     private Map<String, String> appNameDB = new HashMap<>();
     private Map<String, String> appURLDB = new HashMap<>();
 
@@ -179,19 +180,21 @@ public class ShieldTVConnectionManager {
         this.currentApp = currentApp;
         handler.updateChannelState(CHANNEL_APP, new StringType(currentApp));
 
-        String appName = "";
-        String appURL = "";
+        if (this.appDBPopulated) {
+            String appName = "";
+            String appURL = "";
 
-        if (appNameDB.get(currentApp) != null) {
-            appName = appNameDB.get(currentApp);
-            handler.updateChannelState(CHANNEL_APPNAME, new StringType(appName));
-        } else {
-            logger.info("Unknown Android App: {}", currentApp);
-        }
+            if (appNameDB.get(currentApp) != null) {
+                appName = appNameDB.get(currentApp);
+                handler.updateChannelState(CHANNEL_APPNAME, new StringType(appName));
+            } else {
+                logger.info("Unknown Android App: {}", currentApp);
+            }
 
-        if (appURLDB.get(currentApp) != null) {
-            appURL = appURLDB.get(currentApp);
-            handler.updateChannelState(CHANNEL_APPURL, new StringType(appURL));
+            if (appURLDB.get(currentApp) != null) {
+                appURL = appURLDB.get(currentApp);
+                handler.updateChannelState(CHANNEL_APPURL, new StringType(appURL));
+            }
         }
     }
 
@@ -256,6 +259,7 @@ public class ShieldTVConnectionManager {
     public void setAppDB(Map<String, String> appNameDB, Map<String, String> appURLDB) {
         this.appNameDB = appNameDB;
         this.appURLDB = appURLDB;
+        this.appDBPopulated = true;
         logger.debug("{} - App DB Populated", handler.getThingID());
         logger.trace("{} - Handler appNameDB: {} appURLDB: {}", handler.getThingID(), this.appNameDB.toString(),
                 this.appURLDB.toString());
@@ -713,7 +717,7 @@ public class ShieldTVConnectionManager {
                     inMessage = true;
                     msgType = thisMsg;
                 } else if (DELIMITER_18.equals(lastMsg) && thisMsg.equals(msgType) && inMessage) {
-                    if (!DELIMITER_0.startsWith(msgType)) {
+                    if (!msgType.startsWith(DELIMITER_0)) {
                         sbReader.append(thisMsg.toString());
                         thisMsg = fixMessage(Integer.toHexString(reader.read()));
                     }

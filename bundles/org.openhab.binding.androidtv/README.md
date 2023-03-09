@@ -25,6 +25,8 @@ This binding does not require any special configuration files.
 
 This binding does require a PIN login process (documented below) upon first connection.
 
+This binding requires GoogleTV to be installed on the device (https://play.google.com/store/apps/details?id=com.google.android.videos)
+
 ## Thing Configuration
 
 There are three required fields to connect successfully to a ShieldTV.
