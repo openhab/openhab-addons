@@ -311,10 +311,6 @@ abstract class ApiConsumerHandler extends BaseThingHandler implements ApiConsume
         updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
     }
 
-    // protected void updateChannelDecimal(String group, String channelId, @Nullable Double value) {
-    // updateIfActive(group, channelId, value != null ? new DecimalType(value) : UnDefType.NULL);
-    // }
-
     protected void updateChannelQuantity(String group, String channelId, QuantityType<?> qtty, Unit<?> unit) {
         updateChannelQuantity(group, channelId, qtty.toUnit(unit));
     }

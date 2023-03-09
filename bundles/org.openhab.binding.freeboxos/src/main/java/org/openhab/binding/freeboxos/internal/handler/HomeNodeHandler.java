@@ -51,26 +51,23 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
         HomeNode node = getManager(HomeManager.class).getHomeNode(getClientId());
-        if (node != null) {
 
-            // Gets the lowest refresh time or else, we'll keep configuration default
-            node.showEndpoints().stream().filter(ep -> ep.epType() == EpType.SIGNAL).filter(ep -> ep.refresh() != 0)
-                    .min(Comparator.comparing(Endpoint::refresh)).map(Endpoint::refresh).ifPresent(rate -> {
-                        Configuration thingConfig = editConfiguration();
-                        thingConfig.put(ApiConsumerConfiguration.REFRESH_INTERVAL, Integer.toString(rate / 1000));
-                        updateConfiguration(thingConfig);
-                    });
+        // Gets the lowest refresh time or else, we'll keep configuration default
+        node.showEndpoints().stream().filter(ep -> ep.epType() == EpType.SIGNAL).filter(ep -> ep.refresh() != 0)
+                .min(Comparator.comparing(Endpoint::refresh)).map(Endpoint::refresh).ifPresent(rate -> {
+                    Configuration thingConfig = editConfiguration();
+                    thingConfig.put(ApiConsumerConfiguration.REFRESH_INTERVAL, Integer.toString(rate / 1000));
+                    updateConfiguration(thingConfig);
+                });
 
-            properties.putAll(node.props());
+        properties.putAll(node.props());
 
-            getThing().getChannels().forEach(channel -> {
-                Configuration conf = channel.getConfiguration();
-                node.type().endpoints().stream().filter(ep -> ep.name().equals(channel.getUID().getIdWithoutGroup()))
-                        .forEach(endPoint -> conf.put(endPoint.epType().asConfId(), endPoint.id()));
-                internalConfigureChannel(channel.getUID().getIdWithoutGroup(), conf, node.type().endpoints());
-            });
-
-        }
+        getThing().getChannels().forEach(channel -> {
+            Configuration conf = channel.getConfiguration();
+            node.type().endpoints().stream().filter(ep -> ep.name().equals(channel.getUID().getIdWithoutGroup()))
+                    .forEach(endPoint -> conf.put(endPoint.epType().asConfId(), endPoint.id()));
+            internalConfigureChannel(channel.getUID().getIdWithoutGroup(), conf, node.type().endpoints());
+        });
     }
 
     protected void internalConfigureChannel(String channelId, Configuration conf, List<Endpoint> endpoints) {

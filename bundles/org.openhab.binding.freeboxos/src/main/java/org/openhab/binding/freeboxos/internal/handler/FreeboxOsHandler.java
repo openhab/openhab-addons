@@ -71,7 +71,7 @@ public class FreeboxOsHandler extends BaseBridgeHandler {
 
                 if (config.appToken.isBlank()) {
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Please accept pairing request directly on your freebox");
+                            "@text/info-conf-pending");
                 } else {
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
                 }
