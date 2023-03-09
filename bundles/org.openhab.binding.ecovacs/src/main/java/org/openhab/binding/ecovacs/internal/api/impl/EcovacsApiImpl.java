@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -188,7 +189,8 @@ public final class EcovacsApiImpl implements EcovacsApi {
     }
 
     private List<DeviceDescription> getSupportedDeviceList() {
-        InputStream is = getClass().getResourceAsStream("devices/supported_device_list.json");
+        ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
+        InputStream is = cl.getResourceAsStream("devices/supported_device_list.json");
         JsonReader reader = new JsonReader(new InputStreamReader(is));
         Type type = new TypeToken<List<DeviceDescription>>() {
         }.getType();
