@@ -56,4 +56,7 @@ public class AndroidTVBindingConstants {
     // List of all config properties
     public static final String IPADDRESS = "ipAddress";
     public static final String PORT = "port";
+
+    // List of all static String literals
+    public static final String PIN_REQUEST = "REQUEST";
 }

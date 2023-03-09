@@ -13,6 +13,7 @@
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -255,10 +256,10 @@ public class GoogleTVConnectionManager {
     }
 
     public void setVolMute(String volMute) {
-        if (volMute.equals("00")) {
+        if (DELIMITER_00.equals(volMute)) {
             this.volMute = false;
             handler.updateChannelState(CHANNEL_MUTE, OnOffType.OFF);
-        } else if (volMute.equals("01")) {
+        } else if (DELIMITER_01.equals(volMute)) {
             this.volMute = true;
             handler.updateChannelState(CHANNEL_MUTE, OnOffType.ON);
         }
@@ -847,7 +848,7 @@ public class GoogleTVConnectionManager {
             int current = 0;
             while (!Thread.interrupted() && reader != null) {
                 thisMsg = GoogleTVRequest.fixMessage(Integer.toHexString(reader.read()));
-                if (thisMsg.equals("ffffffff")) {
+                if (HARD_DROP.equals(thisMsg)) {
                     // Google has crashed the connection. Disconnect hard.
                     logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
                     reconnect();
@@ -945,7 +946,7 @@ public class GoogleTVConnectionManager {
             int current = 0;
             while (!Thread.interrupted() && reader != null) {
                 thisShimMsg = GoogleTVRequest.fixMessage(Integer.toHexString(reader.read()));
-                if (thisShimMsg.equals("ffffffff")) {
+                if (HARD_DROP.equals(thisShimMsg)) {
                     // Google has crashed the connection. Disconnect hard.
                     disconnect(false);
                     break;

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.shieldtv;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -48,7 +50,7 @@ public class ShieldTVRequest {
     }
 
     public static String pinRequest(String pin) {
-        if (pin.equals("REQUEST")) {
+        if (PIN_REQUEST.equals(pin)) {
             String message = "080a120308cd08";
             return message;
         } else {

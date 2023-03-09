@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.shieldtv;
 
+import static org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConstants.*;
+
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -61,7 +63,7 @@ public class ShieldTVMessageParser {
 
         try {
             // All lengths are little endian when larger than 0xff
-            if (msg.startsWith("080a12") && msg.startsWith("08e807", 8)) {
+            if (msg.startsWith(MESSAGE_LOWPRIV) && msg.startsWith(MESSAGE_SHORTNAME, 8)) {
                 // Pre-login Hostname of Shield Replied
                 // 080a 12 1408e807 12 0f08e807 12 LEN Hostname 18d7fd04 180a
                 // 080a 12 1d08e807 12 180801 12 LEN Hostname 18d7fd04 180a
@@ -75,7 +77,7 @@ public class ShieldTVMessageParser {
                 StringBuffer hostname = new StringBuffer();
                 while (chunk < 3) {
                     st = "" + charArray[i] + "" + charArray[i + 1];
-                    if (st.equals("12")) {
+                    if (DELIMITER_12.equals(st)) {
                         chunk++;
                     }
                     i += 2;
@@ -94,7 +96,7 @@ public class ShieldTVMessageParser {
 
                 callback.setHostName(ShieldTVRequest.encodeMessage(hostname.toString()));
 
-            } else if (msg.startsWith("080b12")) {
+            } else if (msg.startsWith(MESSAGE_HOSTNAME)) {
                 // Longer hostname reply
                 // 080b 12 5b08b510 12 TOTALLEN? 0a LEN Hostname 12 LEN IPADDR Padding? 22 LEN DeviceID 2a LEN arm64-v8a
                 // 2a LEN armeabi-v7a 2a LEN armeabi 180b
@@ -134,7 +136,7 @@ public class ShieldTVMessageParser {
                 }
 
                 st = "" + charArray[i] + "" + charArray[i + 1];
-                while (!st.equals("22")) {
+                while (!DELIMITER_22.equals(st)) {
                     i += 2;
                     st = "" + charArray[i] + "" + charArray[i + 1];
                 }
@@ -158,7 +160,7 @@ public class ShieldTVMessageParser {
                 // architectures
                 st = "" + charArray[i] + "" + charArray[i + 1];
                 StringBuffer arch = new StringBuffer();
-                while (st.equals("2a")) {
+                while (DELIMITER_2A.equals(st)) {
                     i += 2;
                     st = "" + charArray[i] + "" + charArray[i + 1];
                     length = Integer.parseInt(st, 16) * 2;
@@ -169,7 +171,7 @@ public class ShieldTVMessageParser {
                         arch.append(st);
                     }
                     st = "" + charArray[i] + "" + charArray[i + 1];
-                    if (st.equals("2a")) {
+                    if (DELIMITER_2A.equals(st)) {
                         arch.append("2c");
                     }
                 }
@@ -186,13 +188,13 @@ public class ShieldTVMessageParser {
                 callback.setDeviceID(ShieldTVRequest.encodeMessage(deviceId.toString()));
                 callback.setArch(ShieldTVRequest.encodeMessage(arch.toString()));
 
-            } else if (msg.equals("08f1071202080318f107")) {
+            } else if (APP_START_SUCCESS.equals(msg)) {
                 // App successfully started
-            } else if (msg.equals("08f107120608031202080118f107")) {
+            } else if (APP_START_FAILED.equals(msg)) {
                 // App failed to start
-            } else if (msg.startsWith("08f10712") && (msg.length() > 30)) {
+            } else if (msg.startsWith(MESSAGE_APPDB) && (msg.length() > 30)) {
                 // Massive dump of currently installed apps
-                // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
+                // 8f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
 
                 Map<String, String> appNameDB = new HashMap<>();
                 Map<String, String> appURLDB = new HashMap<>();
@@ -229,7 +231,7 @@ public class ShieldTVMessageParser {
 
                     st = "" + charArray[i] + "" + charArray[i + 1];
 
-                    if (!st.toString().equals("12")) {
+                    if (!DELIMITER_12.equals(st)) {
                         appSBPrepend = new StringBuffer();
                         appSBDN = new StringBuffer();
 
@@ -241,18 +243,18 @@ public class ShieldTVMessageParser {
                             st = "" + charArray[i] + "" + charArray[i + 1];
                             appSBPrepend.append(st);
                             i += 2;
-                        } while (!st.toString().equals("0a"));
+                        } while (!DELIMITER_0A.equals(st));
                         do {
                             st = "" + charArray[i] + "" + charArray[i + 1];
                             appSBPrepend.append(st);
                             i += 2;
-                        } while (!st.toString().equals("0a"));
+                        } while (!DELIMITER_0A.equals(st));
                         st = "" + charArray[i] + "" + charArray[i + 1];
 
                         // Look for a third 0a, but only if 12 is not down the line
                         // If 12 is exactly 20 away from 0a that means that the DN was actually 10 long
                         String st2 = "" + charArray[i + 22] + "" + charArray[i + 23];
-                        if (st.toString().equals("0a") && !st2.equals("12")) {
+                        if (DELIMITER_0A.equals(st.toString()) && !DELIMITER_12.equals(st2)) {
                             appSBPrepend.append(st);
                             i += 2;
                             st = "" + charArray[i] + "" + charArray[i + 1];
@@ -286,7 +288,7 @@ public class ShieldTVMessageParser {
                     // Proceed forward until we get to the 22 delimiter
 
                     st = "" + charArray[i] + "" + charArray[i + 1];
-                    while (!st.toString().equals("22")) {
+                    while (!DELIMITER_22.equals(st)) {
                         i += 2;
                         st = "" + charArray[i] + "" + charArray[i + 1];
                     }
@@ -302,7 +304,7 @@ public class ShieldTVMessageParser {
                         appSBURL.append(st);
                     }
                     st = "" + charArray[i] + "" + charArray[i + 1];
-                    if (!st.toString().equals("12")) {
+                    if (!DELIMITER_12.equals(st)) {
                         i += 4; // terminates 2801
                     }
                     String appPrepend = appSBPrepend.toString();
@@ -340,17 +342,17 @@ public class ShieldTVMessageParser {
                     logger.warn("{} - MP empty msg: {} appDB appNameDB: {} appURLDB: {}", callback.getThingID(), msg,
                             appNameDB.toString(), appURLDB.toString());
                 }
-            } else if (msg.startsWith("08f30712")) {
+            } else if (msg.startsWith(MESSAGE_GOOD_COMMAND)) {
                 // This has something to do with successful command response, maybe.
-            } else if (msg.equals("080028fae0a6c0d130")) {
+            } else if (KEEPALIVE_REPLY.equals(msg)) {
                 // Keepalive Reply
-            } else if (msg.startsWith("080a12") && msg.startsWith("0308cf08", 6)) {
+            } else if (msg.startsWith(MESSAGE_LOWPRIV) && msg.startsWith(MESSAGE_PINSTART, 6)) {
                 // 080a 12 0308cf08 180a
                 logger.debug("PIN Process Started");
-            } else if (msg.startsWith("20") && msg.length() == 6) {
+            } else if (msg.startsWith(MESSAGE_CERT_COMING) && msg.length() == 6) {
                 // This seems to be 20**** when observed. It is unclear what this does.
                 // This seems to send immediately before the certificate reply and as a reply to the pin being sent
-            } else if (msg.startsWith("08f007")) {
+            } else if (msg.startsWith(MESSAGE_SUCCESS)) {
                 // Successful command received
                 // 08f007 12 0c 0804 12 08 0a0608 01100c200f 18f007 - GOOD LOGIN
                 // 08f007 12 LEN 0804 12 LEN 0a0608 01100c200f 18f007
@@ -360,14 +362,14 @@ public class ShieldTVMessageParser {
                 // 08f00712 0c 0804 12 08 0a0608 01200f2801 18f007 KEY_MUTE
                 logger.info("{} - Login Successful to {}", callback.getThingID(), callback.getHostName());
                 callback.setLoggedIn(true);
-            } else if (msg.equals("080a121108b510120c0804120854696d65206f7574180a")) {
+            } else if (TIMEOUT.equals(msg)) {
                 // Timeout
                 // 080a 12 1108b510 12 0c0804 12 08 54696d65206f7574 180a
                 // 080a 12 1108b510 12 0c0804 12 LEN Timeout 180a
                 logger.debug("{} - Timeout", callback.getThingID());
-            } else if (msg.startsWith("08ec07") && msg.startsWith("0803", 10)) {
+            } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_GET_SUCCESS, 10)) {
                 // Get current app command successful. Usually paired with 0807 reply below.
-            } else if (msg.startsWith("08ec07") && msg.startsWith("0807", 10)) {
+            } else if (msg.startsWith(MESSAGE_APP_SUCCESS) && msg.startsWith(MESSAGE_APP_CURRENT, 10)) {
                 // Current App
                 // 08ec07 12 2a0807 22 262205 656e5f555342 1d 636f6d2e676f6f676c652e616e64726f69642e74766c61756e63686572
                 // 18ec07
@@ -379,7 +381,7 @@ public class ShieldTVMessageParser {
                     appName.append(charArray[i]);
                 }
                 callback.setCurrentApp(ShieldTVRequest.encodeMessage(appName.toString()));
-            } else if (msg.startsWith("080a12") && msg.startsWith("08b510", 10)) {
+            } else if (msg.startsWith(MESSAGE_LOWPRIV) && msg.startsWith(MESSAGE_CERT, 10)) {
                 // Certificate Reply
                 // |--6-----------12-----------10---------------16---------6--- = 50 characters long
                 // |080a 12 ad10 08b510 12 a710 0801 12 07 53756363657373 1ac009 3082... 3082... 180a
@@ -391,7 +393,7 @@ public class ShieldTVMessageParser {
                 // |-----------------------------------------------------Little Endian Length (e.g. 09c0 and 09c2 above)
                 // |------------------------------------------------------------Priv Key RSA 2048
                 // |--------------------------------------------------------------------Cert X.509
-                if (msg.startsWith("0753756363657373", 28)) {
+                if (msg.startsWith(MESSAGE_CERT_PAYLOAD, 28)) {
                     StringBuffer preamble = new StringBuffer();
                     StringBuffer privKey = new StringBuffer();
                     StringBuffer pubKey = new StringBuffer();

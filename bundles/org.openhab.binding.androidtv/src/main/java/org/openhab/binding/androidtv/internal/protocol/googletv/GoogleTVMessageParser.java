@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
+import static org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +53,9 @@ public class GoogleTVMessageParser {
         callback.validMessageReceived();
 
         try {
-            if (msg.startsWith("1a")) {
+            if (msg.startsWith(DELIMITER_1A)) {
                 logger.warn("{} - GoogleTV Error Message: {}", callback.getThingID(), msg);
-            } else if (msg.startsWith("0a")) {
+            } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //
                 // 0a 5b08 ff 041256 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 22 02 3131 2a
@@ -168,14 +170,14 @@ public class GoogleTVMessageParser {
                 callback.setRemoteServer(remoteServer);
                 callback.setRemoteServerVersion(remoteServerVersion);
 
-            } else if (msg.startsWith("12")) {
+            } else if (msg.startsWith(DELIMITER_12)) {
                 // Second message on connection from GTV
                 // Login successful
                 callback.sendCommand(
                         new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(5))));
                 logger.info("{} - Login Successful", callback.getThingID());
                 callback.setLoggedIn(true);
-            } else if (msg.startsWith("92")) {
+            } else if (msg.startsWith(DELIMITER_92)) {
                 // Third message on connection from GTV
                 // Also sent on power state change (to ON only unless keypress triggers)i
                 // 9203 21 08 02 10 02 1a 11 534849454c4420416e64726f6964205456 20 02 2800 30 0f 38 0e 40 00
@@ -212,12 +214,12 @@ public class GoogleTVMessageParser {
 
                 st = "" + charArray[i] + charArray[i + 1];
                 do {
-                    if (!st.equals("1a")) {
+                    if (!DELIMITER_1A.equals(st)) {
                         preambleSb.append(st);
                         i += 2;
                         st = "" + charArray[i] + charArray[i + 1];
                     }
-                } while (!st.equals("1a"));
+                } while (!DELIMITER_1A.equals(st));
 
                 i += 2; // 1a delimiter
 
@@ -236,7 +238,7 @@ public class GoogleTVMessageParser {
 
                 audioMode = st; // 01 remote audio - 02 local audio
 
-                if (st.equals("02")) {
+                if (DELIMITER_02.equals(st)) {
                     i += 2; // 02 longer message
                     i += 4; // Unknown 2800 message
                     i += 2; // 30 delimiter
@@ -257,9 +259,9 @@ public class GoogleTVMessageParser {
                         audioMode, volMax, volCurr, volMute);
                 callback.setAudioMode(audioMode);
 
-            } else if (msg.startsWith("08")) {
+            } else if (msg.startsWith(DELIMITER_08)) {
                 // PIN Process Messages. Only used on 6467.
-                if (msg.startsWith("080210c801ca02")) {
+                if (msg.startsWith(MESSAGE_PINSUCCESS)) {
                     // PIN Process Successful
                     logger.trace("{} - PIN Process Successful!", callback.getThingID());
                     callback.finishPinProcess();
@@ -267,21 +269,21 @@ public class GoogleTVMessageParser {
                     // 080210c801a201081204080310061801
                     // 080210c801fa0100
                 }
-            } else if (msg.startsWith("c2")) {
+            } else if (msg.startsWith(DELIMITER_C2)) {
                 // Power State
                 // c202020800 - OFF
                 // c202020801 - ON
-                if (msg.equals("c202020800")) {
+                if (MESSAGE_POWEROFF.equals(msg)) {
                     callback.setPower(false);
-                } else if (msg.equals("c202020801")) {
+                } else if (MESSAGE_POWERON.equals(msg)) {
                     callback.setPower(true);
                 } else {
                     logger.info("{} - Unknown power state received. {}", callback.getThingID(), msg);
                 }
-            } else if (msg.startsWith("42")) {
+            } else if (msg.startsWith(DELIMITER_42)) {
                 // Keepalive request
                 callback.sendKeepAlive(msg);
-            } else if (msg.startsWith("a2")) {
+            } else if (msg.startsWith(DELIMITER_A2)) {
                 // Current app name. Sent on keypress and power change.
                 // a201 21 0a 1f 62 1d 636f6d2e676f6f676c652e616e64726f69642e796f75747562652e7476
                 // -----------------LEN-com.google.android.youtube.tv

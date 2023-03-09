@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.googletv;
 
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -49,7 +52,7 @@ public class GoogleTVRequest {
 
     public static String pinRequest(String pin) {
         // OLD
-        if (pin.equals("REQUEST")) {
+        if (PIN_REQUEST.equals(pin)) {
             return loginRequest(3);
         } else {
             // 080210c801c202 22 0a 20 0e066c3d1c3a6686edb6b2648ff25fcb3f0bf9cc81deeee9fad1a26073645e17
@@ -114,10 +117,10 @@ public class GoogleTVRequest {
         do {
             int sbLen = sb.toString().length();
             st = "" + charArray[sbLen - 2] + charArray[sbLen - 1];
-            if (!st.equals("10")) {
+            if (!DELIMITER_10.equals(st)) {
                 sb.setLength(sbLen - 2);
             }
-        } while (!st.equals("10"));
+        } while (!DELIMITER_10.equals(st));
         sb.setLength(sb.toString().length() - 2);
 
         StringBuffer sbReply = new StringBuffer();

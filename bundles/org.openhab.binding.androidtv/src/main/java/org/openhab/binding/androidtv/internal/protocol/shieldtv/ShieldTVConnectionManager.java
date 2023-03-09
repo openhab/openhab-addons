@@ -13,6 +13,7 @@
 package org.openhab.binding.androidtv.internal.protocol.shieldtv;
 
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -181,14 +182,15 @@ public class ShieldTVConnectionManager {
         String appName = "";
         String appURL = "";
 
-        try {
+        if (appNameDB.get(currentApp) != null) {
             appName = appNameDB.get(currentApp);
-            appURL = appURLDB.get(currentApp);
-        } catch (NullPointerException e) {
-            logger.debug("Null Pointer Exception", e);
-            logger.info("Unknown Android App: {}", currentApp);
-        } finally {
             handler.updateChannelState(CHANNEL_APPNAME, new StringType(appName));
+        } else {
+            logger.info("Unknown Android App: {}", currentApp);
+        }
+
+        if (appURLDB.get(currentApp) != null) {
+            appURL = appURLDB.get(currentApp);
             handler.updateChannelState(CHANNEL_APPURL, new StringType(appURL));
         }
     }
@@ -706,23 +708,23 @@ public class ShieldTVConnectionManager {
             BufferedReader reader = this.reader;
             while (!Thread.interrupted() && reader != null) {
                 thisMsg = fixMessage(Integer.toHexString(reader.read()));
-                if (thisMsg.equals("ffffffff")) {
+                if (HARD_DROP.equals(thisMsg)) {
                     // Shield has crashed the connection. Disconnect hard.
                     logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
                     reconnect();
                     break;
                 }
-                if (lastMsg.equals("08") && !inMessage) {
+                if (DELIMITER_08.equals(lastMsg) && !inMessage) {
                     flushReader();
                     inMessage = true;
                     msgType = thisMsg;
-                } else if (lastMsg.equals("18") && thisMsg.equals(msgType) && inMessage) {
-                    if (!msgType.startsWith("0")) {
+                } else if (DELIMITER_18.equals(lastMsg) && thisMsg.equals(msgType) && inMessage) {
+                    if (!DELIMITER_0.startsWith(msgType)) {
                         sbReader.append(thisMsg.toString());
                         thisMsg = fixMessage(Integer.toHexString(reader.read()));
                     }
                     finishReaderMessage();
-                } else if (msgType.equals("00") && (sbReader.toString().length() == 16)) {
+                } else if (DELIMITER_00.equals(msgType) && (sbReader.toString().length() == 16)) {
                     // keepalive messages don't have delimiters but are always 18 in length
                     finishReaderMessage();
                 } else {
@@ -757,7 +759,7 @@ public class ShieldTVConnectionManager {
             while (!Thread.interrupted() && reader != null) {
                 thisShimRawMsg = reader.read();
                 thisShimMsg = fixMessage(Integer.toHexString(thisShimRawMsg));
-                if (thisShimMsg.equals("ffffffff")) {
+                if (HARD_DROP.equals(thisShimMsg)) {
                     disconnect(false);
                     break;
                 }
@@ -767,7 +769,7 @@ public class ShieldTVConnectionManager {
                     sbShimReader.append(thisShimMsg.toString());
                     inShimMessage = true;
                     payloadBlock++;
-                } else if ((payloadBlock == 1) && (thisShimMsg.equals("00"))) {
+                } else if ((payloadBlock == 1) && (DELIMITER_00.equals(thisShimMsg))) {
                     sbShimReader.append(thisShimMsg.toString());
                     payloadRemain = 8;
                     thisShimMsgType = thisShimMsg;
@@ -779,7 +781,8 @@ public class ShieldTVConnectionManager {
                     }
                     payloadRemain--;
                     payloadBlock++;
-                } else if ((payloadBlock == 1) && (thisShimMsg.startsWith("f1") || thisShimMsg.startsWith("f3"))) {
+                } else if ((payloadBlock == 1)
+                        && (thisShimMsg.startsWith(DELIMITER_F1) || thisShimMsg.startsWith(DELIMITER_F3))) {
                     sbShimReader.append(thisShimMsg.toString());
                     payloadRemain = 6;
                     thisShimMsgType = thisShimMsg;
@@ -807,7 +810,8 @@ public class ShieldTVConnectionManager {
                     sbShimReader.append(thisShimMsg.toString());
                     logger.trace("PB4 SSR {} TSMT {} TSM {} PR {}", sbShimReader.toString(), thisShimMsgType,
                             thisShimMsg, payloadRemain);
-                    if (thisShimMsgType.equals("e9") || thisShimMsgType.equals("f0") || thisShimMsgType.equals("ec")) {
+                    if (DELIMITER_E9.equals(thisShimMsgType) || DELIMITER_F0.equals(thisShimMsgType)
+                            || DELIMITER_EC.equals(thisShimMsgType)) {
                         payloadRemain = thisShimRawMsg + 1;
                     }
                     while (payloadRemain > 1) {
