@@ -69,9 +69,8 @@ public class AndroidTVPKI {
 
     private final Logger logger = LoggerFactory.getLogger(AndroidTVPKI.class);
 
-    private final int KEYSIZE = 128;
-    private final int DATALENGTH = 128;
-    private final String CIPHER = "AES/GCM/NoPadding";
+    private final int keySize = 128;
+    private final int dataLength = 128;
 
     private String privKey = "";
     private String cert = "";
@@ -87,7 +86,7 @@ public class AndroidTVPKI {
 
     public AndroidTVPKI() {
         try {
-            encryptionCipher = Cipher.getInstance(CIPHER);
+            encryptionCipher = Cipher.getInstance(cipher);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             logger.debug("Could not get cipher instance", e);
         }
@@ -97,7 +96,7 @@ public class AndroidTVPKI {
         Key key;
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(KEYSIZE);
+            keyGenerator.init(keySize);
             key = keyGenerator.generateKey();
             byte[] newKey = key.getEncoded();
             this.keyAlgorithm = key.getAlgorithm();
@@ -131,7 +130,7 @@ public class AndroidTVPKI {
     public String decrypt(String encryptedData, Key key, String cipher) throws Exception {
         byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
         Cipher decryptionCipher = Cipher.getInstance(cipher);
-        GCMParameterSpec spec = new GCMParameterSpec(DATALENGTH, encryptionCipher.getIV());
+        GCMParameterSpec spec = new GCMParameterSpec(dataLength, encryptionCipher.getIV());
         decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
         byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
         return new String(decryptedBytes);
