@@ -60,7 +60,8 @@ The "externaltemperature" only works on a few cars.
 The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car.
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
-The "Pause" and "chargingmode" mat not working on some cars. as an example "chargingmode" do not work on Dacia Spring cars.
+The 'pause' and 'chargingmode' may not work on some cars. 
+As an example 'chargingmode' do not work on Dacia Spring cars.
 
 The Kamereon API Key changes periodically, which causes a communication error.
 To fix this error update the API Key in the bindings configuration.
@@ -80,7 +81,7 @@ sitemap renaultcar label="Renault Car" {
         Default icon="poweroutlet" item=RenaultCar_PlugStatus
         Default icon="switch" item=RenaultCar_ChargingStatus
         Selection icon="switch" item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"]
-        Default icon="switch" item=RenaultCar_PauseMode
+        Default icon="switch" item=RenaultCar_Pause
         Default item=RenaultCar_ChargingTimeRemaining
         Default icon="pressure" item=RenaultCar_EstimatedRange
         Default icon="pressure" item=RenaultCar_Odometer

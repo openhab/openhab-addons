@@ -17,7 +17,6 @@ import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ public class Car {
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
-    private OnOffType pausemode = OnOffType.OFF;
+    private boolean pausemode = false;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
     private ChargingMode chargingMode = ChargingMode.UNKNOWN;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
@@ -300,7 +299,7 @@ public class Car {
         return chargingMode;
     }
 
-    public OnOffType getPauseMode() {
+    public boolean getPauseMode() {
         return pausemode;
     }
 
@@ -352,7 +351,7 @@ public class Car {
         }
     }
 
-    public void setPauseMode(OnOffType pausemode) {
+    public void setPauseMode(boolean pausemode) {
         this.pausemode = pausemode;
     }
 

@@ -205,23 +205,25 @@ public class RenaultHandler extends BaseThingHandler {
                     }
                 }
                 break;
-            case RenaultBindingConstants.CHANNEL_PAUSE_MODE:
+            case RenaultBindingConstants.CHANNEL_PAUSE:
                 if (command instanceof RefreshType) {
                     reschedulePollingJob();
                 } else if (command instanceof OnOffType) {
                     try {
                         MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                         try {
-                            OnOffType newcommand = OnOffType.from(command.toString());
+                            boolean pause = OnOffType.ON == command;
                             httpSession.initSesssion(car);
-                            httpSession.actionPause(newcommand);
-                            car.setPauseMode(newcommand);
-                            updateState(CHANNEL_PAUSE_MODE, newcommand);
-                        } catch (InterruptedException | RenaultForbiddenException | RenaultNotImplementedException
-                                | RenaultActionException | RenaultException | RenaultUpdateException
-                                | ExecutionException | TimeoutException e) {
+                            httpSession.actionPause(pause);
+                            car.setPauseMode(pause);
+                            updateState(CHANNEL_PAUSE, OnOffType.from(command.toString()));
+                        } catch (InterruptedException e) {
                             logger.warn("Error My Renault Http Session.", e);
                             Thread.currentThread().interrupt();
+                        } catch (RenaultForbiddenException | RenaultNotImplementedException | RenaultActionException
+                                | RenaultException | RenaultUpdateException | ExecutionException | TimeoutException e) {
+                            logger.warn("Error during action set pause.", e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     } catch (IllegalArgumentException e) {
                         logger.warn("Invalid Pause Mode {}.", command.toString());
