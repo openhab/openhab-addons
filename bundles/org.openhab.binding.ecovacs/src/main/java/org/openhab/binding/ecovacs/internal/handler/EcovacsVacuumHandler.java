@@ -77,6 +77,7 @@ import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.config.EcovacsVacuumConfiguration;
 import org.openhab.binding.ecovacs.internal.util.StateOptionEntry;
 import org.openhab.binding.ecovacs.internal.util.StateOptionMapping;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -506,14 +507,13 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         }
 
         final EcovacsApiHandler handler = getApiHandler();
-        final EcovacsApi api = handler != null ? handler.createApiForDevice(serial) : null;
-
-        if (api == null) {
+        if (handler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
         try {
+            final EcovacsApi api = handler.createApiForDevice(serial);
             api.loginAndGetAccessToken();
             Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
                     .filter(d -> serial.equals(d.getSerialNumber())).findFirst();
@@ -531,6 +531,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } catch (ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } catch (EcovacsApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }

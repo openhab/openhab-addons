@@ -16,17 +16,18 @@ import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
+import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.config.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.discovery.EcovacsDeviceDiscoveryService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -47,10 +48,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EcovacsApiHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EcovacsApiHandler.class);
+    private static final long RETRY_INTERVAL_SECONDS = 120;
 
-    private @Nullable EcovacsDeviceDiscoveryService discoveryService;
-    private @Nullable EcovacsApi api;
-    private @Nullable Future<?> loginFuture;
+    private Optional<EcovacsDeviceDiscoveryService> discoveryService = Optional.empty();
+    private SchedulerTask loginTask;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
 
@@ -58,23 +59,17 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpClient = httpClient;
         this.localeProvider = localeProvider;
+        this.loginTask = new SchedulerTask(scheduler, logger, "API Login", this::loginToApi);
     }
 
     public void setDiscoveryService(EcovacsDeviceDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
+        this.discoveryService = Optional.of(discoveryService);
     }
 
-    @Nullable
-    public EcovacsApi getApi() {
-        return api;
-    }
-
-    @Nullable
-    public EcovacsApi createApiForDevice(String serial) {
+    public EcovacsApi createApiForDevice(String serial) throws ConfigurationException {
         String country = localeProvider.getLocale().getCountry();
-        EcovacsApi api = this.api;
-        if (api == null || country.isEmpty()) {
-            return null;
+        if (country.isEmpty()) {
+            throw new ConfigurationException("Country unset in locale settings");
         }
         return createApi("-" + serial, country);
     }
@@ -90,16 +85,13 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
             updateConfiguration(newConfig);
         }
         updateStatus(ThingStatus.UNKNOWN);
-        initializeApi();
+        loginTask.submit();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        final EcovacsDeviceDiscoveryService discoveryService = this.discoveryService;
-        if (discoveryService != null) {
-            discoveryService.stopScan();
-        }
+        discoveryService.ifPresent(ds -> ds.stopScan());
     }
 
     @Override
@@ -111,28 +103,18 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing Ecovacs API account '{}'", getThing().getUID().getId());
-            initializeApi();
+            scheduleLogin(0);
         }
     }
 
     public void onLoginExpired() {
         logger.debug("Ecovacs API login for account '{}' expired, logging in again", getThing().getUID().getId());
-        final EcovacsApi api = this.api;
-        if (api != null) {
-            loginToApi(api);
-        }
+        scheduleLogin(0);
     }
 
-    private void initializeApi() {
-        String country = localeProvider.getLocale().getCountry();
-        if (country.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-no-country");
-            return;
-        }
-
-        EcovacsApi api = createApi("", country);
-        loginToApi(api);
+    private void scheduleLogin(long delaySeconds) {
+        loginTask.cancel();
+        loginTask.schedule(delaySeconds);
     }
 
     private EcovacsApi createApi(String deviceIdSuffix, String country) {
@@ -145,31 +127,27 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         return EcovacsApi.create(httpClient, apiConfig);
     }
 
-    private synchronized void loginToApi(final EcovacsApi api) {
-        Future<?> loginFuture = this.loginFuture;
-        if (loginFuture != null && !loginFuture.isDone()) {
-            return;
-        }
-        loginFuture = scheduler.submit(() -> {
-            try {
-                api.loginAndGetAccessToken();
-                this.api = api;
-                updateStatus(ThingStatus.ONLINE);
-
-                logger.debug("Ecovacs API initialized");
-                final EcovacsDeviceDiscoveryService discoveryService = this.discoveryService;
-                if (discoveryService != null) {
-                    discoveryService.startScan();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE);
-                this.api = null;
-            } catch (EcovacsApiException e) {
-                logger.debug("Ecovacs API login failed", e);
-                this.api = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+    private void loginToApi() {
+        try {
+            String country = localeProvider.getLocale().getCountry();
+            if (country.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-no-country");
+                return;
             }
-        });
+            EcovacsApi api = createApi("", country);
+            api.loginAndGetAccessToken();
+            updateStatus(ThingStatus.ONLINE);
+            discoveryService.ifPresent(ds -> ds.startScanningWithApi(api));
+
+            logger.debug("Ecovacs API initialized");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE);
+        } catch (EcovacsApiException e) {
+            logger.debug("Ecovacs API login failed", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            scheduleLogin(RETRY_INTERVAL_SECONDS);
+        }
     }
 }
