@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="regex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>transformation</type>
+	<name>Roller Shutter Position Emulation</name>
+	<description>Emulates absolute position setting for roller shutter devices which only support basic UP/DOWN/STOP
+		commands.</description>
+
+</addon:addon>
