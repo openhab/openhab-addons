@@ -298,6 +298,7 @@
 	<channel-type id="wifi-rssi" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
+		<description>Received signal strength indicator for Wi-Fi</description>
 		<category>QualityOfService</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
