@@ -20,10 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.openhab.binding.hue.internal.HueBindingConstants;
-import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
@@ -52,7 +49,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,8 +80,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(HueThingHandlerFactory.class);
 
-    private final HttpClient httpClient;
-    private final HTTP2Client http2Client;
+    private final HttpClientFactory httpClientFactory;
     private final HueStateDescriptionProvider stateDescriptionProvider;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
@@ -98,31 +93,12 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
             final @Reference ThingRegistry thingRegistry,
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        // TODO as with 'HttpClientFactory' (above), the OH Core may in future provide an 'Http2ClientFactory'
-        http2Client = new HTTP2Client();
-        http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
-        http2Client.setIdleTimeout(-1);
-        try {
-            http2Client.start();
-        } catch (Exception e) {
-            logger.warn("Error starting HTTP/2 client: {}", e.getMessage());
-            throw new IllegalStateException("Error starting Http2Client");
-        }
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-    }
-
-    @Deactivate
-    public void deactivate() {
-        try {
-            http2Client.stop();
-        } catch (Exception e) {
-            logger.warn("Error stopping HTTP/2 client: {}", e.getMessage());
-        }
     }
 
     @Override
@@ -198,12 +174,12 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (HueBindingConstants.THING_TYPE_CLIP2.equals(thingTypeUID)) {
-            return new Clip2BridgeHandler((Bridge) thing, httpClient, http2Client, thingRegistry);
+            return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new Clip2ThingHandler(thing, thingRegistry, itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueBridgeHandler((Bridge) thing, httpClient, stateDescriptionProvider, i18nProvider,
-                    localeProvider);
+            return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
+                    stateDescriptionProvider, i18nProvider, localeProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
