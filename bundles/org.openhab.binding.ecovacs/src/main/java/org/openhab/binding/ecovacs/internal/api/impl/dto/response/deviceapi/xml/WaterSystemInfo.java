@@ -23,7 +23,9 @@ import org.w3c.dom.Node;
  */
 @NonNullByDefault
 public class WaterSystemInfo {
-    // returns whether water system is present
+    /**
+     * @return Whether water system is present
+     */
     public static boolean parseWaterBoxInfo(String xml) throws DataParsingException {
         Node node = XPathUtils.getFirstXPathMatch(xml, "//@on");
         return Integer.valueOf(node.getNodeValue()) != 0;

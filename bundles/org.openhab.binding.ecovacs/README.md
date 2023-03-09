@@ -161,7 +161,8 @@ The possible values for `continent` include the following values:
 - `na` for North America
 - `as` for Asia
 
-Then devices are detected automatically. If you also want to enter those manually, the syntax is as follows:
+The devices are detected automatically.
+If you also want to enter those manually, the syntax is as follows:
 
 ```java
 Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password="yourpassword", continent="ww" ]

@@ -251,9 +251,9 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     private class PingHandler {
-        private static final long INTERVAL = 30; // seconds
+        private static final long INTERVAL_SECONDS = 30;
         // After a failure, use shorter intervals since subsequent further failure is likely
-        private static final long POST_FAILURE_INTERVAL = 5; // seconds
+        private static final long POST_FAILURE_INTERVAL_SECONDS = 5;
         private static final int MAX_FAILURES = 4;
 
         private final XMPPTCPConnection connection;
@@ -314,7 +314,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         }
 
         private long currentPingInterval() {
-            return failedPings > 0 ? POST_FAILURE_INTERVAL : INTERVAL;
+            return failedPings > 0 ? POST_FAILURE_INTERVAL_SECONDS : INTERVAL_SECONDS;
         }
     }
 

@@ -14,6 +14,7 @@ package org.openhab.binding.ecovacs.internal.util;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
  * 
  * @author Danny Baumann - Initial contribution
  */
+@NonNullByDefault
 public class StateOptionEntry<T extends Enum<T>> {
     public final T enumValue;
     public final String value;

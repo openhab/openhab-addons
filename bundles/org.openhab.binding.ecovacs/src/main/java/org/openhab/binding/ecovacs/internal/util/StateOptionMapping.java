@@ -16,9 +16,12 @@ package org.openhab.binding.ecovacs.internal.util;
 import java.util.HashMap;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Danny Baumann - Initial contribution
  */
+@NonNullByDefault
 public class StateOptionMapping<T extends Enum<T>> extends HashMap<T, StateOptionEntry<T>> {
     private static final long serialVersionUID = -6828690091106259902L;
 
