@@ -63,7 +63,8 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE), DISCOVERY_TIMEOUT_SECONDS, true);
+        super(Set.of(HueBindingConstants.THING_TYPE_DEVICE, HueBindingConstants.THING_TYPE_GROUPED_LIGHT),
+                DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
