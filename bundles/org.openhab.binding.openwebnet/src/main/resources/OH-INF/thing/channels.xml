@@ -454,6 +454,7 @@
 				<option value="TAMPERING">Tampering</option>
 				<option value="ANTI_PANIC">Anti Panic</option>
 				<option value="SILENT">Silent</option>
+				<option value="NONE">None</option>
 			</options>
 		</state>
 	</channel-type>

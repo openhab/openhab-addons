@@ -14,6 +14,7 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,17 +53,28 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
+    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<OpenWebNetAlarmHandler>();
+
     private static final String BATTERY_OK = "OK";
     private static final String BATTERY_FAULT = "FAULT";
     private static final String BATTERY_UNLOADED = "UNLOADED";
 
-    private static final String SILENT = "SILENT";
-    private static final String INTRUSION = "INTRUSION";
-    private static final String ANTI_PANIC = "ANTI_PANIC";
-    private static final String TAMPERING = "TAMPERING";
+    private static final String ALARM_INTRUSION = "INTRUSION";
+    private static final String ALARM_TAMPERING = "TAMPERING";
+    private static final String ALARM_ANTI_PANIC = "ANTI_PANIC";
+    private static final String ALARM_SILENT = "SILENT";
+    private static final String ALARM_NONE = "NONE";
 
     public OpenWebNetAlarmHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thing.getThingTypeUID())) {
+            zoneHandlers.add(this);
+        }
     }
 
     @Override
@@ -165,6 +177,9 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private void updateAlarmSystemArmed(WhatAlarm w) {
         updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_ENGAGED));
+        if (w == Alarm.WhatAlarm.SYSTEM_ENGAGED) {
+            resetAllZonesAlarmState();
+        }
     }
 
     private void updateNetworkState(WhatAlarm w) {
@@ -211,13 +226,19 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private void updateZoneAlarmState(WhatAlarm w) {
         if (w == Alarm.WhatAlarm.ZONE_ALARM_SILENT) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(SILENT));
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_SILENT));
         } else if (w == Alarm.WhatAlarm.ZONE_ALARM_INTRUSION) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(INTRUSION));
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_INTRUSION));
         } else if (w == Alarm.WhatAlarm.ZONE_ALARM_ANTI_PANIC) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ANTI_PANIC));
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_ANTI_PANIC));
         } else {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(TAMPERING));
+            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_TAMPERING));
+        }
+    }
+
+    private void resetAllZonesAlarmState() {
+        for (OpenWebNetAlarmHandler h : zoneHandlers) {
+            h.updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_NONE));
         }
     }
 
@@ -229,5 +250,14 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.BURGLAR_ALARM.value().toString();
+    }
+
+    @Override
+    public void dispose() {
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thing.getThingTypeUID())) {
+            zoneHandlers.remove(this);
+            logger.debug("Alarm.dispose() - removed zone {}", this.deviceWhere);
+        }
+        super.dispose();
     }
 }
