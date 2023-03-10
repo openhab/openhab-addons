@@ -66,42 +66,42 @@
 		</state>
 	</channel-type>
 	<channel-type id="supervisionTrouble">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Supervision Trouble</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="inTxDelay">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>In TX Delay</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="shutdown">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Shutdown</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="bypassed">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Bypassed</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasActivatedIntellizoneDelay">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Has Activated Intellizone Delay</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="hasActivatedEntryDelay">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Has Activated Entry Delay</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="presentlyInAlarm">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Currently in Alarm</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="generatedAlarm">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Generated an Alarm</label>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
