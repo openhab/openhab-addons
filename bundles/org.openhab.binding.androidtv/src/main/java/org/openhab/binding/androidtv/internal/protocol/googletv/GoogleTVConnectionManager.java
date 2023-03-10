@@ -1218,15 +1218,17 @@ public class GoogleTVConnectionManager {
                     sendCommand(new GoogleTVCommand(GoogleTVRequest.encodeMessage("5204085b1003")));
                 }
             }
-        } else if (CHANNEL_RAW.equals(channelUID.getId())) {
+        } else if (CHANNEL_DEBUG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                String message = GoogleTVRequest.encodeMessage(command.toString());
-                logger.trace("Raw Message Decodes as: {}", GoogleTVRequest.decodeMessage(message));
-                sendCommand(new GoogleTVCommand(message));
-            }
-        } else if (CHANNEL_RAWMSG.equals(channelUID.getId())) {
-            if (command instanceof StringType) {
-                messageParser.handleMessage(command.toString());
+                if (command.toString().startsWith("RAW", 9)) {
+                    String newCommand = command.toString().substring(13);
+                    String message = GoogleTVRequest.encodeMessage(newCommand);
+                    logger.trace("Raw Message Decodes as: {}", GoogleTVRequest.decodeMessage(message));
+                    sendCommand(new GoogleTVCommand(message));
+                } else if (command.toString().startsWith("MSG", 9)) {
+                    String newCommand = command.toString().substring(13);
+                    messageParser.handleMessage(newCommand);
+                }
             }
         } else if (CHANNEL_KEYBOARD.equals(channelUID.getId())) {
             if (command instanceof StringType) {

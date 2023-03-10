@@ -196,6 +196,10 @@ public class AndroidTVHandler extends BaseThingHandler {
                     ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
                     shieldtvConfig.shim = true;
                     shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
+                } else if (command.toString().startsWith("GOOGLETV") && (googletvConnectionManager != null)) {
+                    googletvConnectionManager.handleCommand(channelUID, command);
+                } else if (command.toString().startsWith("SHIELDTV") && (shieldtvConnectionManager != null)) {
+                    shieldtvConnectionManager.handleCommand(channelUID, command);
                 }
 
             }

@@ -18,8 +18,6 @@
 			<channel id="app" typeId="app"/>
 			<channel id="appname" typeId="appname"/>
 			<channel id="appurl" typeId="appurl"/>
-			<channel id="raw" typeId="raw"/>
-			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="power" typeId="system.power"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -83,8 +81,6 @@
 			<channel id="keycode" typeId="keycode"/>
 			<channel id="pincode" typeId="pincode"/>
 			<channel id="app" typeId="app"/>
-			<channel id="raw" typeId="raw"/>
-			<channel id="rawmsg" typeId="rawmsg"/>
 			<channel id="power" typeId="system.power"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -137,18 +133,6 @@
 		<item-type>String</item-type>
 		<label>DEBUG Command</label>
 		<description>Binding control (for debugging)</description>
-	</channel-type>
-
-	<channel-type id="raw" advanced="true">
-		<item-type>String</item-type>
-		<label>RAW Command</label>
-		<description>RAW command to send (for debugging)</description>
-	</channel-type>
-
-	<channel-type id="rawmsg" advanced="true">
-		<item-type>String</item-type>
-		<label>RAW Message</label>
-		<description>RAW message to handle (for debugging)</description>
 	</channel-type>
 
 	<channel-type id="app">
