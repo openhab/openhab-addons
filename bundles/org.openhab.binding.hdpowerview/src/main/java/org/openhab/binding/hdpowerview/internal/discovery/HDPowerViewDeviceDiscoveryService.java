@@ -55,7 +55,7 @@ public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService 
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewDeviceDiscoveryService(HDPowerViewHubHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 600, true);
+        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 60, true);
         this.hub = hub;
         this.scanner = createScanner();
     }

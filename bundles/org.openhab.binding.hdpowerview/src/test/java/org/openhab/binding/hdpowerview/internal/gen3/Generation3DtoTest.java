@@ -13,11 +13,15 @@
 package org.openhab.binding.hdpowerview.internal.gen3;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -29,7 +33,18 @@ import org.openhab.binding.hdpowerview.internal.dto.gen3.SceneEvent;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.ShadeEvent;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.handler.ShadeThingHandler;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
@@ -130,9 +145,137 @@ public class Generation3DtoTest {
         String json = loadJson("gen3/shades.json");
         List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
         assertNotNull(shadeList);
-        assertEquals(1, shadeList.size());
+        assertEquals(2, shadeList.size());
         Shade shadeData = shadeList.get(0);
         assertEquals("Shade 2 ABC", shadeData.getName());
         assertEquals(789, shadeData.getId());
+        assertFalse(shadeData.isMainsPowered());
+        assertEquals(new DecimalType(66), shadeData.getBatteryLevel());
+        assertEquals(OnOffType.OFF, shadeData.getLowBattery());
+        ShadePosition positions = shadeData.getShadePositions();
+        assertNotNull(positions);
+        assertTrue(positions.supportsPrimary());
+        assertTrue(positions.supportsSecondary());
+        assertTrue(positions.supportsTilt());
+
+        shadeData = shadeList.get(1);
+        assertEquals(123, shadeData.getId());
+        assertTrue(shadeData.isMainsPowered());
+        positions = shadeData.getShadePositions();
+        assertNotNull(positions);
+        assertTrue(positions.supportsPrimary());
+        assertFalse(positions.supportsSecondary());
+        assertFalse(positions.supportsTilt());
+    }
+
+    /**
+     * Test sending properties and dynamic channel values to a shade handler.
+     */
+    @Test
+    public void testShadeHandlerPropertiesAndChannels() throws IOException {
+        ThingTypeUID thingTypeUID = new ThingTypeUID("hdpowerview:shade");
+        ThingUID thingUID = new ThingUID(thingTypeUID, "test");
+
+        List<Channel> channels = new ArrayList<Channel>();
+        for (String channelId : Set.of(CHANNEL_SHADE_POSITION, CHANNEL_SHADE_SECONDARY_POSITION, CHANNEL_SHADE_VANE,
+                CHANNEL_SHADE_BATTERY_LEVEL, CHANNEL_SHADE_LOW_BATTERY, CHANNEL_SHADE_SIGNAL_STRENGTH)) {
+            ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+            channels.add(ChannelBuilder.create(channelUID).build());
+        }
+
+        String json = loadJson("gen3/shades.json");
+        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        assertNotNull(shadeList);
+        assertEquals(2, shadeList.size());
+
+        Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withChannels(channels).build();
+        ShadeThingHandler shadeThingHandler;
+        Shade shadeData;
+
+        /*
+         * Use the first JSON Shade entry.
+         * It should support the full 6 dynamic channels.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData = shadeList.get(0).setId(0);
+        assertTrue(shadeData.hasFullState());
+        shadeThingHandler.notify(shadeData);
+        Thing handlerThing = shadeThingHandler.getThing();
+        assertEquals("23", handlerThing.getProperties().get("type"));
+        assertEquals("wand", handlerThing.getProperties().get("powerType"));
+        assertEquals("3.0.309", handlerThing.getProperties().get("firmwareVersion"));
+        assertEquals(new DecimalType(-55), shadeData.getSignalStrength());
+        assertEquals(6, handlerThing.getChannels().size());
+
+        /*
+         * Reuse the first JSON Shade entry and delete its 3 positions.
+         * So it should now only support 3 dynamic channels.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData.setShadePosition(new ShadePosition());
+        shadeThingHandler.notify(shadeData);
+        handlerThing = shadeThingHandler.getThing();
+        assertEquals(3, handlerThing.getChannels().size());
+
+        /*
+         * Use the second JSON Shade entry.
+         * It should support only 2 dynamic channel.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData = shadeList.get(1).setId(0);
+        assertTrue(shadeData.hasFullState());
+        shadeThingHandler.notify(shadeData);
+        handlerThing = shadeThingHandler.getThing();
+        assertEquals("44", handlerThing.getProperties().get("type"));
+        assertEquals("hardwired", handlerThing.getProperties().get("powerType"));
+        assertEquals("3.0.123", handlerThing.getProperties().get("firmwareVersion"));
+        assertEquals(new DecimalType(-44), shadeData.getSignalStrength());
+        assertEquals(2, handlerThing.getChannels().size());
+    }
+
+    /**
+     * Test sending state change events to shade handler.
+     */
+    @Test
+    public void testShadeHandlerEvents() throws IOException {
+        ThingTypeUID thingTypeUID = new ThingTypeUID("hdpowerview:shade");
+        ThingUID thingUID = new ThingUID(thingTypeUID, "test");
+
+        List<Channel> channels = new ArrayList<Channel>();
+        for (String channelId : Set.of(CHANNEL_SHADE_POSITION, CHANNEL_SHADE_SECONDARY_POSITION, CHANNEL_SHADE_VANE,
+                CHANNEL_SHADE_BATTERY_LEVEL, CHANNEL_SHADE_LOW_BATTERY, CHANNEL_SHADE_SIGNAL_STRENGTH)) {
+            ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+            channels.add(ChannelBuilder.create(channelUID).build());
+        }
+
+        String json = loadJson("gen3/shades.json");
+        List<Shade> shadeList = gson.fromJson(json, GatewayWebTargets.LIST_SHADES);
+        assertNotNull(shadeList);
+        assertEquals(2, shadeList.size());
+
+        Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withChannels(channels).build();
+        ShadeThingHandler shadeThingHandler;
+        Shade shadeData;
+
+        /*
+         * Use the second JSON Shade entry, which only has a primary channel.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData = shadeList.get(1).setId(0);
+        shadeThingHandler.notify(shadeData);
+
+        /*
+         * And try to update it with an event that has all 3 channels.
+         */
+        json = loadJson("gen3/shade-event.json");
+        ShadeEvent event = gson.fromJson(json, ShadeEvent.class);
+        assertNotNull(event);
+        shadeData = new Shade().setId(0).setShadePosition(event.getCurrentPositions()).setPartialState();
+        assertFalse(shadeData.hasFullState());
+        shadeThingHandler.notify(shadeData);
     }
 }

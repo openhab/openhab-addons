@@ -43,6 +43,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +55,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShadeThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
-
     private static final String INVALID_CHANNEL = "invalid channel";
+
     private static final String INVALID_COMMAND = "invalid command";
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
+    private final Logger logger = LoggerFactory.getLogger(ShadeThingHandler.class);
 
     private final Shade thisShade = new Shade();
     private boolean isInitialized;
@@ -255,8 +256,8 @@ public class ShadeThingHandler extends BaseThingHandler {
             updateDynamicChannel(removeChannels, CHANNEL_SHADE_VANE, positions.supportsTilt());
         }
 
-        updateDynamicChannel(removeChannels, CHANNEL_SHADE_BATTERY_LEVEL, shade.isMainsPowered());
-        updateDynamicChannel(removeChannels, CHANNEL_SHADE_LOW_BATTERY, shade.isMainsPowered());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_BATTERY_LEVEL, !shade.isMainsPowered());
+        updateDynamicChannel(removeChannels, CHANNEL_SHADE_LOW_BATTERY, !shade.isMainsPowered());
 
         if (!removeChannels.isEmpty()) {
             if (logger.isDebugEnabled()) {
@@ -284,6 +285,19 @@ public class ShadeThingHandler extends BaseThingHandler {
                     { HDPowerViewBindingConstants.PROPERTY_BLE_NAME, shade.getBleName() },
                     { Thing.PROPERTY_FIRMWARE_VERSION, shade.getFirmware() } //
             }).collect(Collectors.toMap(data -> data[0], data -> data[1])));
+        }
+    }
+
+    /**
+     * Override base method to only update the channel if it actually exists.
+     *
+     * @param channelID id of the channel, which was updated
+     * @param state new state
+     */
+    @Override
+    protected void updateState(String channelID, State state) {
+        if (thing.getChannel(channelID) != null) {
+            super.updateState(channelID, state);
         }
     }
 }

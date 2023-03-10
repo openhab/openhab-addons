@@ -78,7 +78,6 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        // generation 3
         if (HDPowerViewBindingConstants.THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             GatewayBridgeHandler handler = new GatewayBridgeHandler((Bridge) thing, httpClient, translationProvider,
                     clientBuilder, eventSourceFactory);
@@ -86,9 +85,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE3.equals(thingTypeUID)) {
             return new ShadeThingHandler(thing);
-        } else
-        // generation 1/2
-        if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
+        } else if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
             HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider);
             registerService(new HDPowerViewDeviceDiscoveryService(handler));
             return handler;
@@ -97,7 +94,6 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         } else if (HDPowerViewBindingConstants.THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new HDPowerViewRepeaterHandler(thing);
         }
-
         return null;
     }
 

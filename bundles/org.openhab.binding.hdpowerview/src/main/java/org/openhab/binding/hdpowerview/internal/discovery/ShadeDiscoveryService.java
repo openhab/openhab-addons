@@ -44,7 +44,7 @@ public class ShadeDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public ShadeDiscoveryService(GatewayBridgeHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 600, true);
+        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 60, true);
         this.hub = hub;
         this.scanner = createScanner();
     }

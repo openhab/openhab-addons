@@ -21,7 +21,6 @@ import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.dto.Firmware;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -49,7 +48,7 @@ public class Shade {
     public State getBatteryLevel() {
         Integer batteryStatus = this.batteryStatus;
         return batteryStatus == null ? UnDefType.UNDEF
-                : new PercentType(Math.max(0, Math.min(100, (100 * batteryStatus) / 3)));
+                : new DecimalType(Math.max(0, Math.min(100, (100 * batteryStatus) / 3)));
     }
 
     public @Nullable String getBleName() {
@@ -117,8 +116,7 @@ public class Shade {
     }
 
     public boolean isMainsPowered() {
-        // check powerType and return true or false
-        return false;
+        return "hardwired".equalsIgnoreCase(powerType) || "1".equals(powerType);
     }
 
     public Shade setCapabilities(int capabilities) {

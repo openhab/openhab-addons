@@ -48,7 +48,7 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public HDPowerViewHubDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_HUB), 600, true);
+        super(Collections.singleton(THING_TYPE_HUB), 60, true);
         scanner = createScanner();
     }
 

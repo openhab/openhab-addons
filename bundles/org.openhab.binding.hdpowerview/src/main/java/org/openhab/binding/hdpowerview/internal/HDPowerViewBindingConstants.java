@@ -75,15 +75,15 @@ public class HDPowerViewBindingConstants {
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
-            THING_TYPE_REPEATER);
-
     public static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     // generation 3
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_SHADE3 = new ThingTypeUID(BINDING_ID, "shade3");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
+            THING_TYPE_REPEATER, THING_TYPE_GATEWAY, THING_TYPE_SHADE3);
 
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_POWER_TYPE = "powerType";

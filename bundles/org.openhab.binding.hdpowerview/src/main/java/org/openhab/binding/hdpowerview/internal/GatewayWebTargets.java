@@ -330,7 +330,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
      * @throws HubProcessingException if any error occurs.
      */
     public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException {
-        invoke(HttpMethod.PUT, String.format(shadeMotion, shadeId), null, jsonParser.toJson(position));
+        invoke(HttpMethod.PUT, String.format(shadePositions, shadeId), null, jsonParser.toJson(position));
     }
 
     /**
