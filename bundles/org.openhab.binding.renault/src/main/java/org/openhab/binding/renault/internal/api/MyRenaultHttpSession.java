@@ -274,6 +274,16 @@ public class MyRenaultHttpSession {
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
+    public void actionPause(boolean mode)
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+
+        final String apiMode = mode ? "pause" : "resume";
+        final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
+                + "/charge/pause-resume?country=" + getCountry(config);
+        postKamereonRequest(path,
+                "{\"data\":{\"type\":\"ChargePauseResume\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
+    }
+
     private void postKamereonRequest(final String path, final String content)
             throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.POST)
