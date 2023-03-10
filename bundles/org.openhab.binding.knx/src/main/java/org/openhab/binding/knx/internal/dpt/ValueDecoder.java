@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -64,6 +65,7 @@ public class ValueDecoder {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValueDecoder.class);
 
     private static final String TIME_DAY_FORMAT = "EEE, HH:mm:ss";
+    private static final String TIME_FORMAT = "HH:mm:ss";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     // RGB: "r:123 g:123 b:123" value-range: 0-255
     private static final Pattern RGB_PATTERN = Pattern.compile("r:(?<r>\\d+) g:(?<g>\\d+) b:(?<b>\\d+)");
@@ -207,8 +209,14 @@ public class ValueDecoder {
             stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
             value = stb.toString();
         }
-        return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN)
-                .format(new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value)));
+        Date date = null;
+        try {
+            date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
+        } catch (ParseException pe) {
+            date = new SimpleDateFormat(TIME_FORMAT, Locale.US).parse(value);
+            throw pe;
+        }
+        return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date));
     }
 
     private static @Nullable Type handleDpt19(DPTXlator translator) throws KNXFormatException {
