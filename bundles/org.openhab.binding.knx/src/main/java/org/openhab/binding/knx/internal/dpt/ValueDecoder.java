@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.dpt;
 
-import static org.openhab.binding.knx.internal.KNXBindingConstants.DISABLE_UOM;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.disableUoM;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -291,20 +291,20 @@ public class ValueDecoder {
     private static @Nullable Type handleDpt242(String value) {
         Matcher xyY = XYY_PATTERN.matcher(value);
         if (xyY.matches()) {
-            String xString = xyY.group("x");
-            String yString = xyY.group("y");
-            String YString = xyY.group("Y");
+            String stringx = xyY.group("x");
+            String stringy = xyY.group("y");
+            String stringY = xyY.group("Y");
 
-            if (xString != null && yString != null) {
-                double x = Double.parseDouble(xString.replace(",", "."));
-                double y = Double.parseDouble(yString.replace(",", "."));
-                if (YString == null) {
+            if (stringx != null && stringy != null) {
+                double x = Double.parseDouble(stringx.replace(",", "."));
+                double y = Double.parseDouble(stringy.replace(",", "."));
+                if (stringY == null) {
                     return HSBType.fromXY((float) x, (float) y);
                     // return ColorUtil.xyToHsv(new double[] { x, y });
                 } else {
                     // FIXME core does not support xyY yet
                     return HSBType.fromXY((float) x, (float) y);
-                    // double Y = Double.parseDouble(YString.replace(",", "."));
+                    // double Y = Double.parseDouble(stringY.replace(",", "."));
                     // return ColorUtil.xyToHsv(new double[] { x, y, Y });
                 }
             }
@@ -349,7 +349,7 @@ public class ValueDecoder {
             return new PercentType(BigDecimal.valueOf(Math.round(value)));
         }
 
-        if (allowedTypes.contains(QuantityType.class) && !DISABLE_UOM) {
+        if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
             String unit = DPTUnits.getUnitForDpt(id);
             if (unit != null) {
                 return new QuantityType<>(value + " " + unit);

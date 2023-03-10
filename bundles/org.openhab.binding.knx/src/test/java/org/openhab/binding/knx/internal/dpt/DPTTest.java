@@ -27,6 +27,16 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
+import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
  *
@@ -92,7 +102,8 @@ class DPTTest {
     @SuppressWarnings("null")
     void testToDPT9ValueFromQuantityType() {
         assertEquals("23.1", ValueEncoder.encode(new QuantityType<>("23.1 °C"), "9.001"));
-        assertEquals("5", ValueEncoder.encode(new QuantityType<>("41 °F"), "9.001"));
+        assertEquals(5.0,
+                Double.parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("41 °F"), "9.001"))));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("274.15 K"), "9.001"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "9.002"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 mK"), "9.002"));
@@ -105,7 +116,8 @@ class DPTTest {
         assertEquals("100", ValueEncoder.encode(new QuantityType<>("100 lx"), "9.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m/s"), "9.005"));
         assertTrue(ValueEncoder.encode(new QuantityType<>("1.94 kn"), "9.005").startsWith("0.99"));
-        assertEquals("1", ValueEncoder.encode(new QuantityType<>("3.6 km/h"), "9.005"));
+        assertEquals(1.0, Double
+                .parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("3.6 km/h"), "9.005"))));
         assertEquals("456", ValueEncoder.encode(new QuantityType<>("456 Pa"), "9.006"));
         assertEquals("70", ValueEncoder.encode(new QuantityType<>("70 %"), "9.007"));
         assertEquals("8", ValueEncoder.encode(new QuantityType<>("8 ppm"), "9.008"));
@@ -198,6 +210,7 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 F"), "14.011"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 C/m²"), "14.012"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 C/m³"), "14.013"));
+
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m²/N"), "14.014"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 S"), "14.015"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 S/m"), "14.016"));
@@ -328,11 +341,50 @@ class DPTTest {
         assertEquals(18, hsbType.getBrightness().doubleValue(), 0.1);
     }
 
-    // TODO maybe re-use this (#208)
+    // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
+    // update Calimero library
     @Test
-    public void unitFix() {
-        // Assertions.assertEquals("m/s²", KNXCoreTypeMapper.fixUnit("ms⁻²"));
-        // sAssertions.assertEquals("Ah", KNXCoreTypeMapper.fixUnit("A h"));
+    public void unitFixes() {
+        // 8bit signed (DPT 6)
+        assertEquals(DPTXlator8BitSigned.DPT_PERCENT_V8.getUnit(), Units.PERCENT.getSymbol());
+
+        // two byte unsigned (DPT 7)
+        assertNotEquals("", DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getUnit()); // counts have no unit
+        assertNotEquals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getUnit(), "ms"); // according to spec, it is ms
+        assertNotEquals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getUnit(), "ms"); // according to spec, it is ms
+
+        // two byte signed (DPT 8, DPTXlator is missing in calimero 2.5-M1)
+        assertNotEquals("", DptXlator2ByteSigned.DptValueCount.getUnit()); // pulses habe no unit
+
+        // 4 byte unsigned (DPT 12)
+        assertNotEquals("", DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getUnit()); // counts have no unit
+
+        // 4 byte signed (DPT 13)
+        assertNotEquals(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
+        assertNotEquals(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY_KVARH.getUnit(), Units.KILOVAR_HOUR.toString());
+        assertNotEquals(DPTXlator4ByteSigned.DPT_APPARENT_ENERGY_KVAH.getUnit(), "kVA*h");
+        assertNotEquals(DPTXlator4ByteSigned.DPT_FLOWRATE.getUnit(), Units.CUBICMETRE_PER_HOUR.toString());
+        assertNotEquals("", DPTXlator4ByteSigned.DPT_COUNT.getUnit()); // counts have no unit
+
+        // four byte float (DPT 14)
+        assertNotEquals(DPTXlator4ByteFloat.DPT_CONDUCTANCE.getUnit(), Units.SIEMENS.toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ANGULAR_MOMENTUM.getUnit(),
+                Units.JOULE.multiply(Units.SECOND).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ACTIVITY.getUnit(), Units.BECQUEREL.toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ELECTRICAL_CONDUCTIVITY.getUnit(),
+                Units.SIEMENS.divide(SIUnits.METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_TORQUE.getUnit(), Units.NEWTON.multiply(SIUnits.METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_RESISTIVITY.getUnit(), Units.OHM.multiply(SIUnits.METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ELECTRIC_DIPOLEMOMENT.getUnit(),
+                Units.COULOMB.multiply(SIUnits.METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getUnit(), Units.VOLT.multiply(SIUnits.METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_MAGNETIC_MOMENT.getUnit(),
+                Units.AMPERE.multiply(SIUnits.SQUARE_METRE).toString());
+        assertNotEquals(DPTXlator4ByteFloat.DPT_ELECTROMAGNETIC_MOMENT.getUnit(),
+                Units.AMPERE.multiply(SIUnits.SQUARE_METRE).toString());
+
+        // 64 bit signed (DPT 29)
+        assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
     }
 
     private static Stream<String> unitProvider() {

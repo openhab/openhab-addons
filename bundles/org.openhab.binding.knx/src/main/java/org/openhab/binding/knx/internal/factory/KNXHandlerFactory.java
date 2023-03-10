@@ -72,7 +72,7 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
 
     @Modified
     protected void modified(Map<String, Object> config) {
-        DISABLE_UOM = (boolean) config.getOrDefault(CONFIG_DISABLE_UOM, false);
+        disableUoM = (boolean) config.getOrDefault(CONFIG_DISABLE_UOM, false);
     }
 
     @Override

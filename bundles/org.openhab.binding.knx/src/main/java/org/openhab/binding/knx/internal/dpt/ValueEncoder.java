@@ -32,6 +32,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,9 @@ import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.dptxlator.DPT;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
+import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
@@ -172,10 +175,38 @@ public class ValueEncoder {
 
     private static String handleNumericTypes(String dptId, String mainNumber, DPT dpt, Type value) {
         BigDecimal bigDecimal;
-        if (value instanceof DecimalType) {
-            bigDecimal = ((DecimalType) value).toBigDecimal();
+        if (value instanceof DecimalType decimalType) {
+            bigDecimal = decimalType.toBigDecimal();
         } else {
             String unit = DPTUnits.getUnitForDpt(dptId);
+
+            // exception for DPT using temperature differences
+            // - conversion °C or °F to K is wrong for differences,
+            // - stick to the unit given, fix the scaling for °F
+            // 9.002 DPT_Value_Tempd
+            // 9.003 DPT_Value_Tempa
+            // 9.023 DPT_KelvinPerPercent
+            if (DPTXlator2ByteFloat.DPT_TEMPERATURE_DIFFERENCE.getID().equals(dptId)
+                    || DPTXlator2ByteFloat.DPT_TEMPERATURE_GRADIENT.getID().equals(dptId)
+                    || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
+                // match unicode character or °C
+                if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
+                    unit = unit.replace("K", "°C");
+                } else if (value.toString().contains("°F")) {
+                    unit = unit.replace("K", "°F");
+                    value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(5.0 / 9.0));
+                }
+            } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
+                if (!value.toString().contains("J")) {
+                    unit = unit.replace("J", "lm*s");
+                }
+            } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
+                // use alternate definition of flux
+                if (value.toString().contains("C")) {
+                    unit = "C";
+                }
+            }
+
             if (unit != null) {
                 QuantityType<?> converted = ((QuantityType<?>) value).toUnit(unit);
                 if (converted == null) {
