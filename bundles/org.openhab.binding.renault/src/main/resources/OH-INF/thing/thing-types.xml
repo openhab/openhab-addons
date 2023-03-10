@@ -28,6 +28,11 @@
 			<channel id="locationupdated" typeId="locationupdated"/>
 			<channel id="locked" typeId="locked"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 
 			<parameter name="myRenaultUsername" type="text" required="true">
