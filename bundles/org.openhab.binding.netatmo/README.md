@@ -69,7 +69,7 @@ The Account bridge has the following configuration elements:
 
 Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your things.
 
-Starting on 04/17/2023 - Netatmo API requires an update of the refreshToken provided by the oAuth mechanism every three hours.
+Starting on 2023/04/17 - Netatmo API requires an update of the refreshToken provided by the oAuth mechanism every three hours.
 Once authentication process has been done, current refreshToken is stored in `/OPENHAB_USERDATA/netatmo` folder.
 
 ## List of supported things
