@@ -1,6 +1,6 @@
 # MyNice Binding
 
-This binding implements the support of the IT4Wifi module through the NHK protocol and enables management of Nice gates automatisms.
+This binding implements the support of the IT4Wifi module through the NHK protocol and enables management of Nice gates actuators.
 IT4Wifi is a bridge between the TP4 bus of your gate and your Ethernet network.
 
 ## Supported Things

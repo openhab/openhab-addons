@@ -120,7 +120,7 @@ public class GateHandler extends BaseThingHandler implements MyNiceDataListener 
             } else {
                 String status = device.properties.doorStatus;
                 updateState(DOOR_STATUS, new StringType(status));
-                updateState(DOOR_OBSTRUCTED, new StringType(device.properties.obstruct));
+                updateState(DOOR_OBSTRUCTED, OnOffType.from("1".equals(device.properties.obstruct)));
                 updateState(DOOR_MOVING, OnOffType.from(status.equals(CLOSING) || status.equals(OPENING)));
             }
             return true;

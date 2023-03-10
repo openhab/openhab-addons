@@ -18,7 +18,7 @@
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of the IT4Wifi</description>
 			</parameter>
 			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"
 				required="true">
@@ -109,9 +109,9 @@
 	</channel-type>
 
 	<channel-type id="obstruct">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Obstruction</label>
-		<description>Something obstructs normal movement of the gate</description>
+		<description>Something prevented normal operation of the gate by crossing the infra-red barrier</description>
 		<state readOnly="true"/>
 	</channel-type>
 
