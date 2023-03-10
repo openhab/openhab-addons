@@ -6,6 +6,12 @@
 	<thing-type uid="renault:car">
 
 		<instruction-set targetVersion="1">
+			<add-channel id="batterystatusupdated">
+				<type>renault:batterystatusupdated</type>
+			</add-channel>
+			<add-channel id="locked">
+				<type>renault:locked</type>
+			</add-channel>
 			<add-channel id="pause">
 				<type>renault:pause</type>
 			</add-channel>
