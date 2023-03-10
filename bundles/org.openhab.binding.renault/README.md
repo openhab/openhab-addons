@@ -61,7 +61,7 @@ The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditi
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
 The 'pause' and 'chargingmode' may not work on some cars. 
-As an example 'chargingmode' do not work on Dacia Spring cars.
+As an example, 'chargingmode' does not work on Dacia Spring cars.
 
 The Kamereon API Key changes periodically, which causes a communication error.
 To fix this error update the API Key in the bindings configuration.
