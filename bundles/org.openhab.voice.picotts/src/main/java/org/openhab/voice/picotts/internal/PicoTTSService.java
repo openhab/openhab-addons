@@ -12,6 +12,8 @@
  */
 package org.openhab.voice.picotts.internal;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -30,6 +32,7 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Florian Schmidt - Initial Contribution
+ * @author Laurent Garnier - Code to generate the audio file is moved into that class
  */
 @Component
 @NonNullByDefault
@@ -71,7 +74,7 @@ public class PicoTTSService implements TTSService {
         }
 
         try {
-            return new PicoTTSAudioStream(text, voice, requestedFormat);
+            return new PicoTTSAudioStream(generateFile(text, voice), requestedFormat);
         } catch (AudioException e) {
             throw new TTSException(e);
         }
@@ -85,5 +88,31 @@ public class PicoTTSService implements TTSService {
     @Override
     public String getLabel(@Nullable Locale locale) {
         return "PicoTTS";
+    }
+
+    private File generateFile(String text, Voice voice) throws AudioException {
+        File outputFile;
+        try {
+            outputFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            outputFile.deleteOnExit();
+        } catch (IOException e) {
+            throw new AudioException("Unable to create temp file.", e);
+        }
+
+        String[] command = new String[] { "pico2wave", "-l=" + voice.getLabel(), "-w=" + outputFile.getAbsolutePath(),
+                text };
+
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            if (outputFile.length() == 0) {
+                throw new AudioException("Generated file '" + outputFile + "' has no content.'");
+            }
+            return outputFile;
+        } catch (IOException e) {
+            throw new AudioException("Error while executing '" + command + "'", e);
+        } catch (InterruptedException e) {
+            throw new AudioException("The '" + command + "' has been interrupted", e);
+        }
     }
 }

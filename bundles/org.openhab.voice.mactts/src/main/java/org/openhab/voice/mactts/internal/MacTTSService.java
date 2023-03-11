@@ -13,6 +13,7 @@
 package org.openhab.voice.mactts.internal;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  * @author Pauli Antilla
  * @author Kelly Davis
+ * @author Laurent Garnier - Code to generate the audio file is moved into that class
  */
 @Component
 @NonNullByDefault
@@ -81,7 +83,7 @@ public class MacTTSService implements TTSService {
         }
 
         try {
-            return new MacTTSAudioStream(text, voice, requestedFormat);
+            return new MacTTSAudioStream(generateFile(text, voice, requestedFormat), requestedFormat);
         } catch (AudioException e) {
             throw new TTSException(e);
         }
@@ -113,5 +115,39 @@ public class MacTTSService implements TTSService {
     @Override
     public String getLabel(@Nullable Locale locale) {
         return "macOS TTS";
+    }
+
+    private File generateFile(String text, Voice voice, AudioFormat audioFormat) throws AudioException {
+        File outputFile;
+        try {
+            outputFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            outputFile.deleteOnExit();
+        } catch (IOException e) {
+            throw new AudioException("Unable to create temp file.", e);
+        }
+
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("say");
+        stringBuffer.append(" --voice=" + voice.getLabel());
+        stringBuffer.append(" --output-file=" + outputFile.getAbsolutePath());
+        stringBuffer.append(" --file-format=" + audioFormat.getContainer());
+        stringBuffer.append(" --data-format=LEI" + audioFormat.getBitDepth() + "@" + audioFormat.getFrequency());
+        stringBuffer.append(" --channels=1"); // Mono
+        stringBuffer.append(" " + text);
+        String command = stringBuffer.toString();
+        logger.debug("Executing on command line: {}", command);
+
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            if (outputFile.length() == 0) {
+                throw new AudioException("Generated file '" + outputFile + "' has no content.'");
+            }
+            return outputFile;
+        } catch (IOException e) {
+            throw new AudioException("Error while executing '" + command + "'", e);
+        } catch (InterruptedException e) {
+            throw new AudioException("The '" + command + "' has been interrupted", e);
+        }
     }
 }
