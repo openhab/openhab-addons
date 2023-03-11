@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "discovery.volumio")
 public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final Logger logger = LoggerFactory.getLogger(VolumioDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(VolumioDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

@@ -54,7 +54,7 @@ import io.socket.emitter.Emitter;
 @NonNullByDefault
 public class VolumioHandler extends BaseThingHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(VolumioHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VolumioHandler.class);
 
     private @Nullable VolumioService volumio;
 
@@ -66,7 +66,6 @@ public class VolumioHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("channelUID: {}", channelUID);
 
         if (volumio == null) {
@@ -209,7 +208,6 @@ public class VolumioHandler extends BaseThingHandler {
                 default:
                     logger.error("Unknown channel: {}", channelUID.getId());
             }
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -234,7 +232,6 @@ public class VolumioHandler extends BaseThingHandler {
     }
 
     private void handleVolumeCommand(Command command) {
-
         if (command instanceof PercentType) {
             volumio.setVolume((PercentType) command);
         } else if (command instanceof RefreshType) {
@@ -255,9 +252,7 @@ public class VolumioHandler extends BaseThingHandler {
 
     private void handlePlaybackCommands(Command command) {
         if (command instanceof PlayPauseType) {
-
             PlayPauseType playPauseCmd = (PlayPauseType) command;
-
             switch (playPauseCmd) {
                 case PLAY:
                     volumio.play();
@@ -267,9 +262,7 @@ public class VolumioHandler extends BaseThingHandler {
                     break;
             }
         } else if (command instanceof NextPreviousType) {
-
             NextPreviousType nextPreviousType = (NextPreviousType) command;
-
             switch (nextPreviousType) {
                 case PREVIOUS:
                     volumio.previous();
@@ -278,18 +271,14 @@ public class VolumioHandler extends BaseThingHandler {
                     volumio.next();
                     break;
             }
-
         } else if (command instanceof RewindFastforwardType) {
-
             RewindFastforwardType fastForwardType = (RewindFastforwardType) command;
-
             switch (fastForwardType) {
                 case FASTFORWARD:
                 case REWIND:
                     logger.warn("Not implemented yet");
                     break;
             }
-
         } else if (command instanceof RefreshType) {
             volumio.getState();
         } else {
@@ -304,7 +293,6 @@ public class VolumioHandler extends BaseThingHandler {
      * - PUSH.STATE -
      */
     private void bindDefaultListener() {
-
         volumio.on(Socket.EVENT_CONNECT, connectListener());
         volumio.on(Socket.EVENT_DISCONNECT, disconnectListener());
         volumio.on(VolumioEvents.PUSH_STATE, pushStateListener());
@@ -316,7 +304,6 @@ public class VolumioHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-
         String hostname = (String) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_HOSTNAME);
         int port = ((BigDecimal) getThing().getConfiguration().get(VolumioBindingConstants.CONFIG_PROPERTY_PORT))
                 .intValueExact();
@@ -325,30 +312,22 @@ public class VolumioHandler extends BaseThingHandler {
                 .intValueExact();
 
         if (hostname == null) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration incomplete, missing hostname");
-
         } else if (protocol == null) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration incomplete, missing protocol");
-
         } else {
-
             logger.debug("Trying to connect to Volumio on {}://{}:{}", protocol, hostname, port);
             try {
                 volumio = new VolumioService(protocol, hostname, port, timeout);
-
                 clearChannels();
                 bindDefaultListener();
                 updateStatus(ThingStatus.OFFLINE);
                 volumio.connect();
-
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-
         }
     }
 
@@ -411,33 +390,25 @@ public class VolumioHandler extends BaseThingHandler {
      */
     private Emitter.Listener pushStateListener() {
         return data -> {
-
             try {
-
                 JSONObject jsonObject = (JSONObject) data[0];
                 logger.debug("{}", jsonObject.toString());
                 state.update(jsonObject);
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_TITLE) && state.isTitleDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_TITLE, state.getTitle());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_ARTIST) && state.isArtistDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_ARTIST, state.getArtist());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_ALBUM) && state.isAlbumDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_ALBUM, state.getAlbum());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_VOLUME) && state.isVolumeDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_VOLUME, state.getVolume());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_PLAYER) && state.isStateDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_PLAYER, state.getState());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_TRACK_TYPE) && state.isTrackTypeDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_TRACK_TYPE, state.getTrackType());
                 }
@@ -445,17 +416,14 @@ public class VolumioHandler extends BaseThingHandler {
                 if (isLinked(VolumioBindingConstants.CHANNEL_PLAY_RANDOM) && state.isRandomDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_PLAY_RANDOM, state.getRandom());
                 }
-
                 if (isLinked(VolumioBindingConstants.CHANNEL_PLAY_REPEAT) && state.isRepeatDirty()) {
                     updateState(VolumioBindingConstants.CHANNEL_PLAY_REPEAT, state.getRepeat());
                 }
-
                 /**
                  * if (isLinked(CHANNEL_COVER_ART) && state.isCoverArtDirty()) {
                  * updateState(CHANNEL_COVER_ART, state.getCoverArt());
                  * }
                  */
-
             } catch (JSONException e) {
                 logger.error("Could not refresh channel: {}", e.getMessage());
 

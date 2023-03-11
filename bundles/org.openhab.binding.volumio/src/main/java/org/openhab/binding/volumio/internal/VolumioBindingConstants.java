@@ -32,31 +32,31 @@ public class VolumioBindingConstants {
     public static final ThingTypeUID THING_TYPE_VOLUMIO = new ThingTypeUID(BINDING_ID, "player");
 
     // List of all Channel ids
-    public final static String CHANNEL_TITLE = "title";
-    public final static String CHANNEL_ARTIST = "artist";
-    public final static String CHANNEL_ALBUM = "album";
-    public final static String CHANNEL_VOLUME = "volume";
-    public final static String CHANNEL_PLAYER = "player";
-    public final static String CHANNEL_COVER_ART = "albumArt";
-    public final static String CHANNEL_TRACK_TYPE = "trackType";
-    public final static String CHANNEL_PLAY_RADIO_STREAM = "playRadioStream";
-    public final static String CHANNEL_PLAY_PLAYLIST = "playPlaylist";
-    public final static String CHANNEL_CLEAR_QUEUE = "clearQueue";
-    public final static String CHANNEL_PLAY_RANDOM = "random";
-    public final static String CHANNEL_PLAY_REPEAT = "repeat";
-    public final static String CHANNEL_PLAY_URI = "playURI";
-    public final static String CHANNEL_PLAY_FILE = "playFile";
-    public final static String CHANNEL_SYSTEM_COMMAND = "systemCommand";
-    public final static String CHANNEL_STOP = "stopCommand";
+    public static final String CHANNEL_TITLE = "title";
+    public static final String CHANNEL_ARTIST = "artist";
+    public static final String CHANNEL_ALBUM = "album";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_PLAYER = "player";
+    public static final String CHANNEL_COVER_ART = "albumArt";
+    public static final String CHANNEL_TRACK_TYPE = "trackType";
+    public static final String CHANNEL_PLAY_RADIO_STREAM = "playRadioStream";
+    public static final String CHANNEL_PLAY_PLAYLIST = "playPlaylist";
+    public static final String CHANNEL_CLEAR_QUEUE = "clearQueue";
+    public static final String CHANNEL_PLAY_RANDOM = "random";
+    public static final String CHANNEL_PLAY_REPEAT = "repeat";
+    public static final String CHANNEL_PLAY_URI = "playURI";
+    public static final String CHANNEL_PLAY_FILE = "playFile";
+    public static final String CHANNEL_SYSTEM_COMMAND = "systemCommand";
+    public static final String CHANNEL_STOP = "stopCommand";
 
     // discovery properties
-    public final static String DISCOVERY_SERVICE_TYPE = "_Volumio._tcp.local.";
-    public final static String DISCOVERY_NAME_PROPERTY = "volumioName";
-    public final static String DISCOVERY_UUID_PROPERTY = "UUID";
+    public static final String DISCOVERY_SERVICE_TYPE = "_Volumio._tcp.local.";
+    public static final String DISCOVERY_NAME_PROPERTY = "volumioName";
+    public static final String DISCOVERY_UUID_PROPERTY = "UUID";
 
     // config
-    public final static String CONFIG_PROPERTY_HOSTNAME = "hostname";
-    public final static String CONFIG_PROPERTY_PORT = "port";
-    public final static String CONFIG_PROPERTY_PROTOCOL = "protocol";
-    public final static String CONFIG_PROPERTY_TIMEOUT = "timeout";
+    public static final String CONFIG_PROPERTY_HOSTNAME = "hostname";
+    public static final String CONFIG_PROPERTY_PORT = "port";
+    public static final String CONFIG_PROPERTY_PROTOCOL = "protocol";
+    public static final String CONFIG_PROPERTY_TIMEOUT = "timeout";
 }

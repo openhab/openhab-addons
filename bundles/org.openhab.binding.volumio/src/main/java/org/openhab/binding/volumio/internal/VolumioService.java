@@ -37,7 +37,7 @@ import io.socket.emitter.Emitter;
 @NonNullByDefault
 public class VolumioService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VolumioService.class);
+    private final Logger logger = LoggerFactory.getLogger(VolumioService.class);
 
     private final Socket socket;
 
@@ -45,7 +45,6 @@ public class VolumioService {
 
     public VolumioService(String protocol, String hostname, int port, int timeout)
             throws URISyntaxException, UnknownHostException {
-
         String uriString = String.format("%s://%s:%d", protocol, hostname, port);
 
         URI destUri = new URI(uriString);
@@ -153,7 +152,6 @@ public class VolumioService {
             item.put("name", playlistName);
 
             socket.emit(VolumioCommands.PLAY_PLAYLIST, item);
-
         } catch (JSONException e) {
             logger.error("The following error occurred {}", e.getMessage());
         }
@@ -234,7 +232,6 @@ public class VolumioService {
             item.put("service", serviceType);
 
             socket.emit(VolumioCommands.ADD_PLAY, item);
-
         } catch (JSONException e) {
             logger.error("The following error occurred {}", e.getMessage());
         }
@@ -249,7 +246,6 @@ public class VolumioService {
             item.put("service", serviceType);
 
             socket.emit(VolumioCommands.REPLACE_AND_PLAY, item);
-
         } catch (JSONException e) {
             logger.error("The following error occurred {}", e.getMessage());
         }

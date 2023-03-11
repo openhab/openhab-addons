@@ -28,8 +28,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VolumioData} class defines state data of volumio.
@@ -40,8 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VolumioData {
-
-    private static final Logger log = LoggerFactory.getLogger(VolumioData.class);
 
     private String title = "";
     private boolean titleDirty;
@@ -75,7 +71,6 @@ public class VolumioData {
     private boolean randomDirty;
 
     public void update(JSONObject jsonObject) throws JSONException {
-
         if (jsonObject.has(VolumioBindingConstants.CHANNEL_TITLE)) {
             setTitle(jsonObject.getString(VolumioBindingConstants.CHANNEL_TITLE));
         } else {
@@ -154,8 +149,7 @@ public class VolumioData {
     }
 
     public void setAlbum(String album) {
-
-        if (album.equals("null")) {
+        if (album.toString().equals("null")) {
             album = "";
         }
 
@@ -172,8 +166,7 @@ public class VolumioData {
     }
 
     public void setArtist(String artist) {
-
-        if (artist.equals("null")) {
+        if (artist.toString().equals("null")) {
             artist = "";
         }
 
@@ -208,7 +201,6 @@ public class VolumioData {
     }
 
     public PlayPauseType getState() {
-
         PlayPauseType playPauseStatus;
 
         if ("play".equals(state)) {
@@ -245,7 +237,7 @@ public class VolumioData {
     public void setCoverArt(@Nullable String coverArtUrl) {
         if (coverArtUrl != null) {
             if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
-                // TODO: Only handle images with complete uri atm.
+                // TODO Only handle images with complete uri atm.
                 if (!coverArtUrl.startsWith("http")) {
                     return;
                 }
@@ -254,7 +246,6 @@ public class VolumioData {
                     URL url = new URL(coverArtUrl);
                     URLConnection connection = url.openConnection();
                     coverArt = IOUtils.toByteArray(connection.getInputStream());
-
                 } catch (IOException ioe) {
                     coverArt = null;
                 }

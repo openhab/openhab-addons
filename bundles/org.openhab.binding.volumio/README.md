@@ -33,6 +33,7 @@ In the thing file, this looks e.g. like
 ```java
 Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volumio.local", protocol="http"]
 ```
+
 ### `sample` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
@@ -101,5 +102,7 @@ sitemap demo label="Main Menu"
 }
 ```
 
+
 ## Any custom content here!
+
 _Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

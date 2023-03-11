@@ -26,5 +26,5 @@ public class VolumioEvents {
      * track, artist, title, volume, ...
      *
      */
-    public final static String PUSH_STATE = "pushState";
+    public static final String PUSH_STATE = "pushState";
 }
