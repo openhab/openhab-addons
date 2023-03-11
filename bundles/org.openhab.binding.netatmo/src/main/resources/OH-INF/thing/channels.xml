@@ -17,7 +17,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="siren-status-ro">
+	<channel-type id="siren-status">
 		<item-type>Switch</item-type>
 		<label>Siren</label>
 		<description>Status of the siren</description>

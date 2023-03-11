@@ -34,6 +34,7 @@ public class NetatmoBindingConstants {
     public static final String PROPERTY_COUNTRY = "country";
     public static final String PROPERTY_TIMEZONE = "timezone";
     public static final String PROPERTY_FEATURE = "feature";
+    public static final String PROPERTY_THING_TYPE_VERSION = "thingTypeVersion";
 
     // Channel group ids
     public static final String GROUP_LAST_EVENT = "last-event";

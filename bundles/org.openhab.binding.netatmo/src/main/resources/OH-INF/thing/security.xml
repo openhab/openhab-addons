@@ -32,7 +32,7 @@
 	<channel-group-type id="siren">
 		<label>Siren Status</label>
 		<channels>
-			<channel id="status" typeId="siren-status-ro"/>
+			<channel id="status" typeId="siren-status"/>
 			<channel id="monitoring" typeId="siren-monitoring"/>
 		</channels>
 	</channel-group-type>
