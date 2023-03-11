@@ -9,6 +9,9 @@ This can clutter your Git history and make your PR unuseable.
 Use "git rebase" instead. See this forum post for further details:
 https://community.openhab.org/t/rebase-your-code-or-how-to-fix-your-git-history-before-requesting-a-pull/129358
 
+All PRs should be created using the "main" branch as base.
+Important bugfixes are cherry-picked by maintainers to the patch release branch after a PR has been merged.
+
 Add one or more appropriate labels to make your PR show up in the release notes.
 E.g. enhancement, bug, documentation, new binding
 This can only be done by yourself if you already contributed to this repo.
