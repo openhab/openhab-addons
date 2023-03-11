@@ -171,7 +171,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             }
         } catch (CGateException e) {
             logger.warn("Cannot load C-Bus network {}", networkID, e);
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
         updateStatus();
     }

@@ -53,7 +53,6 @@ import org.openhab.core.util.UIDUtils;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 class PhonebookProfileTest {
-
     private static final String INTERNAL_PHONE_NUMBER = "999";
     private static final String OTHER_PHONE_NUMBER = "555-456";
     private static final String JOHN_DOES_PHONE_NUMBER = "12345";
@@ -61,6 +60,7 @@ class PhonebookProfileTest {
     private static final ThingUID THING_UID = new ThingUID(BINDING_ID, THING_TYPE_FRITZBOX.getId(), "test");
     private static final String MY_PHONEBOOK = UIDUtils.encode(THING_UID.getAsString()) + ":MyPhonebook";
 
+    @NonNullByDefault
     public static class ParameterSet {
         public final State state;
         public final State resultingState;
@@ -108,12 +108,10 @@ class PhonebookProfileTest {
     private final Phonebook phonebook = new Phonebook() {
         @Override
         public Optional<String> lookupNumber(String number, int matchCount) {
-            switch (number) {
-                case JOHN_DOES_PHONE_NUMBER:
-                    return Optional.of(JOHN_DOES_NAME);
-                default:
-                    return Optional.empty();
-            }
+            return switch (number) {
+                case JOHN_DOES_PHONE_NUMBER -> Optional.of(JOHN_DOES_NAME);
+                default -> Optional.empty();
+            };
         }
 
         @Override

@@ -20,9 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface WundergroundUpdateReceiverServletControls {
 
-    void activate();
+    void enable();
 
-    void deactivate();
+    void disable();
 
     boolean isActive();
 }

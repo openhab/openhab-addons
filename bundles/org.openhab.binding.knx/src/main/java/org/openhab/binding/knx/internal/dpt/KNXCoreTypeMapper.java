@@ -14,8 +14,6 @@ package org.openhab.binding.knx.internal.dpt;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -890,7 +888,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
                         logger.debug("toType: KNX DPT_Control_Dimming: break received.");
-                        return UnDefType.UNDEF;
+                        return UnDefType.NULL;
                     }
                     switch (subNumber) {
                         case 7:
@@ -898,27 +896,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                                     : IncreaseDecreaseType.DECREASE;
                         case 8:
                             return translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
-                    }
-                case 14:
-                    /*
-                     * FIXME: Workaround for a bug in Calimero / Openhab DPTXlator4ByteFloat.makeString(): is using a
-                     * locale when
-                     * translating a Float to String. It could happen the a ',' is used as separator, such as
-                     * 3,14159E20.
-                     * Openhab's DecimalType expects this to be in US format and expects '.': 3.14159E20.
-                     * There is no issue with DPTXlator2ByteFloat since calimero is using a non-localized translation
-                     * there.
-                     */
-                    DPTXlator4ByteFloat translator4ByteFloat = (DPTXlator4ByteFloat) translator;
-                    Float f = translator4ByteFloat.getValueFloat();
-                    if (Math.abs(f) < 100000) {
-                        value = String.valueOf(f);
-                    } else {
-                        NumberFormat dcf = NumberFormat.getInstance(Locale.US);
-                        if (dcf instanceof DecimalFormat) {
-                            ((DecimalFormat) dcf).applyPattern("0.#####E0");
-                        }
-                        value = dcf.format(f);
                     }
                     break;
                 case 18:
@@ -1000,7 +977,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (typeClass.equals(DateTimeType.class)) {
                 String date = formatDateTime(value, datapoint.getDPT());
                 if (date.isEmpty()) {
-                    logger.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
+                    logger.debug("toType: KNX clock msg ignored: date object empty {}.", date);
                     return null;
                 } else {
                     return DateTimeType.valueOf(date);
@@ -1070,7 +1047,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @return a formatted String like </code>yyyy-MM-dd'T'HH:mm:ss</code> which
      *         is target format of the {@link DateTimeType}
      */
-    private String formatDateTime(String value, String dpt) {
+    private String formatDateTime(String value, @Nullable String dpt) {
         Date date = null;
 
         try {
