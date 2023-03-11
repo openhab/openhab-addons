@@ -13,6 +13,7 @@
 package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,8 @@ import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConf
 import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInQueryModel;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInResponseModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -40,7 +43,7 @@ import com.google.gson.Gson;
 public class SignInService {
 
     private final Gson gson = OJGSonBuilder.getGSon();
-
+    private final Logger logger = LoggerFactory.getLogger(SignInService.class);
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration config;
 
@@ -62,18 +65,28 @@ public class SignInService {
      * @param connectionLosed This method is called if no connection could established.
      * @param unauthorized This method is called if the result is unauthorized.
      */
-    public void signIn(Consumer<String> signInDone, Runnable connectionLosed, Runnable unauthorized) {
+    public void signIn(Consumer<String> signInDone, Consumer<@Nullable String> connectionLosed, Runnable unauthorized) {
+        logger.trace("Trying to sign in");
+
         Request request = httpClient.POST(config.getApiUrl() + "/UserProfile/SignIn")
                 .header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(gson.toJson(getPostSignInQueryModel())));
+                .content(new StringContentProvider(gson.toJson(getPostSignInQueryModel())))
+                .timeout(1, TimeUnit.MINUTES);
 
         request.send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
-                if (result == null || result.isFailed()) {
-                    connectionLosed.run();
+                if (result == null) {
                     return;
                 }
+
+                if (result.isFailed()) {
+                    final Throwable failure = result.getFailure();
+                    logger.error("Signing in failed", failure);
+                    connectionLosed.accept(failure.getLocalizedMessage());
+                    return;
+                }
+
                 if (result.getResponse().getStatus() == 200) {
                     PostSignInResponseModel signInModel = Objects
                             .requireNonNull(gson.fromJson(getContentAsString(), PostSignInResponseModel.class));
@@ -81,11 +94,12 @@ public class SignInService {
                         unauthorized.run();
                         return;
                     }
+                    logger.trace("Signing in successful {}", getContentAsString());
                     signInDone.accept(signInModel.sessionId);
                     return;
                 }
 
-                connectionLosed.run();
+                connectionLosed.accept(null);
                 return;
             }
         });

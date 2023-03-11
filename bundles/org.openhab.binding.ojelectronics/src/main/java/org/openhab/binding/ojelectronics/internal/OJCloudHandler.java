@@ -208,9 +208,9 @@ public class OJCloudHandler extends BaseBridgeHandler {
         restartRefreshServiceAsync(1);
     }
 
-    private void handleConnectionLost() {
+    private void handleConnectionLost(@Nullable String message) {
         logger.trace("OJElectronicsCloudHandler.handleConnectionLost()");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         final RefreshService localRefreshService = this.refreshService;
         if (localRefreshService != null) {
             localRefreshService.stop();

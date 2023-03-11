@@ -14,6 +14,7 @@ package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,10 +50,10 @@ public final class UpdateService {
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration configuration;
     private final Runnable unauthorized;
-    private final Runnable connectionLost;
+    private final Consumer<@Nullable String> connectionLost;
 
-    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient, Runnable connectionLost,
-            Runnable unauthorized) {
+    public UpdateService(OJElectronicsBridgeConfiguration configuration, HttpClient httpClient,
+            Consumer<@Nullable String> connectionLost, Runnable unauthorized) {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.unauthorized = unauthorized;

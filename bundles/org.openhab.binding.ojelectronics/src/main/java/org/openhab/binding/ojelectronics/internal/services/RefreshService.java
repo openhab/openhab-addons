@@ -14,6 +14,7 @@ package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
+import org.openhab.binding.ojelectronics.internal.common.SignalRLogger;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.SignalRResultModel;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentResponseModel;
@@ -49,7 +51,7 @@ public final class RefreshService implements AutoCloseable {
     private final HttpClient httpClient;
     private final Gson gson = OJGSonBuilder.getGSon();
 
-    private @Nullable Runnable connectionLost;
+    private @Nullable Consumer<@Nullable String> connectionLost;
     private @Nullable BiConsumer<@Nullable GroupContentResponseModel, @Nullable String> initializationDone;
     private @Nullable BiConsumer<@Nullable SignalRResultModel, @Nullable String> refreshDone;
     private @Nullable Runnable unauthorized;
@@ -81,8 +83,8 @@ public final class RefreshService implements AutoCloseable {
      */
     public void start(String sessionId,
             BiConsumer<@Nullable GroupContentResponseModel, @Nullable String> initializationDone,
-            BiConsumer<@Nullable SignalRResultModel, @Nullable String> refreshDone, Runnable connectionLost,
-            Runnable unauthorized) {
+            BiConsumer<@Nullable SignalRResultModel, @Nullable String> refreshDone,
+            Consumer<@Nullable String> connectionLost, Runnable unauthorized) {
         logger.trace("RefreshService.startService({})", sessionId);
         this.connectionLost = connectionLost;
         this.initializationDone = initializationDone;
@@ -109,7 +111,8 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private Connection createSignalRConnection() {
-        Connection signalRConnection = new Connection(config.getSignalRUrl());
+        Connection signalRConnection = new Connection(config.getSignalRUrl(), new SignalRLogger());
+        signalRConnection.setReconnectOnError(false);
         signalRConnection.received(json -> {
             if (json != null && json.isJsonObject()) {
                 BiConsumer<@Nullable SignalRResultModel, @Nullable String> refreshDone = this.refreshDone;
@@ -129,7 +132,7 @@ public final class RefreshService implements AutoCloseable {
         signalRConnection.stateChanged((oldState, newState) -> {
             logger.trace("Connection state changed from {} to {}", oldState, newState);
             if (newState == ConnectionState.Disconnected && !destroyed) {
-                handleConnectionLost();
+                handleConnectionLost("Connection broken");
             }
         });
         signalRConnection.reconnected(() -> {
@@ -143,15 +146,12 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private void initializeGroups(boolean shouldStartSignalRService) {
-        if (destroyed) {
+        if (destroyed || isInitializing) {
             return;
         }
         final String sessionId = this.sessionId;
         if (sessionId == null) {
-            handleConnectionLost();
-        }
-        if (isInitializing) {
-            return;
+            handleConnectionLost("No session id");
         }
         isInitializing = true;
         logger.trace("initializeGroups started");
@@ -160,11 +160,13 @@ public final class RefreshService implements AutoCloseable {
             @Override
             public void onComplete(@Nullable Result result) {
                 try {
-                    if (destroyed) {
+                    if (destroyed || result == null) {
                         return;
                     }
-                    if (result == null || result.isFailed()) {
-                        handleConnectionLost();
+                    if (result.isFailed()) {
+                        final Throwable failure = result.getFailure();
+                        logger.error("Error initializing groups", failure);
+                        handleConnectionLost(failure.getLocalizedMessage());
                     } else {
                         int status = result.getResponse().getStatus();
                         logger.trace("HTTP-Status {}", status);
@@ -172,7 +174,7 @@ public final class RefreshService implements AutoCloseable {
                             if (unauthorized != null) {
                                 unauthorized.run();
                             } else {
-                                handleConnectionLost();
+                                handleConnectionLost(null);
                             }
                         } else if (status == HttpStatus.OK_200) {
                             initializationDone(Objects.requireNonNull(getContentAsString()));
@@ -182,7 +184,7 @@ public final class RefreshService implements AutoCloseable {
                             }
                         } else {
                             logger.warn("unsupported HTTP-Status {}", status);
-                            handleConnectionLost();
+                            handleConnectionLost(null);
                         }
                     }
                 } finally {
@@ -214,10 +216,10 @@ public final class RefreshService implements AutoCloseable {
         }
     }
 
-    private void handleConnectionLost() {
-        final Runnable connectionLost = this.connectionLost;
+    private void handleConnectionLost(@Nullable String message) {
+        final Consumer<@Nullable String> connectionLost = this.connectionLost;
         if (connectionLost != null) {
-            connectionLost.run();
+            connectionLost.accept(message);
         }
     }
 
