@@ -102,5 +102,4 @@ sitemap demo label="Main Menu"
 ```
 
 ## Any custom content here!
-
 _Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
