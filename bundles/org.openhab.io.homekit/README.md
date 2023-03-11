@@ -480,9 +480,9 @@ e.g.
 
 ```xtend
 Group           gBlind                  "Blind with tilt"                               {homekit = "WindowCovering"}
-Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "WindowCovering"}
-Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
-Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
+Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "CurrentPosition, TargetPosition, PositionState"}
+Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "CurrentHorizontalTiltAngle, TargetHorizontalTiltAngle"}
+Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "CurrentVerticalTiltAngle, TargetVerticalTiltAngle"}
  ```
 
 Current and Target Position characteristics can be linked to Rollershutter but also to Number or Dimmer item types.

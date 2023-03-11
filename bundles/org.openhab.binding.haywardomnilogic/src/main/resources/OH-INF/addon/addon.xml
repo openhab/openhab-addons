@@ -6,5 +6,5 @@
 	<type>binding</type>
 	<name>Hayward OmniLogix Binding</name>
 	<description>Binding for the Hayward OmniLogix swimming pool automation controller.</description>
-	<author>Matt Myers</author>
+
 </addon:addon>

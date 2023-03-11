@@ -13,15 +13,14 @@
 package org.openhab.binding.boschshc.internal.services.intrusion;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,23 +33,21 @@ import org.openhab.binding.boschshc.internal.services.intrusion.dto.IntrusionDet
 
 /**
  * Unit tests for {@link IntrusionDetectionSystemStateService}.
- * 
+ *
  * @author David Pace - Initial contribution
  *
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class IntrusionDetectionSystemStateServiceTest {
 
-    private IntrusionDetectionSystemStateService fixture;
+    private @NonNullByDefault({}) IntrusionDetectionSystemStateService fixture;
 
-    @Mock
-    private BridgeHandler bridgeHandler;
+    private @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
 
-    @Mock
-    private Consumer<IntrusionDetectionSystemState> consumer;
+    private @Mock @NonNullByDefault({}) Consumer<IntrusionDetectionSystemState> consumer;
 
-    @Mock
-    private IntrusionDetectionSystemState testState;
+    private @Mock @NonNullByDefault({}) IntrusionDetectionSystemState testState;
 
     @BeforeEach
     void beforeEach() {

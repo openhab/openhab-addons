@@ -29,6 +29,7 @@ public class SnmpBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_TARGET = new ThingTypeUID(BINDING_ID, "target");
+    public static final ThingTypeUID THING_TYPE_TARGET3 = new ThingTypeUID(BINDING_ID, "target3");
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_STRING = new ChannelTypeUID(BINDING_ID, "string");

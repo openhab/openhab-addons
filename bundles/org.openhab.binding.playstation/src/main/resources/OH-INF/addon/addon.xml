@@ -6,6 +6,5 @@
 	<type>binding</type>
 	<name>Sony PlayStation Binding</name>
 	<description>Monitor and control your Sony PlayStation.</description>
-	<author>Fredrik Ahlström</author>
 
 </addon:addon>
