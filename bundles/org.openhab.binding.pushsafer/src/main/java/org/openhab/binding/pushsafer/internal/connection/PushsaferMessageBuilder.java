@@ -185,18 +185,13 @@ public class PushsaferMessageBuilder {
         return this;
     }
 	
-	public PushsaferMessageBuilder withAnswerForce(boolean answerforce) {
+    public PushsaferMessageBuilder withAnswerForce(boolean answerforce) {
         this.answerforce = answerforce;
         return this;
     }
 	
-	public PushsaferMessageBuilder withAnswerOptions(String answeroptions) {
+    public PushsaferMessageBuilder withAnswerOptions(String answeroptions) {
         this.answeroptions = answeroptions;
-        return this;
-    }
-	
-	public PushsaferMessageBuilder withAnswer(boolean answer) {
-        this.answer = answer;
         return this;
     }
 
