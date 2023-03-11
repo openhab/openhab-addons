@@ -242,7 +242,6 @@ public class VolumioData {
     public void setCoverArt(@Nullable String coverArtUrl) {
         if (coverArtUrl != null) {
             if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
-                // TODO Only handle images with complete uri atm.
                 if (!coverArtUrl.startsWith("http")) {
                     return;
                 }
@@ -253,9 +252,6 @@ public class VolumioData {
                     InputStream inStream = null;
                     inStream = connection.getInputStream();
                     coverArt = inputStreamToByte(inStream);
-                    // coverArt = IOUtils.toByteArray(connection.getInputStream());
-                    // InputStream in = new BufferedInputStream(connection.getInputStream());
-                    // coverArt = in.read();
                 } catch (IOException ioe) {
                     coverArt = null;
                 }
