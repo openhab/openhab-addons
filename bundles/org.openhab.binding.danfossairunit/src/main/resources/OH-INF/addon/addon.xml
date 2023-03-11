@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DanfossAirUnit Binding</name>
 	<description>This is the binding for DanfossAirUnit.</description>
+	<connection>local</connection>
 
 </addon:addon>
