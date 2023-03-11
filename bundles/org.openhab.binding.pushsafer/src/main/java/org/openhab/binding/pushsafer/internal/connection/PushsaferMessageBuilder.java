@@ -184,12 +184,12 @@ public class PushsaferMessageBuilder {
         this.answer = answer;
         return this;
     }
-	
+
     public PushsaferMessageBuilder withAnswerForce(boolean answerforce) {
         this.answerforce = answerforce;
         return this;
     }
-	
+
     public PushsaferMessageBuilder withAnswerOptions(String answeroptions) {
         this.answeroptions = answeroptions;
         return this;
@@ -320,10 +320,10 @@ public class PushsaferMessageBuilder {
         body.addFieldPart(MESSAGE_KEY_CONFIRM, new StringContentProvider(String.valueOf(confirm)), null);
 
         body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(String.valueOf(answer)), null);
-		
-		body.addFieldPart(MESSAGE_KEY_ANSWEROPTIONS, new StringContentProvider(String.valueOf(answeroptions)), null);
-		
-		body.addFieldPart(MESSAGE_KEY_ANSWERFORCE, new StringContentProvider(String.valueOf(answerforce)), null);
+
+        body.addFieldPart(MESSAGE_KEY_ANSWEROPTIONS, new StringContentProvider(String.valueOf(answeroptions)), null);
+
+        body.addFieldPart(MESSAGE_KEY_ANSWERFORCE, new StringContentProvider(String.valueOf(answerforce)), null);
 
         body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
 
