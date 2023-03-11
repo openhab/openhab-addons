@@ -32,7 +32,7 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `answeroptions`                | text |  specify predefined answer options divided by a pipe character, e.g. Yes&#124;No&#124;Maybe **advanced**                                                                                  |
 | `answerforce`                | integer | 1 = force an answer. The user will be prompted to answer, the message will be open directly. (default: `0`). **advanced**                                                                                  |
 
-The `retry`, `expire` and `confirm` parameters are only used for emergency-priority notifications.
+The `retry` and `expire` parameters are only used for emergency-priority notifications.
 
 ## Channels
 
