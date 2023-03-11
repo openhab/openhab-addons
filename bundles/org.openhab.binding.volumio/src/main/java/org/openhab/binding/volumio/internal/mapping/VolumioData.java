@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.volumio.internal.mapping;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
@@ -28,6 +29,8 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VolumioData} class defines state data of volumio.
@@ -38,6 +41,8 @@ import org.openhab.core.library.types.StringType;
  */
 @NonNullByDefault
 public class VolumioData {
+
+    private final Logger logger = LoggerFactory.getLogger(VolumioData.class);
 
     private String title = "";
     private boolean titleDirty;
@@ -245,7 +250,12 @@ public class VolumioData {
                 try {
                     URL url = new URL(coverArtUrl);
                     URLConnection connection = url.openConnection();
-                    coverArt = IOUtils.toByteArray(connection.getInputStream());
+                    InputStream inStream = null;
+                    inStream = connection.getInputStream();
+                    coverArt = inputStreamToByte(inStream);
+                    // coverArt = IOUtils.toByteArray(connection.getInputStream());
+                    // InputStream in = new BufferedInputStream(connection.getInputStream());
+                    // coverArt = in.read();
                 } catch (IOException ioe) {
                     coverArt = null;
                 }
@@ -256,6 +266,25 @@ public class VolumioData {
         } else {
             coverArt = null;
         }
+    }
+
+    private byte @Nullable [] inputStreamToByte(InputStream is) {
+        byte @Nullable [] imgdata = null;
+        try {
+            ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+            int ch;
+
+            while ((ch = is.read()) != -1) {
+                bytestream.write(ch);
+            }
+            imgdata = bytestream.toByteArray();
+            bytestream.close();
+            return imgdata;
+        } catch (Exception e) {
+            logger.error("Could not open or read input stream {}", e.getMessage());
+        }
+
+        return imgdata;
     }
 
     public @Nullable RawType getCoverArt() {
