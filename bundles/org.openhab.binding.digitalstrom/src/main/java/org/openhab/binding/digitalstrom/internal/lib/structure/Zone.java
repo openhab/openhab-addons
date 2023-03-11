@@ -19,7 +19,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 /**
  * The {@link Zone} represents a digitalSTROM-Zone.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add java-doc
  * @author Matthias Siegele - add java-doc
  */

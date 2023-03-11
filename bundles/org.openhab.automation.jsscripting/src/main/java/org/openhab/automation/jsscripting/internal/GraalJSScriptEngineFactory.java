@@ -89,8 +89,8 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!SCRIPT_TYPES.contains(scriptType)) {
             return null;
         }
-        return new DebuggingGraalScriptEngine<>(
-                new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary, jsScriptServiceUtil));
+        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionEnabled, useIncludedLibrary,
+                jsScriptServiceUtil, jsDependencyTracker));
     }
 
     @Override

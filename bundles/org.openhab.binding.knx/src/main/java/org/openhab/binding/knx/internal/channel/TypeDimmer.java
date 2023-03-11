@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.toSet;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -40,7 +38,7 @@ class TypeDimmer extends KNXChannelType {
 
     @Override
     protected Set<String> getAllGAKeys() {
-        return Stream.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA).collect(toSet());
+        return Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA);
     }
 
     @Override

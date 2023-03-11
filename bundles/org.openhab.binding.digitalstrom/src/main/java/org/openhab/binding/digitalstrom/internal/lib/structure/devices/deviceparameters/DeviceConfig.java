@@ -15,7 +15,7 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DeviceConfig} saves device configurations.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add missing java-doc
  * @author Matthias Siegele - add missing java-doc
  */

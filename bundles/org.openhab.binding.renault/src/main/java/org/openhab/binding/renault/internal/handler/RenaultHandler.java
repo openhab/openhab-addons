@@ -205,6 +205,32 @@ public class RenaultHandler extends BaseThingHandler {
                     }
                 }
                 break;
+            case RenaultBindingConstants.CHANNEL_PAUSE:
+                if (command instanceof RefreshType) {
+                    reschedulePollingJob();
+                } else if (command instanceof OnOffType) {
+                    try {
+                        MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                        try {
+                            boolean pause = OnOffType.ON == command;
+                            httpSession.initSesssion(car);
+                            httpSession.actionPause(pause);
+                            car.setPauseMode(pause);
+                            updateState(CHANNEL_PAUSE, OnOffType.from(command.toString()));
+                        } catch (InterruptedException e) {
+                            logger.warn("Error My Renault Http Session.", e);
+                            Thread.currentThread().interrupt();
+                        } catch (RenaultForbiddenException | RenaultNotImplementedException | RenaultActionException
+                                | RenaultException | RenaultUpdateException | ExecutionException | TimeoutException e) {
+                            logger.warn("Error during action set pause.", e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Invalid Pause Mode {}.", command.toString());
+                        return;
+                    }
+                }
+                break;
             default:
                 if (command instanceof RefreshType) {
                     reschedulePollingJob();

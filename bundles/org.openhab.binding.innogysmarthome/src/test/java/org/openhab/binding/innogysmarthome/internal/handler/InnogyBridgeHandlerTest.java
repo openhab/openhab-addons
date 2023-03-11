@@ -36,6 +36,11 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -50,6 +55,12 @@ public class InnogyBridgeHandlerTest {
 
     @BeforeEach
     public void before() throws Exception {
+        final Logger loggerBridge = (Logger) LoggerFactory.getLogger(InnogyBridgeHandler.class);
+        loggerBridge.setLevel(Level.OFF);
+
+        final Logger logerBaseHandler = (Logger) LoggerFactory.getLogger(BaseThingHandler.class);
+        logerBaseHandler.setLevel(Level.OFF);
+
         bridgeMock = mock(Bridge.class);
         when(bridgeMock.getUID()).thenReturn(new ThingUID("innogysmarthome", "bridge"));
 

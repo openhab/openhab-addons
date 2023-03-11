@@ -38,13 +38,16 @@ public class KNXBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // Property IDs
-    public static final String FIRMWARE_TYPE = "firmwaretype";
-    public static final String FIRMWARE_VERSION = "firmwareversion";
-    public static final String FIRMWARE_SUBVERSION = "firmwaresubversion";
-    public static final String MANUFACTURER_NAME = "manfacturername";
-    public static final String MANUFACTURER_SERIAL_NO = "manfacturerserialnumber";
-    public static final String MANUFACTURER_HARDWARE_TYPE = "manfacturerhardwaretype";
-    public static final String MANUFACTURER_FIRMWARE_REVISION = "manfacturerfirmwarerevision";
+    public static final String DEVICE_MASK_VERSION = "deviceMaskVersion";
+    public static final String DEVICE_PROFILE = "deviceProfile";
+    public static final String DEVICE_MEDIUM_TYPE = "deviceMediumType";
+    public static final String FRIENDLY_NAME = "deviceName";
+    public static final String MANUFACTURER_NAME = "manufacturerName";
+    public static final String MANUFACTURER_SERIAL_NO = "manufacturerSerialNumber";
+    public static final String MANUFACTURER_HARDWARE_TYPE = "manufacturerHardwareType";
+    public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerFirmwareRevision";
+    public static final String MANUFACTURER_ORDER_INFO = "manufacturerOrderInfo";
+    public static final String MAX_APDU_LENGTH = "maxApduLength";
 
     // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";
