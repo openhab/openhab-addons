@@ -1,6 +1,6 @@
 # volumio Binding
 
-This binding integrates the open-source Music Player [Volumio](https://www.volumio.com).. 
+This binding integrates the open-source Music Player [Volumio](https://www.volumio.com).
 
 ## Supported Things
 
@@ -14,11 +14,11 @@ The volumio devices are discovered through UPnP in the local network and all dev
 
 ## Binding Configuration
 
-The binding has the following configuration options, which can be set for "binding:sonos":
+The binding has the following configuration options, which can be set:
 
 | Parameter   | Name             | Description                                                                | Required |
 | ----------- | ---------------- | -------------------------------------------------------------------------- | -------- |
-| hostname    | Hostanem         | The hostname of the Volumio player.                                        | yes      |
+| hostname    | Hostname         | The hostname of the Volumio player.                                        | yes      |
 | port        | Port             | The port of your volumio2 device (default is 3000)                         | yes      |
 | protocol    | Protocol         | The protocol of your volumio2 device (default is http)                     | yes      |
 | timeout     | Timeout          | Connection-Timeout in ms                                                   | no       |
@@ -27,7 +27,7 @@ The binding has the following configuration options, which can be set for "bindi
 ## Thing Configuration
 
 The Volumio Thing requires the hostname, port and protocol as a configuration value in order for the binding to know how to access it.
-Additionally, a connection timeout (in ms)can be configured.
+Additionally, a connection timeout (in ms) can be configured.
 In the thing file, this looks e.g. like
 
 ```java
@@ -74,7 +74,6 @@ demo.things:
 
 ```java
 Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volumio.local", protocol="http"]
-
 ```
 
 demo.items:
@@ -86,7 +85,6 @@ String	Volumio_CurrentAlbum	    "Current Album [%s]"	                    {channe
 Dimmer	Volumio_CurrentVolume	    "CurrentVolume [%.1f %%]"  <soundvolume>	{channel="volumio:player:VolumioLivingRoom:volume"}
 Player	Volumio	                    "Current Status [%s]"	   <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
 String	Volumio_CurrentTrackType	"Current trackType [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:trackType"}
-
 ```
 
 demo.sitemap:
@@ -101,8 +99,3 @@ sitemap demo label="Main Menu"
     }
 }
 ```
-
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

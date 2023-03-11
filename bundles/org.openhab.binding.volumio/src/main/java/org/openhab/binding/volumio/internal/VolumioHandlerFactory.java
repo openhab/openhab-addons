@@ -14,7 +14,6 @@ package org.openhab.binding.volumio.internal;
 
 import static org.openhab.binding.volumio.internal.VolumioBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,8 +40,8 @@ public class VolumioHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(VolumioHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(VolumioBindingConstants.THING_TYPE_VOLUMIO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(VolumioBindingConstants.THING_TYPE_VOLUMIO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
