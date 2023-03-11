@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
-import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,12 +44,12 @@ public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final Logger logger = LoggerFactory.getLogger(VolumioDiscoveryParticipant.class);
 
     @Override
-    public @NotNull Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(THING_TYPE_VOLUMIO);
     }
 
     @Override
-    public @NotNull String getServiceType() {
+    public String getServiceType() {
         return VolumioBindingConstants.DISCOVERY_SERVICE_TYPE;
     }
 
@@ -77,7 +76,7 @@ public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@NotNull ServiceInfo serviceInfo) {
+    public @Nullable ThingUID getThingUID(ServiceInfo serviceInfo) {
         Collections.list(serviceInfo.getPropertyNames()).forEach(s -> logger.debug("PropertyName: {}", s));
 
         String volumioName = serviceInfo.getPropertyString("volumioName");
