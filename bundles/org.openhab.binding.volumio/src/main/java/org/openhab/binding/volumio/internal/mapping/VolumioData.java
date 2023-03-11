@@ -154,7 +154,7 @@ public class VolumioData {
     }
 
     public void setAlbum(String album) {
-        if (album.toString().equals("null")) {
+        if ("null".equals(album)) {
             album = "";
         }
 
@@ -171,7 +171,7 @@ public class VolumioData {
     }
 
     public void setArtist(String artist) {
-        if (artist.toString().equals("null")) {
+        if ("null".equals(artist)) {
             artist = "";
         }
 

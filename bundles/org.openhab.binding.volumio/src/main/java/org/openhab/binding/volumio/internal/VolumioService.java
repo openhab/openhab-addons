@@ -200,8 +200,6 @@ public class VolumioService {
     /**
      * Play a radio station from volumio´s Radio Favourites identifed by
      * its index.
-     *
-     * @param index
      */
     public void playRadioFavourite(final Integer index) {
         logger.debug("socket.emit({})", VolumioCommands.PLAY_RADIO_FAVOURITES);

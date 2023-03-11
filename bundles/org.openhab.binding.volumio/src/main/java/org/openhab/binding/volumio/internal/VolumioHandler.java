@@ -91,13 +91,6 @@ public class VolumioHandler extends BaseThingHandler {
                     break;
                 case VolumioBindingConstants.CHANNEL_TRACK_TYPE:
                     break;
-                /**
-                 * case CHANNEL_COVER_ART:
-                 * if (command instanceof RefreshType) {
-                 * volumio.getState();
-                 * }
-                 * break;
-                 **/
                 case VolumioBindingConstants.CHANNEL_TITLE:
                     break;
 
@@ -334,16 +327,13 @@ public class VolumioHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         if (volumio != null) {
-            scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (volumio.isConnected()) {
-                        logger.warn("Timeout during disconnect event");
-                    } else {
-                        volumio.close();
-                    }
-                    clearChannels();
+            scheduler.schedule(() -> {
+                if (volumio.isConnected()) {
+                    logger.warn("Timeout during disconnect event");
+                } else {
+                    volumio.close();
                 }
+                clearChannels();
             }, 30, TimeUnit.SECONDS);
 
             volumio.disconnect();
@@ -375,8 +365,6 @@ public class VolumioHandler extends BaseThingHandler {
     /**
      * As soon as the Disconnect Listener is executed
      * the ThingStatus is set to OFFLINE.
-     *
-     * @return
      */
     private Emitter.Listener disconnectListener() {
         return arg0 -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -385,8 +373,6 @@ public class VolumioHandler extends BaseThingHandler {
     /**
      * On received a pushState Event, the ThingChannels are
      * updated if there is a change and they are linked.
-     *
-     * @return
      */
     private Emitter.Listener pushStateListener() {
         return data -> {

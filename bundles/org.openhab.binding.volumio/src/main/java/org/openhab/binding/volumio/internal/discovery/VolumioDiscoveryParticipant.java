@@ -16,6 +16,7 @@ import static org.openhab.binding.volumio.internal.VolumioBindingConstants.THING
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -45,7 +46,7 @@ public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_VOLUMIO);
+        return Set.of(THING_TYPE_VOLUMIO);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class VolumioDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo serviceInfo) {
         String volumioName = serviceInfo.getPropertyString(VolumioBindingConstants.DISCOVERY_NAME_PROPERTY);
-        HashMap<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         ThingUID thingUID = getThingUID(serviceInfo);
 
         logger.debug("Service Device: {}", serviceInfo);
