@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.sonnen.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SonnenJsonPowerMeterDataDTO} is the Java class used to map the JSON
  * response from the API to a PowerMeter Object.
  *
  * @author Christian Feininger - Initial contribution
  */
+@NonNullByDefault
 public class SonnenJsonPowerMeterDataDTO {
 
     float kwhExported;
