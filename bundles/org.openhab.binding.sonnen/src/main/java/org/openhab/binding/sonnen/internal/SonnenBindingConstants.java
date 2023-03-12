@@ -45,4 +45,30 @@ public class SonnenBindingConstants {
     public static final String CHANNELFLOWGRIDBATTERYSTATE = "flowGridBatteryState";
     public static final String CHANNELFLOWPRODUCTIONBATTERYSTATE = "flowProductionBatteryState";
     public static final String CHANNELFLOWPRODUCTIONGRIDSTATE = "flowProductionGridState";
+
+    // List of new Channel ids
+    public static final String KWHIMPORTEDSTATE = "kwhImportedState";
+    public static final String KWHEXPORTEDSTATE = "kwhExportedState";
+
+    // List of dynamic Channel ids
+    // public static final String AL1STATE = "al1";
+    // public static final String AL2STATE = "al2";
+    // public static final String AL3STATE = "al3";
+    // public static final String CHANNELSTATE = "channel";
+    // public static final String DEVICEIDSTATE = "deviceid";
+    // public static final String DIRECTIONSTATE = "direction";
+    // public static final String ERRORSTATE = "error";
+    // public static final String VL1L2STATE = "vl1l2";
+    // public static final String VL1NSTATE = "vl1n";
+    // public static final String VL2L3STATE = "vl2l3";
+    // public static final String VL2NSTATE = "vl2n";
+    // public static final String VL3L1STATE = "vl2l1";
+    // public static final String VL3NSTATE = "vl3n";
+    // public static final String VATOTALSTATE = "vatotal";
+    // public static final String VARTOTALSTATE = "vartotal";
+    // public static final String W11STATE = "w11";
+    // public static final String W12STATE = "w12";
+    // public static final String W13STATE = "w13";
+    // public static final String WTOTALSTATE = "wtotal";
+
 }

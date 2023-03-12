@@ -25,6 +25,8 @@
 			<channel id="flowGridBatteryState" typeId="flowGridBatteryState"/>
 			<channel id="flowProductionBatteryState" typeId="flowProductionBatteryState"/>
 			<channel id="flowProductionGridState" typeId="flowProductionGridState"/>
+			<channel id="kwhImportedState" typeId="kwhImportedState"/>
+			<channel id="kwhExportedState" typeId="kwhExportedState"/>
 		</channels>
 
 		<config-description>
@@ -33,6 +35,18 @@
 				<label>IP Address</label>
 				<description>Please add the IP Address of your sonnen battery.</description>
 			</parameter>
+			<parameter name="authToken" type="text">
+                <context>Authentication Token</context>
+                <label>Auth Token</label>
+                <description>Authentication Token which can be found under "Software Integration" if you connect locally to your sonnen battery. If empty the old deprecated API will be used.</description>
+            </parameter>
+            <parameter name="powerMeter" type="boolean">
+                <context>sonnen Power Meter</context>
+                <label>Power Meter</label>
+                <description>If activated, the power meter values will be also retrieved. For advanced users.</description>
+                <advanced>true</advanced>
+                <default>false</default>
+            </parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
 				<description>How often in seconds the sonnen battery should schedule a refresh after a channel is linked to an item.
@@ -128,4 +142,16 @@
 		<description>Indicates if there is a current flow from production towards grid.</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="kwhImportedState">
+        <item-type>Number:Energy</item-type>
+        <label>kWh Imported per Day</label>
+        <description>Indicates the imported kWh per Day, starting every day at midnight.</description>
+        <state readOnly="true" pattern="%.0f %unit%"/>
+    </channel-type>
+    <channel-type id="kwhExportedState">
+        <item-type>Number:Energy</item-type>
+        <label>kWh Exported per Day</label>
+        <description>Indicates the exported kWh per Day, starting every day at midnight.</description>
+        <state readOnly="true" pattern="%.0f %unit%"/>
+    </channel-type>	
 </thing:thing-descriptions>

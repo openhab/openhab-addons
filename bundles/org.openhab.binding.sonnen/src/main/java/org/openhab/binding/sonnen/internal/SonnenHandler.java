@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
+import org.openhab.binding.sonnen.internal.communication.SonnenJsonPowerMeterDataDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -61,6 +62,10 @@ public class SonnenHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
+    private boolean newAPI = false;
+
+    private int disconnectionCounter = 0;
+
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public SonnenHandler(Thing thing) {
@@ -82,8 +87,12 @@ public class SonnenHandler extends BaseThingHandler {
             return;
         }
 
+        if (config.authToken != null) {
+            newAPI = true;
+        }
+
         serviceCommunication.setConfig(config);
-        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.submit(() -> {
             if (updateBatteryData()) {
                 for (Channel channel : getThing().getChannels()) {
@@ -93,6 +102,23 @@ public class SonnenHandler extends BaseThingHandler {
                 }
             }
         });
+
+        // if (config.powerMeter) {
+        // List<Channel> channels = createDynamicChannels();
+        // ThingBuilder builder = editThing();
+        // boolean changed = false;
+        // for (Channel channel : channels) {
+        // // we only want to add each channel, not replace all of them
+        // if (getThing().getChannel(channel.getUID()) == null) {
+        // builder.withChannel(channel);
+        // changed = true;
+        // }
+        // }
+        // if (changed) {
+        // updateThing(builder.build());
+        // }
+        // }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
@@ -101,13 +127,20 @@ public class SonnenHandler extends BaseThingHandler {
      * @return true if the update succeeded, false otherwise
      */
     private boolean updateBatteryData() {
-        String error = serviceCommunication.refreshBatteryConnection();
+        String error = serviceCommunication.refreshBatteryConnection(newAPI);
         if (error.isEmpty()) {
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
+                disconnectionCounter = 0;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            disconnectionCounter++;
+            if (disconnectionCounter > 60) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                return true;
+            }
         }
         return error.isEmpty();
     }
@@ -134,7 +167,7 @@ public class SonnenHandler extends BaseThingHandler {
     }
 
     /**
-     * Start the job refreshing the oven status
+     * Start the job refreshing the battery status
      */
     private void startAutomaticRefresh() {
         ScheduledFuture<?> job = refreshJob;
@@ -176,6 +209,29 @@ public class SonnenHandler extends BaseThingHandler {
         if (isLinked(channelId)) {
             State state = null;
             SonnenJsonDataDTO data = serviceCommunication.getBatteryData();
+            // String direction = GetPowerMeterDirection(channelId);
+
+            // The sonnen API has two sub-channels, e.g. 4_1 and 4_2, one representing consumption and the
+            // other production. E.g. 4_1.kwh_imported represents the total production since the
+            // battery was installed.
+            SonnenJsonPowerMeterDataDTO[] dataPM = null;
+            if (config.powerMeter) {
+                dataPM = serviceCommunication.getPowerMeterDatas();
+            }
+
+            if (dataPM != null) {
+                switch (channelId) {
+                    case KWHIMPORTEDSTATE:
+                        state = new QuantityType<Power>(dataPM[1].getKwh_imported(), Units.WATT);
+                        update(state, channelId);
+                        break;
+                    case KWHEXPORTEDSTATE:
+                        state = new QuantityType<Power>(dataPM[1].getKwh_exported(), Units.WATT);
+                        update(state, channelId);
+                        break;
+                }
+            }
+
             if (data != null) {
                 switch (channelId) {
                     case CHANNELBATTERYDISCHARGINGSTATE:
@@ -234,11 +290,113 @@ public class SonnenHandler extends BaseThingHandler {
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
                 }
-            } else {
-                update(null, channelId);
             }
+
+            // else if (!direction.equals("") && datas != null) {
+            //
+            // SonnenJsonPowerMeterDataDTO dataPM = GetByDirection(datas, direction);
+            // if (dataPM != null) {
+            // updatePowerMeterChannels(dataPM, channelId);
+            // }
+            // }
+        } else {
+            update(null, channelId);
         }
     }
+
+    // private SonnenJsonPowerMeterDataDTO GetByDirection(SonnenJsonPowerMeterDataDTO[] datas, String direction) {
+    // for (SonnenJsonPowerMeterDataDTO data : datas) {
+    // if (data.getDirection().equals(direction)) {
+    // return data;
+    // }
+    // }
+    // return null;
+    // }
+
+    // private String GetPowerMeterDirection(String channelID) {
+    // int i = channelID.indexOf("_");
+    // if (i > 0) {
+    // return channelID.substring(0, i - 1);
+    // } else {
+    // return "";
+    // }
+    // }
+
+    // private void updatePowerMeterChannels(SonnenJsonPowerMeterDataDTO dataPM, String channelId) {
+    // if (dataPM != null) {
+    // String pattern = dataPM.getDirection() + "_";
+    // State state = null;
+    // if (channelId.equals(pattern + AL1STATE)) {
+    // state = new QuantityType<Power>(dataPM.getA_l1(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + AL2STATE)) {
+    // state = new QuantityType<Power>(dataPM.getA_l2(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + AL3STATE)) {
+    // state = new QuantityType<Power>(dataPM.getA_l3(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + CHANNELSTATE)) {
+    // state = new StringType(dataPM.getChannel());
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + DEVICEIDSTATE)) {
+    // state = new StringType(dataPM.getDeviceid());
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + ERRORSTATE)) {
+    // state = new StringType(dataPM.getError());
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + DIRECTIONSTATE)) {
+    // state = new StringType(dataPM.getDirection());
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + KWHEXPORTEDSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getKwh_exported(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + KWHIMPORTEDSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getKwh_imported(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL1L2STATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l1_l2(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL1NSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l1_n(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL2L3STATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l2_l3(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL2NSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l2_n(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL3L1STATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l3_l1(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL3NSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l3_n(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VL3NSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getV_l3_n(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VATOTALSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getVa_total(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + VARTOTALSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getVar_total(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + W11STATE)) {
+    // state = new QuantityType<Power>(dataPM.getW_11(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + W12STATE)) {
+    // state = new QuantityType<Power>(dataPM.getW_12(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + W13STATE)) {
+    // state = new QuantityType<Power>(dataPM.getW_13(), Units.WATT);
+    // update(state, channelId);
+    // } else if (channelId.equals(pattern + WTOTALSTATE)) {
+    // state = new QuantityType<Power>(dataPM.getW_total(), Units.WATT);
+    // update(state, channelId);
+    // }
+    // } else {
+    // update(null, channelId);
+    // }
+    // }
 
     /**
      * Updates the State of the given channel
@@ -258,4 +416,39 @@ public class SonnenHandler extends BaseThingHandler {
             updateChannel(channelUID.getId());
         }
     }
+
+    // private Channel buildChannel(String channelType, String itemType) {
+    // return ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelType), itemType).build();
+    // }
+
+    // protected List<Channel> createDynamicChannels() {
+    // SonnenJsonPowerMeterDataDTO[] dataArray = serviceCommunication.getPowerMeterDatas();
+    // List<Channel> channels = new ArrayList<>();
+    // for (SonnenJsonPowerMeterDataDTO data : dataArray) {
+    // String direction = data.getDirection();
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.DIRECTIONSTATE, "String"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.AL1STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.AL2STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.AL3STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.CHANNELSTATE, "String"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.DEVICEIDSTATE, "Number"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.ERRORSTATE, "String"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.KWHEXPORTEDSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.KWHIMPORTEDSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL1L2STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL1NSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL2L3STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL2NSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL3L1STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VL3NSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VATOTALSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.VARTOTALSTATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.W11STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.W12STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.W13STATE, "Number:Power"));
+    // channels.add(buildChannel(direction + "_" + SonnenBindingConstants.WTOTALSTATE, "Number:Power"));
+    // }
+    // return channels;
+    // }
+
 }
