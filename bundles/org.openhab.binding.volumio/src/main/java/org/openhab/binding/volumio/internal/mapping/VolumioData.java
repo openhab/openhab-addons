@@ -266,15 +266,12 @@ public class VolumioData {
 
     private byte @Nullable [] inputStreamToByte(InputStream is) {
         byte @Nullable [] imgdata = null;
-        try {
-            ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream bytestream = new ByteArrayOutputStream()) {
             int ch;
-
             while ((ch = is.read()) != -1) {
                 bytestream.write(ch);
             }
             imgdata = bytestream.toByteArray();
-            bytestream.close();
             return imgdata;
         } catch (Exception e) {
             logger.error("Could not open or read input stream {}", e.getMessage());
@@ -289,7 +286,7 @@ public class VolumioData {
     }
 
     public OnOffType getRandom() {
-        return (random) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(random);
     }
 
     public void setRandom(boolean val) {
@@ -302,7 +299,7 @@ public class VolumioData {
     }
 
     public OnOffType getRepeat() {
-        return (repeat) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(repeat);
     }
 
     public void setRepeat(boolean val) {

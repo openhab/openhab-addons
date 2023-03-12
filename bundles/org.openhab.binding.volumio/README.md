@@ -1,4 +1,4 @@
-# volumio Binding
+# Volumio Binding
 
 This binding integrates the open-source Music Player [Volumio](https://www.volumio.com).
 
@@ -9,7 +9,7 @@ All available Volumio (playback) modes are supported by this binding.
 
 ## Discovery
 
-The volumio devices are discovered through UPnP in the local network and all devices are put in the Inbox.
+The Volumio devices are discovered through mDNS in the local network and all devices are put in the Inbox.
 
 
 ## Binding Configuration
@@ -39,8 +39,8 @@ Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volu
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | The hostname of the Volumio player.   | N/A     | yes      | no       |
-| port            | text    | The port of your volumio2 device.     | 3000    | yes      | no       |
-| protocol        | text    | The protocol of your volumio2 device. | http    | yes      | no       |
+| port            | text    | The port of your Volumio device.     | 3000    | yes      | no       |
+| protocol        | text    | The protocol of your Volumio device. | http    | yes      | no       |
 | timeout         | integer | Connection-Timeout in ms.             | 5000    | no       | yes      |
 
 ## Channels
@@ -79,12 +79,12 @@ Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volu
 demo.items:
 
 ```java
-String	Volumio_CurrentTitle	    "Current Titel [%s]"	   <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
+String	Volumio_CurrentTitle	    "Current Title [%s]"	   <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
 String	Volumio_CurrentArtist	    "Current Artist [%s]"	                    {channel="volumio:player:VolumioLivingRoom:artist"}
 String	Volumio_CurrentAlbum	    "Current Album [%s]"	                    {channel="volumio:player:VolumioLivingRoom:album"}
-Dimmer	Volumio_CurrentVolume	    "CurrentVolume [%.1f %%]"  <soundvolume>	{channel="volumio:player:VolumioLivingRoom:volume"}
+Dimmer	Volumio_CurrentVolume	    "Current Volume [%.1f %%]"  <soundvolume>	{channel="volumio:player:VolumioLivingRoom:volume"}
 Player	Volumio	                    "Current Status [%s]"	   <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
-String	Volumio_CurrentTrackType	"Current trackType [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:trackType"}
+String	Volumio_CurrentTrackType	"Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:trackType"}
 ```
 
 demo.sitemap:

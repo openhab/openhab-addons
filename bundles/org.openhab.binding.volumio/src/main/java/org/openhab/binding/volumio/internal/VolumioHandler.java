@@ -86,76 +86,41 @@ public class VolumioHandler extends BaseThingHandler {
                     break;
 
                 case VolumioBindingConstants.CHANNEL_ARTIST:
-                    break;
                 case VolumioBindingConstants.CHANNEL_ALBUM:
-                    break;
                 case VolumioBindingConstants.CHANNEL_TRACK_TYPE:
-                    break;
                 case VolumioBindingConstants.CHANNEL_TITLE:
                     break;
 
                 case VolumioBindingConstants.CHANNEL_PLAY_RADIO_STREAM:
-                    if (volumio == null) {
-                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
-                                command);
-                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "device is offline");
-                        }
-                    } else {
-                        if (command instanceof StringType) {
-                            final String uri = command.toFullString();
-                            volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
-                        }
+                    if (command instanceof StringType) {
+                        final String uri = command.toFullString();
+                        volumio.replacePlay(uri, "Radio", VolumioServiceTypes.WEBRADIO);
                     }
+
                     break;
 
                 case VolumioBindingConstants.CHANNEL_PLAY_URI:
-                    if (volumio == null) {
-                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
-                                command);
-                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "device is offline");
-                        }
-                    } else {
-                        if (command instanceof StringType) {
-                            final String uri = command.toFullString();
-                            volumio.replacePlay(uri, "URI", VolumioServiceTypes.WEBRADIO);
-                        }
+                    if (command instanceof StringType) {
+                        final String uri = command.toFullString();
+                        volumio.replacePlay(uri, "URI", VolumioServiceTypes.WEBRADIO);
                     }
+
                     break;
 
                 case VolumioBindingConstants.CHANNEL_PLAY_FILE:
-                    if (volumio == null) {
-                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
-                                command);
-                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "device is offline");
-                        }
-                    } else {
-                        if (command instanceof StringType) {
-                            final String uri = command.toFullString();
-                            volumio.replacePlay(uri, "", VolumioServiceTypes.MPD);
-                        }
+                    if (command instanceof StringType) {
+                        final String uri = command.toFullString();
+                        volumio.replacePlay(uri, "", VolumioServiceTypes.MPD);
                     }
+
                     break;
 
                 case VolumioBindingConstants.CHANNEL_PLAY_PLAYLIST:
-                    if (volumio == null) {
-                        logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(),
-                                command);
-                        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "device is offline");
-                        }
-                    } else {
-                        if (command instanceof StringType) {
-                            final String playlistName = command.toFullString();
-                            volumio.playPlaylist(playlistName);
-                        }
+                    if (command instanceof StringType) {
+                        final String playlistName = command.toFullString();
+                        volumio.playPlaylist(playlistName);
                     }
+
                     break;
                 case VolumioBindingConstants.CHANNEL_CLEAR_QUEUE:
                     if (command instanceof OnOffType) {
@@ -355,8 +320,6 @@ public class VolumioHandler extends BaseThingHandler {
     /**
      * As soon as the Connect Listener is executed
      * the ThingStatus is set to ONLINE.
-     *
-     * @return
      */
     private Emitter.Listener connectListener() {
         return arg -> updateStatus(ThingStatus.ONLINE);

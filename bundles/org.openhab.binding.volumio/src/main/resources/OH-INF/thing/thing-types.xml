@@ -29,16 +29,16 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
-				<description>The hostname of your volumio device</description>
+				<description>The hostname of your Volumio device</description>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
-				<description>The port of your volumio device (default is 3000)</description>
+				<description>The port of your Volumio device (default is 3000)</description>
 				<default>3000</default>
 			</parameter>
 			<parameter name="protocol" type="text" required="true">
 				<label>Protocol</label>
-				<description>The protocol of your volumio device (default is http)</description>
+				<description>The protocol of your Volumio device (default is http)</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="http">http</option>
