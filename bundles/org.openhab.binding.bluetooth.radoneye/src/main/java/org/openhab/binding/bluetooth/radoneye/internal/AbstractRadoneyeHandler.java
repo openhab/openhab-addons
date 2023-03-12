@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.radoneye.internal;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -45,10 +44,9 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractRadoneyeHandler.class);
 
     private AtomicInteger sinceLastReadSec = new AtomicInteger();
-    private Optional<RadoneyeConfiguration> configuration = Optional.empty();
+    private RadoneyeConfiguration configuration = new RadoneyeConfiguration();
     private @Nullable ScheduledFuture<?> scheduledTask;
 
-    private volatile int refreshInterval;
     private volatile int errorConnectCounter;
     private volatile int errorReadCounter;
     private volatile int errorWriteCounter;
@@ -78,16 +76,14 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
     public void initialize() {
         logger.debug("Initialize");
         super.initialize();
-        configuration = Optional.of(getConfigAs(RadoneyeConfiguration.class));
-        logger.debug("Using configuration: {}", configuration.get());
+        configuration = getConfigAs(RadoneyeConfiguration.class);
+        logger.debug("Using configuration: {}", configuration);
         cancelScheduledTask();
-        configuration.ifPresent(cfg -> {
-            refreshInterval = cfg.refreshInterval;
-            logger.debug("Start scheduled task to read device in every {} seconds", refreshInterval);
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::executePeridioc, CHECK_PERIOD_SEC, CHECK_PERIOD_SEC,
-                    TimeUnit.SECONDS);
-        });
-        sinceLastReadSec.set(refreshInterval); // update immediately
+        logger.debug("Start scheduled task to read device in every {} seconds", configuration.refreshInterval);
+        scheduledTask = scheduler.scheduleWithFixedDelay(this::executePeridioc, CHECK_PERIOD_SEC, CHECK_PERIOD_SEC,
+                TimeUnit.SECONDS);
+
+        sinceLastReadSec.set(configuration.refreshInterval); // update immediately
     }
 
     @Override
@@ -293,7 +289,16 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
     private boolean isTimeToRead() {
         int sinceLastRead = sinceLastReadSec.get();
         logger.debug("Time since last update: {} sec", sinceLastRead);
-        return sinceLastRead >= refreshInterval;
+        return sinceLastRead >= configuration.refreshInterval;
+    }
+
+    /**
+     * Provides the configured major firmware version
+     *
+     * @return the major firmware version configured
+     */
+    protected int getFwVersion() {
+        return configuration.fwVersion;
     }
 
     /**
