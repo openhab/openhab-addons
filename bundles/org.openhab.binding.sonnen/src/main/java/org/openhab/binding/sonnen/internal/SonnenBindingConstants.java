@@ -49,5 +49,4 @@ public class SonnenBindingConstants {
     // List of new Channel ids for PowerMeter API
     public static final String KWHIMPORTEDSTATE = "kwhImportedState";
     public static final String KWHEXPORTEDSTATE = "kwhExportedState";
-
 }

@@ -299,5 +299,4 @@ public class SonnenHandler extends BaseThingHandler {
             updateChannel(channelUID.getId());
         }
     }
-
 }

@@ -36,5 +36,4 @@ public class SonnenJsonPowerMeterDataDTO {
     public float getKwh_imported() {
         return kwh_imported;
     }
-
 }

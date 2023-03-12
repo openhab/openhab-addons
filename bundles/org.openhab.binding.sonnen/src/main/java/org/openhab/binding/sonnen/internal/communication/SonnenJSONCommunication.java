@@ -39,7 +39,7 @@ public class SonnenJSONCommunication {
 
     private Gson gson;
     private @Nullable SonnenJsonDataDTO batteryData;
-    private @Nullable SonnenJsonPowerMeterDataDTO[] powerMeterDatas;
+    private SonnenJsonPowerMeterDataDTO @Nullable [] powerMeterDatas;
 
     public SonnenJSONCommunication() {
         gson = new Gson();
@@ -74,20 +74,21 @@ public class SonnenJSONCommunication {
                     if (response == null) {
                         throw new IOException("HttpUtil.executeUrl returned null");
                     }
+
                     powerMeterDatas = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
                 }
 
             } catch (IOException | JsonSyntaxException e) {
                 logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
 
-                if (e.getMessage().contains("WWW-Authenticate header")) {
+                if (e.getMessage() != null && e.getMessage().contains("WWW-Authenticate header")) {
                     result = "Given token: " + config.authToken + " is not valid.";
                 } else {
                     result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
                     logger.debug("Error in establishing connection", e.getMessage());
                 }
                 batteryData = null;
-                powerMeterDatas = null;
+                powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
             }
 
         } else {
@@ -131,7 +132,7 @@ public class SonnenJSONCommunication {
      *
      * @return JSON Data from the Power Meter or null if request failed
      */
-    public @Nullable SonnenJsonPowerMeterDataDTO[] getPowerMeterDatas() {
+    public SonnenJsonPowerMeterDataDTO @Nullable [] getPowerMeterDatas() {
         return this.powerMeterDatas;
     }
 

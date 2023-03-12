@@ -25,6 +25,6 @@ public class SonnenConfiguration {
 
     public @Nullable String hostIP = null;
     public int refreshInterval = 30;
-    public @Nullable String authToken = null;
+    public String authToken = "";
     public boolean powerMeter = false;
 }
