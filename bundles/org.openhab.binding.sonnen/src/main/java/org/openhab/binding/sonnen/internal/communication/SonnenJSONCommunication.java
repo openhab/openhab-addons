@@ -52,7 +52,6 @@ public class SonnenJSONCommunication {
      * @return an empty string if no error occurred, the error message otherwise.
      */
     public String refreshBatteryConnection(boolean newAPI) {
-
         String result = "";
         String urlStr = "";
         if (newAPI) {
@@ -77,7 +76,6 @@ public class SonnenJSONCommunication {
 
                     powerMeterDatas = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
                 }
-
             } catch (IOException | JsonSyntaxException e) {
                 logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
 
@@ -90,7 +88,6 @@ public class SonnenJSONCommunication {
                 batteryData = null;
                 powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
             }
-
         } else {
             urlStr = "http://" + config.hostIP + "/api/v1/status";
             try {

@@ -20,20 +20,20 @@ package org.openhab.binding.sonnen.internal.communication;
  */
 public class SonnenJsonPowerMeterDataDTO {
 
-    float kwh_exported;
-    float kwh_imported;
+    float kwhExported;
+    float kwhImported;
 
     /**
      * @return the kwh_exported
      */
-    public float getKwh_exported() {
-        return kwh_exported;
+    public float getKwhExported() {
+        return kwhExported;
     }
 
     /**
      * @return the kwh_imported
      */
-    public float getKwh_imported() {
-        return kwh_imported;
+    public float getKwhImported() {
+        return kwhImported;
     }
 }
