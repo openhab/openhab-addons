@@ -204,11 +204,11 @@ public class SonnenHandler extends BaseThingHandler {
             if (dataPM != null) {
                 switch (channelId) {
                     case KWHIMPORTEDSTATE:
-                        state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.WATT_HOUR);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
                     case KWHEXPORTEDSTATE:
-                        state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.WATT_HOUR);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
                 }
