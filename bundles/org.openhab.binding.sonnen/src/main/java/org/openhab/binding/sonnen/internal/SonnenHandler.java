@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -207,11 +208,11 @@ public class SonnenHandler extends BaseThingHandler {
             if (dataPM != null) {
                 switch (channelId) {
                     case KWHIMPORTEDSTATE:
-                        state = new QuantityType<Power>(dataPM[1].getKwhImported(), Units.WATT);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.WATT_HOUR);
                         update(state, channelId);
                         break;
                     case KWHEXPORTEDSTATE:
-                        state = new QuantityType<Power>(dataPM[1].getKwhExported(), Units.WATT);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.WATT_HOUR);
                         update(state, channelId);
                         break;
                 }

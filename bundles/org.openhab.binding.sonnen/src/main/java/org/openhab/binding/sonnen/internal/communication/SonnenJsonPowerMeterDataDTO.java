@@ -14,6 +14,8 @@ package org.openhab.binding.sonnen.internal.communication;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SonnenJsonPowerMeterDataDTO} is the Java class used to map the JSON
  * response from the API to a PowerMeter Object.
@@ -23,7 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SonnenJsonPowerMeterDataDTO {
 
+    @SerializedName("kwh_exported")
     float kwhExported;
+    @SerializedName("kwh_imported")
     float kwhImported;
 
     /**
