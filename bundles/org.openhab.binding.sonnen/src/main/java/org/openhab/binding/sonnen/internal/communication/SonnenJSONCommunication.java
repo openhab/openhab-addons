@@ -83,7 +83,7 @@ public class SonnenJSONCommunication {
                     result = "Given token: " + config.authToken + " is not valid.";
                 } else {
                     result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
-                    logger.debug("Error in establishing connection", e.getMessage());
+                    logger.debug("Error in establishing connection: {}", e.getMessage());
                 }
                 batteryData = null;
                 powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
