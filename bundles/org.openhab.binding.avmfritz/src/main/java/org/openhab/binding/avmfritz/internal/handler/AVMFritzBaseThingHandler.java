@@ -263,7 +263,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
     private void updateColorLight(@Nullable ColorControlModel colorControlModel,
             @Nullable LevelControlModel levelControlModel, @Nullable SimpleOnOffModel simpleOnOff) {
-        if (colorControlModel != null && levelControlModel != null) {
+        if (colorControlModel != null && levelControlModel != null && simpleOnOff != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
             PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
             PercentType brightness;
@@ -537,12 +537,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
-                BigDecimal color_temperature = null;
+                BigDecimal colorTemperature = null;
                 if (command instanceof PercentType) {
-                    color_temperature = ((PercentType) command).toBigDecimal();
+                    colorTemperature = ((PercentType) command).toBigDecimal();
                 }
-                if (color_temperature != null) {
-                    int pct = color_temperature.intValue();
+                if (colorTemperature != null) {
+                    int pct = colorTemperature.intValue();
                     int temperature = 2700;
                     if (pct <= 6) {
                         temperature = 2700;
