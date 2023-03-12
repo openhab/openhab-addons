@@ -93,7 +93,7 @@ public class SonnenHandler extends BaseThingHandler {
         }
 
         serviceCommunication.setConfig(config);
-
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.submit(() -> {
             if (updateBatteryData()) {
                 for (Channel channel : getThing().getChannels()) {
@@ -103,8 +103,6 @@ public class SonnenHandler extends BaseThingHandler {
                 }
             }
         });
-
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
@@ -121,10 +119,8 @@ public class SonnenHandler extends BaseThingHandler {
             }
         } else {
             disconnectionCounter++;
-            if (disconnectionCounter > 60) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-            } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            if (disconnectionCounter < 60) {
                 return true;
             }
         }
