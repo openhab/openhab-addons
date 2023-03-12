@@ -59,6 +59,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) OpenWebNetBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
+    private boolean cuFound = false;
+
     public OpenWebNetDeviceDiscoveryService() {
         super(SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
     }
@@ -72,6 +74,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     protected void startScan() {
         logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", bridgeHandler.getThing().getLabel(),
                 bridgeUID);
+        cuFound = false;
         bridgeHandler.searchDevices();
     }
 
@@ -91,10 +94,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where the discovered device's address (WHERE)
+     * @param where      the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device
-     *            (optional)
+     * @param message    the OWN message received that identified the device
+     *                   (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -244,6 +247,23 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thingTypeUID)) {
             whereConfig = "" + ((WhereAlarm) where).getZone();
         }
+
+        Map<String, Object> properties = new HashMap<>(2);
+
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
+            cuFound = true;
+            logger.debug("CU found: {}", where);
+            if (((WhereThermo) where).value().charAt(0) == '#') { // 99-zone CU
+                thingLabel += " 99-zone";
+                logger.debug("CU found 99-zone: {}", where);
+            } else {
+                thingLabel += " 4-zone";
+                logger.debug("CU found 4-zone: {}", where);
+            }
+        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID) && cuFound) {
+            properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
+        }
+
         if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
@@ -256,7 +276,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH,
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS);
         }
-        Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
         if (OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE.equals(thingTypeUID)) {
