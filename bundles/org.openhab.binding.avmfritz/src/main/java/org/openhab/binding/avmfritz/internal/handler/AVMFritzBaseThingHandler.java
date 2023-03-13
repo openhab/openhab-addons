@@ -276,26 +276,10 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
             if (colorControlModel.currentMode == 4) {
                 int temperature = colorControlModel.temperature;
-                int pct = 0;
-                if (temperature <= 2700) {
-                    pct = 0;
-                } else if ((temperature > 2700) && (temperature <= 3000)) {
-                    pct = 13;
-                } else if ((temperature > 3000) && (temperature <= 3400)) {
-                    pct = 25;
-                } else if ((temperature > 3400) && (temperature <= 3800)) {
-                    pct = 38;
-                } else if ((temperature > 3800) && (temperature <= 4200)) {
-                    pct = 50;
-                } else if ((temperature > 4200) && (temperature <= 4700)) {
-                    pct = 63;
-                } else if ((temperature > 4700) && (temperature <= 5300)) {
-                    pct = 75;
-                } else if ((temperature > 5300) && (temperature <= 5900)) {
-                    pct = 88;
-                } else if (temperature > 5900) { // 6500
-                    pct = 100;
-                }
+                int tempMired = 1000000 / temperature;
+                int tempMinMired = 1000000 / 2700;
+                int tempMaxMired = 1000000 / 6500;
+                int pct = (tempMired - tempMinMired) * 100 / (tempMaxMired - tempMinMired);
                 updateThingChannelState(CHANNEL_COLORTEMPERATURE, new PercentType(pct));
             }
         }
@@ -543,26 +527,11 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 if (colorTemperature != null) {
                     int pct = colorTemperature.intValue();
-                    int temperature = 2700;
-                    if (pct <= 6) {
-                        temperature = 2700;
-                    } else if ((pct > 6) && (pct <= 19)) {
-                        temperature = 3000;
-                    } else if ((pct > 19) && (pct <= 31)) {
-                        temperature = 3400;
-                    } else if ((pct > 31) && (pct <= 44)) {
-                        temperature = 3800;
-                    } else if ((pct > 44) && (pct <= 56)) {
-                        temperature = 4200;
-                    } else if ((pct > 56) && (pct <= 69)) {
-                        temperature = 4700;
-                    } else if ((pct > 69) && (pct <= 81)) {
-                        temperature = 5300;
-                    } else if ((pct > 81) && (pct <= 93)) {
-                        temperature = 5900;
-                    } else if (pct >= 93) {
-                        temperature = 6500;
-                    }
+                    // AHA-HTTP-Inteface docu say that the values typically between 2700K and 6500K
+                    int tempMinMired = 1000000 / 2700;
+                    int tempMaxMired = 1000000 / 6500;
+                    int tempScaledMired = tempMinMired + ((tempMaxMired - tempMinMired) * pct / 100);
+                    int temperature = 1000000 / tempScaledMired;
                     fritzBox.setColorTemperature(ain, temperature, 0);
                 }
                 break;
