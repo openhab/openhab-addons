@@ -47,61 +47,67 @@ public class SonnenJSONCommunication {
     }
 
     /**
-     * Refreshes the battery connection.
+     * Refreshes the battery connection with the new API Call V2.
      *
      * @return an empty string if no error occurred, the error message otherwise.
      */
-    public String refreshBatteryConnection(boolean newAPI) {
+    public String refreshBatteryConnectionAPICALLV2() {
         String result = "";
-        String urlStr = "";
-        if (newAPI) {
-            Properties httpHeader = new Properties();
-            httpHeader = createHeader(config.authToken);
-            try {
-                String response = HttpUtil.executeUrl("GET", "http://" + config.hostIP + "/api/v2/status", httpHeader,
+        String urlStr = "http://" + config.hostIP + "/api/v2/status";
+        Properties httpHeader = new Properties();
+        httpHeader = createHeader(config.authToken);
+        try {
+            String response = HttpUtil.executeUrl("GET", urlStr, httpHeader, null, "application/json", 10000);
+            logger.debug("BatteryData = {}", response);
+            if (response == null) {
+                throw new IOException("HttpUtil.executeUrl returned null");
+            }
+            batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
+
+            if (config.powerMeter) {
+                response = HttpUtil.executeUrl("GET", "http://" + config.hostIP + "/api/v2/powermeter", httpHeader,
                         null, "application/json", 10000);
-                logger.debug("BatteryData = {}", response);
+                logger.debug("PowerMeterData = {}", response);
                 if (response == null) {
                     throw new IOException("HttpUtil.executeUrl returned null");
                 }
-                batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
 
-                if (config.powerMeter) {
-                    response = HttpUtil.executeUrl("GET", "http://" + config.hostIP + "/api/v2/powermeter", httpHeader,
-                            null, "application/json", 10000);
-                    logger.debug("PowerMeterData = {}", response);
-                    if (response == null) {
-                        throw new IOException("HttpUtil.executeUrl returned null");
-                    }
-
-                    powerMeterDatas = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
-                }
-            } catch (IOException | JsonSyntaxException e) {
-                logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
-
-                if (e.getMessage() != null && e.getMessage().contains("WWW-Authenticate header")) {
-                    result = "Given token: " + config.authToken + " is not valid.";
-                } else {
-                    result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
-                    logger.debug("Error in establishing connection: {}", e.getMessage());
-                }
-                batteryData = null;
-                powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
+                powerMeterDatas = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
             }
-        } else {
-            urlStr = "http://" + config.hostIP + "/api/v1/status";
-            try {
-                String response = HttpUtil.executeUrl("GET", urlStr, 10000);
-                logger.debug("BatteryData = {}", response);
-                if (response == null) {
-                    throw new IOException("HttpUtil.executeUrl returned null");
-                }
-                batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
-            } catch (IOException | JsonSyntaxException e) {
-                logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
+        } catch (IOException | JsonSyntaxException e) {
+            logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
+
+            if (e.getMessage() != null && e.getMessage().contains("WWW-Authenticate header")) {
+                result = "Given token: " + config.authToken + " is not valid.";
+            } else {
                 result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
-                batteryData = null;
+                logger.debug("Error in establishing connection: {}", e.getMessage());
             }
+            batteryData = null;
+            powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
+        }
+        return result;
+    }
+
+    /**
+     * Refreshes the battery connection with the Old API Call.
+     *
+     * @return an empty string if no error occurred, the error message otherwise.
+     */
+    public String refreshBatteryConnectionAPICALLV1() {
+        String result = "";
+        String urlStr = "http://" + config.hostIP + "/api/v1/status";
+        try {
+            String response = HttpUtil.executeUrl("GET", urlStr, 10000);
+            logger.debug("BatteryData = {}", response);
+            if (response == null) {
+                throw new IOException("HttpUtil.executeUrl returned null");
+            }
+            batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
+        } catch (IOException | JsonSyntaxException e) {
+            logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
+            result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
+            batteryData = null;
         }
         return result;
     }

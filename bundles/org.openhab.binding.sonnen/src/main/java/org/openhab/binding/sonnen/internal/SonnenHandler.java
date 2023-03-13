@@ -63,7 +63,7 @@ public class SonnenHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
-    private boolean newAPI = false;
+    private boolean sonnenAPIV2 = false;
 
     private int disconnectionCounter = 0;
 
@@ -89,7 +89,7 @@ public class SonnenHandler extends BaseThingHandler {
         }
 
         if (config.authToken != null) {
-            newAPI = true;
+            sonnenAPIV2 = true;
         }
 
         serviceCommunication.setConfig(config);
@@ -111,7 +111,12 @@ public class SonnenHandler extends BaseThingHandler {
      * @return true if the update succeeded, false otherwise
      */
     private boolean updateBatteryData() {
-        String error = serviceCommunication.refreshBatteryConnection(newAPI);
+        String error = "";
+        if (sonnenAPIV2) {
+            error = serviceCommunication.refreshBatteryConnectionAPICALLV2();
+        } else {
+            error = serviceCommunication.refreshBatteryConnectionAPICALLV1();
+        }
         if (error.isEmpty()) {
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
@@ -203,11 +208,11 @@ public class SonnenHandler extends BaseThingHandler {
 
             if (dataPM != null) {
                 switch (channelId) {
-                    case KWHIMPORTEDSTATE:
+                    case ENERGYIMPORTEDSTATE:
                         state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case KWHEXPORTEDSTATE:
+                    case ENERGYEXPORTEDSTATE:
                         state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
