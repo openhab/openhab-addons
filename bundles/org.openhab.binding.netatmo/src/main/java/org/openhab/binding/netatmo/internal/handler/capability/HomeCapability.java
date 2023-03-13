@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,12 +26,9 @@ import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
-import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
-import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.Location;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.slf4j.Logger;
@@ -44,14 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomeCapability extends RestCapability<HomeApi> {
+
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
-
+    private final Set<FeatureArea> featuresArea = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
-
-    private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
-    private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
-
-    private Set<FeatureArea> featuresArea = Set.of();
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, HomeApi.class);
@@ -60,7 +54,6 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     @Override
     protected void updateHomeData(HomeData home) {
-        featuresArea = home.getFeatures();
         if (hasFeature(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
             handler.getCapabilities().put(new SecurityCapability(handler));
         }
@@ -71,7 +64,8 @@ public class HomeCapability extends RestCapability<HomeApi> {
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
             home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             properties.put(GROUP_LOCATION, ((Location) home).getLocation().toString());
-            properties.put(PROPERTY_FEATURE, featuresArea.stream().map(f -> f.name()).collect(Collectors.joining(",")));
+            properties.put(PROPERTY_FEATURE,
+                    featuresArea.stream().map(FeatureArea::name).collect(Collectors.joining(",")));
         }
     }
 
@@ -86,35 +80,33 @@ public class HomeCapability extends RestCapability<HomeApi> {
         }
     }
 
-    private boolean hasFeature(FeatureArea seeked) {
-        return featuresArea.contains(seeked);
-    }
-
-    public NAObjectMap<HomeDataPerson> getPersons() {
-        return persons;
-    }
-
-    public NAObjectMap<HomeDataModule> getModules() {
-        return modules;
+    private boolean hasFeature(FeatureArea searched) {
+        return featuresArea.contains(searched);
     }
 
     @Override
     protected List<NAObject> updateReadings(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
-        try {
-            HomeData homeData = api.getHomeData(handler.getId());
-            if (homeData != null) {
-                result.add(homeData);
-                persons = homeData.getPersons();
-                modules = homeData.getModules();
+        boolean firstRead = featuresArea.isEmpty();
+        Set<String> homeIds = handler.getConfiguration().values().stream().filter(String.class::isInstance)
+                .map(String.class::cast).collect(Collectors.toSet());
+        homeIds.forEach(id -> {
+            try {
+                HomeData homeData = api.getHomeData(id);
+                if (homeData != null) {
+                    result.add(homeData);
+                    if (firstRead) {
+                        featuresArea.addAll(homeData.getFeatures());
+                    }
+                }
+                HomeStatus homeStatus = api.getHomeStatus(id);
+                if (homeStatus != null) {
+                    result.add(homeStatus);
+                }
+            } catch (NetatmoException e) {
+                logger.warn("Error getting Home informations : {}", e.getMessage());
             }
-            HomeStatus homeStatus = api.getHomeStatus(handler.getId());
-            if (homeStatus != null) {
-                result.add(homeStatus);
-            }
-        } catch (NetatmoException e) {
-            logger.warn("Error getting Home informations : {}", e.getMessage());
-        }
+        });
         return result;
     }
 }

@@ -444,19 +444,19 @@ All these channels except setpoint and setpoint-mode are read only.
 | battery       | low-battery | Switch       | Low battery                                      |
 | battery       | status      | String       | Description of the battery status (*)            |
 
-### Welcome Home
+### Security Home
 
-All these channels are read only.
+A Security Home is the home holding at least one Welcome or Presence camera and related devices (alarms, door tags...)
 
-**Supported channels for the Home thing:**
+All channels are read only.
+
+**Supported channels for the Security Home thing:**
 
 | Channel Group | Channel Id             | Item Type | Description                                      |
 | ------------- | ---------------------- | --------- | ------------------------------------------------ |
 | security      | person-count           | Number    | Total number of persons that are at home         |
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
-
-All these channels are read only.
 
 **Supported trigger channels for the Home thing:**
 
@@ -493,7 +493,7 @@ All these channels are read only.
 Warnings:
 
 - The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
-- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
+- Some features like the video monitoring are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 

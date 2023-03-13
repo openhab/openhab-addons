@@ -37,7 +37,7 @@ public class NAThing extends NAObject implements NAModule {
     protected @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private @Nullable String firmware;
-    private @Nullable Boolean reachable;
+    protected @Nullable Boolean reachable;
     private @Nullable Dashboard dashboardData;
 
     private @Nullable String roomId;
@@ -53,10 +53,6 @@ public class NAThing extends NAObject implements NAModule {
         // This is not implemented on all devices/modules, so if absent we consider it is reachable
         Boolean localReachable = this.reachable;
         return localReachable != null ? localReachable : true;
-    }
-
-    public void setReachable(boolean reachable) {
-        this.reachable = reachable;
     }
 
     public @Nullable Dashboard getDashboardData() {
