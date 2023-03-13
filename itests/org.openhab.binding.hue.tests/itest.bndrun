@@ -1,10 +1,11 @@
 -include: ../itest-common.bndrun
 
 Bundle-SymbolicName: ${project.artifactId}
-Fragment-Host: org.openhab.binding.tradfri
+Fragment-Host: org.openhab.binding.hue
 
 -runrequires: \
-	bnd.identity;id='org.openhab.binding.tradfri.tests'
+	bnd.identity;id='org.openhab.binding.hue.tests',\
+	bnd.identity;id='org.eclipse.jdt.annotation'
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
@@ -14,9 +15,8 @@ Fragment-Host: org.openhab.binding.tradfri
 # done
 #
 -runbundles: \
-	org.osgi.service.event;version='[1.4.0,1.4.1)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
-	javax.jmdns;version='[3.5.8,3.5.9)',\
+	org.osgi.service.event;version='[1.4.0,1.4.1)',\
 	org.hamcrest;version='[2.2.0,2.2.1)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.3,2.3.4)',\
@@ -34,20 +34,19 @@ Fragment-Host: org.openhab.binding.tradfri
 	si.uom.si-quantity;version='[2.1.0,2.1.1)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
+	org.eclipse.jdt.annotation;version='[2.2.100,2.2.101)',\
+	javax.jmdns;version='[3.5.8,3.5.9)',\
 	ch.qos.logback.classic;version='[1.2.11,1.2.12)',\
 	ch.qos.logback.core;version='[1.2.11,1.2.12)',\
-	net.i2p.crypto.eddsa;version='[0.3.0,0.3.1)',\
-	org.eclipse.californium.core;version='[2.7.4,2.7.5)',\
-	org.eclipse.californium.element-connector;version='[2.7.4,2.7.5)',\
-	org.eclipse.californium.scandium;version='[2.7.4,2.7.5)',\
 	biz.aQute.tester.junit-platform;version='[6.4.0,6.4.1)',\
-	org.openhab.binding.tradfri;version='[4.0.0,4.0.1)',\
-	org.openhab.binding.tradfri.tests;version='[4.0.0,4.0.1)',\
+	org.openhab.binding.hue;version='[4.0.0,4.0.1)',\
+	org.openhab.binding.hue.tests;version='[4.0.0,4.0.1)',\
 	org.openhab.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.core;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery;version='[4.0.0,4.0.1)',\
 	org.openhab.core.config.discovery.mdns;version='[4.0.0,4.0.1)',\
 	org.openhab.core.io.console;version='[4.0.0,4.0.1)',\
+	org.openhab.core.io.net;version='[4.0.0,4.0.1)',\
 	org.openhab.core.io.transport.mdns;version='[4.0.0,4.0.1)',\
 	org.openhab.core.test;version='[4.0.0,4.0.1)',\
 	org.openhab.core.thing;version='[4.0.0,4.0.1)',\
@@ -57,6 +56,7 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
 	org.apache.felix.scr;version='[2.2.4,2.2.5)',\
+	org.eclipse.jetty.client;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.http;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.io;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.security;version='[9.4.50,9.4.51)',\
@@ -64,6 +64,9 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.eclipse.jetty.servlet;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.util;version='[9.4.50,9.4.51)',\
 	org.eclipse.jetty.util.ajax;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.websocket.api;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.websocket.client;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.websocket.common;version='[9.4.50,9.4.51)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.0,2.2.1)',\
 	org.osgi.service.component;version='[1.5.0,1.5.1)',\
 	junit-jupiter-api;version='[5.9.2,5.9.3)',\
@@ -73,7 +76,10 @@ Fragment-Host: org.openhab.binding.tradfri
 	junit-platform-launcher;version='[1.9.2,1.9.3)',\
 	net.bytebuddy.byte-buddy;version='[1.12.19,1.12.20)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.12.19,1.12.20)',\
-	org.mockito.junit-jupiter;version='[4.11.0,4.11.1)',\
+	org.eclipse.jetty.alpn.client;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.http2.client;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.http2.common;version='[9.4.50,9.4.51)',\
+	org.eclipse.jetty.http2.hpack;version='[9.4.50,9.4.51)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	xstream;version='[1.4.20,1.4.21)'
