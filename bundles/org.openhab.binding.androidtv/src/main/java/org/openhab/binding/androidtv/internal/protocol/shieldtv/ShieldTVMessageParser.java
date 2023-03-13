@@ -190,10 +190,13 @@ public class ShieldTVMessageParser {
                 // App successfully started
             } else if (APP_START_FAILED.equals(msg)) {
                 // App failed to start
+            } else if (msg.startsWith(MESSAGE_APPDB) && msg.startsWith(DELIMITER_0A, 18)) {
+                // Individual update?
+                // 08f10712 5808061254 0a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 300118f107
+                logger.info("{} - Individual App Update - Please Report This: {}", callback.getThingID(), msg);
             } else if (msg.startsWith(MESSAGE_APPDB) && (msg.length() > 30)) {
                 // Massive dump of currently installed apps
-                // 8f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
-
+                // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
                 Map<String, String> appNameDB = new HashMap<>();
                 Map<String, String> appURLDB = new HashMap<>();
                 int appCount = 0;
@@ -435,10 +438,10 @@ public class ShieldTVMessageParser {
                     logger.info("{} - Pin Process Failed.", callback.getThingID());
                 }
             } else {
-                logger.debug("{} - Unknown payload received. {}", callback.getThingID(), msg);
+                logger.info("{} - Unknown payload received. {}", callback.getThingID(), msg);
             }
         } catch (Exception e) {
-            logger.debug("{} - Message Parser Caught Exception", callback.getThingID(), e);
+            logger.info("{} - Message Parser Caught Exception", callback.getThingID(), e);
         }
     }
 }
