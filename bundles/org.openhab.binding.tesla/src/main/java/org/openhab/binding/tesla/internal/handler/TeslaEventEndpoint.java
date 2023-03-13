@@ -75,6 +75,16 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         }
     }
 
+    public void close() {
+        try {
+            if (client.isRunning()) {
+                client.stop();
+            }
+        } catch (Exception e) {
+            logger.warn("An exception occurred while stopping the WebSocket client : {}", e.getMessage());
+        }
+    }
+
     public void connect(URI endpointURI) {
         if (connectionState == ConnectionState.CONNECTED) {
             return;
@@ -114,7 +124,7 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         this.session = session;
     }
 
-    public void close() {
+    public void closeConnection() {
         try {
             connectionState = ConnectionState.CLOSING;
             if (session != null && session.isOpen()) {

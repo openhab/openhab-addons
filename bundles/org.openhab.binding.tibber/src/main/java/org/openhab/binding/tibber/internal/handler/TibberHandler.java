@@ -146,28 +146,14 @@ public class TibberHandler extends BaseThingHandler {
 
                 if ("true".equals(rtEnabled)) {
                     logger.debug("Pulse associated with HomeId: Live stream will be started");
+                    getSubscriptionUrl();
 
-                    InputStream wsURL = tibberQuery.getWebsocketUrl();
-                    String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
-
-                    JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
-                    JsonObject dataObject = wsobject.getAsJsonObject("data");
-                    if (dataObject != null) {
-                        JsonObject viewerObject = dataObject.getAsJsonObject("viewer");
-                        if (viewerObject != null) {
-                            JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
-                            if (subscriptionElement != null) {
-                                subscriptionURL = subscriptionElement.toString().replaceAll("^\"|\"$", "");
-                            }
-                        }
-                    }
-                    String url = subscriptionURL;
-                    if (url == null || url.isBlank()) {
-                        logger.trace("Unexpected result from the server: {}", jsonResponse);
+                    if (subscriptionURL == null || subscriptionURL.isBlank()) {
+                        logger.debug("Unexpected subscription result from the server");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Unexpected result from the server");
+                                "Unexpected subscription result from the server");
                     } else {
-                        logger.debug("Subscribing to: {}", subscriptionURL);
+                        logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
                         open();
                     }
                 } else {
@@ -297,7 +283,34 @@ public class TibberHandler extends BaseThingHandler {
         getURLInput(BASE_URL);
         if ("true".equals(rtEnabled) && !isConnected()) {
             logger.debug("Attempting to reopen Websocket connection");
-            open();
+            getSubscriptionUrl();
+
+            if (subscriptionURL == null || subscriptionURL.isBlank()) {
+                logger.debug("Unexpected subscription result from the server");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unexpected subscription result from the server");
+            } else {
+                logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
+                open();
+            }
+        }
+    }
+
+    private void getSubscriptionUrl() throws IOException {
+        TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
+        InputStream wsURL = tibberQuery.getWebsocketUrl();
+        String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
+
+        JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
+        JsonObject dataObject = wsobject.getAsJsonObject("data");
+        if (dataObject != null) {
+            JsonObject viewerObject = dataObject.getAsJsonObject("viewer");
+            if (viewerObject != null) {
+                JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
+                if (subscriptionElement != null) {
+                    subscriptionURL = subscriptionElement.toString().replaceAll("^\"|\"$", "");
+                }
+            }
         }
     }
 

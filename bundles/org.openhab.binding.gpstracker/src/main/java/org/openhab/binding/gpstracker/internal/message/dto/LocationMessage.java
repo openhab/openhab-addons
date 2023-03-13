@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gpstracker.internal.message;
+package org.openhab.binding.gpstracker.internal.message.dto;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -48,6 +48,12 @@ public class LocationMessage {
      */
     @SerializedName("tid")
     private String trackerId = "";
+
+    /**
+     * Altitude (iOS, Android/integer/meters/optional)
+     */
+    @SerializedName("alt")
+    private Integer altitude = Integer.MIN_VALUE;
 
     /**
      * Latitude (iOS, Android/float/meters/required)
@@ -103,7 +109,9 @@ public class LocationMessage {
      * @return Conversion result
      */
     public State getTrackerLocation() {
-        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
+        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude) && Integer.MIN_VALUE != altitude) {
+            return new PointType(new DecimalType(latitude), new DecimalType(longitude), new DecimalType(altitude));
+        } else if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
         }
         return UnDefType.UNDEF;
@@ -122,8 +130,9 @@ public class LocationMessage {
     }
 
     public State getGpsAccuracy() {
-        if (gpsAccuracy != null) {
-            return new QuantityType<>(gpsAccuracy.intValue(), SIUnits.METRE);
+        BigDecimal gpsAccuracyLocal = gpsAccuracy;
+        if (gpsAccuracyLocal != null) {
+            return new QuantityType<>(gpsAccuracyLocal.intValue(), SIUnits.METRE);
         }
         return UnDefType.UNDEF;
     }
@@ -131,7 +140,7 @@ public class LocationMessage {
     @Override
     public String toString() {
         return "LocationMessage [" + ("type=" + type + ", ") + ("trackerId=" + trackerId + ", ")
-                + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ")
+                + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ") + ("altitude=" + altitude + ", ")
                 + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
                 + ("batteryLevel=" + batteryLevel + ", ") + ("timestampMillis=" + timestampMillis) + "]";
     }
