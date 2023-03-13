@@ -46,7 +46,6 @@ import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http.MetaData.Response;
-import org.eclipse.jetty.http.PreEncodedHttpField;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
 import org.eclipse.jetty.http2.client.HTTP2Client;
@@ -86,7 +85,6 @@ import com.google.gson.JsonParser;
  * It uses the following connection mechanisms..
  *
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
- * <li>The 'putResource()' method uses HTTP/1.1 over the OH common Jetty client if the HPACK jar is missing.</li>
  * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
  * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
  *
@@ -417,7 +415,6 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
-    private final boolean useHttp1;
     private final Object restartLock = new Object();
 
     private State onlineState = State.CLOSED;
@@ -438,11 +435,7 @@ public class Clip2Bridge implements Closeable {
             String applicationKey) {
         logger.debug("Clip2Bridge()");
         httpClient = httpClientFactory.getCommonHttpClient();
-        // TODO PR #3433 adds methods to HttpClientFactory for creating HTTP/2 clients
-        // this.http2Client = HttpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
-        http2Client = new HTTP2Client();
-        http2Client.addBean(httpClient.getSslContextFactory());
-        // TODO PR #3433 END
+        http2Client = httpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
         this.applicationKey = applicationKey;
@@ -451,16 +444,6 @@ public class Clip2Bridge implements Closeable {
         baseUrl = String.format(FORMAT_URL_RESOURCE, hostName);
         eventUrl = String.format(FORMAT_URL_EVENTS, hostName);
         registrationUrl = String.format(FORMAT_URL_REGISTER, hostName);
-        boolean http2HpackLoaded = false;
-        try {
-            PreEncodedHttpField field = new PreEncodedHttpField(HttpHeader.C_METHOD, "PUT");
-            ByteBuffer bytes = ByteBuffer.allocate(32);
-            field.putTo(bytes, HttpVersion.HTTP_2);
-            http2HpackLoaded = true;
-        } catch (Exception e) {
-            logger.warn("Clip2Bridge() HTTP/2 hpack module not yet loaded; falling back to HTTP/1.1");
-        }
-        useHttp1 = !http2HpackLoaded;
     }
 
     /**
@@ -617,11 +600,11 @@ public class Clip2Bridge implements Closeable {
      * @throws HttpUnauthorizedException if the request was refused as not authorised or forbidden.
      */
     private Resources getResourcesImpl(ResourceReference reference) throws ApiException, HttpUnauthorizedException {
-        throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
+        throttle();
         String url = getUrl(reference);
         HttpFields fields = new HttpFields();
         fields.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
@@ -835,16 +818,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Use an HTTP/1.1 or HTTP/2 PUT command to send a resource to the server.
-     *
-     * <p>
-     * <b>Developer Note:</b>
-     * For best performance this method should use a new stream on the existing HTTP/2 session. However the Jetty HTTP2
-     * library version currently used by OH [v9.4.50.v20221201] fails with an 'hpack' (header compression) error
-     * <a href="https://github.com/eclipse/jetty.project/issues/9168">(Jetty Issue 9168)</a> when attempting to encode
-     * the PUT method. This may be fixed when the OH Jetty library is increased to a higher version, or when Jetty
-     * HTTP/2 is included in the OH core, but in the meantime we can fall back to using a regular HTTP/1.1 call.
-     * </p>
+     * Use an HTTP/2 PUT command to send a resource to the server.
      *
      * @param resource the resource to put.
      * @throws ApiException if something fails.
@@ -853,53 +827,11 @@ public class Clip2Bridge implements Closeable {
         if (onlineState == State.CLOSED) {
             return;
         }
-        if (useHttp1) {
-            putResourceHttp1Impl(resource);
-        } else {
-            putResourceHttp2Impl(resource);
-        }
-    }
-
-    /**
-     * Use an HTTP/1.1 PUT to send a Resource to the server.
-     *
-     * @param resource the resource to put.
-     * @throws ApiException if something fails.
-     */
-    private void putResourceHttp1Impl(Resource resource) throws ApiException {
-        throttle();
-        String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
-        String json = jsonParser.toJson(resource);
-        logger.trace("PUT {} HTTP/1.1 >> {}", url, json);
-        try {
-            json = httpClient.newRequest(url).method(HttpMethod.PUT).header(APPLICATION_KEY, applicationKey)
-                    .header(HttpHeader.USER_AGENT, APPLICATION_ID).accept(MediaType.APPLICATION_JSON)
-                    .content(new StringContentProvider(MediaType.APPLICATION_JSON, json, StandardCharsets.UTF_8))
-                    .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send().getContentAsString().trim();
-            logger.trace("HTTP/1.1 200 OK << {}", json);
-            Resources result = Objects.requireNonNull(jsonParser.fromJson(json, Resources.class));
-            if (logger.isDebugEnabled()) {
-                result.getErrors().forEach(error -> logger.debug("Resources error:{}", error));
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new ApiException("Error sending request", e);
-        } catch (JsonParseException e) {
-            throw new ApiException("Parsing error", e);
-        }
-    }
-
-    /**
-     * Use an HTTP/2 PUT to send a Resource to the server.
-     *
-     * @param resource the resource to put.
-     * @throws ApiException if something fails.
-     */
-    private void putResourceHttp2Impl(Resource resource) throws ApiException {
-        throttle();
         Session session = http2Session;
         if (Objects.isNull(session) || session.isClosed()) {
             throw new ApiException("HTTP 2 session is null or closed");
         }
+        throttle();
         String json = jsonParser.toJson(resource);
         ByteBuffer jsonBytes = ByteBuffer.wrap(json.getBytes(StandardCharsets.UTF_8));
         String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
