@@ -316,6 +316,7 @@
     <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.roku</module>
