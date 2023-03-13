@@ -87,6 +87,11 @@ public final class NibeUplinkBindingConstants {
     public static final String CHANNEL_TYPE_HW_MODE_RW = "rwtype-hw-mode";
     public static final String CHANNEL_TYPE_FAN_SPEED_RW = "rwtype-fan-speed";
 
+    // Status Keys
+    public static final String STATUS_INVALID_NIBE_ID = "@text/status.invalid.nibeId";
+    public static final String STATUS_INVALID_CREDENTIALS = "@text/status.invalid.credentials";
+    public static final String STATUS_ONLINE = "@text/status.online";
+
     // URLs
     public static final String LOGIN_URL = "https://www.nibeuplink.com/LogIn";
     public static final String DATA_API_URL = "https://www.nibeuplink.com/PrivateAPI/QueueValues";

@@ -156,7 +156,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                     break;
                 case FOUND:
                     uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "most likely your NibeId is wrong. please check your NibeId.");
+                            STATUS_INVALID_NIBE_ID);
                     setAuthenticated(false);
                     break;
                 case OK:
@@ -185,12 +185,12 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         private void processAuthenticationResult(CommunicationStatus status) {
             switch (status.getHttpCode()) {
                 case FOUND:
-                    uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
+                    uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, STATUS_ONLINE);
                     setAuthenticated(true);
                     break;
                 case OK:
                     uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "invalid username or password");
+                            STATUS_INVALID_CREDENTIALS);
                     setAuthenticated(false);
                     break;
                 case SERVICE_UNAVAILABLE:
