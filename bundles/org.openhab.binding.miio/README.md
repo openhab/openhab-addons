@@ -492,6 +492,7 @@ Currently the miio binding supports more than 340 different models.
 | Yeelight LED Filament Bulb         | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes          |            |
 | Mi Smart LED Bulb                  | miio:basic       | [yeelink.light.mono6](#yeelink-light-mono6) | Yes          |            |
 | Yeelight LED smart bulb W3(dimmable) | miio:basic       | [yeelink.light.monoa](#yeelink-light-monoa) | Yes          |            |
+| Yeelight LED smart bulb W3 RGB(color) | miio:basic       | [yeelink.light.colorb](#yeelink-light-colorb) | Yes          |            |
 | Yeelight GU10 Smart Bulb W1(dimmable) | miio:basic       | [yeelink.light.monob](#yeelink-light-monob) | Yes          |            |
 | Yeelight Whiteglow Panel Light     | miio:basic       | [yeelink.light.panel1](#yeelink-light-panel1) | Yes          |            |
 | Yeelight Lightstrip                | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes          |            |
