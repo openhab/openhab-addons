@@ -444,9 +444,27 @@ All these channels except setpoint and setpoint-mode are read only.
 | battery       | low-battery | Switch       | Low battery                                      |
 | battery       | status      | String       | Description of the battery status (*)            |
 
-### Security Home
+### Home
 
-A Security Home is the home holding at least one Welcome or Presence camera and related devices (alarms, door tags...)
+A Home is the Thing holding various modules and devices. They can hold two areas of equipments : Security and Energy.
+Depending on the way it is configured the behaviour will be adapted and available channels can vary.
+
+**Home Configuration**
+
+The Home thing has the following configuration elements:
+
+| Parameter  | Type   | Required | Description                                                                         |
+| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
+| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId   | String | No       | Id of a home holding energy control devices                                         |
+| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+
+At least one of these parameter must be filled - at most two : 
+* id or securityId
+* id or energyId
+* securityId and energyId
+
+(1) this parameter is only kept for backward compatibility.
 
 All channels are read only.
 
@@ -458,7 +476,7 @@ All channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-**Supported trigger channels for the Home thing:**
+**Supported trigger channels for the Security Home thing:**
 
 | Channel Type ID  | Options            | Description                                                                                                                                                                      |
 | ---------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

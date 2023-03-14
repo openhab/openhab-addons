@@ -37,7 +37,7 @@ public class NAThing extends NAObject implements NAModule {
     protected @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private @Nullable String firmware;
-    protected @Nullable Boolean reachable;
+    private @Nullable Boolean reachable;
     private @Nullable Dashboard dashboardData;
 
     private @Nullable String roomId;
