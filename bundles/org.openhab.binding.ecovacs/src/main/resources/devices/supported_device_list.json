@@ -420,6 +420,11 @@
         "deviceClassLink": "fqxoiu"
     },
     {
+        "modelName": "DEEBOT T10 OMNI",
+        "deviceClass": "lx3j7m",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
         "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "8bja83",
         "deviceClassLink": "fqxoiu"
@@ -442,6 +447,11 @@
     {
         "modelName": "DEEBOT X1 PLUS",
         "deviceClass": "n4gstt",
+        "deviceClassLink": "fqxoiu"
+    },
+    {
+        "modelName": "DEEBOT X1e OMNI",
+        "deviceClass": "bro5wu",
         "deviceClassLink": "fqxoiu"
     },
 
