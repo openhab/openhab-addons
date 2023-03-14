@@ -39,13 +39,15 @@ public class AirQualityResponse extends ResponseRoot {
 
     public String getErrorMessage() {
         if (getStatus() != ResponseStatus.OK) {
-            if (msg != null) {
-                return msg;
+            String localMsg = msg;
+            if (localMsg != null) {
+                return localMsg;
             } else {
                 AirQualityData localData = data;
                 if (localData != null) {
-                    if (localData.msg != null) {
-                        return localData.msg;
+                    localMsg = localData.msg;
+                    if (localMsg != null) {
+                        return localMsg;
                     } else {
                         return "Unknown error";
                     }
