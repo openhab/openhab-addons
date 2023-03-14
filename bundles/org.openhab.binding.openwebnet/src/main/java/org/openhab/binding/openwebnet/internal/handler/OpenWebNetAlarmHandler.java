@@ -63,6 +63,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     private static final String ALARM_TAMPERING = "TAMPERING";
     private static final String ALARM_ANTI_PANIC = "ANTI_PANIC";
     private static final String ALARM_SILENT = "SILENT";
+    private static final String ALARM_TECHNICAL = "TECHNICAL";
+    private static final String ALARM_TECHNICAL_RESET = "TECHNICAL_RESET";
     private static final String ALARM_NONE = "NONE";
 
     public OpenWebNetAlarmHandler(Thing thing) {
@@ -127,7 +129,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
-        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
+        logger.debug("handleMessage({}) for thing: {} {}", msg, thing.getUID(), ((WhatAlarm) msg.getWhat()).name());
         super.handleMessage(msg);
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_BUS_ALARM_SYSTEM.equals(thingType)) {
@@ -153,18 +155,20 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case SYSTEM_ENGAGED:
                 updateAlarmSystemArmed(w);
                 break;
-            case SYSTEM_BATTERY_FAULT:
             case SYSTEM_BATTERY_OK:
             case SYSTEM_BATTERY_UNLOADED:
+            case SYSTEM_BATTERY_FAULT:
                 updateBatteryState(w);
                 break;
             case SYSTEM_NETWORK_ERROR:
             case SYSTEM_NETWORK_OK:
                 updateNetworkState(w);
                 break;
+            case DELAY_END:
+                resetAllZonesAlarmState();
+                break;
             case START_PROGRAMMING:
             case STOP_PROGRAMMING:
-            case DELAY_END:
             case NO_CONNECTION_TO_DEVICE:
             default:
                 logger.debug("Alarm.updateSystem() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
@@ -177,9 +181,6 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private void updateAlarmSystemArmed(WhatAlarm w) {
         updateState(CHANNEL_ALARM_SYSTEM_ARMED, OnOffType.from(w == Alarm.WhatAlarm.SYSTEM_ENGAGED));
-        if (w == Alarm.WhatAlarm.SYSTEM_ENGAGED) {
-            resetAllZonesAlarmState();
-        }
     }
 
     private void updateNetworkState(WhatAlarm w) {
@@ -211,10 +212,10 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case ZONE_ALARM_TAMPERING:
             case ZONE_ALARM_ANTI_PANIC:
             case ZONE_ALARM_SILENT:
-                updateZoneAlarmState(w);
-                break;
-            case ZONE_ALARM_TECHNICAL:// not handled for now
+            case ZONE_ALARM_TECHNICAL:
             case ZONE_ALARM_TECHNICAL_RESET:
+                updateZoneAlarm(w);
+                break;
             default:
                 logger.debug("Alarm.updateZone() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
         }
@@ -224,21 +225,29 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
         updateState(CHANNEL_ALARM_ZONE_STATE, OnOffType.from(w == Alarm.WhatAlarm.ZONE_ENGAGED));
     }
 
-    private void updateZoneAlarmState(WhatAlarm w) {
-        if (w == Alarm.WhatAlarm.ZONE_ALARM_SILENT) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_SILENT));
-        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_INTRUSION) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_INTRUSION));
-        } else if (w == Alarm.WhatAlarm.ZONE_ALARM_ANTI_PANIC) {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_ANTI_PANIC));
-        } else {
-            updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_TAMPERING));
+    private void updateZoneAlarm(WhatAlarm w) {
+        switch (w) {
+            case ZONE_ALARM_INTRUSION:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_INTRUSION));
+            case ZONE_ALARM_TAMPERING:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TAMPERING));
+            case ZONE_ALARM_ANTI_PANIC:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_ANTI_PANIC));
+            case ZONE_ALARM_SILENT:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_SILENT));
+            case ZONE_ALARM_TECHNICAL:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL));
+            case ZONE_ALARM_TECHNICAL_RESET:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_TECHNICAL_RESET));
+            default:
+                updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
+                logger.debug("Alarm.updateZoneAlarm() Ignoring unsupported WHAT {}.", w);
         }
     }
 
     private void resetAllZonesAlarmState() {
         for (OpenWebNetAlarmHandler h : zoneHandlers) {
-            h.updateState(CHANNEL_ALARM_ZONE_ALARM_STATE, new StringType(ALARM_NONE));
+            h.updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
         }
     }
 
