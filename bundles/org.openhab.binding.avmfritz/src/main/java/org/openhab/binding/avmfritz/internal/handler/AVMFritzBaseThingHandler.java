@@ -19,6 +19,7 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHA
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_BRIGHTNESS;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLOR;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COLORTEMPERATURE_ABS;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_COMFORTTEMP;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_CONTACT_STATE;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.CHANNEL_DEVICE_LOCKED;
@@ -281,6 +282,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 int tempMaxMired = 1000000 / 6500;
                 int pct = (tempMired - tempMinMired) * 100 / (tempMaxMired - tempMinMired);
                 updateThingChannelState(CHANNEL_COLORTEMPERATURE, new PercentType(pct));
+                updateThingChannelState(CHANNEL_COLORTEMPERATURE_ABS,
+                        new QuantityType<>(BigDecimal.valueOf(temperature), Units.KELVIN));
             }
         }
     }
@@ -521,18 +524,32 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
-                BigDecimal colorTemperature = null;
+                BigDecimal colorTemperaturePct = null;
                 if (command instanceof PercentType) {
-                    colorTemperature = ((PercentType) command).toBigDecimal();
+                    colorTemperaturePct = ((PercentType) command).toBigDecimal();
                 }
-                if (colorTemperature != null) {
-                    int pct = colorTemperature.intValue();
+                if (colorTemperaturePct != null) {
+                    int pct = colorTemperaturePct.intValue();
                     // AHA-HTTP-Inteface docu say that the values typically between 2700K and 6500K
                     int tempMinMired = 1000000 / 2700;
                     int tempMaxMired = 1000000 / 6500;
                     int tempScaledMired = tempMinMired + ((tempMaxMired - tempMinMired) * pct / 100);
-                    int temperature = 1000000 / tempScaledMired;
-                    fritzBox.setColorTemperature(ain, temperature, 0);
+                    int tempKelvin = 1000000 / tempScaledMired;
+                    fritzBox.setColorTemperature(ain, tempKelvin, 0);
+                }
+                break;
+            case CHANNEL_COLORTEMPERATURE_ABS:
+                BigDecimal colorTemperature = null;
+                if (command instanceof QuantityType) {
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
+                    if (convertedCommand != null) {
+                        colorTemperature = convertedCommand.toBigDecimal();
+                    }
+                } else if (command instanceof DecimalType) {
+                    colorTemperature = ((DecimalType) command).toBigDecimal();
+                }
+                if (colorTemperature != null) {
+                    fritzBox.setColorTemperature(ain, colorTemperature.intValue(), 0);
                 }
                 break;
             case CHANNEL_SETTEMP:
