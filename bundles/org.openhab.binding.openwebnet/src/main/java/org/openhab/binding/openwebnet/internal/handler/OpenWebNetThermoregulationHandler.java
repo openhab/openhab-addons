@@ -26,8 +26,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -64,7 +62,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
     private Thermoregulation.OperationMode currentMode = Thermoregulation.OperationMode.MANUAL;
 
-    private boolean isStandAlone = false;
+    private boolean isStandAlone = true;
 
     private boolean isCentralUnit = false;
 
@@ -95,18 +93,20 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (!isCentralUnit) {
             Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
             if (standAloneConfig != null) {
-                // null in case of thermo_sensor
                 isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
             }
         } else {
-            // central unit must have WHERE=0
-            if (!deviceWhere.value().equals("0")) {
-                logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-where");
-            }
-
+            /*
+             * // central unit must have WHERE=0
+             * if (!deviceWhere.value().equals("0")) {
+             * logger.warn("initialize() Invalid WHERE={} for Central Unit.",
+             * deviceWhere.value());
+             *
+             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+             * "@text/offline.conf-error-where");
+             * }
+             */
             // reset state of signal channels (they will be setted when specific messages
             // are received)
             updateState(CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL, OnOffType.OFF);
@@ -572,21 +572,21 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     @Override
     protected void refreshDevice(boolean refreshAll) {
         logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
-        if (isCentralUnit) {
-            // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
-            // 99-zones central no! let's assume it's a 99 zone
-            try {
-                send(Thermoregulation.requestStatus("#0"));
-            } catch (OWNException e) {
-                logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
-            }
-
-            return;
-        }
 
         if (deviceWhere != null) {
-
             String w = deviceWhere.value();
+
+            if (isCentralUnit) {
+                // TODO: 4 zone central -> zone #0 CAN be also a zone with its temp.. with
+                // 99-zones central no! let's assume it's a 99 zone
+                try {
+                    send(Thermoregulation.requestStatus(w));
+                } catch (OWNException e) {
+                    logger.warn("refreshDevice() central unit returned OWNException {}", e.getMessage());
+                }
+                return;
+            }
+
             try {
                 send(Thermoregulation.requestTemperature(w));
 
@@ -615,6 +615,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } catch (OWNException e) {
                 logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
             }
+        } else {
+            logger.debug("refreshDevice() where is null");
         }
     }
 }

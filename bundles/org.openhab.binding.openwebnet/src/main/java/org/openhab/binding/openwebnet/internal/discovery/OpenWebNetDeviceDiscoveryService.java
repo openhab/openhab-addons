@@ -240,32 +240,36 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
         String whereConfig = w.value();
 
-        // remove # from discovered thermo zone/central unit or alarm zone
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)
-                || OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
-            whereConfig = "" + ((WhereThermo) where).getZone();
-        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thingTypeUID)) {
-            whereConfig = "" + ((WhereAlarm) where).getZone();
+        // remove # from discovered alarm zone
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE.equals(thingTypeUID)) {
+            whereConfig = "" + ((WhereAlarm) w).getZone();
         }
 
         Map<String, Object> properties = new HashMap<>(2);
 
+        // detect Thermo CU type
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU.equals(thingTypeUID)) {
             cuFound = true;
-            logger.debug("CU found: {}", where);
-            if (((WhereThermo) where).value().charAt(0) == '#') { // 99-zone CU
+            logger.debug("CU found: {}", w);
+            if (w.value().charAt(0) == '#') { // 99-zone CU
                 thingLabel += " 99-zone";
-                logger.debug("CU found 99-zone: {}", where);
+                logger.debug("CU found 99-zone: where={}, whereConfig={}", w, whereConfig);
             } else {
                 thingLabel += " 4-zone";
-                logger.debug("CU found 4-zone: {}", where);
+                whereConfig = "#" + w.value();
+                logger.debug("CU found 4-zone: where={}, whereConfig={}", w, whereConfig);
             }
-        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID) && cuFound) {
-            properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
+        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)) {
+            if (cuFound) {
+                // set param standalone = false for thermo zone
+                properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
+            }
+            whereConfig = "" + ((WhereThermo) w).getZone();
+            logger.debug("ZONE found: where={}, whereConfig={}", w, whereConfig);
         }
 
-        if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
-            logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
+        if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) w).getUnit())) {
+            logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", w);
             thingRemoved(thingUID); // remove previously discovered thing
             // re-create thingUID with new type
             thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
