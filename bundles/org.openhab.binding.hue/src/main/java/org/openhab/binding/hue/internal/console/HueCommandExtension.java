@@ -14,9 +14,11 @@ package org.openhab.binding.hue.internal.console;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -156,6 +158,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
 
                                 if (!resources.isEmpty()) {
                                     console.println(String.format(FMT_COMMENT, resourceType.toString()));
+                                    Map<String, String> lines = new TreeMap<>();
 
                                     resources.forEach(resource -> {
                                         String label = resource.getName();
@@ -178,11 +181,12 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                                                 }
                                             }
                                         }
-
-                                        console.println(String.format(FMT_THING,
-                                                resourceType.name().replace("_", "").toLowerCase(), resource.getId(),
-                                                label, resource.getId(), comment));
+                                        lines.put(label,
+                                                String.format(FMT_THING,
+                                                        resourceType.name().replace("_", "").toLowerCase(),
+                                                        resource.getId(), label, resource.getId(), comment));
                                     });
+                                    lines.entrySet().forEach(entry -> console.println(entry.getValue()));
                                 }
                             }
                             console.println("}");

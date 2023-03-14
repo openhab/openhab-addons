@@ -85,6 +85,11 @@ Bridge hue:bridge:g24 "Philips Hue Hub" @ "Under Stairs" [ipAddress="192.168.1.2
 
 // new (API v2) ...
 Bridge hue:clip2:g24 "Philips Hue Hub (api2)" @ "Home" [ipAddress="192.168.1.234", applicationKey="abcdefghijklmnopqrstuvwxyz0123456789ABCD"] {
-    Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"]
+    // Device things
+    Thing device 11111111-2222-3333-4444-555555555555 "Living Room Standard Lamp Left" @ "Living Room" [resourceId="11111111-2222-3333-4444-555555555555"] // Hue color lamp
+    ..
+    // Grouped light things
+    Thing groupedlight 99999999-8888-7777-6666-555555555555 "Back Bedroom (Room)" [resourceId="99999999-8888-7777-6666-555555555555"] // Grouped light
+    ..
 }
 ```
