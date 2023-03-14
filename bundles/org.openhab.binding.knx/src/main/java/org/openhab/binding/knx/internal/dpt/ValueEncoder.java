@@ -157,7 +157,7 @@ public class ValueEncoder {
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
-                // FIXME implementation in core is different compared to ColorUtil
+                // FIXME change after openhab/openhab-core#3434 is merged
                 // double[] xyY = ColorUtil.hsbToXY(hsb);
                 // return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
                 PercentType[] xyY = hsb.toXY();

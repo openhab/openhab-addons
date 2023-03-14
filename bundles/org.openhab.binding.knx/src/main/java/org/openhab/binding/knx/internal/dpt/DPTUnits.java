@@ -104,6 +104,8 @@ public class DPTUnits {
         DPT_UNIT_MAP.put(DPTXlator8BitUnsigned.DPT_SCALING.getID(), Units.PERCENT.getSymbol()); // required to ensure
                                                                                                 // correct conversion
         DPT_UNIT_MAP.put(DPTXlator8BitUnsigned.DPT_ANGLE.getID(), "°"); // Calimero returns Unicode
+        DPT_UNIT_MAP.put(DPTXlator8BitUnsigned.DPT_PERCENT_U8.getID(), Units.PERCENT.getSymbol()); // required to ensure
+                                                                                                   // correct conversion
 
         // 8bit signed (DPT 6)
         DPT_UNIT_MAP.put(DPTXlator8BitSigned.DPT_PERCENT_V8.getID(), Units.PERCENT.getSymbol()); // required to ensure
@@ -114,7 +116,7 @@ public class DPTUnits {
         DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID(), "ms"); // according to spec, it is ms
         DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID(), "ms"); // according to spec, it is ms
 
-        // two byte signed (DPT 8, DPTXlator is missing in calimero 2.5-M1)
+        // two byte signed (DPT 8)
         DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses habe no unit
 
         // 4 byte unsigned (DPT 12)
@@ -123,7 +125,8 @@ public class DPTUnits {
         // 4 byte signed (DPT 13)
         DPT_UNIT_MAP.put(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY.getID(), Units.VAR_HOUR.toString());
         DPT_UNIT_MAP.put(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY_KVARH.getID(), Units.KILOVAR_HOUR.toString());
-        DPT_UNIT_MAP.put(DPTXlator4ByteSigned.DPT_APPARENT_ENERGY_KVAH.getID(), "kVA*h");
+        DPT_UNIT_MAP.put(DPTXlator4ByteSigned.DPT_APPARENT_ENERGY_KVAH.getID(),
+                Units.KILOVOLT_AMPERE.multiply(Units.HOUR).toString());
         DPT_UNIT_MAP.put(DPTXlator4ByteSigned.DPT_FLOWRATE.getID(), Units.CUBICMETRE_PER_HOUR.toString());
         DPT_UNIT_MAP.remove(DPTXlator4ByteSigned.DPT_COUNT.getID()); // counts have no unit
 

@@ -41,6 +41,7 @@ public class ListenSpecImpl implements InboundSpec {
         return dpt;
     }
 
+    @Override
     public Set<GroupAddress> getGroupAddresses() {
         return listenAddresses;
     }

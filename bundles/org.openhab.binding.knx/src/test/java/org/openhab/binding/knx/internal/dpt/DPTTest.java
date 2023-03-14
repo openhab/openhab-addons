@@ -49,7 +49,7 @@ class DPTTest {
     @Test
     void testToDPTValueTrailingZeroesStrippedOff() {
         assertEquals("3", ValueEncoder.encode(new DecimalType("3"), "17.001"));
-        assertEquals("3", ValueEncoder.encode(new DecimalType("3"), "17.001"));
+        assertEquals("3", ValueEncoder.encode(new DecimalType("3.0"), "17.001"));
     }
 
     @Test
