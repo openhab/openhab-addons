@@ -31,6 +31,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
 
@@ -100,7 +101,13 @@ public class DPTUnits {
         // override/fix units where Calimero data is unparsable or missing
 
         // 8 bit unsigned (DPT 5)
+        DPT_UNIT_MAP.put(DPTXlator8BitUnsigned.DPT_SCALING.getID(), Units.PERCENT.getSymbol()); // required to ensure
+                                                                                                // correct conversion
         DPT_UNIT_MAP.put(DPTXlator8BitUnsigned.DPT_ANGLE.getID(), "°"); // Calimero returns Unicode
+
+        // 8bit signed (DPT 6)
+        DPT_UNIT_MAP.put(DPTXlator8BitSigned.DPT_PERCENT_V8.getID(), Units.PERCENT.getSymbol()); // required to ensure
+                                                                                                 // correct conversion
 
         // two byte unsigned (DPT 7)
         DPT_UNIT_MAP.remove(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID()); // counts have no unit
@@ -111,7 +118,6 @@ public class DPTUnits {
         DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses habe no unit
 
         // 4 byte unsigned (DPT 12)
-        // DPT_UNIT_MAP.put(DPTXlator4ByteUnsigned.DptVolumeLiquid.getID(), Units.LITRE.toString());
         DPT_UNIT_MAP.remove(DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getID()); // counts have no unit
 
         // 4 byte signed (DPT 13)
