@@ -125,7 +125,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
- * @author Tobias Lange - Fixed Thing value changes and on/off behavior of Light Blub
+ * @author Tobias Lange - Added abs color temperature and fixed on/off behavior of light blub
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
