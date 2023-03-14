@@ -28,10 +28,6 @@ public class AirQualityException extends Exception {
         super(message, e);
     }
 
-    public AirQualityException(String message) {
-        super(message);
-    }
-
     public AirQualityException(String message, Object... params) {
         super(String.format(message, params));
     }

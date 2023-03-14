@@ -84,14 +84,14 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService impleme
             PointType location = provider.getLocation();
             AirQualityBridgeHandler bridge = this.bridgeHandler;
             if (location == null || bridge == null) {
-                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+                logger.info("openHab server location is not defined, will not provide any discovery results");
                 return;
             }
             createResults(location, bridge.getThing().getUID());
         }
     }
 
-    public void createResults(PointType location, ThingUID bridgeUID) {
+    private void createResults(PointType location, ThingUID bridgeUID) {
         ThingUID localAirQualityThing = new ThingUID(THING_TYPE_STATION, bridgeUID, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
                 .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))
