@@ -32,7 +32,7 @@ import tuwien.auto.calimero.KNXFormatException;
 
 /**
  *
- * @author Simon Kaufmann - initial contribution and API.
+ * @author Simon Kaufmann - Initial contribution
  *
  */
 @NonNullByDefault

@@ -9,12 +9,12 @@ The KNX binding then can communicate directly with this gateway.
 Alternatively, a PC running [KNXD](https://github.com/knxd/knxd) (free open source component software) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway.
 Since the protocol is identical, the KNX binding can also communicate with it transparently.
 
-***Attention:*** With the introduction of UoM support (see `number` channel below) some data types have changed:
+***Attention:*** With the introduction of Unit of Measurement (UoM) support, some data types have changed (see `number` channel below):
 
-- the data type for DPT 5.001 (Percent 8bit, 0 -> 100%) has changed from `PercentType` to `QuantityType`for `number` channels (`dimmer`, `color`, `rollershutter` channels stay with `PercentType`)
-- the data type for DPT 5.004 (Percent 8bit, 0 -> 255%) has changed from `PercentType` to `QuantityType`
-- the data type for DPT 6.001 (Percent 8bit -128 -> 127%) has changed from `PercentType` to `QuantityType`
-- the data type for DPT 9.007 (Humidity) has changed from `PercentType` to `QuantityType`
+- Data type for DPT 5.001 (Percent 8bit, 0 -> 100%) has changed from `PercentType` to `QuantityType`for `number` channels (`dimmer`, `color`, `rollershutter` channels stay with `PercentType`).
+- Data type for DPT 5.004 (Percent 8bit, 0 -> 255%) has changed from `PercentType` to `QuantityType`.
+- Data type for DPT 6.001 (Percent 8bit -128 -> 127%) has changed from `PercentType` to `QuantityType`.
+- Data type for DPT 9.007 (Humidity) has changed from `PercentType` to `QuantityType`.
 
 Rules that check for or compare states and transformations that expect a raw value might need adjustments.
 If you run into trouble with that and need some time, you can disable UoM support on binding level via the `disableUoM` parameter.
@@ -96,7 +96,7 @@ They are used in the common case where the physical state is owned by a device w
 
 Control channel types (suffix `-control`) are used for cases where the KNX bus does not own the physical state of a device.
 This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
-If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
+When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
 ##### Channel Type `color`, `color-control`
 
@@ -141,13 +141,13 @@ A change would break all existing installations and is therefore not implemented
 |-----------|---------------|-------------|
 | ga        | Group address | 9.001       |
 
-Note: The `number` channel has full support for UoM. 
+Note: The `number` channel has full support for Units Of Measurement (UoM).
 
-Using the Units Of Measurement feature of openHAB (QuantityType) requires that the DPT value is set correctly.
+Using the UoM feature of openHAB (QuantityType) requires that the DPT value is set correctly.
 Automatic type conversion will be applied if required.
 
 Incoming values from the KNX bus are converted to values with units (e.g. `23 °C`).
-If the channel is linked to the correct item-type (`Number:Temperature` in this case) the display unit can be controlled my item metadata (e.g. `%.1f °F` for 1 digit of precision in Fahrenheit).
+If the channel is linked to the correct item-type (`Number:Temperature` in this case) the display unit can be controlled by item metadata (e.g. `%.1f °F` for 1 digit of precision in Fahrenheit).
 The unit is stripped if the channel is linked to a plain number item (type `Number`). 
 
 Outgoing values with unit are first converted to the unit associated with the DPT (e.g. a value of `10 °F` is converted to `-8.33 °C` if the channel has DPT 9.001).
@@ -177,7 +177,7 @@ Values from plain number channels are sent as-is (without any conversion).
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device.
 This could for example be the case if a lamp from another binding should be controlled by a KNX wall switch.
-If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
+When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
 ##### Channel Type "switch-control"
 

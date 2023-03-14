@@ -65,7 +65,7 @@ public class ValueEncoder {
     }
 
     /**
-     * formats the given value as String for outputting via Calimero
+     * Formats the given value as String for outputting via Calimero.
      *
      * @param value the value
      * @param dptId the DPT id to use for formatting the string (e.g. 9.001)
