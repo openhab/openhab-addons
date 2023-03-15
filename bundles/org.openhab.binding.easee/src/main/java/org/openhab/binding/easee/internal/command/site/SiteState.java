@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeChargerHandler;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.binding.easee.internal.model.GenericResponseTransformer;
@@ -47,10 +48,11 @@ public class SiteState extends AbstractCommand {
      */
     private final Logger logger = LoggerFactory.getLogger(SiteState.class);
 
-    public SiteState(EaseeThingHandler handler, String siteId, Map<String, EaseeChargerHandler> chargerHandlers) {
+    public SiteState(EaseeThingHandler handler, String siteId, Map<String, EaseeChargerHandler> chargerHandlers,
+            JsonResultProcessor resultProcessor) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
         this.url = SITE_STATE_URL.replaceAll("\\{siteId\\}", siteId);
         this.chargerHandlers = chargerHandlers;
     }

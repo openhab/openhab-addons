@@ -75,14 +75,15 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
 
-        enqueueCommand(new Charger(this, getId(), this::updateProperties));
+        enqueueCommand(new Charger(this, getId(), this::updatePropertiesAndOnlineStatus));
     }
 
     public String getId() {
         return getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
     }
 
-    private void updateProperties(CommunicationStatus status, JsonObject charger) {
+    private void updatePropertiesAndOnlineStatus(CommunicationStatus status, JsonObject charger) {
+        updateOnlineStatus(status, charger);
         Map<String, String> properties = editProperties();
 
         String backPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
@@ -126,8 +127,8 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         // proceed if charger is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            enqueueCommand(new GetConfiguration(this, chargerId));
-            enqueueCommand(new LatestChargingSession(this, chargerId));
+            enqueueCommand(new GetConfiguration(this, chargerId, this::updateOnlineStatus));
+            enqueueCommand(new LatestChargingSession(this, chargerId, this::updateOnlineStatus));
         }
     }
 
@@ -141,6 +142,28 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
             super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
+        }
+    }
+
+    /**
+     * result processor to handle online status updates
+     *
+     * @param status of command execution
+     * @param jsonObject json respone result
+     */
+    protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+        if (msg == null || msg.isBlank()) {
+            msg = status.getMessage();
+        }
+
+        switch (status.getHttpCode()) {
+            case OK:
+            case ACCEPTED:
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -206,11 +229,11 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         switch (Utils.getWriteCommand(channel)) {
             case COMMAND_CHANGE_CONFIGURATION:
-                return new ChangeConfiguration(this, chargerId, channel, command);
+                return new ChangeConfiguration(this, chargerId, channel, command, this::updateOnlineStatus);
             case COMMAND_SEND_COMMAND:
-                return new SendCommand(this, chargerId, channel, command);
+                return new SendCommand(this, chargerId, channel, command, this::updateOnlineStatus);
             case COMMAND_SEND_COMMAND_START_STOP:
-                return new SendCommandStartStop(this, chargerId, channel, command);
+                return new SendCommandStartStop(this, chargerId, channel, command, this::updateOnlineStatus);
             default:
                 // this should not happen
                 logger.error("write command '{}' not found for channel '{}'", command.toString(),
