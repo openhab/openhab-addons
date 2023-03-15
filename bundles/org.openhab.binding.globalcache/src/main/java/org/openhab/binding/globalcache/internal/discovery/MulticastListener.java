@@ -41,6 +41,7 @@ public class MulticastListener {
     private final Logger logger = LoggerFactory.getLogger(MulticastListener.class);
 
     private MulticastSocket socket;
+    private InetSocketAddress inetSocketAddress;
 
     private String serialNumber = "";
     private String vendor = "";
@@ -67,19 +68,25 @@ public class MulticastListener {
      */
     public MulticastListener(String ipv4Address) throws IOException, SocketException, UnknownHostException {
         InetAddress ifAddress = InetAddress.getByName(ipv4Address);
-        NetworkInterface netIF = getMulticastInterface(ipv4Address);
+        NetworkInterface networkInterface = getMulticastInterface(ipv4Address);
         logger.debug("Discovery job using address {} on network interface {}", ifAddress.getHostAddress(),
-                netIF.getName());
+                networkInterface.getName());
         socket = new MulticastSocket(GC_MULTICAST_PORT);
-        socket.setNetworkInterface(netIF);
+        socket.setNetworkInterface(networkInterface);
         socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
-        socket.joinGroup(new InetSocketAddress(InetAddress.getByName(GC_MULTICAST_GROUP), GC_MULTICAST_PORT), null);
+        inetSocketAddress = new InetSocketAddress(InetAddress.getByName(GC_MULTICAST_GROUP), GC_MULTICAST_PORT);
+        socket.joinGroup(inetSocketAddress, null);
         logger.debug("Multicast listener joined multicast group {}:{}", GC_MULTICAST_GROUP, GC_MULTICAST_PORT);
     }
 
     public void shutdown() {
         logger.debug("Multicast listener closing down multicast socket");
-        socket.close();
+        try {
+            socket.leaveGroup(inetSocketAddress, null);
+            socket.close();
+        } catch (IOException e) {
+            logger.debug("Exception shutting down multicast socket");
+        }
     }
 
     /*
