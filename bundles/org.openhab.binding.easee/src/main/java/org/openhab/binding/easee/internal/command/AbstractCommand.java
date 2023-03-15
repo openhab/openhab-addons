@@ -18,8 +18,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -107,29 +105,20 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * allows further processing of the json result data, if set.
      */
-    private List<JsonResultProcessor> resultProcessors;
-
-    /**
-     * the constructor
-     */
-    public AbstractCommand(EaseeThingHandler handler, RetryOnFailure retryOnFailure,
-            ProcessFailureResponse processFailureResponse) {
-        this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
-        this.communicationStatus = new CommunicationStatus();
-        this.resultProcessors = new ArrayList<>();
-        this.transformer = new GenericResponseTransformer(handler);
-        this.handler = handler;
-        this.processFailureResponse = processFailureResponse;
-        this.retryOnFailure = retryOnFailure;
-    }
+    private JsonResultProcessor resultProcessor;
 
     /**
      * the constructor
      */
     public AbstractCommand(EaseeThingHandler handler, RetryOnFailure retryOnFailure,
             ProcessFailureResponse processFailureResponse, JsonResultProcessor resultProcessor) {
-        this(handler, retryOnFailure, processFailureResponse);
-        this.resultProcessors.add(resultProcessor);
+        this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
+        this.communicationStatus = new CommunicationStatus();
+        this.transformer = new GenericResponseTransformer(handler);
+        this.handler = handler;
+        this.processFailureResponse = processFailureResponse;
+        this.retryOnFailure = retryOnFailure;
+        this.resultProcessor = resultProcessor;
     }
 
     /**
@@ -283,12 +272,13 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     }
 
     /**
-     * calls the registered resultPRocessors.
+     * calls the registered resultProcessor.
      *
      * @param jsonObject
      */
     protected final void processResult(JsonObject jsonObject) {
-        for (JsonResultProcessor processor : resultProcessors) {
+        JsonResultProcessor processor = resultProcessor;
+        if (processor != null) {
             try {
                 processor.processResult(getCommunicationStatus(), jsonObject);
             } catch (Exception ex) {
@@ -320,9 +310,4 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * @return Url
      */
     protected abstract String getURL();
-
-    @Override
-    public void registerResultProcessor(JsonResultProcessor resultProcessor) {
-        this.resultProcessors.add(resultProcessor);
-    }
 }

@@ -115,7 +115,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         String siteId = getConfig().get(EaseeBindingConstants.THING_CONFIG_SITE_ID).toString();
         logger.debug("polling site data for {}", siteId);
 
-        SiteState state = new SiteState(this, siteId, getChildChargerHandlers());
+        SiteState state = new SiteState(this, siteId, getChildChargerHandlers(), this::updateOnlineStatus);
         enqueueCommand(state);
 
         // proceed if site is online
@@ -140,6 +140,28 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
                     }
                 });
         return chargerHandlers;
+    }
+
+    /**
+     * result processor to handle online status updates
+     *
+     * @param status of command execution
+     * @param jsonObject json respone result
+     */
+    protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+        if (msg == null || msg.isBlank()) {
+            msg = status.getMessage();
+        }
+
+        switch (status.getHttpCode()) {
+            case OK:
+            case ACCEPTED:
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+        }
     }
 
     /**
