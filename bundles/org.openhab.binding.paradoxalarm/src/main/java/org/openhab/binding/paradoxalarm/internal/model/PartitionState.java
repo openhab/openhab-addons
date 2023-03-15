@@ -47,10 +47,32 @@ public class PartitionState {
     private boolean areAllZoneclosed;
 
     public String getMainState() {
-        if (isInAlarm) {
+        if (isInAlarm || isInSilentAlarm || isInAudibleAlarm || isInFireAlarm) {
             return "InAlarm";
         } else {
             return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? "Armed" : "Disarmed";
+        }
+    }
+
+    public String getExactState() {
+        if (isInSilentAlarm) {
+            return "SilentAlarm";
+        } else if (isInAudibleAlarm) {
+            return "AudibleAlarm";
+        } else if (isInFireAlarm) {
+            return "FireAlarm";
+        } else if (isInAlarm) {
+            return "InAlarm";
+        } else if (isArmed) {
+            return "Armed";
+        } else if (isArmedInAway) {
+            return "ArmedInAway";
+        } else if (isArmedInStay) {
+            return "ArmedInStay";
+        } else if (isArmedInNoEntry) {
+            return "ArmedInNoEntry";
+        } else {
+            return "Disarmed";
         }
     }
 

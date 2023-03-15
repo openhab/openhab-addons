@@ -15,6 +15,7 @@
 		<channels>
 			<channel id="label" typeId="partitionLabel"/>
 			<channel id="state" typeId="state"/>
+			<channel id="detailedState" typeId="state"/>
 			<channel id="additionalStates" typeId="additionalState"/>
 			<channel id="readyToArm" typeId="readyToArm"/>
 			<channel id="inExitDelay" typeId="inExitDelay"/>

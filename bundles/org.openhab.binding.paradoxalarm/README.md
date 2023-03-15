@@ -76,7 +76,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | Channel                  | Type    | Description                                                                                   |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------|
 | partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  |State of partition (armed, disarmed, in alarm)                                                 |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
+| detailedState               | String  | Calculated detailed state of the partition based on partition state bits (contains more detailed states like Armed, Armed in Stay, Armed in No Entry, Alarm, Fire Alarm, Silent Alarm, etc)             |
 | additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
 | readyToArm               | Switch  | Partition is Ready to arm                                                                     |
 | inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
