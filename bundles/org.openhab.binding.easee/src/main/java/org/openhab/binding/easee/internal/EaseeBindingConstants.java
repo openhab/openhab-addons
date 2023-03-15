@@ -88,6 +88,7 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_GENERIC_NAME = "name";
     public static final String JSON_KEY_CIRCUIT_NAME = "panelName";
     public static final String JSON_KEY_CIRCUIT_ID = "circuitId";
+    public static final String JSON_KEY_CHARGER_ID = "chargerID";
     public static final String JSON_KEY_CIRCUITS = "circuits";
     public static final String JSON_KEY_CHARGERS = "chargers";
     public static final String JSON_KEY_BACK_PLATE = "backPlate";
@@ -99,6 +100,9 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "accessToken";
     public static final String JSON_KEY_AUTH_REFRESH_TOKEN = "refreshToken";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expiresIn";
+    public static final String JSON_KEY_CIRCUIT_STATES = "circuitStates";
+    public static final String JSON_KEY_CHARGER_STATES = "chargerStates";
+    public static final String JSON_KEY_CHARGER_STATE = "chargerState";
 
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
@@ -128,7 +132,7 @@ public class EaseeBindingConstants {
     public static final String REFRESH_TOKEN_URL = "https://api.easee.cloud/api/accounts/refresh_token";
     public static final String GET_SITE_URL = "https://api.easee.cloud/api/sites/{siteId}";
     public static final String CHARGER_URL = "https://api.easee.cloud/api/chargers/{id}";
-    public static final String STATE_URL = "https://api.easee.cloud/api/chargers/{id}/state";
+    public static final String SITE_STATE_URL = "https://api.easee.cloud/api/sites/{siteId}/state";
     public static final String GET_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/config";
     public static final String CHANGE_CONFIGURATION_URL = "https://api.easee.cloud/api/chargers/{id}/settings";
     public static final String COMMANDS_URL = "https://api.easee.cloud/api/chargers/{id}/commands/{command}";

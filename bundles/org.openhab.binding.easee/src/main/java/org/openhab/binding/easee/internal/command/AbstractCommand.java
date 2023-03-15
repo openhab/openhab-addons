@@ -87,7 +87,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * generic transformer which just transfers all values in a plain map.
      */
-    private final GenericResponseTransformer transformer;
+    protected final GenericResponseTransformer transformer;
 
     /**
      * retry counter.
@@ -237,7 +237,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * @param json
      * @return
      */
-    private @Nullable JsonObject transform(@Nullable String json) {
+    protected @Nullable JsonObject transform(@Nullable String json) {
         if (json != null) {
             try {
                 return gson.fromJson(json, JsonObject.class);
