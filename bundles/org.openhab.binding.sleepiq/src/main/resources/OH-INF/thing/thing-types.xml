@@ -68,6 +68,10 @@
 			<channel-group id="right" typeId="chamberGroupType"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="bedId" type="text" required="true">
 				<label>Bed ID</label>

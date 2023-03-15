@@ -202,10 +202,7 @@ public class BluetoothDeviceSnapshot extends BluetoothDiscoveryDevice {
         if (!Objects.equals(firmwareRevision, other.firmwareRevision)) {
             return false;
         }
-        if (!Objects.equals(softwareRevision, other.softwareRevision)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(softwareRevision, other.softwareRevision);
     }
 
     /**
