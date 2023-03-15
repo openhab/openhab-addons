@@ -176,9 +176,6 @@ public class TapoLightStrip extends TapoDevice {
             case CHANNEL_FX_NAME:
                 lightEffect.setName(command.toString());
                 break;
-            case CHANNEL_FX_ENABLE:
-                lightEffect.setEnable(command == OnOffType.ON);
-                break;
         }
         setLightEffects(lightEffect);
     }
@@ -224,7 +221,5 @@ public class TapoLightStrip extends TapoDevice {
         publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_BRIGHTNESS),
                 getPercentType(lightEffect.getBrightness()));
         publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(lightEffect.getName()));
-        publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_ENABLE), getOnOffType(lightEffect.getEnable()));
-        publishState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_CUSTOM), getOnOffType(lightEffect.getCustom()));
     }
 }

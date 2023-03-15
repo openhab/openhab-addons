@@ -214,23 +214,12 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     /**
      * Query Info from Device and refresh deviceInfo
      *
+     * 
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void queryInfo(boolean ignoreGap) {
         logger.trace("({}) DeviceConnetor_queryInfo from '{}'", uid, deviceURL);
-        long now = System.currentTimeMillis();
-        if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
-            this.lastQuery = now;
-
-            /* create payload */
-            PayloadBuilder plBuilder = new PayloadBuilder();
-            plBuilder.method = DEVICE_CMD_GETINFO;
-            String payload = plBuilder.getPayload();
-
-            sendSecurePasstrhroug(payload, DEVICE_CMD_GETINFO);
-        } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastQuery);
-        }
+        queryCommand(DEVICE_CMD_GETINFO, ignoreGap);
     }
 
     /**
@@ -239,27 +228,37 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     public void queryChildDevices() {
         logger.trace("({}) DeviceConnetor_queryChildDevices from '{}'", uid, deviceURL);
-
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = DEVICE_CMD_CHILD_DEVICE_LIST;
-        String payload = plBuilder.getPayload();
-
-        sendSecurePasstrhroug(payload, DEVICE_CMD_CHILD_DEVICE_LIST);
+        queryCommand(DEVICE_CMD_CHILD_DEVICE_LIST, false);
     }
 
     /**
      * Get energy usage from device
      */
     public void getEnergyUsage() {
-        logger.trace("({}) DeviceConnetor_getEnergyUsage from '{}'", uid, deviceURL);
+        queryCommand(DEVICE_CMD_GETENERGY, true);
+    }
 
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = DEVICE_CMD_GETENERGY;
-        String payload = plBuilder.getPayload();
+    /**
+     * Send Custom DeviceQuery
+     * 
+     * @param queryCommand Command to be queried
+     * @param ignoreGap ignore gap to last query. query anyway
+     */
+    public void queryCommand(String queryCommand, boolean ignoreGap) {
+        logger.trace("({}) DeviceConnetor_queryCommand '{}' from '{}'", uid, queryCommand, deviceURL);
+        long now = System.currentTimeMillis();
+        if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
+            this.lastQuery = now;
 
-        sendSecurePasstrhroug(payload, DEVICE_CMD_GETENERGY);
+            /* create payload */
+            PayloadBuilder plBuilder = new PayloadBuilder();
+            plBuilder.method = queryCommand;
+            String payload = plBuilder.getPayload();
+
+            sendSecurePasstrhroug(payload, queryCommand);
+        } else {
+            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastQuery);
+        }
     }
 
     /**

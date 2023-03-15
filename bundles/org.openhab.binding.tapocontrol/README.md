@@ -64,20 +64,21 @@ The thing has the following configuration parameters:
 
 All devices support some of the following channels:
 
-| group     | channel          | type                   | description                  | things supporting this channel                                   |
-|-----------|----------------- |------------------------|------------------------------|------------------------------------------------------------------|
-| actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | output1          | Switch                 | Power socket 1 on or off     | P300                                                             |
-|           | output2          | Switch                 | Power socket 2 on or off     | P300                                                             |
-|           | output3          | Switch                 | Power socket 3 on or off     | P300                                                             |
-|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L610, L630, L900                                     |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L610, L630, L900                                     |
-|           | color            | Color                  | Color                        | L530, L630, L900                                                 |
-| device    | wifiSignal       | Number                 | WiFi-quality-level           | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
-|           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
-| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110, P115                                                       |
-|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110, P115                                                       |
-|           | todayRuntime     | Number:Time            | seconds output was on today  | P110, P115                                                       |
+| group     | channel          | type                   | description                         | things supporting this channel                                   |
+|-----------|----------------- |------------------------|-------------------------------------|------------------------------------------------------------------|
+| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
+|           | output1          | Switch                 | Power socket 1 on or off            | P300                                                             |
+|           | output2          | Switch                 | Power socket 2 on or off            | P300                                                             |
+|           | output3          | Switch                 | Power socket 3 on or off            | P300                                                             |
+|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900                                     |
+|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900                                     |
+|           | color            | Color                  | Color                               | L530, L630, L900                                                 |
+| effects   | fxName           | String                 | active lightning effect (readonly)  | L530                                                             |
+| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
+|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                       |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)              | P110, P115                                                       |
+|           | todayRuntime     | Number:Time            | seconds output was on today         | P110, P115                                                       |
 
 
 ## Channel Refresh

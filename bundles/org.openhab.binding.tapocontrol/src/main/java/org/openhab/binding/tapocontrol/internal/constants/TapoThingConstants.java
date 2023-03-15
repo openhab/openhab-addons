@@ -142,6 +142,9 @@ public class TapoThingConstants {
     public static final String PROPERTY_LIGHTNING_EFFECT_ENABLE = "enable";
     public static final String PROPERTY_LIGHTNING_EFFECT_ID = "id";
     public static final String PROPERTY_LIGHTNING_EFFECT_NAME = "name";
+    public static final String PROPERTY_LIGHTNING_DYNAMIC_ENABLE = "dynamic_light_effect_enable";
+    public static final String PROPERTY_LIGHTNING_DYNAMIC_ID = "dynamic_light_effect_id";
+
     // energy monitoring
     public static final String ENERGY_PROPERTY_POWER = "current_power";
     public static final String ENERGY_PROPERTY_RUNTIME_TODAY = "today_runtime";
@@ -178,12 +181,10 @@ public class TapoThingConstants {
     public static final String CHANNEL_NRG_USAGE_TODAY = "todayEnergyUsage";
     public static final String CHANNEL_NRG_RUNTIME_TODAY = "todayRuntime";
     // channel group effect
-    public static final String CHANNEL_GROUP_EFFECTS = "effect";
-    public static final String CHANNEL_FX_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_FX_COLORS = "displayColors";
-    public static final String CHANNEL_FX_CUSTOM = "custom";
-    public static final String CHANNEL_FX_ENABLE = "enable";
-    public static final String CHANNEL_FX_NAME = "name";
+    public static final String CHANNEL_GROUP_EFFECTS = "effects";
+    public static final String CHANNEL_FX_BRIGHTNESS = "fxBrightness";
+    public static final String CHANNEL_FX_COLORS = "fxColors";
+    public static final String CHANNEL_FX_NAME = "fxName";
 
     /*** LIST OF PROPERTY NAMES ***/
     public static final String PROPERTY_FAMILY = "deviceFamily";

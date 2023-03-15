@@ -117,7 +117,7 @@ public class TapoDeviceInfo {
      *
      ************************************/
     public Boolean hasLightEffect() {
-        return this.jsonObject.has(DEVICE_PROPERTY_EFFECT);
+        return this.jsonObject.has(DEVICE_PROPERTY_EFFECT) || this.jsonObject.has(PROPERTY_LIGHTNING_DYNAMIC_ENABLE);
     }
 
     /***********************************

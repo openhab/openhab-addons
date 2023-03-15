@@ -28,10 +28,10 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoLightEffect {
-    private Integer enable = 0;
+    private Boolean enable = false;
     private String id = "";
     private String name = "";
-    private Integer custom = 0;
+    private Boolean custom = false;
     private Integer brightness = 0;
     private Integer[] colorTempRange = { 9000, 9000 }; // :[9000,9000]
     private Color displayColors[] = { Color.WHITE };
@@ -42,7 +42,6 @@ public class TapoLightEffect {
      * INIT
      */
     public TapoLightEffect() {
-        setData();
     }
 
     /**
@@ -62,20 +61,32 @@ public class TapoLightEffect {
     public TapoLightEffect setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no lighning effect */
         if (jso.has(DEVICE_PROPERTY_EFFECT)) {
+            this.jsonObject = jso.getAsJsonObject(DEVICE_PROPERTY_EFFECT);
+            this.enable = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_EFFECT_ENABLE);
+            this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_ID);
+            this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
+            this.custom = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
+            this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
+        } else if (jso.has(PROPERTY_LIGHTNING_DYNAMIC_ENABLE)) {
             this.jsonObject = jso;
+            this.enable = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_DYNAMIC_ENABLE);
+            this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_DYNAMIC_ID);
         } else {
-            jsonObject = new JsonObject();
+            setDefaults();
         }
-        setData();
         return this;
     }
 
-    private void setData() {
-        this.enable = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_ENABLE);
-        this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_ID);
-        this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
-        this.custom = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
-        this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
+    /**
+     * Set default values
+     */
+    private void setDefaults() {
+        this.jsonObject = new JsonObject();
+        this.enable = false;
+        this.id = "";
+        this.name = "";
+        this.custom = false;
+        this.brightness = 100;
     }
 
     /***********************************
@@ -85,7 +96,7 @@ public class TapoLightEffect {
      ************************************/
 
     public void setEnable(Boolean enable) {
-        this.enable = enable ? 1 : 0;
+        this.enable = enable;
     }
 
     public void setName(String value) {
@@ -93,7 +104,7 @@ public class TapoLightEffect {
     }
 
     public void setCustom(Boolean enable) {
-        this.custom = enable ? 1 : 0;
+        this.custom = enable;
     }
 
     public void setBrightness(Integer value) {
@@ -106,7 +117,7 @@ public class TapoLightEffect {
      *
      ************************************/
 
-    public Integer getEnable() {
+    public Boolean getEnable() {
         return this.enable;
     }
 
@@ -118,7 +129,7 @@ public class TapoLightEffect {
         return this.name;
     }
 
-    public Integer getCustom() {
+    public Boolean getCustom() {
         return this.custom;
     }
 
