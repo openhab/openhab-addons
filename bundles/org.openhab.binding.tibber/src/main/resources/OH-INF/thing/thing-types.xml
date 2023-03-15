@@ -24,6 +24,7 @@
 			<channel id="live_timestamp" typeId="timestamp"/>
 			<channel id="live_power" typeId="power"/>
 			<channel id="live_lastMeterConsumption" typeId="consumption"/>
+			<channel id="live_lastMeterProduction" typeId="production"/>
 			<channel id="live_accumulatedConsumption" typeId="consumption"/>
 			<channel id="live_accumulatedCost" typeId="cost"/>
 			<channel id="live_accumulatedReward" typeId="reward"/>
@@ -44,6 +45,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">Tibber</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<config-description>
 			<parameter name="token" type="text" required="true">
@@ -121,7 +123,7 @@
 	<channel-type id="production">
 		<item-type>Number:Energy</item-type>
 		<label>Total Production</label>
-		<description>Accumulated Production since Midnight</description>
+		<description>Production at given time interval (e.g. last meter reading, accumulated since midnight)</description>
 		<state pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="tomorrow_prices" advanced="true">
