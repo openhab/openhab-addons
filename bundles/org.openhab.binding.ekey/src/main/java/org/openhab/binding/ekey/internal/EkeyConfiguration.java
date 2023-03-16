@@ -13,11 +13,13 @@
 package org.openhab.binding.ekey.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link EkeyConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Hans-Jörg Merk - Initial contribution
+ * @author Robert Delbrück - Add sourceIp
  */
 @NonNullByDefault
 public class EkeyConfiguration {
@@ -26,4 +28,5 @@ public class EkeyConfiguration {
     public int port;
     public String protocol = "";
     public String delimiter = "";
+    public @Nullable String sourceIp;
 }

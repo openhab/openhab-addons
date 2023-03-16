@@ -41,6 +41,11 @@
 				<description>@text/thing-type.config.ekey.delimiter.description</description>
 				<default>_</default>
 			</parameter>
+			<parameter name="sourceIp" type="text" required="false">
+				<context>network-address</context>
+				<label>@text/thing-type.config.ekey.sourceIp.label</label>
+				<description>@text/thing-type.config.ekey.sourceIp.description</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
