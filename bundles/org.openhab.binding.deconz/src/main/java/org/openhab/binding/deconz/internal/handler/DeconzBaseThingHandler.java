@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
@@ -35,6 +37,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -58,7 +61,9 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     protected final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
     protected final Gson gson;
+
     private @Nullable ScheduledFuture<?> initializationJob;
+    private @Nullable ScheduledFuture<?> lastSeenPollingJob;
     protected @Nullable WebSocketConnection connection;
 
     public DeconzBaseThingHandler(Thing thing, Gson gson, ResourceType resourceType) {
@@ -68,13 +73,24 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     }
 
     /**
-     * Stops the API request
+     * Stops the initialization request
      */
     private void stopInitializationJob() {
         ScheduledFuture<?> future = initializationJob;
         if (future != null) {
             future.cancel(true);
             initializationJob = null;
+        }
+    }
+
+    /**
+     * Stops the last_seen polling
+     */
+    private void stopLastSeenPollingJob() {
+        ScheduledFuture<?> future = lastSeenPollingJob;
+        if (future != null) {
+            future.cancel(true);
+            lastSeenPollingJob = null;
         }
     }
 
@@ -117,7 +133,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
                 return;
             }
 
-            final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
+            final WebSocketConnection webSocketConnection = bridgeHandler.getWebSocketConnection();
             this.connection = webSocketConnection;
 
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
@@ -145,7 +161,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     protected abstract void processStateResponse(DeconzBaseMessage stateResponse);
 
     /**
-     * Perform a request to the REST API for retrieving the full light state with all data and configuration.
+     * Perform a request to the REST API for retrieving the full state with all data and configuration.
      */
     protected void requestState(Consumer<DeconzBaseMessage> processor) {
         DeconzBridgeHandler bridgeHandler = getBridgeHandler();
@@ -161,6 +177,87 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
                                     TimeUnit.SECONDS);
                         }
                     }));
+        }
+    }
+
+    /**
+     * create a channel on the current thing
+     *
+     * @param thingBuilder a ThingBuilder instance for this thing
+     * @param channelId the channel id
+     * @param kind the channel kind (STATE or TRIGGER)
+     * @return true if the thing was modified
+     */
+    protected boolean createChannel(ThingBuilder thingBuilder, String channelId, ChannelKind kind) {
+        if (thing.getChannel(channelId) != null) {
+            // channel already exists, no update necessary
+            return false;
+        }
+
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+        ChannelTypeUID channelTypeUID;
+        switch (channelId) {
+            case CHANNEL_BATTERY_LEVEL:
+                channelTypeUID = new ChannelTypeUID("system:battery-level");
+                break;
+            case CHANNEL_BATTERY_LOW:
+                channelTypeUID = new ChannelTypeUID("system:low-battery");
+                break;
+            case CHANNEL_CONSUMPTION_2:
+                channelTypeUID = new ChannelTypeUID("deconz:consumption");
+                break;
+            default:
+                channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                break;
+        }
+
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
+            thingBuilder.withChannel(channel);
+            logger.trace("Added '{}' to thing '{}'", channelId, thing.getUID());
+
+            return true;
+        }
+
+        logger.warn("Could not create channel '{}' for thing '{}'", channelUID, thing.getUID());
+        return false;
+    }
+
+    /**
+     * check if we need to add a last seen channel (called from processStateResponse only)
+     *
+     * @param thingBuilder a ThingBuilder instance for this thing
+     * @param lastSeen the lastSeen string of a deconz message
+     * @return true if the thing was modified
+     */
+    protected boolean checkLastSeen(ThingBuilder thingBuilder, @Nullable String lastSeen) {
+        // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
+        // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
+        // So to monitor a sensor is still alive, the "last seen" is necessary.
+        // Because "last seen" is never updated by the WebSocket API we have to
+        // manually poll it after the defined time if supported by the device
+        stopLastSeenPollingJob();
+        boolean thingEdited = false;
+        if (lastSeen != null && config.lastSeenPolling > 0) {
+            thingEdited = createChannel(thingBuilder, CHANNEL_LAST_SEEN, ChannelKind.STATE);
+            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
+            lastSeenPollingJob = scheduler.scheduleWithFixedDelay(() -> requestState(this::processLastSeen),
+                    config.lastSeenPolling, config.lastSeenPolling, TimeUnit.MINUTES);
+            logger.trace("lastSeen polling enabled for thing {} with interval of {} minutes", thing.getUID(),
+                    config.lastSeenPolling);
+        } else if (thing.getChannel(CHANNEL_LAST_SEEN) != null) {
+            thingBuilder.withoutChannel(new ChannelUID(thing.getUID(), CHANNEL_LAST_SEEN));
+            thingEdited = true;
+        }
+
+        return thingEdited;
+    }
+
+    private void processLastSeen(DeconzBaseMessage stateResponse) {
+        String lastSeen = stateResponse.lastseen;
+        if (lastSeen != null) {
+            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
         }
     }
 
@@ -195,7 +292,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
                 .collect(Collectors.joining("/"));
 
-        bridgeHandler.sendObject(endpoint, object).thenAccept(v -> {
+        bridgeHandler.sendObject(endpoint, object, HttpMethod.PUT).thenAccept(v -> {
             if (acceptProcessing != null) {
                 acceptProcessing.run();
             }
@@ -212,9 +309,36 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         });
     }
 
+    public void doNetwork(@Nullable Object object, String commandUrl, HttpMethod httpMethod,
+            @Nullable Consumer<String> acceptProcessing) {
+        DeconzBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
+                .collect(Collectors.joining("/"));
+
+        bridgeHandler.sendObject(endpoint, object, httpMethod).thenAccept(v -> {
+            if (v.getResponseCode() != java.net.HttpURLConnection.HTTP_OK) {
+                logger.warn("Sending {} via {} to {} failed: {} - {}", object, httpMethod, commandUrl,
+                        v.getResponseCode(), v.getBody());
+            } else {
+                logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+                if (acceptProcessing != null) {
+                    acceptProcessing.accept(v.getBody());
+                }
+            }
+        }).exceptionally(e -> {
+            logger.warn("Sending {} via {} to {} failed: {} - {}", object, httpMethod, commandUrl, e.getClass(),
+                    e.getMessage());
+            return null;
+        });
+    }
+
     @Override
     public void dispose() {
         stopInitializationJob();
+        stopLastSeenPollingJob();
         unregisterListener();
         super.dispose();
     }
@@ -226,32 +350,6 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         Bridge bridge = getBridge();
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
-        }
-    }
-
-    protected void createChannel(String channelId, ChannelKind kind) {
-        if (thing.getChannel(channelId) != null) {
-            // channel already exists, no update necessary
-            return;
-        }
-
-        ThingHandlerCallback callback = getCallback();
-        if (callback != null) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            ChannelTypeUID channelTypeUID;
-            switch (channelId) {
-                case CHANNEL_BATTERY_LEVEL:
-                    channelTypeUID = new ChannelTypeUID("system:battery-level");
-                    break;
-                case CHANNEL_BATTERY_LOW:
-                    channelTypeUID = new ChannelTypeUID("system:low-battery");
-                    break;
-                default:
-                    channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-                    break;
-            }
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
-            updateThing(editThing().withChannel(channel).build());
         }
     }
 }

@@ -35,6 +35,7 @@ public enum ResourceType {
     GROUPS("groups", "action", GroupMessage.class),
     LIGHTS("lights", "state", LightMessage.class),
     SENSORS("sensors", "config", SensorMessage.class),
+    SCENES("scenes", "", DeconzBaseMessage.class),
     UNKNOWN("", "", null);
 
     private static final Map<String, ResourceType> MAPPING = Arrays.stream(ResourceType.values())

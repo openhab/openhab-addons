@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -74,7 +75,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         if (handler != null) {
             handler.getBridgeFullState().thenAccept(fullState -> {
                 stopScan();
-                removeOlderResults(getTimestampOfLastScan());
                 fullState.ifPresent(state -> {
                     state.sensors.forEach(this::addSensor);
                     state.lights.forEach(this::addLight);
@@ -83,6 +83,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
             });
         }
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        removeOlderResults(getTimestampOfLastScan());
+        super.stopScan();
     }
 
     @Override
@@ -130,6 +136,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case LIGHT_GROUP:
                 thingTypeUID = THING_TYPE_LIGHTGROUP;
                 break;
+            case LUMINAIRE:
+            case LIGHT_SOURCE:
+            case ROOM:
+                logger.debug("Group {} ({}), type {} ignored.", group.id, group.name, group.type);
+                return;
             default:
                 logger.debug(
                         "Found group: {} ({}), type {} but no thing type defined for that type. This should be reported.",
@@ -261,6 +272,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             }
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
+        } else if (sensor.type.contains("ZHAAirQuality")) { // ZHAAirQuality
+            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = THING_TYPE_TEMPERATURE_SENSOR;
         } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity
@@ -279,10 +292,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else if (sensor.type.contains("ZHABattery")) {
             thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
+        } else if (sensor.type.contains("ZHAMoisture")) {
+            thingTypeUID = THING_TYPE_MOISTURE_SENSOR; // ZHAMoisture
         } else if (sensor.type.contains("ZHAThermostat")) {
             thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
-        } else if (sensor.type.contains("ZHAAirQuality")) {
-            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;
@@ -316,6 +329,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
     @Override
     public void deactivate() {
+        removeOlderResults(new Date().getTime());
         super.deactivate();
     }
 }

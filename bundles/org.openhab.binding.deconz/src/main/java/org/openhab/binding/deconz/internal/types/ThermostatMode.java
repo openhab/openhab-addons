@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Thermostat mode as reported by the REST API for usage in {@link org.openhab.binding.deconz.internal.dto.SensorConfig}
+ * Thermostat mode as reported by the REST API for usage in
+ * {@link org.smarthomej.binding.deconz.internal.dto.SensorConfig}
  *
  * @author Lukas Agethen - Initial contribution
  */

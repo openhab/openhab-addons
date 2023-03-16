@@ -16,6 +16,10 @@
 			<channel typeId="system.power" id="enabled"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>uid</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
@@ -112,6 +116,10 @@
 			<channel typeId="button" id="button"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uid</representation-property>
 
@@ -336,7 +344,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Open/Close Sensor</label>
-		<description>An open/close sensor</description>
+		<description>A open/close sensor</description>
 		<channels>
 			<channel typeId="open" id="open"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -464,6 +472,10 @@
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>uid</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
@@ -491,13 +503,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-
 	<thing-type id="airqualitysensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
-		<label>Air quality Sensor</label>
-		<description>An air quality sensor</description>
+		<label>Carbon-monoxide Sensor</label>
 		<channels>
 			<channel typeId="airquality" id="airquality"/>
 			<channel typeId="airqualityppb" id="airqualityppb"/>
@@ -511,20 +521,38 @@
 
 	<channel-type id="airquality">
 		<item-type>String</item-type>
-		<label>Air quality level</label>
-		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor,
-			...</description>
-		<state readOnly="true" pattern="%s"></state>
+		<label>Air Quality</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="airqualityppb">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Air quality in ppb</label>
-		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
-			specified in ppb (parts per billion).</description>
-		<state readOnly="true" pattern="%d"></state>
+		<label>Air Quality (ppb)</label>
+		<state readOnly="true"/>
 	</channel-type>
 
+	<thing-type id="moisturesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Moisture Sensor</label>
+		<description>A moisture sensor</description>
+		<channels>
+			<channel typeId="moisture" id="moisture"></channel>
+			<channel typeId="last_updated" id="last_updated"></channel>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<channel-type id="moisture">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Moisture</label>
+		<description>Current moisture</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
@@ -544,12 +572,26 @@
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Status of this thermostat's childlock.</description>
+		<category>Lock</category>
+	</channel-type>
+	<channel-type id="windowopen">
+		<item-type>Contact</item-type>
+		<label>Window Open</label>
+	</channel-type>
+	<channel-type id="externalwindowopen">
+		<item-type>Contact</item-type>
+		<label>External Window Open</label>
+	</channel-type>
 	<channel-type id="heatsetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Target Temperature</label>
+		<label>Target temperature</label>
 		<description>Target temperature</description>
 		<category>Heating</category>
-		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"></state>
+		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
@@ -574,7 +616,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Valve position</label>
 		<description>Current valve position</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

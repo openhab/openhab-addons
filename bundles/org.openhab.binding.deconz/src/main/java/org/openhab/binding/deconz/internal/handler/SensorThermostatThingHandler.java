@@ -33,15 +33,18 @@ import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.dto.ThermostatUpdateConfig;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +69,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_THERMOSTAT);
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
-            CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE);
+            CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE, CHANNEL_THERMOSTAT_LOCKED);
 
     private final Logger logger = LoggerFactory.getLogger(SensorThermostatThingHandler.class);
 
@@ -83,6 +86,9 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         }
         ThermostatUpdateConfig newConfig = new ThermostatUpdateConfig();
         switch (channelUID.getId()) {
+            case CHANNEL_THERMOSTAT_LOCKED:
+                newConfig.locked = OnOffType.ON.equals(command);
+                break;
             case CHANNEL_HEATSETPOINT:
                 Integer newHeatsetpoint = getTemperatureFromCommand(command);
                 if (newHeatsetpoint == null) {
@@ -118,6 +124,9 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                     return;
                 }
                 break;
+            case CHANNEL_EXTERNAL_WINDOW_OPEN:
+                newConfig.externalwindowopen = OpenClosedType.OPEN.equals(command);
+                break;
             default:
                 // no supported command
                 return;
@@ -133,6 +142,9 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         ThermostatMode thermostatMode = newConfig.mode;
         String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
         switch (channelUID.getId()) {
+            case CHANNEL_THERMOSTAT_LOCKED:
+                updateSwitchChannel(channelUID, newConfig.locked);
+                break;
             case CHANNEL_HEATSETPOINT:
                 updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
                 break;
@@ -141,6 +153,12 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 break;
             case CHANNEL_THERMOSTAT_MODE:
                 updateState(channelUID, new StringType(mode));
+                break;
+            case CHANNEL_EXTERNAL_WINDOW_OPEN:
+                Boolean open = newConfig.externalwindowopen;
+                if (open != null) {
+                    updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                }
                 break;
         }
     }
@@ -153,9 +171,14 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_VALVE_POSITION:
-                updateQuantityTypeChannel(channelUID, newState.valve, PERCENT, 100.0 / 255);
+                Integer valve = newState.valve;
+                if (valve == null || valve < 0 || valve > 100) {
+                    updateState(channelUID, UnDefType.UNDEF);
+                } else {
+                    updateQuantityTypeChannel(channelUID, valve, PERCENT, 1.0);
+                }
                 break;
-            case CHANNEL_WINDOWOPEN:
+            case CHANNEL_WINDOW_OPEN:
                 String open = newState.windowopen;
                 if (open != null) {
                     updateState(channelUID, "Closed".equals(open) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
@@ -165,7 +188,13 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    protected void createTypeSpecificChannels(SensorConfig sensorConfig, SensorState sensorState) {
+    protected boolean createTypeSpecificChannels(ThingBuilder thingBuilder, SensorConfig sensorConfig,
+            SensorState sensorState) {
+        boolean thingEdited = false;
+        if (sensorConfig.locked != null && createChannel(thingBuilder, CHANNEL_THERMOSTAT_LOCKED, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        return thingEdited;
     }
 
     @Override
@@ -199,8 +228,25 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
         SensorMessage sensorMessage = (SensorMessage) stateResponse;
         SensorState sensorState = sensorMessage.state;
+        SensorConfig sensorConfig = sensorMessage.config;
+
+        boolean changed = false;
+        ThingBuilder thingBuilder = editThing();
+
         if (sensorState != null && sensorState.windowopen != null) {
-            createChannel(CHANNEL_WINDOWOPEN, ChannelKind.STATE);
+            if (createChannel(thingBuilder, CHANNEL_WINDOW_OPEN, ChannelKind.STATE)) {
+                changed = true;
+            }
+        }
+
+        if (sensorConfig != null && sensorConfig.externalwindowopen != null) {
+            if (createChannel(thingBuilder, CHANNEL_EXTERNAL_WINDOW_OPEN, ChannelKind.STATE)) {
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            updateThing(thingBuilder.build());
         }
 
         super.processStateResponse(stateResponse);

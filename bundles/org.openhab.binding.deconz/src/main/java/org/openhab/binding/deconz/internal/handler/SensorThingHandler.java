@@ -33,6 +33,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -60,7 +61,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
             THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
             THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR,
-            THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_AIRQUALITY_SENSOR, THING_TYPE_COLOR_CONTROL);
+            THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_AIRQUALITY_SENSOR, THING_TYPE_COLOR_CONTROL,
+            THING_TYPE_MOISTURE_SENSOR);
 
     private static final List<String> CONFIG_CHANNELS = List.of(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_ENABLED, CHANNEL_TEMPERATURE);
@@ -197,10 +199,16 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                 updateSwitchChannel(channelUID, newState.carbonmonoxide);
                 break;
             case CHANNEL_AIRQUALITY:
-                updateStringChannel(channelUID, newState.airquality);
+                String airquality = newState.airquality;
+                if (airquality != null) {
+                    updateState(channelUID, new StringType(airquality));
+                }
                 break;
             case CHANNEL_AIRQUALITYPPB:
-                updateDecimalTypeChannel(channelUID, newState.airqualityppb);
+                updateQuantityTypeChannel(channelUID, newState.airqualityppb, PARTS_PER_BILLION);
+                break;
+            case CHANNEL_MOISTURE:
+                updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);
                 break;
             case CHANNEL_BUTTON:
                 updateDecimalTypeChannel(channelUID, newState.buttonevent);
@@ -224,40 +232,49 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    protected void createTypeSpecificChannels(SensorConfig sensorConfig, SensorState sensorState) {
+    protected boolean createTypeSpecificChannels(ThingBuilder thingBuilder, SensorConfig sensorConfig,
+            SensorState sensorState) {
+        boolean thingEdited = false;
+
         // some Xiaomi sensors
-        if (sensorConfig.temperature != null) {
-            createChannel(CHANNEL_TEMPERATURE, ChannelKind.STATE);
+        if (sensorConfig.temperature != null && createChannel(thingBuilder, CHANNEL_TEMPERATURE, ChannelKind.STATE)) {
+            thingEdited = true;
         }
 
         // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
-        if (sensorState.dark != null) {
-            createChannel(CHANNEL_DARK, ChannelKind.STATE);
+        if (sensorState.dark != null && createChannel(thingBuilder, CHANNEL_DARK, ChannelKind.STATE)) {
+            thingEdited = true;
         }
 
         // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
-        if (sensorState.power != null) {
-            createChannel(CHANNEL_POWER, ChannelKind.STATE);
+        if (sensorState.power != null && createChannel(thingBuilder, CHANNEL_POWER, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        // ZHAConsumption - e.g. Linky devices second channel
+        if (sensorState.consumption2 != null && createChannel(thingBuilder, CHANNEL_CONSUMPTION_2, ChannelKind.STATE)) {
+            thingEdited = true;
         }
 
         // ZHAPower - e.g. Heiman SmartPlug
-        if (sensorState.voltage != null) {
-            createChannel(CHANNEL_VOLTAGE, ChannelKind.STATE);
+        if (sensorState.voltage != null && createChannel(thingBuilder, CHANNEL_VOLTAGE, ChannelKind.STATE)) {
+            thingEdited = true;
         }
-        if (sensorState.current != null) {
-            createChannel(CHANNEL_CURRENT, ChannelKind.STATE);
+        if (sensorState.current != null && createChannel(thingBuilder, CHANNEL_CURRENT, ChannelKind.STATE)) {
+            thingEdited = true;
         }
 
         // IAS Zone sensor - e.g. Heiman HS1MS motion sensor
-        if (sensorState.tampered != null) {
-            createChannel(CHANNEL_TAMPERED, ChannelKind.STATE);
+        if (sensorState.tampered != null && createChannel(thingBuilder, CHANNEL_TAMPERED, ChannelKind.STATE)) {
+            thingEdited = true;
         }
 
         // e.g. Aqara Cube
-        if (sensorState.gesture != null) {
-            createChannel(CHANNEL_GESTURE, ChannelKind.STATE);
-            createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
+        if (sensorState.gesture != null && (createChannel(thingBuilder, CHANNEL_GESTURE, ChannelKind.STATE)
+                || createChannel(thingBuilder, CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER))) {
+            thingEdited = true;
         }
+
+        return thingEdited;
     }
 
     @Override

@@ -19,9 +19,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PercentType;
@@ -94,5 +96,16 @@ public class Util {
                     ZonedDateTime.ofInstant(LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             ZoneOffset.UTC, ZoneId.systemDefault()));
         }
+    }
+
+    /**
+     * get all keys corresponding to a given value of a map
+     *
+     * @param map a map
+     * @param value the value to find in the map
+     * @return Stream of all keys for the value
+     */
+    public static <@NonNull K, @NonNull V> Stream<K> getKeysFromValue(Map<K, V> map, V value) {
+        return map.entrySet().stream().filter(e -> e.getValue().equals(value)).map(Map.Entry::getKey);
     }
 }

@@ -17,8 +17,6 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
@@ -33,12 +31,12 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -73,27 +71,16 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
      * Prevent a dispose/init cycle while this flag is set. Use for property updates
      */
     private boolean ignoreConfigurationUpdate;
-    private @Nullable ScheduledFuture<?> lastSeenPollingJob;
 
     public SensorBaseThingHandler(Thing thing, Gson gson) {
         super(thing, gson, ResourceType.SENSORS);
     }
 
     @Override
-    public void dispose() {
-        ScheduledFuture<?> lastSeenPollingJob = this.lastSeenPollingJob;
-        if (lastSeenPollingJob != null) {
-            lastSeenPollingJob.cancel(true);
-            this.lastSeenPollingJob = null;
-        }
-
-        super.dispose();
-    }
-
-    @Override
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
-    protected abstract void createTypeSpecificChannels(SensorConfig sensorState, SensorState sensorConfig);
+    protected abstract boolean createTypeSpecificChannels(ThingBuilder thingBuilder, SensorConfig sensorState,
+            SensorState sensorConfig);
 
     protected abstract List<String> getConfigChannels();
 
@@ -116,7 +103,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
             return;
         }
 
@@ -133,46 +120,45 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         // Some sensors support optional channels
         // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
         // any battery-powered sensor
+        ThingBuilder thingBuilder = editThing();
+        boolean thingEdited = false;
+
         if (sensorConfig.battery != null) {
-            createChannel(CHANNEL_BATTERY_LEVEL, ChannelKind.STATE);
-            createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
+            if (createChannel(thingBuilder, CHANNEL_BATTERY_LEVEL, ChannelKind.STATE)) {
+                thingEdited = true;
+            }
+            if (createChannel(thingBuilder, CHANNEL_BATTERY_LOW, ChannelKind.STATE)) {
+                thingEdited = true;
+            }
         }
 
-        if (sensorState.lowbattery != null) {
-            createChannel(CHANNEL_BATTERY_LOW, ChannelKind.STATE);
+        if (sensorState.lowbattery != null && sensorConfig.battery == null) {
+            // if sensorConfig.battery != null the channel is already added
+            if (createChannel(thingBuilder, CHANNEL_BATTERY_LOW, ChannelKind.STATE)) {
+                thingEdited = true;
+            }
         }
 
-        createTypeSpecificChannels(sensorConfig, sensorState);
+        if (createTypeSpecificChannels(thingBuilder, sensorConfig, sensorState)) {
+            thingEdited = true;
+        }
 
+        if (checkLastSeen(thingBuilder, sensorMessage.lastseen)) {
+            thingEdited = true;
+        }
+
+        // if the thing was edited, we update it now
+        if (thingEdited) {
+            logger.debug("Thing configuration changed, updating thing.");
+            updateThing(thingBuilder.build());
+        }
         ignoreConfigurationUpdate = false;
-
-        // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
-        // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
-        // So to monitor a sensor is still alive, the "last seen" is necessary.
-        // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
-        // manually poll it after the defined time
-        String lastSeen = sensorMessage.lastseen;
-        if (lastSeen != null && config.lastSeenPolling > 0) {
-            createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
-            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
-            lastSeenPollingJob = scheduler.schedule(() -> requestState(this::processLastSeen), config.lastSeenPolling,
-                    TimeUnit.MINUTES);
-            logger.trace("lastSeen polling enabled for thing {} with interval of {} minutes", thing.getUID(),
-                    config.lastSeenPolling);
-        }
 
         // Initial data
         updateChannels(sensorConfig);
         updateChannels(sensorState, true);
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    private void processLastSeen(DeconzBaseMessage stateResponse) {
-        String lastSeen = stateResponse.lastseen;
-        if (lastSeen != null) {
-            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
-        }
     }
 
     /**
@@ -215,10 +201,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                 }
                 break;
             case CHANNEL_BATTERY_LOW:
-                Boolean lowBattery = newState.lowbattery;
-                if (lowBattery != null) {
-                    updateState(channelUID, OnOffType.from(lowBattery));
-                }
+                updateSwitchChannel(channelUID, newState.lowbattery);
                 break;
             default:
                 // other cases covered by sub-class
@@ -226,14 +209,18 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     }
 
     @Override
-    public void messageReceived(String sensorID, DeconzBaseMessage message) {
+    public void messageReceived(DeconzBaseMessage message) {
         logger.trace("{} received {}", thing.getUID(), message);
         if (message instanceof SensorMessage) {
             SensorMessage sensorMessage = (SensorMessage) message;
             SensorConfig sensorConfig = sensorMessage.config;
             if (sensorConfig != null) {
-                this.sensorConfig = sensorConfig;
-                updateChannels(sensorConfig);
+                if (sensorConfig.reachable) {
+                    updateStatus(ThingStatus.ONLINE);
+                    updateChannels(sensorConfig);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+                }
             }
             SensorState sensorState = sensorMessage.state;
             if (sensorState != null) {
@@ -243,6 +230,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     }
 
     private void updateChannels(SensorConfig newConfig) {
+        this.sensorConfig = newConfig;
         List<String> configChannels = getConfigChannels();
         thing.getChannels().stream().map(Channel::getUID)
                 .filter(channelUID -> configChannels.contains(channelUID.getId()))
@@ -259,10 +247,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             return;
         }
         updateState(channelUID, OnOffType.from(value));
-    }
-
-    protected void updateStringChannel(ChannelUID channelUID, @Nullable String value) {
-        updateState(channelUID, new StringType(value));
     }
 
     protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {

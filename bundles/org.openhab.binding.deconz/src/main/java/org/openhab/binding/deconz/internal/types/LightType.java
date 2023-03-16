@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Type of a light as reported by the REST API for usage in {@link org.openhab.binding.deconz.internal.dto.LightMessage}
+ * Type of a light as reported by the REST API for usage in
+ * {@link org.smarthomej.binding.deconz.internal.dto.LightMessage}
  *
  * @author Jan N. Klug - Initial contribution
  */

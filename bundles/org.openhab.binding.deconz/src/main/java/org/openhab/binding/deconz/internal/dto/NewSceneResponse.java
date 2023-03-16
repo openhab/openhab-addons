@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.internal.netutils;
+package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 
 /**
- * Informs about received messages
+ * The {@link NewSceneResponse} is the response after a successfull scene creation
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public interface WebSocketMessageListener {
-    /**
-     * A new message was received
-     *
-     * @param message The received message
-     */
-    void messageReceived(DeconzBaseMessage message);
+public class NewSceneResponse {
+    public Success success = new Success();
+
+    public static class Success {
+        public int id = 0;
+    }
 }
