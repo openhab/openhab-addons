@@ -236,6 +236,8 @@ The `lightgroup` thing supports thing actions for managing scenes:
 | `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                      |
 | `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                               |
 
+The return value refers to a key of the given name within the returned Map. See [example](#thing-actions-example).
+
 ## Full Example
 
 ### Things file
@@ -285,13 +287,31 @@ then
 end
 ```
 
-### Thing Actions
+# Thing Actions Example
 
-```js
-deconzActions = actions.get("deconz", "deconz:lightgroup:00212E040ED9:5");
-retVal = deconzActions.createScene("TestScene");
-deconzActions.storeScene(retVal["newSceneId"]);
-```
+:::: tabs
+
+::: tab JavaScript
+
+ ```javascript
+ deconzActions = actions.get("deconz", "deconz:lightgroup:00212E040ED9:5");
+ retVal = deconzActions.createScene("TestScene");
+ deconzActions.storeScene(retVal["newSceneId"]);
+ ```
+
+:::
+
+::: tab DSL
+
+ ```java
+ val deconzActions = getActions("deconz", "deconz:lightgroup:00212E040ED9:5");
+ var retVal = deconzActions.createScene("TestScene");
+ deconzActions.storeScene(retVal.get("newSceneId"));
+ ```
+
+:::
+
+::::
 
 ### Troubleshooting
 
