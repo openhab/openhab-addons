@@ -157,12 +157,8 @@ public class ValueEncoder {
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
-                // FIXME change after openhab/openhab-core#3434 is merged
-                // double[] xyY = ColorUtil.hsbToXY(hsb);
-                // return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
-                PercentType[] xyY = hsb.toXY();
-                return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0].doubleValue(), xyY[1].doubleValue(),
-                        xyY[2].doubleValue() * 100.0);
+                double[] xyY = ColorUtil.hsbToXY(hsb);
+                return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
                 return String.format("%d %d %d - %%", hsb.getRed().intValue(), hsb.getGreen().intValue(),
                         hsb.getBlue().intValue());

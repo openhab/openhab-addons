@@ -307,15 +307,10 @@ public class ValueDecoder {
                 double x = Double.parseDouble(stringx.replace(",", "."));
                 double y = Double.parseDouble(stringy.replace(",", "."));
                 if (stringY == null) {
-                    return HSBType.fromXY((float) x, (float) y);
-                    // FIXME change after openhab/openhab-core#3434 is merged
-                    // return ColorUtil.xyToHsv(new double[] { x, y });
+                    return ColorUtil.xyToHsv(new double[] { x, y });
                 } else {
-                    // NOTE: this is _wrong_, as Y is ignored
-                    return HSBType.fromXY((float) x, (float) y);
-                    // FIXME change after openhab/openhab-core#3434 is merged
-                    // double Y = Double.parseDouble(stringY.replace(",", "."));
-                    // return ColorUtil.xyToHsv(new double[] { x, y, Y });
+                    double Y = Double.parseDouble(stringY.replace(",", "."));
+                    return ColorUtil.xyToHsv(new double[] { x, y, Y });
                 }
             }
         }
