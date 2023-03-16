@@ -68,8 +68,8 @@ public class BridgeActions implements ThingActions {
     }
 
     public static void permitJoin(ThingActions actions, @Nullable Integer duration) {
-        if (actions instanceof BridgeActions) {
-            ((BridgeActions) actions).permitJoin(duration);
+        if (actions instanceof BridgeActions bridgeActions) {
+            bridgeActions.permitJoin(duration);
         }
     }
 

@@ -93,15 +93,13 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         super.valueUpdated(channelUID, newConfig);
         switch (channelUID.getId()) {
-            case CHANNEL_ENABLED:
-                updateState(channelUID, OnOffType.from(newConfig.on));
-                break;
-            case CHANNEL_TEMPERATURE:
+            case CHANNEL_ENABLED -> updateState(channelUID, OnOffType.from(newConfig.on));
+            case CHANNEL_TEMPERATURE -> {
                 Float temperature = newConfig.temperature;
                 if (temperature != null) {
                     updateState(channelUID, new QuantityType<>(temperature / 100, CELSIUS));
                 }
-                break;
+            }
         }
     }
 
@@ -109,10 +107,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
         super.valueUpdated(channelUID, newState, initializing);
         switch (channelUID.getId()) {
-            case CHANNEL_BATTERY_LEVEL:
-                updateDecimalTypeChannel(channelUID, newState.battery);
-                break;
-            case CHANNEL_LIGHT:
+            case CHANNEL_BATTERY_LEVEL -> updateDecimalTypeChannel(channelUID, newState.battery);
+            case CHANNEL_LIGHT -> {
                 Boolean dark = newState.dark;
                 if (dark != null) {
                     Boolean daylight = newState.daylight;
@@ -128,106 +124,61 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                         updateState(channelUID, new StringType("Daylight"));
                     }
                 }
-                break;
-            case CHANNEL_POWER:
-                updateQuantityTypeChannel(channelUID, newState.power, WATT);
-                break;
-            case CHANNEL_CONSUMPTION:
-                updateQuantityTypeChannel(channelUID, newState.consumption, WATT_HOUR);
-                break;
-            case CHANNEL_VOLTAGE:
-                updateQuantityTypeChannel(channelUID, newState.voltage, VOLT);
-                break;
-            case CHANNEL_CURRENT:
-                updateQuantityTypeChannel(channelUID, newState.current, MILLI(AMPERE));
-                break;
-            case CHANNEL_LIGHT_LUX:
-                updateQuantityTypeChannel(channelUID, newState.lux, LUX);
-                break;
-            case CHANNEL_COLOR:
+            }
+            case CHANNEL_POWER -> updateQuantityTypeChannel(channelUID, newState.power, WATT);
+            case CHANNEL_CONSUMPTION -> updateQuantityTypeChannel(channelUID, newState.consumption, WATT_HOUR);
+            case CHANNEL_VOLTAGE -> updateQuantityTypeChannel(channelUID, newState.voltage, VOLT);
+            case CHANNEL_CURRENT -> updateQuantityTypeChannel(channelUID, newState.current, MILLI(AMPERE));
+            case CHANNEL_LIGHT_LUX -> updateQuantityTypeChannel(channelUID, newState.lux, LUX);
+            case CHANNEL_COLOR -> {
                 final double @Nullable [] xy = newState.xy;
                 if (xy != null && xy.length == 2) {
                     updateState(channelUID, HSBType.fromXY((float) xy[0], (float) xy[1]));
                 }
-                break;
-            case CHANNEL_LIGHT_LEVEL:
-                updateDecimalTypeChannel(channelUID, newState.lightlevel);
-                break;
-            case CHANNEL_DARK:
-                updateSwitchChannel(channelUID, newState.dark);
-                break;
-            case CHANNEL_DAYLIGHT:
-                updateSwitchChannel(channelUID, newState.daylight);
-                break;
-            case CHANNEL_TEMPERATURE:
-                updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
-                break;
-            case CHANNEL_HUMIDITY:
-                updateQuantityTypeChannel(channelUID, newState.humidity, PERCENT, 1.0 / 100);
-                break;
-            case CHANNEL_PRESSURE:
-                updateQuantityTypeChannel(channelUID, newState.pressure, HECTO(PASCAL));
-                break;
-            case CHANNEL_PRESENCE:
-                updateSwitchChannel(channelUID, newState.presence);
-                break;
-            case CHANNEL_VALUE:
-                updateDecimalTypeChannel(channelUID, newState.status);
-                break;
-            case CHANNEL_OPENCLOSE:
+            }
+            case CHANNEL_LIGHT_LEVEL -> updateDecimalTypeChannel(channelUID, newState.lightlevel);
+            case CHANNEL_DARK -> updateSwitchChannel(channelUID, newState.dark);
+            case CHANNEL_DAYLIGHT -> updateSwitchChannel(channelUID, newState.daylight);
+            case CHANNEL_TEMPERATURE -> updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
+            case CHANNEL_HUMIDITY -> updateQuantityTypeChannel(channelUID, newState.humidity, PERCENT, 1.0 / 100);
+            case CHANNEL_PRESSURE -> updateQuantityTypeChannel(channelUID, newState.pressure, HECTO(PASCAL));
+            case CHANNEL_PRESENCE -> updateSwitchChannel(channelUID, newState.presence);
+            case CHANNEL_VALUE -> updateDecimalTypeChannel(channelUID, newState.status);
+            case CHANNEL_OPENCLOSE -> {
                 Boolean open = newState.open;
                 if (open != null) {
                     updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
-                break;
-            case CHANNEL_WATERLEAKAGE:
-                updateSwitchChannel(channelUID, newState.water);
-                break;
-            case CHANNEL_FIRE:
-                updateSwitchChannel(channelUID, newState.fire);
-                break;
-            case CHANNEL_ALARM:
-                updateSwitchChannel(channelUID, newState.alarm);
-                break;
-            case CHANNEL_TAMPERED:
-                updateSwitchChannel(channelUID, newState.tampered);
-                break;
-            case CHANNEL_VIBRATION:
-                updateSwitchChannel(channelUID, newState.vibration);
-                break;
-            case CHANNEL_CARBONMONOXIDE:
-                updateSwitchChannel(channelUID, newState.carbonmonoxide);
-                break;
-            case CHANNEL_AIRQUALITY:
+            }
+            case CHANNEL_WATERLEAKAGE -> updateSwitchChannel(channelUID, newState.water);
+            case CHANNEL_FIRE -> updateSwitchChannel(channelUID, newState.fire);
+            case CHANNEL_ALARM -> updateSwitchChannel(channelUID, newState.alarm);
+            case CHANNEL_TAMPERED -> updateSwitchChannel(channelUID, newState.tampered);
+            case CHANNEL_VIBRATION -> updateSwitchChannel(channelUID, newState.vibration);
+            case CHANNEL_CARBONMONOXIDE -> updateSwitchChannel(channelUID, newState.carbonmonoxide);
+            case CHANNEL_AIRQUALITY -> {
                 String airquality = newState.airquality;
                 if (airquality != null) {
                     updateState(channelUID, new StringType(airquality));
                 }
-                break;
-            case CHANNEL_AIRQUALITYPPB:
-                updateQuantityTypeChannel(channelUID, newState.airqualityppb, PARTS_PER_BILLION);
-                break;
-            case CHANNEL_MOISTURE:
-                updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);
-                break;
-            case CHANNEL_BUTTON:
-                updateDecimalTypeChannel(channelUID, newState.buttonevent);
-                break;
-            case CHANNEL_BUTTONEVENT:
+            }
+            case CHANNEL_AIRQUALITYPPB -> updateQuantityTypeChannel(channelUID, newState.airqualityppb,
+                    PARTS_PER_BILLION);
+            case CHANNEL_MOISTURE -> updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);
+            case CHANNEL_BUTTON -> updateDecimalTypeChannel(channelUID, newState.buttonevent);
+            case CHANNEL_BUTTONEVENT -> {
                 Integer buttonevent = newState.buttonevent;
                 if (buttonevent != null && !initializing) {
                     triggerChannel(channelUID, String.valueOf(buttonevent));
                 }
-                break;
-            case CHANNEL_GESTURE:
-                updateDecimalTypeChannel(channelUID, newState.gesture);
-                break;
-            case CHANNEL_GESTUREEVENT:
+            }
+            case CHANNEL_GESTURE -> updateDecimalTypeChannel(channelUID, newState.gesture);
+            case CHANNEL_GESTUREEVENT -> {
                 Integer gesture = newState.gesture;
                 if (gesture != null && !initializing) {
                     triggerChannel(channelUID, String.valueOf(gesture));
                 }
-                break;
+            }
         }
     }
 

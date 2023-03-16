@@ -88,8 +88,8 @@ public class GroupActions implements ThingActions {
     }
 
     public static Map<String, Object> createScene(ThingActions actions, @Nullable String name) {
-        if (actions instanceof GroupActions) {
-            return ((GroupActions) actions).createScene(name);
+        if (actions instanceof GroupActions groupActions) {
+            return groupActions.createScene(name);
         }
         return Map.of();
     }
@@ -113,8 +113,8 @@ public class GroupActions implements ThingActions {
     }
 
     public static void deleteScene(ThingActions actions, @Nullable Integer sceneId) {
-        if (actions instanceof GroupActions) {
-            ((GroupActions) actions).deleteScene(sceneId);
+        if (actions instanceof GroupActions groupActions) {
+            groupActions.deleteScene(sceneId);
         }
     }
 
@@ -137,8 +137,8 @@ public class GroupActions implements ThingActions {
     }
 
     public static void storeScene(ThingActions actions, @Nullable Integer sceneId) {
-        if (actions instanceof GroupActions) {
-            ((GroupActions) actions).storeScene(sceneId);
+        if (actions instanceof GroupActions groupActions) {
+            groupActions.storeScene(sceneId);
         }
     }
 

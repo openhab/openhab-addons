@@ -17,8 +17,6 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -133,8 +131,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
                 return;
             }
 
-            final WebSocketConnection webSocketConnection = bridgeHandler.getWebSocketConnection();
-            this.connection = webSocketConnection;
+            this.connection = bridgeHandler.getWebSocketConnection();
 
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
 
@@ -195,21 +192,12 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         }
 
         ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-        ChannelTypeUID channelTypeUID;
-        switch (channelId) {
-            case CHANNEL_BATTERY_LEVEL:
-                channelTypeUID = new ChannelTypeUID("system:battery-level");
-                break;
-            case CHANNEL_BATTERY_LOW:
-                channelTypeUID = new ChannelTypeUID("system:low-battery");
-                break;
-            case CHANNEL_CONSUMPTION_2:
-                channelTypeUID = new ChannelTypeUID("deconz:consumption");
-                break;
-            default:
-                channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-                break;
-        }
+        ChannelTypeUID channelTypeUID = switch (channelId) {
+            case CHANNEL_BATTERY_LEVEL -> new ChannelTypeUID("system:battery-level");
+            case CHANNEL_BATTERY_LOW -> new ChannelTypeUID("system:low-battery");
+            case CHANNEL_CONSUMPTION_2 -> new ChannelTypeUID("deconz:consumption");
+            default -> new ChannelTypeUID(BINDING_ID, channelId);
+        };
 
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
@@ -289,8 +277,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         if (bridgeHandler == null) {
             return;
         }
-        String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
-                .collect(Collectors.joining("/"));
+        String endpoint = String.join("/", resourceType.getIdentifier(), config.id, commandUrl);
 
         bridgeHandler.sendObject(endpoint, object, HttpMethod.PUT).thenAccept(v -> {
             if (acceptProcessing != null) {
@@ -315,8 +302,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         if (bridgeHandler == null) {
             return;
         }
-        String endpoint = Stream.of(resourceType.getIdentifier(), config.id, commandUrl)
-                .collect(Collectors.joining("/"));
+        String endpoint = String.join("/", resourceType.getIdentifier(), config.id, commandUrl);
 
         bridgeHandler.sendObject(endpoint, object, httpMethod).thenAccept(v -> {
             if (v.getResponseCode() != java.net.HttpURLConnection.HTTP_OK) {

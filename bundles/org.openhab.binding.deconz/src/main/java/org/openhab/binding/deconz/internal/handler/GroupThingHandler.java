@@ -90,25 +90,23 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
 
         GroupAction newGroupAction = new GroupAction();
         switch (channelId) {
-            case CHANNEL_ALL_ON:
-            case CHANNEL_ANY_ON:
+            case CHANNEL_ALL_ON, CHANNEL_ANY_ON -> {
                 if (command instanceof RefreshType) {
                     valueUpdated(channelUID.getId(), groupStateCache);
                     return;
                 }
-                break;
-            case CHANNEL_ALERT:
+            }
+            case CHANNEL_ALERT -> {
                 if (command instanceof StringType) {
                     newGroupAction.alert = command.toString();
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_COLOR:
+            }
+            case CHANNEL_COLOR -> {
                 if (command instanceof OnOffType) {
                     newGroupAction.on = (command == OnOffType.ON);
-                } else if (command instanceof HSBType) {
-                    HSBType hsbCommand = (HSBType) command;
+                } else if (command instanceof HSBType hsbCommand) {
                     // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb
                     // is in CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
                     if ("hs".equals(colorMode)) {
@@ -133,21 +131,20 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 if (newBri != null) {
                     newGroupAction.on = (newBri > 0);
                 }
-
                 Double transitiontime = config.transitiontime;
                 if (transitiontime != null) {
                     // value is in 1/10 seconds
                     newGroupAction.transitiontime = (int) Math.round(10 * transitiontime);
                 }
-                break;
-            case CHANNEL_COLOR_TEMPERATURE:
-                if (command instanceof DecimalType) {
-                    int miredValue = kelvinToMired(((DecimalType) command).intValue());
+            }
+            case CHANNEL_COLOR_TEMPERATURE -> {
+                if (command instanceof DecimalType decimalCommand) {
+                    int miredValue = kelvinToMired(decimalCommand.intValue());
                     newGroupAction.ct = constrainToRange(miredValue, ZCL_CT_MIN, ZCL_CT_MAX);
                     newGroupAction.on = true;
                 }
-                break;
-            case CHANNEL_SCENE:
+            }
+            case CHANNEL_SCENE -> {
                 if (command instanceof StringType) {
                     getIdFromSceneName(command.toString())
                             .thenAccept(id -> sendCommand(null, command, channelUID, "scenes/" + id + "/recall", null))
@@ -158,9 +155,11 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                             });
                 }
                 return;
-            default:
+            }
+            default -> {
                 // no supported command
                 return;
+            }
         }
 
         Boolean newOn = newGroupAction.on;
@@ -181,20 +180,16 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
 
     private void valueUpdated(String channelId, GroupState newState) {
         switch (channelId) {
-            case CHANNEL_ALL_ON:
-                updateState(channelId, OnOffType.from(newState.allOn));
-                break;
-            case CHANNEL_ANY_ON:
-                updateState(channelId, OnOffType.from(newState.anyOn));
-                break;
-            default:
+            case CHANNEL_ALL_ON -> updateState(channelId, OnOffType.from(newState.allOn));
+            case CHANNEL_ANY_ON -> updateState(channelId, OnOffType.from(newState.anyOn));
+            default -> {
+            }
         }
     }
 
     @Override
     public void messageReceived(DeconzBaseMessage message) {
-        if (message instanceof GroupMessage) {
-            GroupMessage groupMessage = (GroupMessage) message;
+        if (message instanceof GroupMessage groupMessage) {
             logger.trace("{} received {}", thing.getUID(), groupMessage);
             GroupState groupState = groupMessage.state;
             if (groupState != null) {
@@ -261,8 +256,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
     }
 
     private Map<String, String> processScenes(DeconzBaseMessage stateResponse) {
-        if (stateResponse instanceof GroupMessage) {
-            GroupMessage groupMessage = (GroupMessage) stateResponse;
+        if (stateResponse instanceof GroupMessage groupMessage) {
             Map<String, String> scenes = groupMessage.scenes.stream()
                     .collect(Collectors.toMap(scene -> scene.id, scene -> scene.name));
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_SCENE);

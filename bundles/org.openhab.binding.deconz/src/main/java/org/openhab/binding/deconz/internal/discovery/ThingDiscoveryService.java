@@ -133,19 +133,17 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         properties.put(CONFIG_ID, groupId);
 
         switch (groupType) {
-            case LIGHT_GROUP:
-                thingTypeUID = THING_TYPE_LIGHTGROUP;
-                break;
-            case LUMINAIRE:
-            case LIGHT_SOURCE:
-            case ROOM:
+            case LIGHT_GROUP -> thingTypeUID = THING_TYPE_LIGHTGROUP;
+            case LUMINAIRE, LIGHT_SOURCE, ROOM -> {
                 logger.debug("Group {} ({}), type {} ignored.", group.id, group.name, group.type);
                 return;
-            default:
+            }
+            default -> {
                 logger.debug(
                         "Found group: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         group.id, group.name, group.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, group.id);
@@ -190,42 +188,24 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         switch (lightType) {
-            case ON_OFF_LIGHT:
-            case ON_OFF_PLUGIN_UNIT:
-            case SMART_PLUG:
-                thingTypeUID = THING_TYPE_ONOFF_LIGHT;
-                break;
-            case DIMMABLE_LIGHT:
-            case DIMMABLE_PLUGIN_UNIT:
-                thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
-                break;
-            case COLOR_TEMPERATURE_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
-                break;
-            case COLOR_DIMMABLE_LIGHT:
-            case COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_LIGHT;
-                break;
-            case EXTENDED_COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
-                break;
-            case WINDOW_COVERING_DEVICE:
-                thingTypeUID = THING_TYPE_WINDOW_COVERING;
-                break;
-            case WARNING_DEVICE:
-                thingTypeUID = THING_TYPE_WARNING_DEVICE;
-                break;
-            case DOORLOCK:
-                thingTypeUID = THING_TYPE_DOORLOCK;
-                break;
-            case CONFIGURATION_TOOL:
+            case ON_OFF_LIGHT, ON_OFF_PLUGIN_UNIT, SMART_PLUG -> thingTypeUID = THING_TYPE_ONOFF_LIGHT;
+            case DIMMABLE_LIGHT, DIMMABLE_PLUGIN_UNIT -> thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
+            case COLOR_TEMPERATURE_LIGHT -> thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
+            case COLOR_DIMMABLE_LIGHT, COLOR_LIGHT -> thingTypeUID = THING_TYPE_COLOR_LIGHT;
+            case EXTENDED_COLOR_LIGHT -> thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
+            case WINDOW_COVERING_DEVICE -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
+            case WARNING_DEVICE -> thingTypeUID = THING_TYPE_WARNING_DEVICE;
+            case DOORLOCK -> thingTypeUID = THING_TYPE_DOORLOCK;
+            case CONFIGURATION_TOOL -> {
                 // ignore configuration tool device
                 return;
-            default:
+            }
+            default -> {
                 logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         light.modelid, light.name, light.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));

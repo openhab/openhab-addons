@@ -93,11 +93,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
     @Override
     protected void processStateResponse(DeconzBaseMessage stateResponse) {
-        if (!(stateResponse instanceof SensorMessage)) {
+        if (!(stateResponse instanceof SensorMessage sensorMessage)) {
             return;
         }
 
-        SensorMessage sensorMessage = (SensorMessage) stateResponse;
         sensorConfig = Objects.requireNonNullElse(sensorMessage.config, new SensorConfig());
         sensorState = Objects.requireNonNullElse(sensorMessage.state, new SensorState());
 
@@ -170,18 +169,19 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         Integer batteryLevel = newConfig.battery;
         switch (channelUID.getId()) {
-            case CHANNEL_BATTERY_LEVEL:
+            case CHANNEL_BATTERY_LEVEL -> {
                 if (batteryLevel != null) {
                     updateState(channelUID, new DecimalType(batteryLevel.longValue()));
                 }
-                break;
-            case CHANNEL_BATTERY_LOW:
+            }
+            case CHANNEL_BATTERY_LOW -> {
                 if (batteryLevel != null) {
                     updateState(channelUID, OnOffType.from(batteryLevel <= 10));
                 }
-                break;
-            default:
-                // other cases covered by sub-class
+            }
+            default -> {
+            }
+            // other cases covered by sub-class
         }
     }
 
@@ -194,25 +194,23 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
      */
     protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
         switch (channelUID.getId()) {
-            case CHANNEL_LAST_UPDATED:
+            case CHANNEL_LAST_UPDATED -> {
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
                 }
-                break;
-            case CHANNEL_BATTERY_LOW:
-                updateSwitchChannel(channelUID, newState.lowbattery);
-                break;
-            default:
-                // other cases covered by sub-class
+            }
+            case CHANNEL_BATTERY_LOW -> updateSwitchChannel(channelUID, newState.lowbattery);
+            default -> {
+            }
+            // other cases covered by sub-class
         }
     }
 
     @Override
     public void messageReceived(DeconzBaseMessage message) {
         logger.trace("{} received {}", thing.getUID(), message);
-        if (message instanceof SensorMessage) {
-            SensorMessage sensorMessage = (SensorMessage) message;
+        if (message instanceof SensorMessage sensorMessage) {
             SensorConfig sensorConfig = sensorMessage.config;
             if (sensorConfig != null) {
                 if (sensorConfig.reachable) {

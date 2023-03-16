@@ -86,26 +86,24 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         }
         ThermostatUpdateConfig newConfig = new ThermostatUpdateConfig();
         switch (channelUID.getId()) {
-            case CHANNEL_THERMOSTAT_LOCKED:
-                newConfig.locked = OnOffType.ON.equals(command);
-                break;
-            case CHANNEL_HEATSETPOINT:
+            case CHANNEL_THERMOSTAT_LOCKED -> newConfig.locked = OnOffType.ON.equals(command);
+            case CHANNEL_HEATSETPOINT -> {
                 Integer newHeatsetpoint = getTemperatureFromCommand(command);
                 if (newHeatsetpoint == null) {
                     logger.warn("Heatsetpoint must not be null.");
                     return;
                 }
                 newConfig.heatsetpoint = newHeatsetpoint;
-                break;
-            case CHANNEL_TEMPERATURE_OFFSET:
+            }
+            case CHANNEL_TEMPERATURE_OFFSET -> {
                 Integer newOffset = getTemperatureFromCommand(command);
                 if (newOffset == null) {
                     logger.warn("Offset must not be null.");
                     return;
                 }
                 newConfig.offset = newOffset;
-                break;
-            case CHANNEL_THERMOSTAT_MODE:
+            }
+            case CHANNEL_THERMOSTAT_MODE -> {
                 if (command instanceof StringType) {
                     String thermostatMode = ((StringType) command).toString();
                     try {
@@ -123,14 +121,12 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 } else {
                     return;
                 }
-                break;
-            case CHANNEL_EXTERNAL_WINDOW_OPEN:
-                newConfig.externalwindowopen = OpenClosedType.OPEN.equals(command);
-                break;
-            default:
+            }
+            case CHANNEL_EXTERNAL_WINDOW_OPEN -> newConfig.externalwindowopen = OpenClosedType.OPEN.equals(command);
+            default -> {
                 // no supported command
                 return;
-
+            }
         }
 
         sendCommand(newConfig, command, channelUID, null);
@@ -142,24 +138,18 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         ThermostatMode thermostatMode = newConfig.mode;
         String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
         switch (channelUID.getId()) {
-            case CHANNEL_THERMOSTAT_LOCKED:
-                updateSwitchChannel(channelUID, newConfig.locked);
-                break;
-            case CHANNEL_HEATSETPOINT:
-                updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
-                break;
-            case CHANNEL_TEMPERATURE_OFFSET:
-                updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS, 1.0 / 100);
-                break;
-            case CHANNEL_THERMOSTAT_MODE:
-                updateState(channelUID, new StringType(mode));
-                break;
-            case CHANNEL_EXTERNAL_WINDOW_OPEN:
+            case CHANNEL_THERMOSTAT_LOCKED -> updateSwitchChannel(channelUID, newConfig.locked);
+            case CHANNEL_HEATSETPOINT -> updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS,
+                    1.0 / 100);
+            case CHANNEL_TEMPERATURE_OFFSET -> updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS,
+                    1.0 / 100);
+            case CHANNEL_THERMOSTAT_MODE -> updateState(channelUID, new StringType(mode));
+            case CHANNEL_EXTERNAL_WINDOW_OPEN -> {
                 Boolean open = newConfig.externalwindowopen;
                 if (open != null) {
                     updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
-                break;
+            }
         }
     }
 
@@ -167,23 +157,21 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     protected void valueUpdated(ChannelUID channelUID, SensorState newState, boolean initializing) {
         super.valueUpdated(channelUID, newState, initializing);
         switch (channelUID.getId()) {
-            case CHANNEL_TEMPERATURE:
-                updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
-                break;
-            case CHANNEL_VALVE_POSITION:
+            case CHANNEL_TEMPERATURE -> updateQuantityTypeChannel(channelUID, newState.temperature, CELSIUS, 1.0 / 100);
+            case CHANNEL_VALVE_POSITION -> {
                 Integer valve = newState.valve;
                 if (valve == null || valve < 0 || valve > 100) {
                     updateState(channelUID, UnDefType.UNDEF);
                 } else {
                     updateQuantityTypeChannel(channelUID, valve, PERCENT, 1.0);
                 }
-                break;
-            case CHANNEL_WINDOW_OPEN:
+            }
+            case CHANNEL_WINDOW_OPEN -> {
                 String open = newState.windowopen;
                 if (open != null) {
                     updateState(channelUID, "Closed".equals(open) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 }
-                break;
+            }
         }
     }
 
@@ -222,11 +210,10 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
     @Override
     protected void processStateResponse(DeconzBaseMessage stateResponse) {
-        if (!(stateResponse instanceof SensorMessage)) {
+        if (!(stateResponse instanceof SensorMessage sensorMessage)) {
             return;
         }
 
-        SensorMessage sensorMessage = (SensorMessage) stateResponse;
         SensorState sensorState = sensorMessage.state;
         SensorConfig sensorConfig = sensorMessage.config;
 
