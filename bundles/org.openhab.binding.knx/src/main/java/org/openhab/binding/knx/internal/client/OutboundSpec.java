@@ -47,5 +47,11 @@ public interface OutboundSpec {
      */
     Type getValue();
 
+    /**
+     * Check if group address to be used matches a given group address.
+     *
+     * @param groupAddress group address to be compared
+     * @return true if addresses match
+     */
     boolean matchesDestination(GroupAddress groupAddress);
 }

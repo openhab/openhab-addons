@@ -100,7 +100,7 @@ public class ValueDecoder {
                 id = translator.getType().getID();
                 m = DPTUtil.DPT_PATTERN.matcher(id);
                 if (!m.matches() || m.groupCount() != 2) {
-                    LOGGER.warn("couldn't identify main/sub number in dptID '{}'", id);
+                    LOGGER.warn("Couldn't identify main/sub number in dptID '{}'", id);
                     return null;
                 }
             }

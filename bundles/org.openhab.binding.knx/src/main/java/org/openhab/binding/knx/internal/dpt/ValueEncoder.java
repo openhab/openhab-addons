@@ -74,7 +74,7 @@ public class ValueEncoder {
     public static @Nullable String encode(Type value, String dptId) {
         Matcher m = DPTUtil.DPT_PATTERN.matcher(dptId);
         if (!m.matches() || m.groupCount() != 2) {
-            LOGGER.warn("couldn't identify main/sub number in dptId '{}'", dptId);
+            LOGGER.warn("Couldn't identify main/sub number in dptId '{}'", dptId);
             return null;
         }
 

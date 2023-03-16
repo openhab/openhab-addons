@@ -23,8 +23,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 /**
  * Helper class to find the matching {@link KNXChannel} for any given {@link ChannelTypeUID}.
  *
- * @author Simon Kaufmann - initial contribution and API
- * @author Jan N. Klug - refactored ro factory class
+ * @author Simon Kaufmann - Initial contribution
+ * @author Jan N. Klug - Refactored to factory class
  *
  */
 @NonNullByDefault
