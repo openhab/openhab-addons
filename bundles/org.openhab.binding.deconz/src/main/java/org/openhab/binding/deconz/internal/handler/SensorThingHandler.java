@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.dto.SensorUpdateConfig;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -37,6 +36,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.Gson;
 
@@ -133,7 +133,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_COLOR -> {
                 final double @Nullable [] xy = newState.xy;
                 if (xy != null && xy.length == 2) {
-                    updateState(channelUID, HSBType.fromXY((float) xy[0], (float) xy[1]));
+                    updateState(channelUID, ColorUtil.xyToHsv(xy));
                 }
             }
             case CHANNEL_LIGHT_LEVEL -> updateDecimalTypeChannel(channelUID, newState.lightlevel);
@@ -156,12 +156,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_TAMPERED -> updateSwitchChannel(channelUID, newState.tampered);
             case CHANNEL_VIBRATION -> updateSwitchChannel(channelUID, newState.vibration);
             case CHANNEL_CARBONMONOXIDE -> updateSwitchChannel(channelUID, newState.carbonmonoxide);
-            case CHANNEL_AIRQUALITY -> {
-                String airquality = newState.airquality;
-                if (airquality != null) {
-                    updateState(channelUID, new StringType(airquality));
-                }
-            }
+            case CHANNEL_AIRQUALITY -> updateStringChannel(channelUID, newState.airquality);
             case CHANNEL_AIRQUALITYPPB -> updateQuantityTypeChannel(channelUID, newState.airqualityppb,
                     PARTS_PER_BILLION);
             case CHANNEL_MOISTURE -> updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);

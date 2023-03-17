@@ -37,6 +37,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -92,7 +93,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
         switch (channelId) {
             case CHANNEL_ALL_ON, CHANNEL_ANY_ON -> {
                 if (command instanceof RefreshType) {
-                    valueUpdated(channelUID.getId(), groupStateCache);
+                    valueUpdated(channelUID, groupStateCache);
                     return;
                 }
             }
@@ -178,12 +179,10 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
         messageReceived(stateResponse);
     }
 
-    private void valueUpdated(String channelId, GroupState newState) {
-        switch (channelId) {
-            case CHANNEL_ALL_ON -> updateState(channelId, OnOffType.from(newState.allOn));
-            case CHANNEL_ANY_ON -> updateState(channelId, OnOffType.from(newState.anyOn));
-            default -> {
-            }
+    private void valueUpdated(ChannelUID channelUID, GroupState newState) {
+        switch (channelUID.getId()) {
+            case CHANNEL_ALL_ON -> updateSwitchChannel(channelUID, newState.allOn);
+            case CHANNEL_ANY_ON -> updateSwitchChannel(channelUID, newState.anyOn);
         }
     }
 
@@ -194,7 +193,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
             GroupState groupState = groupMessage.state;
             if (groupState != null) {
                 updateStatus(ThingStatus.ONLINE);
-                thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, groupState));
+                thing.getChannels().stream().map(Channel::getUID).forEach(c -> valueUpdated(c, groupState));
                 groupStateCache = groupState;
             }
             GroupAction groupAction = groupMessage.action;

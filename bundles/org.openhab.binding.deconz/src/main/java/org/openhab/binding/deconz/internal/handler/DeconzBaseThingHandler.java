@@ -13,10 +13,13 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.binding.deconz.internal.Util.toPercentType;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +29,10 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -336,6 +343,58 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         Bridge bridge = getBridge();
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
+        }
+    }
+
+    protected void updateStringChannel(ChannelUID channelUID, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelUID, new StringType(value));
+    }
+
+    protected void updateSwitchChannel(ChannelUID channelUID, @Nullable Boolean value) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelUID, OnOffType.from(value));
+    }
+
+    protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelUID, new DecimalType(value.longValue()));
+    }
+
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit) {
+        updateQuantityTypeChannel(channelUID, value, unit, 1.0);
+    }
+
+    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit,
+            double scaling) {
+        if (value == null) {
+            return;
+        }
+        updateState(channelUID, new QuantityType<>(value.doubleValue() * scaling, unit));
+    }
+
+    /**
+     * Update a channel with a {@link org.openhab.core.library.types.PercentType} of {@link OnOffType}
+     *
+     * If either {@param value} or {@param on} are <code>null</code> or {@param on} is <code>false</code> the method
+     * updated the channel with {@link OnOffType#OFF}, otherwise {@param value} is scaled and converted to
+     * {@link org.openhab.core.library.types.PercentType} before updating the channel.
+     *
+     * @param channelUID the {@link ChannelUID} that shall receive the update
+     * @param value an {@link Integer} value (0-255) that is posted
+     * @param on the on state of the channel
+     */
+    protected void updatePercentTypeChannel(ChannelUID channelUID, @Nullable Integer value, @Nullable Boolean on) {
+        if (value != null && on != null && on) {
+            updateState(channelUID, toPercentType(value));
+        } else {
+            updateState(channelUID, OnOffType.OFF);
         }
     }
 }

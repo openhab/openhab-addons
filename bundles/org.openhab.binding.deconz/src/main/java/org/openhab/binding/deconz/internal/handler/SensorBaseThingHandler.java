@@ -18,10 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
@@ -30,7 +27,6 @@ import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -102,7 +98,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.sensor-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
             return;
         }
 
@@ -217,7 +213,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     updateChannels(sensorConfig);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.sensor-not-reachable");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
                 }
             }
             SensorState sensorState = sensorMessage.state;
@@ -238,31 +234,5 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     protected void updateChannels(SensorState newState, boolean initializing) {
         sensorState = newState;
         thing.getChannels().forEach(channel -> valueUpdated(channel.getUID(), newState, initializing));
-    }
-
-    protected void updateSwitchChannel(ChannelUID channelUID, @Nullable Boolean value) {
-        if (value == null) {
-            return;
-        }
-        updateState(channelUID, OnOffType.from(value));
-    }
-
-    protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {
-        if (value == null) {
-            return;
-        }
-        updateState(channelUID, new DecimalType(value.longValue()));
-    }
-
-    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit) {
-        updateQuantityTypeChannel(channelUID, value, unit, 1.0);
-    }
-
-    protected void updateQuantityTypeChannel(ChannelUID channelUID, @Nullable Number value, Unit<?> unit,
-            double scaling) {
-        if (value == null) {
-            return;
-        }
-        updateState(channelUID, new QuantityType<>(value.doubleValue() * scaling, unit));
     }
 }
