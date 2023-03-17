@@ -94,10 +94,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where      the discovered device's address (WHERE)
+     * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message    the OWN message received that identified the device
-     *                   (optional)
+     * @param message the OWN message received that identified the device
+     *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -268,8 +268,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
             }
             whereConfig = "" + ((WhereThermo) w).getZone();
             logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO ZONE found: where={}, whereConfig={}, standalone={}", w,
-                    whereConfig,
-                    properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
+                    whereConfig, properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
         }
 
         if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) w).getUnit())) {

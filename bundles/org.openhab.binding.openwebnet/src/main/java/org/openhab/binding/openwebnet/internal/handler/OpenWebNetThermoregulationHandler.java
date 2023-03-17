@@ -296,6 +296,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
 
+        logger.debug("@@@@ Thermo.handleMessage(): {}", msg.toStringVerbose());
+
         if (isCentralUnit) {
             if (msg.getWhat() == null) {
                 return;
