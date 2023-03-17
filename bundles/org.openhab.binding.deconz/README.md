@@ -44,7 +44,7 @@ Additionally, lights, window coverings (blinds), door locks and thermostats are 
 | Warning Device (Siren)               | Warning device                                | `warningdevice`         |
 | Door Lock                            | A remotely operatable door lock               | `doorlock`              |
 
-**Note**: `windowcovering` might require updating your deconz software since the support changed.
+**Note**: `windowcovering` might require updating your deCONZ software since the support changed.
 
 Currently only light-groups are supported via the thing-type `lightgroup`.
 
@@ -81,7 +81,7 @@ For this process the deCONZ bridge must be unlocked in the deCONZ software so th
 ### Things
 
 All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
-Auto-discovered things do not need to be configured. 
+Auto-discovered things do not need to be configured.
 
 All sensor-things have an additional `lastSeenPolling` parameter.
 Due to limitations in the API of deCONZ, the `lastSeen` channel (available some sensors) is only available when using polling.

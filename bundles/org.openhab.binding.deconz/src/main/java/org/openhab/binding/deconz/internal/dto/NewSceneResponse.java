@@ -15,7 +15,7 @@ package org.openhab.binding.deconz.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NewSceneResponse} is the response after a successfull scene creation
+ * The {@link NewSceneResponse} is the response after a successful scene creation
  *
  * @author Jan N. Klug - Initial contribution
  */

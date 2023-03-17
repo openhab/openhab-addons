@@ -102,7 +102,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.sensor-not-reachable");
             return;
         }
 
@@ -217,7 +217,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     updateChannels(sensorConfig);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.sensor-not-reachable");
                 }
             }
             SensorState sensorState = sensorMessage.state;

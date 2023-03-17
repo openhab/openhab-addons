@@ -9,7 +9,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Presence Sensor</label>
-		<description>A Presence sensor</description>
 		<channels>
 			<channel typeId="system.motion" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -46,7 +45,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Power Sensor</label>
-		<description>A power sensor</description>
 		<channels>
 			<channel typeId="power" id="power"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -62,7 +60,7 @@
 		<label>Power</label>
 		<description>Current power usage</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="voltage">
@@ -86,10 +84,9 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Consumption Sensor</label>
-		<description>A consumption sensor</description>
 		<channels>
-			<channel typeId="consumption" id="consumption"></channel>
-			<channel typeId="last_updated" id="last_updated"></channel>
+			<channel typeId="consumption" id="consumption"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -102,7 +99,7 @@
 		<label>Consumption</label>
 		<description>Current consumption</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<thing-type id="colorcontrol">
@@ -131,7 +128,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Switch/Button</label>
-		<description>A switch or button</description>
 		<channels>
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
@@ -155,7 +151,7 @@
 		<item-type>Number</item-type>
 		<label>Button</label>
 		<description>The Button that was last pressed on the switch.</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="gestureevent">
@@ -189,7 +185,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Light Sensor</label>
-		<description>A light sensor</description>
 		<channels>
 			<channel typeId="lightlux" id="lightlux"/>
 			<channel typeId="light_level" id="light_level"/>
@@ -207,7 +202,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current light illuminance</description>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="light_level" advanced="true">
@@ -236,7 +231,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Sensor</label>
-		<description>A temperature sensor</description>
 		<channels>
 			<channel typeId="temperature" id="temperature"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -252,7 +246,7 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.2f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<thing-type id="humiditysensor">
@@ -260,7 +254,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Humidity Sensor</label>
-		<description>A humidity sensor</description>
 		<channels>
 			<channel typeId="humidity" id="humidity"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -276,7 +269,7 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.2f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<thing-type id="pressuresensor">
@@ -284,10 +277,9 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Pressure Sensor</label>
-		<description>A pressure senor</description>
 		<channels>
-			<channel typeId="pressure" id="pressure"></channel>
-			<channel typeId="last_updated" id="last_updated"></channel>
+			<channel typeId="pressure" id="pressure"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -300,7 +292,7 @@
 		<label>Pressure</label>
 		<description>Current pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<thing-type id="daylightsensor">
@@ -308,10 +300,9 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Daylight Sensor</label>
-		<description>A daylight sensor</description>
 		<channels>
-			<channel typeId="value" id="value"></channel>
-			<channel typeId="light" id="light"></channel>
+			<channel typeId="value" id="value"/>
+			<channel typeId="light" id="light"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -323,13 +314,12 @@
 		<item-type>Number</item-type>
 		<label>Daylight Value</label>
 		<description>Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="light">
 		<item-type>String</item-type>
 		<label>Lightlevel</label>
-		<description>A light level</description>
 		<state readOnly="true">
 			<options>
 				<option value="daylight">Daylight</option>
@@ -344,7 +334,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Open/Close Sensor</label>
-		<description>A open/close sensor</description>
 		<channels>
 			<channel typeId="open" id="open"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -359,7 +348,7 @@
 		<item-type>Contact</item-type>
 		<label>Open/Close</label>
 		<description>Open/Close detected</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<thing-type id="waterleakagesensor">
@@ -367,7 +356,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Water Leakage Sensor</label>
-		<description>A water leakage sensor</description>
 		<channels>
 			<channel typeId="waterleakage" id="waterleakage"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -390,7 +378,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Fire Sensor</label>
-		<description>A fire sensor</description>
 		<channels>
 			<channel typeId="fire" id="fire"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -413,7 +400,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Alarm Sensor</label>
-		<description>An alarm sensor</description>
 		<channels>
 			<channel typeId="alarm" id="alarm"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -443,7 +429,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Vibration Sensor</label>
-		<description>A vibration sensor</description>
 		<channels>
 			<channel typeId="vibration" id="vibration"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -466,7 +451,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Battery Sensor</label>
-		<description>A battery sensor</description>
 		<channels>
 			<channel typeId="system.battery-level" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -522,12 +506,16 @@
 	<channel-type id="airquality">
 		<item-type>String</item-type>
 		<label>Air Quality</label>
+		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor,
+			...</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="airqualityppb">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Air Quality (ppb)</label>
+		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
+			specified in ppb (parts per billion).</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -536,10 +524,9 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Moisture Sensor</label>
-		<description>A moisture sensor</description>
 		<channels>
-			<channel typeId="moisture" id="moisture"></channel>
-			<channel typeId="last_updated" id="last_updated"></channel>
+			<channel typeId="moisture" id="moisture"/>
+			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -551,7 +538,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<description>Current moisture</description>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<thing-type id="thermostat">
@@ -610,7 +597,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Offset</label>
 		<description>Temperature offset</description>
-		<state pattern="%.2f %unit%" step="0.01"></state>
+		<state pattern="%.2f %unit%" step="0.01"/>
 	</channel-type>
 	<channel-type id="valve">
 		<item-type>Number:Dimensionless</item-type>

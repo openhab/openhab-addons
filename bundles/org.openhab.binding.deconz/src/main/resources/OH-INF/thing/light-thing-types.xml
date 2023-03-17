@@ -9,7 +9,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
-		<description>A warning device</description>
 		<category>Siren</category>
 		<channels>
 			<channel typeId="alert" id="alert"/>
@@ -63,7 +62,6 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
-		<description>A dimmable light.</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="system.brightness" id="brightness"/>

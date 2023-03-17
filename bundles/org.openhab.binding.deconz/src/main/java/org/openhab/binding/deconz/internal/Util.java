@@ -61,7 +61,7 @@ public class Util {
     }
 
     /**
-     * convert a brightness value from int to PercentType
+     * Convert a brightness value from int to PercentType
      *
      * @param val the value
      * @return the corresponding PercentType value
@@ -73,7 +73,7 @@ public class Util {
     }
 
     /**
-     * convert a brightness value from PercentType to int
+     * Convert a brightness value from PercentType to int
      *
      * @param val the value
      * @return the corresponding int value
@@ -83,7 +83,7 @@ public class Util {
     }
 
     /**
-     * convert a timestamp string to a DateTimeType
+     * Convert a timestamp string to a DateTimeType
      *
      * @param timestamp either in zoned date time or local date time format
      * @return the corresponding DateTimeType
@@ -99,7 +99,7 @@ public class Util {
     }
 
     /**
-     * get all keys corresponding to a given value of a map
+     * Get all keys corresponding to a given value of a map
      *
      * @param map a map
      * @param value the value to find in the map
