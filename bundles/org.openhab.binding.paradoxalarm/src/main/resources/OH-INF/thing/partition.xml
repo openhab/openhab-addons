@@ -15,7 +15,7 @@
 		<channels>
 			<channel id="label" typeId="partitionLabel"/>
 			<channel id="state" typeId="state"/>
-			<channel id="detailedState" typeId="state"/>
+			<channel id="detailedState" typeId="detailedState"/>
 			<channel id="additionalStates" typeId="additionalState"/>
 			<channel id="readyToArm" typeId="readyToArm"/>
 			<channel id="inExitDelay" typeId="inExitDelay"/>
@@ -58,6 +58,12 @@
 		<item-type>String</item-type>
 		<label>Partition State</label>
 		<description>State of partition</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="detailedState">
+		<item-type>String</item-type>
+		<label>Detailed partition State</label>
+		<description>The detailed state of partition (contains sub-states like Stay in Armed, etc)</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="additionalState">

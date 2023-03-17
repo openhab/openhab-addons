@@ -54,26 +54,28 @@ public class PartitionState {
         }
     }
 
-    public String getExactState() {
-        if (isInSilentAlarm) {
-            return "SilentAlarm";
-        } else if (isInAudibleAlarm) {
-            return "AudibleAlarm";
-        } else if (isInFireAlarm) {
-            return "FireAlarm";
-        } else if (isInAlarm) {
+    public String getDetailedState() {
+        if (isInAlarm) {
+            if (isInSilentAlarm) {
+                return "SilentAlarm";
+            } else if (isInAudibleAlarm) {
+                return "AudibleAlarm";
+            } else if (isInFireAlarm) {
+                return "FireAlarm";
+            }
             return "InAlarm";
         } else if (isArmed) {
+            if (isArmedInAway) {
+                return "ArmedInAway";
+            } else if (isArmedInStay) {
+                return "ArmedInStay";
+            } else if (isArmedInNoEntry) {
+                return "ArmedInNoEntry";
+            }
             return "Armed";
-        } else if (isArmedInAway) {
-            return "ArmedInAway";
-        } else if (isArmedInStay) {
-            return "ArmedInStay";
-        } else if (isArmedInNoEntry) {
-            return "ArmedInNoEntry";
-        } else {
-            return "Disarmed";
         }
+
+        return "Disarmed";
     }
 
     @Override
