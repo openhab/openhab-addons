@@ -119,7 +119,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO</label>
 		<description>CO level in ppm</description>
-		<category>Carbonmonoxide</category>
+		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>CO</tag>
@@ -131,7 +131,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>VOC</label>
 		<description>Volatile organic compounds level in ppm/</description>
-		<category>Volatile organic compounds</category>
+		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Gas</tag>
@@ -143,7 +143,7 @@
 		<item-type>String</item-type>
 		<label>VOC ID</label>
 		<description>Volatile organic compounds identification</description>
-		<category>Volatile organic compounds</category>
+		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Gas</tag>
@@ -155,7 +155,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC</label>
 		<description>Total volatile organic compounds level in ppb/</description>
-		<category>Volatile organic compounds</category>
+		<category>Gas</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Gas</tag>
