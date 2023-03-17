@@ -253,11 +253,13 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
             logger.debug("CU found: {}", w);
             if (w.value().charAt(0) == '#') { // 99-zone CU
                 thingLabel += " 99-zone";
-                logger.debug("CU found 99-zone: where={}, whereConfig={}", w, whereConfig);
+                logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO CU found 99-zone: where={}, whereConfig={}", w,
+                        whereConfig);
             } else {
                 thingLabel += " 4-zone";
                 whereConfig = "#" + w.value();
-                logger.debug("CU found 4-zone: where={}, whereConfig={}", w, whereConfig);
+                logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO CU found 4-zone: where={}, whereConfig={}", w,
+                        whereConfig);
             }
         } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE.equals(thingTypeUID)) {
             if (cuFound) {
@@ -265,7 +267,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE, false);
             }
             whereConfig = "" + ((WhereThermo) w).getZone();
-            logger.debug("ZONE found: where={}, whereConfig={}", w, whereConfig);
+            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@ THERMO ZONE found: where={}, whereConfig={}, standalone={}", w,
+                    whereConfig,
+                    properties.get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE));
         }
 
         if (w instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) w).getUnit())) {

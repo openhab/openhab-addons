@@ -62,7 +62,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
     private Thermoregulation.OperationMode currentMode = Thermoregulation.OperationMode.MANUAL;
 
-    private boolean isStandAlone = true;
+    private boolean isStandAlone = true; // true if zone is not associated to a CU
 
     private boolean isCentralUnit = false;
 
@@ -95,6 +95,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             if (standAloneConfig != null) {
                 isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
             }
+            logger.debug("@@@@@@@@@@@@@@@@@@@@  THERMO ZONE INITIALIZE isStandAlone={}", isStandAlone);
         } else {
 
             /*
