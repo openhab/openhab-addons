@@ -159,7 +159,7 @@
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
-/bundles/org.openhab.binding.knx/ @kaikreuzer
+/bundles/org.openhab.binding.knx/ @kaikreuzer @holgerfriedrich
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
 /bundles/org.openhab.binding.kostalinverter/ @cschneider

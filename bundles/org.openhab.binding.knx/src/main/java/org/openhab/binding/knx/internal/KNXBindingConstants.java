@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.knx.internal;
 
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,6 +27,10 @@ import org.openhab.core.thing.ThingTypeUID;
 public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
+
+    // Global config
+    public static final String CONFIG_DISABLE_UOM = "disableUoM";
+    public static boolean disableUoM = false;
 
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_IP_BRIDGE = new ThingTypeUID(BINDING_ID, "ip");
@@ -84,7 +84,8 @@ public class KNXBindingConstants {
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
 
-    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections.unmodifiableSet(Stream.of(CHANNEL_COLOR_CONTROL, //
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
+            CHANNEL_COLOR_CONTROL, //
             CHANNEL_CONTACT_CONTROL, //
             CHANNEL_DATETIME_CONTROL, //
             CHANNEL_DIMMER_CONTROL, //
@@ -92,7 +93,7 @@ public class KNXBindingConstants {
             CHANNEL_ROLLERSHUTTER_CONTROL, //
             CHANNEL_STRING_CONTROL, //
             CHANNEL_SWITCH_CONTROL //
-    ).collect(toSet()));
+    );
 
     public static final String CHANNEL_RESET = "reset";
 
