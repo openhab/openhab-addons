@@ -402,6 +402,7 @@
 /bundles/org.openhab.transform.regex/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.rollershutterposition/ @jsjames
 /bundles/org.openhab.transform.scale/ @clinique
+/bundles/org.openhab.transform.vat/ @jlaur
 /bundles/org.openhab.transform.xpath/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.xslt/ @openhab/add-ons-maintainers
 /bundles/org.openhab.voice.googlestt/ @GiviMAD
