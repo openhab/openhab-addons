@@ -58,13 +58,10 @@ This has the following advantages:
 
 #### Value-Added Tax
 
-The channels `currentSpotPrice`, `currentNetTariff`, `currentSystemTariff`, `currentElectricityTax` and `currentTransmissionNetTariff` can be configured to include VAT with this configuration parameter:
-
-| Name            | Type    | Description                                  | Default | Required | Advanced |
-|-----------------|---------|----------------------------------------------|---------|----------|----------|
-| includeVAT      | boolean | Add VAT to amount based on regional settings | no      | no       | no       |
-
-Please be aware that this channel configuration will affect all linked items.
+VAT is not included in any of the prices.
+To include VAT for items linked to the `Number` channels, the [VAT profile](https://www.openhab.org/addons/transformations/vat/) can be used.
+This must be installed separately.
+Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
 #### Current Net Tariff
 
@@ -132,7 +129,6 @@ The format of the `hourlyPrices` JSON array is as follows:
 
 Future spot prices for the next day are usually available around 13:00 CET and are fetched around that time.
 Historic prices older than 12 hours are removed from the JSON array each hour.
-Channel configuration for "Include VAT" is ignored, i.e. VAT is excluded.
 
 ## Thing Actions
 
@@ -322,26 +318,19 @@ var priceMap = actions.getPrices("SpotPrice,NetTariff");
 ### Thing Configuration
 
 ```java
-Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
-    Channels:
-        Number : electricity#currentSpotPrice [ includeVAT="true" ]
-        Number : electricity#currentNetTariff [ includeVAT="true" ]
-        Number : electricity#currentSystemTariff [ includeVAT="true" ]
-        Number : electricity#currentElectricityTax [ includeVAT="true" ]
-        Number : electricity#currentTransmissionNetTariff [ includeVAT="true" ]
-}
+Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ]
 ```
 
 ### Item Configuration
 
 ```java
 Group:Number:SUM CurrentTotalPrice "Current Total Price" <price>
-Number CurrentSpotPrice "Current Spot Price" <price> (CurrentTotalPrice) {channel="energidataservice:service:energidataservice:electricity#currentSpotPrice"}
-Number CurrentNetTariff "Current Net Tariff" <price> (CurrentTotalPrice) {channel="energidataservice:service:energidataservice:electricity#currentNetTariff"}
-Number CurrentSystemTariff "Current System Tariff" <price> (CurrentTotalPrice) {channel="energidataservice:service:energidataservice:electricity#currentSystemTariff"}
-Number CurrentElectricityTax "Current Electricity Tax" <price> (CurrentTotalPrice) {channel="energidataservice:service:energidataservice:electricity#currentElectricityTax"}
-Number CurrentTransmissionNetTariff "Current Transmission Tariff" <price> (CurrentTotalPrice) {channel="energidataservice:service:energidataservice:electricity#currentTransmissionNetTariff"}
-String HourlyPrices "Hourly Prices" <price> {channel="energidataservice:service:energidataservice:electricity#hourlyPrices"}
+Number CurrentSpotPrice "Current Spot Price" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentSpotPrice" [profile="transform:VAT"] }
+Number CurrentNetTariff "Current Net Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentNetTariff" [profile="transform:VAT"] }
+Number CurrentSystemTariff "Current System Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentSystemTariff" [profile="transform:VAT"] }
+Number CurrentElectricityTax "Current Electricity Tax" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentElectricityTax" [profile="transform:VAT"] }
+Number CurrentTransmissionNetTariff "Current Transmission Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentTransmissionNetTariff" [profile="transform:VAT"] }
+String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourlyPrices" }
 ```
 
 ### Thing Actions Example
@@ -404,5 +393,4 @@ durationPhases.add(Duration.ofMinutes(41))
 durationPhases.add(Duration.ofMinutes(104))
 
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(24).toInstant(), Duration.ofMinutes(236), phases, 0.1 | kWh)
-
 ```

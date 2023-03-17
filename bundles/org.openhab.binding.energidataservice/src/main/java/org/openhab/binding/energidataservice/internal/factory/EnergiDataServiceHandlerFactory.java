@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -46,16 +45,13 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SERVICE);
 
     private final HttpClient httpClient;
-    private final LocaleProvider localeProvider;
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public EnergiDataServiceHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference LocaleProvider localeProvider, final @Reference TimeZoneProvider timeZoneProvider,
-            ComponentContext componentContext) {
+            final @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
         super.activate(componentContext);
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -69,7 +65,7 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SERVICE.equals(thingTypeUID)) {
-            return new EnergiDataServiceHandler(thing, httpClient, localeProvider, timeZoneProvider);
+            return new EnergiDataServiceHandler(thing, httpClient, timeZoneProvider);
         }
 
         return null;

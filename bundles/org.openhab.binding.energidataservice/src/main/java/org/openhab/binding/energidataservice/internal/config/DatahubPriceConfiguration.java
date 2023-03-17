@@ -30,7 +30,7 @@ import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class DatahubPriceConfiguration extends PriceConfiguration {
+public class DatahubPriceConfiguration {
 
     /**
      * Comma-separated list of charge type codes, e.g. "CD,CD R".

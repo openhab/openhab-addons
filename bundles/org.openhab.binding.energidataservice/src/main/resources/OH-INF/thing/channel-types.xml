@@ -10,7 +10,6 @@
 		<description>Spot price.</description>
 		<category>Price</category>
 		<state readOnly="true" pattern="%.9f"></state>
-		<config-description-ref uri="channel-type:energidataservice:spot-price"/>
 	</channel-type>
 
 	<channel-type id="datahubPrice">

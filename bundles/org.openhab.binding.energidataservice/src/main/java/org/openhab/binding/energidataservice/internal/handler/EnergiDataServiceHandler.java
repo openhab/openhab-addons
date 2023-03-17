@@ -48,11 +48,9 @@ import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRe
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.config.DatahubPriceConfiguration;
 import org.openhab.binding.energidataservice.internal.config.EnergiDataServiceConfiguration;
-import org.openhab.binding.energidataservice.internal.config.PriceConfiguration;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.binding.energidataservice.internal.retry.RetryPolicyFactory;
 import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -81,7 +79,6 @@ import com.google.gson.Gson;
 public class EnergiDataServiceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EnergiDataServiceHandler.class);
-    private final LocaleProvider localeProvider;
     private final TimeZoneProvider timeZoneProvider;
     private final ApiController apiController;
     private final CacheManager cacheManager;
@@ -97,10 +94,8 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             @Nullable BigDecimal transmissionNetTariff) {
     }
 
-    public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, LocaleProvider localeProvider,
-            TimeZoneProvider timeZoneProvider) {
+    public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.apiController = new ApiController(httpClient, timeZoneProvider);
         this.cacheManager = new CacheManager();
@@ -354,50 +349,15 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         if (!isLinked(CHANNEL_CURRENT_SPOT_PRICE)) {
             return;
         }
-        BigDecimal price = getVATAdjustedPrice(cacheManager.getSpotPrice(), CHANNEL_CURRENT_SPOT_PRICE);
-        updateState(CHANNEL_CURRENT_SPOT_PRICE, price != null ? new DecimalType(price) : UnDefType.UNDEF);
+        BigDecimal spotPrice = cacheManager.getSpotPrice();
+        updateState(CHANNEL_CURRENT_SPOT_PRICE, spotPrice != null ? new DecimalType(spotPrice) : UnDefType.UNDEF);
     }
 
     private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
         if (!isLinked(channelId)) {
             return;
         }
-        BigDecimal price = getVATAdjustedPrice(tariff, channelId);
-        updateState(channelId, price != null ? new DecimalType(price) : UnDefType.UNDEF);
-    }
-
-    private @Nullable BigDecimal getVATAdjustedPrice(@Nullable BigDecimal price, String channelId) {
-        if (price == null) {
-            return price;
-        }
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
-            return price;
-        }
-        Object obj = channel.getConfiguration().get(PriceConfiguration.INCLUDE_VAT);
-        if (obj == null) {
-            return price;
-        }
-        Boolean includeVAT = (Boolean) obj;
-        if (includeVAT) {
-            return price.multiply(getVATPercentageFactor());
-        }
-        return price;
-    }
-
-    private BigDecimal getVATPercentageFactor() {
-        String country = localeProvider.getLocale().getCountry();
-        switch (country) {
-            case "DK":
-            case "NO":
-            case "SE":
-                return new BigDecimal("1.25");
-            case "DE":
-                return new BigDecimal("1.19");
-            default:
-                logger.debug("No VAT rate for country {}", country);
-                return BigDecimal.ONE;
-        }
+        updateState(channelId, tariff != null ? new DecimalType(tariff) : UnDefType.UNDEF);
     }
 
     private void updateHourlyPrices() {

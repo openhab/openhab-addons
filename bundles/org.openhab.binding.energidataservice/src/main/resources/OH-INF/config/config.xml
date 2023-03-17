@@ -65,18 +65,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="channel-type:energidataservice:spot-price">
-		<parameter name="includeVAT" type="boolean">
-			<label>Include VAT</label>
-			<description>Add VAT to amount based on regional settings.</description>
-		</parameter>
-	</config-description>
-
 	<config-description uri="channel-type:energidataservice:datahub-price">
-		<parameter name="includeVAT" type="boolean">
-			<label>Include VAT</label>
-			<description>Add VAT to amount based on regional settings.</description>
-		</parameter>
 		<parameter name="chargeTypeCodes" type="text">
 			<label>Charge Type Code Filters</label>
 			<description>Comma-separated list of charge type codes.</description>
