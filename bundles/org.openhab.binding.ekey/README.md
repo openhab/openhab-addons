@@ -20,7 +20,7 @@ The binding uses the following configuration parameters.
 | port      | The port as configured during the UDP Converter configuration.  e.g. 56000 (Binding default)                                                                                             |
 | protocol  | Can be RARE, MULTI or HOME depending on what the system supports. Binding defaults to RARE                                                                                               |
 | delimiter | The delimiter is also defined on the ekey UDP converter - use the ekey configuration software to determine which delimiter is used or to change it.  Binding default is `_` (underscore) |
-| sourceIp  | [Optional] IPv4 address of a received eKey udp packet. Can be different from the ipAddress when using NAT. (e.g. in Kubernetes)                                                          |
+| natIp  | [Optional] IPv4 address of a received eKey udp packet. Can be different from the ipAddress when using NAT. (e.g. in Kubernetes)                                                          |
 
 ## Channels
 

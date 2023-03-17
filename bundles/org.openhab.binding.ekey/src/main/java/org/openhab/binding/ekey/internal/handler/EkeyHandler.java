@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Hans-Jörg Merk - Initial contribution
- * @author Robert Delbrück - Add sourceIp
+ * @author Robert Delbrück - Add natIp
  */
 @NonNullByDefault
 public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener {
@@ -85,7 +85,7 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
                 String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
                 EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
-                        Optional.ofNullable(config.sourceIp).orElse(config.ipAddress), config.port, readerThreadName);
+                        Optional.ofNullable(config.natIp).orElse(config.ipAddress), config.port, readerThreadName);
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();
