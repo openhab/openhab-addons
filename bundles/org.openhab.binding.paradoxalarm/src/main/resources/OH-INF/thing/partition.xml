@@ -62,8 +62,8 @@
 	</channel-type>
 	<channel-type id="detailedState">
 		<item-type>String</item-type>
-		<label>Detailed partition State</label>
-		<description>The detailed state of partition (contains sub-states like Stay in Armed, etc)</description>
+		<label>Detailed Partition State</label>
+		<description>The detailed state of partition (contains sub-states like Stay in Armed, Armed no entry, etc)</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="additionalState">
