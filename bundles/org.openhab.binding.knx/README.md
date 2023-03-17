@@ -177,7 +177,17 @@ Values from plain number channels are sent as-is (without any conversion).
 
 In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device.
 This could for example be the case if a lamp from another binding should be controlled by a KNX wall switch.
-When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
+When a `GroupValue_Read` telegram is sent from the KNX bus to a *-control channel, the bridge responds with a `GroupValue_Response` telegram to the KNX bus.
+
+Control channels are sending commands to Items for `GroupValue_Write` KNX-telegrams on the first specified GA. This means, that rules can be triggered with ´received command', which is in contrast to none *-control channels which can trigger rules only with changed. 
+
+**Hint:** If you want prevent, that OH sends `GroupValue_Write` telegrams by itself to the bus, use the invalid GA address 0/0/0 as first GA. Otherwise you get an echo for all `GroupValue_Write` telegrams sent from your KNX devices.
+
+```
+       Type switch-control        : controlSwitch        "Send Command by pressing KNX button"        [ ga="0/0/0+1/3/11" ]   // 
+```
+
+Please note that `GroupValue_Read` telegrams are still sent from OH to the bus. Disable the `A` flag on actors listingen for telegrams on the bus to prevent unwanted switch behaviours at your actors caused by OH reads.
 
 ##### Channel Type "switch-control"
 
