@@ -99,13 +99,6 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         }
     }
 
-    private void registerListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.registerListener(resourceType, config.id, this);
-        }
-    }
-
     private void unregisterListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
@@ -138,12 +131,12 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
                 return;
             }
 
-            this.connection = bridgeHandler.getWebSocketConnection();
-
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
 
             // Real-time data
-            registerListener();
+            WebSocketConnection socketConnection = bridgeHandler.getWebSocketConnection();
+            this.connection = socketConnection;
+            socketConnection.registerListener(resourceType, config.id, this);
 
             // get initial values
             requestState(this::processStateResponse);
@@ -261,7 +254,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
      *
      * @param object must be serializable and contain the command
      * @param originalCommand the original openHAB command (used for logging purposes)
-     * @param channelUID the channel that this command was send to (used for logging purposes)
+     * @param channelUID the channel that this command was sent to (used for logging purposes)
      * @param acceptProcessing additional processing after the command was successfully send (might be null)
      */
     protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
@@ -274,7 +267,7 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
      *
      * @param object must be serializable and contain the command
      * @param originalCommand the original openHAB command (used for logging purposes)
-     * @param channelUID the channel that this command was send to (used for logging purposes)
+     * @param channelUID the channel that this command was sent to (used for logging purposes)
      * @param commandUrl the command URL
      * @param acceptProcessing additional processing after the command was successfully send (might be null)
      */

@@ -38,7 +38,7 @@ public enum GroupType {
             .collect(Collectors.toMap(v -> v.type, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupType.class);
 
-    private String type;
+    private final String type;
 
     GroupType(String type) {
         this.type = type;

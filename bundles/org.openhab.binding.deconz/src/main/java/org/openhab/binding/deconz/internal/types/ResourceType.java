@@ -42,8 +42,8 @@ public enum ResourceType {
             .collect(Collectors.toMap(v -> v.identifier, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceType.class);
 
-    private String identifier;
-    private String commandUrl;
+    private final String identifier;
+    private final String commandUrl;
     private @Nullable Class<? extends DeconzBaseMessage> expectedMessageType;
 
     ResourceType(String identifier, String commandUrl,

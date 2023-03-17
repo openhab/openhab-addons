@@ -37,7 +37,7 @@ public enum ThermostatMode {
             .collect(Collectors.toMap(v -> v.deconzValue, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(ThermostatMode.class);
 
-    private String deconzValue;
+    private final String deconzValue;
 
     ThermostatMode(String deconzValue) {
         this.deconzValue = deconzValue;

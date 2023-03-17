@@ -47,7 +47,7 @@ public enum LightType {
             .collect(Collectors.toMap(v -> v.type, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(LightType.class);
 
-    private String type;
+    private final String type;
 
     LightType(String type) {
         this.type = type;

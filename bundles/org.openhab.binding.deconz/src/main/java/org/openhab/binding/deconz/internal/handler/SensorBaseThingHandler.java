@@ -25,8 +25,6 @@ import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -164,20 +162,12 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
      */
     protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         Integer batteryLevel = newConfig.battery;
-        switch (channelUID.getId()) {
-            case CHANNEL_BATTERY_LEVEL -> {
-                if (batteryLevel != null) {
-                    updateState(channelUID, new DecimalType(batteryLevel.longValue()));
-                }
+        if (batteryLevel != null) {
+            switch (channelUID.getId()) {
+                case CHANNEL_BATTERY_LEVEL -> updateDecimalTypeChannel(channelUID, batteryLevel.longValue());
+                case CHANNEL_BATTERY_LOW -> updateSwitchChannel(channelUID, batteryLevel <= 10);
+                // other cases covered by subclass
             }
-            case CHANNEL_BATTERY_LOW -> {
-                if (batteryLevel != null) {
-                    updateState(channelUID, OnOffType.from(batteryLevel <= 10));
-                }
-            }
-            default -> {
-            }
-            // other cases covered by sub-class
         }
     }
 
@@ -197,9 +187,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                 }
             }
             case CHANNEL_BATTERY_LOW -> updateSwitchChannel(channelUID, newState.lowbattery);
-            default -> {
-            }
-            // other cases covered by sub-class
+            // other cases covered by subclass
         }
     }
 

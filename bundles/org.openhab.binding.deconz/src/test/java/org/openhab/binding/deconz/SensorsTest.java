@@ -124,7 +124,7 @@ public class SensorsTest {
         sensorThingHandler.messageReceived(sensorMessage);
 
         // ASSERT
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(new QuantityType("129 ppb")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID), eq(new QuantityType<>("129 ppb")));
     }
 
     @Test
