@@ -54,10 +54,12 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         if (criteria.getBeginDate() != null) {
             range.withStart(criteria.getBeginDate().toInstant());
         } else {
-            range = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
+            range.withStart(-100L, ChronoUnit.YEARS); // Flux needs a mandatory start range
         }
         if (criteria.getEndDate() != null) {
             range.withStop(criteria.getEndDate().toInstant());
+        } else {
+            range.withStop(100L, ChronoUnit.YEARS);
         }
         flux = range;
 
