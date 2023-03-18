@@ -562,7 +562,7 @@
 	<channel-type id="locked">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
-		<description>Status of this thermostat's childlock.</description>
+		<description>Status of this thermostat's child lock.</description>
 		<category>Lock</category>
 	</channel-type>
 	<channel-type id="windowopen">
