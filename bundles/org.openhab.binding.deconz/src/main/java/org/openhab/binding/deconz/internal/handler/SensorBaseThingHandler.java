@@ -123,9 +123,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             if (createChannel(thingBuilder, CHANNEL_BATTERY_LOW, ChannelKind.STATE)) {
                 thingEdited = true;
             }
-        }
-
-        if (sensorState.lowbattery != null && sensorConfig.battery == null) {
+        } else if (sensorState.lowbattery != null) {
             // if sensorConfig.battery != null the channel is already added
             if (createChannel(thingBuilder, CHANNEL_BATTERY_LOW, ChannelKind.STATE)) {
                 thingEdited = true;

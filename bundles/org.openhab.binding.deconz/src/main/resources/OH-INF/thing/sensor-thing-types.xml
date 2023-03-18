@@ -575,7 +575,7 @@
 	</channel-type>
 	<channel-type id="heatsetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Target temperature</label>
+		<label>Target Temperature</label>
 		<description>Target temperature</description>
 		<category>Heating</category>
 		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"/>

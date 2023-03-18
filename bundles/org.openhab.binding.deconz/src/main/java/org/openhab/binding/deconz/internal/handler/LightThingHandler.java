@@ -425,7 +425,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     thing.getChannels().stream().map(Channel::getUID).forEach(c -> valueUpdated(c, lightState));
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.sensor-not-reachable");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
                 }
             }
         }
