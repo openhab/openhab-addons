@@ -19,6 +19,16 @@ package org.openhab.binding.paradoxalarm.internal.model;
  */
 public class PartitionState {
 
+    private static final String ARMED = "Armed";
+    private static final String DISARMED = "Disarmed";
+    private static final String IN_ALARM = "InAlarm";
+
+    private static final String ARMED_IN_NO_ENTRY = "NoEntry Armed";
+    private static final String ARMED_IN_STAY = "Stay Armed";
+    private static final String ARMED_IN_AWAY = "Away Armed";
+    private static final String FIRE_ALARM = "Fire Alarm";
+    private static final String AUDIBLE_ALARM = "Audible Alarm";
+    private static final String SILENT_ALARM = "Silent Alarm";
     private boolean isArmed;
     private boolean isArmedInAway;
     private boolean isArmedInStay;
@@ -48,34 +58,34 @@ public class PartitionState {
 
     public String getMainState() {
         if (isInAlarm || isInSilentAlarm || isInAudibleAlarm || isInFireAlarm) {
-            return "InAlarm";
+            return IN_ALARM;
         } else {
-            return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? "Armed" : "Disarmed";
+            return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? ARMED : DISARMED;
         }
     }
 
     public String getDetailedState() {
         if (isInAlarm) {
             if (isInSilentAlarm) {
-                return "SilentAlarm";
+                return SILENT_ALARM;
             } else if (isInAudibleAlarm) {
-                return "AudibleAlarm";
+                return AUDIBLE_ALARM;
             } else if (isInFireAlarm) {
-                return "FireAlarm";
+                return FIRE_ALARM;
             }
-            return "InAlarm";
+            return IN_ALARM;
         } else if (isArmed) {
             if (isArmedInAway) {
-                return "ArmedInAway";
+                return ARMED_IN_AWAY;
             } else if (isArmedInStay) {
-                return "ArmedInStay";
+                return ARMED_IN_STAY;
             } else if (isArmedInNoEntry) {
-                return "ArmedInNoEntry";
+                return ARMED_IN_NO_ENTRY;
             }
-            return "Armed";
+            return ARMED;
         }
 
-        return "Disarmed";
+        return DISARMED;
     }
 
     @Override

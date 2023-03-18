@@ -99,8 +99,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 ### Partition detailed state possible values:
 | Overall state value      | Detailed state value (depending on the sub-state)                                            |
 |--------------------------|----------------------------------------------------------------------------------------------|
-| InAlarm                  | SilentAlarm, AudibleAlarm, FireAlarm, InAlarm (if none of the first three)                   |
-| Armed                    | ArmedInAway, ArmedInStay, ArmedInNoEntry, Armed (if none of the first three)                 |
+| InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
+| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
 | Disarmed                 | Disarmed                                                                                     |
 
 ### Zone channels:

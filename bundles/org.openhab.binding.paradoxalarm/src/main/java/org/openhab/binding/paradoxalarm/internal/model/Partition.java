@@ -40,10 +40,10 @@ public class Partition extends Entity implements Commandable {
 
     public Partition setState(PartitionState state) {
         this.state = state;
-        logger.debug("Partition {}:\t{}", getLabel(), getState().getMainState());
+        logger.debug("Partition {} main state:\t{}", getLabel(), getState().getMainState());
         if (logger.isTraceEnabled()) {
-            logger.trace("Partition {}:\t{}", getLabel(), getState().getDetailedState());
-            logger.trace("Partition {}:\t{}", getLabel(), getState());
+            logger.trace("Partition {} detailed state:\t{}", getLabel(), getState().getDetailedState());
+            logger.trace("Partition {} full state dump:\t{}", getLabel(), getState());
         }
         return this;
     }
