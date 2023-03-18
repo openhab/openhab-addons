@@ -19,7 +19,7 @@
         "lastupdated": "2020-05-31T20:24:55.819",
         "on": true,
         "temperature": 1650,
-        "valve": 99
+        "valve": 255
     },
     "swversion": "20191014",
     "type": "ZHAThermostat",
