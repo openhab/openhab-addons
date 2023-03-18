@@ -82,7 +82,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
@@ -96,7 +96,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\"./.*/;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)"));
+        assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y, stop:100y)"));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])
                 \t|> filter(fn: (r) => (r["_field"] == "value" and r["_value"] <= 90))"""));
@@ -155,7 +155,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])
                 \t|> limit(n:10, offset:20)"""));
@@ -173,7 +173,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])
                 \t|> sort(desc:false, columns:["_time"])"""));
@@ -187,7 +187,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])
                 \t|> last()"""));
@@ -215,7 +215,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
                 \t|> filter(fn: (r) => r["item"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
@@ -228,7 +228,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
-                \t|> range(start:-100y)
+                \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
