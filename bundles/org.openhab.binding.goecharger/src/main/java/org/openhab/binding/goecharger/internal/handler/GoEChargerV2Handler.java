@@ -145,7 +145,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
             case ALLOW_CHARGING:
                 return goeResponse.allowCharging == true ? OnOffType.ON : OnOffType.OFF;
             case TEMPERATURE_TYPE2_PORT:
-                if (goeResponse.temperatures == null) {
+                if (goeResponse.temperatures == null || goeResponse.temperatures.length < 2) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.temperatures[0], SIUnits.CELSIUS);
