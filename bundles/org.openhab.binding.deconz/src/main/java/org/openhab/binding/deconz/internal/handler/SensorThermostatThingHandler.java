@@ -17,7 +17,6 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -26,9 +25,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
-import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.dto.ThermostatUpdateConfig;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
@@ -68,8 +65,9 @@ import com.google.gson.Gson;
 public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_THERMOSTAT);
 
-    private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
-            CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE, CHANNEL_THERMOSTAT_LOCKED);
+    private static final List<String> CONFIG_CHANNELS = List.of(CHANNEL_EXTERNAL_WINDOW_OPEN, CHANNEL_BATTERY_LEVEL,
+            CHANNEL_BATTERY_LOW, CHANNEL_HEATSETPOINT, CHANNEL_TEMPERATURE_OFFSET, CHANNEL_THERMOSTAT_MODE,
+            CHANNEL_THERMOSTAT_LOCKED);
 
     private final Logger logger = LoggerFactory.getLogger(SensorThermostatThingHandler.class);
 
@@ -172,6 +170,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                     updateState(channelUID, "Closed".equals(open) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 }
             }
+            case CHANNEL_THERMOSTAT_ON -> updateSwitchChannel(channelUID, newState.on);
         }
     }
 
@@ -182,6 +181,20 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         if (sensorConfig.locked != null && createChannel(thingBuilder, CHANNEL_THERMOSTAT_LOCKED, ChannelKind.STATE)) {
             thingEdited = true;
         }
+        if (sensorState.valve != null && createChannel(thingBuilder, CHANNEL_VALVE_POSITION, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        if (sensorState.on != null && createChannel(thingBuilder, CHANNEL_THERMOSTAT_ON, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        if (sensorState.windowopen != null && createChannel(thingBuilder, CHANNEL_WINDOW_OPEN, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        if (sensorConfig.externalwindowopen != null
+                && createChannel(thingBuilder, CHANNEL_EXTERNAL_WINDOW_OPEN, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+
         return thingEdited;
     }
 
@@ -206,36 +219,5 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
             return null;
         }
         return newTemperature.scaleByPowerOfTen(2).intValue();
-    }
-
-    @Override
-    protected void processStateResponse(DeconzBaseMessage stateResponse) {
-        if (!(stateResponse instanceof SensorMessage sensorMessage)) {
-            return;
-        }
-
-        SensorState sensorState = sensorMessage.state;
-        SensorConfig sensorConfig = sensorMessage.config;
-
-        boolean changed = false;
-        ThingBuilder thingBuilder = editThing();
-
-        if (sensorState != null && sensorState.windowopen != null) {
-            if (createChannel(thingBuilder, CHANNEL_WINDOW_OPEN, ChannelKind.STATE)) {
-                changed = true;
-            }
-        }
-
-        if (sensorConfig != null && sensorConfig.externalwindowopen != null) {
-            if (createChannel(thingBuilder, CHANNEL_EXTERNAL_WINDOW_OPEN, ChannelKind.STATE)) {
-                changed = true;
-            }
-        }
-
-        if (changed) {
-            updateThing(thingBuilder.build());
-        }
-
-        super.processStateResponse(stateResponse);
     }
 }

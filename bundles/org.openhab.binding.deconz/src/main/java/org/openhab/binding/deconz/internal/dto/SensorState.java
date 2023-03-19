@@ -79,6 +79,7 @@ public class SensorState {
     public @Nullable Integer gesture;
     /** Thermostat may provide this value. */
     public @Nullable Integer valve;
+    public @Nullable Boolean on;
     /** air quality sensors provide this value */
     public @Nullable String airquality;
     public @Nullable Integer airqualityppb;
