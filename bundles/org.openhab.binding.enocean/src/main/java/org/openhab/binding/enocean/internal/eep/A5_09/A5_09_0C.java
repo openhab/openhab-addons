@@ -35,24 +35,24 @@ public class A5_09_0C extends A5_09_05 {
     }
 
     @Override
-    protected String[] get_VOC_Ids() {
-        String[] VOC_Ids_super = super.get_VOC_Ids();
-        int elFromSuper = VOC_Ids_super.length - 2;
-        String[] VOC_Ids_extension = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene",
-                "Trichloroethylene", "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
-        String[] VOC_Ids_extended = new String[elFromSuper + VOC_Ids_extension.length];
+    protected String[] getVOCIdentifications() {
+        String[] VOCIdsSuper = super.getVOCIdentifications();
+        int elFromSuper = VOCIdsSuper.length - 2;
+        String[] VOCIdsExtension = new String[] { "Naphthalene", "4-Phenylcyclohexene", "Limonene", "Trichloroethylene",
+                "Isovaleric acid", "Indole", "Cadaverine", "Putrescine", "Caproic acid", "Ozone" };
+        String[] VOCIdsExtended = new String[elFromSuper + VOCIdsExtension.length];
 
-        System.arraycopy(VOC_Ids_super, 0, VOC_Ids_extended, 0, elFromSuper);
-        System.arraycopy(VOC_Ids_extension, 0, VOC_Ids_extended, elFromSuper, VOC_Ids_extension.length);
+        System.arraycopy(VOCIdsSuper, 0, VOCIdsExtended, 0, elFromSuper);
+        System.arraycopy(VOCIdsExtension, 0, VOCIdsExtended, elFromSuper, VOCIdsExtension.length);
 
-        return VOC_Ids_extended;
+        return VOCIdsExtended;
     }
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
 
-        if (channelId.equals(CHANNEL_VOC)) {
+        if (CHANNEL_VOC.equals(channelId)) {
             double scaledVOC = getUnscaledVOCValue() * getScalingFactor();
             if (getBit(getDB_0(), 2)) {
                 return new QuantityType<>(scaledVOC, Units.MICROGRAM_PER_CUBICMETRE);

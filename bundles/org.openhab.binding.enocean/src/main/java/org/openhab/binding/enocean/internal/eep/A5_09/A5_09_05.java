@@ -38,7 +38,7 @@ public class A5_09_05 extends A5_09 {
 
     protected double[] ScaleMultiplier = new double[] { 0.01, 0.1, 1, 10 };
 
-    protected String[] get_VOC_Ids() {
+    protected String[] getVOCIdentifications() {
         return new String[] { "VOCT", "Formaldehyde", "Benzene", "Styrene", "Toluene", "Tetrachloroethylene", "Xylene",
                 "n-Hexane", "n-Octane", "Cyclopentane", "Methanol", "Ethanol", "1-Pentanol", "Acetone",
                 "ethylene Oxide", "Acetaldehyde ue", "Acetic Acid", "Propionine Acid", "Valeric Acid", "Butyric Acid",
@@ -48,10 +48,6 @@ public class A5_09_05 extends A5_09 {
 
     protected long getUnscaledVOCValue() {
         return getDBByOffsetSizeValue(0, 16);
-    }
-
-    protected double getVODID() {
-        return getDB_1Value();
     }
 
     protected double getScalingFactor() {
@@ -65,16 +61,16 @@ public class A5_09_05 extends A5_09 {
     }
 
     protected String getVOCID() {
-        int voc_id = getDB_1Value();
-        String[] VOC_Indentifications = get_VOC_Ids();
-        if (voc_id == 255) {
-            return VOC_Indentifications[VOC_Indentifications.length - 1];
-        } else if (voc_id < 0 || voc_id >= VOC_Indentifications.length - 1) {
-            logger.debug("Invalid value according to enocean specification for A5_09 VOC Identification {}", voc_id);
+        int vocId = getDB_1Value();
+        String[] VOCIdentifications = getVOCIdentifications();
+        if (vocId == 255) {
+            return VOCIdentifications[VOCIdentifications.length - 1];
+        } else if (vocId < 0 || vocId >= VOCIdentifications.length - 1) {
+            logger.debug("Invalid value according to enocean specification for A5_09 VOC Identification {}", vocId);
             return "";
         }
 
-        return VOC_Indentifications[voc_id];
+        return VOCIdentifications[vocId];
     }
 
     @Override
