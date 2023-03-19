@@ -182,6 +182,12 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         if (sensorConfig.locked != null && createChannel(thingBuilder, CHANNEL_THERMOSTAT_LOCKED, ChannelKind.STATE)) {
             thingEdited = true;
         }
+        if (sensorState.valve != null && createChannel(thingBuilder, CHANNEL_VALVE_POSITION, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
+        if (sensorState.on != null && createChannel(thingBuilder, CHANNEL_THERMOSTAT_ON, ChannelKind.STATE)) {
+            thingEdited = true;
+        }
         return thingEdited;
     }
 

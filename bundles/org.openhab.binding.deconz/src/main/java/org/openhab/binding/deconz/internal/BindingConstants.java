@@ -110,6 +110,8 @@ public class BindingConstants {
     public static final String CHANNEL_THERMOSTAT_MODE = "mode";
     public static final String CHANNEL_THERMOSTAT_LOCKED = "locked";
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
+
+    public static final String CHANNEL_THERMOSTAT_ON = "on";
     public static final String CHANNEL_VALVE_POSITION = "valve";
     public static final String CHANNEL_WINDOW_OPEN = "windowopen";
     public static final String CHANNEL_EXTERNAL_WINDOW_OPEN = "externalwindowopen";
