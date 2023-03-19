@@ -88,7 +88,7 @@ public class SonnenHandler extends BaseThingHandler {
             return;
         }
 
-        if (!config.authToken.equals("")) {
+        if (!config.authToken.isEmpty()) {
             sonnenAPIV2 = true;
         }
 
