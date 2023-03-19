@@ -26,9 +26,9 @@ import com.google.gson.annotations.SerializedName;
 public class SonnenJsonPowerMeterDataDTO {
 
     @SerializedName("kwh_exported")
-    float kwhExported;
+    private float kwhExported;
     @SerializedName("kwh_imported")
-    float kwhImported;
+    private float kwhImported;
 
     /**
      * @return the kwh_exported

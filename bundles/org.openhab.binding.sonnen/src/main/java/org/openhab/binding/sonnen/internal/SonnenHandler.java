@@ -88,7 +88,7 @@ public class SonnenHandler extends BaseThingHandler {
             return;
         }
 
-        if (config.authToken != null) {
+        if (!config.authToken.equals("")) {
             sonnenAPIV2 = true;
         }
 
@@ -209,11 +209,11 @@ public class SonnenHandler extends BaseThingHandler {
             if (dataPM != null) {
                 switch (channelId) {
                     case ENERGYIMPORTEDSTATE:
-                        state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhImported(), Units.WATT_HOUR);
                         update(state, channelId);
                         break;
                     case ENERGYEXPORTEDSTATE:
-                        state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
+                        state = new QuantityType<Energy>(dataPM[1].getKwhExported(), Units.WATT_HOUR);
                         update(state, channelId);
                         break;
                 }
