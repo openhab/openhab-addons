@@ -64,7 +64,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     public void initialize() {
         super.initialize();
         freshestEventTime = null;
-        securityId = handler.getConfiguration().as(HomeConfiguration.class).getId(FeatureArea.SECURITY);
+        securityId = handler.getConfiguration().as(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
     }
 
     @Override
@@ -109,7 +109,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         if (objectId == null) {
             return;
         }
-        handler.getActiveChildren().stream().filter(child -> child.getId().equals(objectId))
+        handler.getActiveChildren(FeatureArea.SECURITY).filter(child -> child.getId().equals(objectId))
                 .forEach(child -> child.setNewData(homeEvent.ignoringForThingUpdate()));
     }
 

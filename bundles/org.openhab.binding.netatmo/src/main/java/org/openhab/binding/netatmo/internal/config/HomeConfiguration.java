@@ -28,10 +28,10 @@ public class HomeConfiguration extends NAThingConfiguration {
 
     @Override
     public String getId() {
-        return getId(energyId.isBlank() ? FeatureArea.SECURITY : FeatureArea.ENERGY);
+        return getIdForArea(energyId.isBlank() ? FeatureArea.SECURITY : FeatureArea.ENERGY);
     }
 
-    public String getId(FeatureArea feature) {
+    public String getIdForArea(FeatureArea feature) {
         return FeatureArea.ENERGY.equals(feature) ? energyId.isBlank() ? id : energyId
                 : FeatureArea.SECURITY.equals(feature) ? securityId.isBlank() ? id : securityId : id;
     }
