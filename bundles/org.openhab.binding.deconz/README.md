@@ -156,8 +156,9 @@ The sensor devices support some of the following channels:
 | carbonmonoxide     | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
 | color              | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
 | windowopen         | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
-| externalwindowopen | Contact                  | R/W         | forward a status to a theromastat (some devices)                                          | thermostat                                        |
-| locked             | Switch                   | R/W         | reports/sets the childlock on some thermostats                                            | thermostat                                        |
+| externalwindowopen | Contact                  | R/W         | forward a status to a thermostat (some devices)                                           | thermostat                                        |
+| on                 | Switch                   | R           | some thermostats report their output state as switch                                      | thermostat                                        |
+| locked             | Switch                   | R/W         | reports/sets the child lock on some thermostats                                           | thermostat                                        |
 | airquality         | String                   | R           | Airquality as string                                                                      | airqualitysensor                                  |
 | airqualityppb      | Number:Dimensionless     | R           | Airquality (in parts-per-billion)                                                         | airqualitysensor                                  |
 | moisture           | Number:Dimensionless     | R           | Moisture                                                                                  | moisturesensor                                    |

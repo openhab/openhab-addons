@@ -491,7 +491,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
-		<label>Carbon-monoxide Sensor</label>
+		<label>Air Quality Sensor</label>
 		<channels>
 			<channel typeId="airquality" id="airquality"/>
 			<channel typeId="airqualityppb" id="airqualityppb"/>
@@ -552,7 +552,6 @@
 			<channel typeId="heatsetpoint" id="heatsetpoint"/>
 			<channel typeId="mode" id="mode"/>
 			<channel typeId="offset" id="offset"/>
-			<channel typeId="valve" id="valve"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 		<representation-property>uid</representation-property>
@@ -604,6 +603,11 @@
 		<label>Valve position</label>
 		<description>Current valve position</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="on">
+		<item-type>Switch</item-type>
+		<label>Heater State</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
