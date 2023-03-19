@@ -17,63 +17,95 @@
 		<label>MobileLink Generator</label>
 		<description>MobileLink Generator</description>
 		<channels>
-			<channel id="connected" typeId="connected"/>
-			<channel id="greenLight" typeId="greenLight"/>
-			<channel id="yellowLight" typeId="yellowLight"/>
-			<channel id="redLight" typeId="redLight"/>
-			<channel id="blueLight" typeId="blueLight"/>
-			<channel id="statusDate" typeId="statusDate"/>
+			<channel id="heroImageUrl" typeId="heroImageUrl"/>
+			<channel id="statusLabel" typeId="statusLabel"/>
+			<channel id="statusText" typeId="statusText"/>
+			<channel id="activationDate" typeId="activationDate"/>
+			<channel id="deviceSsid" typeId="deviceSsid"/>
 			<channel id="status" typeId="status"/>
-			<channel id="currentAlarmDescription" typeId="currentAlarmDescription"/>
+			<channel id="isConnected" typeId="isConnected"/>
+			<channel id="isConnecting" typeId="isConnecting"/>
+			<channel id="showWarning" typeId="showWarning"/>
+			<channel id="hasMaintenanceAlert" typeId="hasMaintenanceAlert"/>
+			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="connectionTime" typeId="connectionTime"/>
 			<channel id="runHours" typeId="runHours"/>
-			<channel id="exerciseHours" typeId="exerciseHours"/>
-			<channel id="fuelType" typeId="fuelType"/>
-			<channel id="fuelLevel" typeId="fuelLevel"/>
 			<channel id="batteryVoltage" typeId="batteryVoltage"/>
-			<channel id="serviceStatus" typeId="serviceStatus"/>
+			<channel id="hoursOfProtection" typeId="hoursOfProtection"/>
+			<channel id="signalStrength" typeId="signalStrength"/>
 		</channels>
 		<representation-property>generatorId</representation-property>
 		<config-description-ref uri="thing-type:generacmobilelink:generator"/>
 	</thing-type>
 
-	<channel-type id="connected">
-		<item-type>Switch</item-type>
-		<label>Connected</label>
+	<channel-type id="heroImageUrl">
+		<item-type>String</item-type>
+		<label>Hero Image URL</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="greenLight">
-		<item-type>Switch</item-type>
-		<label>Green Light Status</label>
+	<channel-type id="statusLabel">
+		<item-type>String</item-type>
+		<label>Status Label</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="yellowLight">
-		<item-type>Switch</item-type>
-		<label>Yellow Light Status</label>
+	<channel-type id="statusText">
+		<item-type>String</item-type>
+		<label>Status Text</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="redLight">
-		<item-type>Switch</item-type>
-		<label>Red Light Status</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="blueLight">
-		<item-type>Switch</item-type>
-		<label>Blue Light Status</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="statusDate">
+	<channel-type id="activationDate">
 		<item-type>DateTime</item-type>
-		<label>Last Status Date</label>
+		<label>Activation Date</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="deviceSsid">
+		<item-type>String</item-type>
+		<label>Status Text</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">Ready</option>
+				<option value="2">Running</option>
+				<option value="3">Exercising</option>
+				<option value="4">Warning</option>
+				<option value="5">Stopped</option>
+				<option value="5">Communication Issue</option>
+				<option value="7">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="isConnected">
+		<item-type>Switch</item-type>
+		<label>Is Connected</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="currentAlarmDescription">
-		<item-type>String</item-type>
-		<label>Current Alarm Description</label>
+	<channel-type id="isConnecting">
+		<item-type>Switch</item-type>
+		<label>Is Connecting</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="showWarning">
+		<item-type>Switch</item-type>
+		<label>Show Warning</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hasMaintenanceAlert">
+		<item-type>Switch</item-type>
+		<label>Has Maintenance Alert</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="connectionTime">
+		<item-type>DateTime</item-type>
+		<label>Connection Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runHours">
@@ -81,29 +113,19 @@
 		<label>Number of Hours Run</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="exerciseHours">
-		<item-type>Number:Time</item-type>
-		<label>Number of Hours Exercised</label>
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="fuelType">
-		<item-type>Number</item-type>
-		<label>Fuel Type</label>
-		<state readOnly="true"/>
+	<channel-type id="hoursOfProtection">
+		<item-type>Number:Time</item-type>
+		<label>Number of Hours of Protection</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="fuelLevel">
+	<channel-type id="signalStrength">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fuel Level</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="batteryVoltage">
-		<item-type>String</item-type>
-		<label>Battery Voltage Status</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="serviceStatus">
-		<item-type>Switch</item-type>
-		<label>Service Status</label>
-		<state readOnly="true"/>
+		<label>Signal Strength</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

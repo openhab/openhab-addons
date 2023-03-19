@@ -10,14 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.generacmobilelink.internal.dto;
+package org.openhab.binding.generacmobilelink.internal.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link ErrorResponseDTO} object from the MobileLink API
+ * The {@link GeneracMobileLinkGeneratorConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class ErrorResponseDTO {
-    public Integer errorCode;
-    public String errorMessage;
+@NonNullByDefault
+public class GeneracMobileLinkGeneratorConfiguration {
+
+    public String generatorId = "";
 }

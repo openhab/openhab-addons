@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
-import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.Apparatus;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering generator things
+ * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering device things
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -52,12 +52,13 @@ public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService 
         return false;
     }
 
-    public void generatorDiscovered(GeneratorStatusDTO generator, ThingUID bridgeUID) {
+    public void generatorDiscovered(Apparatus apparatus, ThingUID bridgeUID) {
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, bridgeUID,
-                        String.valueOf(generator.gensetID)))
-                .withLabel("MobileLink Generator " + generator.generatorName)
-                .withProperty("generatorId", String.valueOf(generator.gensetID))
+                        String.valueOf(apparatus.apparatusId)))
+                .withLabel("MobileLink Generator " + apparatus.name)
+                .withProperty("serialNumber", String.valueOf(apparatus.serialNumber))
+                .withProperty("generatorId", String.valueOf(apparatus.apparatusId))
                 .withRepresentationProperty("generatorId").withBridge(bridgeUID).build();
         thingDiscovered(result);
     }
