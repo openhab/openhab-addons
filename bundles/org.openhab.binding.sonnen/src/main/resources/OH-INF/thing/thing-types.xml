@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="powerMeter" type="boolean">
 				<label>sonnen API Power Meter</label>
-				<description>If activated, the power meter values will be also retrieved. For advanced users.</description>
+				<description>If activated, the power meter values will also be retrieved. For advanced users.</description>
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
@@ -145,13 +145,13 @@
 	<channel-type id="energyImportedState">
 		<item-type>Number:Energy</item-type>
 		<label>kWh Imported per Day</label>
-		<description>Indicates the imported kWh per Day, starting every day at midnight.</description>
+		<description>Indicates the imported kWh per day, starting every day at midnight.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="energyExportedState">
 		<item-type>Number:Energy</item-type>
 		<label>kWh Exported per Day</label>
-		<description>Indicates the exported kWh per Day, starting every day at midnight.</description>
+		<description>Indicates the exported kWh per day, starting every day at midnight.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -203,7 +203,7 @@ public class SonnenHandler extends BaseThingHandler {
             // battery was installed.
             SonnenJsonPowerMeterDataDTO[] dataPM = null;
             if (config.powerMeter) {
-                dataPM = serviceCommunication.getPowerMeterDatas();
+                dataPM = serviceCommunication.getPowerMeterData();
             }
 
             if (dataPM != null) {

@@ -39,7 +39,7 @@ public class SonnenJSONCommunication {
 
     private Gson gson;
     private @Nullable SonnenJsonDataDTO batteryData;
-    private SonnenJsonPowerMeterDataDTO @Nullable [] powerMeterDatas;
+    private SonnenJsonPowerMeterDataDTO @Nullable [] powerMeterData;
 
     public SonnenJSONCommunication() {
         gson = new Gson();
@@ -72,7 +72,7 @@ public class SonnenJSONCommunication {
                     throw new IOException("HttpUtil.executeUrl returned null");
                 }
 
-                powerMeterDatas = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
+                powerMeterData = gson.fromJson(response, SonnenJsonPowerMeterDataDTO[].class);
             }
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
@@ -84,7 +84,7 @@ public class SonnenJSONCommunication {
                 logger.debug("Error in establishing connection: {}", e.getMessage());
             }
             batteryData = null;
-            powerMeterDatas = new SonnenJsonPowerMeterDataDTO[] {};
+            powerMeterData = new SonnenJsonPowerMeterDataDTO[] {};
         }
         return result;
     }
@@ -131,12 +131,12 @@ public class SonnenJSONCommunication {
     }
 
     /**
-     * Returns the actual stored Power Meter Datas Array
+     * Returns the actual stored Power Meter Data Array
      *
      * @return JSON Data from the Power Meter or null if request failed
      */
-    public SonnenJsonPowerMeterDataDTO @Nullable [] getPowerMeterDatas() {
-        return this.powerMeterDatas;
+    public SonnenJsonPowerMeterDataDTO @Nullable [] getPowerMeterData() {
+        return this.powerMeterData;
     }
 
     /**
