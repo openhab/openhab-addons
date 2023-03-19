@@ -39,7 +39,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

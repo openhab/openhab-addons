@@ -491,7 +491,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
-		<label>Carbon-monoxide Sensor</label>
+		<label>Air Quality Sensor</label>
 		<channels>
 			<channel typeId="airquality" id="airquality"/>
 			<channel typeId="airqualityppb" id="airqualityppb"/>
