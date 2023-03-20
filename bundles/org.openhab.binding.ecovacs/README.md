@@ -47,11 +47,12 @@ For the cloud API thing, the following parameters must be configured:
 | password  | The cloud account password                                                                                                    |
 | continent | The continent you are residing on, or 'World' if none matches. This is used to select the correct cloud server to connect to. |
 
-For the vacuum things, there is no required configuration. Optionally, you can tweak the following parameters:
+For the vacuum things, there is no required configuration (when using discovery). The following parameters exist:
 
-| Config  | Description                                                                            |
-|---------|----------------------------------------------------------------------------------------|
-| refresh | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes. |
+| Config       | Description                                                                                                                   |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------|
+| serialNumber | Required: The device's serial number as printed on the barcode below the dust bin. Filled automatically when using discovery. |
+| refresh | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes.                                             |
 
 ## Channels
 
@@ -168,7 +169,7 @@ If you also want to enter those manually, the syntax is as follows:
 ```java
 Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password="yourpassword", continent="ww" ]
 {
-    Thing vacuum myDeebot "Deebot Vacuum" [ serialNumber="serial as printed on label" ]
+    Thing vacuum myDeebot "Deebot Vacuum" [ serialNumber="serial as printed on label below dust bin" ]
 }
 ```
 
