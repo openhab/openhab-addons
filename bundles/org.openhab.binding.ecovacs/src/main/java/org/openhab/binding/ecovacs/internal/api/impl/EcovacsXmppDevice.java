@@ -220,8 +220,6 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
             listener.onFirmwareVersionChanged(this, sendCommand(new GetFirmwareVersionCommand()));
             pingHandler.start();
-        } catch (EcovacsApiException e) {
-            throw e;
         } catch (SASLErrorException e) {
             throw new EcovacsApiException(e, true);
         } catch (XMPPException | SmackException | InterruptedException | IOException e) {

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ecovacs.internal.api;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Response;
 
@@ -21,7 +19,7 @@ import org.eclipse.jetty.client.api.Response;
  * @author Danny Baumann - Initial contribution
  */
 @NonNullByDefault
-public class EcovacsApiException extends IOException {
+public class EcovacsApiException extends Exception {
     private static final long serialVersionUID = -5903398729974682356L;
     public final boolean isAuthFailure;
 
