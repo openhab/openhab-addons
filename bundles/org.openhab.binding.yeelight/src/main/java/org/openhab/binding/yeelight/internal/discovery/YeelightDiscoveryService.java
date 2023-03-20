@@ -99,6 +99,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
+            case strip6:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             case desklamp:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DESKLAMP, device.getDeviceId());
@@ -125,6 +126,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ct_bulb:
                 return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
+            case strip6:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             case desklamp:
                 return YeelightBindingConstants.THING_TYPE_DESKLAMP;
