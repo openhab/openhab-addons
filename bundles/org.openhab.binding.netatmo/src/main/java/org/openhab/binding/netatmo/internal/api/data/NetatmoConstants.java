@@ -197,10 +197,13 @@ public class NetatmoConstants {
         WRITE_DOORBELL,
         @SerializedName("access_doorbell")
         ACCESS_DOORBELL,
+        @SerializedName("read_carbonmonoxidedetector")
+        READ_CARBONMONOXIDEDETECTOR,
         UNKNOWN;
     }
 
     private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
+    private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR };
     private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
     private static final Scope[] WEATHER_SCOPES = { Scope.READ_STATION };
     private static final Scope[] THERMOSTAT_SCOPES = { Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT };
@@ -212,7 +215,7 @@ public class NetatmoConstants {
         AIR_CARE(AIR_CARE_SCOPES),
         WEATHER(WEATHER_SCOPES),
         ENERGY(THERMOSTAT_SCOPES),
-        SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES),
+        SECURITY(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES, CARBON_MONOXIDE_SCOPES),
         NONE();
 
         public static String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)

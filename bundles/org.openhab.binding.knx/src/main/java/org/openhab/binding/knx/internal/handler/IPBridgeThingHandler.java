@@ -175,8 +175,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
+            } else {
+                localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
-            localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);

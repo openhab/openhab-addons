@@ -3,7 +3,7 @@
         "battery": 98,
         "on": true,
         "pending" : [],
-        "reachable": false
+        "reachable": true
     },
     "ep": 1,
     "etag": "717549a99371f3ea1a5f0b40f1537094",
