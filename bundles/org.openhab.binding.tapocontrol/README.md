@@ -73,7 +73,7 @@ All devices support some of the following channels:
 |           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900                                     |
 |           | colorTemperature | Number                 | White-Color-Temp 2500-6500K         | L510, L530, L610, L630, L900                                     |
 |           | color            | Color                  | Color                               | L530, L630, L900                                                 |
-| effects   | fxName           | String                 | active lightning effect (readonly)  | L530                                                             |
+| effects   | fxName           | String                 | Active lightning effect (readonly)  | L530                                                             |
 | device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
 |           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
 | energy    | actualPower      | Number:Power           | actual Power (Watt)                 | P110, P115                                                       |

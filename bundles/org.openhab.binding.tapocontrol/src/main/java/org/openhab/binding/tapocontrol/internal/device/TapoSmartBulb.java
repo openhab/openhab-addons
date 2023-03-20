@@ -66,7 +66,7 @@ public class TapoSmartBulb extends TapoDevice {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    connector.sendDeviceCommand(DEVICE_PROPERTY_ON, command == OnOffType.ON);
+                    connector.sendDeviceCommand(JSON_KEY_ON, command == OnOffType.ON);
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
@@ -114,11 +114,11 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setBrightness(Integer newBrightness) {
         /* switch off if 0 */
         if (newBrightness == 0) {
-            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
+            connector.sendDeviceCommand(JSON_KEY_ON, false);
         } else {
             HashMap<String, Object> newState = new HashMap<>();
-            newState.put(DEVICE_PROPERTY_ON, true);
-            newState.put(DEVICE_PROPERTY_BRIGHTNES, newBrightness);
+            newState.put(JSON_KEY_ON, true);
+            newState.put(JSON_KEY_BRIGHTNES, newBrightness);
             connector.sendDeviceCommands(newState);
         }
     }
@@ -130,11 +130,11 @@ public class TapoSmartBulb extends TapoDevice {
      */
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_HUE, command.getHue().intValue());
-        newState.put(DEVICE_PROPERTY_SATURATION, command.getSaturation().intValue());
-        newState.put(DEVICE_PROPERTY_BRIGHTNES, command.getBrightness().intValue());
-        newState.put(PROPERTY_LIGHTNING_DYNAMIC_ENABLE, false);
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_HUE, command.getHue().intValue());
+        newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
+        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness().intValue());
+        newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, false);
         connector.sendDeviceCommands(newState);
     }
 
@@ -146,25 +146,25 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setColorTemp(Integer colorTemp) {
         HashMap<String, Object> newState = new HashMap<>();
         colorTemp = limitVal(colorTemp, BULB_MIN_COLORTEMP, BULB_MAX_COLORTEMP);
-        newState.put(DEVICE_PROPERTY_ON, true);
-        newState.put(DEVICE_PROPERTY_COLORTEMP, colorTemp);
+        newState.put(JSON_KEY_ON, true);
+        newState.put(JSON_KEY_COLORTEMP, colorTemp);
         connector.sendDeviceCommands(newState);
     }
 
     /**
-     * SET LIGHT-EFFECT
+     * Set light effect
      * 
      * @param fxName (String) id of LightEffect
      */
     protected void setLightEffect(String fxName) {
         HashMap<String, Object> newState = new HashMap<>();
         if (fxName.length() > 0) {
-            newState.put(DEVICE_PROPERTY_ON, true);
-            newState.put(PROPERTY_LIGHTNING_DYNAMIC_ENABLE, true);
-            newState.put(PROPERTY_LIGHTNING_DYNAMIC_ID, fxName);
+            newState.put(JSON_KEY_ON, true);
+            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, true);
+            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ID, fxName);
         } else {
-            newState.put(PROPERTY_LIGHTNING_DYNAMIC_ENABLE, false);
-            newState.put(PROPERTY_LIGHTNING_DYNAMIC_ID, "");
+            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE, false);
+            newState.put(JSON_KEY_LIGHTNING_DYNAMIC_ID, "");
         }
         connector.sendDeviceCommands(newState);
     }
@@ -193,7 +193,7 @@ public class TapoSmartBulb extends TapoDevice {
     }
 
     /**
-     * SET LIGTH EFFECT CHANNELS
+     * Set light effect channels
      * 
      * @param lightEffect
      */

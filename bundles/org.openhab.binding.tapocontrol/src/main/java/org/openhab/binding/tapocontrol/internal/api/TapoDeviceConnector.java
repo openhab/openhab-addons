@@ -257,7 +257,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
             sendSecurePasstrhroug(payload, queryCommand);
         } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastQuery);
+            logger.debug("({}) command not sent because of min_gap: {}", uid, now + " <- " + lastQuery);
         }
     }
 
@@ -313,7 +313,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleDeviceResult(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(DEVICE_PROPERTY_ID)) {
+        if (jsnResult.has(JSON_KEY_ID)) {
             this.deviceInfo = new TapoDeviceInfo(jsnResult);
             this.device.setDeviceInfo(deviceInfo);
         } else {
@@ -331,7 +331,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleEnergyResult(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(ENERGY_PROPERTY_POWER)) {
+        if (jsnResult.has(JSON_KEY_ENERGY_POWER)) {
             this.energyData = new TapoEnergyData(jsnResult);
             this.device.setEnergyData(energyData);
         } else {
@@ -348,7 +348,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     @Override
     protected void handleChildDevices(String responseBody) {
         JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(CHILD_PROPERTY_START_INDEX)) {
+        if (jsnResult.has(JSON_KEY_CHILD_START_INDEX)) {
             this.childData = Objects.requireNonNull(GSON.fromJson(jsnResult, TapoChildData.class));
             this.device.setChildData(childData);
         } else {

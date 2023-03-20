@@ -60,17 +60,17 @@ public class TapoLightEffect {
      */
     public TapoLightEffect setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no lighning effect */
-        if (jso.has(DEVICE_PROPERTY_EFFECT)) {
-            this.jsonObject = jso.getAsJsonObject(DEVICE_PROPERTY_EFFECT);
-            this.enable = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_EFFECT_ENABLE);
-            this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_ID);
-            this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
-            this.custom = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
-            this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
-        } else if (jso.has(PROPERTY_LIGHTNING_DYNAMIC_ENABLE)) {
+        if (jso.has(JSON_KEY_LIGHTNING_EFFECT)) {
+            this.jsonObject = jso.getAsJsonObject(JSON_KEY_LIGHTNING_EFFECT);
+            this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ENABLE);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_ID);
+            this.name = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_EFFECT_NAME);
+            this.custom = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_EFFECT_CUSTOM);
+            this.brightness = jsonObjectToInt(jsonObject, JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS);
+        } else if (jso.has(JSON_KEY_LIGHTNING_DYNAMIC_ENABLE)) {
             this.jsonObject = jso;
-            this.enable = jsonObjectToBool(jsonObject, PROPERTY_LIGHTNING_DYNAMIC_ENABLE);
-            this.id = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_DYNAMIC_ID);
+            this.enable = jsonObjectToBool(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ENABLE);
+            this.id = jsonObjectToString(jsonObject, JSON_KEY_LIGHTNING_DYNAMIC_ID);
         } else {
             setDefaults();
         }

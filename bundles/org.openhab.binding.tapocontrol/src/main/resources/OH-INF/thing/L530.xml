@@ -34,8 +34,8 @@
 	<!-- effect name -->
 	<channel-type id="l530fxList">
 		<item-type>String</item-type>
-		<label>Ligth Effect Theme</label>
-		<description>Name of active LightningEffect</description>
+		<label>Light Effect Theme</label>
+		<description>Name of active lightning effect</description>
 		<state readOnly="true">
 			<options>
 				<option value="">None (No FX)</option>
