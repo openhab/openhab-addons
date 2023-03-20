@@ -415,8 +415,8 @@ public class Clip2Bridge implements Closeable {
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
     private final Gson jsonParser = new Gson();
-    private final Object restartLock = new Object();
 
+    private boolean restarting = false;
     private State onlineState = State.CLOSED;
     private Instant lastRequestTime = Instant.MIN;
     private Instant sessionExpireTime = Instant.MAX;
@@ -479,7 +479,7 @@ public class Clip2Bridge implements Closeable {
     public void close() {
         synchronized (this) {
             logger.debug("close()");
-            boolean wasActive = onlineState == State.ACTIVE;
+            boolean notifyHandler = (onlineState == State.ACTIVE) && !restarting;
             onlineState = State.CLOSED;
             closeCheckAliveTask();
             closeSession();
@@ -488,7 +488,7 @@ public class Clip2Bridge implements Closeable {
             } catch (Exception e) {
                 // ignore
             }
-            if (wasActive) {
+            if (notifyHandler) {
                 bridgeHandler.onConnectionOffline();
             }
         }
@@ -527,29 +527,34 @@ public class Clip2Bridge implements Closeable {
      * @param error the type of error.
      */
     private void fatalError(Object cause, BaseAdapter.Error error) {
-        if (onlineState == State.CLOSED) {
+        if (restarting || (onlineState == State.CLOSED)) {
             return;
         }
         String causeId = cause.getClass().getSimpleName();
         if (cause instanceof ContentAdapter) {
             logger.debug("fatalError() {} {} ignoring", causeId, error);
         } else if (error == AdapterErrorHandler.Error.GO_AWAY) {
-            synchronized (restartLock) {
-                State priorState = onlineState;
+            logger.debug("fatalError() {} {} reconnecting", causeId, error);
+
+            // close
+            restarting = true;
+            boolean active = onlineState == State.ACTIVE;
+            close();
+
+            // schedule task to open again
+            bridgeHandler.getScheduler().schedule(() -> {
                 try {
-                    logger.debug("fatalError() {} {} reconnecting", causeId, error);
-                    onlineState = State.PASSIVE; // suppress handler notification
-                    close();
                     openPassive();
-                    if (priorState == State.ACTIVE) {
+                    if (active) {
                         openActive();
                     }
                 } catch (ApiException | HttpUnauthorizedException e) {
                     logger.warn("fatalError() {} {} reconnect failed {}", causeId, error, e.getMessage(), e);
-                    onlineState = priorState; // re-enable handler notification
+                    restarting = false;
                     close();
                 }
-            }
+                restarting = false;
+            }, 5, TimeUnit.SECONDS);
         } else {
             logger.warn("fatalError() {} {} closing", causeId, error);
             close();
@@ -581,6 +586,7 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if anything fails.
      */
     public Resources getResources(ResourceReference reference) throws ApiException {
+        sleepDuringRestart();
         if (onlineState == State.CLOSED) {
             throw new ApiException("getResources() offline");
         }
@@ -824,6 +830,7 @@ public class Clip2Bridge implements Closeable {
      * @throws ApiException if something fails.
      */
     public void putResource(Resource resource) throws ApiException {
+        sleepDuringRestart();
         if (onlineState == State.CLOSED) {
             return;
         }
@@ -916,6 +923,24 @@ public class Clip2Bridge implements Closeable {
             // fall through
         }
         throw new HttpUnauthorizedException("Application key registration failed");
+    }
+
+    /**
+     * Sleep the caller during any period when the connection is marked as restarting.
+     * Force time out after 10 seconds.
+     */
+    private void sleepDuringRestart() {
+        int iteration = 0;
+        while (restarting) {
+            try {
+                Thread.sleep(500);
+                if (++iteration > 20) {
+                    break;
+                }
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
     }
 
     /**
