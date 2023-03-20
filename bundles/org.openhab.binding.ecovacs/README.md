@@ -52,7 +52,7 @@ For the vacuum things, there is no required configuration (when using discovery)
 | Config       | Description                                                                                                                   |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------|
 | serialNumber | Required: The device's serial number as printed on the barcode below the dust bin. Filled automatically when using discovery. |
-| refresh | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes.                                             |
+| refresh      | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes.                                        |
 
 ## Channels
 
