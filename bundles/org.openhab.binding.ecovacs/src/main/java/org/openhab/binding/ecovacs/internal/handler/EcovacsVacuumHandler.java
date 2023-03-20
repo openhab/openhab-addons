@@ -218,15 +218,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public void initialize() {
-        final String serial = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
-        if (serial.isEmpty()) {
-            logger.info("Thing {} is missing serial number information", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        } else {
-            logger.debug("{}: Initializing handler", serial);
-            updateStatus(ThingStatus.UNKNOWN);
-            initTask.submit();
-        }
+        logger.debug("{}: Initializing handler", getDeviceSerial());
+        updateStatus(ThingStatus.UNKNOWN);
+        initTask.submit();
     }
 
     @Override
@@ -532,9 +526,9 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcovacsApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -803,7 +797,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
             logger.debug("{}: Failed communicating to device, reconnecting", getDeviceSerial(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             if (e.isAuthFailure) {
                 EcovacsApiHandler apiHandler = getApiHandler();
                 if (apiHandler != null) {

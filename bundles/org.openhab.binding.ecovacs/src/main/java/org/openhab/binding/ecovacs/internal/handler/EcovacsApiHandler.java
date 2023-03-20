@@ -69,7 +69,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     public EcovacsApi createApiForDevice(String serial) throws ConfigurationException {
         String country = localeProvider.getLocale().getCountry();
         if (country.isEmpty()) {
-            throw new ConfigurationException("Country unset in locale settings");
+            throw new ConfigurationException("@text/offline.config-error-no-country");
         }
         return createApi("-" + serial, country);
     }
