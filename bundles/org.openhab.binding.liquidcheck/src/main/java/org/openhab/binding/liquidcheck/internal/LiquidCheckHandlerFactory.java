@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.liquidcheck", service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, configurationPid = "bindig.liquidCheck")
 public class LiquidCheckHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LIQUID_CHECK);

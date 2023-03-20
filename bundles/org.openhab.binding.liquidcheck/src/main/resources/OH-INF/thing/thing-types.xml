@@ -11,11 +11,11 @@
 		<channels>
 			<channel id="content" typeId="content-channel"/>
 			<channel id="level" typeId="level-channel"/>
-			<channel id="fill-indicator" typeId="fill-indicator-channel"/>
-			<channel id="raw-content" typeId="raw-content-channel"/>
-			<channel id="raw-level" typeId="raw-level-channel"/>
-			<channel id="pump-runs" typeId="pump-runs-channel"></channel>
-			<channel id="pump-runtime" typeId="pump-runtime-channel"></channel>
+			<channel id="fillIndicator" typeId="fill-indicator-channel"/>
+			<channel id="rawContent" typeId="raw-content-channel"/>
+			<channel id="rawLevel" typeId="raw-level-channel"/>
+			<channel id="pumpRuns" typeId="pump-runs-channel"></channel>
+			<channel id="pumpRuntime" typeId="pump-runtime-channel"></channel>
 			<channel id="measure" typeId="measure-channel"/>
 		</channels>
 
@@ -32,13 +32,13 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="3600">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval the device is polled in seconds.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="120">
 				<label>Connection Timeout</label>
-				<description>After the given amount of seconds without a response, the connection will be seen as timed out!</description>
+				<description>After the given amount of seconds without a response, the connection will be seen as timed out.</description>
 				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>
