@@ -30,6 +30,6 @@ public class ModuledSmartHomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_FAN_SPEED_CONTROL = new ThingTypeUID(BINDING_ID, "fanSpeedControl");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
-    public static final String CHANNEL_2 = "channel2";
+    public static final String FAN_SPEED_CHANNEL = "fanSpeed";
+    public static final String FAN_DIRECTION_CHANNEL = "fanDirection";
 }

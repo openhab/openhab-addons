@@ -17,8 +17,8 @@
 		<category>HVAC</category>
 
 		<channels>
-			<channel id="channel1" typeId="fanSpeed"/>
-			<channel id="channel2" typeId="fanDirection"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="fanDirection" typeId="fanDirection"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
@@ -47,10 +47,29 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
+	<!-- Channel Type -->
+	<channel-type id="fanDirection">
+		<item-type>String</item-type>
+		<label>SET DIRECTION</label>
+		<description>Channel for setting direction</description>
+		<category>HVAC</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Wind</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="UP">Up</option>
+				<option value="STOP">Stop</option>
+				<option value="DOWN">Down</option>
+			</options>
+		</command>
+	</channel-type>
+
+
 	<channel-type id="fanSpeed">
 		<item-type>Number</item-type>
-		<label>Setpoint Speed</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>SETPOINT SPEED</label>
 		<description>Channel for setting speed</description>
 		<category>HVAC</category>
 		<tags>
@@ -60,21 +79,6 @@
 		<state min="1" max="5" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="fanDirection">
-		<item-type>String</item-type>
-		<label>Set Direction</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Channel for setting direction</description>
-		<category>HVAC</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Wind</tag>
-		</tags>
-		<command>
-			<options>
-				<option value="UP">UP Direction</option>
-				<option value="DOWN">DOWN Direction</option>
-			</options>
-		</command>
-	</channel-type>
+
 
 </thing:thing-descriptions>

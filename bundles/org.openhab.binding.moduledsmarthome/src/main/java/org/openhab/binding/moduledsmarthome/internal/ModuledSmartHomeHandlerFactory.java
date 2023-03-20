@@ -18,12 +18,15 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link ModuledSmartHomeHandlerFactory} is responsible for creating things and thing
@@ -36,6 +39,12 @@ import org.osgi.service.component.annotations.Component;
 public class ModuledSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FAN_SPEED_CONTROL);
+    private final HttpClientFactory httpClientFactory;
+
+    @Activate
+    public ModuledSmartHomeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +56,7 @@ public class ModuledSmartHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_FAN_SPEED_CONTROL.equals(thingTypeUID)) {
-            return new ModuledSmartHomeHandler(thing);
+            return new ModuledSmartHomeHandler(thing, httpClientFactory.getCommonHttpClient());
         }
 
         return null;
