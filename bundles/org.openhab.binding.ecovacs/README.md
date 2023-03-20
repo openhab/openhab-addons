@@ -156,6 +156,7 @@ Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password
 ```
 
 The possible values for `continent` include the following values:
+
 - `ww` for World
 - `eu` for Europe
 - `na` for North America
