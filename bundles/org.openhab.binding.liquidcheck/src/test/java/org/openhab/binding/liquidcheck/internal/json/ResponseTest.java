@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 
 /**
- * The {@link ResponseTest} .
+ * The {@link ResponseTest} will test the correct parsing from json responses for the CommData class.
  *
  * @author Marcel Goerentz - Initial contribution
  */

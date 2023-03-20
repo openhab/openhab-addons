@@ -73,11 +73,6 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.debug("Couldn't start client: {}", e.getMessage());
-        }
         scheduler.execute(liquidCheckDiscoveryRunnable());
     }
 
@@ -86,11 +81,6 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected synchronized void stopScan() {
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.debug("Couldn't stop client: {}", e.getMessage());
-        }
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
@@ -130,9 +120,9 @@ public class LiquidCheckDiscoveryService extends AbstractDiscoveryService {
                                 }
                             }
                         } catch (TimeoutException e) {
-                            logger.debug("TimeOut!");
+                            logger.debug("TimeOut: {}", e.getMessage());
                         } catch (ExecutionException e) {
-                            logger.debug("ExecutionException!");
+                            logger.debug("ExecutionException: {}", e.getMessage());
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
