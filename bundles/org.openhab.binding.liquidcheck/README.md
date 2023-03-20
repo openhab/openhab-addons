@@ -35,30 +35,30 @@ If the maximum content has not been set the fill-indicator channel will not cont
 |----------------|-----------------------------|------------|---------------------------------------|
 | content        | Number:Volume               | R          | This is the measured content          |
 | level          | Number:Length               | R          | This is the measured level            |
-| raw-content    | Number:Volume               | R          | This is the measured raw content data |
-| raw-level      | Number:Length               | R          | This is the measured raw level data   |
-| fill-indicator | Number:Dimensionless        | R          | This is the fill level in percentage  |
+| rawContent    | Number:Volume               | R          | This is the measured raw content data |
+| rawLevel      | Number:Length               | R          | This is the measured raw level data   |
+| fillIndicator | Number:Dimensionless        | R          | This is the fill level in percentage  |
 | measure        | Switch                      | W          | This starts a measurement             |
-| pump-runs      | Number                      | R          | This is the total runs number         |
-| pump-runtime   | Number:Time                 | R          | This is the total runtime in sec.     |
+| pumpRuns      | Number                      | R          | This is the total runs number         |
+| pumpRuntime   | Number:Time                 | R          | This is the total runtime in sec.     |
 
 ## Full Example
 
 ### Thing
 
 ```java
-- Thing liquidcheck:liquidCheckDevice:myDevice "Label" @ "Location" [hostname="XXX.XXX.XXX.XXX", maxContent=9265, refreshInterval=600, connectionTimeout=5]
+Thing liquidcheck:liquidCheckDevice:myDevice "Label" @ "Location" [hostname="XXX.XXX.XXX.XXX", maxContent=9265, refreshInterval=600, connectionTimeout=5]
 ```
 
 ### Items
 
 ```java
-- Number:Volume ContentLiquidCheck "Content" {liquidcheck:liquidCheckDevice:myDevice:content}
-- Number:Length LevelLiquidCheck "Level" {liquidcheck:liquidCheckDevice:myDevice:level}
-- Number:Volume RawContentLiquidCheck "Raw Content" {liquidcheck:liquidCheckDevice:myDevice:raw-content}
-- Number:Length RawLevelLiquidCheck "Raw Level" {liquidcheck:liquidCheckDevice:myDevice:raw-level}
-- Number:Dimensionless FillIndicator "Fill Indicator" {liquidcheck:liquidCheckDevice:myDevice:fill-indicator}
-- Switch MeasureLiquidCheck "Measure" {liquidcheck:liquidCheckDevice:myDevice:measure}
-- Number PumpRuns "Pump runs" {liquidcheck:liquidCheckDevice:myDevice:pump-runs}
-- Number PumpRuntime "Pump runtime" {liquidcheck:liquidCheckDevice:myDevice:pump-runtime}
+Number:Volume ContentLiquidCheck "Content" {liquidcheck:liquidCheckDevice:myDevice:content}
+Number:Length LevelLiquidCheck "Level" {liquidcheck:liquidCheckDevice:myDevice:level}
+Number:Volume RawContentLiquidCheck "Raw Content" {liquidcheck:liquidCheckDevice:myDevice:rawContent}
+Number:Length RawLevelLiquidCheck "Raw Level" {liquidcheck:liquidCheckDevice:myDevice:rawLevel}
+Number:Dimensionless FillIndicator "Fill Indicator" {liquidcheck:liquidCheckDevice:myDevice:fillIndicator}
+Switch MeasureLiquidCheck "Measure" {liquidcheck:liquidCheckDevice:myDevice:measure}
+Number PumpRuns "Pump runs" {liquidcheck:liquidCheckDevice:myDevice:pumpRuns}
+Number PumpRuntime "Pump runtime" {liquidcheck:liquidCheckDevice:myDevice:pumpRuntime}
 ```
