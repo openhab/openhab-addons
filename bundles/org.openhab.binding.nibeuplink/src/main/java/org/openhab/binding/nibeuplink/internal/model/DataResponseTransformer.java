@@ -30,6 +30,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,7 @@ public class DataResponseTransformer {
                 logger.warn("Channel not found: {}", channelId);
             } else if (value == null) {
                 logger.debug("null value for channel: {}", channelId);
+                result.put(channel, UnDefType.UNDEF);
             } else {
                 ChannelTypeUID typeUID = channel.getChannelTypeUID();
                 String type = typeUID == null ? "null" : typeUID.getId();

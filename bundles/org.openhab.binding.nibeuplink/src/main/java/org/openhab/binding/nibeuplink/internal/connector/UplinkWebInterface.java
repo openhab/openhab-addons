@@ -185,11 +185,11 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         private void processAuthenticationResult(CommunicationStatus status) {
             switch (status.getHttpCode()) {
                 case FOUND:
-                    uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, STATUS_ONLINE);
+                    uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                     setAuthenticated(true);
                     break;
                 case OK:
-                    uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             STATUS_INVALID_CREDENTIALS);
                     setAuthenticated(false);
                     break;

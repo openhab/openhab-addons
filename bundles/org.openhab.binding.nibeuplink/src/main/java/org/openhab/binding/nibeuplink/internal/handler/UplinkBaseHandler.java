@@ -191,7 +191,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     }
 
     @Override
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
     }
 

@@ -90,7 +90,6 @@ public final class NibeUplinkBindingConstants {
     // Status Keys
     public static final String STATUS_INVALID_NIBE_ID = "@text/status.invalid.nibeId";
     public static final String STATUS_INVALID_CREDENTIALS = "@text/status.invalid.credentials";
-    public static final String STATUS_ONLINE = "@text/status.online";
 
     // URLs
     public static final String LOGIN_URL = "https://www.nibeuplink.com/LogIn";
