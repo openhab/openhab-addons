@@ -105,7 +105,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * allows further processing of the json result data, if set.
      */
-    private JsonResultProcessor resultProcessor;
+    private final JsonResultProcessor resultProcessor;
 
     /**
      * the constructor
@@ -277,14 +277,11 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * @param jsonObject
      */
     protected final void processResult(JsonObject jsonObject) {
-        JsonResultProcessor processor = resultProcessor;
-        if (processor != null) {
-            try {
-                processor.processResult(getCommunicationStatus(), jsonObject);
-            } catch (Exception ex) {
-                // this should not happen
-                logger.warn("Exception caught: {}", ex.getMessage(), ex);
-            }
+        try {
+            resultProcessor.processResult(getCommunicationStatus(), jsonObject);
+        } catch (Exception ex) {
+            // this should not happen
+            logger.warn("Exception caught: {}", ex.getMessage(), ex);
         }
     }
 
