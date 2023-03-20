@@ -196,8 +196,6 @@ public class SonnenHandler extends BaseThingHandler {
         if (isLinked(channelId)) {
             State state = null;
             SonnenJsonDataDTO data = serviceCommunication.getBatteryData();
-            // String direction = GetPowerMeterDirection(channelId);
-
             // The sonnen API has two sub-channels, e.g. 4_1 and 4_2, one representing consumption and the
             // other production. E.g. 4_1.kwh_imported represents the total production since the
             // battery was installed.
