@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 public class SchedulerTask implements Runnable {
     private final Logger logger;
     private final String name;
+    private String prefixedName;
     private final Runnable runnable;
     private final ScheduledExecutorService scheduler;
     private @Nullable Future<?> future;
@@ -34,8 +35,20 @@ public class SchedulerTask implements Runnable {
     public SchedulerTask(ScheduledExecutorService scheduler, Logger logger, String name, Runnable runnable) {
         this.logger = logger;
         this.name = name;
+        this.prefixedName = name;
         this.runnable = runnable;
         this.scheduler = scheduler;
+    }
+
+    public void setNamePrefix(String prefix) {
+        if (future != null) {
+            throw new IllegalStateException("Must not set prefix while scheduled");
+        }
+        if (prefix.isEmpty()) {
+            prefixedName = name;
+        } else {
+            prefixedName = prefix + ": " + name;
+        }
     }
 
     public void submit() {
@@ -44,10 +57,10 @@ public class SchedulerTask implements Runnable {
 
     public synchronized void schedule(long delaySeconds) {
         if (future != null) {
-            logger.trace("{}: Already scheduled to run", name);
+            logger.trace("{}: Already scheduled to run", prefixedName);
             return;
         }
-        logger.trace("{}: Scheduling to run in {} seconds", name, delaySeconds);
+        logger.trace("{}: Scheduling to run in {} seconds", prefixedName, delaySeconds);
         if (delaySeconds == 0) {
             future = scheduler.submit(this);
         } else {
@@ -57,10 +70,10 @@ public class SchedulerTask implements Runnable {
 
     public synchronized void scheduleRecurring(long intervalSeconds) {
         if (future != null) {
-            logger.trace("{}: Already scheduled to run", name);
+            logger.trace("{}: Already scheduled to run", prefixedName);
             return;
         }
-        logger.trace("{}: Scheduling to run in {} second intervals", name, intervalSeconds);
+        logger.trace("{}: Scheduling to run in {} second intervals", prefixedName, intervalSeconds);
         future = scheduler.scheduleWithFixedDelay(runnable, 0, intervalSeconds, TimeUnit.SECONDS);
     }
 
@@ -69,7 +82,7 @@ public class SchedulerTask implements Runnable {
         this.future = null;
         if (future != null) {
             future.cancel(true);
-            logger.trace("{}: Cancelled", name);
+            logger.trace("{}: Cancelled", prefixedName);
         }
     }
 
@@ -78,7 +91,7 @@ public class SchedulerTask implements Runnable {
         synchronized (this) {
             future = null;
         }
-        logger.trace("{}: Running one-shot", name);
+        logger.trace("{}: Running one-shot", prefixedName);
         runnable.run();
     }
 }

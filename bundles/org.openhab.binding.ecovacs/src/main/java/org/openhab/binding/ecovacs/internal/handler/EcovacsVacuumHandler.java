@@ -135,7 +135,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private Optional<String> lastDownloadedCleanMapUrl = Optional.empty();
     private long lastSuccessfulPollTimestamp;
     private int lastDefaultCleaningPasses = 1;
-    private final String serialNumber;
+    private String serialNumber = "<unset>";
 
     public EcovacsVacuumHandler(Thing thing, TranslationProvider i18Provider, LocaleProvider localeProvider,
             EcovacsDynamicStateDescriptionProvider stateDescriptionProvider) {
@@ -144,11 +144,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         bundle = FrameworkUtil.getBundle(getClass());
-        serialNumber = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
 
-        initTask = new SchedulerTask(scheduler, logger, serialNumber + ": Init", this::initDevice);
-        reconnectTask = new SchedulerTask(scheduler, logger, serialNumber + ": Connection", this::connectToDevice);
-        pollTask = new SchedulerTask(scheduler, logger, serialNumber + ": Poll", this::pollData);
+        initTask = new SchedulerTask(scheduler, logger, "Init", this::initDevice);
+        reconnectTask = new SchedulerTask(scheduler, logger, "Connection", this::connectToDevice);
+        pollTask = new SchedulerTask(scheduler, logger, "Poll", this::pollData);
     }
 
     @Override
@@ -218,12 +217,16 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public void initialize() {
+        serialNumber = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
         if (serialNumber.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.config-error-no-serial");
         } else {
             logger.debug("{}: Initializing handler", serialNumber);
             updateStatus(ThingStatus.UNKNOWN);
+            initTask.setNamePrefix(serialNumber);
+            reconnectTask.setNamePrefix(serialNumber);
+            pollTask.setNamePrefix(serialNumber);
             initTask.submit();
         }
     }

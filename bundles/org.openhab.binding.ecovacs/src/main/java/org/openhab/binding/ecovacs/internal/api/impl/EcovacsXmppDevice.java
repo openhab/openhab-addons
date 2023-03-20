@@ -265,9 +265,10 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         PingHandler(XMPPTCPConnection connection, ScheduledExecutorService scheduler, EventListener listener, Jid to) {
             this.connection = connection;
             this.pingManager = PingManager.getInstanceFor(connection);
-            this.pingTask = new SchedulerTask(scheduler, logger, getSerialNumber() + ": Ping", this::sendPing);
+            this.pingTask = new SchedulerTask(scheduler, logger, "Ping", this::sendPing);
             this.listener = listener;
             this.toAddress = to;
+            this.pingTask.setNamePrefix(getSerialNumber());
         }
 
         public void start() {
