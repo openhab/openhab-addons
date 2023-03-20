@@ -146,7 +146,7 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
                 .withBridge(apiHandler.getThing().getUID()).withLabel(device.getModelName())
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())
                 .withProperty(Thing.PROPERTY_MODEL_ID, device.getModelName())
-                .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).build();
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
         thingDiscovered(discoveryResult);
     }
 }
