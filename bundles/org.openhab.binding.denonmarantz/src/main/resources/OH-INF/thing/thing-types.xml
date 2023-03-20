@@ -29,6 +29,8 @@
 			</channel-group>
 		</channel-groups>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter-group name="receiverProperties">
 				<label>Receiver Properties</label>

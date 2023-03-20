@@ -17,15 +17,14 @@
     <dependency>
       <groupId>com.alphacephei</groupId>
       <artifactId>vosk</artifactId>
-      <version>0.3.38</version>
+      <version>0.3.45</version>
       <scope>compile</scope>
     </dependency>
     <!--Deps -->
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.7.0</version>
-      <scope>compile</scope>
+      <version>5.13.0</version>
     </dependency>
   </dependencies>
 </project>

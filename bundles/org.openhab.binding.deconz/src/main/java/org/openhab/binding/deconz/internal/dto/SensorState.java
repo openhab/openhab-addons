@@ -37,9 +37,9 @@ public class SensorState {
     /** Light sensors provide a lux value. */
     public @Nullable Integer lux;
     /** Temperature sensors provide a degrees value. */
-    public @Nullable Float temperature;
+    public @Nullable Double temperature;
     /** Humidity sensors provide a percent value. */
-    public @Nullable Float humidity;
+    public @Nullable Double humidity;
     /** OpenClose sensors provide a boolean value. */
     public @Nullable Boolean open;
     /** fire sensors provide a boolean value. */
@@ -54,29 +54,23 @@ public class SensorState {
     public @Nullable Boolean vibration;
     /** carbonmonoxide sensors provide a boolean value. */
     public @Nullable Boolean carbonmonoxide;
-    /** airquality sensors provide a string value. */
-    public @Nullable String airquality;
-    /** airquality sensors provide an integer value. */
-    public @Nullable Integer airqualityppb;
     /** Pressure sensors provide a hPa value. */
     public @Nullable Integer pressure;
     /** Presence sensors provide this boolean. */
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
-    public @Nullable Float power;
+    public @Nullable Double power;
     /** Batttery sensors provide this value */
     public @Nullable Integer battery;
-    /**
-     * Some battery sensors (especially Tuya driven devices) provide this boolean
-     * instead of battery level
-     */
+    /** Consumption sensors provide this value in Watts/hour. */
     public @Nullable Boolean lowbattery;
     /** Consumption sensors provide this value in Watts/hour. */
-    public @Nullable Float consumption;
+    public @Nullable Double consumption;
+    public @Nullable Double consumption2;
     /** Power sensors provide this value in Volt. */
-    public @Nullable Float voltage;
+    public @Nullable Double voltage;
     /** Power sensors provide this value in Milliampere. */
-    public @Nullable Float current;
+    public @Nullable Double current;
     /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
     public @Nullable Integer status;
     /** Switches provide this value. */
@@ -85,6 +79,12 @@ public class SensorState {
     public @Nullable Integer gesture;
     /** Thermostat may provide this value. */
     public @Nullable Integer valve;
+    public @Nullable Boolean on;
+    /** air quality sensors provide this value */
+    public @Nullable String airquality;
+    public @Nullable Integer airqualityppb;
+    /** moisture sensors provide this value */
+    public @Nullable Integer moisture;
     /** Thermostats may provide this value */
     public @Nullable String windowopen;
     /** deCONZ sends a last update string with every event. */
@@ -97,11 +97,11 @@ public class SensorState {
         return "SensorState{" + "dark=" + dark + ", daylight=" + daylight + ", lightlevel=" + lightlevel + ", lux="
                 + lux + ", temperature=" + temperature + ", humidity=" + humidity + ", open=" + open + ", fire=" + fire
                 + ", water=" + water + ", alarm=" + alarm + ", tampered=" + tampered + ", vibration=" + vibration
-                + ", carbonmonoxide=" + carbonmonoxide + ", airquality=" + airquality + ", airqualityppb="
-                + airqualityppb + ", pressure=" + pressure + ", presence=" + presence + ", power=" + power
-                + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage + ", current="
-                + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture=" + gesture + ", valve="
-                + valve + ", windowopen='" + windowopen + '\'' + ", lastupdated='" + lastupdated + '\'' + ", xy="
-                + Arrays.toString(xy) + '}';
+                + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
+                + ", power=" + power + ", battery=" + battery + ", lowbattery=" + lowbattery + ", consumption="
+                + consumption + ", voltage=" + voltage + ", current=" + current + ", status=" + status
+                + ", buttonevent=" + buttonevent + ", gesture=" + gesture + ", valve=" + valve + ", airquality='"
+                + airquality + "'" + ", airqualityppb=" + airqualityppb + ", windowopen='" + windowopen + "'"
+                + ", lastupdated='" + lastupdated + "'" + ", xy=" + Arrays.toString(xy) + "}";
     }
 }

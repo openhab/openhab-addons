@@ -52,6 +52,6 @@ public enum DSMRMeterKind {
      * @return Returns the i18n label key for this meter.
      */
     public String getLabelKey() {
-        return "@text/meterKind." + name().toLowerCase() + ".label";
+        return "@text/addon.dsmr.meterKind." + name().toLowerCase() + ".label";
     }
 }

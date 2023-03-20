@@ -29,12 +29,12 @@ public class UniFiUnknownClient extends UniFiClient {
     }
 
     @Override
-    public Boolean isWired() {
-        return null; // mgb: no is_wired property in the json
+    public boolean isWired() {
+        return false; // mgb: no is_wired property in the JSON
     }
 
     @Override
     public String getDeviceMac() {
-        return null; // mgb: no device mac in the json
+        return null; // mgb: no device mac in the JSON
     }
 }
