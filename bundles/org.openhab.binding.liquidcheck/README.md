@@ -44,15 +44,12 @@ If the maximum content has not been set the fill-indicator channel will not cont
 
 ## Full Example
 
-### Thing
+Thing:
 
-```java
 - Thing liquidcheck:liquidCheckDevice:myDevice "Label" @ "Location" [hostname="XXX.XXX.XXX.XXX", maxContent=9265, refreshInterval=600, connectionTimeout=5]
-```
 
-### Items
+Items:
 
-```java
 - Number:Volume ContentLiquidCheck "Content" {liquidcheck:liquidCheckDevice:myDevice:content}
 - Number:Length LevelLiquidCheck "Level" {liquidcheck:liquidCheckDevice:myDevice:level}
 - Number:Volume RawContentLiquidCheck "Raw Content" {liquidcheck:liquidCheckDevice:myDevice:raw-content}
@@ -61,4 +58,3 @@ If the maximum content has not been set the fill-indicator channel will not cont
 - Switch MeasureLiquidCheck "Measure" {liquidcheck:liquidCheckDevice:myDevice:measure}
 - Number PumpRuns "Pump runs" {liquidcheck:liquidCheckDevice:myDevice:pump-runs}
 - Number PumpRuntime "Pump runtime" {liquidcheck:liquidCheckDevice:myDevice:pump-runtime}
-```

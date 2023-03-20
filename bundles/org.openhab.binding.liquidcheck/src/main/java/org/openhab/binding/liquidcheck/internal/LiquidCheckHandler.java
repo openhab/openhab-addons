@@ -79,7 +79,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
         if (channelUID.getId().equals(MEASURE_CHANNEL)) {
             if (command instanceof OnOffType) {
                 try {
-                    if (client.isConnected()) {
+                    if (client != null && client.isConnected()) {
                         String response = client.measureCommand();
                         CommData commandResponse = new Gson().fromJson(response, CommData.class);
                         if (commandResponse != null) {
@@ -118,7 +118,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                 polling = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.refreshInterval,
                         TimeUnit.SECONDS);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE);
             }
         });
     }
@@ -158,7 +158,6 @@ public class LiquidCheckHandler extends BaseThingHandler {
 
                     updateState(RAW_LEVEL_CHANNEL,
                             new QuantityType<>(response.payload.measure.raw.level, SIUnits.METRE));
-
                     updateState(PUMP_TOTAL_RUNS_CHANNEL, new DecimalType(response.payload.system.pump.totalRuns));
                     updateState(PUMP_TOTAL_RUNTIME_CHANNEL,
                             new QuantityType<>(response.payload.system.pump.totalRuntime, Units.SECOND));
