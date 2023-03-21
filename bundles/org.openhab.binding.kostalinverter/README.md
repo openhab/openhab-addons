@@ -317,7 +317,7 @@ Number:Frequency            GridFreq                    "Grid Freq"             
 Number:Angle                GridCosPhi                  "Grid Cos Phi"                              <energy> { channel="kostalinverter:piko1020:mypiko1020:gridCosPhi" }
 Number:Energy               HomeConsumptionDay          "Home Consumption Day"                      <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionDay" } 
 Number:Energy               OwnConsumptionDay           "Own Consumption Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionDay" } 
-Number:Dimensionless        OwnConsRateDay              "Own Cons Rate Day                          <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateDay" } 
+Number:Dimensionless        OwnConsRateDay              "Own Cons Rate Day"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateDay" } 
 Number:Dimensionless        AutonomyDegreeDay           "Autonomy Degree Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:autonomyDegreeDay" }
 Number:Energy               HomeConsumptionTotal        "Home Consumption Total"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionTotal" } 
 Number:Energy               OwnConsumptionTotal         "Own Consumption Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionTotal" } 
