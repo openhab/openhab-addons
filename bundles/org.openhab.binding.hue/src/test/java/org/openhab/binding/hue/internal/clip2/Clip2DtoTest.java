@@ -69,7 +69,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class Clip2DtoTests {
+class Clip2DtoTest {
 
     private static final Gson GSON = new Gson();
 
@@ -89,6 +89,41 @@ class Clip2DtoTests {
             fail(e.getMessage());
         }
         return "";
+    }
+
+    /**
+     * Helper method for checking if expected and actual State values are both of HSBType, and if so, that their
+     * respective Hue, Saturation and Brightness parameter values all lie within 2% of each other. This method is
+     * required in order to eliminate integer rounding artifacts in testing HSB versus the float mathematics of the
+     * underlying ColorXY data.
+     *
+     * @param expectedState an HSBType containing the expected colour.
+     * @param actualState an HSBType containing the actual colour.
+     * @return true if all the HSB parameters of expected and actual are within 2% of each other.
+     */
+    private boolean hsbEquals(State expectedState, State actualState) {
+        if (!(expectedState instanceof HSBType) || !(actualState instanceof HSBType)) {
+            return false;
+        }
+
+        HSBType expectedHSB = (HSBType) expectedState;
+        HSBType actualHSB = (HSBType) actualState;
+
+        int expectedHue = expectedHSB.getHue().intValue();
+        int actualHue = actualHSB.getHue().intValue();
+        int temp = Math.abs(expectedHue - actualHue) % 360;
+        int deltaHue = temp > 180 ? 360 - temp : temp;
+
+        int expectedSaturation = expectedHSB.getSaturation().intValue();
+        int actualSaturation = actualHSB.getSaturation().intValue();
+        int deltaSaturation = Math.abs(expectedSaturation - actualSaturation);
+
+        int expectedBrightness = expectedHSB.getBrightness().intValue();
+        int actualBrightness = actualHSB.getBrightness().intValue();
+        int deltaBrightness = Math.abs(expectedBrightness - actualBrightness);
+
+        // note: hue is on a scale 0..360 so 2% equals 7
+        return (deltaHue <= 7) && (deltaSaturation <= 2) && (deltaBrightness <= 2);
     }
 
     @Test
@@ -310,12 +345,12 @@ class Clip2DtoTests {
     }
 
     @Test
-    void testResoureceMerging() {
+    void testResourceMerging() {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
         one.setColor(HSBType.RED);
-        assertEquals(HSBType.RED, one.getColorState());
+        assertTrue(hsbEquals(HSBType.RED, one.getColorState()));
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
 
         // null its Dimming field
@@ -329,7 +364,8 @@ class Clip2DtoTests {
 
         // confirm that brightness is no longer valid, and therefore that color has also changed
         assertEquals(UnDefType.NULL, one.getBrightnessState());
-        assertEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)), one.getColorState());
+        assertTrue(hsbEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50)),
+                one.getColorState()));
 
         PercentType testBrightness = new PercentType(42);
 
@@ -347,7 +383,7 @@ class Clip2DtoTests {
         assertEquals("AARDVARK", one.getId());
         assertEquals(ResourceType.LIGHT, one.getType());
         assertEquals(testBrightness, one.getBrightnessState());
-        assertEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness), one.getColorState());
+        assertTrue(hsbEquals(new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness), one.getColorState()));
     }
 
     @Test
@@ -424,7 +460,7 @@ class Clip2DtoTests {
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
             resource.setColor(color);
             State state = resource.getColorState();
-            assertEquals(color, state);
+            assertTrue(hsbEquals(color, state));
         }
     }
 
