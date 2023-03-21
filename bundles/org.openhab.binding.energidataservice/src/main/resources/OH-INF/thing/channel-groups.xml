@@ -8,27 +8,27 @@
 		<label>Electricity</label>
 		<description>Channels related to electricity</description>
 		<channels>
-			<channel id="currentSpotPrice" typeId="spotPrice">
+			<channel id="current-spot-price" typeId="spot-price">
 				<label>Current Spot Price</label>
 				<description>Spot price in DKK or EUR per kWh for current hour.</description>
 			</channel>
-			<channel id="currentNetTariff" typeId="datahubPrice">
+			<channel id="current-net-tariff" typeId="datahub-price">
 				<label>Current Net Tariff</label>
 				<description>Net tariff in DKK per kWh for current hour.</description>
 			</channel>
-			<channel id="currentSystemTariff" typeId="datahubPrice">
+			<channel id="current-system-tariff" typeId="datahub-price">
 				<label>Current System Tariff</label>
 				<description>System tariff in DKK per kWh for current hour.</description>
 			</channel>
-			<channel id="currentElectricityTax" typeId="datahubPrice">
+			<channel id="current-electricity-tax" typeId="datahub-price">
 				<label>Current Electricity Tax</label>
 				<description>Electricity Tax in DKK per kWh for current hour.</description>
 			</channel>
-			<channel id="currentTransmissionNetTariff" typeId="datahubPrice">
+			<channel id="current-transmission-net-tariff" typeId="datahub-price">
 				<label>Current Transmission Tariff</label>
 				<description>Transmission Net Tariff in DKK per kWh for current hour.</description>
 			</channel>
-			<channel id="hourlyPrices" typeId="hourlyPrices"/>
+			<channel id="hourly-prices" typeId="hourly-prices"/>
 		</channels>
 	</channel-group-type>
 

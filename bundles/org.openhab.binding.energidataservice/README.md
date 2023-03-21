@@ -39,14 +39,14 @@ To obtain the Global Location Number of your grid company:
 
 ### Channel Group `electricity`
 
-| Channel                      | Type   | Description                                                                                    | Advanced |
-|------------------------------|--------|------------------------------------------------------------------------------------------------|----------|
-| currentSpotPrice             | Number | Spot price in DKK or EUR per kWh for current hour                                              | no       |
-| currentNetTariff             | Number | Net tariff in DKK per kWh for current hour. Only available when `gridCompanyGLN` is configured | no       |
-| currentSystemTariff          | Number | System tariff in DKK per kWh for current hour                                                  | no       |
-| currentElectricityTax        | Number | Electricity tax in DKK per kWh for current hour                                                | no       |
-| currentTransmissionNetTariff | Number | Transmission net tariff in DKK per kWh for current hour                                        | no       |
-| hourlyPrices                 | String | JSON array with hourly prices from 12 hours ago and onward                                     | yes      |
+| Channel                         | Type   | Description                                                                                    | Advanced |
+|---------------------------------|--------|------------------------------------------------------------------------------------------------|----------|
+| current-spot-price              | Number | Spot price in DKK or EUR per kWh for current hour                                              | no       |
+| current-net-tariff              | Number | Net tariff in DKK per kWh for current hour. Only available when `gridCompanyGLN` is configured | no       |
+| current-system-tariff           | Number | System tariff in DKK per kWh for current hour                                                  | no       |
+| current-electricity-tax         | Number | Electricity tax in DKK per kWh for current hour                                                | no       |
+| current-transmission-net-tariff | Number | Transmission net tariff in DKK per kWh for current hour                                        | no       |
+| hourly-prices                   | String | JSON array with hourly prices from 12 hours ago and onward                                     | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -65,11 +65,11 @@ Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
 #### Current Net Tariff
 
-Discounts are automatically taken into account for channel `currentNetTariff` so that it represents the actual price.
+Discounts are automatically taken into account for channel `current-net-tariff` so that it represents the actual price.
 
 The tariffs are downloaded using pre-configured filters for the different [Grid Company GLN's](#global-location-number-of-the-grid-company).
 If your company is not in the list, or the filters are not working, they can be manually overridden.
-To override filters, the channel `currentNetTariff` has the following configuration parameters:
+To override filters, the channel `current-net-tariff` has the following configuration parameters:
 
 | Name            | Type    | Description                                                                                                                | Default | Required | Advanced |
 |-----------------|---------|----------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -102,7 +102,7 @@ _Nord Energi Net:_
 
 #### Hourly Prices
 
-The format of the `hourlyPrices` JSON array is as follows:
+The format of the `hourly-prices` JSON array is as follows:
 
 ```json
 [
@@ -132,14 +132,14 @@ Historic prices older than 12 hours are removed from the JSON array each hour.
 
 ## Thing Actions
 
-Thing actions can be used to perform calculations as well as import prices directly into rules without deserializing JSON from the [hourlyPrices](#hourly-prices) channel.
+Thing actions can be used to perform calculations as well as import prices directly into rules without deserializing JSON from the [hourly-prices](#hourly-prices) channel.
 This is more convenient, much faster, and provides automatic summation of the price elements of interest.
 
 Actions use cached data for performing operations.
 Since data is only fetched when an item is linked to a channel, there might not be any cached data available.
 In this case the data will be fetched on demand and cached afterwards.
 The first action triggered on a given day may therefore be a bit slower, and is also prone to failing if the server call fails for any reason.
-This potential problem can be prevented by linking the indivial channels to items, or by linking the `hourlyPrices` channel to an item.
+This potential problem can be prevented by linking the indivial channels to items, or by linking the `hourly-prices` channel to an item.
 
 ### `calculateCheapestPeriod`
 
@@ -325,12 +325,12 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 
 ```java
 Group:Number:SUM CurrentTotalPrice "Current Total Price" <price>
-Number CurrentSpotPrice "Current Spot Price" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentSpotPrice" [profile="transform:VAT"] }
-Number CurrentNetTariff "Current Net Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentNetTariff" [profile="transform:VAT"] }
-Number CurrentSystemTariff "Current System Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentSystemTariff" [profile="transform:VAT"] }
-Number CurrentElectricityTax "Current Electricity Tax" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentElectricityTax" [profile="transform:VAT"] }
-Number CurrentTransmissionNetTariff "Current Transmission Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#currentTransmissionNetTariff" [profile="transform:VAT"] }
-String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourlyPrices" }
+Number CurrentSpotPrice "Current Spot Price" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-spot-price" [profile="transform:VAT"] }
+Number CurrentNetTariff "Current Net Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-net-tariff" [profile="transform:VAT"] }
+Number CurrentSystemTariff "Current System Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-system-tariff" [profile="transform:VAT"] }
+Number CurrentElectricityTax "Current Electricity Tax" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-electricity-tax" [profile="transform:VAT"] }
+Number CurrentTransmissionNetTariff "Current Transmission Tariff" <price> (CurrentTotalPrice) { channel="energidataservice:service:energidataservice:electricity#current-transmission-net-tariff" [profile="transform:VAT"] }
+String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourly-prices" }
 ```
 
 ### Thing Actions Example

@@ -41,17 +41,17 @@ public class EnergiDataServiceBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_SPOT_PRICE = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "currentSpotPrice";
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "current-spot-price";
     public static final String CHANNEL_CURRENT_NET_TARIFF = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "currentNetTariff";
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "current-net-tariff";
     public static final String CHANNEL_CURRENT_SYSTEM_TARIFF = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "currentSystemTariff";
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "current-system-tariff";
     public static final String CHANNEL_CURRENT_ELECTRICITY_TAX = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "currentElectricityTax";
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "current-electricity-tax";
     public static final String CHANNEL_CURRENT_TRANSMISSION_NET_TARIFF = CHANNEL_GROUP_ELECTRICITY
-            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "currentTransmissionNetTariff";
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "current-transmission-net-tariff";
     public static final String CHANNEL_HOURLY_PRICES = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
-            + "hourlyPrices";
+            + "hourly-prices";
 
     public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_CURRENT_SPOT_PRICE,
             CHANNEL_CURRENT_NET_TARIFF, CHANNEL_CURRENT_SYSTEM_TARIFF, CHANNEL_CURRENT_ELECTRICITY_TAX,
