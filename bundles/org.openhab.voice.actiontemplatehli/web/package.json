@@ -1,0 +1,21 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:oh": "NODE_ENV=production npm run build -- --mode oh",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "@picocss/pico": "^1.5.7",
+    "axios": "^1.3.4",
+    "pkce-challenge": "^3.0.0"
+  }
+}

@@ -28,14 +28,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ActionTemplatePlaceholder {
     @JsonProperty(value = "label", required = true)
     public String label = "";
-    @JsonProperty("ner")
-    public @Nullable String nerFile = null;
-    @JsonProperty("nerValues")
-    public String @Nullable [] nerStaticValues = null;
-    @JsonProperty("pos")
-    public @Nullable String posFile = null;
-    @JsonProperty("posValues")
-    public @Nullable Map<String, String> posStaticValues = null;
+    @JsonProperty("values")
+    public String @Nullable [] values = null;
+    @JsonProperty("mappedValues")
+    public @Nullable Map<String, String> mappedValues = null;
 
     public static ActionTemplatePlaceholder withLabel(String label) {
         var placeholder = new ActionTemplatePlaceholder();

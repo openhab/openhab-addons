@@ -51,11 +51,11 @@ public class ActionTemplateInterpreterConstants {
     /**
      * NER folder for dictionaries and models
      */
-    public static final String NER_FOLDER = Path.of(NLP_FOLDER, "ner").toString();
+    public static final String VALUES_FOLDER = Path.of(NLP_FOLDER, "values").toString();
     /**
      * POS folder for dictionaries and models
      */
-    public static final String POS_FOLDER = Path.of(NLP_FOLDER, "pos").toString();
+    public static final String MAPPED_VALUES_FOLDER = Path.of(NLP_FOLDER, "mapped_values").toString();
     /**
      * Folder for type action configurations
      */

@@ -1,0 +1,264 @@
+/** root styles */
+body>main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 7rem);
+  padding: 1rem 0;
+}
+
+nav .actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  min-width: 50%;
+  padding-top: 18px;
+  padding-right: 0px;
+}
+
+nav .actions button {
+  margin-left: 1%;
+  width: 50%;
+  max-width: 200px;
+}
+
+.main-container {
+  padding: 0px;
+}
+
+.action-grid article header,
+.action-grid article footer,
+.action-grid article .action-type {
+  padding: 0;
+}
+
+.action-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-left: 1%;
+}
+.action-grid article {
+  margin-top: 3px;
+  margin-bottom: 9px;
+}
+
+.action-grid article .action-type {
+  text-align: right;
+}
+
+.action-grid article .action-type p {
+  display: inline-block;
+  margin: 9px;
+}
+
+.action-grid article header p {
+  text-align: center;
+}
+
+.values-list {
+  display: flex;
+  flex-direction: row;
+  padding: 9px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.values-list p {
+  margin-right: 6px;
+}
+
+/** action article */
+.action-article {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0px;
+}
+
+.action-article header {
+  margin-bottom: 9px;
+}
+.action-article .action-template-container {
+  padding: 0px;
+}
+
+.action-article .action-article-actions {
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+/** shared form styles */
+
+dialog .values-list {
+  display: flex;
+  flex-direction: row;
+  padding: 0px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+dialog .values-list p {
+  max-width: 20%;
+  width: 100%;
+  margin-right: 6px;
+}
+
+dialog .values-list p kbd {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  cursor: pointer;
+}
+
+dialog .values-list p kbd:hover {
+  background-color: firebrick;
+}
+
+dialog .input-value {
+  display: flex;
+  padding: 0px;
+}
+
+dialog .input-value button {
+  max-width: 20%;
+}
+
+/** Test dialog */
+
+.test-form article {
+  min-width: 90%;
+  max-width: 900px;
+}
+.test-form h6 {
+  margin-top: 6px;
+  margin-bottom: 3px;
+}
+.test-form small {
+  margin-bottom: 6px;
+}
+/** action form styles */
+
+.action-form .placeholders-title {
+  display: flex;
+  padding: 0px;
+}
+
+.action-form .placeholders-title button {
+  width: 33px;
+  height: 33px;
+  padding: 0px;
+  margin-left: 6px;
+}
+
+.action-form .placeholders-list {
+  display: flex;
+  flex-direction: row;
+  padding: 0px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.action-form .inline-title {
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.action-form label {
+  margin-bottom: 12px;
+}
+.action-form article {
+  max-width: 900px;
+  min-width: 90%;
+}
+
+.action-form .optional-section {
+  padding: 0px;
+}
+
+/** articles width */
+
+.action-grid article {
+  max-width: 900px;
+  min-width: 98%;
+}
+.placeholder-form article {
+  max-width: 900px;
+  min-width: 85%;
+}
+
+@media (min-width: 576px) {
+  body>main {
+    padding: 1.25rem 0;
+  }
+  .action-form article {
+    min-width: 90%;
+  }
+  .action-grid article {
+    min-width: 98%;
+  }
+  .placeholder-form article {
+    min-width: 85%;
+  }
+  .test-form article {
+    min-width: 85%;
+  }
+  article div {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  body>main {
+    padding: 1.5rem 0;
+  }
+  .action-grid article {
+    width: 48%;
+    min-width: 48%;
+    max-width: 48%;
+  }
+  .action-form article {
+    min-width: 78%;
+  }
+  .test-form article {
+    min-width: 78%;
+  }
+
+  article div {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  body>main {
+    padding: 1.75rem 0;
+  }
+  .action-grid article {
+    width: 32%;
+    min-width: 32%;
+    max-width: 32%;
+  }
+  article div {
+    padding: 1.75rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  body>main {
+    padding: 2rem 0;
+  }
+
+  article div {
+    padding: 2rem;
+  }
+}
+
+/** util classes */
+.hidden {
+  display: none;
+}

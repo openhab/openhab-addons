@@ -31,8 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class ActionTemplateConfiguration {
-    @JsonProperty("type")
-    public String type = "tokens";
+    @JsonProperty("id")
+    public String id = "";
     @JsonProperty("read")
     public boolean read = false;
     @JsonProperty(value = "template", required = true)
@@ -44,11 +44,15 @@ public class ActionTemplateConfiguration {
     @JsonProperty("placeholders")
     public List<ActionTemplatePlaceholder> placeholders = List.of();
     @JsonProperty("requiredTags")
-    public String[] requiredItemTags = new String[] {};
+    public String[] requiredTags = new String[] {};
+    @JsonProperty("affectedTypes")
+    public String[] affectedTypes = new String[] {};
+    @JsonProperty("affectedSemantics")
+    public String[] affectedSemantics = new String[] {};
     @JsonProperty("silent")
     public boolean silent = false;
-    @JsonProperty("memberTargets")
-    public @Nullable ActionTemplateGroupTargets memberTargets = null;
+    @JsonProperty("groupTargets")
+    public @Nullable ActionTemplateGroupTargets groupTargets = null;
 
     public static ActionTemplateConfiguration[] fromMetadata(Metadata metadata) throws JsonProcessingException {
         var configuration = metadata.getConfiguration();

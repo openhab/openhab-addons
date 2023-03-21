@@ -37,10 +37,6 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="optionalLanguageTags" type="text" groupName="nlp">
-			<label>Optional Language Tags</label>
-			<description>Comma separated POS language tags that will be optional when comparing.</description>
-		</parameter>
 		<parameter name="commandSentMessage" type="text" groupName="messages">
 			<label>Command Sent Message</label>
 			<description>Message for successful command.</description>

@@ -23,12 +23,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @NonNullByDefault
 public class ActionTemplateGroupTargets {
-    @JsonProperty("itemName")
-    public String itemName = "";
-    @JsonProperty("itemType")
-    public String itemType = "";
+    @JsonProperty("affectedTypes")
+    public String[] affectedTypes = new String[] {};
+    @JsonProperty("affectedSemantics")
+    public String[] affectedSemantics = new String[] {};
     @JsonProperty("requiredTags")
-    public String[] requiredItemTags = new String[] {};
+    public String[] requiredTags = new String[] {};
     @JsonProperty("mergeState")
     public boolean mergeState = false;
     @JsonProperty("recursive")

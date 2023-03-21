@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Action Template Interpreter</title>
+  <link rel="stylesheet" href="/node_modules/@picocss/pico/css/pico.min.css">
+</head>
+
+<body>
+  <nav class="container-fluid">
+    <ul>
+      <li><a href="./" class="contrast" onclick="event.preventDefault()"><strong>Action Template
+            Interpreter</strong></a></li>
+    </ul>
+    <div class="actions">
+      <button id="test-action-btn" role="button" dir="rtl">Test</button>
+      <button id="add-action-btn" role="button" dir="rtl">New Action</button>
+    </div>
+  </nav>
+  <main class="container-fluid main-container">
+    <div id="actions-container" class="grid action-grid"></div>
+  </main>
+  <dialog id="action-dialog" class="action-form">
+    <article>
+      <header>
+        <a id="close-action-form" href="#close" aria-label="Close" class="close"></a>
+        Action Form
+      </header>
+      <h6 class="inline-title">Read:</h6>
+      <input type="checkbox" id="action-read" name="action-read" role="switch" checked="">
+      <h6>Template:</h6>
+      <input id="action-template-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+        spellcheck="false">
+      <h6>Value:</h6>
+      <input id="action-value" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div id="write-action-section" class="optional-section">
+        <h6 class="inline-title">Silent:</h6>
+        <input type="checkbox" id="action-silent" name="action-silent" role="switch" checked="">
+      </div>
+      <div id="read-action-section" class="optional-section">
+        <h6>Empty Value:</h6>
+        <input id="action-empty-value" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+          spellcheck="false">
+      </div>
+      <div class="placeholders-title">
+        <h6>Placeholders:</h6><button id="add-placeholder-btn" role="button">+</button>
+      </div>
+      <div id="action-placeholders-container" class="values-list">
+      </div>
+      <div class="placeholders-title">
+        <h6>Shared Placeholders:</h6><button id="add-shared-placeholder-btn" role="button">+</button>
+      </div>
+      <div id="shared-placeholders-container" class="values-list">
+      </div>
+      <h6>Affected Types:</h6>
+      <div class="input-value">
+        <select id="available-types"></select><button id="add-type-btn" role="button">+</button>
+      </div>
+      <div id="affected-types-container" class="values-list">
+      </div>
+      <h6>Affected Semantics:</h6>
+      <div class="input-value">
+        <select id="available-semantics"></select><button id="add-semantic-btn" role="button">+</button>
+      </div>
+      <div id="affected-semantics-container" class="values-list">
+      </div>
+      <h6>Required Tags:</h6>
+      <div class="input-value">
+        <input id="tag-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+          spellcheck="false"><button id="add-tag-btn" role="button">+</button>
+      </div>
+      <div id="required-tags-container" class="values-list">
+      </div>
+      <div id="group-options">
+        <h6>Group Options:</h6>
+        <h6>Child Types:</h6>
+        <div class="input-value">
+          <select id="child-types"></select><button id="add-child-type-btn" role="button">+</button>
+        </div>
+        <div id="child-types-container" class="values-list">
+        </div>
+        <h6>Child Semantics:</h6>
+        <div class="input-value">
+          <select id="child-semantics"></select><button id="add-child-semantic-btn" role="button">+</button>
+        </div>
+        <div id="child-semantics-container" class="values-list">
+        </div>
+        <h6>Child Required Tags:</h6>
+        <div class="input-value">
+          <input id="child-tag-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+            spellcheck="false"><button id="add-child-tag-btn" role="button">+</button>
+        </div>
+        <div id="required-child-tags-container" class="values-list">
+        </div>
+        <h6 class="inline-title">Recursive:</h6>
+        <input type="checkbox" id="action-recursive" name="action-recursive" role="switch" checked="">
+        <h6 class="inline-title">Merge State:</h6>
+        <input type="checkbox" id="action-merge-state" name="action-merge-state" role="switch" checked="">
+      </div>
+      <button id="save-action-btn" role="button">Save</button>
+      <button id="remove-action-btn" role="button" class="secondary hidden">Remove</button>
+    </article>
+  </dialog>
+
+  <dialog id="placeholder-dialog" class="placeholder-form">
+    <article>
+      <header>
+        <a id="close-placeholder-form" href="#close" aria-label="Close" class="close"></a>
+        Placeholder Form
+      </header>
+      <h6>Label:</h6>
+      <input id="placeholder-label" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+        spellcheck="false">
+      <h6>Values:</h6>
+      <div class="input-value">
+        <input id="add-value-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+          spellcheck="false"><button id="add-value" role="button">+</button>
+      </div>
+      <div id="values-container" class="values-list">
+      </div>
+      <h6>Mapped Values:</h6>
+      <div class="input-value">
+        <input id="add-mapped-text-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+          spellcheck="false"><input id="add-mapped-value-input" type="text" autocomplete="off" autocorrect="off"
+          autocapitalize="off" spellcheck="false"><button id="add-mapped-value" role="button">+</button>
+      </div>
+      <div id="mapped-values-container" class="values-list">
+      </div>
+      <button id="save-placeholder-btn" role="button">Save</button>
+      <button id="remove-placeholder-btn" role="button" class="secondary hidden">Remove</button>
+    </article>
+  </dialog>
+
+  <dialog id="test-dialog" class="test-form">
+    <article>
+      <header>
+        <a id="close-test-dialog" href="#close" aria-label="Close" class="close"></a>
+        Action Test
+      </header>
+      <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="test-input">
+      <label for="dry-run"><input type="checkbox" id="dry-run" name="dry-run" role="switch" checked="">Dry run</label>
+      <button id="test-btn">Test it</button>
+    </article>
+  </dialog>
+
+
+  <dialog id="test-result-dialog" class="test-form">
+    <article>
+      <header>
+        <a id="close-test-result-dialog" href="#close" aria-label="Close" class="close"></a>
+        Test Result
+      </header>
+      <h6>Response:</h6>
+      <small id="test-response-text"></small>
+      <h6>Target Item:</h6>
+      <small id="test-item-text"></small>
+      <h6>Matched Template:</h6>
+      <small id="test-template-text"></small>
+    </article>
+  </dialog>
+
+  <template id="action-article-template">
+    <article class="action-article">
+      <header>
+        <div class="action-type">
+          <p dir="rtl"><kbd id="action-type">Read</kbd></p>
+        </div>
+        <div id="action-filter" class="values-list">
+        </div>
+      </header>
+      <div id="action-template-container" class="action-template-container">
+        <h4 id="action-template-block"><abbr data-tooltip="Values: turn on, turn off">$onOff</abbr> the <ins><abbr
+              data-tooltip="Any of your item labels or synonyms">$itemLabel</abbr></ins></h4>
+      </div>
+      <div class="action-article-actions" style="align-self: baseline;">
+        <button id="edit-btn">Edit</button>
+      </div>
+    </article>
+  </template>
+
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
