@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
 public class RadoneyeDataParser {
     public static final String RADON = "radon";
 
-    private static final int EXPECTED_DATA_LEN = 20;
+    private static final int EXPECTED_DATA_LEN_V1 = 20;
+    private static final int EXPECTED_DATA_LEN_V2 = 12;
     private static final int EXPECTED_VER_PLUS = 1;
 
     private static final Logger logger = LoggerFactory.getLogger(RadoneyeDataParser.class);
@@ -38,18 +39,32 @@ public class RadoneyeDataParser {
     private RadoneyeDataParser() {
     }
 
-    public static Map<String, Number> parseRd200Data(int[] data) throws RadoneyeParserException {
+    public static Map<String, Number> parseRd200Data(int fwVersion, int[] data) throws RadoneyeParserException {
         logger.debug("Parsed data length: {}", data.length);
         logger.debug("Parsed data: {}", data);
-        if (data.length == EXPECTED_DATA_LEN) {
-            final Map<String, Number> result = new HashMap<>();
 
-            int[] radonArray = subArray(data, 2, 6);
-            result.put(RADON, new BigDecimal(readFloat(radonArray) * 37));
-            return result;
-        } else {
-            throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
+        final Map<String, Number> result = new HashMap<>();
+
+        switch (fwVersion) {
+            case 1:
+                if (data.length != EXPECTED_DATA_LEN_V1) {
+                    throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
+                }
+
+                int[] radonArray = subArray(data, 2, 6);
+                result.put(RADON, new BigDecimal(readFloat(radonArray) * 37));
+                break;
+            case 2:
+                if (data.length != EXPECTED_DATA_LEN_V2) {
+                    throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
+                }
+
+                result.put(RADON, intFromBytes(data[2], data[3]));
+                break;
+            default:
+                throw new UnsupportedOperationException("fwVersion: " + fwVersion + " is not implemented");
         }
+        return result;
     }
 
     private static int intFromBytes(int lowByte, int highByte) {

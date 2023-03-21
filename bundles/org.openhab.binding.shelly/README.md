@@ -121,10 +121,6 @@ Disabling this feature allows granular control, which event types will be used.
 This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
 In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
-'Generation 2:'
-
-### Generation 2 (Plus
-
 ## Firmware
 
 The binding requires firmware version 1.8.2 or newer for generation 1  to enable all features, version 1.9.2+ is recommended. Generation 2 devices require 0.10.2 or newer, the Plus HT at least 0.11.0.

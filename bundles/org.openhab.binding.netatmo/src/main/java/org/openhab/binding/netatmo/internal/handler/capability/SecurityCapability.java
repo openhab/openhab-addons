@@ -162,24 +162,24 @@ class SecurityCapability extends RestCapability<SecurityApi> {
         return event;
     }
 
-    public @Nullable HomeEvent getLastDeviceEvent(String cameraId, String deviceType) {
-        HomeEvent event = eventBuffer.get(cameraId);
+    public @Nullable HomeEvent getDeviceLastEvent(String moduleId, String deviceType) {
+        HomeEvent event = eventBuffer.get(moduleId);
         if (event == null) {
-            Collection<HomeEvent> events = requestDeviceEvents(cameraId, deviceType);
+            Collection<HomeEvent> events = requestDeviceEvents(moduleId, deviceType);
             if (!events.isEmpty()) {
                 event = events.iterator().next();
-                eventBuffer.put(cameraId, event);
+                eventBuffer.put(moduleId, event);
             }
         }
         return event;
     }
 
-    private Collection<HomeEvent> requestDeviceEvents(String cameraId, String deviceType) {
+    private Collection<HomeEvent> requestDeviceEvents(String moduleId, String deviceType) {
         return getApi().map(api -> {
             try {
-                return api.getDeviceEvents(handler.getId(), cameraId, deviceType);
+                return api.getDeviceEvents(handler.getId(), moduleId, deviceType);
             } catch (NetatmoException e) {
-                logger.warn("Error retrieving last events of camera '{}' : {}", cameraId, e.getMessage());
+                logger.warn("Error retrieving last events of camera '{}' : {}", moduleId, e.getMessage());
                 return null;
             }
         }).orElse(List.of());

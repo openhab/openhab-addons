@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.solaredge.internal.config;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -101,10 +100,10 @@ public class SolarEdgeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("tokenOrApiKey", getTokenOrApiKey()).append("solarId", getSolarId())
-                .append("meterInstalled", isMeterInstalled()).append("usePrivateApi", isUsePrivateApi())
-                .append("live data pollingInterval", getLiveDataPollingInterval())
-                .append("aggregate data pollingInterval", getAggregateDataPollingInterval())
-                .append("asyncTimeout", getAsyncTimeout()).append("syncTimeout", getSyncTimeout()).toString();
+        return getClass().getSimpleName() + "{ tokenOrApiKey=" + getTokenOrApiKey() + ", solarId=" + getSolarId()
+                + ", meterInstalled=" + isMeterInstalled() + ", usePrivateApi=" + isUsePrivateApi()
+                + ", live data pollingInterval=" + getLiveDataPollingInterval() + ", aggregate data pollingInterval="
+                + getAggregateDataPollingInterval() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
+                + getSyncTimeout() + "}";
     }
 }

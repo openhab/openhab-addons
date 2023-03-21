@@ -87,8 +87,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
             Channel channel = getSpecificChannel(channelUID.getIdWithoutGroup());
             if (channel != null) {
                 ChannelTypeUID typeUID = channel.getChannelTypeUID();
-                if (typeUID != null && typeUID.getId() != null
-                        && typeUID.getId().startsWith(NibeUplinkBindingConstants.RW_CHANNEL_PREFIX)) {
+                if (typeUID != null && typeUID.getId().startsWith(NibeUplinkBindingConstants.RW_CHANNEL_PREFIX)) {
                     webInterface.enqueueCommand(new UpdateSetting(this, channel, command));
                 }
             }
@@ -192,7 +191,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     }
 
     @Override
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
     }
 

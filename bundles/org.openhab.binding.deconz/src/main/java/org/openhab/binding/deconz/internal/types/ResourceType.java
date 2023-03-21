@@ -35,14 +35,15 @@ public enum ResourceType {
     GROUPS("groups", "action", GroupMessage.class),
     LIGHTS("lights", "state", LightMessage.class),
     SENSORS("sensors", "config", SensorMessage.class),
+    SCENES("scenes", "", DeconzBaseMessage.class),
     UNKNOWN("", "", null);
 
     private static final Map<String, ResourceType> MAPPING = Arrays.stream(ResourceType.values())
             .collect(Collectors.toMap(v -> v.identifier, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceType.class);
 
-    private String identifier;
-    private String commandUrl;
+    private final String identifier;
+    private final String commandUrl;
     private @Nullable Class<? extends DeconzBaseMessage> expectedMessageType;
 
     ResourceType(String identifier, String commandUrl,

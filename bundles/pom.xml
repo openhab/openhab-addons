@@ -41,6 +41,7 @@
     <module>org.openhab.transform.regex</module>
     <module>org.openhab.transform.rollershutterposition</module>
     <module>org.openhab.transform.scale</module>
+    <module>org.openhab.transform.vat</module>
     <module>org.openhab.transform.xpath</module>
     <module>org.openhab.transform.xslt</module>
     <!-- bindings -->
@@ -116,6 +117,7 @@
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ecovacs</module>
     <module>org.openhab.binding.ecowatt</module>
     <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.electroluxair</module>
@@ -251,6 +253,7 @@
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
+    <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>
