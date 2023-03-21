@@ -51,7 +51,7 @@ public class VehicleStateContainerTest {
         assertEquals("2024-06-01T00:00",
                 ((DateTimeType) VehicleStatusUtils
                         .getNextServiceDate(vehicleStateContainer.getState().getRequiredServices())).getZonedDateTime()
-                                .toLocalDateTime().toString(),
+                        .toLocalDateTime().toString(),
                 "Service Date");
 
         assertEquals("2022-12-21T15:41:23Z", vehicleStateContainer.getState().getLastUpdatedAt(), "Last update time");
