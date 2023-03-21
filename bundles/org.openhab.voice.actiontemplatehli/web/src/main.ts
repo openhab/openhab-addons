@@ -478,7 +478,7 @@ function bindActionForm(config: ActionTemplateConfig) {
     onActionFormChange();
   });
   // handle action empty value
-  const emptyValueInput = recreateElement(queryAssertElement<HTMLInputElement>('#action-value', formContainer));
+  const emptyValueInput = recreateElement(queryAssertElement<HTMLInputElement>('#action-empty-value', formContainer));
   emptyValueInput.value = config.emptyValue;
   emptyValueInput.addEventListener('input', function () {
     config.emptyValue = this.value;
