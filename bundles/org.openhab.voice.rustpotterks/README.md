@@ -5,10 +5,10 @@ This voice service allows you to use the open source library Rustpotter as your 
 
 Rustpotter provides personal on-device wake word detection. You need to generate a model for your keyword using audio samples.
 
-You can test library in your browser, using these web pages:
+You can test library in your browser using these web pages:
 
-* [The spot demo](https://givimad.github.io/rustpotter-worklet-demo/), which include some example wakewords (but it's recommended to use your own).
-* [The model creation demo](https://givimad.github.io/rustpotter-create-model-demo/), it allows you to record compatible wav files and generate a wakeword file that you can test on the previous page.
+- [The spot demo](https://givimad.github.io/rustpotter-worklet-demo/), which include some example wakewords (but it's recommended to use your own).
+- [The model creation demo](https://givimad.github.io/rustpotter-create-model-demo/), it allows you to record compatible wav files and generate a wakeword file that you can test on the previous page.
 
 Important: No voice data listened by this service will be uploaded to the Cloud.
 The voice data is processed offline, locally on your openHAB server by Rustpotter.
