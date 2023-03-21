@@ -157,8 +157,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             case CHANNEL_VIBRATION -> updateSwitchChannel(channelUID, newState.vibration);
             case CHANNEL_CARBONMONOXIDE -> updateSwitchChannel(channelUID, newState.carbonmonoxide);
             case CHANNEL_AIRQUALITY -> updateStringChannel(channelUID, newState.airquality);
-            case CHANNEL_AIRQUALITYPPB -> updateQuantityTypeChannel(channelUID, newState.airqualityppb,
-                    PARTS_PER_BILLION);
+            case CHANNEL_AIRQUALITYPPB ->
+                updateQuantityTypeChannel(channelUID, newState.airqualityppb, PARTS_PER_BILLION);
             case CHANNEL_MOISTURE -> updateQuantityTypeChannel(channelUID, newState.moisture, PERCENT);
             case CHANNEL_BUTTON -> updateDecimalTypeChannel(channelUID, newState.buttonevent);
             case CHANNEL_BUTTONEVENT -> {

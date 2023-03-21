@@ -110,7 +110,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
                 : getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                                        .doubleValue());
+                        .doubleValue());
     }
 
     @Override
