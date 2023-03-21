@@ -24,8 +24,8 @@ public class PortalDeviceResponse extends AbstractPortalResponse {
     @SerializedName("devices")
     private final List<Device> devices;
 
-    public PortalDeviceResponse(String todo, String result, List<Device> devices) {
-        super(todo, result);
+    public PortalDeviceResponse(String result, List<Device> devices) {
+        super(result);
         this.devices = devices;
     }
 

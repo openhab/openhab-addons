@@ -18,9 +18,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Danny Baumann - Initial contribution
  */
 public class AbstractPortalIotCommandResponse {
-    @SerializedName("id")
-    private final String id;
-
     @SerializedName("ret")
     private final String result;
 
@@ -29,8 +26,9 @@ public class AbstractPortalIotCommandResponse {
     @SerializedName("error")
     private final String errorMessage;
 
-    public AbstractPortalIotCommandResponse(String id, String result, int errorCode, String errorMessage) {
-        this.id = id;
+    // unused field: 'id' (string)
+
+    public AbstractPortalIotCommandResponse(String result, int errorCode, String errorMessage) {
         this.result = result;
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;

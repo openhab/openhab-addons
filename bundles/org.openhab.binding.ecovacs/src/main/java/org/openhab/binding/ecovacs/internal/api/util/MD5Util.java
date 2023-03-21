@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MD5Util {
-    private static final Logger logger = LoggerFactory.getLogger(MD5Util.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MD5Util.class);
 
     private MD5Util() {
         // Prevent instantiation of util class
@@ -35,7 +35,7 @@ public class MD5Util {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            logger.error("Could not get MD5 MessageDigest instance", e);
+            LOGGER.error("Could not get MD5 MessageDigest instance", e);
             return "";
         }
         md.update(input.getBytes());

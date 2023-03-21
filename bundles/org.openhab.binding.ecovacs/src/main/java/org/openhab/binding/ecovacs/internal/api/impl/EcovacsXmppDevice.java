@@ -137,7 +137,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 if (response != null) {
                     logger.trace("{}: Received command response XML {}", getSerialNumber(), response);
 
-                    PortalIotCommandXmlResponse responseObj = new PortalIotCommandXmlResponse("", "", response, 0, "");
+                    PortalIotCommandXmlResponse responseObj = new PortalIotCommandXmlResponse("", response, 0, "");
                     return command.convertResponse(responseObj, ProtocolVersion.XML, gson);
                 }
             }

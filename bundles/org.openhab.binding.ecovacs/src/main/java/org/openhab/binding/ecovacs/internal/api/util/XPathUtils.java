@@ -31,7 +31,7 @@ import org.xml.sax.InputSource;
  */
 @NonNullByDefault
 public class XPathUtils {
-    private static @Nullable XPathFactory FACTORY;
+    private static @Nullable XPathFactory factory;
 
     public static Node getFirstXPathMatch(String xml, String xpathExpression) throws DataParsingException {
         NodeList nodes = getXPathMatches(xml, xpathExpression);
@@ -58,10 +58,10 @@ public class XPathUtils {
     @SuppressWarnings("null") // null annotations don't recognize FACTORY can not be null in return statement
     private static XPath newXPath() {
         synchronized (XPathUtils.class) {
-            if (FACTORY == null) {
-                FACTORY = XPathFactory.newInstance();
+            if (factory == null) {
+                factory = XPathFactory.newInstance();
             }
-            return FACTORY.newXPath();
+            return factory.newXPath();
         }
     }
 }

@@ -27,7 +27,7 @@ public abstract class AbstractNoResponseCommand extends IotDeviceCommand<Abstrac
         private Nothing() {
         }
 
-        private static Nothing INSTANCE = new Nothing();
+        private static final Nothing INSTANCE = new Nothing();
     }
 
     protected AbstractNoResponseCommand() {

@@ -31,8 +31,8 @@ public class PortalLoginResponse extends AbstractPortalResponse {
     @SerializedName("last")
     private final String last;
 
-    public PortalLoginResponse(String todo, String result, String userId, String resource, String token, String last) {
-        super(todo, result);
+    public PortalLoginResponse(String result, String userId, String resource, String token, String last) {
+        super(result);
         this.userId = userId;
         this.resource = resource;
         this.token = token;

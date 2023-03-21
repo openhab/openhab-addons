@@ -18,15 +18,12 @@ import com.google.gson.annotations.SerializedName;
  * @author Johannes Ptaszyk - Initial contribution
  */
 public abstract class AbstractPortalResponse {
-
-    @SerializedName("todo")
-    private final String todo;
-
     @SerializedName("result")
     private final String result;
 
-    protected AbstractPortalResponse(String todo, String result) {
-        this.todo = todo;
+    // unused field: 'todo' (string)
+
+    protected AbstractPortalResponse(String result) {
         this.result = result;
     }
 

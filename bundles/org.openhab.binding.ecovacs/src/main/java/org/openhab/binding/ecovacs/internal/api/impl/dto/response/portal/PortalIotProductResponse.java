@@ -20,15 +20,12 @@ import com.google.gson.annotations.SerializedName;
  * @author Danny Baumann - Initial contribution
  */
 public class PortalIotProductResponse {
-
-    @SerializedName("code")
-    private final int code;
-
     @SerializedName("data")
     private final List<IotProduct> products;
 
-    public PortalIotProductResponse(int code, List<IotProduct> products) {
-        this.code = code;
+    // unused field: 'code' (integer)
+
+    public PortalIotProductResponse(List<IotProduct> products) {
         this.products = products;
     }
 
