@@ -255,10 +255,12 @@ public class GoogleSTTService implements STTService {
         long startTime = System.currentTimeMillis();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
-        int readBytes = 6400;
+        int bufferSize = 6400;
+        int numBytesRead;
+        int remaining = bufferSize;
+        byte[] audioBuffer = new byte[bufferSize];
         while (!aborted.get()) {
-            byte[] data = new byte[readBytes];
-            int dataN = audioStream.read(data);
+            numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
             if (aborted.get()) {
                 logger.debug("Stops listening, aborted");
                 break;
@@ -272,16 +274,18 @@ public class GoogleSTTService implements STTService {
                 logger.debug("Stops listening, max silence time reached");
                 break;
             }
-            if (dataN != readBytes) {
+            if (numBytesRead != remaining) {
+                remaining = remaining - numBytesRead;
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
                 continue;
             }
+            remaining = bufferSize;
             StreamingRecognizeRequest dataRequest = StreamingRecognizeRequest.newBuilder()
-                    .setAudioContent(ByteString.copyFrom(data)).build();
-            logger.debug("Sending audio data {}", dataN);
+                    .setAudioContent(ByteString.copyFrom(audioBuffer)).build();
+            logger.debug("Sending audio data {}", bufferSize);
             clientStream.send(dataRequest);
         }
     }
