@@ -40,7 +40,7 @@ import org.openhab.core.types.UnDefType;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-public class SensorThermostatThingHandlerTest extends BaseSensorThingHandlerTest {
+public class SensorThermostatThingHandlerTest extends BaseDeconzThingHandlerTest {
 
     @Test
     public void testDanfoss() throws IOException {

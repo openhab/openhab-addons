@@ -72,12 +72,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link BaseSensorThingHandlerTest} is the base class for classes that extend {@link DeconzBaseThingHandler}
+ * The {@link BaseDeconzThingHandlerTest} is the base class for test classes that are used to test subclasses of
+ * {@link DeconzBaseThingHandler}
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class BaseSensorThingHandlerTest extends JavaTest {
+public class BaseDeconzThingHandlerTest extends JavaTest {
     private static final ThingUID BRIDGE_UID = new ThingUID(BRIDGE_TYPE, "bridge");
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_THERMOSTAT, "thing");
     protected @NonNullByDefault({}) DeconzBaseMessage deconzMessage;

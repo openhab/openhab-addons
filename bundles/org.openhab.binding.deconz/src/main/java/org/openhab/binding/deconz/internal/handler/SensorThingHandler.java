@@ -107,8 +107,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
         super.valueUpdated(channelUID, newState, initializing);
         switch (channelUID.getId()) {
             case CHANNEL_AIRQUALITY -> updateStringChannel(channelUID, newState.airquality);
-            case CHANNEL_AIRQUALITYPPB -> updateQuantityTypeChannel(channelUID, newState.airqualityppb,
-                    PARTS_PER_BILLION);
+            case CHANNEL_AIRQUALITYPPB ->
+                updateQuantityTypeChannel(channelUID, newState.airqualityppb, PARTS_PER_BILLION);
             case CHANNEL_ALARM -> updateSwitchChannel(channelUID, newState.alarm);
             case CHANNEL_BATTERY_LEVEL -> updateDecimalTypeChannel(channelUID, newState.battery);
             case CHANNEL_BUTTON -> updateDecimalTypeChannel(channelUID, newState.buttonevent);
@@ -138,12 +138,12 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                     updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
             }
-            case CHANNEL_ORIENTATION_X -> updateDecimalTypeChannel(channelUID,
-                    newState.orientation != null ? newState.orientation[0] : null);
-            case CHANNEL_ORIENTATION_Y -> updateDecimalTypeChannel(channelUID,
-                    newState.orientation != null ? newState.orientation[1] : null);
-            case CHANNEL_ORIENTATION_Z -> updateDecimalTypeChannel(channelUID,
-                    newState.orientation != null ? newState.orientation[2] : null);
+            case CHANNEL_ORIENTATION_X ->
+                updateDecimalTypeChannel(channelUID, newState.orientation != null ? newState.orientation[0] : null);
+            case CHANNEL_ORIENTATION_Y ->
+                updateDecimalTypeChannel(channelUID, newState.orientation != null ? newState.orientation[1] : null);
+            case CHANNEL_ORIENTATION_Z ->
+                updateDecimalTypeChannel(channelUID, newState.orientation != null ? newState.orientation[2] : null);
             case CHANNEL_POWER -> updateQuantityTypeChannel(channelUID, newState.power, WATT);
             case CHANNEL_PRESENCE -> updateSwitchChannel(channelUID, newState.presence);
             case CHANNEL_PRESSURE -> updateQuantityTypeChannel(channelUID, newState.pressure, HECTO(PASCAL));

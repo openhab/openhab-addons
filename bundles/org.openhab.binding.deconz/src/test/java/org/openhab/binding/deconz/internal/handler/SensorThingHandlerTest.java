@@ -39,7 +39,7 @@ import org.openhab.core.types.UnDefType;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-public class SensorThingHandlerTest extends BaseSensorThingHandlerTest {
+public class SensorThingHandlerTest extends BaseDeconzThingHandlerTest {
 
     @Test
     public void testAirQuality() throws IOException {
