@@ -17,19 +17,19 @@ The voice data is processed offline, locally on your openHAB server by Rustpotte
 
 After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - Rustpotter Keyword Spotter**) to edit them:
 
-* **Threshold** - Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should obtain to trigger a detection. Defaults to 0.5.
-* **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should obtain against a combination of the wake word templates, the detection will be aborted if this is not the case. This way it can prevent to run the comparison of the current frame against each of the wake word templates which saves cpu. If set to 0 this functionality is disabled.
-* **Score Mode** - Indicates how to calculate the final score.
-* **Min Scores** - Minimum number of positive scores to consider a partial detection as a detection.
-* **Comparator Ref** - Configures the reference for the comparator used to match the samples.
-* **Comparator Band Size** - Configures the band-size for the comparator used to match the samples.
-* **Gain Normalizer** - Enables an audio filter that intent to approximate the volume of the stream to a reference level.
-* **Min Gain** - Min gain applied by the gain normalizer filter.
-* **Max Gain** - Max gain applied by the gain normalizer filter.
-* **Gain Ref** - The RMS reference used by the gain-normalizer to calculate the gain applied. If unset an estimation of the wakeword level is used.
-* **Band Pass** - Enables an audio filter that attenuates frequencies outside the low cutoff and high cutoff range.
-* **Low Cutoff** - Low cutoff for the band-pass filter.
-* **High Cutoff** - High cutoff for the band-pass filter.
+- **Threshold** - Configures the detector threshold, is the min score (in range 0. to 1.) that some wake word template should obtain to trigger a detection. Defaults to 0.5.
+- **Averaged Threshold** - Configures the detector averaged threshold, is the min score (in range 0. to 1.) that the audio should obtain against a combination of the wake word templates, the detection will be aborted if this is not the case. This way it can prevent to run the comparison of the current frame against each of the wake word templates which saves cpu. If set to 0 this functionality is disabled.
+- **Score Mode** - Indicates how to calculate the final score.
+- **Min Scores** - Minimum number of positive scores to consider a partial detection as a detection.
+- **Comparator Ref** - Configures the reference for the comparator used to match the samples.
+- **Comparator Band Size** - Configures the band-size for the comparator used to match the samples.
+- **Gain Normalizer** - Enables an audio filter that intent to approximate the volume of the stream to a reference level.
+- **Min Gain** - Min gain applied by the gain normalizer filter.
+- **Max Gain** - Max gain applied by the gain normalizer filter.
+- **Gain Ref** - The RMS reference used by the gain-normalizer to calculate the gain applied. If unset an estimation of the wakeword level is used.
+- **Band Pass** - Enables an audio filter that attenuates frequencies outside the low cutoff and high cutoff range.
+- **Low Cutoff** - Low cutoff for the band-pass filter.
+- **High Cutoff** - High cutoff for the band-pass filter.
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `rustpotterks.cfg`
 
@@ -69,11 +69,11 @@ The service will only work if it's able to find the correct rpw for your magic w
 
 You can setup your preferred default keyword spotter and default magic word in the UI:
 
-* Go to **Settings**.
-* Edit **System Services - Voice**.
-* Set **Rustpotter Keyword Spotter** as **Default Keyword Spotter**.
-* Choose your preferred **Magic Word** for your setup.
-* Choose optionally your **Listening Switch** item that will be switch ON during the period when the dialog processor has spotted the keyword and is listening for commands.
+- Go to **Settings**.
+- Edit **System Services - Voice**.
+- Set **Rustpotter Keyword Spotter** as **Default Keyword Spotter**.
+- Choose your preferred **Magic Word** for your setup.
+- Choose optionally your **Listening Switch** item that will be switch ON during the period when the dialog processor has spotted the keyword and is listening for commands.
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
