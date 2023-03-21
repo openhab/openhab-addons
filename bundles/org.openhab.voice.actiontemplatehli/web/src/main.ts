@@ -433,7 +433,7 @@ function validatePlaceholderForm() {
   if (!(isRead && placeholder.label === STATE_PLACEHOLDER) && RESERVED_WRITE_PLACEHOLDERS.includes(placeholder.label)) {
     return "Label is reserved";
   }
-  if ([...state.sharedPlaceholders, ...action.placeholders].some(p => p.label === placeholder.label)) {
+  if (state.placeholderOnEditOriginal && placeholder.label !== state.placeholderOnEditOriginal.label && [...state.sharedPlaceholders, ...action.placeholders].some(p => p.label === placeholder.label)) {
     return "Placeholder already exists";
   }
   if (!placeholder.values.length && !Object.keys(placeholder.mappedValues).length) {
