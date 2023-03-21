@@ -19,13 +19,13 @@ The addon includes a small UI that allows you configure and test your action tem
 
 This interpreter allows two ways to target items:
 
-* You can link an action to a specific item by adding the custom metadata namespace 'actiontemplatehli' to it using the main UI.
-* You can link an action to a subset of items by using included UI. Those actions should contain the $itemLabel placeholder which will be matched against all the compatible items labels.
+- You can link an action to a specific item by adding the custom metadata namespace 'actiontemplatehli' to it using the main UI.
+- You can link an action to a subset of items by using included UI. Those actions should contain the $itemLabel placeholder which will be matched against all the compatible items labels.
 
 Two important notes:
 
-* Actions linked to items have prevalence over actions linked to a whole item type.
-* On actions linked to an item type the itemLabel placeholder will always be applied (explained bellow). If there are multiple item labels detected on the input the actions linked to both will be scored, each using the correct itemLabel value, so there should be no collisions in case a template contains a token that matches an item label.
+- Actions linked to items have prevalence over actions linked to a whole item type.
+- On actions linked to an item type the itemLabel placeholder will always be applied (explained bellow). If there are multiple item labels detected on the input the actions linked to both will be scored, each using the correct itemLabel value, so there should be no collisions in case a template contains a token that matches an item label.
 
 ## Action Template Scoring
 
@@ -51,25 +51,25 @@ This is defined by the boolean field read which is 'false' by default.
 
 When read is false:
 
-* template: action template. (Required)
-* value: value to be sent. It can be used to capture the transformed placeholder values. (Required)
-* affectedTypes: item types affected by this action (at least one is required to work).
-* affectedSemantics: item semantics affected by this action.
-* requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
-* placeholders: defined placeholders that can be used on the template and replaced on the value.
-* silent: boolean used to avoid confirmation message.
-* groupTargets: when targeting a Group item, can be used to send the command to its member items instead. (Requires at least one affected type to take effect)
+- template: action template. (Required)
+- value: value to be sent. It can be used to capture the transformed placeholder values. (Required)
+- affectedTypes: item types affected by this action (at least one is required to work).
+- affectedSemantics: item semantics affected by this action.
+- requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
+- placeholders: defined placeholders that can be used on the template and replaced on the value.
+- silent: boolean used to avoid confirmation message.
+- groupTargets: when targeting a Group item, can be used to send the command to its member items instead. (Requires at least one affected type to take effect)
 
 When read is true:
 
-* template: action template. (Required)
-* value: a template for the interpreter response, can use the placeholders symbols $groupLabel, $itemLabel and $state. (Required)
-* emptyValue: An alternative response template. Is used when the state value is empty or NULL after the transforming it. The $groupLabel and $itemLabel placeholders are available.
-* affectedTypes: item types affected by this action (at least one is required to work).
-* affectedSemantics: item semantics affected by this action.
-* requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
-* placeholders: only the placeholder with label state will be used, will apply its configured mappedValues on the state backwards.
-* groupTargets: when targeting a Group item, can be used to send the command to its member items instead.  (Requires at least one affected type to take effect)
+- template: action template. (Required)
+- value: a template for the interpreter response, can use the placeholders symbols $groupLabel, $itemLabel and $state. (Required)
+- emptyValue: An alternative response template. Is used when the state value is empty or NULL after the transforming it. The $groupLabel and $itemLabel placeholders are available.
+- affectedTypes: item types affected by this action (at least one is required to work).
+- affectedSemantics: item semantics affected by this action.
+- requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
+- placeholders: only the placeholder with label state will be used, will apply its configured mappedValues on the state backwards.
+- groupTargets: when targeting a Group item, can be used to send the command to its member items instead.  (Requires at least one affected type to take effect)
 
 ## Placeholders
 
@@ -121,9 +121,9 @@ Note that, when targeting multiple group members, text search is done by merging
 The dynamic placeholder is designed to capture free text. The captured value is exposed to the value under the symbol '$*' as other placeholders.
 It has some restrictions:
 
-* Can not be the only token on the template.
-* Can not be used as an optional token.
-* Can not be used multiple times on the same template alternative.
+- Can not be the only token on the template.
+- Can not be used as an optional token.
+- Can not be used multiple times on the same template alternative.
 
 Note that the dynamic placeholder does not score. This way you can use it to fallback other sentences.
 
@@ -143,11 +143,11 @@ When the target of an action is a group item, you can target its members instead
 
 You can use the following fields:
 
-* affectedTypes: item types affected by this action (at least one is required or all the group targets configurations is ignored).
-* affectedSemantics: item semantics affected by this action.
-* requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
-* recursive: when matching by itemType, look for group members in a recursive way, default true.
-* mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types and for a single affectedType, default false.
+- affectedTypes: item types affected by this action (at least one is required or all the group targets configurations is ignored).
+- affectedSemantics: item semantics affected by this action.
+- requiredTags: allow to restrict the items targeted by its tags by ignoring items not having all these tags.
+- recursive: when matching by itemType, look for group members in a recursive way, default true.
+- mergeState: on a read action when matching by itemType, merge the item states by performing an AND operation, only allowed for 'Switch' and 'Contact' item types and for a single affectedType, default false.
 
 ## Text Preprocessing
 
@@ -162,8 +162,8 @@ You can provide a custom model at '<OPENHAB_USERDATA>/actiontemplatehli/token.bi
 
 Here you have an example of the built-in ones:
 
-* Using the white space tokenizer "What time is it?" produces the tokens "what" "time" "is" "it?"
-* Using the simple tokenizer "What time is it?" produces the tokens "what" "time" "is" "it" "?"
+- Using the white space tokenizer "What time is it?" produces the tokens "what" "time" "is" "it?"
+- Using the simple tokenizer "What time is it?" produces the tokens "what" "time" "is" "it" "?"
 
 Tokenizing the text is enough to use the action type 'tokens' as tokens are the only ones required for scoring (but the option 'optionalLanguageTags' will not take effect unless you have the POS language tags).
 
