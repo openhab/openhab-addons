@@ -354,7 +354,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     }
                     frequency = ((BigDecimal) Objects.requireNonNullElse(
                             channel.getConfiguration().get(KNXBindingConstants.REPEAT_FREQUENCY), BigDecimal.ZERO))
-                                    .intValue();
+                            .intValue();
                 } else {
                     // disable dimming by binding
                     frequency = 0;

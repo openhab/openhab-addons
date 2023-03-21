@@ -120,7 +120,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                                        .doubleValue());
+                        .doubleValue());
     }
 
     @Override
@@ -129,7 +129,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
-                                        .doubleValue());
+                        .doubleValue());
     }
 
     @Override
@@ -189,7 +189,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
                                 HomekitTaggedItem.MIN_VALUE,
                                 BigDecimal.valueOf(HomekitCharacteristicFactory
                                         .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
-                                                .doubleValue());
+                                .doubleValue());
     }
 
     @Override
@@ -200,7 +200,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
                                 HomekitTaggedItem.MAX_VALUE,
                                 BigDecimal.valueOf(HomekitCharacteristicFactory
                                         .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
-                                                .doubleValue());
+                                .doubleValue());
     }
 
     @Override

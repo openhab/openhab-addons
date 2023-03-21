@@ -137,10 +137,10 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
         switch (channelUID.getId()) {
             case CHANNEL_THERMOSTAT_LOCKED -> updateSwitchChannel(channelUID, newConfig.locked);
-            case CHANNEL_HEATSETPOINT -> updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS,
-                    1.0 / 100);
-            case CHANNEL_TEMPERATURE_OFFSET -> updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS,
-                    1.0 / 100);
+            case CHANNEL_HEATSETPOINT ->
+                updateQuantityTypeChannel(channelUID, newConfig.heatsetpoint, CELSIUS, 1.0 / 100);
+            case CHANNEL_TEMPERATURE_OFFSET ->
+                updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS, 1.0 / 100);
             case CHANNEL_THERMOSTAT_MODE -> updateState(channelUID, new StringType(mode));
             case CHANNEL_EXTERNAL_WINDOW_OPEN -> {
                 Boolean open = newConfig.externalwindowopen;
