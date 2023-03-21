@@ -33,6 +33,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +183,8 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
                     updateState(channelUID, Util.convertTimestampToDateTime(lastUpdated));
+                } else if ("none".equals(lastUpdated)) {
+                    updateState(channelUID, UnDefType.UNDEF);
                 }
             }
             case CHANNEL_BATTERY_LOW -> updateSwitchChannel(channelUID, newState.lowbattery);
