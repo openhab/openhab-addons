@@ -110,7 +110,6 @@ public class EcovacsDeviceDiscoveryService extends AbstractDiscoveryService impl
     public synchronized void stopScan() {
         logger.debug("Stopping Ecovacs discovery scan");
         onDemandScanTask.cancel();
-        this.api = Optional.empty();
         super.stopScan();
     }
 

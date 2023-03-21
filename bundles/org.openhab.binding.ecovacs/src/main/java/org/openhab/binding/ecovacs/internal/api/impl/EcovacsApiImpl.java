@@ -217,6 +217,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         PortalAuthRequest data = new PortalAuthRequest(PortalTodo.GET_DEVICE_LIST, createAuthData());
         String userUrl = EcovacsApiUrlFactory.getPortalUsersUrl(configuration);
         ContentResponse deviceResponse = executeRequest(createJsonRequest(userUrl, data));
+        logger.trace("Got device list response {}", deviceResponse.getContentAsString());
         List<Device> devices = handleResponse(deviceResponse, PortalDeviceResponse.class).getDevices();
         return devices != null ? devices : Collections.emptyList();
     }
@@ -224,8 +225,9 @@ public final class EcovacsApiImpl implements EcovacsApi {
     private List<IotProduct> getIotProductMap() throws EcovacsApiException, InterruptedException {
         PortalIotProductRequest data = new PortalIotProductRequest(createAuthData());
         String url = EcovacsApiUrlFactory.getPortalProductIotMapUrl(configuration);
-        ContentResponse deviceResponse = executeRequest(createJsonRequest(url, data));
-        List<IotProduct> products = handleResponse(deviceResponse, PortalIotProductResponse.class).getProducts();
+        ContentResponse productResponse = executeRequest(createJsonRequest(url, data));
+        logger.trace("Got product list response {}", productResponse.getContentAsString());
+        List<IotProduct> products = handleResponse(productResponse, PortalIotProductResponse.class).getProducts();
         return products != null ? products : Collections.emptyList();
     }
 
