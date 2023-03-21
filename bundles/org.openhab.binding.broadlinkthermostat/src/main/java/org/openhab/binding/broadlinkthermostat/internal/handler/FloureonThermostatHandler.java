@@ -216,7 +216,7 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
             try {
                 new SetTimeCommand(tob(zonedDateTime.getHour()), tob(zonedDateTime.getMinute()),
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))
-                                .execute(floureonDevice);
+                        .execute(floureonDevice);
             } catch (Exception e) {
                 logger.warn("Error while setting time of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
