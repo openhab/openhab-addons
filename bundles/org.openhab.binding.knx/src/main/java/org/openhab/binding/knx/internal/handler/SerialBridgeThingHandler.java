@@ -20,6 +20,7 @@ import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.client.SerialClient;
 import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
+import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -42,8 +43,11 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeThingHandler.class);
 
-    public SerialBridgeThingHandler(Bridge bridge) {
+    private final SerialPortManager serialPortManager;
+
+    public SerialBridgeThingHandler(Bridge bridge, final SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), config.getSerialPort(),
-                config.useCemi(), this);
+                config.useCemi(), serialPortManager, this);
 
         updateStatus(ThingStatus.UNKNOWN);
         // delay actual initialization, allow for longer runtime of actual initialization

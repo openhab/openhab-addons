@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
- * The{@link PostProcessingException} is a catched Exception that is thrown in case of conversion errors during post
- * processing
+ * The {@link PostProcessingException} is an Exception that is thrown in case of conversion errors during
+ * post-processing
  *
  * @author Jan N. Klug - Initial contribution
  */

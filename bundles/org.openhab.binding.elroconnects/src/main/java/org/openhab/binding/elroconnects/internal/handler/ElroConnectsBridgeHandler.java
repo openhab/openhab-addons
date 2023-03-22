@@ -853,7 +853,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Sync scenes");
         ElroConnectsMessage elroMessage = new ElroConnectsMessage(msgIdIncrement(), connectorId, ctrlKey,
                 ELRO_SYNC_SCENES, legacyFirmware).withSceneGroup(0).withSceneContent(SYNC_COMMAND)
-                        .withAnswerContent(SYNC_COMMAND);
+                .withAnswerContent(SYNC_COMMAND);
         sendElroMessage(elroMessage, true);
     }
 

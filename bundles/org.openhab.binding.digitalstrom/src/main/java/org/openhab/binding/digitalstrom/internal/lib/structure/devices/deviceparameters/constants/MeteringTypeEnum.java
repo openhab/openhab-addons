@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * The {@link MeteringTypeEnum} lists all available digitalSTROM metering types.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - Initial contribution
  * @author Michael Ochel - add MeteringUnitEnum list
  * @author Matthias Siegele - add MeteringUnitEnum list
  */
