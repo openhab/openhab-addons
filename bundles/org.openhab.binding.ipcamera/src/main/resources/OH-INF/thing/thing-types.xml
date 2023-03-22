@@ -2751,8 +2751,8 @@
 	<channel-type id="motionDetectionLevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Motion Detection Level</label>
-		<description>By moving this control you should be able to change how sensitive the camera's motion detection is to
-			movements.</description>
+		<description>Change how sensitive the camera's motion detection is to
+			movement.</description>
 		<category>Motion</category>
 		<state min="0" max="6" step="1" readOnly="false">
 			<options>
