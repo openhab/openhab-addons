@@ -255,7 +255,7 @@ public class GoogleSTTService implements STTService {
         long startTime = System.currentTimeMillis();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
-        int bufferSize = 6400;
+        final int bufferSize = 6400;
         int numBytesRead;
         int remaining = bufferSize;
         byte[] audioBuffer = new byte[bufferSize];
