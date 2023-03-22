@@ -23,8 +23,13 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -112,6 +117,9 @@ public class ShieldTVConnectionManager {
     private final Object keepAliveReconnectLock = new Object();
     private final Object connectionLock = new Object();
     private int periodicUpdate;
+
+    private @Nullable ScheduledFuture<?> deviceHealthJob;
+    private boolean isOnline = true;
 
     private StringBuffer sbReader = new StringBuffer();
     private StringBuffer sbShimReader = new StringBuffer();
@@ -243,6 +251,40 @@ public class ShieldTVConnectionManager {
         return this.isLoggedIn;
     }
 
+    private boolean servicePing() {
+        double execStartTimeInMS = System.currentTimeMillis();
+        int timeout = 500;
+
+        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
+        try (Socket socket = new Socket()) {
+            socket.connect(socketAddress, timeout);
+            return true;
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+            return false;
+        } catch (IOException ignored) {
+            // IOException is thrown by automatic close() of the socket.
+            // This should actually never return a value as we should return true above already
+            return true;
+        }
+    }
+
+    private void checkHealth() {
+        boolean isOnline;
+        if (!isLoggedIn) {
+            isOnline = servicePing();
+        } else {
+            isOnline = true;
+        }
+        logger.trace("{} - Device Health - Online: {} - Logged In: {}", handler.getThingID(), isOnline, isLoggedIn);
+        if (isOnline != this.isOnline) {
+            this.isOnline = isOnline;
+            if (isOnline) {
+                logger.trace("{} - Device is back online.  Attempting reconnection.", handler.getThingID());
+                reconnect();
+            }
+        }
+    }
+
     public void setKeys(String privKey, String cert) {
         try {
             androidtvPKI.setKeys(privKey, encryptionKey, cert);
@@ -326,6 +368,9 @@ public class ShieldTVConnectionManager {
         androidtvPKI.setKeystoreFileName(config.keystoreFileName);
         androidtvPKI.setAlias("nvidia");
 
+        deviceHealthJob = scheduler.scheduleWithFixedDelay(this::checkHealth, config.heartbeat, config.heartbeat,
+                TimeUnit.SECONDS);
+
         try {
             File keystoreFile = new File(config.keystoreFileName);
 
@@ -366,57 +411,61 @@ public class ShieldTVConnectionManager {
 
     public void connect() {
         synchronized (connectionLock) {
-            try {
-                logger.debug("{} - Opening ShieldTV SSL connection to {}:{}", handler.getThingID(), config.ipAddress,
-                        config.port);
-                SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
-                sslSocket.startHandshake();
-                writer = new BufferedWriter(
-                        new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
-                reader = new BufferedReader(
-                        new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
-                this.sslSocket = sslSocket;
-            } catch (UnknownHostException e) {
-                setStatus(false, "Unknown host");
-                return;
-            } catch (IllegalArgumentException e) {
-                // port out of valid range
-                setStatus(false, "Invalid port number");
-                return;
-            } catch (InterruptedIOException e) {
-                logger.debug("Interrupted while establishing ShieldTV connection");
-                Thread.currentThread().interrupt();
-                return;
-            } catch (IOException e) {
-                setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
-                logger.info("{} - Error opening ShieldTV SSL connection to {}:{} {}", handler.getThingID(),
-                        config.ipAddress, config.port, e.getMessage());
-                disconnect(false);
+            if (isOnline) {
+                try {
+                    logger.debug("{} - Opening ShieldTV SSL connection to {}:{}", handler.getThingID(),
+                            config.ipAddress, config.port);
+                    SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
+                    sslSocket.startHandshake();
+                    writer = new BufferedWriter(
+                            new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
+                    reader = new BufferedReader(
+                            new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.ISO_8859_1));
+                    this.sslSocket = sslSocket;
+                } catch (UnknownHostException e) {
+                    setStatus(false, "Unknown host");
+                    return;
+                } catch (IllegalArgumentException e) {
+                    // port out of valid range
+                    setStatus(false, "Invalid port number");
+                    return;
+                } catch (InterruptedIOException e) {
+                    logger.debug("Interrupted while establishing ShieldTV connection");
+                    Thread.currentThread().interrupt();
+                    return;
+                } catch (IOException e) {
+                    setStatus(false, "Error opening ShieldTV SSL connection. Check log.");
+                    logger.info("{} - Error opening ShieldTV SSL connection to {}:{} {}", handler.getThingID(),
+                            config.ipAddress, config.port, e.getMessage());
+                    disconnect(false);
+                    scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
+                    return;
+                }
+
+                setStatus(false, "Initializing");
+
+                Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader " + handler.getThingID());
+                readerThread.setDaemon(true);
+                readerThread.start();
+                this.readerThread = readerThread;
+
+                Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender " + handler.getThingID());
+                senderThread.setDaemon(true);
+                senderThread.start();
+                this.senderThread = senderThread;
+
+                if (!config.shim) {
+                    this.periodicUpdate = 20;
+                    logger.debug("{} - Starting ShieldTV keepalive job with interval {}", handler.getThingID(),
+                            config.heartbeat);
+                    keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat,
+                            config.heartbeat, TimeUnit.SECONDS);
+
+                    String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
+                    sendCommand(new ShieldTVCommand(login));
+                }
+            } else {
                 scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
-                return;
-            }
-
-            setStatus(false, "Initializing");
-
-            Thread readerThread = new Thread(this::readerThreadJob, "ShieldTV reader " + handler.getThingID());
-            readerThread.setDaemon(true);
-            readerThread.start();
-            this.readerThread = readerThread;
-
-            Thread senderThread = new Thread(this::senderThreadJob, "ShieldTV sender " + handler.getThingID());
-            senderThread.setDaemon(true);
-            senderThread.start();
-            this.senderThread = senderThread;
-
-            if (!config.shim) {
-                this.periodicUpdate = 20;
-                logger.debug("{} - Starting ShieldTV keepalive job with interval {}", handler.getThingID(),
-                        config.heartbeat);
-                keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, config.heartbeat, config.heartbeat,
-                        TimeUnit.SECONDS);
-
-                String login = ShieldTVRequest.encodeMessage(ShieldTVRequest.loginRequest());
-                sendCommand(new ShieldTVCommand(login));
             }
         }
     }
@@ -498,6 +547,8 @@ public class ShieldTVConnectionManager {
     private void disconnect(boolean interruptAll) {
         synchronized (connectionLock) {
             logger.debug("{} - Disconnecting ShieldTV", handler.getThingID());
+
+            this.isLoggedIn = false;
 
             ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
             if (connectRetryJob != null) {
@@ -622,6 +673,7 @@ public class ShieldTVConnectionManager {
                             handler.getThingID(), e.getMessage());
                     setStatus(false, "Communication error, will try to reconnect");
                     sendQueue.add(command); // Requeue command
+                    this.isLoggedIn = false;
                     reconnect();
                     break; // reconnect() will start a new thread; terminate this one
                 }
@@ -709,6 +761,7 @@ public class ShieldTVConnectionManager {
                 if (HARD_DROP.equals(thisMsg)) {
                     // Shield has crashed the connection. Disconnect hard.
                     logger.trace("{} - readerThreadJob received ffffffff.  Disconnecting hard.", handler.getThingID());
+                    this.isLoggedIn = false;
                     reconnect();
                     break;
                 }
@@ -1154,6 +1207,10 @@ public class ShieldTVConnectionManager {
         Future<?> shimAsyncInitializeTask = this.shimAsyncInitializeTask;
         if (shimAsyncInitializeTask != null && !shimAsyncInitializeTask.isDone()) {
             shimAsyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
+        }
+        ScheduledFuture<?> deviceHealthJob = this.deviceHealthJob;
+        if (deviceHealthJob != null) {
+            deviceHealthJob.cancel(true);
         }
         disconnect(true);
     }
