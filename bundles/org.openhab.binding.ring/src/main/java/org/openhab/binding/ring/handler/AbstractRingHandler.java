@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRingHandler extends BaseThingHandler {
 
     // Current status
-    protected OnOffType status;
-    protected OnOffType enabled;
-    protected Logger logger = LoggerFactory.getLogger(AbstractRingHandler.class);
+    protected OnOffType status = OnOffType.OFF;
+    protected OnOffType enabled = OnOffType.ON;
+    protected final Logger logger = LoggerFactory.getLogger(AbstractRingHandler.class);
 
     // Scheduler
     ScheduledFuture<?> refreshJob;
@@ -50,8 +50,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      */
     public AbstractRingHandler(final Thing thing) {
         super(thing);
-        status = OnOffType.OFF;
-        enabled = OnOffType.ON;
     }
 
     @Override
@@ -60,7 +58,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, getThing().getUID().getId());
         updateProperties(properties);
-        // super.initialize();
     }
 
     /**
@@ -116,7 +113,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
         try {
             registry.removeRingDevice(id);
         } catch (final DeviceNotFoundException e) {
-            // TODO Auto-generated catch block
             logger.debug("Exception occurred during execution of handleRemoval(): {}", e.getMessage(), e);
         } finally {
             updateStatus(ThingStatus.REMOVED);

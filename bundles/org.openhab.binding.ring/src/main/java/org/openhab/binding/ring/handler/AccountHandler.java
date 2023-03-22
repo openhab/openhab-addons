@@ -55,11 +55,9 @@ import org.osgi.service.http.HttpService;
 
 public class AccountHandler extends AbstractRingHandler implements RingAccount {
 
-    private // Scheduler
-    ScheduledFuture<?> jobTokenRefresh = null;
+    private ScheduledFuture<?> jobTokenRefresh = null;
     private Runnable runnableToken = null;
     private @Nullable RingVideoServlet ringVideoServlet;
-    // private HttpService httpService;
     private @Nullable HttpService httpService;
     /**
      * The user profile retrieved when authenticating.
@@ -174,7 +172,6 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                         if (enabled.equals(OnOffType.ON)) {
                             Configuration config = getThing().getConfiguration();
                             Integer refreshInterval = ((BigDecimal) config.get("refreshInterval")).intValueExact();
-                            ;
                             startAutomaticRefresh(refreshInterval);
                         } else {
                             stopAutomaticRefresh();
@@ -222,7 +219,6 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
                     return;
                 }
                 // write hardwareId to thing config
-                config.remove("hardwareId");
                 config.put("hardwareId", hardwareId);
                 updateConfiguration(config);
             }
@@ -282,7 +278,6 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
 
     @Override
     protected void minuteTick() {
-        // if (registry == null) {
         try {
             // Init the devices
             refreshRegistry();

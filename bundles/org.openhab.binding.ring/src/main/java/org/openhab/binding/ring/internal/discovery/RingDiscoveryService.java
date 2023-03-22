@@ -14,7 +14,6 @@ package org.openhab.binding.ring.internal.discovery;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -47,11 +46,8 @@ public class RingDiscoveryService extends AbstractDiscoveryService {
 
     public static Set<ThingTypeUID> getSupportedTypes() {
         if (SUPPORTED_THING_TYPES_UIDS == null) {
-            SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-            SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ACCOUNT);
-            SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CHIME);
-            SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOORBELL);
-            SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_STICKUPCAM);
+            SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
+                    THING_TYPE_STICKUPCAM);
         }
         return SUPPORTED_THING_TYPES_UIDS;
     }

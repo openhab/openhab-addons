@@ -14,7 +14,6 @@ package org.openhab.binding.ring.internal;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -71,11 +70,8 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
 
         logger.debug("Using OH HTTP port {}", httpPort);
 
-        SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ACCOUNT);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOORBELL);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CHIME);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_STICKUPCAM);
+        SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_DOORBELL, THING_TYPE_CHIME,
+                THING_TYPE_STICKUPCAM);
     }
 
     @Override
