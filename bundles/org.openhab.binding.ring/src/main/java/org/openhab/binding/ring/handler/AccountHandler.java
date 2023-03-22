@@ -226,7 +226,6 @@ public class AccountHandler extends AbstractRingHandler implements RingAccount {
             restClient = new RestClient();
             userProfile = restClient.getAuthenticatedProfile(username, password, refreshToken, twofactorCode,
                     hardwareId);
-            config.remove("refreshToken");
             config.put("refreshToken", userProfile.getRefreshToken());
             updateConfiguration(config);
             if ((String) config.get("refreshToken") != userProfile.getRefreshToken()) {

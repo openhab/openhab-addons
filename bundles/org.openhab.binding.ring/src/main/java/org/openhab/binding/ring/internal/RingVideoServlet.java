@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public class RingVideoServlet extends HttpServlet {
             String path = request.getRequestURI().substring(0, SERVLET_VIDEO_PATH.length());
             logger.trace("RingVideo: Reqeust from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getServerPort(), request.getProtocol());
-            if (!request.getMethod().equalsIgnoreCase(HTTP_METHOD_GET)) {
+            if (!request.getMethod().equalsIgnoreCase(HttpMethod.GET.toString())) {
                 logger.error("RingVideo: Unexpected method='{}'", request.getMethod());
             }
             if (!path.equalsIgnoreCase(SERVLET_VIDEO_PATH)) {

@@ -40,7 +40,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(AbstractRingHandler.class);
 
     // Scheduler
-    ScheduledFuture<?> refreshJob;
+    protected ScheduledFuture<?> refreshJob;
 
     /**
      * There is no default constructor. We have to define a
