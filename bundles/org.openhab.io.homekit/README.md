@@ -553,7 +553,8 @@ String          thermostat_current_mode     "Thermostat Current Mode" (gThermost
 
 You can provide mapping for target mode in a similar way.
 
-The custom mapping can be also used to reduce number of modes shown in Home app. The modes can be only reduced, but not added, i.e. it is not possible to add a new custom mode to HomeKit thermostat.
+The custom mapping can be also used to reduce number of modes shown in Home app.
+The modes can be only reduced, but not added, i.e. it is not possible to add a new custom mode to HomeKit thermostat.
 
 Example: if your thermostat does not support cooling, then you need to limit mapping to OFF and HEAT values only:
 
