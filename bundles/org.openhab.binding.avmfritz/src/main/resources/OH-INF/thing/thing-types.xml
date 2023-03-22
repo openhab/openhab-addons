@@ -91,7 +91,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -124,7 +127,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -157,7 +163,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -190,7 +199,10 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -223,8 +235,14 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy"/>
-			<channel id="power" typeId="system.electric-power"/>
+			<channel id="energy" typeId="system.electrical-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
@@ -251,8 +269,14 @@
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="energy" typeId="system.electrical-energy"/>
-			<channel id="power" typeId="system.electric-power"/>
+			<channel id="energy" typeId="system.electrical-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
@@ -279,8 +303,14 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy"/>
-			<channel id="power" typeId="system.electric-power"/>
+			<channel id="energy" typeId="system.electrical-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
@@ -438,7 +468,10 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="actual_temp" typeId="system.indoor-temperature"/>
+			<channel id="actual_temp" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Current measured temperature.</description>
+			</channel>
 			<channel id="set_temp" typeId="set_temp"/>
 			<channel id="eco_temp" typeId="eco_temp"/>
 			<channel id="comfort_temp" typeId="comfort_temp"/>
@@ -470,8 +503,14 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="device_locked" typeId="device_locked"/>
-			<channel id="energy" typeId="system.electrical-energy"/>
-			<channel id="power" typeId="system.electric-power"/>
+			<channel id="energy" typeId="system.electrical-energy">
+				<label>Energy Consumption</label>
+				<description>Accumulated energy consumption.</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power</label>
+				<description>Current power consumption.</description>
+			</channel>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
