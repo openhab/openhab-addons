@@ -259,7 +259,7 @@ public class GoogleSTTService implements STTService {
         int numBytesRead;
         int remaining = bufferSize;
         byte[] audioBuffer = new byte[bufferSize];
-        while (!aborted.get()) {
+        while (!aborted.get() && !responseObserver.isDone()) {
             numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
             if (aborted.get()) {
                 logger.debug("Stops listening, aborted");
@@ -276,10 +276,6 @@ public class GoogleSTTService implements STTService {
             }
             if (numBytesRead != remaining) {
                 remaining = remaining - numBytesRead;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
                 continue;
             }
             remaining = bufferSize;
@@ -288,6 +284,7 @@ public class GoogleSTTService implements STTService {
             logger.debug("Sending audio data {}", bufferSize);
             clientStream.send(dataRequest);
         }
+        audioStream.close();
     }
 
     private void sendStreamConfig(ClientStream<StreamingRecognizeRequest> clientStream,
@@ -339,6 +336,7 @@ public class GoogleSTTService implements STTService {
         private float confidenceSum = 0;
         private int responseCount = 0;
         private long lastInputTime = 0;
+        private boolean done = false;
 
         public TranscriptionListener(STTListener sttListener, GoogleSTTConfiguration config, AtomicBoolean aborted) {
             this.sttListener = sttListener;
@@ -378,7 +376,7 @@ public class GoogleSTTService implements STTService {
                     responseCount++;
                     // when in single utterance mode we can just get one final result so complete
                     if (config.singleUtteranceMode) {
-                        onComplete();
+                        done = true;
                     }
                 }
             });
@@ -413,6 +411,10 @@ public class GoogleSTTService implements STTService {
                             new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
                 }
             }
+        }
+
+        public boolean isDone() {
+            return done;
         }
 
         public long getLastInputTime() {
