@@ -134,9 +134,9 @@ public class TapoLightStrip extends TapoDevice {
     protected void setColor(HSBType command) {
         HashMap<String, Object> newState = new HashMap<>();
         newState.put(JSON_KEY_ON, true);
-        newState.put(JSON_KEY_HUE, command.getHue());
-        newState.put(JSON_KEY_SATURATION, command.getSaturation());
-        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness());
+        newState.put(JSON_KEY_HUE, command.getHue().intValue());
+        newState.put(JSON_KEY_SATURATION, command.getSaturation().intValue());
+        newState.put(JSON_KEY_BRIGHTNES, command.getBrightness().intValue();
         connector.sendDeviceCommands(newState);
     }
 
