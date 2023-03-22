@@ -283,8 +283,8 @@ Use the `SCRIPT` transformation with JavaScript Scripting by:
    })(input);
    ```
 
-2. Using `SCRIPT(graaljs:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
-3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(graaljs:<scriptname>.script?arg=value):%s`.
+2. Using `SCRIPT(js:<scriptname>.script):%s` as the transformation profile, e.g. on an Item.
+3. Passing parameters is also possible by using a URL like syntax: `SCRIPT(js:<scriptname>.script?arg=value):%s`.
    Parameters are injected into the script and can be referenced like variables.
 
 ## Standard Library
