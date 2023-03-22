@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solaredge.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +23,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
+import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePrivateApi;
+import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApi;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdateMeterless;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApi;
+import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
+import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -91,14 +100,58 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * Start the polling.
      */
     private void startPolling() {
-        updateJobReference(liveDataPollingJobReference,
-                scheduler.scheduleWithFixedDelay(new SolarEdgeLiveDataPolling(this), LIVE_POLLING_INITIAL_DELAY,
-                        getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES));
+        updateJobReference(liveDataPollingJobReference, scheduler.scheduleWithFixedDelay(this::liveDataPollingRun,
+                LIVE_POLLING_INITIAL_DELAY, getConfiguration().getLiveDataPollingInterval(), TimeUnit.MINUTES));
 
         updateJobReference(aggregateDataPollingJobReference,
-                scheduler.scheduleWithFixedDelay(new SolarEdgeAggregateDataPolling(this),
-                        AGGREGATE_POLLING_INITIAL_DELAY, getConfiguration().getAggregateDataPollingInterval(),
-                        TimeUnit.MINUTES));
+                scheduler.scheduleWithFixedDelay(this::aggregateDataPollingRun, AGGREGATE_POLLING_INITIAL_DELAY,
+                        getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES));
+    }
+
+    /**
+     * Poll the SolarEdge Webservice one time per call to retrieve live data.
+     */
+    void liveDataPollingRun() {
+        logger.debug("polling SolarEdge live data {}", getConfiguration());
+        SolarEdgeCommand ldu;
+
+        if (getConfiguration().isUsePrivateApi()) {
+            ldu = new LiveDataUpdatePrivateApi(this);
+        } else {
+            if (getConfiguration().isMeterInstalled()) {
+                ldu = new LiveDataUpdatePublicApi(this);
+            } else {
+                ldu = new LiveDataUpdateMeterless(this);
+            }
+        }
+        getWebInterface().enqueueCommand(ldu);
+    }
+
+    /**
+     * Poll the SolarEdge Webservice one time per call to retrieve aggregate data.
+     */
+    void aggregateDataPollingRun() {
+        // if no meter is present all data will be fetched by the 'LiveDataUpdateMeterless'
+        if (getConfiguration().isMeterInstalled()) {
+            logger.debug("polling SolarEdge aggregate data {}", getConfiguration());
+            List<SolarEdgeCommand> commands = new ArrayList<>();
+
+            if (getConfiguration().isUsePrivateApi()) {
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.DAY));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.WEEK));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH));
+                commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR));
+            } else {
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.DAY));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.WEEK));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.MONTH));
+                commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.YEAR));
+            }
+
+            for (SolarEdgeCommand command : commands) {
+                getWebInterface().enqueueCommand(command);
+            }
+        }
     }
 
     /**
