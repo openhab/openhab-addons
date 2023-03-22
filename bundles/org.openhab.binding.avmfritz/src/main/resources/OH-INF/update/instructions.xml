@@ -3,6 +3,20 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
+	<thing-type uid="avmfritz:FRITZ_Powerline_546E_Solo">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="avmfritz:FRITZ_DECT_210">
 		<instruction-set targetVersion="1">
 			<update-channel id="energy">
