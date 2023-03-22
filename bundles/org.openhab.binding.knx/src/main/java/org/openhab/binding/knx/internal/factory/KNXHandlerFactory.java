@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.factory;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +39,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -54,17 +56,23 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_IP_BRIDGE, THING_TYPE_SERIAL_BRIDGE);
 
     @Nullable
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
 
     @Activate
-    public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+    public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
             final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
             final @Reference SerialPortManager serialPortManager) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
         this.networkAddressService = networkAddressService;
         this.serialPortManager = serialPortManager;
         SerialTransportAdapter.setSerialPortManager(serialPortManager);
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        disableUoM = (boolean) config.getOrDefault(CONFIG_DISABLE_UOM, false);
     }
 
     @Override

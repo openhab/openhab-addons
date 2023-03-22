@@ -64,7 +64,7 @@
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
 /bundles/org.openhab.binding.dbquery/ @lujop
-/bundles/org.openhab.binding.deconz/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.deconz/ @J-N-K
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.deutschebahn/ @soenkekueper
 /bundles/org.openhab.binding.digiplex/ @rmichalak
@@ -82,6 +82,7 @@
 /bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
+/bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
 /bundles/org.openhab.binding.ekey/ @hmerk
 /bundles/org.openhab.binding.electroluxair/ @jannegpriv
@@ -159,7 +160,7 @@
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
-/bundles/org.openhab.binding.knx/ @kaikreuzer
+/bundles/org.openhab.binding.knx/ @kaikreuzer @holgerfriedrich
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
 /bundles/org.openhab.binding.kostalinverter/ @cschneider
@@ -402,6 +403,7 @@
 /bundles/org.openhab.transform.regex/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.rollershutterposition/ @jsjames
 /bundles/org.openhab.transform.scale/ @clinique
+/bundles/org.openhab.transform.vat/ @jlaur
 /bundles/org.openhab.transform.xpath/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.xslt/ @openhab/add-ons-maintainers
 /bundles/org.openhab.voice.googlestt/ @GiviMAD

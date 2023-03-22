@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
+
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
@@ -25,8 +27,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.internal.KNXTypeMapper;
-import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
+import org.openhab.binding.knx.internal.dpt.ValueEncoder;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
 import org.openhab.core.thing.ThingStatus;
@@ -82,7 +83,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private static final int MAX_SEND_ATTEMPTS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXClient.class);
-    private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
 
     private final ThingUID thingUID;
     private final int responseTimeout;
@@ -119,23 +119,20 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         @Override
         public void groupWrite(ProcessEvent e) {
-            processEvent("Group Write", e, (listener, source, destination, asdu) -> {
-                listener.onGroupWrite(AbstractKNXClient.this, source, destination, asdu);
-            });
+            processEvent("Group Write", e, (listener, source, destination, asdu) -> listener
+                    .onGroupWrite(AbstractKNXClient.this, source, destination, asdu));
         }
 
         @Override
         public void groupReadRequest(ProcessEvent e) {
-            processEvent("Group Read Request", e, (listener, source, destination, asdu) -> {
-                listener.onGroupRead(AbstractKNXClient.this, source, destination, asdu);
-            });
+            processEvent("Group Read Request", e, (listener, source, destination, asdu) -> listener
+                    .onGroupRead(AbstractKNXClient.this, source, destination, asdu));
         }
 
         @Override
         public void groupReadResponse(ProcessEvent e) {
-            processEvent("Group Read Response", e, (listener, source, destination, asdu) -> {
-                listener.onGroupReadResponse(AbstractKNXClient.this, source, destination, asdu);
-            });
+            processEvent("Group Read Response", e, (listener, source, destination, asdu) -> listener
+                    .onGroupReadResponse(AbstractKNXClient.this, source, destination, asdu));
         }
     };
 
@@ -151,21 +148,16 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     public void initialize() {
-        if (!scheduleReconnectJob()) {
-            connect();
-        }
+        connect();
     }
 
-    private boolean scheduleReconnectJob() {
+    private void scheduleReconnectJob() {
         if (autoReconnectPeriod > 0) {
             // schedule connect job, for the first connection ignore autoReconnectPeriod and use 1 sec
             final long reconnectDelayS = (state == ClientState.INIT) ? 1 : autoReconnectPeriod;
             final String prefix = (state == ClientState.INIT) ? "re" : "";
             logger.debug("Bridge {} scheduling {}connect in {}s", thingUID, prefix, reconnectDelayS);
             connectJob = knxScheduler.schedule(this::connect, reconnectDelayS, TimeUnit.SECONDS);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -181,7 +173,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     private synchronized boolean connectIfNotAutomatic() {
         if (!isConnected()) {
-            return connectJob != null ? false : connect();
+            return connectJob == null && connect();
         }
         return true;
     }
@@ -241,15 +233,14 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
             // ProcessCommunicationResponder provides responses to requests from KNX bus (Calimero).
             // Note for KNX Secure: SAL to be provided
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link,
+            this.responseCommunicator = new ProcessCommunicationResponder(link,
                     new SecureApplicationLayer(link, Security.defaultInstallation()));
-            this.responseCommunicator = responseCommunicator;
 
             // register this class, callbacks will be triggered
             link.addLinkListener(this);
 
             // create a job carrying out read requests
-            busJob = knxScheduler.scheduleWithFixedDelay(() -> readNextQueuedDatapoint(), 0, readingPause,
+            busJob = knxScheduler.scheduleWithFixedDelay(this::readNextQueuedDatapoint, 0, readingPause,
                     TimeUnit.MILLISECONDS);
 
             statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
@@ -314,9 +305,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             pc.detach();
         });
         deviceInfoClient = null;
-        managementClient = nullify(managementClient, mc -> mc.detach());
-        managementProcedures = nullify(managementProcedures, mp -> mp.detach());
-        link = nullify(link, l -> l.close());
+        managementClient = nullify(managementClient, ManagementClient::detach);
+        managementProcedures = nullify(managementProcedures, ManagementProcedures::detach);
+        link = nullify(link, KNXNetworkLink::close);
         logger.trace("Bridge {} disconnected from KNX bus", thingUID);
     }
 
@@ -337,18 +328,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
             }
         }
-    }
-
-    /**
-     * Transforms a {@link Type} into a datapoint type value for the KNX bus.
-     *
-     * @param type the {@link Type} to transform
-     * @param dpt the datapoint type to which should be converted
-     * @return the corresponding KNX datapoint type value as a string
-     */
-    @Nullable
-    private String toDPTValue(Type type, String dpt) {
-        return typeHelper.toDPTValue(type, dpt);
     }
 
     // datapoint is null at end of the list, warning is misleading
@@ -380,7 +359,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                 }
             } catch (InterruptedException | CancellationException e) {
                 logger.debug("Interrupted sending KNX read request");
-                return;
             } catch (Exception e) {
                 // Any other exception: Fail gracefully, i.e. notify user and continue reading next DP.
                 // Not catching this would end the scheduled read for all DPs in case of an error.
@@ -469,13 +447,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     @Override
-    public final boolean registerGroupAddressListener(GroupAddressListener listener) {
-        return groupAddressListeners.add(listener);
+    public final void registerGroupAddressListener(GroupAddressListener listener) {
+        groupAddressListeners.add(listener);
     }
 
     @Override
-    public final boolean unregisterGroupAddressListener(GroupAddressListener listener) {
-        return groupAddressListeners.remove(listener);
+    public final void unregisterGroupAddressListener(GroupAddressListener listener) {
+        groupAddressListeners.remove(listener);
     }
 
     @Override
@@ -499,7 +477,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         ProcessCommunicator processCommunicator = this.processCommunicator;
         KNXNetworkLink link = this.link;
         if (processCommunicator == null || link == null) {
-            logger.debug("Cannot write to KNX bus (processCommuicator: {}, link: {})",
+            logger.debug("Cannot write to KNX bus (processCommunicator: {}, link: {})",
                     processCommunicator == null ? "Not OK" : "OK",
                     link == null ? "Not OK" : (link.isOpen() ? "Open" : "Closed"));
             return;
@@ -508,9 +486,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
 
-        if (groupAddress != null) {
-            sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getType());
-        }
+        sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
     }
 
     @Override
@@ -527,27 +503,26 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
 
-        if (groupAddress != null) {
-            sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getType());
-        }
+        sendToKNX(responseCommunicator, groupAddress, responseSpec.getDPT(), responseSpec.getValue());
     }
 
-    private void sendToKNX(ProcessCommunication communicator, KNXNetworkLink link, GroupAddress groupAddress,
-            String dpt, Type type) throws KNXException {
+    private void sendToKNX(ProcessCommunication communicator, GroupAddress groupAddress, String dpt, Type type)
+            throws KNXException {
         if (!connectIfNotAutomatic()) {
             return;
         }
 
-        Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0, dpt);
-        String mappedValue = toDPTValue(type, dpt);
-
-        logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
-
+        Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0,
+                NORMALIZED_DPT.getOrDefault(dpt, dpt));
+        String mappedValue = ValueEncoder.encode(type, dpt);
         if (mappedValue == null) {
-            logger.debug("Value '{}' cannot be mapped to datapoint '{}'", type, datapoint);
+            logger.debug("Value '{}' of type '{}' cannot be mapped to datapoint '{}'", type, type.getClass(),
+                    datapoint);
             return;
         }
-        for (int i = 0; i < MAX_SEND_ATTEMPTS; i++) {
+        logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
+
+        for (int i = 0;; i++) {
             try {
                 communicator.write(datapoint, mappedValue);
                 logger.debug("Wrote value '{}' to datapoint '{}' ({}. attempt).", type, datapoint, i);

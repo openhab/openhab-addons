@@ -66,6 +66,7 @@ public class JRubyScriptFileWatcher extends AbstractScriptFileWatcher {
         if (scriptEngineFactory.isFileInGemHome(path) || scriptEngineFactory.isFileInLoadPath(path)) {
             return Optional.empty();
         }
-        return super.getScriptType(scriptFilePath);
+
+        return super.getScriptType(scriptFilePath).filter(type -> scriptEngineFactory.getScriptTypes().contains(type));
     }
 }
