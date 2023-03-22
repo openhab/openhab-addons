@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * {@link org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler} configuration
  *
- * @author Simon Kaufmann - initial contribution and API
+ * @author Simon Kaufmann - Initial contribution
  *
  */
 @NonNullByDefault
