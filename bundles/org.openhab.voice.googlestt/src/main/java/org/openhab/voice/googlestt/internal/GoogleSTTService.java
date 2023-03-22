@@ -265,6 +265,10 @@ public class GoogleSTTService implements STTService {
                 logger.debug("Stops listening, aborted");
                 break;
             }
+            if (numBytesRead == -1) {
+                logger.debug("End of stream");
+                break;
+            }
             if (isExpiredInterval(maxTranscriptionMillis, startTime)) {
                 logger.debug("Stops listening, max transcription time reached");
                 break;
