@@ -134,7 +134,7 @@ If an app that is in the JSON database fails to start when selected, try adjusti
 A current list of `APP_ID`'s can be found at http://hometest.buddytv.netdna-cdn.com/appservice/vizio_apps_prod.json
 and `NAME_SPACE` &amp; `MESSAGE` values needed can be found at http://hometest.buddytv.netdna-cdn.com/appservice/app_availability_prod.json
 
-If there is an error in the user supplied `appListJson`, the thing will fail to start and display a CONFIGURATION_PENDING message.
+If there is an error in the user supplied `appListJson`, the thing will fail to start and display a CONFIGURATION_ERROR message.
 If all text in `appListJson` is removed (set to null) and the thing configuration saved, the binding will restore `appListJson` from the binding's JSON db.
 
 ## Full Example

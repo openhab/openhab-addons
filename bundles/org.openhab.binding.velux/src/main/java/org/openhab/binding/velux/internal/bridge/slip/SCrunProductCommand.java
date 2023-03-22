@@ -355,7 +355,7 @@ public class SCrunProductCommand extends RunProductCommand implements SlipBridge
             // create notification product that clones the new command positions
             product = new VeluxProduct(VeluxProductName.UNKNOWN, new ProductBridgeIndex(reqIndexArray01),
                     ProductState.EXECUTING.value, setMainParameter, setMainParameter, reqFunctionalParameters, COMMAND)
-                            .overrideDataSource(DataSource.BINDING);
+                    .overrideDataSource(DataSource.BINDING);
 
             return true;
         }

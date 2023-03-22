@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HttpBindingConstants {
 
-    private static final String BINDING_ID = "http";
+    public static final String BINDING_ID = "http";
 
     public static final ThingTypeUID THING_TYPE_URL = new ThingTypeUID(BINDING_ID, "url");
 }

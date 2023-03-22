@@ -170,7 +170,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         when(oAuthFactory
                 .getOAuthClientService(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString()))
-                        .thenReturn(oAuthClientService);
+                .thenReturn(oAuthClientService);
 
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);

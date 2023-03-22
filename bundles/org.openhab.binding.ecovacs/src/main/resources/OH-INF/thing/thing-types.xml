@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecovacs"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vacuum">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ecovacsapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Ecovacs Vacuum Cleaner</label>
+		<description>Represents an Ecovacs vacuum cleaner</description>
+
+		<channel-groups>
+			<channel-group id="actions" typeId="actions"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="last-clean" typeId="last-clean"/>
+			<channel-group id="total-stats" typeId="total-stats"/>
+			<channel-group id="consumables" typeId="consumables"/>
+			<channel-group id="settings" typeId="settings"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Device Serial Number</label>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min" min="1" required="false">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Specifies the refresh interval in minutes.</description>
+				<unitLabel>Minutes</unitLabel>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="current-cleaning-mode" typeId="current-cleaning-mode"/>
+			<channel id="current-cleaning-time" typeId="current-cleaning-time"/>
+			<channel id="current-cleaned-area" typeId="current-cleaned-area"/>
+			<channel id="current-cleaning-spot-definition" typeId="current-cleaning-spot-definition"/>
+			<channel id="water-system-present" typeId="water-system-present"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="error-description" typeId="error-description"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="actions">
+		<label>Actions</label>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="total-stats">
+		<label>Device Lifetime Statistics</label>
+		<channels>
+			<channel id="total-cleaning-time" typeId="total-cleaning-time"/>
+			<channel id="total-cleaned-area" typeId="total-cleaned-area"/>
+			<channel id="total-clean-runs" typeId="total-clean-runs"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="last-clean">
+		<label>Last Clean Run</label>
+		<channels>
+			<channel id="last-clean-start" typeId="last-clean-start"/>
+			<channel id="last-clean-duration" typeId="last-clean-duration"/>
+			<channel id="last-clean-area" typeId="last-clean-area"/>
+			<channel id="last-clean-mode" typeId="last-clean-mode"/>
+			<channel id="last-clean-map" typeId="last-clean-map"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="consumables">
+		<label>Consumables</label>
+		<channels>
+			<channel id="main-brush-lifetime" typeId="main-brush-lifetime"/>
+			<channel id="side-brush-lifetime" typeId="side-brush-lifetime"/>
+			<channel id="dust-filter-lifetime" typeId="dust-filter-lifetime"/>
+			<channel id="other-component-lifetime" typeId="other-component-lifetime"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="settings">
+		<label>Settings</label>
+		<channels>
+			<channel id="water-amount" typeId="water-amount"/>
+			<channel id="suction-power" typeId="suction-power"/>
+			<channel id="voice-volume" typeId="voice-volume"/>
+			<channel id="auto-empty" typeId="auto-empty"/>
+			<channel id="cleaning-passes" typeId="cleaning-passes"/>
+			<channel id="continuous-cleaning" typeId="continuous-cleaning"/>
+			<channel id="true-detect-3d" typeId="true-detect-3d"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Current state</description>
+		<state readOnly="true">
+			<options>
+				<option value="cleaning">Cleaning</option>
+				<option value="pause">Paused</option>
+				<option value="stop">Stopped</option>
+				<option value="washing">Washing the cleaning pad</option>
+				<option value="drying">Drying the cleaning pad</option>
+				<option value="returning">Going to charge station</option>
+				<option value="charging">Charging</option>
+				<option value="idle">Idle</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Command to execute</description>
+		<state>
+			<options>
+				<option value="clean">Automatic cleaning</option>
+				<option value="pause">Pause cleaning</option>
+				<option value="resume">Resume cleaning</option>
+				<option value="stop">Stop</option>
+				<option value="charge">Go to charge station</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="current-cleaning-mode">
+		<item-type>String</item-type>
+		<label>Current Cleaning Mode</label>
+		<description>Mode used in current clean cycle</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
+				<option value="edge">@text/ecovacs.cleaning-mode.edge</option>
+				<option value="spot">@text/ecovacs.cleaning-mode.spot</option>
+				<option value="spotArea">@text/ecovacs.cleaning-mode.spotArea</option>
+				<option value="customArea">@text/ecovacs.cleaning-mode.customArea</option>
+				<option value="singleRoom">@text/ecovacs.cleaning-mode.singleRoom</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="current-cleaning-time">
+		<item-type>Number:Time</item-type>
+		<label>Current Cleaning Time</label>
+		<description>Cleaning time in current clean cycle</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="current-cleaned-area">
+		<item-type>Number:Area</item-type>
+		<label>Current Cleaned Area</label>
+		<description>Cleaned area in current clean cycle</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="current-cleaning-spot-definition" advanced="true">
+		<item-type>String</item-type>
+		<label>Current Cleaning Spot</label>
+		<description>Custom or spot area used in current clean cycle</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-cleaning-time">
+		<item-type>Number:Time</item-type>
+		<label>Total Cleaning Time</label>
+		<description>Cleaning time in device life time</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-cleaned-area">
+		<item-type>Number:Area</item-type>
+		<label>Total Cleaned Area</label>
+		<description>Cleaned area in device life time</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-clean-runs">
+		<item-type>Number</item-type>
+		<label>Total Clean Runs</label>
+		<description>Number of cleaning runs in device life time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-clean-start">
+		<item-type>DateTime</item-type>
+		<label>Last Cleaning Start</label>
+		<description>Start time of last completed cleaning run</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-clean-duration">
+		<item-type>Number:Time</item-type>
+		<label>Last Cleaning Duration</label>
+		<description>Duration of last completed cleaning run</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="last-clean-area">
+		<item-type>Number:Area</item-type>
+		<label>Last Cleaned Area</label>
+		<description>Cleaned area in last completed cleaning run</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="last-clean-mode">
+		<item-type>String</item-type>
+		<label>Last Cleaning Mode</label>
+		<description>Operation mode used in last completed cleaning run</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">@text/ecovacs.cleaning-mode.auto</option>
+				<option value="edge">@text/ecovacs.cleaning-mode.edge</option>
+				<option value="spot">@text/ecovacs.cleaning-mode.spot</option>
+				<option value="spotArea">@text/ecovacs.cleaning-mode.spotArea</option>
+				<option value="customArea">@text/ecovacs.cleaning-mode.customArea</option>
+				<option value="singleRoom">@text/ecovacs.cleaning-mode.singleRoom</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="last-clean-map">
+		<item-type>Image</item-type>
+		<label>Last Clean Map</label>
+		<description>Cleaning map for last completed cleaning run</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="auto-empty" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Auto Empty</label>
+		<description>Automatically empty dust bin in station</description>
+	</channel-type>
+
+	<channel-type id="cleaning-passes" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cleaning Passes</label>
+		<description>Number of cleaning passes used by default (if not overridden in command)</description>
+		<state min="1" max="2" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="continuous-cleaning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Continuous Cleaning</label>
+		<description>Automatically resume unfinished cleaning after charging</description>
+	</channel-type>
+
+	<channel-type id="suction-power">
+		<item-type>String</item-type>
+		<label>Cleaning Power Level</label>
+		<description>Amount of suction power to be used while cleaning</description>
+		<state>
+			<options>
+				<option value="silent">Silent</option>
+				<option value="normal">Normal</option>
+				<option value="high">Maximum</option>
+				<option value="higher">Maximum+</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="true-detect-3d" advanced="true">
+		<item-type>Switch</item-type>
+		<label>True Detect 3D</label>
+		<description>Enable the True Detect 3D object recognition technology</description>
+	</channel-type>
+
+	<channel-type id="water-system-present">
+		<item-type>Switch</item-type>
+		<label>Water System Present</label>
+		<description>Water plate with mop attached to device?</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="water-amount" advanced="true">
+		<item-type>String</item-type>
+		<label>Mopping Water Amount</label>
+		<state>
+			<options>
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+				<option value="veryhigh">Very high</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="wifi-rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Received signal strength indicator for Wi-Fi</description>
+		<category>QualityOfService</category>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="main-brush-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Main Brush Lifetime</label>
+		<description>Remaining life time of main brush in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="side-brush-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Side Brush Lifetime</label>
+		<description>Remaining life time of side brush in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dust-filter-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Dust Filter Lifetime</label>
+		<description>Remaining life time of dust bin filter in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="other-component-lifetime">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Other Component Lifetime</label>
+		<description>Remaining time until device maintenance is required in percent</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="voice-volume">
+		<item-type>Dimmer</item-type>
+		<label>Voice Volume</label>
+		<description>Volume level of voice reports</description>
+		<state min="0" max="100" step="10"/>
+	</channel-type>
+
+	<channel-type id="error-code">
+		<item-type>Number</item-type>
+		<label>Last Error Code</label>
+		<description>The numerical value (code) of the last encountered error</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="error-description">
+		<item-type>String</item-type>
+		<label>Last Error Description</label>
+		<description>A text describing the last encountered error</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
